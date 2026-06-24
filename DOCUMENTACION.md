@@ -298,12 +298,59 @@ Cambia la pose de un personaje visible.
 ```
 
 ### playSound
-Reproduce un archivo de audio.
+Reproduce un archivo de audio con opciones avanzadas.
 
+**Formato Simple:**
 ```json
 {
   "type": "playSound",
   "value": "assets/sounds/bell.mp3"
+}
+```
+
+**Formato Avanzado:**
+```json
+{
+  "type": "playSound",
+  "path": "assets/sounds/music.mp3",
+  "volume": 0.8,
+  "loop": true
+}
+```
+
+**Parámetros:**
+- `path` o `value`: Ruta del archivo de audio
+- `volume`: Volumen (0.0 a 1.0, por defecto 1.0)
+- `loop`: Si se repite en bucle (por defecto false)
+- `autoPlay`: Si se inicia automáticamente (por defecto true)
+
+**Ejemplos:**
+
+Música de fondo (baja, en bucle):
+```json
+{
+  "type": "playSound",
+  "path": "assets/sounds/ambient.mp3",
+  "volume": 0.5,
+  "loop": true
+}
+```
+
+Efecto de sonido (volumen máximo):
+```json
+{
+  "type": "playSound",
+  "path": "assets/sounds/sword.mp3",
+  "volume": 1.0
+}
+```
+
+Sonido silencioso:
+```json
+{
+  "type": "playSound",
+  "path": "assets/sounds/whisper.mp3",
+  "volume": 0.3
 }
 ```
 
@@ -459,6 +506,225 @@ Cada personaje puede tener:
   ]
 }
 ```
+
+---
+
+## 🔊 Sistema de Sonidos
+
+### Estructura de Carpetas
+
+Coloca tus archivos de audio en `assets/sounds/`:
+
+```
+assets/
+├── sounds/
+│   ├── music/
+│   │   ├── ambient.mp3
+│   │   └── boss_theme.mp3
+│   ├── effects/
+│   │   ├── sword.mp3
+│   │   ├── bell.mp3
+│   │   └── explosion.mp3
+│   └── voices/
+│       ├── greeting.mp3
+│       └── farewell.mp3
+```
+
+### Formatos Soportados
+
+Usa archivos de audio comunes:
+- **MP3** - Mejor compatibilidad
+- **OGG** - Buena compresión
+- **WAV** - Calidad sin pérdidas
+- **M4A** - Para Apple
+
+### Acciones de Sonido
+
+#### 1. Reproducir Sonido Simple
+```json
+{
+  "type": "playSound",
+  "value": "assets/sounds/effects/bell.mp3"
+}
+```
+
+#### 2. Música de Fondo (En Bucle)
+```json
+{
+  "type": "playSound",
+  "path": "assets/sounds/music/ambient.mp3",
+  "volume": 0.5,
+  "loop": true
+}
+```
+
+#### 3. Efecto de Sonido (Volumen Alto)
+```json
+{
+  "type": "playSound",
+  "path": "assets/sounds/effects/sword.mp3",
+  "volume": 1.0
+}
+```
+
+#### 4. Sonido Silencioso (Whisper)
+```json
+{
+  "type": "playSound",
+  "path": "assets/sounds/voices/whisper.mp3",
+  "volume": 0.3
+}
+```
+
+### Ejemplo Completo en Capítulo
+
+```json
+{
+  "_line": 1,
+  "character": "Narrador",
+  "text": "Una mañana tranquila en el café...",
+  "actions": [
+    {
+      "type": "setBackground",
+      "value": "assets/backgrounds/cafe.png"
+    },
+    {
+      "type": "playSound",
+      "path": "assets/sounds/music/ambient.mp3",
+      "volume": 0.4,
+      "loop": true
+    }
+  ]
+},
+{
+  "_line": 2,
+  "character": "Luna",
+  "text": "¡Ring! ¡El timbre de la puerta!",
+  "actions": [
+    {
+      "type": "playSound",
+      "path": "assets/sounds/effects/bell.mp3",
+      "volume": 1.0
+    }
+  ]
+}
+```
+
+### Parámetros de Sonido
+
+| Parámetro | Descripción | Rango | Por Defecto |
+|-----------|-------------|-------|------------|
+| `path` o `value` | Ruta del archivo de audio | string | requerido |
+| `volume` | Volumen del sonido | 0.0 - 1.0 | 1.0 |
+| `loop` | Repetir en bucle | boolean | false |
+| `autoPlay` | Iniciar automáticamente | boolean | true |
+| `id` | ID único para controlar después | string | null |
+| `fadeIn` | Fade in en milisegundos | number | 0 |
+
+### Control Avanzado de Sonidos
+
+#### Detener Sonido (con fade out opcional)
+```json
+{
+  "type": "stopSound",
+  "id": "music_background",
+  "fadeOut": 1000
+}
+```
+
+#### Parar Todos los Sonidos
+```json
+{
+  "type": "stopAllSounds"
+}
+```
+
+#### Pausar Sonido
+```json
+{
+  "type": "pauseSound",
+  "id": "effect_ambient"
+}
+```
+
+#### Reanudar Sonido
+```json
+{
+  "type": "resumeSound",
+  "id": "effect_ambient"
+}
+```
+
+#### Cambiar Volumen
+```json
+{
+  "type": "setVolume",
+  "id": "music_background",
+  "volume": 0.3
+}
+```
+
+### Ejemplo Completo: Control de Música
+
+```json
+{
+  "_line": 1,
+  "character": "Narrador",
+  "text": "Una mañana tranquila...",
+  "actions": [
+    {
+      "type": "playSound",
+      "path": "assets/sounds/music/ambient.mp3",
+      "volume": 0.5,
+      "loop": true,
+      "fadeIn": 1000,
+      "id": "music_background"
+    }
+  ]
+},
+{
+  "_line": 2,
+  "character": "Luna",
+  "text": "¡Algo terrible sucede!",
+  "actions": [
+    {
+      "type": "setVolume",
+      "id": "music_background",
+      "volume": 0.2
+    },
+    {
+      "type": "playSound",
+      "path": "assets/sounds/effects/alarm.mp3",
+      "volume": 1.0
+    }
+  ]
+},
+{
+  "_line": 3,
+  "character": "Narrador",
+  "text": "Luego todo vuelve a la normalidad...",
+  "actions": [
+    {
+      "type": "setVolume",
+      "id": "music_background",
+      "volume": 0.5
+    },
+    {
+      "type": "stopSound",
+      "id": "music_background",
+      "fadeOut": 2000
+    }
+  ]
+}
+```
+
+### Consejos
+
+✅ **Música de Fondo:** Usa `loop: true`, `id` para control, y `fadeIn/fadeOut` para transiciones suaves
+✅ **Efectos:** Usa `volume: 0.8-1.0` para que se escuche bien
+✅ **Transiciones:** Usa `fadeOut` cuando cambies de música (1000-2000ms)
+✅ **IDs únicos:** Asigna `id` a música de fondo para poder controlarla después
+✅ **Comprensión:** Los MP3 son más ligeros que WAV
 
 ---
 

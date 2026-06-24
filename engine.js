@@ -13,6 +13,8 @@ class VisualNovelEngine {
         this.speakingCharacter = null;
         this.speakingPosition = null;
         this.characterPositions = {}; // Rastrear qué personaje está en qué posición
+        this.audioInstances = {}; // Rastrear instancias de audio
+        this.currentMusic = null; // Música de fondo actual
     }
 
     async loadChapter(chapterName) {
@@ -85,7 +87,31 @@ class VisualNovelEngine {
                 this.gameState[action.variable] = action.value;
                 break;
             case 'playSound':
-                this.playSound(action.value);
+                // Soportar tanto formato antiguo (action.value) como nuevo (action.path + opciones)
+                const soundPath = action.path || action.value;
+                const soundOptions = {
+                    volume: action.volume !== undefined ? action.volume : 1.0,
+                    loop: action.loop || false,
+                    autoPlay: action.autoPlay !== false,
+                    id: action.id,
+                    fadeIn: action.fadeIn || 0
+                };
+                this.playSound(soundPath, soundOptions);
+                break;
+            case 'stopSound':
+                this.stopSound(action.id || action.audio, action.fadeOut || 0);
+                break;
+            case 'stopAllSounds':
+                this.stopAllSounds();
+                break;
+            case 'pauseSound':
+                this.pauseSound(action.id || action.audio);
+                break;
+            case 'resumeSound':
+                this.resumeSound(action.id || action.audio);
+                break;
+            case 'setVolume':
+                this.setVolume(action.id || action.audio, action.volume);
                 break;
             case 'wait':
                 await this.wait(action.value);
@@ -164,9 +190,140 @@ class VisualNovelEngine {
         }
     }
 
-    playSound(soundPath) {
+    playSound(soundPath, options = {}) {
+        const {
+            volume = 1.0,
+            loop = false,
+            autoPlay = true,
+            id = null,
+            fadeIn = 0
+        } = options;
+
         const audio = new Audio(soundPath);
-        audio.play().catch(e => console.log('Error reproduciendo sonido:', e));
+        audio.volume = Math.max(0, Math.min(1, volume)); // Clamp 0-1
+        audio.loop = loop;
+
+        // Si es música (loop), guardar como música actual
+        if (loop) {
+            this.currentMusic = audio;
+        }
+
+        // Rastrear por ID si se proporciona
+        if (id) {
+            this.audioInstances[id] = audio;
+        }
+
+        // Fade in si se especifica
+        if (fadeIn > 0) {
+            audio.volume = 0;
+            let startTime = Date.now();
+            const targetVolume = Math.max(0, Math.min(1, volume));
+
+            const fadeInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / fadeIn, 1);
+                audio.volume = targetVolume * progress;
+
+                if (progress >= 1) {
+                    clearInterval(fadeInterval);
+                }
+            }, 20);
+        }
+
+        if (autoPlay) {
+            audio.play().catch(e => console.log('Error reproduciendo sonido:', e));
+        }
+
+        return audio;
+    }
+
+    stopSound(audioOrId, fadeOut = 0) {
+        let audio = audioOrId;
+
+        // Si es string, buscar por ID
+        if (typeof audioOrId === 'string') {
+            audio = this.audioInstances[audioOrId];
+            if (!audio) {
+                console.warn(`Audio con ID "${audioOrId}" no encontrado`);
+                return;
+            }
+        }
+
+        if (!audio) return;
+
+        if (fadeOut > 0) {
+            // Fade out gradual
+            let startTime = Date.now();
+            const initialVolume = audio.volume;
+
+            const fadeInterval = setInterval(() => {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / fadeOut, 1);
+                audio.volume = initialVolume * (1 - progress);
+
+                if (progress >= 1) {
+                    clearInterval(fadeInterval);
+                    audio.pause();
+                    audio.currentTime = 0;
+                }
+            }, 20);
+        } else {
+            // Parar inmediatamente
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    }
+
+    stopAllSounds() {
+        // Parar toda la música y efectos
+        if (this.currentMusic) {
+            this.currentMusic.pause();
+            this.currentMusic.currentTime = 0;
+            this.currentMusic = null;
+        }
+
+        // Parar todos los efectos registrados
+        for (const id in this.audioInstances) {
+            this.audioInstances[id].pause();
+            this.audioInstances[id].currentTime = 0;
+        }
+        this.audioInstances = {};
+    }
+
+    pauseSound(audioOrId) {
+        let audio = audioOrId;
+
+        if (typeof audioOrId === 'string') {
+            audio = this.audioInstances[audioOrId];
+        }
+
+        if (audio) {
+            audio.pause();
+        }
+    }
+
+    resumeSound(audioOrId) {
+        let audio = audioOrId;
+
+        if (typeof audioOrId === 'string') {
+            audio = this.audioInstances[audioOrId];
+        }
+
+        if (audio) {
+            audio.play().catch(e => console.log('Error reanudando sonido:', e));
+        }
+    }
+
+    setVolume(audioOrId, volume) {
+        let audio = audioOrId;
+
+        if (typeof audioOrId === 'string') {
+            audio = this.audioInstances[audioOrId];
+        }
+
+        if (audio) {
+            audio.volume = Math.max(0, Math.min(1, volume));
+        }
     }
 
     wait(ms) {
@@ -333,6 +490,9 @@ class VisualNovelEngine {
         this.speakingCharacter = null;
         this.speakingPosition = null;
         this.characterPositions = {};
+
+        // Detener todos los sonidos
+        this.stopAllSounds();
 
         // Limpiar la interfaz visual
         this.hideDialog();

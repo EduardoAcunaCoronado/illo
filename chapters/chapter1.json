@@ -1,5 +1,5 @@
 {
-  "title": "Capítulo 1: El Encuentro",
+  "title": "Prólogo: Re:ferenciaS",
   "scenes": [
     {
       "title": "Escena 1: El Café",
@@ -16,6 +16,14 @@
               "character": "2b",
               "position": "left",
               "pose": "neutral"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/devolapopola.mp3",
+              "volume": 0.1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 1000
             }
           ],
           "character": "2B",
@@ -68,6 +76,14 @@
               "character": "emil",
               "position": "right",
               "pose": "neutral"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/emil.mp3",
+              "volume": 1.0,
+              "loop": true,
+              "id": "emil",
+              "fadeIn": 1000
             }
           ],
           "character": "Emil",
@@ -81,6 +97,16 @@
               "character": "2b",
               "position": "left",
               "pose": "neutral"
+            },
+            {
+              "type": "stopSound",
+              "id": "emil",
+              "fadeOut": 1000
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/disco-rayado.mp3",
+              "volume": 1.0
             }
           ],
           "character": "2B",
