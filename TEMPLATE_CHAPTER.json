@@ -1,0 +1,56 @@
+{
+  "title": "Capítulo X: Nombre del Capítulo",
+  "scenes": [
+    {
+      "title": "Escena 1: Nombre",
+      "lines": [
+        {
+          "character": "Narrador",
+          "text": "Descripción de la escena",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/nombre.jpg"
+            }
+          ]
+        },
+        {
+          "character": "PersonajeName",
+          "text": "Diálogo del personaje",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "personaje_key",
+              "position": "left"
+            }
+          ]
+        },
+        {
+          "character": "OtroPersonaje",
+          "text": "Respuesta",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "otro_personaje",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "PersonajeName",
+          "text": "¿Qué hacemos?",
+          "choices": [
+            {
+              "text": "Primera opción",
+              "nextLine": 10
+            },
+            {
+              "text": "Segunda opción",
+              "nextScene": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

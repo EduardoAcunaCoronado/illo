@@ -1,0 +1,65 @@
+{
+  "title": "Prólogo: El Sueño",
+  "scenes": [
+    {
+      "title": "Escena 1: Un Sueño Extraño",
+      "lines": [
+        {
+          "_line": 0,
+          "character": "Narrador",
+          "text": "Todo comienza con un sueño confuso. Imágenes sin sentido pasan ante tus ojos.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/dream.png"
+            },
+            {
+              "type": "wait",
+              "value": 1500
+            }
+          ]
+        },
+        {
+          "_line": 1,
+          "character": "Voz Misteriosa",
+          "text": "¿Quién eres? ¿Dónde estás?"
+        },
+        {
+          "_line": 2,
+          "character": "Narrador",
+          "text": "Una voz te llama desde la oscuridad. No puedes responder."
+        },
+        {
+          "_line": 3,
+          "character": "Voz Misteriosa",
+          "text": "Despierta... despierta...",
+          "choices": [
+            {
+              "text": "Luchar contra el sueño",
+              "nextLine": 4
+            },
+            {
+              "text": "Aceptar el sueño",
+              "nextLine": 6
+            }
+          ]
+        },
+        {
+          "_line": 4,
+          "character": "Narrador",
+          "text": "Intentas resistir, pero la fatiga es abrumadora. Una última imagen..."
+        },
+        {
+          "_line": 5,
+          "character": "Narrador",
+          "text": "Te despiertas en tu cama. El sol entra por la ventana."
+        },
+        {
+          "_line": 6,
+          "character": "Narrador",
+          "text": "Caes profundamente en la oscuridad. Todo desaparece."
+        }
+      ]
+    }
+  ]
+}

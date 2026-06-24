@@ -1,0 +1,105 @@
+{
+  "title": "Capítulo 1: El Encuentro",
+  "scenes": [
+    {
+      "title": "Escena 1: El Café",
+      "lines": [
+        {
+          "_line": 1,
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/cafe.png"
+            },
+            {
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "neutral"
+            }
+          ],
+          "character": "2B",
+          "text": "¡Hola, buenas tardes!"
+        },
+        {
+          "_line": 2,
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "pod",
+              "position": "right",
+              "pose": "happy"
+            }
+          ],
+          "character": "Pod",
+          "text": "¡HOLA!"
+        },
+        {
+          "_line": 3,
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "happy"
+            }
+          ],
+          "character": "2B",
+          "text": "Prrrr"
+        },
+        {
+          "_line": 4,
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "neutral"
+            }
+          ],
+          "character": "2B",
+          "text": "En el capítulo de hoy vamos a contar cómo se puede torcer un cumpleaños cuando menos te lo esperas..."
+        },
+        {
+          "_line": 5,
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "emil",
+              "position": "right",
+              "pose": "neutral"
+            }
+          ],
+          "character": "Emil",
+          "text": "Luvhaaaaaaaaaaaa dumeeeeeeeeee"
+        },
+        {
+          "_line": 6,
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "neutral"
+            }
+          ],
+          "character": "2B",
+          "text": "¡Shh, calla, niño! Que esta no es tu historia."
+        },
+        {
+          "_line": 7,
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "neutral"
+            }
+          ],
+          "character": "2B",
+          "text": "Esta es la historia de Samu, un chico que se despertó un día y no volvió a ser el mismo..."
+        }
+      ]
+    }
+  ]
+}

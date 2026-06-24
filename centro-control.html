@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Novel Engine - Centro de Control</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f3460 100%);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 3px solid #ff69b4;
+            padding-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #ff69b4, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            background: rgba(39, 174, 96, 0.2);
+            border: 1px solid #27ae60;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: inline-block;
+            color: #27ae60;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            background: rgba(255, 105, 180, 0.1);
+            border-color: #ff69b4;
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #ff69b4;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .card p {
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 105, 180, 0.2);
+            border: 1px solid #ff69b4;
+            color: #ff69b4;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: rgba(255, 105, 180, 0.4);
+            color: #fff;
+        }
+
+        .section-title {
+            font-size: 28px;
+            color: #ff69b4;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            border-left: 3px solid #ff69b4;
+            padding-left: 15px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 105, 180, 0.2);
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 Visual Novel Engine</h1>
+            <p class="subtitle">Centro de Control y Documentación</p>
+            <div class="status">✓ Sistema Listo para Usar</div>
+        </header>
+
+        <h2 class="section-title">📚 Documentación Principal</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>🚀 INICIO (Recomendado)</h3>
+                <p>Guía de 5 minutos para empezar. Los primeros pasos y flujo básico.</p>
+                <a href="INICIO.md" class="btn">Leer INICIO.md</a>
+            </div>
+
+            <div class="card">
+                <h3>⚙️ QUICK START</h3>
+                <p>Pasos detallados para crear tu primer capítulo. Incluye ejemplos JSON.</p>
+                <a href="QUICK_START.md" class="btn">Leer QUICK_START.md</a>
+            </div>
+
+            <div class="card">
+                <h3>📖 README</h3>
+                <p>Documentación completa. Todas las features y ejemplos detallados.</p>
+                <a href="README.md" class="btn">Leer README.md</a>
+            </div>
+
+            <div class="card">
+                <h3>📁 STRUCTURE</h3>
+                <p>Explicación de la estructura de carpetas y cómo agregar contenido.</p>
+                <a href="STRUCTURE.md" class="btn">Leer STRUCTURE.md</a>
+            </div>
+
+            <div class="card">
+                <h3>🎯 ADVANCED</h3>
+                <p>Funciones avanzadas, extensiones y optimizaciones del motor.</p>
+                <a href="ADVANCED.md" class="btn">Leer ADVANCED.md</a>
+            </div>
+
+            <div class="card">
+                <h3>🆘 TROUBLESHOOTING</h3>
+                <p>Soluciones para errores comunes y debugging step-by-step.</p>
+                <a href="TROUBLESHOOTING.md" class="btn">Leer TROUBLESHOOTING.md</a>
+            </div>
+        </div>
+
+        <h2 class="section-title">🛠️ Herramientas Incluidas</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>🎨 Generador de Assets</h3>
+                <p>Crea imágenes de fondos y personajes automáticamente para pruebas.</p>
+                <a href="generate-assets.html" class="btn">Abrir Generador</a>
+            </div>
+
+            <div class="card">
+                <h3>📝 Plantilla de Capítulo</h3>
+                <p>Copia y edita para crear nuevos capítulos rápidamente.</p>
+                <a href="TEMPLATE_CHAPTER.json" class="btn">Ver Plantilla</a>
+            </div>
+
+            <div class="card">
+                <h3>🎮 Juego Principal</h3>
+                <p>Abre esto para jugar con los capítulos de ejemplo.</p>
+                <a href="index.html" class="btn">Jugar Ahora</a>
+            </div>
+        </div>
+
+        <footer>
+            <p>Visual Novel Engine v1.0</p>
+            <p>Documentación completa disponible. Comienza con INICIO.md</p>
+        </footer>
+    </div>
+</body>
+</html>

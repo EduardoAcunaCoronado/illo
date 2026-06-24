@@ -1,0 +1,12 @@
+{
+  "name": "2B",
+  "color": "gray",
+  "poses": {
+    "neutral": "assets/characters/pod.png",
+    "happy": "assets/characters/pod_happy.png",
+    "sad": "assets/characters/pod.png",
+    "angry": "assets/characters/pod.png",
+    "surprised": "assets/characters/pod.png"
+  },
+  "defaultPose": "neutral"
+}

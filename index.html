@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Novel Engine</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Fondo de la escena -->
+        <div id="background" class="background"></div>
+
+        <!-- Personajes -->
+        <div id="characters-container" class="characters-container">
+            <div id="character-left" class="character left"></div>
+            <div id="character-right" class="character right"></div>
+            <div id="character-center" class="character center"></div>
+        </div>
+
+        <!-- Caja de diálogo con estilo Persona 5 -->
+        <div id="dialog-box" class="dialog-box p5-style">
+            <div class="p5-dialog-header">
+                <div class="character-name" id="character-name"></div>
+                <div class="p5-nameplate"></div>
+            </div>
+            <div class="p5-dialog-content">
+                <div class="p5-border-top"></div>
+                <div class="dialog-text" id="dialog-text"></div>
+                <div class="p5-border-bottom"></div>
+            </div>
+            <div class="dialog-continue p5-continue">▼</div>
+        </div>
+
+        <!-- Menú de elecciones con estilo Persona 5 -->
+        <div id="choices-container" class="choices-container p5-choices"></div>
+
+        <!-- Menú principal -->
+        <div id="main-menu" class="main-menu p5-main-menu">
+            <div class="p5-menu-header">
+                <h1>Visual Novel</h1>
+            </div>
+            <nav class="p5-menu-nav">
+                <button id="start-btn" class="menu-btn p5-menu-btn">
+                    <span class="p5-btn-text">Comenzar</span>
+                </button>
+                <button id="load-btn" class="menu-btn p5-menu-btn">
+                    <span class="p5-btn-text">Cargar</span>
+                </button>
+                <button id="settings-btn" class="menu-btn p5-menu-btn">
+                    <span class="p5-btn-text">Configuración</span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <script src="p5-effects.js"></script>
+    <script src="engine.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

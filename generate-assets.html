@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Assets - Visual Novel Engine</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: #fff;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            margin-bottom: 30px;
+            color: #ff69b4;
+        }
+        .section {
+            background: #2a2a2a;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border-left: 3px solid #ff69b4;
+        }
+        h2 {
+            margin-bottom: 15px;
+            color: #00d4ff;
+        }
+        button {
+            background: #ff69b4;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background: #ff1493;
+        }
+        .canvas-preview {
+            display: inline-block;
+            border: 1px solid #ff69b4;
+            margin: 10px 10px 10px 0;
+            background: #000;
+        }
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 3px;
+        }
+        .success {
+            background: #27ae60;
+            color: #fff;
+        }
+        .info {
+            background: #2980b9;
+            color: #fff;
+        }
+        input[type="text"], input[type="color"] {
+            padding: 8px;
+            margin-right: 10px;
+            border: 1px solid #ff69b4;
+            background: #1a1a1a;
+            color: #fff;
+            border-radius: 3px;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Generador de Assets para Visual Novel</h1>
+
+        <div class="section">
+            <h2>📸 Fondos (Backgrounds)</h2>
+            <p style="margin-bottom: 15px;">Genera fondos de escena automáticamente.</p>
+            <button onclick="generateBackground('cafe', '#8B7355', 'Café Acogedor')">Café</button>
+            <button onclick="generateBackground('forest', '#228B22', 'Bosque Oscuro')">Bosque</button>
+            <button onclick="generateBackground('apartment', '#D3D3D3', 'Apartamento')">Apartamento</button>
+            <button onclick="generateBackground('temple', '#4a4a3a', 'Templo Antiguo')">Templo</button>
+            <button onclick="generateBackground('beach', '#87CEEB', 'Playa Soleada')">Playa</button>
+            <button onclick="generateBackground('night', '#1a1a3a', 'Noche Estrellada')">Noche</button>
+            <div id="bg-preview"></div>
+            <div id="bg-message"></div>
+        </div>
+
+        <div class="section">
+            <h2>👤 Personajes (Characters)</h2>
+            <p style="margin-bottom: 15px;">Genera sprites de personajes.</p>
+            <button onclick="generateCharacter('luna', '#ff69b4', 'Luna')">Luna</button>
+            <button onclick="generateCharacter('alex', '#00d4ff', 'Alex')">Alex</button>
+            <button onclick="generateCharacter('sage', '#90EE90', 'Sage')">Sage</button>
+            <button onclick="generateCharacter('raven', '#4B0082', 'Raven')">Raven</button>
+            <div id="char-preview"></div>
+            <div id="char-message"></div>
+        </div>
+
+        <div class="section">
+            <h2>🎯 Generador Personalizado</h2>
+
+            <div style="margin-bottom: 20px;">
+                <h3 style="color: #00d4ff; margin-bottom: 10px;">Fondo Personalizado</h3>
+                <label>
+                    Nombre: <input type="text" id="custom-bg-name" value="custom" placeholder="custom">
+                </label>
+                <label>
+                    Color: <input type="color" id="custom-bg-color" value="#5a5a5a">
+                </label>
+                <label>
+                    Texto: <input type="text" id="custom-bg-text" value="Mi Escena" placeholder="Nombre de la escena">
+                </label>
+                <button onclick="generateCustomBackground()">Generar</button>
+                <div id="custom-bg-message"></div>
+            </div>
+
+            <div>
+                <h3 style="color: #00d4ff; margin-bottom: 10px;">Personaje Personalizado</h3>
+                <label>
+                    Nombre: <input type="text" id="custom-char-name" value="custom" placeholder="custom">
+                </label>
+                <label>
+                    Color: <input type="color" id="custom-char-color" value="#ff69b4">
+                </label>
+                <label>
+                    Nombre a mostrar: <input type="text" id="custom-char-label" value="Personaje" placeholder="Nombre del personaje">
+                </label>
+                <button onclick="generateCustomCharacter()">Generar</button>
+                <div id="custom-char-message"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 Instrucciones de Descarga</h2>
+            <p>Las imágenes generadas aparecerán abajo como previsualizaciones en canvas.</p>
+            <p><strong>Para guardarlas:</strong></p>
+            <ol style="margin-left: 20px; margin-top: 10px;">
+                <li>Haz clic derecho en la imagen</li>
+                <li>Selecciona "Guardar imagen como..."</li>
+                <li>Colócala en la carpeta correcta:
+                    <ul style="margin-left: 20px; margin-top: 5px;">
+                        <li>Fondos → <code>assets/backgrounds/</code></li>
+                        <li>Personajes → <code>assets/characters/</code></li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Generar Todo de Una Vez</h2>
+            <button onclick="generateAll()">Generar todos los assets de ejemplo</button>
+            <div id="all-message"></div>
+            <div id="all-preview"></div>
+        </div>
+    </div>
+
+    <script>
+        function generateBackground(name, color, text) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1920;
+            canvas.height = 1080;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, 1920, 1080);
+
+            // Agregar gradiente sutil
+            const gradient = ctx.createLinearGradient(0, 0, 0, 1080);
+            gradient.addColorStop(0, color);
+            gradient.addColorStop(1, darkenColor(color, 30));
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 1920, 1080);
+
+            // Texto
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
+            ctx.font = 'bold 72px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 960, 540);
+
+            displayCanvas(canvas, name, 'background', 'bg-preview', 'bg-message');
+        }
+
+        function generateCharacter(name, color, label) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 300;
+            canvas.height = 600;
+            const ctx = canvas.getContext('2d');
+
+            // Transparente
+            ctx.clearRect(0, 0, 300, 600);
+
+            ctx.fillStyle = color;
+
+            // Cabeza
+            ctx.beginPath();
+            ctx.arc(150, 80, 50, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Cabello
+            ctx.fillRect(100, 30, 100, 70);
+
+            // Cuerpo
+            ctx.fillRect(110, 140, 80, 120);
+
+            // Brazos
+            ctx.fillRect(50, 150, 60, 20);
+            ctx.fillRect(190, 150, 60, 20);
+
+            // Piernas
+            ctx.fillRect(120, 260, 20, 100);
+            ctx.fillRect(160, 260, 20, 100);
+
+            // Nombre
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, 150, 570);
+
+            displayCanvas(canvas, name, 'character', 'char-preview', 'char-message');
+        }
+
+        function generateCustomBackground() {
+            const name = document.getElementById('custom-bg-name').value || 'custom';
+            const color = document.getElementById('custom-bg-color').value;
+            const text = document.getElementById('custom-bg-text').value;
+
+            generateBackground(name, color, text);
+            document.getElementById('custom-bg-message').innerHTML =
+                `<div class="message success">✓ Fondo "${name}" generado</div>`;
+        }
+
+        function generateCustomCharacter() {
+            const name = document.getElementById('custom-char-name').value || 'custom';
+            const color = document.getElementById('custom-char-color').value;
+            const label = document.getElementById('custom-char-label').value;
+
+            generateCharacter(name, color, label);
+            document.getElementById('custom-char-message').innerHTML =
+                `<div class="message success">✓ Personaje "${name}" generado</div>`;
+        }
+
+        function generateAll() {
+            const container = document.getElementById('all-preview');
+            container.innerHTML = '';
+
+            const backgrounds = [
+                ['cafe', '#8B7355', 'Café Acogedor'],
+                ['forest', '#228B22', 'Bosque Oscuro'],
+                ['apartment', '#D3D3D3', 'Apartamento'],
+                ['temple', '#4a4a3a', 'Templo Antiguo'],
+                ['beach', '#87CEEB', 'Playa Soleada'],
+                ['night', '#1a1a3a', 'Noche Estrellada']
+            ];
+
+            const characters = [
+                ['luna', '#ff69b4', 'Luna'],
+                ['alex', '#00d4ff', 'Alex'],
+                ['sage', '#90EE90', 'Sage'],
+                ['raven', '#4B0082', 'Raven']
+            ];
+
+            // Generar fondos
+            backgrounds.forEach(([name, color, text]) => {
+                generateBackground(name, color, text);
+            });
+
+            // Generar personajes
+            characters.forEach(([name, color, label]) => {
+                generateCharacter(name, color, label);
+            });
+
+            document.getElementById('all-message').innerHTML =
+                `<div class="message success">✓ Todos los assets generados (${backgrounds.length} fondos + ${characters.length} personajes)</div>`;
+        }
+
+        function displayCanvas(canvas, filename, type, previewId, messageId) {
+            const preview = document.getElementById(previewId);
+            const newCanvas = document.createElement('canvas');
+            newCanvas.width = canvas.width;
+            newCanvas.height = canvas.height;
+            newCanvas.getContext('2d').drawImage(canvas, 0, 0);
+
+            // Escalar para preview
+            const scale = type === 'background' ? 0.15 : 0.25;
+            newCanvas.style.width = (canvas.width * scale) + 'px';
+            newCanvas.style.height = (canvas.height * scale) + 'px';
+            newCanvas.className = 'canvas-preview';
+            newCanvas.title = `${filename}.png - Haz clic derecho para guardar`;
+
+            // Permitir descargar
+            newCanvas.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                downloadCanvas(canvas, filename, type);
+            });
+
+            preview.appendChild(newCanvas);
+
+            if (messageId) {
+                document.getElementById(messageId).innerHTML =
+                    `<div class="message success">✓ ${type.charAt(0).toUpperCase() + type.slice(1)} "${filename}" generado<br>Haz clic derecho para guardar</div>`;
+            }
+        }
+
+        function downloadCanvas(canvas, filename, type) {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = `${filename}.png`;
+            link.click();
+        }
+
+        function darkenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.max(0, (num >> 16) - amt);
+            const G = Math.max(0, (num >> 8 & 0x00FF) - amt);
+            const B = Math.max(0, (num & 0x0000FF) - amt);
+            return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+        }
+
+        // Generar automáticamente al cargar
+        window.addEventListener('load', () => {
+            console.log('Asset Generator listo');
+            console.log('Haz clic en los botones para generar imágenes');
+        });
+    </script>
+</body>
+</html>

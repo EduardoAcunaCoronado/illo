@@ -1,0 +1,12 @@
+{
+  "name": "Luna",
+  "color": "#ff69b4",
+  "poses": {
+    "neutral": "assets/characters/luna.png",
+    "happy": "assets/characters/luna_happy.png",
+    "sad": "assets/characters/luna_sad.png",
+    "angry": "assets/characters/luna_angry.png",
+    "surprised": "assets/characters/luna_surprised.png"
+  },
+  "defaultPose": "neutral"
+}

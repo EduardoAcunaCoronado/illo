@@ -1,0 +1,146 @@
+{
+  "title": "Capítulo 2: Decisiones",
+  "scenes": [
+    {
+      "title": "Escena 1: Encrucijada",
+      "lines": [
+        {
+          "_line": 0,
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/forest.png"
+            }
+          ],
+          "character": "Narrador",
+          "text": "El bosque es oscuro y silencioso. Dos caminos se abren ante ti."
+        },
+        {
+          "_line": 1,
+          "character": "Luna",
+          "text": "¿Qué camino elegiremos?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "luna",
+              "position": "left"
+            }
+          ]
+        },
+        {
+          "_line": 2,
+          "character": "Alex",
+          "text": "La decisión es tuya.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "alex",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "_line": 3,
+          "character": "Luna",
+          "text": "¿Vamos a la izquierda o a la derecha?",
+          "choices": [
+            {
+              "text": "Seguir el camino iluminado (izquierda)",
+              "nextScene": 1
+            },
+            {
+              "text": "Explorar la oscuridad (derecha)",
+              "nextScene": 2
+            },
+            {
+              "text": "Esperemos a que amanezca",
+              "nextScene": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 2: El Camino de Luz",
+      "lines": [
+        {
+          "_line": 0,
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "Narrador",
+          "text": "El camino iluminado los lleva a un pueblo abandonado. Las casas parecen viejas pero seguras."
+        },
+        {
+          "_line": 1,
+          "character": "Luna",
+          "text": "Esto parece seguro. Deberíamos explorar."
+        },
+        {
+          "_line": 2,
+          "character": "Narrador",
+          "text": "Fin de la ruta 1."
+        }
+      ]
+    },
+    {
+      "title": "Escena 3: La Oscuridad",
+      "lines": [
+        {
+          "_line": 0,
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/dark_path.png"
+            }
+          ],
+          "character": "Narrador",
+          "text": "En la oscuridad, escuchan sonidos extraños. El miedo invade el ambiente."
+        },
+        {
+          "_line": 1,
+          "character": "Alex",
+          "text": "¿Escuchaste eso? Creo que deberíamos volver atrás."
+        },
+        {
+          "_line": 2,
+          "character": "Narrador",
+          "text": "Fin de la ruta 2."
+        }
+      ]
+    },
+    {
+      "title": "Escena 4: Esperar",
+      "lines": [
+        {
+          "_line": 0,
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/night_forest.png"
+            },
+            {
+              "type": "wait",
+              "value": 2000
+            }
+          ],
+          "character": "Narrador",
+          "text": "Esperan bajo las estrellas. El tiempo transcurre lentamente."
+        },
+        {
+          "_line": 1,
+          "character": "Luna",
+          "text": "Mira qué hermoso es el cielo nocturno."
+        },
+        {
+          "_line": 2,
+          "character": "Narrador",
+          "text": "Fin de la ruta 3."
+        }
+      ]
+    }
+  ]
+}

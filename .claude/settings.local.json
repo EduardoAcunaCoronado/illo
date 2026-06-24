@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python create_assets.py)",
+      "Bash(pip install *)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(curl -s http://localhost:8000)",
+      "Bash(curl -s http://localhost:8000/styles.css)",
+      "PowerShell(Stop-Process -Name python -Force -ErrorAction SilentlyContinue)",
+      "Bash(awk '{print $9, \"\\(\" $5 \"\\)\"}')",
+      "PowerShell(cd 'c:\\\\Proyectos\\\\illo'; Get-ChildItem -File | Where-Object {$_.Extension -match '\\\\.\\(css|js|md|html\\)$'} | Select-Object Name, @{Name=\"Tamaño\";Expression={\"{0:N0} KB\" -f \\($_.Length/1KB\\)}} | Format-Table -AutoSize)",
+      "Bash(grep -n \"playChapterIntro\\\\|lastChapterName\" c:\\\\\\\\Proyectos\\\\\\\\illo\\\\\\\\engine.js)"
+    ]
+  }
+}

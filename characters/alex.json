@@ -1,0 +1,12 @@
+{
+  "name": "Alex",
+  "color": "#00d4ff",
+  "poses": {
+    "neutral": "assets/characters/alex.png",
+    "happy": "assets/characters/alex_happy.png",
+    "sad": "assets/characters/alex_sad.png",
+    "angry": "assets/characters/alex_angry.png",
+    "surprised": "assets/characters/alex_surprised.png"
+  },
+  "defaultPose": "neutral"
+}

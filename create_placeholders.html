@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Imágenes Placeholder</title>
+</head>
+<body>
+    <h1>Generar Imágenes Placeholder</h1>
+    <p>Este archivo genera imágenes PNG simples para usar como placeholders.</p>
+    <button onclick="generatePlaceholders()">Generar Imágenes</button>
+    <div id="output"></div>
+
+    <script>
+        function generatePlaceholders() {
+            // Crear carpeta de destino manualmente o usar canvas
+
+            // Fondo - Café
+            createAndDownloadCanvas('cafe.png', 1920, 1080, '#8B7355', 'Café');
+
+            // Fondo - Bosque
+            createAndDownloadCanvas('forest.png', 1920, 1080, '#228B22', 'Bosque');
+
+            // Fondo - Apartamento
+            createAndDownloadCanvas('apartment.png', 1920, 1080, '#D3D3D3', 'Apartamento');
+
+            // Personaje Luna
+            createCharacterCanvas('luna.png', 300, 600, '#FF69B4', 'Luna');
+
+            // Personaje Alex
+            createCharacterCanvas('alex.png', 300, 600, '#00D4FF', 'Alex');
+
+            document.getElementById('output').innerHTML = `
+                <p>✓ Imágenes generadas como canvas</p>
+                <p>Coloca estas imágenes en:</p>
+                <ul>
+                    <li>assets/backgrounds/ - cafe.png, forest.png, apartment.png</li>
+                    <li>assets/characters/ - luna.png, alex.png</li>
+                </ul>
+                <p>O puedes usar tus propias imágenes reemplazando las rutas en los JSON</p>
+            `;
+        }
+
+        function createAndDownloadCanvas(filename, width, height, color, text) {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = color;
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, width / 2, height / 2);
+
+            downloadCanvas(canvas, filename);
+        }
+
+        function createCharacterCanvas(filename, width, height, color, name) {
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            // Transparente
+            ctx.clearRect(0, 0, width, height);
+
+            // Dibujar figura simple
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.arc(width / 2, 100, 50, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Cuerpo
+            ctx.fillRect(width / 2 - 40, 150, 80, 150);
+
+            // Piernas
+            ctx.fillRect(width / 2 - 30, 300, 25, 100);
+            ctx.fillRect(width / 2 + 5, 300, 25, 100);
+
+            ctx.fillStyle = 'rgba(255,255,255,0.3)';
+            ctx.font = 'bold 20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(name, width / 2, height - 30);
+
+            downloadCanvas(canvas, filename);
+        }
+
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.href = canvas.toDataURL('image/png');
+            link.download = filename;
+            // No descargar automáticamente, solo mostrar
+            console.log(`Canvas listo: ${filename}`);
+        }
+    </script>
+</body>
+</html>

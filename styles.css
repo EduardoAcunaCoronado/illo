@@ -1,0 +1,737 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    font-family: 'Arial', 'Helvetica', sans-serif;
+}
+
+#game-container {
+    width: 100%;
+    height: 100vh;
+    background: #000;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Fondo */
+.background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    transition: opacity 0.8s ease;
+}
+
+/* Personajes */
+.characters-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.character {
+    position: absolute;
+    height: 100vh;
+    width: 50%;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    opacity: 0;
+}
+
+.character.left {
+    bottom: 0;
+    left: 0;
+}
+
+.character.right {
+    bottom: 0;
+    right: 0;
+}
+
+.character.center {
+    display: none;
+}
+
+.character.active {
+    opacity: 1;
+}
+
+.character.speaking {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.character:not(.speaking).active {
+    filter: brightness(0.6);
+    transition: filter 0.3s ease;
+}
+
+/* ============================================
+   ESTILO PERSONA 5 ROYAL - CAJA DE DIÁLOGO
+   ============================================ */
+
+.dialog-box {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: #fff;
+    font-size: 18px;
+    line-height: 1.6;
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+    z-index: 100;
+}
+
+.dialog-box.active {
+    transform: translateY(0);
+}
+
+/* Estilo Persona 5 Royal para caja de diálogo */
+.dialog-box.p5-style {
+    background: rgba(0, 0, 0, 0.95);
+    border: 3px solid #ffcc00;
+    padding: 20px 30px;
+    clip-path: polygon(0 0, calc(100% - 25px) 0, 100% 25px, 100% 100%, 0 100%);
+    box-shadow: 0 0 20px rgba(255, 204, 0, 0.4), inset 0 0 10px rgba(255, 204, 0, 0.1);
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20px;
+}
+
+.p5-dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255, 204, 0, 0.5);
+}
+
+.character-name {
+    font-weight: bold;
+    color: #ffcc00;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-style: italic;
+    text-shadow: 2px 2px 0 rgba(255, 23, 68, 0.6);
+}
+
+.p5-nameplate {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #ffcc00 50%, transparent 100%);
+}
+
+.p5-dialog-content {
+    position: relative;
+}
+
+.p5-border-top {
+    display: none;
+}
+
+.dialog-text {
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    font-size: 30px;
+    line-height: 1.6;
+    color: #ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 10px 0;
+}
+
+.p5-border-bottom {
+    display: none;
+}
+
+.dialog-continue {
+    text-align: center;
+    color: #ffcc00;
+    font-size: 20px;
+    font-weight: bold;
+    animation: p5-bounce 0.8s infinite;
+    margin-top: 8px;
+}
+
+.dialog-continue.p5-continue {
+    text-shadow: 0 0 8px rgba(255, 204, 0, 0.8);
+}
+
+@keyframes p5-bounce {
+    0%, 100% {
+        transform: translateY(0);
+        filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.8));
+    }
+    50% {
+        transform: translateY(-8px);
+        filter: drop-shadow(0 0 12px rgba(255, 204, 0, 1));
+    }
+}
+
+/* ============================================
+   ESTILO PERSONA 5 - MENÚ DE ELECCIONES
+   ============================================ */
+
+.choices-container {
+    position: absolute;
+    bottom: 220px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 101;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.choices-container.active {
+    opacity: 1;
+}
+
+.choices-container.p5-choices {
+    gap: 8px;
+}
+
+.choice-btn {
+    background: #000;
+    border: 3px solid #ffcc00;
+    color: #ffcc00;
+    padding: 16px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    border-radius: 0;
+    position: relative;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
+}
+
+.choice-btn::before {
+    content: '▶';
+    position: absolute;
+    left: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    color: #ff1744;
+    font-weight: bold;
+}
+
+.choice-btn::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255, 204, 0, 0.3) 0%, transparent 100%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.choice-btn:hover {
+    background: #ffcc00;
+    color: #000;
+    transform: translateX(8px);
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.8), inset 0 0 10px rgba(255, 23, 68, 0.2);
+    font-weight: 900;
+}
+
+.choice-btn:hover::before {
+    opacity: 1;
+    color: #ff1744;
+}
+
+.choice-btn:hover::after {
+    opacity: 1;
+}
+
+.choice-btn:active {
+    transform: translateX(4px);
+    box-shadow: 0 0 20px rgba(255, 204, 0, 1), inset 0 0 15px rgba(255, 23, 68, 0.4);
+}
+
+/* ============================================
+   ESTILO PERSONA 5 - MENÚ PRINCIPAL
+   ============================================ */
+
+.main-menu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff;
+    z-index: 200;
+    padding: 60px 40px;
+    border-radius: 0;
+}
+
+.main-menu.p5-main-menu {
+    background: #000;
+    border: 4px solid #ffcc00;
+    box-shadow: 0 0 30px rgba(255, 204, 0, 0.6),
+                inset 0 0 20px rgba(255, 204, 0, 0.1);
+    clip-path: polygon(0 0, calc(100% - 30px) 0, 100% 30px, 100% 100%, 30px 100%, 0 calc(100% - 30px));
+    min-width: 400px;
+}
+
+.p5-menu-header {
+    margin-bottom: 50px;
+    position: relative;
+    padding-bottom: 20px;
+    border-bottom: 3px solid #ffcc00;
+}
+
+.p5-menu-header::before {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff1744, transparent);
+}
+
+.main-menu h1 {
+    font-size: 54px;
+    color: #ffcc00;
+    text-shadow:
+        3px 3px 0 #ff1744,
+        6px 6px 0 rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 204, 0, 0.6);
+    font-weight: 900;
+    letter-spacing: 3px;
+    font-style: italic;
+    text-transform: uppercase;
+}
+
+.p5-menu-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.menu-btn {
+    background: #000;
+    border: 3px solid #ffcc00;
+    color: #ffcc00;
+    padding: 18px 25px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    width: 100%;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
+}
+
+.menu-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.menu-btn::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 2px;
+    background: #ff1744;
+    transition: width 0.3s ease;
+}
+
+.p5-btn-text {
+    position: relative;
+    z-index: 1;
+    display: block;
+}
+
+.menu-btn:hover {
+    background: #ffcc00;
+    color: #000;
+    transform: scale(1.08);
+    box-shadow:
+        0 0 20px rgba(255, 204, 0, 0.8),
+        inset 0 0 15px rgba(255, 23, 68, 0.3),
+        0 5px 15px rgba(0, 0, 0, 0.5);
+    font-weight: 900;
+}
+
+.menu-btn:hover::before {
+    left: 100%;
+}
+
+.menu-btn:hover::after {
+    width: 8px;
+}
+
+.menu-btn:active {
+    transform: scale(1.02);
+    box-shadow:
+        0 0 30px rgba(255, 204, 0, 1),
+        inset 0 0 20px rgba(255, 23, 68, 0.5);
+}
+
+.main-menu.hidden {
+    display: none;
+}
+
+/* ============================================
+   TRANSICIONES Y ANIMACIONES
+   ============================================ */
+
+.fade-out {
+    animation: fadeOut 0.5s ease forwards;
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ============================================
+   ANIMACIÓN DE INTRODUCCIÓN DE CAPÍTULO
+   ============================================ */
+
+.chapter-intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: chapter-fade-in 0.6s ease-out;
+}
+
+.chapter-intro-content {
+    text-align: center;
+    position: relative;
+}
+
+.chapter-intro-line {
+    height: 3px;
+    width: 0;
+    background: linear-gradient(90deg, #ffcc00, #ff1744, #ffcc00);
+    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.6);
+    animation: chapter-line-expand 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.chapter-intro-line-top {
+    animation-delay: 0.2s;
+}
+
+.chapter-intro-line-bottom {
+    animation-delay: 0.4s;
+}
+
+.chapter-intro-text {
+    opacity: 0;
+    animation: chapter-text-appear 0.8s ease-out 0.3s forwards;
+}
+
+.chapter-intro-title {
+    font-size: 54px;
+    color: #ffcc00;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 900;
+    font-style: italic;
+    text-shadow:
+        3px 3px 0 #ff1744,
+        6px 6px 0 rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 204, 0, 0.6);
+    margin: 20px 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.chapter-intro-overlay.fade-out {
+    animation: chapter-fade-out 0.5s ease-out forwards;
+}
+
+@keyframes chapter-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes chapter-fade-out {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes chapter-line-expand {
+    from {
+        width: 0;
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    to {
+        width: 400px;
+        opacity: 1;
+    }
+}
+
+@keyframes chapter-text-appear {
+    from {
+        opacity: 0;
+        transform: scale(0.8) rotate(2deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* Efecto de parpadeo para elementos importantes */
+@keyframes p5-flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+/* Efecto de entrada para el menú */
+@keyframes p5-menu-entrance {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.8) rotate(2deg);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.02) rotate(-1deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+}
+
+.p5-main-menu {
+    animation: p5-menu-entrance 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Efecto de línea animada en el diálogo */
+@keyframes p5-line-sweep {
+    0% { width: 0; }
+    100% { width: 100%; }
+}
+
+.p5-border-top {
+    animation: p5-line-sweep 0.5s ease-out;
+}
+
+/* ============================================
+   PANTALLA DE FIN DE CAPÍTULO
+   ============================================ */
+
+.chapter-end-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: chapter-fade-in 0.6s ease-out;
+}
+
+.chapter-end-content {
+    text-align: center;
+    position: relative;
+    max-width: 500px;
+}
+
+.chapter-end-line {
+    height: 3px;
+    width: 0;
+    background: linear-gradient(90deg, #ffcc00, #ff1744, #ffcc00);
+    margin: 20px auto;
+    box-shadow: 0 0 10px rgba(255, 204, 0, 0.6);
+    animation: chapter-line-expand 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.chapter-end-line-top {
+    animation-delay: 0.2s;
+}
+
+.chapter-end-line-bottom {
+    animation-delay: 0.4s;
+}
+
+.chapter-end-text {
+    opacity: 0;
+    animation: chapter-text-appear 0.8s ease-out 0.3s forwards;
+    margin: 20px 0;
+}
+
+.chapter-end-title {
+    font-size: 48px;
+    color: #ffcc00;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 900;
+    font-style: italic;
+    text-shadow:
+        3px 3px 0 #ff1744,
+        6px 6px 0 rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(255, 204, 0, 0.6);
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.chapter-end-subtitle {
+    font-size: 20px;
+    color: #fff;
+    margin-top: 15px;
+    font-style: italic;
+    letter-spacing: 1px;
+}
+
+.chapter-end-btn {
+    background: #000;
+    border: 3px solid #ffcc00;
+    color: #ffcc00;
+    padding: 16px 40px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 0;
+    position: relative;
+    overflow: hidden;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 30px;
+    clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
+    animation: chapter-text-appear 0.8s ease-out 0.6s forwards;
+    opacity: 0;
+}
+
+.chapter-end-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.3), transparent);
+    transition: left 0.5s ease;
+}
+
+.chapter-end-btn:hover {
+    background: #ffcc00;
+    color: #000;
+    transform: scale(1.08);
+    box-shadow:
+        0 0 20px rgba(255, 204, 0, 0.8),
+        inset 0 0 15px rgba(255, 23, 68, 0.3),
+        0 5px 15px rgba(0, 0, 0, 0.5);
+    font-weight: 900;
+}
+
+.chapter-end-btn:hover::before {
+    left: 100%;
+}
+
+.chapter-end-btn:active {
+    transform: scale(1.02);
+    box-shadow:
+        0 0 30px rgba(255, 204, 0, 1),
+        inset 0 0 20px rgba(255, 23, 68, 0.5);
+}
+
+.chapter-end-overlay.fade-out {
+    animation: chapter-fade-out 0.5s ease-out forwards;
+}
+
+/* Ajustes responsivos */
+@media (max-width: 768px) {
+    .main-menu.p5-main-menu {
+        min-width: 320px;
+        padding: 40px 30px;
+    }
+
+    .main-menu h1 {
+        font-size: 36px;
+    }
+
+    .dialog-box.p5-style {
+        padding: 20px 25px;
+    }
+
+    .character-name {
+        font-size: 16px;
+    }
+
+    .dialog-text {
+        font-size: 14px;
+    }
+
+    .choice-btn {
+        font-size: 14px;
+        padding: 12px 15px;
+    }
+
+    .menu-btn {
+        font-size: 16px;
+        padding: 15px 20px;
+    }
+}
