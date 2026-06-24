@@ -2,6 +2,7 @@ const engine = new VisualNovelEngine();
 let isGameRunning = false;
 let waitingForInput = false;
 let clickHandler = null;
+let currentChapterNumber = 0;
 
 // Elementos del DOM
 const gameContainer = document.getElementById('game-container');
@@ -25,17 +26,26 @@ async function initGame() {
 async function startNewGame() {
     mainMenu.classList.add('hidden');
     isGameRunning = true;
-
-    // Cargar capítulo inicial
-    await engine.loadChapter('chapter1');
+    currentChapterNumber = 0;
 
     // Cargar todos los personajes disponibles
-    const characters = ['luna', 'alex', '2b', 'pod', 'emil'];
+    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu'];
     for (const character of characters) {
         await engine.loadCharacter(character);
     }
 
-    // Iniciar el juego
+    // Iniciar con chapter0
+    await playChapter(currentChapterNumber);
+}
+
+async function playChapter(chapterNumber) {
+    currentChapterNumber = chapterNumber;
+    const chapterName = `chapter${chapterNumber}`;
+
+    // Cargar el capítulo
+    await engine.loadChapter(chapterName);
+
+    // Jugar el capítulo
     await playGame();
 }
 
@@ -80,9 +90,100 @@ async function endGame() {
     const chapterTitle = engine.currentChapter?.title || 'Capítulo Sin Título';
     await engine.showChapterEnd(chapterTitle);
 
-    // Resetear el estado y volver al menú
+    // Resetear el estado
     engine.reset();
-    mainMenu.classList.remove('hidden');
+
+    // Verificar si hay siguiente capítulo
+    const nextChapterNumber = currentChapterNumber + 1;
+    const nextChapterExists = await checkChapterExists(`chapter${nextChapterNumber}`);
+
+    if (nextChapterExists) {
+        // Mostrar opción de continuar al siguiente capítulo
+        await showContinueOptions(nextChapterNumber);
+    } else {
+        // No hay más capítulos, volver al menú
+        mainMenu.classList.remove('hidden');
+    }
+}
+
+async function checkChapterExists(chapterName) {
+    try {
+        const response = await fetch(`chapters/${chapterName}.json`);
+        return response.ok;
+    } catch (error) {
+        return false;
+    }
+}
+
+async function showContinueOptions(nextChapterNumber) {
+    return new Promise(resolve => {
+        // Crear un panel de opciones
+        const optionsContainer = document.createElement('div');
+        optionsContainer.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #000;
+            border: 3px solid #ffcc00;
+            padding: 40px;
+            text-align: center;
+            z-index: 500;
+            border-radius: 0;
+            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+        `;
+
+        optionsContainer.innerHTML = `
+            <h2 style="color: #ffcc00; font-size: 28px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px;">
+                ¿Continuar?
+            </h2>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <button id="continue-next-chapter" style="
+                    background: #000;
+                    border: 3px solid #ffcc00;
+                    color: #ffcc00;
+                    padding: 15px 40px;
+                    font-size: 18px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    transition: all 0.3s ease;
+                ">Siguiente Capítulo</button>
+                <button id="return-to-menu" style="
+                    background: #000;
+                    border: 3px solid #ffcc00;
+                    color: #ffcc00;
+                    padding: 15px 40px;
+                    font-size: 18px;
+                    cursor: pointer;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    letter-spacing: 1px;
+                    transition: all 0.3s ease;
+                ">Menú Principal</button>
+            </div>
+        `;
+
+        document.getElementById('game-container').appendChild(optionsContainer);
+
+        document.getElementById('continue-next-chapter').addEventListener('click', () => {
+            optionsContainer.remove();
+            resolve('continue');
+        });
+
+        document.getElementById('return-to-menu').addEventListener('click', () => {
+            optionsContainer.remove();
+            resolve('menu');
+        });
+    }).then(choice => {
+        if (choice === 'continue') {
+            isGameRunning = true;
+            playChapter(nextChapterNumber);
+        } else {
+            mainMenu.classList.remove('hidden');
+        }
+    });
 }
 
 function loadGame() {

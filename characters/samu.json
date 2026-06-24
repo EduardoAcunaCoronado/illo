@@ -1,0 +1,12 @@
+{
+  "name": "2B",
+  "color": "gray",
+  "poses": {
+    "neutral": "assets/characters/samu.png",
+    "happy": "assets/characters/samu_happy.png",
+    "sad": "assets/characters/samu_sad.png",
+    "angry": "assets/characters/samu_angry.png",
+    "surprised": "assets/characters/samu_surprised.png"
+  },
+  "defaultPose": "neutral"
+}

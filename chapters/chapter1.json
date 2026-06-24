@@ -1,129 +1,171 @@
 {
-  "title": "Prólogo: Re:ferenciaS",
+  "title": "Capítulo 1: Decisiones",
   "scenes": [
     {
-      "title": "Escena 1: El Café",
+      "title": "Escena 1: Encrucijada",
       "lines": [
         {
-          "_line": 1,
+          "_line": 0,
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/cafe.png"
-            },
-            {
-              "type": "showCharacter",
-              "character": "2b",
-              "position": "left",
-              "pose": "neutral"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/sounds/music/devolapopola.mp3",
-              "volume": 0.1,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
+              "value": "assets/backgrounds/pisito.png"
             }
           ],
           "character": "2B",
-          "text": "¡Hola, buenas tardes!"
+          "text": "Una tarde cualquiera se despierta un lobo..."
+        },
+        {
+          "_line": 1,
+          "character": "Samu",
+          "text": "Mmmmmmmmmmmmmmmmgrgrgrgrgrgrg. ¡Buenos días!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left"
+            }
+          ]
         },
         {
           "_line": 2,
+          "character": "Samu",
+          "text": "¡Oh, no! Me he quedado dormido. Y eso que le dije a ChatGPT que me despertara.",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "pod",
-              "position": "right",
-              "pose": "happy"
+              "character": "samu",
+              "position": "left",
+              "pose": "sad"
             }
-          ],
-          "character": "Pod",
-          "text": "¡HOLA!"
+          ]
+
         },
         {
           "_line": 3,
+          "character": "Samu",
+          "text": "Supongo que uno no puede fiarse de la IA (ni siquiera para hacer este juego XD)",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "2b",
+              "character": "samu",
               "position": "left",
-              "pose": "happy"
+              "pose": "angry"
             }
-          ],
-          "character": "2B",
-          "text": "Prrrr"
+          ]
         },
         {
           "_line": 4,
+          "character": "Samu",
+          "text": "Bueno, voy a mirarme en el espejo como hago todas las mañanas, aunque sean las 4 de la tarde.",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "2b",
+              "character": "samu",
               "position": "left",
-              "pose": "neutral"
+              "pose": "happy"
             }
-          ],
-          "character": "2B",
-          "text": "En el capítulo de hoy vamos a contar cómo se puede torcer un cumpleaños cuando menos te lo esperas..."
+          ]  
         },
+        
         {
           "_line": 5,
+          "character": "Samu",
+          "text": "Oh, no. ¡Soy un therian!",
           "actions": [
             {
-              "type": "showCharacter",
-              "character": "emil",
-              "position": "right",
-              "pose": "neutral"
-            },
+              "type": "setBackground",
+              "value": "assets/backgrounds/bathroom.png"
+            }, 
             {
-              "type": "playSound",
-              "path": "assets/sounds/music/emil.mp3",
-              "volume": 1.0,
-              "loop": true,
-              "id": "emil",
-              "fadeIn": 1000
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ]  
+        }
+      ]
+    },
+    {
+      "title": "Escena 2: El Camino de Luz",
+      "lines": [
+        {
+          "_line": 0,
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
             }
           ],
-          "character": "Emil",
-          "text": "Luvhaaaaaaaaaaaa dumeeeeeeeeee"
+          "character": "Narrador",
+          "text": "El camino iluminado los lleva a un pueblo abandonado. Las casas parecen viejas pero seguras."
         },
         {
-          "_line": 6,
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "2b",
-              "position": "left",
-              "pose": "neutral"
-            },
-            {
-              "type": "stopSound",
-              "id": "emil",
-              "fadeOut": 1000
-            },
-            {
-              "type": "playSound",
-              "path": "assets/sounds/effects/disco-rayado.mp3",
-              "volume": 1.0
-            }
-          ],
-          "character": "2B",
-          "text": "¡Shh, calla, niño! Que esta no es tu historia."
+          "_line": 1,
+          "character": "Luna",
+          "text": "Esto parece seguro. Deberíamos explorar."
         },
         {
-          "_line": 7,
+          "_line": 2,
+          "character": "Narrador",
+          "text": "Fin de la ruta 1."
+        }
+      ]
+    },
+    {
+      "title": "Escena 3: La Oscuridad",
+      "lines": [
+        {
+          "_line": 0,
           "actions": [
             {
-              "type": "showCharacter",
-              "character": "2b",
-              "position": "left",
-              "pose": "neutral"
+              "type": "setBackground",
+              "value": "assets/backgrounds/dark_path.png"
             }
           ],
-          "character": "2B",
-          "text": "Esta es la historia de Samu, un chico que se despertó un día y no volvió a ser el mismo..."
+          "character": "Narrador",
+          "text": "En la oscuridad, escuchan sonidos extraños. El miedo invade el ambiente."
+        },
+        {
+          "_line": 1,
+          "character": "Alex",
+          "text": "¿Escuchaste eso? Creo que deberíamos volver atrás."
+        },
+        {
+          "_line": 2,
+          "character": "Narrador",
+          "text": "Fin de la ruta 2."
+        }
+      ]
+    },
+    {
+      "title": "Escena 4: Esperar",
+      "lines": [
+        {
+          "_line": 0,
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/night_forest.png"
+            },
+            {
+              "type": "wait",
+              "value": 2000
+            }
+          ],
+          "character": "Narrador",
+          "text": "Esperan bajo las estrellas. El tiempo transcurre lentamente."
+        },
+        {
+          "_line": 1,
+          "character": "Luna",
+          "text": "Mira qué hermoso es el cielo nocturno."
+        },
+        {
+          "_line": 2,
+          "character": "Narrador",
+          "text": "Fin de la ruta 3."
         }
       ]
     }

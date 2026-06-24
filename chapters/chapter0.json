@@ -1,63 +1,129 @@
 {
-  "title": "Prólogo: El Sueño",
+  "title": "Prólogo: Re:ferenciaS",
   "scenes": [
     {
-      "title": "Escena 1: Un Sueño Extraño",
+      "title": "Escena 1: El NieR",
       "lines": [
         {
-          "_line": 0,
-          "character": "Narrador",
-          "text": "Todo comienza con un sueño confuso. Imágenes sin sentido pasan ante tus ojos.",
+          "_line": 1,
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/dream.png"
+              "value": "assets/backgrounds/room.png"
             },
             {
-              "type": "wait",
-              "value": 1500
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "neutral"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/devolapopola.mp3",
+              "volume": 0.1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 1000
             }
-          ]
-        },
-        {
-          "_line": 1,
-          "character": "Voz Misteriosa",
-          "text": "¿Quién eres? ¿Dónde estás?"
+          ],
+          "character": "2B",
+          "text": "¡Hola, buenas tardes!"
         },
         {
           "_line": 2,
-          "character": "Narrador",
-          "text": "Una voz te llama desde la oscuridad. No puedes responder."
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "pod",
+              "position": "right",
+              "pose": "happy"
+            }
+          ],
+          "character": "Pod",
+          "text": "¡HOLA!"
         },
         {
           "_line": 3,
-          "character": "Voz Misteriosa",
-          "text": "Despierta... despierta...",
-          "choices": [
+          "actions": [
             {
-              "text": "Luchar contra el sueño",
-              "nextLine": 4
-            },
-            {
-              "text": "Aceptar el sueño",
-              "nextLine": 6
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "happy"
             }
-          ]
+          ],
+          "character": "2B",
+          "text": "Prrrr"
         },
         {
           "_line": 4,
-          "character": "Narrador",
-          "text": "Intentas resistir, pero la fatiga es abrumadora. Una última imagen..."
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "neutral"
+            }
+          ],
+          "character": "2B",
+          "text": "En el capítulo de hoy vamos a contar cómo se puede torcer un cumpleaños cuando menos te lo esperas..."
         },
         {
           "_line": 5,
-          "character": "Narrador",
-          "text": "Te despiertas en tu cama. El sol entra por la ventana."
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "emil",
+              "position": "right",
+              "pose": "neutral"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/emil.mp3",
+              "volume": 1.0,
+              "loop": true,
+              "id": "emil",
+              "fadeIn": 1000
+            }
+          ],
+          "character": "Emil",
+          "text": "Luvhaaaaaaaaaaaa dumeeeeeeeeee"
         },
         {
           "_line": 6,
-          "character": "Narrador",
-          "text": "Caes profundamente en la oscuridad. Todo desaparece."
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "neutral"
+            },
+            {
+              "type": "stopSound",
+              "id": "emil",
+              "fadeOut": 1000
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/disco-rayado.mp3",
+              "volume": 1.0
+            }
+          ],
+          "character": "2B",
+          "text": "¡Shh, calla, niño! Que esta no es tu historia."
+        },
+        {
+          "_line": 7,
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "2b",
+              "position": "left",
+              "pose": "neutral"
+            }
+          ],
+          "character": "2B",
+          "text": "Esta es la historia de Samu, un chico que se despertó un día y no volvió a ser el mismo..."
         }
       ]
     }

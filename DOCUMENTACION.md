@@ -1627,6 +1627,158 @@ if (saved) engine.gameState = JSON.parse(saved);
 
 ---
 
+## 🎬 Sistema de Capítulos Múltiples
+
+### ¿Cómo Funciona?
+
+El juego soporta múltiples capítulos en secuencia. Cuando terminas un capítulo, el juego automáticamente detecta si existe el siguiente.
+
+```
+Chapter0 → Chapter1 → Chapter2 → (fin de juego)
+  ↓          ↓          ↓
+ Intro     Principal   Conclusión
+```
+
+### Crear Nuevos Capítulos
+
+1. **Crea el archivo JSON:**
+```
+chapters/chapter3.json
+```
+
+2. **Estructura básica:**
+```json
+{
+  "title": "Capítulo 3: El Viaje",
+  "scenes": [
+    {
+      "title": "Escena 1",
+      "lines": [
+        {
+          "_line": 0,
+          "character": "Luna",
+          "text": "Continuamos nuestra aventura..."
+        }
+      ]
+    }
+  ]
+}
+```
+
+3. **El juego lo cargará automáticamente** cuando termine chapter2
+
+### Estructura de Archivos
+
+```
+chapters/
+├── chapter0.json    ← Prólogo (opcional)
+├── chapter1.json    ← Capítulo principal
+├── chapter2.json    ← Continuación
+├── chapter3.json    ← Nuevo capítulo
+└── chapter99.json   ← Puedes tener muchos
+```
+
+### Flujo de Progresión
+
+```
+1. Usuario hace clic en "Comenzar"
+2. Se carga chapter0 (prólogo)
+3. Al terminar → Opción: "Siguiente Capítulo" o "Menú"
+4. Si elige continuar → Se carga chapter1
+5. Repite hasta no encontrar siguiente capítulo
+6. Muestra "Fin del Juego" → Menú Principal
+```
+
+### Pantalla de Continuación
+
+Cuando terminas un capítulo, aparece:
+
+```
+         ¿CONTINUAR?
+    
+    [Siguiente Capítulo] [Menú Principal]
+```
+
+El jugador elige si desea:
+- **Siguiente Capítulo:** Carga automáticamente el próximo
+- **Menú Principal:** Vuelve al menú (puede recargar desde "Cargar")
+
+### Persisten Variables Entre Capítulos
+
+**IMPORTANTE:** Por defecto, las variables se resetean entre capítulos. Si quieres que persistan:
+
+```javascript
+// En game.js, antes de playChapter():
+const persistedVariables = localStorage.getItem('persistentState');
+if (persistedVariables) {
+    engine.gameState = JSON.parse(persistedVariables);
+}
+
+// Después de endGame():
+localStorage.setItem('persistentState', JSON.stringify(engine.gameState));
+```
+
+### Ejemplo Práctico: 3 Capítulos
+
+**chapter0.json - Prólogo (1-2 minutos):**
+```json
+{
+  "title": "Prólogo: El Principio",
+  "scenes": [{
+    "title": "Introducción",
+    "lines": [
+      {
+        "_line": 0,
+        "character": "Narrador",
+        "text": "Hace mucho tiempo..."
+      }
+    ]
+  }]
+}
+```
+
+**chapter1.json - Acto 1 (5-10 minutos):**
+```json
+{
+  "title": "Capítulo 1: El Encuentro",
+  "scenes": [{
+    "title": "La Historia Comienza",
+    "lines": [...]
+  }]
+}
+```
+
+**chapter2.json - Acto 2 (5-10 minutos):**
+```json
+{
+  "title": "Capítulo 2: El Viaje",
+  "scenes": [{
+    "title": "El Camino",
+    "lines": [...]
+  }]
+}
+```
+
+### Orden de Carga Automática
+
+El sistema carga capítulos en orden numérico:
+
+```
+- chapter0, chapter1, chapter2, ... chapter99
+- Se detiene cuando no encuentra el siguiente
+- Muestra "Fin del Juego" al llegar al final
+```
+
+### Tips
+
+✅ **Cada capítulo debe ser independiente** - Puedes jugar chapter1 sin chapter0
+✅ **Nomenclatura clara** - Usa chapter0, chapter1, etc. (no chapter_1 o capitulo1)
+✅ **Títulos descriptivos** - Cada capítulo debe tener un título único
+✅ **Progresión clara** - Los jugadores entienden que hay más contenido después
+✅ **Guardado automático** - Los jugadores pueden recargar desde "Cargar" en el menú
+
+---
+
 ## 📋 Checklist de Proyecto
 
 ### Antes de comenzar
