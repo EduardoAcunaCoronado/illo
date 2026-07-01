@@ -1,0 +1,14 @@
+{
+  "name": "iphone5",
+  "color": "gray",
+  "poses": {
+    "neutral": "assets/characters/iphone5.png",
+    "edu": "assets/characters/iphone5.png",
+    "tony": "assets/characters/iphone5.png",
+    "jose": "assets/characters/iphone5.png",
+    "worried": "assets/characters/iphone5.png",
+    "shocked": "assets/characters/iphone5.png",
+    "alarmed": "assets/characters/iphone5.png"
+  },
+  "defaultPose": "neutral"
+}

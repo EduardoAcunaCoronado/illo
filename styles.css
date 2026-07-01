@@ -735,3 +735,284 @@ html, body {
         padding: 15px 20px;
     }
 }
+
+/* ===== Minijuego: Ketchup vs Guindillas ===== */
+.minigame-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 600;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+}
+
+.minigame-hud {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 18px 30px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffcc00;
+    text-shadow: 2px 2px 0 #d40000;
+    letter-spacing: 1px;
+    z-index: 2;
+}
+
+.minigame-field {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    cursor: none;
+    background: radial-gradient(circle at 50% 120%, rgba(212, 0, 0, 0.25), transparent 60%);
+}
+
+.minigame-field.mg-hit {
+    animation: mg-shake 0.2s;
+    background: radial-gradient(circle at 50% 50%, rgba(212, 0, 0, 0.55), transparent 70%);
+}
+
+@keyframes mg-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.mg-player {
+    position: absolute;
+    bottom: 4%;
+    transform: translateX(-50%);
+    font-size: 56px;
+    line-height: 1;
+    user-select: none;
+    transition: left 0.05s linear;
+}
+
+.mg-item {
+    position: absolute;
+    transform: translateX(-50%);
+    font-size: 40px;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* Objetivos clicables del minijuego de Ecchi Land */
+.mg-target {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    line-height: 1;
+    user-select: none;
+    cursor: pointer;
+    animation: mg-target-pop 0.2s ease-out;
+    transition: transform 0.1s ease;
+}
+
+.mg-target:hover {
+    transform: translate(-50%, -50%) scale(1.15);
+}
+
+.mg-trap {
+    filter: drop-shadow(0 0 8px #d40000);
+}
+
+@keyframes mg-target-pop {
+    from { transform: translate(-50%, -50%) scale(0.3); opacity: 0; }
+    to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.ecchi-minigame .minigame-field {
+    cursor: crosshair;
+}
+
+/* ===== Minijuego de memoria: palomas (Paloma City) ===== */
+.paloma-minigame .mg-status {
+    color: #fff;
+    text-shadow: none;
+    font-size: 22px;
+}
+
+.paloma-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 24px;
+    padding: 40px;
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    align-content: center;
+}
+
+.paloma-pad {
+    background: #111;
+    border: 4px solid #ffcc00;
+    color: #ffcc00;
+    font-size: 72px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 14px;
+    transition: all 0.12s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.55;
+    user-select: none;
+}
+
+.paloma-pad:hover {
+    opacity: 0.8;
+    transform: scale(1.03);
+}
+
+.paloma-pad.paloma-active {
+    opacity: 1;
+    background: #ffcc00;
+    box-shadow: 0 0 30px #ffcc00;
+    transform: scale(1.08);
+}
+
+.paloma-grid.paloma-locked .paloma-pad {
+    cursor: default;
+    pointer-events: none;
+}
+
+.minigame-instructions {
+    padding: 14px;
+    color: #fff;
+    font-size: 16px;
+    letter-spacing: 1px;
+    opacity: 0.85;
+    z-index: 2;
+}
+
+.minigame-result {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 42px;
+    font-weight: bold;
+    color: #ffcc00;
+    text-shadow: 3px 3px 0 #d40000;
+    background: #000;
+    border: 4px solid #ffcc00;
+    padding: 30px 50px;
+    text-align: center;
+    z-index: 3;
+    clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
+}
+
+.minigame-retry {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.mg-retry-title {
+    margin-bottom: 30px;
+}
+
+.mg-retry-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.mg-retry-buttons button {
+    background: #000;
+    border: 3px solid #ffcc00;
+    color: #ffcc00;
+    padding: 15px 35px;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+
+.mg-retry-buttons button:hover {
+    background: #ffcc00;
+    color: #000;
+}
+
+/* ===== Selector de capítulos ===== */
+.chapter-selector {
+    position: absolute;
+    inset: 0;
+    z-index: 700;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chapter-selector-panel {
+    background: #000;
+    border: 4px solid #ffcc00;
+    padding: 40px 50px;
+    text-align: center;
+    max-width: 90%;
+    clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 0 100%);
+}
+
+.chapter-selector-title {
+    color: #ffcc00;
+    font-size: 32px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 3px 3px 0 #d40000;
+    margin-bottom: 30px;
+}
+
+.chapter-selector-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.chapter-select-btn {
+    background: #000;
+    border: 3px solid #ffcc00;
+    color: #ffcc00;
+    padding: 16px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+}
+
+.chapter-select-btn:hover {
+    background: #ffcc00;
+    color: #000;
+    transform: translateX(6px);
+}
+
+.chapter-selector-back {
+    background: transparent;
+    border: 2px solid #d40000;
+    color: #d40000;
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.chapter-selector-back:hover {
+    background: #d40000;
+    color: #fff;
+}

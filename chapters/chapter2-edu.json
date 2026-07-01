@@ -1,0 +1,754 @@
+{
+  "title": "Capítulo 2: Kingdom Ketchup",
+  "scenes": [
+    {
+      "title": "Escena 1: En la calle",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            },
+            {
+              "type": "rescue",
+              "character": "edu"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu recorre las calles con paso apurado. Algo no va bien en esta ciudad."
+        },
+        {
+          "character": "Samu",
+          "text": "¿Pero qué...? ¿Qué está pasando ahí?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "En cada esquina, enjambres de memes de IA cobran vida y persiguen a los furros, que corren despavoridos entre ladridos y llantos."
+        },
+        {
+          "character": "Samu",
+          "text": "¡Esto es una locura! Memes... ¿pegando a furros? El mundo se ha vuelto del revés.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "angry"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Céntrate, Samu. Tienes que llegar hasta Edu. Pero... ¿cómo se entraba a Kingdom Ketchup?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "De pronto, la voz de Edu resuena en su memoria."
+        },
+        {
+          "character": "Edu",
+          "text": "\"Escucha, Samu: para entrar a Kingdom Ketchup no hay un portal secreto ni nada raro. Basta con colarse por cualquier supermercado. Cualquiera te sirve.\""
+        },
+        {
+          "character": "Samu",
+          "text": "¡Claro! Un supermercado. Hay tres cerca... pero no todos me quedan igual de camino. Cada minuto que pierda es un minuto que Edu pasa ahí dentro.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Entrar por El Jamón",
+              "nextScene": "Escena 2: El Jamón"
+            },
+            {
+              "text": "Entrar por el Día",
+              "nextScene": "Escena 3: Día"
+            },
+            {
+              "text": "Entrar por el Mercadona",
+              "nextScene": "Escena 4: Mercadona"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 2: El Jamón",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/cafe.png"
+            }
+          ],
+          "character": "2B",
+          "text": "El Jamón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos."
+        },
+        {
+          "character": "Samu",
+          "text": "Perfecto, ni un minuto perdido. Huele a embutido y a... ¿tomate? Debe ser por aquí.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Entre las cortinas de fiambre, un resplandor rojizo marca el paso hacia Kingdom Ketchup. Samu cruza sin dudarlo.",
+          "actions": [
+            {
+              "type": "setDelay",
+              "value": 0
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 5: Dentro de Kingdom Ketchup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 3: Día",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/cafe.png"
+            }
+          ],
+          "character": "2B",
+          "text": "El Día queda unas cuantas calles más allá. Samu tiene que rodear a un grupo de memes que acorralan a un furro, y pierde un tiempo precioso."
+        },
+        {
+          "character": "Samu",
+          "text": "Perdona, colega, ¡ya voy, ya voy! Ojalá pudiera ayudaros a todos... pero Edu me necesita.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Tras un buen rato esquivando el caos, Samu llega al Día y encuentra el pasaje rojizo entre las estanterías de ofertas.",
+          "actions": [
+            {
+              "type": "setDelay",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 5: Dentro de Kingdom Ketchup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 4: Mercadona",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/cafe.png"
+            }
+          ],
+          "character": "2B",
+          "text": "El Mercadona está al otro lado del barrio entero. Samu corre calle tras calle, cruzando avenidas tomadas por los memes."
+        },
+        {
+          "character": "Samu",
+          "text": "¿Por qué tenía que ser el más lejos el que me sonaba mejor...? ¡Aguanta, Edu, aguanta!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "sad"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Cuando por fin llega, jadeando, la puerta automática se abre y el brillo de Kingdom Ketchup lo espera al fondo, tras la sección de frescos. Ha tardado demasiado.",
+          "actions": [
+            {
+              "type": "setDelay",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 5: Dentro de Kingdom Ketchup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 5: Dentro de Kingdom Ketchup",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Al otro lado del supermercado, el aire cambia. Samu está por fin dentro de Kingdom Ketchup, entre góndolas infinitas que gotean salsa roja."
+        },
+        {
+          "character": "Samu",
+          "text": "Lo conseguí... estoy dentro. Ahora solo tengo que encontrar a Edu. Pero este sitio es enorme.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "neutral"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Ante Samu se abren dos pasillos idénticos salvo por un cartel. Uno reza \"KETCHUP\". El otro, \"CATSUP\"."
+        },
+        {
+          "character": "Samu",
+          "text": "¿Ketchup o Catsup...? ¿No es lo mismo? Uno de los dos tiene que llevar antes hasta Edu. Si me equivoco, perderé aún más tiempo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Ir por el pasillo del Ketchup",
+              "nextScene": "Escena 6: Pasillo del Ketchup"
+            },
+            {
+              "text": "Ir por el pasillo del Catsup",
+              "nextScene": "Escena 7: Pasillo del Catsup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 6: Pasillo del Ketchup",
+      "lines": [
+        {
+          "character": "2B",
+          "text": "El pasillo del Ketchup es corto y recto. Samu lo cruza casi sin frenar y, al fondo, distingue una silueta conocida."
+        },
+        {
+          "character": "Samu",
+          "text": "¡Buena elección! Este era el camino rápido. ¡Ahí está!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 8: Nate Gentile"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 7: Pasillo del Catsup",
+      "lines": [
+        {
+          "character": "2B",
+          "text": "El pasillo del Catsup serpentea, se bifurca y termina dando toda la vuelta. Samu tarda un buen rato en volver a orientarse.",
+          "actions": [
+            {
+              "type": "addDelay",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Era una trampa! Catsup, Ketchup... ¡es lo mismo escrito distinto para despistar! He perdido un montón de tiempo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "angry"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 8: Nate Gentile"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 8: Nate Gentile",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Cerca de las cajas, un hombre recorre las estanterías examinando cada producto con ojo experto. Es Nate Gentile."
+        },
+        {
+          "character": "Nate",
+          "text": "Mmm... esta lata de tomate tiene una relación calidad-precio brutal. Yo me lo compraría."
+        },
+        {
+          "character": "Nate",
+          "text": "Este ketchup de marca blanca rinde igual que el caro. Yo me lo compraría."
+        },
+        {
+          "character": "Nate",
+          "text": "¿Guindillas en oferta? Para el picante que dan, es una locura no llevárselas. Yo me lo compraría."
+        },
+        {
+          "character": "Samu",
+          "text": "¿Pero este tío se va a comprar el supermercado entero?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "Nate",
+          "text": "¡Eh! ¿Te puedo ayudar en algo, amigo?"
+        },
+        {
+          "character": "Samu",
+          "text": "Uf... tengo que decidir rápido. Edu me está esperando.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Ignorarlo y seguir",
+              "nextScene": "Escena 9: El reencuentro con Edu"
+            },
+            {
+              "text": "Preguntarle qué PC me recomendaría",
+              "nextScene": "Escena 8b: La recomendación de Nate"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 8b: La recomendación de Nate",
+      "lines": [
+        {
+          "character": "Nate",
+          "text": "¡Ah, buena pregunta! Para darte la recomendación perfecta, me vendría genial saber qué uso principal le vas a dar (¿programación, desarrollo, gaming en 1440p o algo más casual?) y, sobre todo, cuál es tu presupuesto aproximado."
+        },
+        {
+          "character": "Nate",
+          "text": "Mientras me cuentas, la industria se encuentra en un gran momento con la llegada de las nuevas arquitecturas y las series RTX 5000 de Nvidia y RX 9000 de AMD. Aquí tienes las tres configuraciones que más merecen la pena ahora mismo según lo que busques gastar."
+        },
+        {
+          "character": "Nate",
+          "text": "1. EL 'SWEET SPOT' (Calidad/Precio Eficiente). Ideal para un rendimiento excelente en multitarea, desarrollo de software ágil, compilación rápida y gaming en 1440p (2K)."
+        },
+        {
+          "character": "Nate",
+          "text": "Procesador: AMD Ryzen 5 9600X o Ryzen 7 9700X (Plataforma AM5, con margen de actualización para el futuro). Gráfica: NVIDIA RTX 5070 (12GB) o AMD RX 9070 (16GB), una potencia brutal en la gama media-alta."
+        },
+        {
+          "character": "Nate",
+          "text": "RAM: 32GB DDR5 a 6000MHz CL30 (imprescindible hoy para ir holgado con contenedores, IDEs o juegos pesados). Almacenamiento: SSD NVMe M.2 de 2TB (WD Black o Crucial Gen4). Placa: chipset B850 (MSI Tomahawk o Gigabyte Gaming). Fuente: 750W u 850W 80+ Gold Modular."
+        },
+        {
+          "character": "Nate",
+          "text": "2. EL ECONÓMICO / ENTRADA RENTABLE. Para productividad fluida, desarrollo ligero y gaming muy decente a 1080p sin gastar de más."
+        },
+        {
+          "character": "Nate",
+          "text": "Procesador: AMD Ryzen 5 7600 (AM5) o Intel Core i5-14400F. Gráfica: NVIDIA RTX 5060 (8GB) o la Intel Arc B580 (que está sorprendiendo mucho por su relación calidad-precio). RAM: 16GB o 32GB DDR5. Almacenamiento: SSD NVMe M.2 de 1TB."
+        },
+        {
+          "character": "Nate",
+          "text": "3. EL 'GOD MODE' (Máximo Rendimiento). Si buscas potencia bruta sin restricciones: renderizado, entornos virtuales masivos, desarrollo 3D/IA local o gaming en 4K Ultra."
+        },
+        {
+          "character": "Nate",
+          "text": "Procesador: AMD Ryzen 7 9800X3D (el rey absoluto en gaming) o Intel Core Ultra 7 265K. Gráfica: NVIDIA RTX 5080 o RTX 5090. RAM: 64GB DDR5 a 6400MHz. Almacenamiento: 2TB o 4TB SSD NVMe Gen5/Gen4 de alta velocidad (Samsung 990 Pro)."
+        },
+        {
+          "character": "2B",
+          "text": "Nate sigue y sigue con todo lujo de detalle. Pasan los minutos. Samu asiente educadamente mientras el reloj corre.",
+          "actions": [
+            {
+              "type": "addDelay",
+              "value": 2
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Gracias, Nate, de verdad... pero ¡tengo que irme YA!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "angry"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 9: El reencuentro con Edu"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 9: El reencuentro con Edu",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu llega por fin al corazón de Kingdom Ketchup. El aire huele intensamente a salsa de tomate."
+        },
+        {
+          "character": "Samu",
+          "text": "Vale, Edu... estoy aquí. ¿Dónde te has metido?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "¡Samu! ¡Por aquí! Menos mal que has venido. Esto está peor de lo que pensaba.",
+          "consequence": {
+            "delayAtLeast": 2,
+            "text": "¡Samu! ¡Por fin! ¿Sabes cuánto llevo aguantando aquí? Pensé que no llegarías nunca... esto está mil veces peor que cuando te llamé."
+          }
+        },
+        {
+          "character": "Samu",
+          "text": "Cuéntame qué está pasando. Desde la llamada no he dejado de preocuparme.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Es largo de explicar... pero no tenemos tiempo. Tenemos que movernos ya.",
+          "consequence": {
+            "delayAtLeast": 2,
+            "text": "Ya no hay tiempo de explicaciones. Mientras tú te perdías por ahí, esto se ha llenado de guindillas. ¡Va a ser mucho más difícil por tu culpa!"
+          }
+        },
+        {
+          "character": "Edu",
+          "text": "¡Cuidado! El cielo de Kingdom Ketchup llueve ketchup... pero también guindillas. ¡Come todo el ketchup que puedas y esquiva el picante!"
+        },
+        {
+          "character": "Samu",
+          "text": "¿En serio? Bueno... ¡vamos allá!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "¡Que empiece el banquete!"
+        },
+        {
+          "actions": [
+            {
+              "type": "minigame",
+              "game": "ketchup",
+              "goal": 10,
+              "maxHits": 3,
+              "maxHitsByDelay": {
+                "0": 3,
+                "1": 2,
+                "2": 1
+              }
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Uf! Eso ha sido más intenso de lo que esperaba.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "¡Lo lograste! Estoy a salvo gracias a ti. Pero los demás siguen en peligro.",
+          "allRescuedText": "¡Lo lograste! Estoy a salvo gracias a ti. Y lo mejor de todo: ya no queda nadie en peligro."
+        },
+        {
+          "character": "Samu",
+          "text": "Es verdad... no puedo descansar todavía. Voy a llamar a alguien para saber cómo están.",
+          "allRescuedText": "Por fin... estáis todos a salvo. Ahora sí puedo respirar tranquilo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Llamar a Tony",
+              "nextScene": "Escena: Llamada a Tony"
+            },
+            {
+              "text": "Llamar a José",
+              "nextScene": "Escena: Llamada a José"
+            },
+            {
+              "text": "Ir al desenlace",
+              "requireAllRescued": true,
+              "chapter3ByFirst": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Llamada a Tony",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu marca el número de Tony y, para su alivio, la línea da tono."
+        },
+        {
+          "character": "Tony",
+          "text": "¿Samu? ¡Menos mal! Aquí en Ecchi Land la cosa está muy fea. ¿Vienes ya?"
+        },
+        {
+          "character": "Samu",
+          "text": "Aguanta, Tony. Rescaté a Edu y voy directo hacia ti.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Llamar a José",
+              "nextScene": "Escena: Llamada a José"
+            },
+            {
+              "text": "Ir a ayudar cuanto antes",
+              "nextScene": "Fin del Capítulo 2",
+              "chapter2ByLastCalled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Llamada a José",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu marca el número de José y, para su alivio, la línea da tono."
+        },
+        {
+          "character": "José",
+          "text": "¡Samu! Paloma City se está viniendo abajo. Necesitamos que vengas."
+        },
+        {
+          "character": "Samu",
+          "text": "Aguanta, José. Rescaté a Edu y voy hacia allá.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Llamar a Tony",
+              "nextScene": "Escena: Llamada a Tony"
+            },
+            {
+              "text": "Ir a ayudar cuanto antes",
+              "nextScene": "Fin del Capítulo 2",
+              "chapter2ByLastCalled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Fuera de cobertura",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu marca el número, pero solo escucha una voz metálica: «El teléfono al que llama está apagado o fuera de cobertura en este momento»."
+        },
+        {
+          "character": "Samu",
+          "text": "Otra vez fuera de cobertura... No puedo llamar a nadie más por ahora. ¡Toca ponerse en marcha!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Ir a ayudar cuanto antes",
+              "nextScene": "Fin del Capítulo 2",
+              "chapter2ByLastCalled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Fin del Capítulo 2",
+      "lines": [
+        {
+          "character": "2B",
+          "text": "Samu guarda el teléfono y se lanza hacia el siguiente destino, con un amigo menos en peligro y la determinación intacta."
+        }
+      ]
+    }
+  ]
+}

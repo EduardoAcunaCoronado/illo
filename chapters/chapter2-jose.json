@@ -1,0 +1,265 @@
+{
+  "title": "Capítulo 2: Paloma City",
+  "scenes": [
+    {
+      "title": "Escena 1: Llegada a Paloma City",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/dark_path.png"
+            },
+            {
+              "type": "rescue",
+              "character": "jose"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu llega a Paloma City. Un silencio extraño cubre las calles, solo roto por el aleteo de las palomas."
+        },
+        {
+          "character": "Samu",
+          "text": "José... aguanta. Ya estoy aquí.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "José",
+          "text": "¡Samu! No sabes el alivio que siento. Pensé que no llegarías a tiempo."
+        },
+        {
+          "character": "Samu",
+          "text": "Nunca te dejaría solo. Cuéntame qué ha pasado aquí.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "José",
+          "text": "Es complicado... y peligroso. Pero juntos tenemos una oportunidad. Vamos."
+        },
+        {
+          "character": "José",
+          "text": "Las palomas de esta ciudad son especiales: se comunican con secuencias. Si quieres pasar, tendrás que memorizar su patrón y repetirlo. ¡Concéntrate!"
+        },
+        {
+          "character": "Samu",
+          "text": "¿Memorizar palomas? Vale... allá voy.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Observa con atención el baile de las palomas..."
+        },
+        {
+          "actions": [
+            {
+              "type": "minigame",
+              "game": "paloma",
+              "rounds": 5,
+              "flashMs": 600,
+              "gapMs": 250
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Lo conseguí! Esas palomas no eran tan listas como yo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "José",
+          "text": "¡Eres increíble, Samu! Estoy a salvo. Pero no todos han tenido tu suerte todavía.",
+          "allRescuedText": "¡Eres increíble, Samu! Estoy a salvo. Y esta vez ya no queda nadie esperando ayuda."
+        },
+        {
+          "character": "Samu",
+          "text": "Tienes razón. Todavía me necesitan. Voy a llamar a alguien para saber cómo están.",
+          "allRescuedText": "Por fin... estáis todos a salvo. Ahora sí puedo respirar tranquilo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Llamar a Edu",
+              "nextScene": "Escena: Llamada a Edu"
+            },
+            {
+              "text": "Llamar a Tony",
+              "nextScene": "Escena: Llamada a Tony"
+            },
+            {
+              "text": "Ir al desenlace",
+              "requireAllRescued": true,
+              "chapter3ByFirst": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Llamada a Edu",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu marca el número de Edu y, para su alivio, la línea da tono."
+        },
+        {
+          "character": "Edu",
+          "text": "¿Samu? Aquí en Kingdom Ketchup seguimos aguantando, pero no sé cuánto más. ¿Vienes?"
+        },
+        {
+          "character": "Samu",
+          "text": "Aguanta, Edu. Rescaté a José y voy directo hacia ti.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Llamar a Tony",
+              "nextScene": "Escena: Llamada a Tony"
+            },
+            {
+              "text": "Ir a ayudar cuanto antes",
+              "nextScene": "Fin del Capítulo 2",
+              "chapter2ByLastCalled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Llamada a Tony",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu marca el número de Tony y, para su alivio, la línea da tono."
+        },
+        {
+          "character": "Tony",
+          "text": "¿Samu? ¡Menos mal! Aquí en Ecchi Land la cosa está muy fea. ¿Vienes ya?"
+        },
+        {
+          "character": "Samu",
+          "text": "Aguanta, Tony. Rescaté a José y voy hacia allá.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Llamar a Edu",
+              "nextScene": "Escena: Llamada a Edu"
+            },
+            {
+              "text": "Ir a ayudar cuanto antes",
+              "nextScene": "Fin del Capítulo 2",
+              "chapter2ByLastCalled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Fuera de cobertura",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu marca el número, pero solo escucha una voz metálica: «El teléfono al que llama está apagado o fuera de cobertura en este momento»."
+        },
+        {
+          "character": "Samu",
+          "text": "Otra vez fuera de cobertura... No puedo llamar a nadie más por ahora. ¡Toca ponerse en marcha!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Ir a ayudar cuanto antes",
+              "nextScene": "Fin del Capítulo 2",
+              "chapter2ByLastCalled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Fin del Capítulo 2",
+      "lines": [
+        {
+          "character": "2B",
+          "text": "Samu guarda el teléfono y se lanza hacia el siguiente destino, con un amigo menos en peligro y la determinación intacta."
+        }
+      ]
+    }
+  ]
+}

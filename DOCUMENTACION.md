@@ -377,6 +377,84 @@ Establece variables en el estado del juego.
 }
 ```
 
+### goToScene
+Salta a otra escena por su **título** (o índice) desde dentro de una línea,
+sin necesidad de una elección. Útil para reunir varias rutas ramificadas en
+una escena común. Debe ser la última acción/línea útil de la escena de origen.
+
+```json
+{
+  "type": "goToScene",
+  "value": "Escena 5: Dentro de Kingdom Ketchup"
+}
+```
+
+### setDelay / addDelay
+Gestionan el **retraso acumulado** (`storyDelay`) del capítulo, un contador que
+mide cuánto tiempo ha perdido el jugador según las rutas que elige. `setDelay`
+fija el valor; `addDelay` lo incrementa. Se reinicia a 0 al cargar cada capítulo.
+
+```json
+{ "type": "setDelay", "value": 2 }
+{ "type": "addDelay", "value": 1 }
+```
+
+El retraso permite dos efectos:
+
+1. **Texto por consecuencia**: una línea de diálogo puede definir `consequence`
+   con un umbral `delayAtLeast`; si el retraso acumulado lo alcanza, se muestra
+   el texto alternativo (p. ej. un personaje más enfadado por la tardanza).
+
+   ```json
+   {
+     "character": "Edu",
+     "text": "¡Menos mal que has venido!",
+     "consequence": {
+       "delayAtLeast": 2,
+       "text": "¿Sabes cuánto llevo esperándote? ¡Esto está mucho peor por tu culpa!"
+     }
+   }
+   ```
+
+   También existe `allRescuedText`: texto que se usa cuando ya se ha rescatado
+   a los 3 amigos (`rescued.length >= 3`). Útil al final de cada Capítulo 2 para
+   no decir que "faltan amigos por rescatar" cuando ya no queda nadie. Tiene
+   prioridad sobre `consequence`.
+
+   ```json
+   {
+     "character": "Edu",
+     "text": "Estoy a salvo. Pero los demás siguen en peligro.",
+     "allRescuedText": "Estoy a salvo. Y ya no queda nadie en peligro."
+   }
+   ```
+
+2. **Dificultad de minijuego**: un `minigame` puede definir cualquier propiedad
+   `<algo>ByDelay` (un mapa umbral→valor) que sobreescribe a `<algo>` según el
+   retraso: se elige la entrada cuyo umbral sea el mayor que no supere el retraso
+   actual. Ejemplos: `maxHitsByDelay` (juego `ketchup`, menos vidas) o
+   `maxMissesByDelay` (juego `ecchi`, menos fallos permitidos).
+
+   ```json
+   {
+     "type": "minigame",
+     "game": "ketchup",
+     "goal": 10,
+     "maxHits": 3,
+     "maxHitsByDelay": { "0": 3, "1": 2, "2": 1 }
+   }
+   ```
+
+   ```json
+   {
+     "type": "minigame",
+     "game": "ecchi",
+     "goal": 12,
+     "maxMisses": 3,
+     "maxMissesByDelay": { "0": 3, "1": 2 }
+   }
+   ```
+
 ---
 
 ## 🎯 Sistema de Elecciones
@@ -432,6 +510,53 @@ Establece variables en el estado del juego.
   ]
 }
 ```
+
+---
+
+## 📞 Sistema de Llamadas
+
+Samu puede llamar a sus amigos (Edu, Tony, José), pero **solo puede completar
+una llamada "real" por cada amigo que ha rescatado, más la primera del inicio**.
+Es decir, tanto en el Capítulo 1 como al final de cada Capítulo 2 solo puede
+llamar a UN amigo; el resto de intentos suenan como "fuera de cobertura" hasta
+que rescate a alguien, momento en que se desbloquea una nueva llamada.
+
+**Regla (motor, `canMakeRealCall`):** `completedCalls.length < rescued.length + 1`.
+
+- `completedCalls`: amigos ya llamados con éxito (persiste entre capítulos).
+- `rescued`: amigos rescatados (persiste entre capítulos).
+
+### Escenas de llamada
+
+Una escena de llamada real debe tener un título que contenga `"Llamada a <Nombre>"`
+(p. ej. `"Escena: Llamada a Tony"`). El motor la registra automáticamente en
+`completedCalls` al entrarse en ella.
+
+Si el jugador elige una llamada pero ya gastó su cupo, el motor **redirige** la
+opción a la escena `"Escena: Fuera de cobertura"` (o a `choice.offCoverageScene`
+si se indica) y NO registra la llamada. Esa escena muestra el mensaje del
+operador y ofrece continuar.
+
+### Campos de opción relacionados
+
+| Campo | Descripción |
+|-------|-------------|
+| `nextScene` con `"Llamada a X"` | Marca la opción como llamada; se redirige si no hay cupo |
+| `offCoverageScene` | Escena alternativa si no hay cupo (por defecto `"Escena: Fuera de cobertura"`) |
+| `chapter2ByFirstCalled` | Ruta dinámica a `chapter2-<primer llamado>` (usado en Cap. 1) |
+| `chapter2ByLastCalled` | Ruta dinámica a `chapter2-<último llamado>` (usado al final de cada Cap. 2) |
+| `chapter3ByFirst` | Ruta dinámica a `chapter3-<primer rescatado>` |
+| `requireAllRescued` | Oculta la opción hasta rescatar a los 3 amigos |
+
+### Flujo típico
+
+1. **Capítulo 1:** Samu llama a un amigo (conversación real). El resto sale
+   "fuera de cobertura". Va a rescatar al primero que llamó
+   (`chapter2ByFirstCalled`).
+2. **Fin de cada Capítulo 2:** tras el rescate se desbloquea una nueva llamada;
+   Samu llama a UN amigo restante (el otro sale "fuera de cobertura") y va hacia
+   él (`chapter2ByLastCalled`), o al desenlace si ya rescató a todos
+   (`requireAllRescued` + `chapter3ByFirst`).
 
 ---
 

@@ -1,0 +1,48 @@
+{
+  "title": "Capítulo 3: El Vuelo de las Palomas",
+  "scenes": [
+    {
+      "title": "Escena 1: Desenlace de José",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/dark_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Los tres amigos están a salvo. Pero el orden en que Samu actuó dejará huella para siempre."
+        },
+        {
+          "character": "José",
+          "text": "Samu, acudiste a Paloma City antes que a ningún otro lugar. Eso significa mucho para mí."
+        },
+        {
+          "character": "Samu",
+          "text": "El silencio de tu ciudad me asustó más que nada. Tenía que llegar cuanto antes.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "José",
+          "text": "Las palomas te han aceptado como uno de los suyos. Te guiarán por caminos que otros no ven."
+        },
+        {
+          "character": "2B",
+          "text": "Camino de José: la sabiduría de Paloma City ilumina la senda final."
+        },
+        {
+          "character": "2B",
+          "text": "Fin del Capítulo 3 (Ruta de José)."
+        }
+      ]
+    }
+  ]
+}

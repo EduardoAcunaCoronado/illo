@@ -3,6 +3,19 @@ let isGameRunning = false;
 let waitingForInput = false;
 let clickHandler = null;
 let currentChapterNumber = 0;
+let currentChapterName = null;
+
+// Capítulos disponibles para el selector de "Cargar"
+const AVAILABLE_CHAPTERS = [
+    { id: 'chapter0', title: 'Prólogo' },
+    { id: 'chapter1', title: 'Capítulo 1: Decisiones' },
+    { id: 'chapter2-edu', title: 'Capítulo 2: Kingdom Ketchup (Edu)' },
+    { id: 'chapter2-tony', title: 'Capítulo 2: Ecchi Land (Tony)' },
+    { id: 'chapter2-jose', title: 'Capítulo 2: Paloma City (José)' },
+    { id: 'chapter3-edu', title: 'Capítulo 3: Ruta de Edu' },
+    { id: 'chapter3-tony', title: 'Capítulo 3: Ruta de Tony' },
+    { id: 'chapter3-jose', title: 'Capítulo 3: Ruta de José' }
+];
 
 // Elementos del DOM
 const gameContainer = document.getElementById('game-container');
@@ -23,24 +36,39 @@ async function initGame() {
     console.log('Visual Novel Engine inicializado');
 }
 
+async function loadAllCharacters() {
+    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5'];
+    for (const character of characters) {
+        await engine.loadCharacter(character);
+    }
+}
+
 async function startNewGame() {
     mainMenu.classList.add('hidden');
     isGameRunning = true;
     currentChapterNumber = 0;
 
+    // Partida nueva: limpiar el progreso de rescates y llamadas
+    engine.rescued = [];
+    engine.completedCalls = [];
+
     // Cargar todos los personajes disponibles
-    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu'];
-    for (const character of characters) {
-        await engine.loadCharacter(character);
-    }
+    await loadAllCharacters();
 
     // Iniciar con chapter0
     await playChapter(currentChapterNumber);
 }
 
-async function playChapter(chapterNumber) {
-    currentChapterNumber = chapterNumber;
-    const chapterName = `chapter${chapterNumber}`;
+async function playChapter(chapterIdentifier) {
+    // Permitir tanto número (chapter0, chapter1...) como nombre directo (chapter2-edu)
+    const chapterName = typeof chapterIdentifier === 'number'
+        ? `chapter${chapterIdentifier}`
+        : chapterIdentifier;
+
+    if (typeof chapterIdentifier === 'number') {
+        currentChapterNumber = chapterIdentifier;
+    }
+    currentChapterName = chapterName;
 
     // Cargar el capítulo
     await engine.loadChapter(chapterName);
@@ -86,6 +114,9 @@ async function endGame() {
     isGameRunning = false;
     engine.hideDialog();
 
+    // Capturar la ruta ramificada elegida (si la hay) antes de resetear
+    const branchChapter = engine.nextChapter;
+
     // Mostrar pantalla de fin de capítulo
     const chapterTitle = engine.currentChapter?.title || 'Capítulo Sin Título';
     await engine.showChapterEnd(chapterTitle);
@@ -93,13 +124,14 @@ async function endGame() {
     // Resetear el estado
     engine.reset();
 
-    // Verificar si hay siguiente capítulo
-    const nextChapterNumber = currentChapterNumber + 1;
-    const nextChapterExists = await checkChapterExists(`chapter${nextChapterNumber}`);
+    // Si una decisión definió un capítulo de ruta, usarlo; si no, seguir
+    // la secuencia numérica habitual
+    const nextChapterId = branchChapter || `chapter${currentChapterNumber + 1}`;
+    const nextChapterExists = await checkChapterExists(nextChapterId);
 
     if (nextChapterExists) {
         // Mostrar opción de continuar al siguiente capítulo
-        await showContinueOptions(nextChapterNumber);
+        await showContinueOptions(nextChapterId);
     } else {
         // No hay más capítulos, volver al menú
         mainMenu.classList.remove('hidden');
@@ -115,7 +147,7 @@ async function checkChapterExists(chapterName) {
     }
 }
 
-async function showContinueOptions(nextChapterNumber) {
+async function showContinueOptions(nextChapterId) {
     return new Promise(resolve => {
         // Crear un panel de opciones
         const optionsContainer = document.createElement('div');
@@ -179,7 +211,7 @@ async function showContinueOptions(nextChapterNumber) {
     }).then(choice => {
         if (choice === 'continue') {
             isGameRunning = true;
-            playChapter(nextChapterNumber);
+            playChapter(nextChapterId);
         } else {
             mainMenu.classList.remove('hidden');
         }
@@ -187,16 +219,67 @@ async function showContinueOptions(nextChapterNumber) {
 }
 
 function loadGame() {
-    const saved = localStorage.getItem('gameState');
-    if (saved) {
-        const state = JSON.parse(saved);
-        engine.gameState = state;
-        mainMenu.classList.add('hidden');
-        isGameRunning = true;
-        playGame();
-    } else {
-        alert('No hay partida guardada');
-    }
+    showChapterSelector();
+}
+
+function showChapterSelector() {
+    // Evitar duplicados si ya está abierto
+    if (document.getElementById('chapter-selector')) return;
+
+    const selector = document.createElement('div');
+    selector.id = 'chapter-selector';
+    selector.className = 'chapter-selector';
+
+    const buttonsHTML = AVAILABLE_CHAPTERS.map(ch => `
+        <button class="chapter-select-btn" data-chapter="${ch.id}">
+            <span>${ch.title}</span>
+        </button>
+    `).join('');
+
+    selector.innerHTML = `
+        <div class="chapter-selector-panel">
+            <h2 class="chapter-selector-title">Seleccionar Capítulo</h2>
+            <div class="chapter-selector-list">
+                ${buttonsHTML}
+            </div>
+            <button class="chapter-selector-back" id="chapter-selector-back">Volver</button>
+        </div>
+    `;
+
+    document.getElementById('game-container').appendChild(selector);
+
+    selector.querySelectorAll('.chapter-select-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const chapterId = btn.getAttribute('data-chapter');
+            selector.remove();
+            startChapterFromSelector(chapterId);
+        });
+    });
+
+    document.getElementById('chapter-selector-back').addEventListener('click', () => {
+        selector.remove();
+    });
+}
+
+async function startChapterFromSelector(chapterId) {
+    mainMenu.classList.add('hidden');
+
+    // Asegurar un estado limpio antes de empezar el capítulo elegido
+    engine.reset();
+    engine.lastChapterName = null;
+    engine.rescued = [];
+    engine.completedCalls = [];
+
+    isGameRunning = true;
+
+    // Si el id es numérico (chapterN), pasar el número para mantener la
+    // secuencia correcta; si no, pasar el nombre de la rama directamente
+    const numericMatch = chapterId.match(/^chapter(\d+)$/);
+    const identifier = numericMatch ? parseInt(numericMatch[1], 10) : chapterId;
+
+    // Cargar personajes y arrancar el capítulo seleccionado
+    await loadAllCharacters();
+    await playChapter(identifier);
 }
 
 function saveGame() {

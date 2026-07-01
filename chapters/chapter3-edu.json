@@ -1,0 +1,48 @@
+{
+  "title": "Capítulo 3: El Precio de la Lealtad",
+  "scenes": [
+    {
+      "title": "Escena 1: Desenlace de Edu",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Los tres amigos están a salvo. Pero el orden en que Samu actuó dejará huella para siempre."
+        },
+        {
+          "character": "Edu",
+          "text": "Samu... viniste a por mí primero. No lo olvidaré jamás. Te debo la vida."
+        },
+        {
+          "character": "Samu",
+          "text": "Fuiste el primero al que escuché en peligro. No podía dudar.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Por eso, ahora yo lideraré contigo lo que viene. Kingdom Ketchup nos dará su fuerza."
+        },
+        {
+          "character": "2B",
+          "text": "Camino de Edu: la alianza con Kingdom Ketchup marca el inicio del verdadero conflicto."
+        },
+        {
+          "character": "2B",
+          "text": "Fin del Capítulo 3 (Ruta de Edu)."
+        }
+      ]
+    }
+  ]
+}

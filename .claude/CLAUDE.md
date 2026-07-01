@@ -48,3 +48,5 @@ proyecto/
 2. **No duplicar:** Una sola fuente de verdad
 3. **Mantener limpio:** Eliminar archivos innecesarios
 4. **Memoria:** Actualizar memory/ con cambios importantes
+
+Narrador es 2B

@@ -10,7 +10,22 @@
       "PowerShell(Stop-Process -Name python -Force -ErrorAction SilentlyContinue)",
       "Bash(awk '{print $9, \"\\(\" $5 \"\\)\"}')",
       "PowerShell(cd 'c:\\\\Proyectos\\\\illo'; Get-ChildItem -File | Where-Object {$_.Extension -match '\\\\.\\(css|js|md|html\\)$'} | Select-Object Name, @{Name=\"Tamaño\";Expression={\"{0:N0} KB\" -f \\($_.Length/1KB\\)}} | Format-Table -AutoSize)",
-      "Bash(grep -n \"playChapterIntro\\\\|lastChapterName\" c:\\\\\\\\Proyectos\\\\\\\\illo\\\\\\\\engine.js)"
+      "Bash(grep -n \"playChapterIntro\\\\|lastChapterName\" c:\\\\\\\\Proyectos\\\\\\\\illo\\\\\\\\engine.js)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('chapters/chapter1.json','utf8'\\)\\); console.log\\('JSON valido'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('chapters/chapter2-edu.json','utf8'\\)\\); console.log\\('chapter2-edu JSON OK'\\)\")",
+      "Bash(node -c engine.js)",
+      "Bash(node -c game.js)",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('chapters/chapter2-tony.json','utf8'\\)\\); console.log\\('chapter2-tony JSON OK'\\)\")",
+      "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('chapters/chapter2-jose.json','utf8'\\)\\); console.log\\('chapter2-jose JSON OK'\\)\")",
+      "Bash(node -e \"const c=require\\('./chapters/chapter2-edu.json'\\); console.log\\('OK scenes:', c.scenes.length\\); c.scenes.forEach\\(s=>console.log\\(' -', s.title, '| lines:', s.lines.length\\)\\);\")",
+      "Bash(node -e \"new Function\\(require\\('fs'\\).readFileSync\\('engine.js','utf8'\\)\\); console.log\\('engine.js: syntax OK'\\)\")",
+      "Bash(node -e ' *)",
+      "Bash(node -e \"const c=require\\('./chapters/chapter2-edu.json'\\); console.log\\('JSON OK, escenas:', c.scenes.length\\);\")",
+      "Bash(node -e \"const c=require\\('./chapters/chapter2-tony.json'\\); const last=c.scenes[c.scenes.length-1]; console.log\\('Título última escena:', last.title\\); const idx=last.lines.findIndex\\(l=>l.choices\\); console.log\\('Línea con choices, idx', idx\\); console.log\\(JSON.stringify\\(last.lines[idx],null,1\\)\\);\")",
+      "Bash(node -e \"new Function\\(require\\('fs'\\).readFileSync\\('engine.js','utf8'\\)\\); console.log\\('engine.js: sintaxis OK'\\)\")",
+      "Bash(node -e \"new Function\\(require\\('fs'\\).readFileSync\\('engine.js','utf8'\\)\\); console.log\\('engine.js OK'\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); new Function\\(fs.readFileSync\\('game.js','utf8'\\).replace\\('const engine','var engine'\\)\\); console.log\\('game.js OK'\\)\")",
+      "Bash(node -e \"require\\('./chapters/chapter2-tony.json'\\); console.log\\('tony JSON OK'\\)\")"
     ]
   }
 }

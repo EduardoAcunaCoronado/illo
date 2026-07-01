@@ -1,0 +1,370 @@
+{
+  "title": "Capítulo 2: Ecchi Land",
+  "scenes": [
+    {
+      "title": "Escena 1: Llegada a Ecchi Land",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/night.png"
+            },
+            {
+              "type": "rescue",
+              "character": "tony"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu cruza la entrada de Ecchi Land. Las luces de neón parpadean de forma inquietante."
+        },
+        {
+          "character": "Samu",
+          "text": "Tony dijo que las cosas estaban fuera de control... y ahora lo entiendo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Ante Samu el pasillo se bifurca en dos caminos. Uno está flanqueado por torres de latas de Monster blanco. El otro, por pirámides de latas de Nestea."
+        },
+        {
+          "character": "Samu",
+          "text": "¿Monster blanco o Nestea...? Uno de estos caminos tiene que llevar antes hasta Tony. Si me equivoco, tardaré más en llegar.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Ir por el camino del Monster blanco",
+              "nextScene": "Escena: Camino del Monster blanco"
+            },
+            {
+              "text": "Ir por el camino del Nestea",
+              "nextScene": "Escena: Camino del Nestea"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Camino del Monster blanco",
+      "lines": [
+        {
+          "character": "2B",
+          "text": "El camino del Monster blanco es corto y directo. Samu lo recorre a toda prisa entre el brillo de las latas y, al fondo, distingue una silueta conocida."
+        },
+        {
+          "character": "Samu",
+          "text": "¡Buena elección! Este era el camino rápido. ¡Ahí está Tony!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena: Encuentro con Tony"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Camino del Nestea",
+      "lines": [
+        {
+          "character": "2B",
+          "text": "El camino del Nestea serpentea entre pirámides de latas que se derrumban al pasar. Samu tiene que rodearlas una y otra vez, perdiendo un tiempo precioso.",
+          "actions": [
+            {
+              "type": "addDelay",
+              "value": 1
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Era el camino largo! He tardado un montón por elegir mal. Ojalá Tony aguante.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "angry"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena: Encuentro con Tony"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Encuentro con Tony",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/night.png"
+            }
+          ],
+          "character": "Tony",
+          "text": "¡Samu! Aquí, rápido. No te separes de mí, este sitio es un caos."
+        },
+        {
+          "character": "Samu",
+          "text": "Estoy contigo, Tony. Dime qué necesitas que haga.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Tony",
+          "text": "Primero, sobrevivir. Después... ya veremos. Sígueme."
+        },
+        {
+          "character": "Tony",
+          "text": "¡Cuidado! Este lugar está lleno de tentaciones. Atrapa los 🍑 que aparezcan, pero NO te dejes engañar por los 💋 o caerás en la trampa."
+        },
+        {
+          "character": "Samu",
+          "text": "Entendido. Concentración total. ¡Vamos!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "¡Mantén la compostura, Samu!"
+        },
+        {
+          "actions": [
+            {
+              "type": "minigame",
+              "game": "ecchi",
+              "goal": 12,
+              "maxMisses": 3,
+              "maxMissesByDelay": {
+                "0": 3,
+                "1": 2
+              },
+              "lifetime": 1100
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Uf! Por poco. Este sitio es más peligroso de lo que parece.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Tony",
+          "text": "Me has salvado, Samu. De verdad. Pero esto aún no ha terminado para los demás.",
+          "allRescuedText": "Me has salvado, Samu. De verdad. Y con esto ya estamos todos a salvo."
+        },
+        {
+          "character": "Samu",
+          "text": "Lo sé. No puedo parar ahora. Voy a llamar a alguien para saber cómo están.",
+          "allRescuedText": "Por fin... estáis todos a salvo. Ahora sí puedo respirar tranquilo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Llamar a Edu",
+              "nextScene": "Escena: Llamada a Edu"
+            },
+            {
+              "text": "Llamar a José",
+              "nextScene": "Escena: Llamada a José"
+            },
+            {
+              "text": "Ir al desenlace",
+              "requireAllRescued": true,
+              "chapter3ByFirst": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Llamada a Edu",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu marca el número de Edu y, para su alivio, la línea da tono."
+        },
+        {
+          "character": "Edu",
+          "text": "¿Samu? Aquí en Kingdom Ketchup seguimos aguantando, pero no sé cuánto más. ¿Vienes?"
+        },
+        {
+          "character": "Samu",
+          "text": "Aguanta, Edu. Rescaté a Tony y voy directo hacia ti.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Llamar a José",
+              "nextScene": "Escena: Llamada a José"
+            },
+            {
+              "text": "Ir a ayudar cuanto antes",
+              "nextScene": "Fin del Capítulo 2",
+              "chapter2ByLastCalled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Llamada a José",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu marca el número de José y, para su alivio, la línea da tono."
+        },
+        {
+          "character": "José",
+          "text": "¡Samu! Paloma City se está viniendo abajo. Necesitamos que vengas."
+        },
+        {
+          "character": "Samu",
+          "text": "Aguanta, José. Rescaté a Tony y voy hacia allá.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Llamar a Edu",
+              "nextScene": "Escena: Llamada a Edu"
+            },
+            {
+              "text": "Ir a ayudar cuanto antes",
+              "nextScene": "Fin del Capítulo 2",
+              "chapter2ByLastCalled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena: Fuera de cobertura",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/light_path.png"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu marca el número, pero solo escucha una voz metálica: «El teléfono al que llama está apagado o fuera de cobertura en este momento»."
+        },
+        {
+          "character": "Samu",
+          "text": "Otra vez fuera de cobertura... No puedo llamar a nadie más por ahora. ¡Toca ponerse en marcha!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Ir a ayudar cuanto antes",
+              "nextScene": "Fin del Capítulo 2",
+              "chapter2ByLastCalled": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Fin del Capítulo 2",
+      "lines": [
+        {
+          "character": "2B",
+          "text": "Samu guarda el teléfono y se lanza hacia el siguiente destino, con un amigo menos en peligro y la determinación intacta."
+        }
+      ]
+    }
+  ]
+}

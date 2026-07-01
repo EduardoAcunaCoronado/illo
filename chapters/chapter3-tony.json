@@ -1,0 +1,48 @@
+{
+  "title": "Capítulo 3: Entre Luces y Sombras",
+  "scenes": [
+    {
+      "title": "Escena 1: Desenlace de Tony",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/night.png"
+            }
+          ],
+          "character": "2B",
+          "text": "Los tres amigos están a salvo. Pero el orden en que Samu actuó dejará huella para siempre."
+        },
+        {
+          "character": "Tony",
+          "text": "Samu, fuiste a por mí antes que a nadie. En medio de aquel caos, apareciste tú."
+        },
+        {
+          "character": "Samu",
+          "text": "No iba a dejarte solo en Ecchi Land. Confié en mi instinto.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Tony",
+          "text": "Y ese instinto nos abrirá las puertas que nadie más puede cruzar. Conozco los secretos de este lugar."
+        },
+        {
+          "character": "2B",
+          "text": "Camino de Tony: los secretos de Ecchi Land cambian el rumbo de la historia."
+        },
+        {
+          "character": "2B",
+          "text": "Fin del Capítulo 3 (Ruta de Tony)."
+        }
+      ]
+    }
+  ]
+}
