@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
+              "value": "assets/backgrounds/iglesia.png"
             },
             {
               "type": "rescue",
@@ -101,15 +101,15 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/cafe.png"
+              "value": "assets/backgrounds/jamon.png"
             }
           ],
           "character": "2B",
-          "text": "El Jamón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos."
+          "text": "El Jamón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos, convencido de haber elegido el atajo perfecto."
         },
         {
           "character": "Samu",
-          "text": "Perfecto, ni un minuto perdido. Huele a embutido y a... ¿tomate? Debe ser por aquí.",
+          "text": "Perfecto, ni un minuto perdido. Huele a embutido y a... ¿pienso de gato?",
           "actions": [
             {
               "type": "showCharacter",
@@ -121,11 +121,117 @@
         },
         {
           "character": "2B",
-          "text": "Entre las cortinas de fiambre, un resplandor rojizo marca el paso hacia Kingdom Ketchup. Samu cruza sin dudarlo.",
+          "text": "De entre las estanterías surge una mujer con la mirada perdida, cargada de gatos hasta las orejas. Es la loca de los gatos.",
           "actions": [
             {
+              "type": "showCharacter",
+              "character": "loca",
+              "position": "right",
+              "pose": "neutral"
+            }
+          ]
+        },
+        {
+          "character": "Loca de los gatos",
+          "text": "¡Ahhh, la madre que los...! ¡Ahhhhh, incentivar la pequeña empresa! ¡Ahhhh, cómo duele! ¡Responsabilidad empresarial! ¡Ahhhhhh, gatos en los pantaloooones!",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "loca",
+              "position": "right",
+              "pose": "crazy"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Pero qué...? ¡Me está lanzando GATOS! ¡Esto era una trampa, no un atajo!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Los gatos se abalanzan desde todos los rincones. Samu no puede pelear: solo le queda correr y aguantar hasta que la loca se canse."
+        },
+        {
+          "character": "Samu",
+          "text": "¡Vale, vale! ¡Solo tengo que esquivarlos y resistir! ¡Aguanta, Samu!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "¡Corre por tu vida, Samu! ¡No dejes que ningún michi te alcance!",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "character": "loca"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "minigame",
+              "game": "gatos",
+              "survive": 60,
+              "cats": 3,
+              "playerSpeed": 5.0,
+              "catSpeed": 3.0
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Sin aliento y con los michis por fin dispersos, la loca se sube a una caja de embutido y, de la nada, arranca un mitin.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "loca",
+              "position": "right",
+              "pose": "neutral"
+            }
+          ]
+        },
+        {
+          "character": "Loca de los gatos",
+          "text": "¡Vale, voten por mí, siiiii!"
+        },
+        {
+          "character": "Samu",
+          "text": "Yo te votaría antes que a Pedro Sánchez.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Dejando atrás a la peculiar candidata y su ejército de gatos, agotado y con el reloj en contra, Samu por fin encuentra el resplandor rojizo hacia Kingdom Ketchup.",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "character": "loca"
+            },
+            {
               "type": "setDelay",
-              "value": 0
+              "value": 2
             }
           ]
         },
@@ -146,31 +252,31 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/cafe.png"
+              "value": "assets/backgrounds/dia.png"
             }
           ],
           "character": "2B",
-          "text": "El Día queda unas cuantas calles más allá. Samu tiene que rodear a un grupo de memes que acorralan a un furro, y pierde un tiempo precioso."
+          "text": "El Día queda a un par de calles, por una travesía tranquila que los memes aún no han tomado. Samu avanza sin apenas obstáculos."
         },
         {
           "character": "Samu",
-          "text": "Perdona, colega, ¡ya voy, ya voy! Ojalá pudiera ayudaros a todos... pero Edu me necesita.",
+          "text": "Este sitio está despejado... buena señal. Ni gatos ni memes por aquí. Directo al grano.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "worried"
+              "pose": "happy"
             }
           ]
         },
         {
           "character": "2B",
-          "text": "Tras un buen rato esquivando el caos, Samu llega al Día y encuentra el pasaje rojizo entre las estanterías de ofertas.",
+          "text": "Entre las estanterías de ofertas, el pasaje rojizo hacia Kingdom Ketchup aparece casi de inmediato. Samu cruza sin perder un segundo.",
           "actions": [
             {
               "type": "setDelay",
-              "value": 1
+              "value": 0
             }
           ]
         },
@@ -191,31 +297,31 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/cafe.png"
+              "value": "assets/backgrounds/mercadona.png"
             }
           ],
           "character": "2B",
-          "text": "El Mercadona está al otro lado del barrio entero. Samu corre calle tras calle, cruzando avenidas tomadas por los memes."
+          "text": "El Mercadona está unas calles más lejos. Samu corre a buen ritmo y solo tiene que rodear a un grupo de memes que acorralan a un furro."
         },
         {
           "character": "Samu",
-          "text": "¿Por qué tenía que ser el más lejos el que me sonaba mejor...? ¡Aguanta, Edu, aguanta!",
+          "text": "Perdona, colega, ¡ya voy, ya voy! Un pequeño rodeo y llego. No está tan mal este camino.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "sad"
+              "pose": "worried"
             }
           ]
         },
         {
           "character": "2B",
-          "text": "Cuando por fin llega, jadeando, la puerta automática se abre y el brillo de Kingdom Ketchup lo espera al fondo, tras la sección de frescos. Ha tardado demasiado.",
+          "text": "Tras el rodeo, la puerta automática se abre y el brillo de Kingdom Ketchup lo espera al fondo, tras la sección de frescos. Ha perdido algo de tiempo, pero no demasiado.",
           "actions": [
             {
               "type": "setDelay",
-              "value": 2
+              "value": 1
             }
           ]
         },
@@ -236,7 +342,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
+              "value": "assets/backgrounds/kingdom_ketchup_pasillos.png"
             }
           ],
           "character": "2B",
@@ -353,7 +459,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
+              "value": "assets/backgrounds/kingdom_ketchup_estanterias.png"
             }
           ],
           "character": "2B",
@@ -489,7 +595,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
+              "value": "assets/backgrounds/kingdom_ketchup_trono.png"
             }
           ],
           "character": "2B",
@@ -529,7 +635,33 @@
         },
         {
           "character": "Edu",
-          "text": "Es largo de explicar... pero no tenemos tiempo. Tenemos que movernos ya.",
+          "text": "No lo sé del todo. Un momento estaba tan tranquilo y, al siguiente, los memes de internet cobraron vida y empezaron a perseguir a todo el que tuviera pinta de furro. A mí me pillaron aquí encerrado.",
+          "byRescueCount": {
+            "1": "No lo sé del todo. Un momento estaba tan tranquilo y, al siguiente, los memes de internet cobraron vida y empezaron a perseguir a todo el que tuviera pinta de furro. A mí me pillaron aquí encerrado.",
+            "2": "Ya me temía que no era casualidad. Fíjate: los que teníamos avatar en internet nos hemos convertido en furros, y los que no tenían avatar... son ahora los memes de IA que nos atacan. Alguien lo ha diseñado así. Esto es un virus.",
+            "3": "Ya sé quién está detrás de todo. Es una IA Biológica... el juguete nuevo de Elon Musk. Se le fue de las manos: infectó la red, nos transformó a todos según nuestro avatar y soltó a los memes contra nosotros. Él empezó esto."
+          }
+        },
+        {
+          "character": "Samu",
+          "text": "Memes contra furros... ¿pero quién ganaría algo con esto? No tiene ni pies ni cabeza.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "byRescueCount": {
+            "1": "Memes contra furros... ¿pero quién ganaría algo con esto? No tiene ni pies ni cabeza.",
+            "2": "¿Un virus que nos convierte según nuestro avatar? Entonces esto no es un caos cualquiera... alguien lo ha soltado a propósito.",
+            "3": "¿Elon Musk? Debí imaginarlo. Una IA Biológica suya suelta por toda la red... ahora todo encaja. Vamos a tener que pararle los pies."
+          }
+        },
+        {
+          "character": "Edu",
+          "text": "No tenemos tiempo para pensarlo. Tenemos que movernos ya.",
           "consequence": {
             "delayAtLeast": 2,
             "text": "Ya no hay tiempo de explicaciones. Mientras tú te perdías por ahí, esto se ha llenado de guindillas. ¡Va a ser mucho más difícil por tu culpa!"
@@ -621,12 +753,6 @@
       "title": "Escena: Llamada a Tony",
       "lines": [
         {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
-            }
-          ],
           "character": "2B",
           "text": "Samu marca el número de Tony y, para su alivio, la línea da tono."
         },
@@ -663,12 +789,6 @@
       "title": "Escena: Llamada a José",
       "lines": [
         {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
-            }
-          ],
           "character": "2B",
           "text": "Samu marca el número de José y, para su alivio, la línea da tono."
         },

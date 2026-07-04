@@ -237,12 +237,32 @@ async function startNewGame() {
 | Campo | Tipo | Obligatorio | Descripción |
 |-------|------|-------------|-------------|
 | `_line` | número | No* | Número de línea (para referencia) |
-| `character` | string | Sí | Nombre del personaje |
+| `character` | string | Sí | Nombre del personaje (se muestra en el cuadro) |
 | `text` | string | Sí | Texto del diálogo |
 | `actions` | array | No | Acciones a ejecutar |
 | `choices` | array | No | Opciones para el usuario |
+| `speakingAs` | string | No | Sprite a resaltar al hablar (ver abajo) |
 
 *No es obligatorio, pero se recomienda para debugging.
+
+### `speakingAs`: resaltar un sprite distinto del que habla
+
+Al mostrar un diálogo, el motor resalta (efecto de brillo/zoom `.speaking`) al
+sprite cuyo nombre coincide con `character`. A veces el que habla **no** tiene su
+propio sprite en pantalla: por ejemplo, en una llamada telefónica habla "Edu"
+pero en pantalla está el móvil (`iphone5`). Con `speakingAs` indicas qué sprite
+debe hacer el zoom, sin cambiar el nombre mostrado en el cuadro de diálogo.
+
+```json
+{
+  "character": "Edu",
+  "speakingAs": "iphone5",
+  "text": "¡Samu! Menos mal que llamas..."
+}
+```
+
+Aquí el cuadro muestra "Edu" como interlocutor, pero es el móvil (a la derecha)
+el que se resalta mientras "habla".
 
 ---
 
@@ -275,15 +295,31 @@ Parámetros:
 - `position`: "left" o "right"
 - `pose`: "neutral", "happy", "sad", "angry", "surprised" (opcional)
 
-### hideCharacter
-Oculta un personaje.
+### hideCharacter / removeCharacter / quitarPersonaje
+Quita a un personaje de la escena (vacía su hueco). Los tres nombres de acción
+son equivalentes. **Recomendado usarlo cuando un personaje deja de intervenir**
+para que no se quede en pantalla en las escenas siguientes.
+
+Formas de uso:
 
 ```json
-{
-  "type": "hideCharacter",
-  "character": "luna"
-}
+{ "type": "removeCharacter", "character": "luna" }
 ```
+Quita a "luna" de la posición en la que se mostró (rastreada automáticamente).
+
+```json
+{ "type": "removeCharacter", "position": "right" }
+```
+Vacía directamente el hueco derecho (sin importar quién esté).
+
+```json
+{ "type": "removeCharacter", "character": "luna", "position": "right" }
+```
+Quita el hueco derecho (y olvida a "luna" si estaba ahí).
+
+> Nota: la posición de cada personaje se rastrea al llamar a `showCharacter`, así
+> que basta con indicar `character`. No hace falta quitar al protagonista (Samu),
+> que permanece en escena durante todo el capítulo.
 
 ### setPose
 Cambia la pose de un personaje visible.
@@ -421,6 +457,27 @@ El retraso permite dos efectos:
    no decir que "faltan amigos por rescatar" cuando ya no queda nadie. Tiene
    prioridad sobre `consequence`.
 
+   Y existe `byRescueCount`: un mapa `nº de rescatados → texto` que permite
+   **revelar la historia por etapas según el ORDEN de rescate**. Al entrar a un
+   Capítulo 2 la acción `rescue` de ese amigo ya se ejecutó, así que
+   `rescued.length` vale 1, 2 o 3 según si es el 1º, 2º o 3º/último rescate. Se
+   elige la entrada cuya clave sea el mayor umbral `<= rescued.length`. Tiene
+   **máxima prioridad** (por encima de `allRescuedText` y `consequence`). Se usa
+   en los tres Capítulos 2 para que la trama del virus de IA se destape poco a
+   poco: 1º = síntomas/misterio, 2º = es un virus deliberado, 3º = el culpable.
+
+   ```json
+   {
+     "character": "Edu",
+     "text": "Los memes de internet cobraron vida y persiguen a los furros...",
+     "byRescueCount": {
+       "1": "Los memes de internet cobraron vida y persiguen a los furros...",
+       "2": "No es casualidad: es un virus que nos transforma según nuestro avatar.",
+       "3": "Es una IA Biológica de Elon Musk. Él empezó todo esto."
+     }
+   }
+   ```
+
    ```json
    {
      "character": "Edu",
@@ -454,6 +511,53 @@ El retraso permite dos efectos:
      "maxMissesByDelay": { "0": 3, "1": 2 }
    }
    ```
+
+### Minijuegos disponibles
+
+| `game` | Descripción | Parámetros principales |
+|--------|-------------|------------------------|
+| `ketchup` | Come 🍅 y esquiva 🌶️ (mover ← →) | `goal`, `maxHits`, `duration` |
+| `ecchi` | Clica 🍑 a tiempo, evita 💋 | `goal`, `maxMisses`, `lifetime` |
+| `paloma` | Memoriza y repite la secuencia | `rounds`, `flashMs`, `gapMs` |
+| `gatos` | **Estilo Pac-Man con laberinto**: huye de los gatos por las calles | `survive`, `cats`, `playerSpeed`, `catSpeed` |
+
+#### Minijuego `gatos` (la loca de los gatos)
+
+Un **Pac-Man por rejilla** en un **laberinto de calles urbanas**. Samu (🐺) recorre
+las calles (← ↑ → ↓ / WASD), girando en las intersecciones, y debe **sobrevivir** un
+tiempo mientras los gatos (🐱) le persiguen por el laberinto. Si un gato lo alcanza,
+pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jamón).
+
+```json
+{
+  "type": "minigame",
+  "game": "gatos",
+  "survive": 60,
+  "cats": 3,
+  "playerSpeed": 5.0,
+  "catSpeed": 3.0
+}
+```
+
+| Parámetro | Descripción | Por defecto |
+|-----------|-------------|-------------|
+| `survive` | Segundos que hay que aguantar | 60 |
+| `cats` | Nº de gatos perseguidores (1-4 usan esquinas distintas) | 3 |
+| `playerSpeed` | Velocidad de Samu (**celdas**/s) | 5.0 |
+| `catSpeed` | Velocidad de los gatos (**celdas**/s) | 3.0 |
+
+El laberinto es fijo (una cuadrícula de manzanas separadas por avenidas), está
+definido en `VisualNovelEngine.GATOS_MAZE` y es completamente transitable (sin
+callejones sin salida). Samu empieza en el centro y los gatos en las esquinas.
+
+**Diseño (importante):** los gatos persiguen con búsqueda de camino (**BFS**) por las
+calles, pero —como los fantasmas de Pac-Man— **no todos van directos a la vez**:
+alternan modo *scatter* (3 s cada 8 s se retiran a su esquina) y modo *chase*, y en
+chase cada gato tiene un objetivo distinto (uno persigue directo, otro embosca 4
+celdas por delante de Samu, otro solo caza si está lejos). Esto crea ventanas de
+escape; si los 3 apuntaran siempre a Samu lo acorralarían y el juego sería imposible.
+La otra clave del equilibrio: Samu es más rápido que los gatos (`playerSpeed >
+catSpeed`) y gana **manteniéndose en movimiento** por las calles.
 
 ---
 
@@ -965,6 +1069,20 @@ Cada capítulo debe tener un campo `title`:
 ```json
 {
   "title": "Capítulo 1: El Encuentro",
+  "scenes": [...]
+}
+```
+
+**Capítulo final (`isFinal`):**
+Un capítulo puede marcarse como el final del juego con `"isFinal": true`. Al
+terminarlo, el juego vuelve **directamente al menú principal** sin ofrecer la
+pantalla "¿Continuar? → Siguiente Capítulo". Los tres Capítulos 3 (rutas de Edu,
+Tony y José) lo usan para cerrar la partida correctamente en lugar de saltar de
+vuelta a un capítulo numérico anterior.
+```json
+{
+  "title": "Capítulo 3: El Precio de la Lealtad",
+  "isFinal": true,
   "scenes": [...]
 }
 ```

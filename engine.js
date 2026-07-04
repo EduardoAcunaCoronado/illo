@@ -75,11 +75,31 @@ class VisualNovelEngine {
     }
 
     // Si la línea define una variante por consecuencia, devuelve una copia con
-    // el texto alternativo. Soporta:
+    // el texto alternativo. Soporta (en orden de prioridad):
+    // - byRescueCount: mapa "nº de rescatados" -> texto. Permite revelar la
+    //   historia por etapas según el ORDEN de rescate. Al entrar a un Capítulo 2
+    //   la acción "rescue" ya se ejecutó, así que rescued.length vale 1, 2 o 3
+    //   según si este amigo es el 1º, 2º o 3º/último rescate. Se elige la entrada
+    //   cuya clave sea el mayor umbral <= rescued.length (así "3" cubre el último
+    //   rescate aunque en el futuro hubiera más amigos).
     // - allRescuedText: se usa cuando ya se ha rescatado a todos (3).
     // - consequence.delayAtLeast: se usa según el retraso acumulado.
     // Si no aplica ninguna, devuelve la línea tal cual.
     resolveConsequenceLine(line) {
+        if (line.byRescueCount && typeof line.byRescueCount === 'object') {
+            const count = this.rescued.length;
+            let best = null;
+            for (const key of Object.keys(line.byRescueCount)) {
+                const threshold = parseInt(key, 10);
+                if (!isNaN(threshold) && threshold <= count &&
+                    (best === null || threshold > best)) {
+                    best = threshold;
+                }
+            }
+            if (best !== null) {
+                return Object.assign({}, line, { text: line.byRescueCount[String(best)] });
+            }
+        }
         if (line.allRescuedText && this.rescued.length >= 3) {
             return Object.assign({}, line, { text: line.allRescuedText });
         }
@@ -101,7 +121,9 @@ class VisualNovelEngine {
                 await this.showCharacter(action.character, action.position, action.pose);
                 break;
             case 'hideCharacter':
-                this.hideCharacter(action.character);
+            case 'removeCharacter':
+            case 'quitarPersonaje':
+                this.hideCharacter(action.character, action.position);
                 break;
             case 'setPose':
                 this.setPose(action.character, action.position, action.pose);
@@ -214,6 +236,9 @@ class VisualNovelEngine {
                 break;
             case 'paloma':
                 await this.playPalomaMinigame(action);
+                break;
+            case 'gatos':
+                await this.playGatosMinigame(action);
                 break;
             default:
                 console.warn(`Minijuego desconocido: ${action.game}`);
@@ -440,6 +465,334 @@ class VisualNovelEngine {
                 overlay.remove();
                 resolve(true);
             });
+        });
+    }
+
+    // Minijuego: la loca de los gatos (El Jamón). Estilo Pac-Man: Samu se mueve
+    // libremente por el campo y debe SOBREVIVIR huyendo de los gatos que le
+    // persiguen durante un tiempo (por defecto 60 s). Si un gato lo alcanza,
+    // pierde y puede reintentar.
+    async playGatosMinigame(options = {}) {
+        this.isWaitingForInput = false;
+
+        let won = false;
+        while (!won) {
+            won = await this.runGatosRound(options);
+            if (!won) {
+                await this.showMinigameRetry('¡Un gato te ha pillado! 🐱');
+            }
+        }
+        return won;
+    }
+
+    // Laberinto fijo de "calles de la ciudad" para el minijuego de gatos.
+    // '#' = manzana (pared), ' ' = calle transitable. Diseñado en cuadrícula
+    // urbana con avenidas horizontales/verticales, sin callejones sin salida
+    // y con múltiples rutas de escape. Samu empieza en el centro (S) y los
+    // gatos en las esquinas (C). El borde exterior es todo calle (ronda).
+    static get GATOS_MAZE() {
+        return [
+            '                     ',
+            ' ### ### ### ### ### ',
+            ' ### ### ### ### ### ',
+            '                     ',
+            ' ### ### ### ### ### ',
+            ' ### ### ### ### ### ',
+            '                     ',
+            ' ### ### ### ### ### ',
+            ' ### ### ### ### ### ',
+            '                     ',
+            ' ### ### ### ### ### ',
+            ' ### ### ### ### ### ',
+            '                     ',
+            ' ### ### ### ### ### ',
+            '                     '
+        ];
+    }
+
+    // Una ronda del minijuego de gatos, estilo Pac-Man por REJILLA. Samu y los
+    // gatos recorren las calles del laberinto (giran en las intersecciones).
+    // Los gatos persiguen a Samu con búsqueda de camino (BFS) por las calles.
+    // Resuelve con true (sobreviviste 'survive' s) o false (te pillaron).
+    runGatosRound(options = {}) {
+        const surviveMs = (options.survive || 60) * 1000; // tiempo a aguantar
+        const catCount = options.cats || 3;               // nº de gatos perseguidores
+        // Velocidades en CELDAS por segundo. Samu debe ir más rápido que los
+        // gatos para poder escapar por las calles.
+        const playerSpeed = options.playerSpeed || 5.0;
+        const catSpeed = options.catSpeed || 3.6;
+
+        // --- Construir el mapa del laberinto ---
+        const map = VisualNovelEngine.GATOS_MAZE;
+        const rows = map.length;
+        const cols = Math.max(...map.map(r => r.length));
+        const isWall = (c, r) => {
+            if (r < 0 || r >= rows || c < 0 || c >= cols) return true;
+            const row = map[r];
+            return c >= row.length ? true : row[c] === '#';
+        };
+        const isStreet = (c, r) => !isWall(c, r);
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay gatos-minigame';
+            overlay.innerHTML = `
+                <div class="minigame-hud">
+                    <span class="mg-timer">⏱️ ${Math.ceil(surviveMs / 1000)}s</span>
+                    <span class="mg-cats">🐱 ${catCount}</span>
+                </div>
+                <div class="minigame-field" id="mg-field-gatos">
+                    <div class="mg-maze" id="mg-maze"></div>
+                    <div class="mg-player" id="mg-player-gatos">🐺</div>
+                </div>
+                <div class="minigame-instructions">¡Recorre las calles con ← ↑ → ↓ (o WASD) y aguanta sin que te pillen los gatos!</div>
+            `;
+            document.getElementById('game-container').appendChild(overlay);
+
+            const field = overlay.querySelector('#mg-field-gatos');
+            const maze = overlay.querySelector('#mg-maze');
+            const player = overlay.querySelector('#mg-player-gatos');
+            const timerEl = overlay.querySelector('.mg-timer');
+
+            // Dibujar el laberinto como rejilla de celdas (las manzanas son
+            // bloques; las calles quedan en negro). Se escala vía CSS grid.
+            maze.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+            maze.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = isWall(c, r) ? 'mg-wall' : 'mg-street';
+                    maze.appendChild(cell);
+                }
+            }
+
+            // Posición en coordenadas de rejilla (celdas, con decimales). Colocar
+            // a Samu y a los gatos en calles conocidas.
+            const centerStreet = () => {
+                // buscar la calle transitable más cercana al centro
+                const cc = Math.floor(cols / 2), cr = Math.floor(rows / 2);
+                for (let rad = 0; rad < Math.max(rows, cols); rad++) {
+                    for (let dr = -rad; dr <= rad; dr++) {
+                        for (let dc = -rad; dc <= rad; dc++) {
+                            if (isStreet(cc + dc, cr + dr)) return { c: cc + dc, r: cr + dr };
+                        }
+                    }
+                }
+                return { c: 1, r: 1 };
+            };
+            const start = centerStreet();
+            let pcx = start.c + 0.5, pcy = start.r + 0.5; // centro de celda
+            let pdir = { x: 0, y: 0 };   // dirección actual
+            let wantDir = { x: 0, y: 0 }; // dirección deseada (se aplica al poder)
+
+            // Convertir celda (col,fila con decimales) a % dentro del campo
+            const toPct = (cx, cy) => ({ left: (cx / cols) * 100, top: (cy / rows) * 100 });
+
+            const placeEntity = (el, cx, cy) => {
+                const p = toPct(cx, cy);
+                el.style.left = `${p.left}%`;
+                el.style.top = `${p.top}%`;
+            };
+            player.style.bottom = 'auto';
+            placeEntity(player, pcx, pcy);
+
+            // Gatos en las esquinas (calles del borde), lo más lejos posible
+            const snapStreet = (c, r) => {
+                if (isStreet(c, r)) return { c, r };
+                const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+                for (const [dc, dr] of dirs) if (isStreet(c+dc, r+dr)) return { c: c+dc, r: r+dr };
+                return { c, r };
+            };
+            // Cada gato arranca en una esquina, que es también su "rincón" de
+            // dispersión (scatter). Las esquinas se reparten para rodear a Samu.
+            const catStarts = [
+                { c: 1, r: 1 }, { c: cols - 2, r: rows - 2 },
+                { c: cols - 2, r: 1 }, { c: 1, r: rows - 2 },
+                { c: Math.floor(cols / 2), r: 1 }, { c: Math.floor(cols / 2), r: rows - 2 }
+            ].map(p => snapStreet(p.c, p.r));
+            const cats = [];
+            for (let i = 0; i < catCount; i++) {
+                const s = catStarts[i % catStarts.length];
+                const el = document.createElement('div');
+                el.className = 'mg-cat';
+                el.textContent = '🐱';
+                placeEntity(el, s.c + 0.5, s.r + 0.5);
+                field.appendChild(el);
+                cats.push({ el, cx: s.c + 0.5, cy: s.r + 0.5, dir: { x: 0, y: 0 },
+                    wantDir: { x: 0, y: 0 }, lastCell: null, home: s, role: i });
+            }
+            const clampCell = (c, r) => snapStreet(
+                Math.max(0, Math.min(cols - 1, c)), Math.max(0, Math.min(rows - 1, r)));
+
+            // BFS por las calles: devuelve el primer paso (dirección) desde
+            // 'from' hacia 'to'. Si no hay camino, {x:0,y:0}.
+            const bfsStep = (from, to) => {
+                if (from.c === to.c && from.r === to.r) return { x: 0, y: 0 };
+                const key = (c, r) => `${c},${r}`;
+                const q = [[from.c, from.r]];
+                const prev = new Map();
+                prev.set(key(from.c, from.r), null);
+                const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+                let found = false;
+                while (q.length) {
+                    const [c, r] = q.shift();
+                    if (c === to.c && r === to.r) { found = true; break; }
+                    for (const [dc, dr] of dirs) {
+                        const nc = c + dc, nr = r + dr;
+                        if (isWall(nc, nr)) continue;
+                        const k = key(nc, nr);
+                        if (prev.has(k)) continue;
+                        prev.set(k, [c, r]);
+                        q.push([nc, nr]);
+                    }
+                }
+                if (!found) return { x: 0, y: 0 };
+                // reconstruir hasta el primer paso desde 'from'
+                let cur = [to.c, to.r];
+                let step = cur;
+                while (true) {
+                    const p = prev.get(key(cur[0], cur[1]));
+                    if (!p) break;
+                    if (p[0] === from.c && p[1] === from.r) { step = cur; break; }
+                    cur = p;
+                }
+                return { x: Math.sign(step[0] - from.c), y: Math.sign(step[1] - from.r) };
+            };
+
+            // --- Controles ---
+            const keyDown = (e) => {
+                if (e.key === 'ArrowUp' || e.key === 'w') wantDir = { x: 0, y: -1 };
+                else if (e.key === 'ArrowDown' || e.key === 's') wantDir = { x: 0, y: 1 };
+                else if (e.key === 'ArrowLeft' || e.key === 'a') wantDir = { x: -1, y: 0 };
+                else if (e.key === 'ArrowRight' || e.key === 'd') wantDir = { x: 1, y: 0 };
+                if (e.key.startsWith('Arrow')) e.preventDefault();
+            };
+            const swallowClick = (e) => e.stopPropagation();
+            document.addEventListener('keydown', keyDown);
+            overlay.addEventListener('click', swallowClick, true);
+
+            let running = true;
+            let lastTime = null;
+            const startTime = performance.now();
+
+            const cleanup = (won) => {
+                running = false;
+                document.removeEventListener('keydown', keyDown);
+                const result = document.createElement('div');
+                result.className = 'minigame-result';
+                result.textContent = won ? '¡Escapaste de la loca de los gatos! 🎉' : '¡Un gato te ha pillado! 🐱';
+                overlay.appendChild(result);
+                setTimeout(() => {
+                    overlay.removeEventListener('click', swallowClick, true);
+                    overlay.remove();
+                    resolve(won);
+                }, won ? 1500 : 800);
+            };
+
+            // ¿Está una entidad alineada al centro de su celda? (para poder girar)
+            const atCenter = (v) => Math.abs(v - (Math.floor(v) + 0.5)) < 0.08;
+            // ¿Se puede avanzar en 'dir' desde el centro de la celda (cc,cr)?
+            const canGo = (cc, cr, dir) => dir.x === 0 && dir.y === 0
+                ? false
+                : isStreet(Math.floor(cc) + dir.x, Math.floor(cr) + dir.y);
+
+            // Mover una entidad por la rejilla: solo gira cuando está centrada en
+            // una celda y la nueva dirección es calle. Devuelve nueva {cx,cy,dir}.
+            const moveGrid = (cx, cy, dir, want, speed, dt) => {
+                const cCol = Math.floor(cx), cRow = Math.floor(cy);
+                // Intentar aplicar la dirección deseada al estar centrado
+                if (want && (want.x !== dir.x || want.y !== dir.y)) {
+                    if (atCenter(cx) && atCenter(cy) && canGo(cx, cy, want)) {
+                        cx = cCol + 0.5; cy = cRow + 0.5;
+                        dir = { ...want };
+                    }
+                }
+                // Si delante hay pared y estamos centrados, parar
+                if (atCenter(cx) && atCenter(cy) && !canGo(cx, cy, dir)) {
+                    dir = { x: 0, y: 0 };
+                }
+                // Avanzar, sin sobrepasar el centro si la siguiente celda es pared
+                let step = speed * dt;
+                if (dir.x !== 0 || dir.y !== 0) {
+                    const nextIsWall = isWall(cCol + dir.x, cRow + dir.y);
+                    cx += dir.x * step;
+                    cy += dir.y * step;
+                    if (nextIsWall) {
+                        // no pasar del centro de la celda actual
+                        if (dir.x > 0) cx = Math.min(cx, cCol + 0.5);
+                        if (dir.x < 0) cx = Math.max(cx, cCol + 0.5);
+                        if (dir.y > 0) cy = Math.min(cy, cRow + 0.5);
+                        if (dir.y < 0) cy = Math.max(cy, cRow + 0.5);
+                    }
+                }
+                return { cx, cy, dir };
+            };
+
+            const loop = (time) => {
+                if (!running) return;
+                if (lastTime === null) lastTime = time;
+                const dt = Math.min((time - lastTime) / 1000, 0.05);
+                lastTime = time;
+
+                // --- Mover a Samu ---
+                const pr = moveGrid(pcx, pcy, pdir, wantDir, playerSpeed, dt);
+                pcx = pr.cx; pcy = pr.cy; pdir = pr.dir;
+                placeEntity(player, pcx, pcy);
+
+                // --- Mover los gatos (persecución BFS por calles) ---
+                // Como los fantasmas de Pac-Man, los gatos NO persiguen todos
+                // directo: alternan "scatter" (van a su rincón) y "chase" (cazan),
+                // y en chase cada uno tiene un objetivo distinto. Esto crea
+                // ventanas de escape; si todos apuntaran a Samu lo acorralarían
+                // siempre y el juego sería imposible.
+                const elapsed = time - startTime;
+                const scatter = (Math.floor(elapsed / 1000) % 8) < 3; // 3s scatter cada 8s
+                const playerCell = { c: Math.floor(pcx), r: Math.floor(pcy) };
+                for (const cat of cats) {
+                    // Recalcula su rumbo al llegar al centro de una celda nueva
+                    // (una intersección): así gira justo donde toca. El BFS sobre
+                    // ~180 celdas es barato a esta frecuencia.
+                    const cellC = Math.floor(cat.cx), cellR = Math.floor(cat.cy);
+                    const centered = atCenter(cat.cx) && atCenter(cat.cy);
+                    const newCell = !cat.lastCell || cellC !== cat.lastCell.c || cellR !== cat.lastCell.r;
+                    const stopped = cat.dir.x === 0 && cat.dir.y === 0;
+                    if (centered && (newCell || stopped)) {
+                        // Objetivo según modo y rol del gato
+                        let target;
+                        if (scatter) {
+                            target = cat.home;
+                        } else if (cat.role === 0) {
+                            target = playerCell;                                   // caza directa
+                        } else if (cat.role === 1) {
+                            // emboscar: apunta 4 celdas por delante de Samu
+                            target = clampCell(playerCell.c + pdir.x * 4, playerCell.r + pdir.y * 4);
+                        } else {
+                            // acosador tímido: solo caza si está lejos; si no, ronda su rincón
+                            const manhattan = Math.abs(cellC - playerCell.c) + Math.abs(cellR - playerCell.r);
+                            target = manhattan > 6 ? playerCell : cat.home;
+                        }
+                        cat.wantDir = bfsStep({ c: cellC, r: cellR }, target);
+                        cat.lastCell = { c: cellC, r: cellR };
+                    }
+                    const cr = moveGrid(cat.cx, cat.cy, cat.dir, cat.wantDir, catSpeed, dt);
+                    cat.cx = cr.cx; cat.cy = cr.cy; cat.dir = cr.dir;
+                    placeEntity(cat.el, cat.cx, cat.cy);
+
+                    // Colisión: misma celda / muy cerca
+                    if (Math.hypot(cat.cx - pcx, cat.cy - pcy) < 0.6) {
+                        return cleanup(false);
+                    }
+                }
+
+                // --- Cuenta atrás ---
+                const remaining = Math.max(0, surviveMs - elapsed);
+                timerEl.textContent = `⏱️ ${Math.ceil(remaining / 1000)}s`;
+                if (remaining <= 0) return cleanup(true);
+
+                requestAnimationFrame(loop);
+            };
+
+            requestAnimationFrame(loop);
         });
     }
 
@@ -754,19 +1107,38 @@ class VisualNovelEngine {
         }
     }
 
-    hideCharacter(characterName) {
-        const leftChar = document.getElementById('character-left');
-        const rightChar = document.getElementById('character-right');
-        const centerChar = document.getElementById('character-center');
+    // Quita a un personaje de la escena. Se puede indicar:
+    // - characterName: quita al personaje (usando la posición rastreada en la
+    //   que se mostró; si además se da position, solo quita si coincide).
+    // - position (sin characterName): vacía directamente ese hueco (left/right/center).
+    // Si no se indica ninguno, no hace nada.
+    hideCharacter(characterName, position) {
+        const clearSlot = (pos) => {
+            const el = document.getElementById(`character-${pos}`);
+            if (el) {
+                el.classList.remove('active', 'speaking');
+                el.style.backgroundImage = '';
+            }
+        };
 
-        if (leftChar && leftChar.style.backgroundImage.includes(this.characters[characterName]?.image)) {
-            leftChar.classList.remove('active');
-        }
-        if (rightChar && rightChar.style.backgroundImage.includes(this.characters[characterName]?.image)) {
-            rightChar.classList.remove('active');
-        }
-        if (centerChar && centerChar.style.backgroundImage.includes(this.characters[characterName]?.image)) {
-            centerChar.classList.remove('active');
+        if (characterName) {
+            const key = characterName.toLowerCase();
+            const tracked = this.characterPositions[key];
+            const target = position || tracked;
+            if (target) {
+                // Si se pasó position explícita y no coincide con la rastreada,
+                // respetamos la position pedida igualmente (limpia ese hueco).
+                clearSlot(target);
+                if (this.characterPositions[key] === target) {
+                    delete this.characterPositions[key];
+                }
+            }
+        } else if (position) {
+            clearSlot(position);
+            // Olvidar cualquier personaje que estuviera rastreado en esa posición
+            for (const k of Object.keys(this.characterPositions)) {
+                if (this.characterPositions[k] === position) delete this.characterPositions[k];
+            }
         }
     }
 
@@ -933,8 +1305,11 @@ class VisualNovelEngine {
         dialogText.textContent = '';
         dialogBox.classList.add('active');
 
-        // Encontrar y aplicar efecto al personaje que habla
-        const speakerName = line.character?.toLowerCase() || '';
+        // Encontrar y aplicar efecto al personaje que habla. Por defecto es el
+        // sprite cuyo nombre coincide con line.character, pero se puede forzar
+        // otro con "speakingAs" (p. ej. en las llamadas habla "Edu" pero el
+        // sprite en pantalla es el móvil "iphone5", que es el que debe resaltarse).
+        const speakerName = (line.speakingAs || line.character || '').toLowerCase();
 
         // Limpiar efectos de todos los personajes
         ['left', 'right'].forEach(pos => {

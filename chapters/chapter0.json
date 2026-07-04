@@ -47,6 +47,10 @@
               "character": "2b",
               "position": "left",
               "pose": "happy"
+            },
+            {
+              "type": "removeCharacter",
+              "character": "pod"
             }
           ],
           "character": "2B",
@@ -96,6 +100,10 @@
               "type": "stopSound",
               "id": "emil",
               "fadeOut": 1000
+            },
+            {
+              "type": "removeCharacter",
+              "character": "emil"
             },
             {
               "type": "playSound",

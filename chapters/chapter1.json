@@ -36,7 +36,6 @@
               "pose": "sad"
             }
           ]
-
         },
         {
           "character": "Samu",
@@ -82,7 +81,7 @@
           "character": "Samu",
           "text": "Mejor dicho. ¡Sí, joder! Soy un furro de verdad. Así que pelillos a la mar.",
           "actions": [
-             {
+            {
               "type": "setBackground",
               "value": "assets/backgrounds/pisito.png"
             },
@@ -144,7 +143,6 @@
             }
           ]
         }
-
       ]
     },
     {
@@ -190,7 +188,8 @@
               "position": "right",
               "pose": "worried"
             }
-          ]
+          ],
+          "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
@@ -206,7 +205,8 @@
         },
         {
           "character": "Edu",
-          "text": "No tengo tiempo para explicar. Necesitamos tu ayuda. Tienes que venir a Kingdom Ketchup lo antes posible. Es urgente."
+          "text": "No hay tiempo. Necesitamos tu ayuda. Tienes que venir a Kingdom Ketchup lo antes posible. Es urgente.",
+          "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
@@ -222,6 +222,12 @@
         },
         {
           "character": "2B",
+          "actions": [
+            {
+              "type": "removeCharacter",
+              "character": "iphone5"
+            }
+          ],
           "text": "La llamada se corta abruptamente. Samu reflexiona sobre lo que acaba de escuchar.",
           "choices": [
             {
@@ -284,7 +290,8 @@
               "position": "right",
               "pose": "shocked"
             }
-          ]
+          ],
+          "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
@@ -300,7 +307,8 @@
         },
         {
           "character": "Tony",
-          "text": "Mira, no puedo hablar mucho. Solo sé que necesitamos refuerzos. ¿Puedes venir lo antes posible?"
+          "text": "Mira, no puedo hablar mucho. Solo sé que necesitamos refuerzos. ¿Puedes venir lo antes posible?",
+          "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
@@ -316,6 +324,12 @@
         },
         {
           "character": "2B",
+          "actions": [
+            {
+              "type": "removeCharacter",
+              "character": "iphone5"
+            }
+          ],
           "text": "La llamada termina.",
           "choices": [
             {
@@ -372,7 +386,8 @@
               "position": "right",
               "pose": "alarmed"
             }
-          ]
+          ],
+          "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
@@ -388,7 +403,8 @@
         },
         {
           "character": "José",
-          "text": "No hay tiempo para explicaciones. Algo ha sucedido aquí y necesitamos tu ayuda urgentemente. Por favor, ven a Paloma City cuanto antes."
+          "text": "No hay tiempo para explicaciones. Algo ha sucedido aquí y necesitamos tu ayuda urgentemente. Por favor, ven a Paloma City cuanto antes.",
+          "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
@@ -404,6 +420,12 @@
         },
         {
           "character": "2B",
+          "actions": [
+            {
+              "type": "removeCharacter",
+              "character": "iphone5"
+            }
+          ],
           "text": "Samu cuelga el teléfono. Una gran responsabilidad cae sobre sus hombros.",
           "choices": [
             {

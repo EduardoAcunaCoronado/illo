@@ -137,7 +137,7 @@
         },
         {
           "character": "Samu",
-          "text": "Estoy contigo, Tony. Dime qué necesitas que haga.",
+          "text": "Estoy contigo, Tony. Dime qué necesitas que haga. ¿Sabes por qué está pasando todo esto?",
           "actions": [
             {
               "type": "showCharacter",
@@ -146,6 +146,32 @@
               "pose": "determined"
             }
           ]
+        },
+        {
+          "character": "Tony",
+          "text": "Ni idea, tío. Un día internet enloqueció: los memes se hicieron de carne y hueso y salieron a cazar furros. A los que teníamos avatar nos convirtieron en bichos peludos. Yo llevo horas escondido aquí.",
+          "byRescueCount": {
+            "1": "Ni idea, tío. Un día internet enloqueció: los memes se hicieron de carne y hueso y salieron a cazar furros. A los que teníamos avatar nos convirtieron en bichos peludos. Yo llevo horas escondido aquí.",
+            "2": "Lo he estado pensando y no es aleatorio: los que teníamos avatar en internet somos furros ahora, y los que no tenían son los memes de IA que nos atacan. Alguien programó esto a mala idea. Es un virus, Samu.",
+            "3": "Ya lo tengo claro: es una IA Biológica, y lleva la firma de Elon Musk por todas partes. Se le escapó del laboratorio, infectó la red y nos repartió en furros y memes según nuestro avatar. Todo esto es cosa suya."
+          }
+        },
+        {
+          "character": "Samu",
+          "text": "Es una locura sin sentido...",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "byRescueCount": {
+            "1": "Es una locura sin sentido... memes persiguiendo furros. Como si alguien quisiera enfrentarnos a todos.",
+            "2": "Entonces no es un accidente. Alguien soltó ese virus a propósito para convertirnos según nuestro avatar. Tenemos que averiguar quién.",
+            "3": "¿Elon Musk y una IA Biológica? Claro que sí... solo a él se le ocurre algo así. Ahora ya sabemos contra quién luchamos."
+          }
         },
         {
           "character": "Tony",

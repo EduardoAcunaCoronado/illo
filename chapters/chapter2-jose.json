@@ -48,6 +48,32 @@
         },
         {
           "character": "José",
+          "text": "Fue todo de golpe. Los memes de internet se volvieron reales y empezaron a perseguir a los furros por las calles. Y a los que teníamos avatar en la red... nos convirtieron en furros. Me refugié aquí entre las palomas.",
+          "byRescueCount": {
+            "1": "Fue todo de golpe. Los memes de internet se volvieron reales y empezaron a perseguir a los furros por las calles. Y a los que teníamos avatar en la red... nos convirtieron en furros. Me refugié aquí entre las palomas.",
+            "2": "He atado cabos, Samu. No es casualidad: los que teníamos avatar somos furros, y los que no lo tenían se han vuelto memes de IA que nos cazan. Alguien diseñó esto con precisión. Es un virus, y muy inteligente.",
+            "3": "Ya sé la verdad completa. Detrás de todo hay una IA Biológica creada por Elon Musk. Se le fue de control, se coló en la red y nos transformó a cada uno según nuestro avatar, memes contra furros. Él es el origen de todo."
+          }
+        },
+        {
+          "character": "Samu",
+          "text": "Cuesta creerlo...",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "byRescueCount": {
+            "1": "Cuesta creerlo... memes de carne y hueso persiguiendo furros. El mundo entero se ha vuelto del revés.",
+            "2": "Si nos transformó según nuestro avatar, esto no es un accidente. Alguien lanzó ese virus a propósito. Necesitamos saber quién.",
+            "3": "¿Una IA Biológica de Elon Musk? Todo cuadra ahora. Ese es nuestro enemigo... y vamos a detenerlo."
+          }
+        },
+        {
+          "character": "José",
           "text": "Es complicado... y peligroso. Pero juntos tenemos una oportunidad. Vamos."
         },
         {

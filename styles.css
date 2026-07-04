@@ -882,6 +882,65 @@ html, body {
     pointer-events: none;
 }
 
+/* ===== Minijuego estilo Pac-Man con laberinto de calles (El Jamón) ===== */
+.gatos-minigame .minigame-field {
+    cursor: none;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* El laberinto: rejilla que mantiene proporción cuadrada y se centra */
+.mg-maze {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    /* las columnas/filas se fijan por JS con gridTemplate* */
+}
+
+/* Manzana de la ciudad (pared) */
+.mg-wall {
+    background: linear-gradient(160deg, #1b2a4a, #0d1526);
+    border: 1px solid #24365c;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Calle transitable (asfalto) */
+.mg-street {
+    background: #05070d;
+}
+
+/* Samu y los gatos se posicionan por top/left dentro del campo (%) */
+.gatos-minigame .mg-player {
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    transition: none;
+    font-size: 34px;
+    filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.8));
+    z-index: 3;
+}
+
+.mg-cat {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    filter: drop-shadow(0 0 5px rgba(212, 0, 0, 0.8));
+    animation: mg-cat-bob 0.5s ease-in-out infinite alternate;
+    z-index: 3;
+}
+
+@keyframes mg-cat-bob {
+    from { transform: translate(-50%, -50%) scale(1); }
+    to { transform: translate(-50%, -55%) scale(1.06); }
+}
+
 .minigame-instructions {
     padding: 14px;
     color: #fff;

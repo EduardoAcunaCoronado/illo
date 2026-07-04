@@ -1,0 +1,13 @@
+{
+  "name": "Loca de los gatos",
+  "color": "#c94fd4",
+  "poses": {
+    "neutral": "assets/characters/loca.png",
+    "happy": "assets/characters/loca.png",
+    "sad": "assets/characters/loca.png",
+    "angry": "assets/characters/loca.png",
+    "surprised": "assets/characters/loca.png",
+    "crazy": "assets/characters/loca.png"
+  },
+  "defaultPose": "neutral"
+}

@@ -37,7 +37,7 @@ async function initGame() {
 }
 
 async function loadAllCharacters() {
-    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5'];
+    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5', 'loca'];
     for (const character of characters) {
         await engine.loadCharacter(character);
     }
@@ -114,8 +114,10 @@ async function endGame() {
     isGameRunning = false;
     engine.hideDialog();
 
-    // Capturar la ruta ramificada elegida (si la hay) antes de resetear
+    // Capturar la ruta ramificada elegida y si el capítulo es final (los
+    // capítulos 3 marcan "isFinal": true), antes de resetear el estado
     const branchChapter = engine.nextChapter;
+    const isFinalChapter = engine.currentChapter?.isFinal === true;
 
     // Mostrar pantalla de fin de capítulo
     const chapterTitle = engine.currentChapter?.title || 'Capítulo Sin Título';
@@ -123,6 +125,12 @@ async function endGame() {
 
     // Resetear el estado
     engine.reset();
+
+    // Si el capítulo es el final del juego, volver directamente al menú
+    if (isFinalChapter) {
+        mainMenu.classList.remove('hidden');
+        return;
+    }
 
     // Si una decisión definió un capítulo de ruta, usarlo; si no, seguir
     // la secuencia numérica habitual
