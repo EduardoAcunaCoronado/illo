@@ -274,19 +274,19 @@ class VisualNovelEngine {
             overlay.className = 'minigame-overlay';
             overlay.innerHTML = `
                 <div class="minigame-hud">
-                    <span class="mg-score">🍅 0 / ${goal}</span>
+                    <span class="mg-score"><img class="mg-hud-icon" src="assets/minigames/ketchup.png" alt="ketchup"><span class="mg-score-text">0 / ${goal}</span></span>
                     <span class="mg-lives">❤️ ${maxHits}</span>
                 </div>
                 <div class="minigame-field" id="mg-field">
                     <div class="mg-player" id="mg-player">🐺</div>
                 </div>
-                <div class="minigame-instructions">Mueve con ← → (o el ratón). ¡Come 🍅 y esquiva 🌶️!</div>
+                <div class="minigame-instructions">Mueve con ← → (o el ratón). ¡Come <img class="mg-inline-icon" src="assets/minigames/ketchup.png" alt="ketchup"> y esquiva <img class="mg-inline-icon" src="assets/minigames/chili.png" alt="guindilla">!</div>
             `;
             document.getElementById('game-container').appendChild(overlay);
 
             const field = overlay.querySelector('#mg-field');
             const player = overlay.querySelector('#mg-player');
-            const scoreEl = overlay.querySelector('.mg-score');
+            const scoreEl = overlay.querySelector('.mg-score-text');
             const livesEl = overlay.querySelector('.mg-lives');
 
             const fieldRect = () => field.getBoundingClientRect();
@@ -334,7 +334,11 @@ class VisualNovelEngine {
                 const isChili = Math.random() < 0.4; // 40% guindillas, 60% ketchup
                 const el = document.createElement('div');
                 el.className = 'mg-item';
-                el.textContent = isChili ? '🌶️' : '🍅';
+                const img = document.createElement('img');
+                img.src = isChili ? 'assets/minigames/chili.png' : 'assets/minigames/ketchup.png';
+                img.alt = isChili ? 'guindilla' : 'ketchup';
+                img.draggable = false;
+                el.appendChild(img);
                 const x = Math.random() * 0.9 + 0.02;
                 el.style.left = `${x * 100}%`;
                 el.style.top = '-10%';
@@ -357,7 +361,7 @@ class VisualNovelEngine {
                 // Mensaje final breve
                 const result = document.createElement('div');
                 result.className = 'minigame-result';
-                result.textContent = won ? '¡Banquete de ketchup! 🎉' : '¡Demasiado picante! 🥵';
+                result.textContent = won ? '¡Banquete de ketchup!' : '¡Demasiado picante!';
                 overlay.appendChild(result);
 
                 setTimeout(() => {
@@ -402,7 +406,7 @@ class VisualNovelEngine {
                     if (caught) {
                         if (it.type === 'ketchup') {
                             score++;
-                            scoreEl.textContent = `🍅 ${score} / ${goal}`;
+                            scoreEl.textContent = `${score} / ${goal}`;
                         } else {
                             lives--;
                             livesEl.textContent = `❤️ ${Math.max(0, lives)}`;
@@ -436,7 +440,7 @@ class VisualNovelEngine {
     }
 
     // Pantalla de derrota: ofrece reintentar el minijuego.
-    showMinigameRetry(message = '¡Demasiado picante! 🥵') {
+    showMinigameRetry(message = '¡Demasiado picante!') {
         return new Promise(resolve => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay minigame-retry';
@@ -479,7 +483,7 @@ class VisualNovelEngine {
         while (!won) {
             won = await this.runGatosRound(options);
             if (!won) {
-                await this.showMinigameRetry('¡Un gato te ha pillado! 🐱');
+                await this.showMinigameRetry('¡Un gato te ha pillado!');
             }
         }
         return won;
@@ -539,7 +543,7 @@ class VisualNovelEngine {
             overlay.innerHTML = `
                 <div class="minigame-hud">
                     <span class="mg-timer">⏱️ ${Math.ceil(surviveMs / 1000)}s</span>
-                    <span class="mg-cats">🐱 ${catCount}</span>
+                    <span class="mg-cats"><img class="mg-hud-icon" src="assets/minigames/gato.png" alt="gato"> ${catCount}</span>
                 </div>
                 <div class="minigame-field" id="mg-field-gatos">
                     <div class="mg-maze" id="mg-maze"></div>
@@ -615,7 +619,11 @@ class VisualNovelEngine {
                 const s = catStarts[i % catStarts.length];
                 const el = document.createElement('div');
                 el.className = 'mg-cat';
-                el.textContent = '🐱';
+                const catImg = document.createElement('img');
+                catImg.src = 'assets/minigames/gato.png';
+                catImg.alt = 'gato';
+                catImg.draggable = false;
+                el.appendChild(catImg);
                 placeEntity(el, s.c + 0.5, s.r + 0.5);
                 field.appendChild(el);
                 cats.push({ el, cx: s.c + 0.5, cy: s.r + 0.5, dir: { x: 0, y: 0 },
@@ -680,7 +688,7 @@ class VisualNovelEngine {
                 document.removeEventListener('keydown', keyDown);
                 const result = document.createElement('div');
                 result.className = 'minigame-result';
-                result.textContent = won ? '¡Escapaste de la loca de los gatos! 🎉' : '¡Un gato te ha pillado! 🐱';
+                result.textContent = won ? '¡Escapaste de la loca de los gatos!' : '¡Un gato te ha pillado!';
                 overlay.appendChild(result);
                 setTimeout(() => {
                     overlay.removeEventListener('click', swallowClick, true);

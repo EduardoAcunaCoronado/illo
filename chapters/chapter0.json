@@ -19,7 +19,7 @@
             {
               "type": "playSound",
               "path": "assets/sounds/music/devolapopola.mp3",
-              "volume": 0.1,
+              "volume": 1,
               "loop": true,
               "id": "bg_music",
               "fadeIn": 1000
@@ -77,6 +77,10 @@
               "pose": "neutral"
             },
             {
+              "type": "pauseSound",
+              "id": "bg_music"
+            },
+            {
               "type": "playSound",
               "path": "assets/sounds/music/emil.mp3",
               "volume": 1.0,
@@ -100,6 +104,10 @@
               "type": "stopSound",
               "id": "emil",
               "fadeOut": 1000
+            },
+            {
+              "type": "resumeSound",
+              "id": "bg_music"
             },
             {
               "type": "removeCharacter",

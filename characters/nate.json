@@ -1,0 +1,12 @@
+{
+  "name": "Nate",
+  "color": "#2ecc71",
+  "poses": {
+    "neutral": "assets/characters/nate.png",
+    "happy": "assets/characters/nate.png",
+    "sad": "assets/characters/nate.png",
+    "angry": "assets/characters/nate.png",
+    "surprised": "assets/characters/nate.png"
+  },
+  "defaultPose": "neutral"
+}

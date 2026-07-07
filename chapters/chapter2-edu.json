@@ -13,7 +13,16 @@
             {
               "type": "rescue",
               "character": "edu"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/huelva.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 1000
             }
+            
           ],
           "character": "2B",
           "text": "Samu recorre las calles con paso apurado. Algo no va bien en esta ciudad."
@@ -184,12 +193,38 @@
         {
           "actions": [
             {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/gatos.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
+            },
+            {
               "type": "minigame",
               "game": "gatos",
               "survive": 60,
               "cats": 3,
               "playerSpeed": 5.0,
               "catSpeed": 3.0
+            },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/huelva.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
             }
           ]
         },
@@ -343,6 +378,19 @@
             {
               "type": "setBackground",
               "value": "assets/backgrounds/kingdom_ketchup_pasillos.png"
+            },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 1000
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 1000
             }
           ],
           "character": "2B",
@@ -460,6 +508,12 @@
             {
               "type": "setBackground",
               "value": "assets/backgrounds/kingdom_ketchup_estanterias.png"
+            },
+            {
+              "type": "showCharacter",
+              "character": "nate",
+              "position": "right",
+              "pose": "neutral"
             }
           ],
           "character": "2B",
@@ -467,7 +521,7 @@
         },
         {
           "character": "Nate",
-          "text": "Mmm... esta lata de tomate tiene una relación calidad-precio brutal. Yo me lo compraría."
+          "text": "Mmm... esta lata de tomate tiene una relación calidad-precio brutal. Yo me la compraría."
         },
         {
           "character": "Nate",
@@ -475,7 +529,7 @@
         },
         {
           "character": "Nate",
-          "text": "¿Guindillas en oferta? Para el picante que dan, es una locura no llevárselas. Yo me lo compraría."
+          "text": "¿Guindillas en oferta? Para el picante que dan, es una locura no llevárselas. Yo me las compraría."
         },
         {
           "character": "Samu",
@@ -506,7 +560,7 @@
           ],
           "choices": [
             {
-              "text": "Ignorarlo y seguir",
+              "text": "Ignorarle y seguir",
               "nextScene": "Escena 9: El reencuentro con Edu"
             },
             {
@@ -596,6 +650,10 @@
             {
               "type": "setBackground",
               "value": "assets/backgrounds/kingdom_ketchup_trono.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "nate"
             }
           ],
           "character": "2B",
@@ -603,7 +661,7 @@
         },
         {
           "character": "Samu",
-          "text": "Vale, Edu... estoy aquí. ¿Dónde te has metido?",
+          "text": "Vale... se supone que Edu estaba aquí. Pero solo veo a un dragón lleno de escamas que no conozco de nada. ¿Dónde se ha metido?",
           "actions": [
             {
               "type": "showCharacter",
@@ -615,32 +673,48 @@
         },
         {
           "character": "Edu",
-          "text": "¡Samu! ¡Por aquí! Menos mal que has venido. Esto está peor de lo que pensaba.",
+          "text": "¡Eh, tú! ¡Por aquí! Menos mal que ha venido alguien. Esto está peor de lo que pensaba.",
           "consequence": {
             "delayAtLeast": 2,
-            "text": "¡Samu! ¡Por fin! ¿Sabes cuánto llevo aguantando aquí? Pensé que no llegarías nunca... esto está mil veces peor que cuando te llamé."
+            "text": "¡Eh, tú! ¡Por fin viene alguien! ¿Sabes cuánto llevo aguantando aquí? Pensé que no llegaría nadie... esto está mil veces peor que antes."
           }
         },
         {
           "character": "Samu",
-          "text": "Cuéntame qué está pasando. Desde la llamada no he dejado de preocuparme.",
+          "text": "¿Eh? Perdona... no nos conocemos, ¿verdad? Estoy buscando a un amigo. ¿Sabes tú qué está pasando aquí?",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "determined"
+              "pose": "surprised"
             }
           ]
         },
         {
           "character": "Edu",
-          "text": "No lo sé del todo. Un momento estaba tan tranquilo y, al siguiente, los memes de internet cobraron vida y empezaron a perseguir a todo el que tuviera pinta de furro. A mí me pillaron aquí encerrado.",
+          "text": "Uf, no sé. Un momento estaba tan tranquilo y, al siguiente, los memes de internet cobraron vida y empezaron a perseguir a todo el que tuviera pinta de furro. A mí me pillaron aquí encerrado.",
           "byRescueCount": {
-            "1": "No lo sé del todo. Un momento estaba tan tranquilo y, al siguiente, los memes de internet cobraron vida y empezaron a perseguir a todo el que tuviera pinta de furro. A mí me pillaron aquí encerrado.",
-            "2": "Ya me temía que no era casualidad. Fíjate: los que teníamos avatar en internet nos hemos convertido en furros, y los que no tenían avatar... son ahora los memes de IA que nos atacan. Alguien lo ha diseñado así. Esto es un virus.",
-            "3": "Ya sé quién está detrás de todo. Es una IA Biológica... el juguete nuevo de Elon Musk. Se le fue de las manos: infectó la red, nos transformó a todos según nuestro avatar y soltó a los memes contra nosotros. Él empezó esto."
+            "1": "Uf, no sé. Un momento estaba tan tranquilo y, al siguiente, los memes de internet cobraron vida y empezaron a perseguir a todo el que tuviera pinta de furro. A mí me pillaron aquí encerrado.",
+            "2": "Uf, no sé... bueno, algo me temía. Fíjate: los que teníamos avatar en internet nos hemos convertido en furros, y los que no tenían avatar... son ahora los memes de IA que nos atacan. Alguien lo ha diseñado así. Esto es un virus.",
+            "3": "Uf, no sé... o mejor dicho, ya sé demasiado. Es una IA Biológica... el juguete nuevo de Elon Musk. Se le fue de las manos: infectó la red, nos transformó a todos según nuestro avatar y soltó a los memes contra nosotros. Él empezó esto."
           }
+        },
+        {
+          "character": "Samu",
+          "text": "Espera... esa manera de hablar, ese \"uf, no sé\"... ¡Edu! ¡Eres tú! No te había reconocido con... con todas esas escamas. ¡Soy yo, Samu!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "¿Samu? ¿En serio eres tú? ¡Madre mía, ni te había reconocido! Con tanto pelo y esos colmillos pareces otro. Menudos dos, aquí sin conocernos ni el uno al otro."
         },
         {
           "character": "Samu",
@@ -661,15 +735,19 @@
         },
         {
           "character": "Edu",
-          "text": "No tenemos tiempo para pensarlo. Tenemos que movernos ya.",
+          "text": "No hay tiempo para pensarlo. Tenemos que movernos ya.",
           "consequence": {
             "delayAtLeast": 2,
-            "text": "Ya no hay tiempo de explicaciones. Mientras tú te perdías por ahí, esto se ha llenado de guindillas. ¡Va a ser mucho más difícil por tu culpa!"
+            "text": "No hay tiempo de explicaciones. Mientras tú te perdías por ahí, esto se ha llenado de guindillas. ¡Va a ser mucho más difícil por tu culpa!"
           }
         },
         {
           "character": "Edu",
-          "text": "¡Cuidado! El cielo de Kingdom Ketchup llueve ketchup... pero también guindillas. ¡Come todo el ketchup que puedas y esquiva el picante!"
+          "text": "Y hay algo más que deberías saber. Kingdom Ketchup siempre fue un sitio seguro: aquí solo llovía ketchup. Pero los memes de IA han soltado guindillas entre la lluvia... a propósito, para confundirme y que no distinga lo que puedo comer de lo que me quema."
+        },
+        {
+          "character": "Edu",
+          "text": "¡Por eso ten cuidado! Ahora el cielo llueve ketchup mezclado con guindillas del picante. ¡Come todo el ketchup que puedas y esquiva las guindillas que han metido esos malditos memes!"
         },
         {
           "character": "Samu",
@@ -690,6 +768,19 @@
         {
           "actions": [
             {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/ketchup.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
+            },
+            {
               "type": "minigame",
               "game": "ketchup",
               "goal": 10,
@@ -699,6 +790,19 @@
                 "1": 2,
                 "2": 1
               }
+            },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
             }
           ]
         },

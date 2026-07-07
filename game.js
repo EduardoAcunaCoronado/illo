@@ -37,7 +37,7 @@ async function initGame() {
 }
 
 async function loadAllCharacters() {
-    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5', 'loca'];
+    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5', 'loca', 'nate'];
     for (const character of characters) {
         await engine.loadCharacter(character);
     }

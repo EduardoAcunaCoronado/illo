@@ -9,6 +9,14 @@
             {
               "type": "setBackground",
               "value": "assets/backgrounds/pisito.png"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/casasamu.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 1000
             }
           ],
           "character": "2B",
