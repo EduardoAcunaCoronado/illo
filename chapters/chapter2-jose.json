@@ -13,6 +13,14 @@
             {
               "type": "rescue",
               "character": "jose"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/ciudad-paloma-1.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 1000
             }
           ],
           "character": "2B",
@@ -26,13 +34,21 @@
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "worried"
+              "pose": "determined"
             }
           ]
         },
         {
           "character": "José",
-          "text": "¡Samu! No sabes el alivio que siento. Pensé que no llegarías a tiempo."
+          "text": "¡Samu! No sabes el alivio que siento. Pensé que no llegarías a tiempo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "happy"
+            }
+          ]
         },
         {
           "character": "Samu",
@@ -42,7 +58,7 @@
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "determined"
+              "pose": "happy"
             }
           ]
         },
@@ -53,7 +69,15 @@
             "1": "Fue todo de golpe. Los memes de internet se volvieron reales y empezaron a perseguir a los furros por las calles. Y a los que teníamos avatar en la red... nos convirtieron en furros. Me refugié aquí entre las palomas.",
             "2": "He atado cabos, Samu. No es casualidad: los que teníamos avatar somos furros, y los que no lo tenían se han vuelto memes de IA que nos cazan. Alguien diseñó esto con precisión. Es un virus, y muy inteligente.",
             "3": "Ya sé la verdad completa. Detrás de todo hay una IA Biológica creada por Elon Musk. Se le fue de control, se coló en la red y nos transformó a cada uno según nuestro avatar, memes contra furros. Él es el origen de todo."
-          }
+          },
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
         },
         {
           "character": "Samu",
@@ -74,11 +98,27 @@
         },
         {
           "character": "José",
-          "text": "Es complicado... y peligroso. Pero juntos tenemos una oportunidad. Vamos."
+          "text": "Es complicado... y peligroso. Pero juntos tenemos una oportunidad. Vamos.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "determined"
+            }
+          ]
         },
         {
           "character": "José",
-          "text": "Las palomas de esta ciudad son especiales: se comunican con secuencias. Si quieres pasar, tendrás que memorizar su patrón y repetirlo. ¡Concéntrate!"
+          "text": "Las palomas de esta ciudad son especiales: se comunican con secuencias. Si quieres pasar, tendrás que memorizar su patrón y repetirlo. ¡Concéntrate!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "thinking"
+            }
+          ]
         },
         {
           "character": "Samu",
@@ -88,7 +128,7 @@
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "determined"
+              "pose": "thinking"
             }
           ]
         },
@@ -99,11 +139,37 @@
         {
           "actions": [
             {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/simon-dice.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
+            },
+            {
               "type": "minigame",
               "game": "paloma",
               "rounds": 5,
               "flashMs": 600,
               "gapMs": 250
+            },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/ciudad-paloma-2.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
             }
           ]
         },
@@ -122,7 +188,15 @@
         {
           "character": "José",
           "text": "¡Eres increíble, Samu! Estoy a salvo. Pero no todos han tenido tu suerte todavía.",
-          "allRescuedText": "¡Eres increíble, Samu! Estoy a salvo. Y esta vez ya no queda nadie esperando ayuda."
+          "allRescuedText": "¡Eres increíble, Samu! Estoy a salvo. Y esta vez ya no queda nadie esperando ayuda.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "happy"
+            }
+          ]
         },
         {
           "character": "Samu",
@@ -158,18 +232,21 @@
       "title": "Escena: Llamada a Edu",
       "lines": [
         {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
-            }
-          ],
           "character": "2B",
           "text": "Samu marca el número de Edu y, para su alivio, la línea da tono."
         },
         {
           "character": "Edu",
-          "text": "¿Samu? Aquí en Kingdom Ketchup seguimos aguantando, pero no sé cuánto más. ¿Vienes?"
+          "text": "¿Samu? Aquí en Kingdom Ketchup seguimos aguantando, pero no sé cuánto más. ¿Vienes?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "iphone5",
+              "position": "right",
+              "pose": "alarmed"
+            }
+          ],
+          "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
@@ -200,18 +277,21 @@
       "title": "Escena: Llamada a Tony",
       "lines": [
         {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
-            }
-          ],
           "character": "2B",
           "text": "Samu marca el número de Tony y, para su alivio, la línea da tono."
         },
         {
           "character": "Tony",
-          "text": "¿Samu? ¡Menos mal! Aquí en Ecchi Land la cosa está muy fea. ¿Vienes ya?"
+          "text": "¿Samu? ¡Menos mal! Aquí en Ecchi Land la cosa está muy fea. ¿Vienes ya?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "iphone5",
+              "position": "right",
+              "pose": "alarmed"
+            }
+          ],
+          "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
@@ -243,10 +323,6 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
-            },
             {
               "type": "showCharacter",
               "character": "samu",

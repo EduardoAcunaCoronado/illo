@@ -37,7 +37,7 @@ async function initGame() {
 }
 
 async function loadAllCharacters() {
-    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5', 'loca', 'nate'];
+    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5', 'loca', 'nate', 'jose'];
     for (const character of characters) {
         await engine.loadCharacter(character);
     }
@@ -148,7 +148,9 @@ async function endGame() {
 
 async function checkChapterExists(chapterName) {
     try {
-        const response = await fetch(`chapters/${chapterName}.json`);
+        const response = await fetch(`chapters/${chapterName}.json?v=${Date.now()}`, {
+            cache: 'no-store'
+        });
         return response.ok;
     } catch (error) {
         return false;
