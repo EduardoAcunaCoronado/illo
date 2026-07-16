@@ -24,7 +24,9 @@ class VisualNovelEngine {
 
     async loadChapter(chapterName) {
         try {
-            const response = await fetch(`chapters/${chapterName}.json`);
+            const response = await fetch(`chapters/${chapterName}.json?v=${Date.now()}`, {
+                cache: 'no-store'
+            });
             const chapter = await response.json();
 
             const isNewChapter = this.lastChapterName !== chapterName;
@@ -49,9 +51,12 @@ class VisualNovelEngine {
 
     async loadCharacter(characterName) {
         try {
-            const response = await fetch(`characters/${characterName}.json`);
+            const characterKey = this.getCharacterKey(characterName);
+            const response = await fetch(`characters/${characterKey}.json?v=${Date.now()}`, {
+                cache: 'no-store'
+            });
             const character = await response.json();
-            this.characters[characterName] = character;
+            this.characters[characterKey] = character;
             return character;
         } catch (error) {
             console.error(`Error cargando personaje ${characterName}:`, error);
@@ -267,6 +272,8 @@ class VisualNovelEngine {
         const goal = options.goal || 10;          // ketchups necesarios para ganar
         const maxHits = options.maxHits || 3;     // golpes de guindilla permitidos
         const duration = options.duration || 0;   // 0 = sin límite de tiempo
+        const ketchupIcon = this.cacheBustAsset('assets/minigames/ketchup.png');
+        const chiliIcon = this.cacheBustAsset('assets/minigames/chili.png');
 
         return new Promise(resolve => {
             // --- Crear overlay del minijuego ---
@@ -274,13 +281,13 @@ class VisualNovelEngine {
             overlay.className = 'minigame-overlay';
             overlay.innerHTML = `
                 <div class="minigame-hud">
-                    <span class="mg-score"><img class="mg-hud-icon" src="assets/minigames/ketchup.png" alt="ketchup"><span class="mg-score-text">0 / ${goal}</span></span>
+                    <span class="mg-score"><img class="mg-hud-icon" src="${ketchupIcon}" alt="ketchup"><span class="mg-score-text">0 / ${goal}</span></span>
                     <span class="mg-lives">❤️ ${maxHits}</span>
                 </div>
                 <div class="minigame-field" id="mg-field">
                     <div class="mg-player" id="mg-player">🐺</div>
                 </div>
-                <div class="minigame-instructions">Mueve con ← → (o el ratón). ¡Come <img class="mg-inline-icon" src="assets/minigames/ketchup.png" alt="ketchup"> y esquiva <img class="mg-inline-icon" src="assets/minigames/chili.png" alt="guindilla">!</div>
+                <div class="minigame-instructions">Mueve con ← → (o el ratón). ¡Come <img class="mg-inline-icon" src="${ketchupIcon}" alt="ketchup"> y esquiva <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla">!</div>
             `;
             document.getElementById('game-container').appendChild(overlay);
 
@@ -335,7 +342,7 @@ class VisualNovelEngine {
                 const el = document.createElement('div');
                 el.className = 'mg-item';
                 const img = document.createElement('img');
-                img.src = isChili ? 'assets/minigames/chili.png' : 'assets/minigames/ketchup.png';
+                img.src = isChili ? chiliIcon : ketchupIcon;
                 img.alt = isChili ? 'guindilla' : 'ketchup';
                 img.draggable = false;
                 el.appendChild(img);
@@ -521,6 +528,7 @@ class VisualNovelEngine {
     runGatosRound(options = {}) {
         const surviveMs = (options.survive || 60) * 1000; // tiempo a aguantar
         const catCount = options.cats || 3;               // nº de gatos perseguidores
+        const catIcon = this.cacheBustAsset('assets/minigames/gato.png');
         // Velocidades en CELDAS por segundo. Samu debe ir más rápido que los
         // gatos para poder escapar por las calles.
         const playerSpeed = options.playerSpeed || 5.0;
@@ -543,7 +551,7 @@ class VisualNovelEngine {
             overlay.innerHTML = `
                 <div class="minigame-hud">
                     <span class="mg-timer">⏱️ ${Math.ceil(surviveMs / 1000)}s</span>
-                    <span class="mg-cats"><img class="mg-hud-icon" src="assets/minigames/gato.png" alt="gato"> ${catCount}</span>
+                    <span class="mg-cats"><img class="mg-hud-icon" src="${catIcon}" alt="gato"> ${catCount}</span>
                 </div>
                 <div class="minigame-field" id="mg-field-gatos">
                     <div class="mg-maze" id="mg-maze"></div>
@@ -620,7 +628,7 @@ class VisualNovelEngine {
                 const el = document.createElement('div');
                 el.className = 'mg-cat';
                 const catImg = document.createElement('img');
-                catImg.src = 'assets/minigames/gato.png';
+                catImg.src = catIcon;
                 catImg.alt = 'gato';
                 catImg.draggable = false;
                 el.appendChild(catImg);
@@ -1076,11 +1084,30 @@ class VisualNovelEngine {
 
     setBackground(imagePath) {
         const bg = document.getElementById('background');
-        bg.style.backgroundImage = `url('${imagePath}')`;
+        bg.style.backgroundImage = `url('${this.cacheBustAsset(imagePath)}')`;
+    }
+
+    cacheBustAsset(path) {
+        if (!path || path.startsWith('data:') || /^https?:\/\//.test(path)) {
+            return path;
+        }
+        const separator = path.includes('?') ? '&' : '?';
+        return `${path}${separator}v=${Date.now()}`;
+    }
+
+    getCharacterKey(characterName) {
+        return String(characterName || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
     }
 
     async showCharacter(characterName, position = 'left', pose = 'neutral') {
-        const character = this.characters[characterName];
+        const characterKey = this.getCharacterKey(characterName);
+        let character = this.characters[characterKey];
+        if (!character) {
+            character = await this.loadCharacter(characterKey);
+        }
         if (!character) return;
 
         const charElement = document.getElementById(`character-${position}`);
@@ -1091,16 +1118,17 @@ class VisualNovelEngine {
                 ? character.poses[character.defaultPose]
                 : character.image || character.poses?.neutral;
 
-            charElement.style.backgroundImage = `url('${poseImage}')`;
+            charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
             charElement.classList.add('active');
 
             // Rastrear posición del personaje
-            this.characterPositions[characterName.toLowerCase()] = position;
+            this.characterPositions[characterKey] = position;
         }
     }
 
     setPose(characterName, position, pose = 'neutral') {
-        const character = this.characters[characterName];
+        const characterKey = this.getCharacterKey(characterName);
+        const character = this.characters[characterKey];
         if (!character) return;
 
         const charElement = document.getElementById(`character-${position}`);
@@ -1111,7 +1139,7 @@ class VisualNovelEngine {
                 ? character.poses[character.defaultPose]
                 : character.image || character.poses?.neutral;
 
-            charElement.style.backgroundImage = `url('${poseImage}')`;
+            charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
         }
     }
 
@@ -1130,7 +1158,7 @@ class VisualNovelEngine {
         };
 
         if (characterName) {
-            const key = characterName.toLowerCase();
+            const key = this.getCharacterKey(characterName);
             const tracked = this.characterPositions[key];
             const target = position || tracked;
             if (target) {
@@ -1317,7 +1345,7 @@ class VisualNovelEngine {
         // sprite cuyo nombre coincide con line.character, pero se puede forzar
         // otro con "speakingAs" (p. ej. en las llamadas habla "Edu" pero el
         // sprite en pantalla es el móvil "iphone5", que es el que debe resaltarse).
-        const speakerName = (line.speakingAs || line.character || '').toLowerCase();
+        const speakerName = this.getCharacterKey(line.speakingAs || line.character);
 
         // Limpiar efectos de todos los personajes
         ['left', 'right'].forEach(pos => {
