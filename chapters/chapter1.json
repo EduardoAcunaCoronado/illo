@@ -272,7 +272,7 @@
         },
         {
           "character": "Samu",
-          "text": "¡Tony! Oye, que llego tarde al cumple. No pude evitarlo.",
+          "text": "¡Tony! Oye, que llego tarde al cumple. No pude evita—",
           "actions": [
             {
               "type": "showCharacter",
@@ -283,14 +283,14 @@
           ]
         },
         {
-          "character": "Tony",
-          "text": "Espera, antes que nada... Necesito contarte algo. Estoy en Ecchi Land y... las cosas se han salido de control. Estamos todos en peligro aquí.",
+          "character": "¿Tony?",
+          "text": "(una voz aguda, suave, casi femenina, entrecortada por la interferencia) ...¿Samu? Ay, gracias a Dios que llamas, miarma...",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "shocked"
+              "pose": "surprised"
             },
             {
               "type": "showCharacter",
@@ -303,7 +303,32 @@
         },
         {
           "character": "Samu",
-          "text": "¿Peligro? ¿En Ecchi Land? ¿Qué está sucediendo, Tony?",
+          "text": "¿...Tony? ¿Eres tú? Qué voz más rara tienes, tío. ¿Estás malo? ¿Te ha cambiado el número?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "¿Tony?",
+          "text": "No preguntes por la voz, no hay tiempo. Estoy en Ecchi Land y esto es un caos, estamos todos en peligro. Ven, por favor... pero prométeme una cosa: no te asustes cuando me veas.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "speakingAs": "iphone5"
+        },
+        {
+          "character": "Samu",
+          "text": "¿Que no me asuste? ¿Peligro en Ecchi Land y ahora hablas como... Tony, me estás rayando muchísimo. ¿QUÉ te ha pasado?",
           "actions": [
             {
               "type": "showCharacter",
@@ -314,13 +339,13 @@
           ]
         },
         {
-          "character": "Tony",
-          "text": "Mira, no puedo hablar mucho. Solo sé que necesitamos refuerzos. ¿Puedes venir lo antes posible?",
+          "character": "¿Tony?",
+          "text": "Tú ven. Ya... ya lo verás con tus propios ojos. Corre, anda. (cuelga)",
           "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
-          "text": "Voy para allá. Mantente seguro.",
+          "text": "...Voy para allá. Aguanta, Tony. Seas quien seas ahora.",
           "actions": [
             {
               "type": "showCharacter",
