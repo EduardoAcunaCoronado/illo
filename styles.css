@@ -104,12 +104,16 @@ html, body {
     color: #fff;
     font-size: 18px;
     line-height: 1.6;
-    transform: translateY(100%);
-    transition: transform 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(calc(100% + 40px));
+    transition: transform 0.3s ease, opacity 0.2s ease;
     z-index: 100;
 }
 
 .dialog-box.active {
+    opacity: 1;
+    pointer-events: auto;
     transform: translateY(0);
 }
 
@@ -929,14 +933,14 @@ html, body {
     cursor: crosshair;
 }
 
-/* ===== Minijuego de memoria: palomas (Paloma City) ===== */
-.paloma-minigame .mg-status {
+/* ===== Minijuego de memoria: runas ===== */
+.runa-minigame .mg-status {
     color: #fff;
     text-shadow: none;
     font-size: 22px;
 }
 
-.paloma-grid {
+.runa-grid {
     flex: 1;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -949,7 +953,7 @@ html, body {
     align-content: center;
 }
 
-.paloma-pad {
+.runa-pad {
     background: #111;
     border: 4px solid #ffcc00;
     color: #ffcc00;
@@ -959,25 +963,50 @@ html, body {
     border-radius: 14px;
     transition: all 0.12s ease;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 12px;
     opacity: 0.55;
     user-select: none;
+    min-width: 0;
+    min-height: 0;
+    padding: 18px;
 }
 
-.paloma-pad:hover {
+.runa-icon {
+    display: block;
+    width: min(52%, 112px);
+    aspect-ratio: 1;
+    object-fit: contain;
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.35));
+}
+
+.runa-label {
+    display: block;
+    max-width: 100%;
+    font-size: clamp(13px, 1.5vw, 18px);
+    line-height: 1.2;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    pointer-events: none;
+}
+
+.runa-pad:hover {
     opacity: 0.8;
     transform: scale(1.03);
 }
 
-.paloma-pad.paloma-active {
+.runa-pad.runa-active {
     opacity: 1;
     background: #ffcc00;
     box-shadow: 0 0 30px #ffcc00;
     transform: scale(1.08);
 }
 
-.paloma-grid.paloma-locked .paloma-pad {
+.runa-grid.runa-locked .runa-pad {
     cursor: default;
     pointer-events: none;
 }

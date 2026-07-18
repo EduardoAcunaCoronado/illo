@@ -1,0 +1,8 @@
+{
+  "name": "Tung Tung Tung Sahur",
+  "color": "#d28a24",
+  "poses": {
+    "neutral": "assets/characters/tung_tung_tung_sahur.png"
+  },
+  "defaultPose": "neutral"
+}
