@@ -20,6 +20,7 @@ class VisualNovelEngine {
         this.nextChapter = null; // Capítulo a cargar (ruta ramificada elegida)
         this.rescued = []; // Personajes rescatados, en orden (persiste entre capítulos)
         this.storyDelay = 0; // Retraso acumulado por las decisiones de ruta dentro de un capítulo
+        this.debugMode = false; // Modo debug para testing
     }
 
     async loadChapter(chapterName) {
@@ -123,7 +124,7 @@ class VisualNovelEngine {
                 this.setBackground(action.value);
                 break;
             case 'showCharacter':
-                await this.showCharacter(action.character, action.position, action.pose);
+                await this.showCharacter(action.character, action.position, action.pose, action.flipped);
                 break;
             case 'hideCharacter':
             case 'removeCharacter':
@@ -180,6 +181,9 @@ class VisualNovelEngine {
                 break;
             case 'goToScene':
                 this.jumpToScene(action.value);
+                break;
+            case 'setNextChapter':
+                this.nextChapter = action.value;
                 break;
         }
     }
@@ -1102,7 +1106,7 @@ class VisualNovelEngine {
             .toLowerCase();
     }
 
-    async showCharacter(characterName, position = 'left', pose = 'neutral') {
+    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false) {
         const characterKey = this.getCharacterKey(characterName);
         let character = this.characters[characterKey];
         if (!character) {
@@ -1120,6 +1124,13 @@ class VisualNovelEngine {
 
             charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
             charElement.classList.add('active');
+
+            // Aplicar flip horizontal si está especificado
+            if (flipped) {
+                charElement.style.transform = 'scaleX(-1)';
+            } else {
+                charElement.style.transform = 'scaleX(1)';
+            }
 
             // Rastrear posición del personaje
             this.characterPositions[characterKey] = position;
@@ -1333,6 +1344,11 @@ class VisualNovelEngine {
     }
 
     async displayDialog(line) {
+        // Actualizar debug panel si está activo
+        if (this.debugMode) {
+            this.updateDebugPanel();
+        }
+
         const characterName = document.getElementById('character-name');
         const dialogText = document.getElementById('dialog-text');
         const dialogBox = document.getElementById('dialog-box');
@@ -1484,6 +1500,9 @@ class VisualNovelEngine {
         const line = this.getCurrentLine();
         if (!line) return false;
 
+        // Resetear el flag de input esperando. Se re-seteará a true si la línea tiene diálogo
+        this.isWaitingForInput = false;
+
         // Ejecutar acciones previas al diálogo
         if (line.actions) {
             for (let action of line.actions) {
@@ -1492,6 +1511,8 @@ class VisualNovelEngine {
                 // procesamiento de esta línea y continuar en el nuevo destino.
                 if (this.pendingSceneJump) {
                     this.pendingSceneJump = false;
+                    // Cuando saltamos de escena, ya estamos en línea 0 de la nueva escena
+                    // No incrementar currentLine
                     return true;
                 }
             }
@@ -1646,6 +1667,34 @@ class VisualNovelEngine {
             choicesContainer.classList.remove('active');
             choicesContainer.innerHTML = '';
         }
+    }
+
+    updateDebugPanel() {
+        const panel = document.getElementById('debug-panel');
+        if (!panel) return;
+
+        const chapterSpan = document.getElementById('debug-chapter');
+        const sceneSpan = document.getElementById('debug-scene');
+        const lineSpan = document.getElementById('debug-line');
+
+        if (this.currentChapter) {
+            const sceneName = this.currentChapter.scenes[this.currentScene]?.title || '-';
+            const totalLines = this.currentChapter.scenes[this.currentScene]?.lines.length || 0;
+
+            if (chapterSpan) chapterSpan.textContent = this.lastChapterName || '-';
+            if (sceneSpan) sceneSpan.textContent = sceneName;
+            if (lineSpan) lineSpan.textContent = `${this.currentLine} / ${totalLines}`;
+        }
+    }
+
+    goToLine(lineNumber) {
+        if (!this.currentChapter) return false;
+        const scene = this.currentChapter.scenes[this.currentScene];
+        if (!scene || lineNumber < 0 || lineNumber >= scene.lines.length) return false;
+
+        this.currentLine = lineNumber;
+        this.updateDebugPanel();
+        return true;
     }
 
     async playChapterIntro(chapter) {
