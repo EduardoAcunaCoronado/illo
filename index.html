@@ -52,6 +52,26 @@
                 </button>
             </nav>
         </div>
+
+        <!-- Panel de Debug -->
+        <div id="debug-panel" class="debug-panel hidden">
+            <div class="debug-header">
+                <h3>Debug Mode</h3>
+                <button id="debug-close" class="debug-close">✕</button>
+            </div>
+            <div class="debug-content">
+                <div class="debug-info">
+                    <p><strong>Capítulo:</strong> <span id="debug-chapter">-</span></p>
+                    <p><strong>Escena:</strong> <span id="debug-scene">-</span></p>
+                    <p><strong>Línea:</strong> <span id="debug-line">-</span></p>
+                </div>
+                <div class="debug-controls">
+                    <input type="number" id="debug-line-input" min="0" placeholder="Ir a línea...">
+                    <button id="debug-goto-line">Ir</button>
+                    <button id="debug-reload">Recargar JSON</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="p5-effects.js?v=20260716-2"></script>

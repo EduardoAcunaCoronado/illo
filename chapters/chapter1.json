@@ -1,5 +1,5 @@
 {
-  "title": "Capítulo 1: Decisiones",
+  "title": "Capítulo 1: Un furro se levanta",
   "scenes": [
     {
       "title": "Escena 1: Encrucijada",
@@ -81,7 +81,8 @@
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "surprised"
+              "pose": "surprised",
+              "flipped": true
             }
           ]
         },
@@ -97,7 +98,8 @@
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "happy"
+              "pose": "happy",
+              "flipped": false
             }
           ]
         },
@@ -121,13 +123,13 @@
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "neutral"
+              "pose": "determined"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "Voy a llamarles para avisarles de que llego tarde. ¿A quién aviso primero?",
+          "text": "Mejor será que avise a mis amigos de que estoy en camino. Voy a llamar a Edu primero.",
           "actions": [
             {
               "type": "showCharacter",
@@ -135,19 +137,13 @@
               "position": "left",
               "pose": "neutral"
             }
-          ],
-          "choices": [
+          ]
+        },
+        {
+          "actions": [
             {
-              "text": "Llamar a Edu",
-              "nextScene": "Escena 2: Llamada a Edu"
-            },
-            {
-              "text": "Llamar a Tony",
-              "nextScene": "Escena 3: Llamada a Tony"
-            },
-            {
-              "text": "Llamar a José",
-              "nextScene": "Escena 4: Llamada a José"
+              "type": "goToScene",
+              "value": "Escena 2: Llamada a Edu"
             }
           ]
         }
@@ -170,7 +166,7 @@
         },
         {
           "character": "Samu",
-          "text": "¡Edu! Hola, voy a llegar tarde al cumple.",
+          "text": "¡Edu! Hola, ¿qué tal? Voy de camino...",
           "actions": [
             {
               "type": "showCharacter",
@@ -182,97 +178,45 @@
         },
         {
           "character": "Edu",
-          "text": "¡Samu! Menos mal que llamas. Escúchame bien, estoy en Kingdom Ketchup y... hay algo raro aquí. Todos estamos en peligro.",
+          "text": "¡Samu, tío! Pues mira, que te voy a ser honesto... no me acordaba ni de que era tu cumple.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "iphone5",
+              "position": "right",
+              "pose": "embarrassed"
+            }
+          ],
+          "speakingAs": "iphone5"
+        },
+        {
+          "character": "Samu",
+          "text": "¿Qué? ¿De verdad?",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
               "pose": "surprised"
-            },
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "worried"
-            }
-          ],
-          "speakingAs": "iphone5"
-        },
-        {
-          "character": "Samu",
-          "text": "¿Peligro? ¿Qué dices? ¿Qué está pasando?",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
             }
           ]
         },
         {
           "character": "Edu",
-          "text": "No hay tiempo. Necesitamos tu ayuda. Tienes que venir a Kingdom Ketchup lo antes posible. Es urgente.",
-          "speakingAs": "iphone5"
-        },
-        {
-          "character": "Samu",
-          "text": "Entendido. Voy para allá ahora mismo. Ten cuidado, Edu.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ]
-        },
-        {
-          "character": "2B",
-          "actions": [
-            {
-              "type": "removeCharacter",
-              "character": "iphone5"
-            }
-          ],
-          "text": "La llamada se corta abruptamente. Samu reflexiona sobre lo que acaba de escuchar.",
-          "choices": [
-            {
-              "text": "Llamar a Tony",
-              "nextScene": "Escena 3: Llamada a Tony"
-            },
-            {
-              "text": "Llamar a José",
-              "nextScene": "Escena 4: Llamada a José"
-            },
-            {
-              "text": "Ir a Kingdom Ketchup",
-              "nextScene": "Fin del Capítulo 1",
-              "nextChapter": "chapter2-edu"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena 3: Llamada a Tony",
-      "lines": [
-        {
+          "text": "Perdona, perdona. Pero es que estoy en Kingdom Ketchup pasándolo bien. Estoy rodeado de ketchup por todas partes y aquí soy el rey.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "tony"
+              "pose": "happy"
             }
           ],
-          "character": "2B",
-          "text": "Samu marca el número de Tony..."
+          "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
-          "text": "¡Tony! Oye, que llego tarde al cumple. No pude evita—",
+          "text": "¿Pasándolo bien? Edu, creí que te importaba... Y me abandonas por un derrapazo de ketchup.",
           "actions": [
             {
               "type": "showCharacter",
@@ -283,69 +227,21 @@
           ]
         },
         {
-          "character": "¿Tony?",
-          "text": "(una voz aguda, suave, casi femenina, entrecortada por la interferencia) ...¿Samu? Ay, gracias a Dios que llamas, miarma...",
+          "character": "Edu",
+          "text": "Venga, no te rayes, tío. Vente y lo hablamos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            },
             {
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "shocked"
+              "pose": "happy"
             }
           ],
           "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
-          "text": "¿...Tony? ¿Eres tú? Qué voz más rara tienes, tío. ¿Estás malo? ¿Te ha cambiado el número?",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
-          ]
-        },
-        {
-          "character": "¿Tony?",
-          "text": "No preguntes por la voz, no hay tiempo. Estoy en Ecchi Land y esto es un caos, estamos todos en peligro. Ven, por favor... pero prométeme una cosa: no te asustes cuando me veas.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ],
-          "speakingAs": "iphone5"
-        },
-        {
-          "character": "Samu",
-          "text": "¿Que no me asuste? ¿Peligro en Ecchi Land y ahora hablas como... Tony, me estás rayando muchísimo. ¿QUÉ te ha pasado?",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ]
-        },
-        {
-          "character": "¿Tony?",
-          "text": "Tú ven. Ya... ya lo verás con tus propios ojos. Corre, anda. (cuelga)",
-          "speakingAs": "iphone5"
-        },
-        {
-          "character": "Samu",
-          "text": "...Voy para allá. Aguanta, Tony. Seas quien seas ahora.",
+          "text": "Vale, voy allí ahora mismo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -361,172 +257,13 @@
             {
               "type": "removeCharacter",
               "character": "iphone5"
+            },
+            {
+              "type": "goToScene",
+              "value": "Fin del Capítulo 1"
             }
           ],
-          "text": "La llamada termina.",
-          "choices": [
-            {
-              "text": "Llamar a Edu",
-              "nextScene": "Escena 2: Llamada a Edu"
-            },
-            {
-              "text": "Llamar a José",
-              "nextScene": "Escena 4: Llamada a José"
-            },
-            {
-              "text": "Ir a Ecchi Land",
-              "nextScene": "Fin del Capítulo 1",
-              "nextChapter": "chapter2-tony"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena 4: Llamada a José",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "jose"
-            }
-          ],
-          "character": "2B",
-          "text": "Samu marca el número de José..."
-        },
-        {
-          "character": "Samu",
-          "text": "¡José! Oye, perdona. Acabo de despertarme. Llegaré tarde.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "embarrassed"
-            }
-          ]
-        },
-        {
-          "character": "José",
-          "text": "¡Samu! Gracias por llamar. Necesito decirte algo importante. Estoy en Paloma City y las cosas se han puesto muy mal. Todos estamos en peligro.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "alarmed"
-            }
-          ],
-          "speakingAs": "iphone5"
-        },
-        {
-          "character": "Samu",
-          "text": "¿Qué? ¿Peligro en Paloma City? ¿Qué está pasando?",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "alarmed"
-            }
-          ]
-        },
-        {
-          "character": "José",
-          "text": "No hay tiempo para explicaciones. Algo ha sucedido aquí y necesitamos tu ayuda urgentemente. Por favor, ven a Paloma City cuanto antes.",
-          "speakingAs": "iphone5"
-        },
-        {
-          "character": "Samu",
-          "text": "Voy inmediatamente. Resiste, José. Llegaré lo antes que pueda.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ]
-        },
-        {
-          "character": "2B",
-          "actions": [
-            {
-              "type": "removeCharacter",
-              "character": "iphone5"
-            }
-          ],
-          "text": "Samu cuelga el teléfono. Una gran responsabilidad cae sobre sus hombros.",
-          "choices": [
-            {
-              "text": "Llamar a Edu",
-              "nextScene": "Escena 2: Llamada a Edu"
-            },
-            {
-              "text": "Llamar a Tony",
-              "nextScene": "Escena 3: Llamada a Tony"
-            },
-            {
-              "text": "Ir a Paloma City",
-              "nextScene": "Fin del Capítulo 1",
-              "nextChapter": "chapter2-jose"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Fuera de cobertura",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/pisito.png"
-            },
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ],
-          "character": "2B",
-          "text": "Samu marca el número, pero solo escucha una voz metálica: «El teléfono al que llama está apagado o fuera de cobertura en este momento»."
-        },
-        {
-          "character": "Samu",
-          "text": "¿Qué...? No me lo coge. Parece que no voy a poder avisar a nadie más por ahora. Será mejor que me ponga en marcha ya.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ],
-          "choices": [
-            {
-              "text": "Llamar a Edu",
-              "nextScene": "Escena 2: Llamada a Edu"
-            },
-            {
-              "text": "Llamar a Tony",
-              "nextScene": "Escena 3: Llamada a Tony"
-            },
-            {
-              "text": "Llamar a José",
-              "nextScene": "Escena 4: Llamada a José"
-            },
-            {
-              "text": "Ir a ayudar cuanto antes",
-              "nextScene": "Fin del Capítulo 1",
-              "chapter2ByFirstCalled": true
-            }
-          ]
+          "text": "Samu se dispone a ir hacia Kingdom Ketchup. Su cumpleaños está a punto de cambiar para siempre."
         }
       ]
     },
@@ -534,8 +271,18 @@
       "title": "Fin del Capítulo 1",
       "lines": [
         {
+          "actions": [
+            {
+              "type": "rescue",
+              "character": "edu"
+            },
+            {
+              "type": "setNextChapter",
+              "value": "chapter2"
+            }
+          ],
           "character": "2B",
-          "text": "Samu se pone manos a la obra."
+          "text": "Y así, sin esperárselo, el cumpleaños de Samu toma un giro inesperado. La aventura de Samu apenas comienza..."
         }
       ]
     }

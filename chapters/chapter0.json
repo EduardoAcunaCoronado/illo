@@ -133,6 +133,14 @@
           ],
           "character": "2B",
           "text": "Esta es la historia de Samu, un chico que se despertó un día y no volvió a ser el mismo..."
+        },
+        {
+          "actions": [
+            {
+              "type": "setNextChapter",
+              "value": "chapter1"
+            }
+          ]
         }
       ]
     }

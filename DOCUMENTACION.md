@@ -114,7 +114,10 @@ proyecto-visual-novel/
 ├── 📁 chapters/                  ← Archivos de capítulos
 │   ├── chapter0.json
 │   ├── chapter1.json
-│   └── chapter2.json
+│   ├── chapter2-edu.json
+│   ├── chapter2-tony.json
+│   ├── chapter2-jose.json
+│   └── chapter3.json
 │
 ├── 📁 assets/                    ← Recursos multimedia
 │   ├── backgrounds/              ← Fondos (1920x1080 PNG)
@@ -1914,10 +1917,12 @@ chapters/chapter3.json
 
 ```
 chapters/
-├── chapter0.json    ← Prólogo (opcional)
-├── chapter1.json    ← Capítulo principal
-├── chapter2.json    ← Continuación
-├── chapter3.json    ← Nuevo capítulo
+├── chapter0.json       ← Prólogo (opcional)
+├── chapter1.json       ← Capítulo 1: Decisiones
+├── chapter2-edu.json   ← Capítulo 2: Kingdom Ketchup (ruta de Edu)
+├── chapter2-tony.json  ← Capítulo 2: Ecchi Land (ruta de Tony)
+├── chapter2-jose.json  ← Capítulo 2: Paloma City (ruta de José)
+└── chapter3.json       ← Capítulo 3: El Precio de la Lealtad (desenlace)
 └── chapter99.json   ← Puedes tener muchos
 ```
 
@@ -1926,10 +1931,11 @@ chapters/
 ```
 1. Usuario hace clic en "Comenzar"
 2. Se carga chapter0 (prólogo)
-3. Al terminar → Opción: "Siguiente Capítulo" o "Menú"
-4. Si elige continuar → Se carga chapter1
-5. Repite hasta no encontrar siguiente capítulo
-6. Muestra "Fin del Juego" → Menú Principal
+3. Al terminar → Se carga chapter1 (decisiones iniciales)
+4. En chapter1 elige al primer rescatado → Se abre la ruta chapter2-<personaje>
+5. Completa chapter2-edu, chapter2-tony o chapter2-jose según elección
+6. Al terminar chapter2 → Se carga chapter3 (desenlace final)
+7. Muestra "Fin del Juego" → Menú Principal
 ```
 
 ### Pantalla de Continuación
@@ -1961,7 +1967,38 @@ if (persistedVariables) {
 localStorage.setItem('persistentState', JSON.stringify(engine.gameState));
 ```
 
-### Ejemplo Práctico: 3 Capítulos
+### Estructura de Capítulos Actual
+
+**chapter0.json - Prólogo:**
+- Introducción a Furrielva
+- Presentación de 2B como narrador
+
+**chapter1.json - Capítulo 1: Decisiones:**
+- Los amigos necesitan ayuda en Furrielva
+- Samu decide a quién rescatar primero (elección dinámica)
+- Rutas ramificadas según la decisión
+
+**chapter2-edu.json - Capítulo 2: Kingdom Ketchup:**
+- Samu busca a Edu en el supermercado
+- Elige ruta entre El Jamón, Día o Mercadona
+- Batalla contra la loca de los gatos (minigame gatos)
+- Rescate de Edu y batalla contra Zip (minigame ketchup)
+- Descubrimiento del concierto de Seraphyna en Ecchi Land
+- Llamadas telefónicas opcionales
+
+**chapter2-tony.json - Capítulo 2: Ecchi Land:**
+- Ruta paralela de Samu rescatando a Tony
+- Aventuras en Ecchi Land
+
+**chapter2-jose.json - Capítulo 2: Paloma City:**
+- Ruta paralela de Samu rescatando a José
+- Aventuras en Paloma City
+
+**chapter3.json - Capítulo 3: El Precio de la Lealtad:**
+- Desenlace final basado en quién fue rescatado primero
+- Resolución de la trama principal con variantes según ruta
+
+### Ejemplo Práctico: Estructura de Capítulo
 
 **chapter0.json - Prólogo (1-2 minutos):**
 ```json

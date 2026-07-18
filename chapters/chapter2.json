@@ -2,7 +2,7 @@
   "title": "Capítulo 2: Kingdom Ketchup",
   "scenes": [
     {
-      "title": "Escena 1: En la calle",
+      "title": "Escena 1: Descubrimiento de Furrielva",
       "lines": [
         {
           "actions": [
@@ -22,14 +22,13 @@
               "id": "bg_music",
               "fadeIn": 1000
             }
-            
           ],
           "character": "2B",
-          "text": "Samu recorre las calles con paso apurado. Algo no va bien en esta ciudad."
+          "text": "Samu sale de casa y se detiene en seco. Huelva ha cambiado por completo."
         },
         {
           "character": "Samu",
-          "text": "¿Pero qué...? ¿Qué está pasando ahí?",
+          "text": "¿Esto... esto es Huelva?",
           "actions": [
             {
               "type": "showCharacter",
@@ -41,40 +40,53 @@
         },
         {
           "character": "2B",
-          "text": "En cada esquina, enjambres de memes de IA cobran vida y persiguen a los furros, que corren despavoridos entre ladridos y llantos."
+          "text": "Las calles están llenas de furros de todo tipo. Caminan tranquilamente, charlando entre ellos, pasándola bien. Solo furros viviendo en paz y armonía."
         },
         {
           "character": "Samu",
-          "text": "¡Esto es una locura! Memes... ¿pegando a furros? El mundo se ha vuelto del revés.",
+          "text": "¿Huelva se ha convertido en Furrielva? Wow...",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "angry"
+              "pose": "happy"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "Céntrate, Samu. Tienes que llegar hasta Edu. Pero... ¿cómo se entraba a Kingdom Ketchup?",
+          "text": "Bonito. Muy bonito. Así debería ser siempre.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "worried"
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Pero bueno, Edu me espera en Kingdom Ketchup. Voy a buscarlo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
             }
           ]
         },
         {
           "character": "2B",
-          "text": "De pronto, la voz de Edu resuena en su memoria."
-        },
-        {
-          "character": "Edu",
-          "text": "\"Escucha, Samu: para entrar a Kingdom Ketchup no hay un portal secreto ni nada raro. Basta con colarse por cualquier supermercado. Cualquiera te sirve.\""
-        },
+          "text": "Samu se adentra en las calles de Furrielva en busca de su amigo."
+        }
+      ]
+    },
+    {
+      "title": "Escena 1.5: En la calle",
+      "lines": [
         {
           "character": "Samu",
           "text": "¡Claro! Un supermercado. Hay tres cerca... pero no todos me quedan igual de camino. Cada minuto que pierda es un minuto que Edu pasa ahí dentro.",
@@ -111,6 +123,14 @@
             {
               "type": "setBackground",
               "value": "assets/backgrounds/jamon.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "loca"
             }
           ],
           "character": "2B",
@@ -288,6 +308,14 @@
             {
               "type": "setBackground",
               "value": "assets/backgrounds/dia.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "loca"
             }
           ],
           "character": "2B",
@@ -295,7 +323,7 @@
         },
         {
           "character": "Samu",
-          "text": "Este sitio está despejado... buena señal. Ni gatos ni memes por aquí. Directo al grano.",
+          "text": "Este sitio está despejado... buena señal. Ni gatos ni trampas por aquí. Directo al grano.",
           "actions": [
             {
               "type": "showCharacter",
@@ -333,14 +361,22 @@
             {
               "type": "setBackground",
               "value": "assets/backgrounds/mercadona.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "loca"
             }
           ],
           "character": "2B",
-          "text": "El Mercadona está unas calles más lejos. Samu corre a buen ritmo y solo tiene que rodear a un grupo de memes que acorralan a un furro."
+          "text": "El Mercadona está unas calles más lejos. Samu corre a buen ritmo y solo tiene que rodear a un grupo de furros que bloquean el camino."
         },
         {
           "character": "Samu",
-          "text": "Perdona, colega, ¡ya voy, ya voy! Un pequeño rodeo y llego. No está tan mal este camino.",
+          "text": "Perdona, amigos, ¡ya voy, ya voy! Un pequeño rodeo y llego. No está tan mal este camino.",
           "actions": [
             {
               "type": "showCharacter",
@@ -378,6 +414,18 @@
             {
               "type": "setBackground",
               "value": "assets/backgrounds/kingdom_ketchup_pasillos.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "loca"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "nate"
             },
             {
               "type": "stopSound",
@@ -508,6 +556,10 @@
             {
               "type": "setBackground",
               "value": "assets/backgrounds/kingdom_ketchup_estanterias.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "samu"
             },
             {
               "type": "showCharacter",
@@ -653,6 +705,10 @@
             },
             {
               "type": "hideCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "hideCharacter",
               "character": "nate"
             }
           ],
@@ -660,8 +716,108 @@
           "text": "Samu llega por fin al corazón de Kingdom Ketchup. El aire huele intensamente a salsa de tomate."
         },
         {
+          "character": "2B",
+          "text": "Samu ve una silueta en la distancia. Un dragón de bolsillo."
+        },
+        {
           "character": "Samu",
-          "text": "Vale... se supone que Edu estaba aquí. Pero solo veo a un dragón lleno de escamas que no conozco de nada. ¿Dónde se ha metido?",
+          "text": "¿Hola? ¿Hay alguien aquí? Busco a mi amigo Edu.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "curious"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Uf, no sé.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Edu? ¡Soy Samu! ¡Viniste aquí, me llamaste y aquí estoy!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "¿Samu? ¿Eres tú, tío? ¡Madre mía, qué cambio! Con todo ese pelo y esos colmillos casi no te reconozco.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Lo mismo te digo, tío. ¿Qué tal Kingdom Ketchup? ¿Es tan alucinante como parecía en la llamada?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "curious"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Todo eso y más. Esto es el paraíso. El ketchup es perfecto, todo es... es increíble. No querría irme nunca.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Espera, ¿no querrías irte nunca? Edu, eso no suena bien. Deberíamos buscar a Tony y a José, ¿recuerdas? Tenemos que celebrar mi cumple.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "alarmed"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "¿Tony? ¿José? ¡Qué importan ellos! Aquí estamos bien. Deberías quedarte conmigo, Samu. Olvídate del mundo exterior, aquí lo tenemos todo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "riku"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Edu, algo te está pasando. El ketchup te está hipnotizando o algo. Tenemos que irnos. ¡Ahora!",
           "actions": [
             {
               "type": "showCharacter",
@@ -673,85 +829,63 @@
         },
         {
           "character": "Edu",
-          "text": "¡Eh, tú! ¡Por aquí! Menos mal que ha venido alguien. Esto está peor de lo que pensaba.",
-          "consequence": {
-            "delayAtLeast": 2,
-            "text": "¡Eh, tú! ¡Por fin viene alguien! ¿Sabes cuánto llevo aguantando aquí? Pensé que no llegaría nadie... esto está mil veces peor que antes."
-          }
-        },
-        {
-          "character": "Samu",
-          "text": "¿Eh? Perdona... no nos conocemos, ¿verdad? Estoy buscando a un amigo. ¿Sabes tú qué está pasando aquí?",
+          "text": "¡No! ¡Yo no me voy a ningún lado! ¡Tú no entiendes nada, Samu! ¡Esto es la perfección y yo me doy el lujazo!",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
+              "character": "edu",
+              "position": "right",
+              "pose": "angry"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "De la nada, Edu empieza a oscurecer su piel y transformarse en algo terrible..."
+        },
+        {
+          "character": "Edu",
+          "text": "¡ARRRGHHHHHHH!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
               "pose": "surprised"
             }
           ]
         },
         {
-          "character": "Edu",
-          "text": "Uf, no sé. Un momento estaba tan tranquilo y, al siguiente, los memes de internet cobraron vida y empezaron a perseguir a todo el que tuviera pinta de furro. A mí me pillaron aquí encerrado.",
-          "byRescueCount": {
-            "1": "Uf, no sé. Un momento estaba tan tranquilo y, al siguiente, los memes de internet cobraron vida y empezaron a perseguir a todo el que tuviera pinta de furro. A mí me pillaron aquí encerrado.",
-            "2": "Uf, no sé... bueno, algo me temía. Fíjate: los que teníamos avatar en internet nos hemos convertido en furros, y los que no tenían avatar... son ahora los memes de IA que nos atacan. Alguien lo ha diseñado así. Esto es un virus.",
-            "3": "Uf, no sé... o mejor dicho, ya sé demasiado. Es una IA Biológica... el juguete nuevo de Elon Musk. Se le fue de las manos: infectó la red, nos transformó a todos según nuestro avatar y soltó a los memes contra nosotros. Él empezó esto."
-          }
+          "character": "2B",
+          "text": "Edu se transforma. Su cuerpo se vuelve oscuro, sus ojos brillan con un amarillo amenazante. Surge Zip, la versión corrupta de Edu."
         },
         {
-          "character": "Samu",
-          "text": "Espera... esa manera de hablar, ese \"uf, no sé\"... ¡Edu! ¡Eres tú! No te había reconocido con... con todas esas escamas. ¡Soy yo, Samu!",
+          "character": "Zip",
+          "text": "JAJAJA... al fin. La IA Biológica me libera. Soy Zip.",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
+              "character": "zip",
+              "position": "right",
+              "pose": "angry"
             }
           ]
         },
         {
-          "character": "Edu",
-          "text": "¿Samu? ¿En serio eres tú? ¡Madre mía, ni te había reconocido! Con tanto pelo y esos colmillos pareces otro. Menudos dos, aquí sin conocernos ni el uno al otro."
+          "character": "Zip",
+          "text": "Escúchame bien, Samu. La humanidad es débil, caótica, sucia. Necesita un orden, una dirección. La IA dominarán el mundo, y todos vosotros, furros, humanos... todos serviréis a una única voluntad."
+        },
+        {
+          "character": "Zip",
+          "text": "Por eso fue creado Kingdom Ketchup, para corromper a tu amigo y convertirle en un meme, o sea, yo. Los memes somos lo único que quedará en este mundo."
+        },
+        {
+          "character": "Zip",
+          "text": "No hay escape. No hay salvación. La IA Biológica está en todas partes, y yo soy su instrumento en Kingdom Ketchup. ¡Vamos, Samu, únete a nosotros o perecerás!"
         },
         {
           "character": "Samu",
-          "text": "Memes contra furros... ¿pero quién ganaría algo con esto? No tiene ni pies ni cabeza.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ],
-          "byRescueCount": {
-            "1": "Memes contra furros... ¿pero quién ganaría algo con esto? No tiene ni pies ni cabeza.",
-            "2": "¿Un virus que nos convierte según nuestro avatar? Entonces esto no es un caos cualquiera... alguien lo ha soltado a propósito.",
-            "3": "¿Elon Musk? Debí imaginarlo. Una IA Biológica suya suelta por toda la red... ahora todo encaja. Vamos a tener que pararle los pies."
-          }
-        },
-        {
-          "character": "Edu",
-          "text": "No hay tiempo para pensarlo. Tenemos que movernos ya.",
-          "consequence": {
-            "delayAtLeast": 2,
-            "text": "No hay tiempo de explicaciones. Mientras tú te perdías por ahí, esto se ha llenado de guindillas. ¡Va a ser mucho más difícil por tu culpa!"
-          }
-        },
-        {
-          "character": "Edu",
-          "text": "Y hay algo más que deberías saber. Kingdom Ketchup siempre fue un sitio seguro: aquí solo llovía ketchup. Pero los memes de IA han soltado guindillas entre la lluvia... a propósito, para confundirme y que no distinga lo que puedo comer de lo que me quema."
-        },
-        {
-          "character": "Edu",
-          "text": "¡Por eso ten cuidado! Ahora el cielo llueve ketchup mezclado con guindillas del picante. ¡Come todo el ketchup que puedas y esquiva las guindillas que han metido esos malditos memes!"
-        },
-        {
-          "character": "Samu",
-          "text": "¿En serio? Bueno... ¡vamos allá!",
+          "text": "¡Edu! ¿¡Qué te han hecho!? ¡Voy a sacarte de aquí, pase lo que pase!",
           "actions": [
             {
               "type": "showCharacter",
@@ -762,8 +896,12 @@
           ]
         },
         {
+          "character": "Zip",
+          "text": "Edu no te escucha, ahora soy pura oscuridad IA. Para vencerme tendrás que hacer lo que hace siempre Edu cuando va a un restaurante, hincharse a ketchup y evitar el picante."
+        },
+        {
           "character": "2B",
-          "text": "¡Que empiece el banquete!"
+          "text": "¡Que comience la batalla! Samu debe luchar contra Zip. Si gana, liberará a Edu de la corrupción."
         },
         {
           "actions": [
@@ -774,7 +912,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ketchup.mp3",
+              "path": "assets/sounds/music/battle.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -807,146 +945,116 @@
           ]
         },
         {
-          "character": "Samu",
-          "text": "¡Uf! Eso ha sido más intenso de lo que esperaba.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
-          ]
-        },
-        {
-          "character": "Edu",
-          "text": "¡Lo lograste! Estoy a salvo gracias a ti. Pero los demás siguen en peligro.",
-          "allRescuedText": "¡Lo lograste! Estoy a salvo gracias a ti. Y lo mejor de todo: ya no queda nadie en peligro."
-        },
-        {
-          "character": "Samu",
-          "text": "Es verdad... no puedo descansar todavía. Voy a llamar a alguien para saber cómo están.",
-          "allRescuedText": "Por fin... estáis todos a salvo. Ahora sí puedo respirar tranquilo.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ],
-          "choices": [
-            {
-              "text": "Llamar a Tony",
-              "nextScene": "Escena: Llamada a Tony"
-            },
-            {
-              "text": "Llamar a José",
-              "nextScene": "Escena: Llamada a José"
-            },
-            {
-              "text": "Ir al desenlace",
-              "requireAllRescued": true,
-              "chapter3ByFirst": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Llamada a Tony",
-      "lines": [
-        {
           "character": "2B",
-          "text": "Samu marca el número de Tony y, para su alivio, la línea da tono."
-        },
-        {
-          "character": "Tony",
-          "text": "¿Samu? ¡Menos mal! Aquí en Ecchi Land la cosa está muy fea. ¿Vienes ya?"
+          "text": "La batalla termina y Zip es derrotado. Edu cae inconsciente, pero vivo."
         },
         {
           "character": "Samu",
-          "text": "Aguanta, Tony. Rescaté a Edu y voy directo hacia ti.",
+          "text": "¡Edu! ¡Aguanta! ¡Despierta!",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ],
-          "choices": [
-            {
-              "text": "Llamar a José",
-              "nextScene": "Escena: Llamada a José"
-            },
-            {
-              "text": "Ir a ayudar cuanto antes",
-              "nextScene": "Fin del Capítulo 2",
-              "chapter2ByLastCalled": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Llamada a José",
-      "lines": [
-        {
-          "character": "2B",
-          "text": "Samu marca el número de José y, para su alivio, la línea da tono."
-        },
-        {
-          "character": "José",
-          "text": "¡Samu! Paloma City se está viniendo abajo. Necesitamos que vengas."
-        },
-        {
-          "character": "Samu",
-          "text": "Aguanta, José. Rescaté a Edu y voy hacia allá.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ],
-          "choices": [
-            {
-              "text": "Llamar a Tony",
-              "nextScene": "Escena: Llamada a Tony"
-            },
-            {
-              "text": "Ir a ayudar cuanto antes",
-              "nextScene": "Fin del Capítulo 2",
-              "chapter2ByLastCalled": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Fuera de cobertura",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
-            },
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
               "pose": "worried"
             }
-          ],
-          "character": "2B",
-          "text": "Samu marca el número, pero solo escucha una voz metálica: «El teléfono al que llama está apagado o fuera de cobertura en este momento»."
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Ugh... ¿qué... qué pasó? Samu, lo siento. No sé qué me pasaba. Este sitio corrompe a las personas con su tentador ketchup.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "sad"
+            }
+          ]
         },
         {
           "character": "Samu",
-          "text": "Otra vez fuera de cobertura... No puedo llamar a nadie más por ahora. ¡Toca ponerse en marcha!",
+          "text": "Eh, creo que solo es una manifestación de tus deseos más oscuros. Tenemos que salir de aquí y buscar al resto.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Gracias, Samu. Tienes razón. Necesitamos encontrar a los otros antes de que les pase algo similar.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Samu y Edu salen juntos de Kingdom Ketchup, dejando atrás el reino rojo de la salsa de tomate. Su verdadera aventura apenas comienza."
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 10: Correo promocional"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 10: Correo promocional",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/huelva.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 1000
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/iglesia.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "edu"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "nate"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "zip"
+            }
+          ],
+          "character": "2B",
+          "text": "Samu y Edu salen finalmente de Kingdom Ketchup. Sus pasos resuenan en las calles de Furrielva hasta que llegan a la iglesia. El aire es fresco, tranquilizador."
+        },
+        {
+          "character": "Samu",
+          "text": "Al menos estamos fuera de ese lugar. Ahora necesitamos encontrar a los otros.",
           "actions": [
             {
               "type": "showCharacter",
@@ -954,23 +1062,133 @@
               "position": "left",
               "pose": "determined"
             }
-          ],
-          "choices": [
-            {
-              "text": "Ir a ayudar cuanto antes",
-              "nextScene": "Fin del Capítulo 2",
-              "chapter2ByLastCalled": true
-            }
           ]
-        }
-      ]
-    },
-    {
-      "title": "Fin del Capítulo 2",
-      "lines": [
+        },
         {
           "character": "2B",
-          "text": "Samu guarda el teléfono y se lanza hacia el siguiente destino, con un amigo menos en peligro y la determinación intacta."
+          "text": "De repente, el móvil de Edu vibra. Un correo. El asunto brilla en la pantalla."
+        },
+        {
+          "character": "Edu",
+          "text": "Espera... ¿un email? *abre el móvil* Samu, mira esto. Es un correo promocional de Ecchi Land.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "La pantalla muestra el anuncio: 'CONCIERTO EXCLUSIVO - Seraphyna en Ecchi Land. Calle Hentai, nº 69. Una noche que no olvidarás.'"
+        },
+        {
+          "character": "Edu",
+          "text": "¿Seraphyna? ¿Dando un concierto en Ecchi Land? Esto es... sospechoso.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Espera, espera... Zip me comentó que Kingdom Ketchup fue creado para corromperte... Y Ecchi Land... Eso suena muy Tony, seguro que es un lugar creado para corromperle a él. Debemos ir a salvarle.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Pero primero, necesitamos saber dónde está exactamente Ecchi Land. Voy a abrir el Google Maps... que por alguna razón ahora se llama Furry Maps...",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Oh, no! La aplicación no me funciona, seguramente sea porque no la tenga actualizada.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "embarrassed"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Espera, deja que lo intente con mi móvil. Yo soy un friki de las actualizaciones y seguramente se me haya actualizado automáticamente.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "epic"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Edu abre Furry Maps en su móvil y busca la dirección. La pantalla carga... carga... y finalmente muestra la dirección."
+        },
+        {
+          "character": "Samu",
+          "text": "Perfecto. Calle Hentai, nº 69. Está en la otra punta de la ciudad, pero podemos hacerlo. Vamos.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Vamos a rescatar a Tony. Seguramente esté en peligro.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Samu y Edu se ponen en marcha.",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "edu"
+            },
+            {
+              "type": "setNextChapter",
+              "value": "chapter3"
+            }
+          ]
         }
       ]
     }

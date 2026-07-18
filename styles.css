@@ -1115,3 +1115,107 @@ html, body {
     background: #d40000;
     color: #fff;
 }
+
+/* ===== Debug Panel ===== */
+.debug-panel {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.95);
+    border: 3px solid #ffcc00;
+    color: #ffcc00;
+    padding: 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    z-index: 9999;
+    max-width: 300px;
+    box-shadow: 0 0 15px rgba(255, 204, 0, 0.3);
+}
+
+.debug-panel.hidden {
+    display: none;
+}
+
+.debug-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #ffcc00;
+    padding-bottom: 8px;
+}
+
+.debug-header h3 {
+    margin: 0;
+    font-size: 14px;
+}
+
+.debug-close {
+    background: none;
+    border: none;
+    color: #ffcc00;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.debug-close:hover {
+    background: #ffcc00;
+    color: #000;
+}
+
+.debug-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.debug-info p {
+    margin: 4px 0;
+    word-break: break-all;
+}
+
+.debug-controls {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.debug-controls input {
+    flex: 1;
+    min-width: 80px;
+    background: #000;
+    border: 2px solid #ffcc00;
+    color: #ffcc00;
+    padding: 6px 8px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+}
+
+.debug-controls input::placeholder {
+    color: #666;
+}
+
+.debug-controls button {
+    background: #ffcc00;
+    border: 2px solid #ffcc00;
+    color: #000;
+    padding: 6px 12px;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.debug-controls button:hover {
+    background: #000;
+    color: #ffcc00;
+}

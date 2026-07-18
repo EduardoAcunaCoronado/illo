@@ -37,7 +37,7 @@ async function initGame() {
 }
 
 async function loadAllCharacters() {
-    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5', 'loca', 'nate', 'jose'];
+    const characters = ['luna', 'edu', 'zip', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5', 'loca', 'nate', 'jose'];
     for (const character of characters) {
         await engine.loadCharacter(character);
     }
@@ -302,3 +302,71 @@ function saveGame() {
     };
     localStorage.setItem('gameState', JSON.stringify(saveData));
 }
+
+// ===== Debug Mode =====
+function initDebugMode() {
+    // Activar con Ctrl + D
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'd') {
+            e.preventDefault();
+            toggleDebugPanel();
+        }
+    });
+
+    // Configurar botones del debug panel
+    const debugPanel = document.getElementById('debug-panel');
+    if (!debugPanel) return;
+
+    document.getElementById('debug-close').addEventListener('click', () => {
+        debugPanel.classList.add('hidden');
+    });
+
+    document.getElementById('debug-goto-line').addEventListener('click', () => {
+        const input = document.getElementById('debug-line-input');
+        const lineNumber = parseInt(input.value, 10);
+        if (!isNaN(lineNumber)) {
+            if (engine.goToLine(lineNumber)) {
+                // Hacer que se muestre la línea
+                playGame();
+            } else {
+                alert('Número de línea inválido');
+            }
+        }
+    });
+
+    document.getElementById('debug-reload').addEventListener('click', () => {
+        if (isGameRunning && engine.currentChapter) {
+            // Recargar el capítulo actual en la misma línea
+            const currentLine = engine.currentLine;
+            engine.lastChapterName = currentChapterName;
+            engine.reset();
+            engine.loadChapter(currentChapterName).then(() => {
+                engine.currentLine = currentLine;
+                playGame();
+            });
+        }
+    });
+
+    // Enter en el input también hace go to line
+    document.getElementById('debug-line-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('debug-goto-line').click();
+        }
+    });
+}
+
+function toggleDebugPanel() {
+    const debugPanel = document.getElementById('debug-panel');
+    if (debugPanel.classList.contains('hidden')) {
+        debugPanel.classList.remove('hidden');
+        engine.debugMode = true;
+    } else {
+        debugPanel.classList.add('hidden');
+        engine.debugMode = false;
+    }
+}
+
+// Inicializar debug mode cuando el juego empieza
+document.addEventListener('DOMContentLoaded', () => {
+    initDebugMode();
+});

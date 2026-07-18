@@ -62,7 +62,11 @@
       "Bash(timeout 40 node drive-remove.js)",
       "Bash(timeout 45 node drive-remove.js)",
       "Bash(node -e \"JSON.parse\\(require\\('fs'\\).readFileSync\\('chapters/chapter1.json','utf8'\\)\\);console.log\\('OK JSON válido'\\)\")",
-      "Bash(timeout 45 node drive-zoom.js)"
+      "Bash(timeout 45 node drive-zoom.js)",
+      "PowerShell(\\(Get-Content \"c:\\\\Proyectos\\\\illo\\\\chapters\\\\chapter1.json\" | Measure-Object -Line\\).Lines)",
+      "Bash(python -m http.server 8000)",
+      "PowerShell(Get-Content 'c:\\\\Proyectos\\\\illo\\\\chapters\\\\chapter1.json' | ConvertFrom-Json | Select-Object -ExpandProperty scenes | ForEach-Object { $_.lines | Where-Object { $_.actions -and -not $_.text -and -not $_.character } } | ConvertTo-Json -Depth 10)",
+      "PowerShell(Get-Content 'c:\\\\Proyectos\\\\illo\\\\chapters\\\\chapter0.json' | ConvertFrom-Json | Select-Object -ExpandProperty scenes | ForEach-Object { $_.lines | Where-Object { $_.actions -and -not $_.text -and -not $_.character } } | ConvertTo-Json -Depth 10)"
     ]
   }
 }

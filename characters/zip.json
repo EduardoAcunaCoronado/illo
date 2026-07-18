@@ -1,0 +1,8 @@
+{
+  "name": "Zip",
+  "color": "#FF6B9D",
+  "poses": {
+    "neutral": "assets/characters/zip.png"
+  },
+  "defaultPose": "neutral"
+}
