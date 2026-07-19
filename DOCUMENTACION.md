@@ -336,6 +336,41 @@ Cambia la pose de un personaje visible.
 }
 ```
 
+### hideDialog / hideText / ocultarTexto
+Oculta el cuadro de diálogo/texto que esté visible. Útil para dejar una imagen,
+fondo o escena en pantalla durante unos segundos sin texto encima.
+
+```json
+{
+  "type": "hideDialog"
+}
+```
+
+Ejemplo con espera:
+
+```json
+{
+  "actions": [
+    { "type": "hideDialog" },
+    { "type": "setBackground", "value": "assets/backgrounds/despertar_samu.png" },
+    { "type": "wait", "value": 2500 }
+  ]
+}
+```
+
+Si quieres mantener la pantalla limpia hasta que el jugador haga click, usa
+`waitForClick` en lugar de `wait`:
+
+```json
+{
+  "actions": [
+    { "type": "hideDialog" },
+    { "type": "setBackground", "value": "assets/backgrounds/despertar_samu.png" },
+    { "type": "waitForClick" }
+  ]
+}
+```
+
 ### playSound
 Reproduce un archivo de audio con opciones avanzadas.
 

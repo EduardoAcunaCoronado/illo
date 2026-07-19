@@ -2,19 +2,20 @@
   "name": "Jose",
   "color": "#00d4ff",
   "poses": {
-    "neutral": "assets/characters/jose/jose.png",
-    "happy": "assets/characters/jose/jose_happy.png",
-    "sad": "assets/characters/jose/jose_sad.png",
-    "angry": "assets/characters/jose/jose_angry.png",
-    "surprised": "assets/characters/jose/jose_surprised.png",
-    "alarmed": "assets/characters/jose/jose_alarmed.png",
-    "determined": "assets/characters/jose/jose_determined.png",
-    "embarrassed": "assets/characters/jose/jose_embarrassed.png",
-    "epic": "assets/characters/jose/jose_epic.png",
-    "facepalm": "assets/characters/jose/jose_facepalm.png",
-    "shocked": "assets/characters/jose/jose_shocked.png",
-    "thinking": "assets/characters/jose/jose_thinking.png",
-    "worried": "assets/characters/jose/jose_worried.png"
+    "neutral": "assets/characters/jose.png",
+    "happy": "assets/characters/jose_happy.png",
+    "sad": "assets/characters/jose_sad.png",
+    "angry": "assets/characters/jose_angry.png",
+    "surprised": "assets/characters/jose_surprised.png",
+    "alarmed": "assets/characters/jose_alarmed.png",
+    "determined": "assets/characters/jose_determined.png",
+    "embarrassed": "assets/characters/jose_embarrassed.png",
+    "epic": "assets/characters/jose_epic.png",
+    "facepalm": "assets/characters/jose_facepalm.png",
+    "shocked": "assets/characters/jose_shocked.png",
+    "thinking": "assets/characters/jose_thinking.png",
+    "worried": "assets/characters/jose_worried.png",
+    "silueta": "assets/characters/jose_silueta.png"
   },
   "defaultPose": "neutral"
 }

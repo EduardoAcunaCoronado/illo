@@ -1,8 +1,8 @@
 {
   "name": "Tony",
-  "color": "#ff4fa3",
+  "color": "#ff69b4",
   "poses": {
-    "neutral": "assets/characters/Tony.png",
+    "neutral": "assets/characters/tony.png",
     "happy": "assets/characters/tony_happy.png",
     "sad": "assets/characters/tony_sad.png",
     "angry": "assets/characters/tony_angry.png",

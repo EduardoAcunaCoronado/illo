@@ -39,6 +39,9 @@ class VisualNovelEngine {
             const response = await fetch(`chapters/${chapterName}.json?v=${Date.now()}`, {
                 cache: 'no-store'
             });
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
             const chapter = await response.json();
 
             const isNewChapter = this.lastChapterName !== chapterName;
@@ -145,6 +148,11 @@ class VisualNovelEngine {
             case 'setPose':
                 this.setPose(action.character, action.position, action.pose);
                 break;
+            case 'hideDialog':
+            case 'hideText':
+            case 'ocultarTexto':
+                this.hideDialog();
+                break;
             case 'setVariable':
                 this.gameState[action.variable] = action.value;
                 break;
@@ -181,6 +189,11 @@ class VisualNovelEngine {
                 break;
             case 'wait':
                 await this.wait(action.value);
+                break;
+            case 'waitForClick':
+            case 'waitClick':
+            case 'esperarClick':
+                await this.waitForActionClick();
                 break;
             case 'minigame':
                 await this.playMinigame(action);
@@ -329,6 +342,9 @@ class VisualNovelEngine {
                 break;
             case 'paloma':
                 await this.playPalomaMinigame(action);
+                break;
+            case 'runa':
+                await this.playRunaMinigame(action);
                 break;
             case 'gatos':
                 await this.playGatosMinigame(action);
@@ -1195,6 +1211,152 @@ class VisualNovelEngine {
                         }
                     } else {
                         // Fallo
+                        finish(false);
+                    }
+                });
+            });
+
+            nextLevel();
+        });
+    }
+
+    // Minijuego: memoria de runas (estilo Simon).
+    async playRunaMinigame(options = {}) {
+        this.isWaitingForInput = false;
+
+        let won = false;
+        while (!won) {
+            won = await this.runRunaRound(options);
+            if (!won) {
+                await this.showMinigameRetry('¡La barrera ha rechazado la secuencia!');
+            }
+        }
+        return won;
+    }
+
+    // Una partida de memoria: repite la secuencia de runas que se ilumina.
+    // La secuencia crece cada nivel hasta completar `rounds`. Resuelve true/false.
+    runRunaRound(options = {}) {
+        const rounds = options.rounds || 5;
+        const flashMs = options.flashMs || 600;
+        const gapMs = options.gapMs || 250;
+        const runas = [
+            { image: 'assets/minigames/runa_samu.png', label: 'Magia de Samu' },
+            { image: 'assets/minigames/runa_edu.png', label: 'Prisa de Edu' },
+            { image: 'assets/minigames/runa_tony.png', label: 'Purificación de Seraphine' },
+            { image: 'assets/minigames/runa_jose.png', label: 'Fuerza de Jose' }
+        ];
+
+        this.isWaitingForInput = false;
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay runa-minigame';
+            overlay.innerHTML = `
+                <div class="minigame-hud">
+                    <span class="mg-score">Nivel 1 / ${rounds}</span>
+                    <span class="mg-status">Observa...</span>
+                </div>
+                <div class="runa-grid" id="runa-grid">
+                    ${runas.map((runa, i) => `
+                        <button class="runa-pad" data-index="${i}" aria-label="${runa.label}">
+                            <img class="runa-icon" src="${this.cacheBustAsset(runa.image)}" alt="${runa.label}">
+                            <span class="runa-label">${runa.label}</span>
+                        </button>
+                    `).join('')}
+                </div>
+                <div class="minigame-instructions">Memoriza la secuencia de runas y repítela en el mismo orden.</div>
+            `;
+            document.getElementById('game-container').appendChild(overlay);
+
+            const grid = overlay.querySelector('#runa-grid');
+            const scoreEl = overlay.querySelector('.mg-score');
+            const statusEl = overlay.querySelector('.mg-status');
+            const pads = Array.from(overlay.querySelectorAll('.runa-pad'));
+
+            const swallowClick = (e) => {
+                if (!e.target.closest('.runa-pad')) e.stopPropagation();
+            };
+            overlay.addEventListener('click', swallowClick, true);
+
+            let sequence = [];
+            let requiredRunes = Array.from({ length: pads.length }, (_, i) => i).sort(
+                () => Math.random() - 0.5
+            );
+            let inputIndex = 0;
+            let acceptingInput = false;
+            let level = 0;
+
+            const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+            const flashPad = async (idx) => {
+                pads[idx].classList.add('runa-active');
+                await wait(flashMs);
+                pads[idx].classList.remove('runa-active');
+                await wait(gapMs);
+            };
+
+            const finish = (won) => {
+                acceptingInput = false;
+                overlay.removeEventListener('click', swallowClick, true);
+
+                const result = document.createElement('div');
+                result.className = 'minigame-result';
+                result.textContent = won ? '¡Las runas aceptan la secuencia!' : '¡Secuencia incorrecta!';
+                overlay.appendChild(result);
+
+                setTimeout(() => {
+                    overlay.remove();
+                    resolve(won);
+                }, won ? 1500 : 800);
+            };
+
+            const playSequence = async () => {
+                acceptingInput = false;
+                statusEl.textContent = 'Observa...';
+                grid.classList.add('runa-locked');
+                await wait(500);
+                for (const idx of sequence) {
+                    await flashPad(idx);
+                }
+                grid.classList.remove('runa-locked');
+                statusEl.textContent = '¡Tu turno!';
+                inputIndex = 0;
+                acceptingInput = true;
+            };
+
+            const nextLevel = async () => {
+                level++;
+                scoreEl.textContent = `Nivel ${level} / ${rounds}`;
+                const nextRune =
+                    requiredRunes.length > 0
+                        ? requiredRunes.pop()
+                        : Math.floor(Math.random() * pads.length);
+                sequence.push(nextRune);
+                await playSequence();
+            };
+
+            pads.forEach((pad, idx) => {
+                pad.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!acceptingInput) return;
+
+                    pad.classList.add('runa-active');
+                    setTimeout(() => pad.classList.remove('runa-active'), 180);
+
+                    if (idx === sequence[inputIndex]) {
+                        inputIndex++;
+                        if (inputIndex >= sequence.length) {
+                            acceptingInput = false;
+                            if (level >= rounds) {
+                                finish(true);
+                            } else {
+                                statusEl.textContent = '¡Bien!';
+                                await wait(600);
+                                await nextLevel();
+                            }
+                        }
+                    } else {
                         finish(false);
                     }
                 });
@@ -2139,6 +2301,17 @@ class VisualNovelEngine {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    waitForActionClick() {
+        return new Promise(resolve => {
+            const clickHandler = () => {
+                document.removeEventListener('click', clickHandler);
+                resolve();
+            };
+
+            document.addEventListener('click', clickHandler);
+        });
+    }
+
     async displayDialog(line) {
         // Actualizar debug panel si está activo
         if (this.debugMode) {
@@ -2410,7 +2583,13 @@ class VisualNovelEngine {
 
     hideDialog() {
         const dialogBox = document.getElementById('dialog-box');
+        const characterName = document.getElementById('character-name');
+        const dialogText = document.getElementById('dialog-text');
+
         dialogBox.classList.remove('active');
+        if (characterName) characterName.textContent = '';
+        if (dialogText) dialogText.textContent = '';
+        this.isWaitingForInput = false;
     }
 
     reset() {
