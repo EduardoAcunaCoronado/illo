@@ -2,21 +2,20 @@
   "name": "Edu",
   "color": "#FF6B9D",
   "poses": {
-    "neutral": "assets/characters/Edu.png",
-    "happy": "assets/characters/edu_happy.png",
-    "sad": "assets/characters/edu_sad.png",
-    "angry": "assets/characters/edu_angry.png",
-    "surprised": "assets/characters/edu_surprised.png",
-    "determined": "assets/characters/edu_determined.png",
-    "embarrassed": "assets/characters/edu_embarrassed.png",
-    "epic": "assets/characters/edu_epic.png",
-    "facepalm": "assets/characters/edu_facepalm.png",
-    "shocked": "assets/characters/edu_shocked.png",
-    "thinking": "assets/characters/edu_thinking.png",
-    "worried": "assets/characters/edu_worried.png",
-    "bua": "assets/characters/edu_bua.png",
-    "clapping": "assets/characters/edu_clapping.png",
-    "riku": "assets/characters/edu_riku.png"
+    "happy": "assets/characters/edu/edu_happy.png",
+    "sad": "assets/characters/edu/edu_sad.png",
+    "angry": "assets/characters/edu/edu_angry.png",
+    "surprised": "assets/characters/edu/edu_surprised.png",
+    "determined": "assets/characters/edu/edu_determined.png",
+    "embarrassed": "assets/characters/edu/edu_embarrassed.png",
+    "bua": "assets/characters/edu/edu_bua.png",
+    "clapping": "assets/characters/edu/edu_clapping.png",
+    "epic": "assets/characters/edu/edu_epic.png",
+    "facepalm": "assets/characters/edu/edu_facepalm.png",
+    "shocked": "assets/characters/edu/edu_shocked.png",
+    "thinking": "assets/characters/edu/edu_thinking.png",
+    "worried": "assets/characters/edu/edu_worried.png",
+    "riku": "assets/characters/edu/edu_riku.png"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "happy"
 }

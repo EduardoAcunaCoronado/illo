@@ -2,19 +2,19 @@
   "name": "Samu",
   "color": "gray",
   "poses": {
-    "neutral": "assets/characters/samu.png",
-    "happy": "assets/characters/samu_happy.png",
-    "sad": "assets/characters/samu_sad.png",
-    "angry": "assets/characters/samu_angry.png",
-    "surprised": "assets/characters/samu_surprised.png",
-    "alarmed": "assets/characters/samu_alarmed.png",
-    "bua": "assets/characters/samu_bua.png",
-    "clapping": "assets/characters/samu_clapping.png",
-    "determined": "assets/characters/samu_determined.png",
-    "embarrassed": "assets/characters/samu_embarrassed.png",
-    "shocked": "assets/characters/samu_shocked.png",
-    "thinking": "assets/characters/samu_thinking.png",
-    "worried": "assets/characters/samu_worried.png"
+    "neutral": "assets/characters/samu/samu.png",
+    "happy": "assets/characters/samu/samu_happy.png",
+    "sad": "assets/characters/samu/samu_sad.png",
+    "angry": "assets/characters/samu/samu_angry.png",
+    "surprised": "assets/characters/samu/samu_surprised.png",
+    "alarmed": "assets/characters/samu/samu_alarmed.png",
+    "bua": "assets/characters/samu/samu_bua.png",
+    "clapping": "assets/characters/samu/samu_clapping.png",
+    "determined": "assets/characters/samu/samu_determined.png",
+    "embarrassed": "assets/characters/samu/samu_embarrassed.png",
+    "shocked": "assets/characters/samu/samu_shocked.png",
+    "thinking": "assets/characters/samu/samu_thinking.png",
+    "worried": "assets/characters/samu/samu_worried.png"
   },
   "defaultPose": "neutral"
 }
