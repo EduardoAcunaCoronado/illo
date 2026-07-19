@@ -355,9 +355,23 @@ class VisualNovelEngine {
             case 'rhythm':
                 await this.playRhythmMinigame(action);
                 break;
+            case 'battle':
+                await this.playBattleMinigame(action);
+                break;
             default:
                 console.warn(`Minijuego desconocido: ${action.game}`);
         }
+    }
+
+    async playBattleMinigame(options = {}) {
+        this.isWaitingForInput = false;
+
+        if (!window.BattleMinigame) {
+            console.warn('BattleMinigame no está cargado.');
+            return false;
+        }
+
+        return await window.BattleMinigame.play(options);
     }
 
     // Minijuego: Samu come ketchup y esquiva guindillas.

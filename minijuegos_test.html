@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba de minijuegos — Con pelos y a lo loco</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="battle-styles.css">
     <style>
         body { background: #05010f; }
         #test-panel {
@@ -46,6 +47,39 @@
         .tp-btn:active { transform: translateY(1px); }
         .tp-music { display: flex; align-items: center; gap: 8px; font-size: 13px; opacity: .85; margin-top: 6px; }
         .tp-hint { font-size: 12px; opacity: .55; max-width: 460px; line-height: 1.5; }
+        .tp-battle-row { align-items: stretch; }
+        .tp-battle-card {
+            display: grid;
+            gap: 8px;
+            min-width: 170px;
+            padding: 12px;
+            border: 1px solid color-mix(in srgb, var(--c, #b04fff) 68%, transparent);
+            border-radius: 12px;
+            background: color-mix(in srgb, var(--c, #b04fff) 12%, #08020f);
+            box-shadow: 0 0 14px color-mix(in srgb, var(--c,#b04fff) 28%, transparent);
+        }
+        .tp-battle-card label {
+            display: grid;
+            gap: 5px;
+            color: #d8e2ff;
+            font-size: 12px;
+            text-align: left;
+        }
+        .tp-battle-card input {
+            width: 100%;
+            border: 1px solid color-mix(in srgb, var(--c, #b04fff) 60%, #fff);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.45);
+            color: #fff;
+            font-size: 15px;
+            padding: 8px;
+        }
+        .tp-battle-card .tp-btn {
+            width: 100%;
+            min-width: 0;
+            padding: 10px 12px;
+            border-radius: 9px;
+        }
         #tp-result {
             min-height: 22px; font-size: 15px; color: #ffd166; font-weight: bold;
             text-shadow: 0 0 10px rgba(255,209,102,.6);
@@ -82,9 +116,39 @@
         <label class="tp-music">
             <input type="checkbox" id="tp-auto"> 🤖 Modo auto (se juega solo, para comprobar el ritmo)
         </label>
+
+        <h2>⚔️ Battle</h2>
+        <div class="tp-row tp-battle-row">
+            <div class="tp-battle-card" style="--c:#d8a05c">
+                <label>HP Ballerina
+                    <input id="hp-ballerina_capuchina" type="number" min="1" step="1" value="420">
+                </label>
+                <button class="tp-btn" onclick="launchBattle('ballerina_capuchina')">Ballerina</button>
+            </div>
+            <div class="tp-battle-card" style="--c:#2f9fe8">
+                <label>HP Tralalero
+                    <input id="hp-tralalelo_tralala" type="number" min="1" step="1" value="520">
+                </label>
+                <button class="tp-btn" onclick="launchBattle('tralalelo_tralala')" disabled>Tralalero</button>
+            </div>
+            <div class="tp-battle-card" style="--c:#d28a24">
+                <label>HP Tung Tung
+                    <input id="hp-tung_tung_tung_sahur" type="number" min="1" step="1" value="620">
+                </label>
+                <button class="tp-btn" onclick="launchBattle('tung_tung_tung_sahur')" disabled>Tung Tung</button>
+            </div>
+            <div class="tp-battle-card" style="--c:#b04fff">
+                <label>HP Amalgama
+                    <input id="hp-amalgama" type="number" min="1" step="1" value="760">
+                </label>
+                <button class="tp-btn" onclick="launchBattle('amalgama')" disabled>Amalgama</button>
+            </div>
+        </div>
+
     </div>
 
     <script src="engine.js"></script>
+    <script src="battle-minigame.js"></script>
     <script>
         const engine = new VisualNovelEngine();
         const panel = document.getElementById('test-panel');
@@ -168,6 +232,25 @@
             const won = await engine.runVocalEchoRound(Object.assign({}, VOCAL[preset]));
             stopMusic();
             resultEl.textContent = won ? '✅ ¡Dúo perfecto!' : '❌ Desafinaste. ¡Inténtalo otra vez!';
+            panel.classList.remove('hidden');
+        }
+
+        function getBattleHp(enemy) {
+            const input = document.getElementById('hp-' + enemy);
+            const hp = input ? parseInt(input.value, 10) : NaN;
+            return Number.isFinite(hp) && hp > 0 ? hp : undefined;
+        }
+
+        async function launchBattle(enemy) {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            startMusic(enemy === 'ballerina_capuchina' ? 'ballerina_capuchina_battle.mp3' : 'brainrot_theme.mp3');
+            const options = { game: 'battle', enemy };
+            const enemyHp = getBattleHp(enemy);
+            if (enemyHp) options.enemyHp = enemyHp;
+            const won = await engine.playBattleMinigame(options);
+            stopMusic();
+            resultEl.textContent = won ? '✅ ¡Victoria en combate!' : '❌ Game Over en combate.';
             panel.classList.remove('hidden');
         }
     </script>

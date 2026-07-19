@@ -1626,6 +1626,16 @@
           ]
         },
         {
+          "actions": [
+            {
+              "type": "minigame",
+              "game": "battle",
+              "enemy": "ballerina_capuchina",
+              "enemyHp": 420
+            }
+          ]
+        },
+        {
           "character": "Ballerina Capuchina",
           "speakingAs": "ballerina_capuchina",
           "text": "Ay, qué monísimos. De verdad pensabais que estabais ganando. Solo necesitaba que siguierais bailando conmigo mientras los otros abrían camino.",
