@@ -368,8 +368,16 @@ class VisualNovelEngine {
         const duration = options.duration || 0;   // 0 = sin límite de tiempo
         const ketchupIcon = this.cacheBustAsset('assets/minigames/ketchup.png');
         const chiliIcon = this.cacheBustAsset('assets/minigames/chili.png');
+        const musicTrack = options.music || 'assets/music/ketchup.mp3';
 
         return new Promise(resolve => {
+            // Reproducir música del minijuego
+            const musicAudio = new Audio(musicTrack);
+            musicAudio.loop = true;
+            musicAudio.volume = 0.6;
+            musicAudio.play().catch(() => {
+                // Silenciosamente fallar si no se puede reproducir
+            });
             // --- Crear overlay del minijuego ---
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay';
@@ -379,7 +387,7 @@ class VisualNovelEngine {
                     <span class="mg-lives">❤️ ${maxHits}</span>
                 </div>
                 <div class="minigame-field" id="mg-field">
-                    <div class="mg-player" id="mg-player">🐺</div>
+                    <div class="mg-player" id="mg-player"><img src="${this.cacheBustAsset('assets/minigames/samu_player.png')}" alt="Samu" draggable="false"></div>
                 </div>
                 <div class="minigame-instructions">Mueve con ← → (o el ratón). ¡Come <img class="mg-inline-icon" src="${ketchupIcon}" alt="ketchup"> y esquiva <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla">!</div>
             `;
@@ -458,6 +466,10 @@ class VisualNovelEngine {
                 document.removeEventListener('keydown', keyDown);
                 document.removeEventListener('keyup', keyUp);
                 field.removeEventListener('mousemove', mouseMove);
+
+                // Detener música
+                musicAudio.pause();
+                musicAudio.currentTime = 0;
 
                 // Mensaje final breve
                 const result = document.createElement('div');
@@ -649,7 +661,7 @@ class VisualNovelEngine {
                 </div>
                 <div class="minigame-field" id="mg-field-gatos">
                     <div class="mg-maze" id="mg-maze"></div>
-                    <div class="mg-player" id="mg-player-gatos">🐺</div>
+                    <div class="mg-player" id="mg-player-gatos"><img src="${this.cacheBustAsset('assets/minigames/samu_player.png')}" alt="Samu" draggable="false"></div>
                 </div>
                 <div class="minigame-instructions">¡Recorre las calles con ← ↑ → ↓ (o WASD) y aguanta sin que te pillen los gatos!</div>
             `;
@@ -716,13 +728,18 @@ class VisualNovelEngine {
                 { c: cols - 2, r: 1 }, { c: 1, r: rows - 2 },
                 { c: Math.floor(cols / 2), r: 1 }, { c: Math.floor(cols / 2), r: rows - 2 }
             ].map(p => snapStreet(p.c, p.r));
+            const catImages = [
+                this.cacheBustAsset('assets/minigames/me-perdonas.png'),
+                this.cacheBustAsset('assets/minigames/te-perdono.png'),
+                this.cacheBustAsset('assets/minigames/no-te-perdono.png')
+            ];
             const cats = [];
             for (let i = 0; i < catCount; i++) {
                 const s = catStarts[i % catStarts.length];
                 const el = document.createElement('div');
                 el.className = 'mg-cat';
                 const catImg = document.createElement('img');
-                catImg.src = catIcon;
+                catImg.src = catImages[i % catImages.length];
                 catImg.alt = 'gato';
                 catImg.draggable = false;
                 el.appendChild(catImg);

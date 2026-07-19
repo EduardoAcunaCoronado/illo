@@ -846,6 +846,18 @@ html, body {
     line-height: 1;
     user-select: none;
     transition: left 0.05s linear;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mg-player img {
+    display: block;
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
 }
 
 .mg-item {
@@ -1010,6 +1022,12 @@ html, body {
     font-size: 34px;
     filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.8));
     z-index: 3;
+}
+
+.gatos-minigame .mg-player img {
+    height: 60px;
+    width: auto;
+    filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.8));
 }
 
 .mg-cat {
