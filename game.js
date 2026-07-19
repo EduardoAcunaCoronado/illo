@@ -5,17 +5,8 @@ let clickHandler = null;
 let currentChapterNumber = 0;
 let currentChapterName = null;
 
-// Capítulos disponibles para el selector de "Cargar"
-const AVAILABLE_CHAPTERS = [
-    { id: 'chapter0', title: 'Prólogo' },
-    { id: 'chapter1', title: 'Capítulo 1: Decisiones' },
-    { id: 'chapter2-edu', title: 'Capítulo 2: Kingdom Ketchup (Edu)' },
-    { id: 'chapter2-tony', title: 'Capítulo 2: Ecchi Land (Tony)' },
-    { id: 'chapter2-jose', title: 'Capítulo 2: Paloma City (José)' },
-    { id: 'chapter3-edu', title: 'Capítulo 3: Ruta de Edu' },
-    { id: 'chapter3-tony', title: 'Capítulo 3: Ruta de Tony' },
-    { id: 'chapter3-jose', title: 'Capítulo 3: Ruta de José' }
-];
+// Capítulos disponibles para el selector de "Cargar" (se cargan dinámicamente)
+let AVAILABLE_CHAPTERS = [];
 
 // Elementos del DOM
 const gameContainer = document.getElementById('game-container');
@@ -34,6 +25,27 @@ document.addEventListener('DOMContentLoaded', initGame);
 
 async function initGame() {
     console.log('Visual Novel Engine inicializado');
+    await loadAvailableChapters();
+}
+
+async function loadAvailableChapters() {
+    AVAILABLE_CHAPTERS = [];
+    // Intentar cargar cada capítulo chapter0-chapter99
+    for (let i = 0; i < 100; i++) {
+        const chapterId = `chapter${i}`;
+        try {
+            const response = await fetch(`chapters/${chapterId}.json?v=${Date.now()}`, {
+                cache: 'no-store'
+            });
+            if (response.ok) {
+                const chapter = await response.json();
+                const title = chapter.title || `Capítulo ${i}`;
+                AVAILABLE_CHAPTERS.push({ id: chapterId, title });
+            }
+        } catch (error) {
+            // Silenciosamente ignorar errores
+        }
+    }
 }
 
 async function loadAllCharacters() {
@@ -237,6 +249,9 @@ function showChapterSelector() {
     // Evitar duplicados si ya está abierto
     if (document.getElementById('chapter-selector')) return;
 
+    // Ocultar menú principal
+    mainMenu.classList.add('hidden');
+
     const selector = document.createElement('div');
     selector.id = 'chapter-selector';
     selector.className = 'chapter-selector';
@@ -269,6 +284,7 @@ function showChapterSelector() {
 
     document.getElementById('chapter-selector-back').addEventListener('click', () => {
         selector.remove();
+        mainMenu.classList.remove('hidden');
     });
 }
 
@@ -284,14 +300,9 @@ async function startChapterFromSelector(chapterId) {
 
     isGameRunning = true;
 
-    // Si el id es numérico (chapterN), pasar el número para mantener la
-    // secuencia correcta; si no, pasar el nombre de la rama directamente
-    const numericMatch = chapterId.match(/^chapter(\d+)$/);
-    const identifier = numericMatch ? parseInt(numericMatch[1], 10) : chapterId;
-
     // Cargar personajes y arrancar el capítulo seleccionado
     await loadAllCharacters();
-    await playChapter(identifier);
+    await playChapter(chapterId);
 }
 
 function saveGame() {
