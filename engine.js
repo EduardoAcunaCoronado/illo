@@ -2083,12 +2083,8 @@ class VisualNovelEngine {
             charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
             charElement.classList.add('active');
 
-            // Aplicar flip horizontal si está especificado
-            if (flipped) {
-                charElement.style.transform = 'scaleX(-1)';
-            } else {
-                charElement.style.transform = 'scaleX(1)';
-            }
+            // Aplicar flip horizontal si está especificado (sin animación)
+            charElement.style.transform = flipped ? 'scaleX(-1)' : 'scaleX(1)';
 
             // Rastrear posición del personaje
             this.characterPositions[characterKey] = position;
