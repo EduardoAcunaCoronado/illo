@@ -2,11 +2,11 @@
   "name": "Pod",
   "color": "gray",
   "poses": {
-    "neutral": "assets/characters/pod.png",
-    "happy": "assets/characters/pod_happy.png",
-    "sad": "assets/characters/pod.png",
-    "angry": "assets/characters/pod.png",
-    "surprised": "assets/characters/pod.png"
+    "neutral": "assets/characters/others/pod.png",
+    "happy": "assets/characters/others/pod_happy.png",
+    "sad": "assets/characters/others/pod.png",
+    "angry": "assets/characters/others/pod.png",
+    "surprised": "assets/characters/others/pod.png"
   },
   "defaultPose": "neutral"
 }
