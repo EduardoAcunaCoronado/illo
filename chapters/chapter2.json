@@ -1082,7 +1082,15 @@
         },
         {
           "character": "2B",
-          "text": "La pantalla muestra el anuncio: 'CONCIERTO EXCLUSIVO - Seraphyna en Ecchi Land. Calle Hentai, nº 69. Una noche que no olvidarás.'"
+          "text": "La pantalla muestra el anuncio: 'CONCIERTO EXCLUSIVO - Seraphyna en Ecchi Land. Calle Hentai, nº 69. Una noche que no olvidarás.'",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "iphone5",
+              "position": "left",
+              "pose": "concierto"
+            }
+          ]
         },
         {
           "character": "Edu",
@@ -1098,7 +1106,7 @@
         },
         {
           "character": "Samu",
-          "text": "Espera, espera... Zip me comentó que Kingdom Ketchup fue creado para corromperte... Y Ecchi Land... Eso suena muy Tony, seguro que es un lugar creado para corromperle a él. Debemos ir a salvarle.",
+          "text": "Espera, espera... Zip me comentó que Kingdom Ketchup fue creado para corromperte... Y Seraphyna... Ecchi Land... Eso suena muy Tony, seguro que es un lugar creado para corromperle a él. Debemos ir a salvarle.",
           "actions": [
             {
               "type": "showCharacter",
