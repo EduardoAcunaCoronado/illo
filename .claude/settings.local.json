@@ -66,7 +66,8 @@
       "PowerShell(\\(Get-Content \"c:\\\\Proyectos\\\\illo\\\\chapters\\\\chapter1.json\" | Measure-Object -Line\\).Lines)",
       "Bash(python -m http.server 8000)",
       "PowerShell(Get-Content 'c:\\\\Proyectos\\\\illo\\\\chapters\\\\chapter1.json' | ConvertFrom-Json | Select-Object -ExpandProperty scenes | ForEach-Object { $_.lines | Where-Object { $_.actions -and -not $_.text -and -not $_.character } } | ConvertTo-Json -Depth 10)",
-      "PowerShell(Get-Content 'c:\\\\Proyectos\\\\illo\\\\chapters\\\\chapter0.json' | ConvertFrom-Json | Select-Object -ExpandProperty scenes | ForEach-Object { $_.lines | Where-Object { $_.actions -and -not $_.text -and -not $_.character } } | ConvertTo-Json -Depth 10)"
+      "PowerShell(Get-Content 'c:\\\\Proyectos\\\\illo\\\\chapters\\\\chapter0.json' | ConvertFrom-Json | Select-Object -ExpandProperty scenes | ForEach-Object { $_.lines | Where-Object { $_.actions -and -not $_.text -and -not $_.character } } | ConvertTo-Json -Depth 10)",
+      "Bash(python -)"
     ]
   }
 }
