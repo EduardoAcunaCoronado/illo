@@ -2028,7 +2028,7 @@
             {
               "type": "minigame",
               "game": "runa",
-              "rounds": 5,
+              "rounds": 10,
               "flashMs": 600,
               "gapMs": 250
             }
