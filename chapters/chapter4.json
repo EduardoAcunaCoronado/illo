@@ -163,19 +163,7 @@
         },
         {
           "character": "Jose",
-          "text": "Normal que estornude... con tanto olor a guano.",
-          "actions": [
-            {
-              "type": "hideCharacter",
-              "position": "left"
-            },
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "position": "left",
-              "pose": "silueta"
-            }
-          ]
+          "text": "Normal que estornude... con tanto olor a guano."
         },
         {
           "actions": [
@@ -433,7 +421,7 @@
           "text": "Vale... y la zorra es... espera... ¿Tony?",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "thinking"
@@ -458,7 +446,7 @@
           "text": "Pero... eres una chica.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "surprised"
@@ -511,7 +499,7 @@
           "text": "Sabía que eras Edu...",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "embarrassed"
@@ -535,7 +523,7 @@
           "text": "Era el más fácil de todos.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "happy"
@@ -559,7 +547,7 @@
           "text": "Porque eres el único dragón azul con una camiseta de Kingdom Hearts.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "happy"
@@ -636,7 +624,7 @@
           "text": "Cada uno tiene sus secretitos.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "neutral"
@@ -673,7 +661,7 @@
           "text": "Mi personaje se llama Piyón. Es un guerrero criado por las palomas de esta ciudad.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "neutral"
@@ -697,7 +685,7 @@
           "text": "Sí. Encontraron un huevo de lagarto, lo incubaron y lo criaron como a uno de los suyos. Piyón creció convencido de que era una paloma especialmente grande.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "neutral"
@@ -721,7 +709,7 @@
           "text": "Las palomas son una familia muy inclusiva.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "happy"
@@ -758,7 +746,7 @@
           "text": "No es una máscara.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "neutral"
@@ -774,7 +762,7 @@
           "text": "...Vale, sí es una máscara. Pero queda mejor si mantengo el misterio.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "happy"
@@ -836,7 +824,7 @@
           "text": "Sí, aquí se comportan de forma distinta. Están buscando algo bajo la ciudad.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "neutral"
@@ -860,7 +848,7 @@
           "text": "Bajo la ciudad hay un santuario central, y los memes están intentando entrar. El problema es que sus accesos no se abren solo a espadazos: Piyón puede romper casi cualquier cosa y aguantar golpes, pero la magia, la velocidad y la luz no son precisamente su fuerte. Para eso os necesito.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "neutral"
@@ -885,7 +873,7 @@
           "text": "También tengo suerte.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "happy"
@@ -909,7 +897,7 @@
           "text": "Una cantidad estadísticamente irritante.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "neutral"
@@ -944,7 +932,7 @@
           "text": "Por eso os necesito. Esta ciudad reconoce las clases de los avatares. Si conseguimos que responda a vosotros, podremos abrir el camino al santuario.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "determined"
@@ -968,7 +956,7 @@
           "text": "Puede que no las eligierais conscientemente. Pero vuestros avatares sí tienen una forma de luchar. La ciudad solo necesita despertarla.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "neutral"
@@ -1363,7 +1351,7 @@
           "text": "No lo es.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "angry"
@@ -1828,7 +1816,7 @@
           "text": "No la han abierto. Se han filtrado por las grietas del sello. Los brainrot no respetan las reglas de la ciudad: son contenido corrupto, ruido digital con patas. Pueden colarse por donde la barrera está dañada.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "worried"
@@ -1853,7 +1841,7 @@
           "text": "Exacto. Ellos pueden colarse como glitch, pero nosotros no atravesamos una puerta de piedra de diez toneladas por mucho entusiasmo que le pongamos. Tenemos que abrirla usando nuestras habilidades a la vez.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "determined"
@@ -1902,7 +1890,7 @@
           "text": "Y yo golpearé mi losa.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "determined"
@@ -1926,7 +1914,7 @@
           "text": "Conozco mis virtudes.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "happy"
@@ -1938,7 +1926,7 @@
           "text": "La puerta no se abre con cualquier orden.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "thinking"
@@ -1962,7 +1950,7 @@
           "text": "De nuestras habilidades. La barrera encenderá los símbolos en una secuencia: magia de Samu, velocidad de Edu, luz de Seraphine y fuerza de Piyón osea yo Jose. Tenemos que repetirla sin fallar.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "determined"
@@ -1999,7 +1987,7 @@
           "text": "Bien. Ahora sí: cada uno a su mecanismo.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "determined"
@@ -2201,7 +2189,7 @@
           "text": "No sé qué nos espera al otro lado de este túnel, pero esta vez no voy solo. Pase lo que pase ahí abajo, lo enfrentaremos juntos.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "jose",
               "position": "right",
               "pose": "determined"
