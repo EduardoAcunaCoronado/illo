@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba de minijuegos — Con pelos y a lo loco</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="battle-styles.css">
+    <link rel="stylesheet" href="battle-styles.css?v=20260720-9">
     <style>
         body { background: #05010f; }
         #test-panel {
@@ -129,26 +129,31 @@
                 <label>HP Tralalero
                     <input id="hp-tralalelo_tralala" type="number" min="1" step="1" value="520">
                 </label>
-                <button class="tp-btn" onclick="launchBattle('tralalelo_tralala')" disabled>Tralalero</button>
+                <button class="tp-btn" onclick="launchBattle('tralalelo_tralala')" >Tralalero</button>
             </div>
             <div class="tp-battle-card" style="--c:#d28a24">
                 <label>HP Tung Tung
                     <input id="hp-tung_tung_tung_sahur" type="number" min="1" step="1" value="620">
                 </label>
-                <button class="tp-btn" onclick="launchBattle('tung_tung_tung_sahur')" disabled>Tung Tung</button>
+                <button class="tp-btn" onclick="launchBattle('tung_tung_tung_sahur')" >Tung Tung</button>
             </div>
             <div class="tp-battle-card" style="--c:#b04fff">
                 <label>HP Amalgama
                     <input id="hp-amalgama" type="number" min="1" step="1" value="760">
                 </label>
-                <button class="tp-btn" onclick="launchBattle('amalgama')" disabled>Amalgama</button>
+                <button class="tp-btn" onclick="launchBattle('amalgama')" >Amalgama</button>
             </div>
         </div>
+
+
+        <label class="tp-music">
+            <input type="checkbox" id="tp-battle-debug-stats"> Mostrar HP/PM del enemigo en Battle
+        </label>
 
     </div>
 
     <script src="engine.js"></script>
-    <script src="battle-minigame.js"></script>
+    <script src="battle-minigame.js?v=20260720-8"></script>
     <script>
         const engine = new VisualNovelEngine();
         const panel = document.getElementById('test-panel');
@@ -168,6 +173,7 @@
         };
 
         function musicOn() { return document.getElementById('tp-music-on').checked; }
+        function battleDebugStatsOn() { return document.getElementById('tp-battle-debug-stats').checked; }
 
         function startMusic(file) {
             if (!musicOn()) return;
@@ -245,7 +251,7 @@
             resultEl.textContent = '';
             panel.classList.add('hidden');
             startMusic(enemy === 'ballerina_capuchina' ? 'ballerina_capuchina_battle.mp3' : 'brainrot_theme.mp3');
-            const options = { game: 'battle', enemy };
+            const options = { game: 'battle', enemy, debugStats: battleDebugStatsOn() };
             const enemyHp = getBattleHp(enemy);
             if (enemyHp) options.enemyHp = enemyHp;
             const won = await engine.playBattleMinigame(options);
