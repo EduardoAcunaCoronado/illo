@@ -2,19 +2,19 @@
   "name": "Tony",
   "color": "#ff69b4",
   "poses": {
-    "neutral": "assets/characters/tony.png",
-    "happy": "assets/characters/tony_happy.png",
-    "sad": "assets/characters/tony_sad.png",
-    "angry": "assets/characters/tony_angry.png",
-    "surprised": "assets/characters/tony_surprised.png",
-    "alarmed": "assets/characters/tony_alarmed.png",
-    "determined": "assets/characters/tony_determined.png",
-    "embarrassed": "assets/characters/tony_embarrassed.png",
-    "shocked": "assets/characters/tony_shocked.png",
-    "worried": "assets/characters/tony_worried.png",
-    "flirt": "assets/characters/tony_flirt.png",
-    "giggle": "assets/characters/tony_giggle.png",
-    "eyeroll": "assets/characters/tony_eyeroll.png"
+    "neutral": "assets/characters/tony/tony.png",
+    "happy": "assets/characters/tony/tony_happy.png",
+    "sad": "assets/characters/tony/tony_sad.png",
+    "angry": "assets/characters/tony/tony_angry.png",
+    "surprised": "assets/characters/tony/tony_surprised.png",
+    "alarmed": "assets/characters/tony/tony_alarmed.png",
+    "determined": "assets/characters/tony/tony_determined.png",
+    "embarrassed": "assets/characters/tony/tony_embarrassed.png",
+    "shocked": "assets/characters/tony/tony_shocked.png",
+    "worried": "assets/characters/tony/tony_worried.png",
+    "flirt": "assets/characters/tony/tony_flirt.png",
+    "giggle": "assets/characters/tony/tony_giggle.png",
+    "eyeroll": "assets/characters/tony/tony_eyeroll.png"
   },
   "defaultPose": "flirt"
 }

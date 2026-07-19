@@ -2,8 +2,8 @@
   "name": "iphone5",
   "color": "gray",
   "poses": {
-    "neutral": "assets/characters/iphone5.png",
-    "concierto": "assets/characters/iphone5-concierto.png"
+    "neutral": "assets/characters/others/iphone5.png",
+    "concierto": "assets/characters/others/iphone5-concierto.png"
   },
   "defaultPose": "neutral"
 }
