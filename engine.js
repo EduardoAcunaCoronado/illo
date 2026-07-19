@@ -19,7 +19,18 @@ class VisualNovelEngine {
         this.completedCalls = []; // Rastrear las llamadas completadas
         this.nextChapter = null; // Capítulo a cargar (ruta ramificada elegida)
         this.rescued = []; // Personajes rescatados, en orden (persiste entre capítulos)
+        this.inventory = []; // Objetos conseguidos (p. ej. 'diapason'); persiste entre capítulos
         this.storyDelay = 0; // Retraso acumulado por las decisiones de ruta dentro de un capítulo
+    }
+
+    // Añade un objeto al inventario (sin duplicar). Persiste entre capítulos.
+    addItem(name) {
+        if (name && !this.inventory.includes(name)) this.inventory.push(name);
+    }
+
+    // Indica si el jugador tiene un objeto en el inventario.
+    hasItem(name) {
+        return this.inventory.includes(name);
     }
 
     async loadChapter(chapterName) {
@@ -136,6 +147,10 @@ class VisualNovelEngine {
             case 'setVariable':
                 this.gameState[action.variable] = action.value;
                 break;
+            case 'giveItem':
+            case 'addItem':
+                this.addItem(action.item || action.value);
+                break;
             case 'playSound':
                 // Soportar tanto formato antiguo (action.value) como nuevo (action.path + opciones)
                 const soundPath = action.path || action.value;
@@ -181,7 +196,76 @@ class VisualNovelEngine {
             case 'goToScene':
                 this.jumpToScene(action.value);
                 break;
+            case 'playVideo':
+            case 'cutscene':
+                await this.playVideo(action);
+                break;
         }
+    }
+
+    // Reproduce un vídeo/cutscene a pantalla completa (p. ej. el opening de Tony).
+    // El vídeo trae su propio audio; se pausa la música del juego mientras dura y
+    // se reanuda al terminar. Se puede saltar con clic / Esc / Enter / Espacio.
+    playVideo(action = {}) {
+        const src = action.path || action.value || action.src;
+        if (!src) { console.warn('playVideo: falta la ruta del vídeo'); return Promise.resolve(); }
+
+        // Pausar la música que esté sonando para no solaparla con el audio del vídeo.
+        const paused = [];
+        const tryPause = (audio) => {
+            if (audio && !audio.paused) { try { audio.pause(); paused.push(audio); } catch (e) {} }
+        };
+        tryPause(this.currentMusic);
+        for (const a of Object.values(this.audioInstances || {})) tryPause(a);
+
+        this.isWaitingForInput = false;
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'cutscene-overlay';
+
+            const video = document.createElement('video');
+            video.className = 'cutscene-video';
+            video.src = this.cacheBustAsset(src);
+            video.setAttribute('playsinline', '');
+            video.autoplay = true;
+            video.controls = false;
+            video.muted = !!action.muted;
+
+            const skipHint = document.createElement('div');
+            skipHint.className = 'cutscene-skip';
+            skipHint.textContent = 'Clic para saltar ▶▶';
+
+            overlay.appendChild(video);
+            overlay.appendChild(skipHint);
+            document.getElementById('game-container').appendChild(overlay);
+
+            let done = false;
+            const finish = () => {
+                if (done) return;
+                done = true;
+                document.removeEventListener('keydown', onKey);
+                try { video.pause(); } catch (e) {}
+                overlay.remove();
+                for (const a of paused) { try { a.play().catch(() => {}); } catch (e) {} }
+                resolve();
+            };
+
+            const onKey = (e) => {
+                if (['Escape', 'Enter', ' ', 'Spacebar'].includes(e.key)) { e.preventDefault(); finish(); }
+            };
+
+            video.addEventListener('ended', finish);
+            video.addEventListener('error', finish);
+            overlay.addEventListener('click', finish);
+            document.addEventListener('keydown', onKey);
+
+            // Autoplay puede fallar si el navegador exige gesto: ofrecer clic para arrancar.
+            const p = video.play();
+            if (p && p.catch) {
+                p.catch(() => { skipHint.textContent = 'Clic para reproducir ▶'; });
+            }
+        });
     }
 
     // Salta a una escena por título (o índice) dentro del capítulo actual.
@@ -244,6 +328,12 @@ class VisualNovelEngine {
                 break;
             case 'gatos':
                 await this.playGatosMinigame(action);
+                break;
+            case 'vocalecho':
+                await this.playVocalEchoMinigame(action);
+                break;
+            case 'rhythm':
+                await this.playRhythmMinigame(action);
                 break;
             default:
                 console.warn(`Minijuego desconocido: ${action.game}`);
@@ -950,6 +1040,17 @@ class VisualNovelEngine {
     async playPalomaMinigame(options = {}) {
         this.isWaitingForInput = false;
 
+        // Bonus del Diapasón de Plata (recompensa por rescatar a Tony antes que a
+        // José): "afina" las palomas → secuencia más lenta y una ronda menos.
+        if (this.hasItem('diapason')) {
+            options = Object.assign({}, options, {
+                flashMs: Math.round((options.flashMs || 600) * 1.4),
+                gapMs: Math.round((options.gapMs || 250) * 1.25),
+                rounds: Math.max(1, (options.rounds || 5) - 1),
+                diapason: true
+            });
+        }
+
         let won = false;
         while (!won) {
             won = await this.runPalomaRound(options);
@@ -983,7 +1084,7 @@ class VisualNovelEngine {
                         <button class="paloma-pad" data-index="${i}">${p}</button>
                     `).join('')}
                 </div>
-                <div class="minigame-instructions">Memoriza la secuencia de palomas y repítela.</div>
+                <div class="minigame-instructions">${options.diapason ? '🔉 El Diapasón de Plata afina las palomas: van más lentas. ' : ''}Memoriza la secuencia de palomas y repítela.</div>
             `;
             document.getElementById('game-container').appendChild(overlay);
 
@@ -1079,6 +1180,684 @@ class VisualNovelEngine {
             });
 
             nextLevel();
+        });
+    }
+
+    // ============================================================
+    // Minijuego: "Vocal Echo / Dúo" (Simon musical) — capítulo de Tony.
+    // Tony canta una secuencia de notas (pads que se iluminan y suenan con
+    // Web Audio); el jugador la repite. Arranca con `startLength` notas y
+    // crece cada estrofa hasta completar `rounds`. Escala con speed/strictTempo.
+    // ============================================================
+    async playVocalEchoMinigame(options = {}) {
+        this.isWaitingForInput = false;
+        let won = false;
+        while (!won) {
+            won = await this.runVocalEchoRound(options);
+            if (!won) {
+                await this.showMinigameRetry('¡Desafinaste! 🎤 Escucha otra vez a Tony.');
+            }
+        }
+        return won;
+    }
+
+    runVocalEchoRound(options = {}) {
+        const rounds = options.rounds || 4;
+        const startLength = options.startLength || 3;
+        const speed = options.speed || 1.0;            // >1 = Tony canta más rápido
+        const strictTempo = !!options.strictTempo;     // exigir repetir sin dormirse
+        const flashMs = Math.max(170, Math.round(520 / speed));
+        const gapMs = Math.max(80, Math.round(240 / speed));
+
+        // Pads pentatónicos con colores neón de Ecchi Land
+        const pads = [
+            { freq: 523.25, label: '🎵', color: '#ff4fa3' }, // C5 magenta
+            { freq: 587.33, label: '🎶', color: '#4fd0ff' }, // D5 cian
+            { freq: 659.25, label: '🎵', color: '#b04fff' }, // E5 morado
+            { freq: 783.99, label: '🎶', color: '#ff8cf0' }  // G5 rosa
+        ];
+
+        this.isWaitingForInput = false;
+
+        return new Promise(resolve => {
+            let audioCtx = null;
+            const ensureAudio = () => {
+                if (!audioCtx) {
+                    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+                    catch (e) { audioCtx = null; }
+                }
+                if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+                return audioCtx;
+            };
+            const playTone = (freq, dur = 0.3) => {
+                const ctx = ensureAudio();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.28, ctx.currentTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+                osc.connect(gain); gain.connect(ctx.destination);
+                osc.start(); osc.stop(ctx.currentTime + dur + 0.03);
+            };
+
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay vocalecho-minigame';
+            overlay.innerHTML = `
+                <div class="minigame-hud">
+                    <span class="mg-score">Estrofa 1 / ${rounds}</span>
+                    <span class="mg-status">Escucha a Tony...</span>
+                </div>
+                <div class="vocalecho-grid" id="vocalecho-grid">
+                    ${pads.map((p, i) => `
+                        <button class="vocalecho-pad" data-index="${i}" style="--pad-color:${p.color}">${p.label}</button>
+                    `).join('')}
+                </div>
+                <div class="minigame-instructions">🎤 Repite la melodía de Tony: pulsa las notas en el mismo orden.</div>
+            `;
+            document.getElementById('game-container').appendChild(overlay);
+
+            const grid = overlay.querySelector('#vocalecho-grid');
+            const scoreEl = overlay.querySelector('.mg-score');
+            const statusEl = overlay.querySelector('.mg-status');
+            const padEls = Array.from(overlay.querySelectorAll('.vocalecho-pad'));
+
+            const swallowClick = (e) => { if (!e.target.closest('.vocalecho-pad')) e.stopPropagation(); };
+            overlay.addEventListener('click', swallowClick, true);
+
+            let sequence = [];
+            let inputIndex = 0;
+            let acceptingInput = false;
+            let level = 0;
+            let turnStart = 0;
+
+            const wait = (ms) => new Promise(r => setTimeout(r, ms));
+
+            const flashPad = async (idx, withSound = true) => {
+                padEls[idx].classList.add('vocalecho-active');
+                if (withSound) playTone(pads[idx].freq, flashMs / 1000);
+                await wait(flashMs);
+                padEls[idx].classList.remove('vocalecho-active');
+                await wait(gapMs);
+            };
+
+            const finish = (won) => {
+                acceptingInput = false;
+                overlay.removeEventListener('click', swallowClick, true);
+                const result = document.createElement('div');
+                result.className = 'minigame-result';
+                result.textContent = won ? '¡Dúo perfecto! 🎤✨' : '¡Se rompió la melodía! 🎶💔';
+                overlay.appendChild(result);
+                setTimeout(() => { overlay.remove(); resolve(won); }, won ? 1500 : 800);
+            };
+
+            const playSequence = async () => {
+                acceptingInput = false;
+                statusEl.textContent = 'Escucha a Tony...';
+                grid.classList.add('vocalecho-locked');
+                await wait(450);
+                for (const idx of sequence) { await flashPad(idx, true); }
+                grid.classList.remove('vocalecho-locked');
+                statusEl.textContent = strictTempo ? '¡Tu turno! (a tiempo)' : '¡Tu turno!';
+                inputIndex = 0;
+                acceptingInput = true;
+                turnStart = performance.now();
+            };
+
+            const nextLevel = async () => {
+                level++;
+                scoreEl.textContent = `Estrofa ${level} / ${rounds}`;
+                const target = startLength + (level - 1);
+                while (sequence.length < target) {
+                    sequence.push(Math.floor(Math.random() * padEls.length));
+                }
+                await playSequence();
+            };
+
+            padEls.forEach((pad, idx) => {
+                pad.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (!acceptingInput) return;
+                    pad.classList.add('vocalecho-active');
+                    playTone(pads[idx].freq, 0.26);
+                    setTimeout(() => pad.classList.remove('vocalecho-active'), 150);
+
+                    if (idx === sequence[inputIndex]) {
+                        inputIndex++;
+                        if (inputIndex >= sequence.length) {
+                            acceptingInput = false;
+                            if (strictTempo) {
+                                const budget = sequence.length * (flashMs + gapMs) * 1.8 + 1200;
+                                if (performance.now() - turnStart > budget) { finish(false); return; }
+                            }
+                            if (level >= rounds) {
+                                finish(true);
+                            } else {
+                                statusEl.textContent = '¡Afinadísimo!';
+                                await wait(520);
+                                await nextLevel();
+                            }
+                        }
+                    } else {
+                        finish(false);
+                    }
+                });
+            });
+
+            nextLevel();
+        });
+    }
+
+    // ============================================================
+    // Minijuego: "Neon Runner" (ritmo tipo DDR) — capítulo de Tony.
+    // Caen notas por varios carriles; hay que pulsar la tecla del carril
+    // (o clicar el carril) cuando la nota cruza la línea de acierto. Se gana
+    // completando la tanda con una precisión >= minAccuracy. Escala con
+    // bpm/lanes/hitWindowMs/minAccuracy (resueltos por playMinigame vía ByDelay).
+    // ============================================================
+    async playRhythmMinigame(options = {}) {
+        this.isWaitingForInput = false;
+        let won = false;
+        while (!won) {
+            won = await this.runRhythmRound(options);
+            if (!won) {
+                await this.showMinigameRetry('¡Perdiste el ritmo! 🎧 La multitud casi te absorbe.');
+            }
+        }
+        return won;
+    }
+
+    runRhythmRound(options = {}) {
+        const bpm = options.bpm || 150;
+        const lanes = Math.max(3, Math.min(6, options.lanes || 4));
+        const hitWindowMs = options.hitWindowMs || 140;
+        const minAccuracy = options.minAccuracy || 0.6;
+        const totalNotes = options.totalNotes || 40;      // notas de la tanda (más largo)
+        const travelMs = options.travelMs || 1500;        // lo que tarda en caer
+        const perfectWindowMs = options.perfectWindowMs || hitWindowMs * 0.45; // ventana PERFECT (resto GOOD)
+
+        // Sincronización musical: las notas caen sobre la rejilla de beats de la
+        // canción y el reloj lo marca el propio audio (audio.currentTime), así
+        // los toques van al ritmo. Si no hay audio, se usa un reloj interno.
+        const beatMs = 60000 / bpm;
+        const beatOffsetMs = options.beatOffsetMs || 0;    // primer golpe de la canción
+        const beatStep = options.beatStep || 1;            // beats entre nota y nota (0.5 = corcheas)
+        const audioEl = options.audio ||
+            (options.audioId ? (this.audioInstances && this.audioInstances[options.audioId]) : null);
+
+        // Efectos de sonido (sintetizados, volumen bajo). Se pueden desactivar
+        // con sfx:false y ajustar con sfxVolume.
+        const sfxOn = options.sfx !== false;
+        const sfxVol = options.sfxVolume !== undefined ? options.sfxVolume : 1;
+
+        // Avatar (Samu) que reacciona a cada acierto/fallo
+        const avatarKey = options.avatar || 'samu';
+        const avatarPoses = {
+            idle:    `assets/characters/${avatarKey}.png`,
+            perfect: `assets/characters/${avatarKey}_happy.png`,
+            good:    `assets/characters/${avatarKey}_determined.png`,
+            miss:    `assets/characters/${avatarKey}_worried.png`
+        };
+
+        // Teclas por carril según número de carriles
+        const keySets = {
+            3: ['D', 'F', 'J'],
+            4: ['D', 'F', 'J', 'K'],
+            5: ['D', 'F', 'G', 'J', 'K'],
+            6: ['S', 'D', 'F', 'J', 'K', 'L']
+        };
+        const keys = keySets[lanes];
+        const laneColors = ['#ff4fa3', '#4fd0ff', '#b04fff', '#ff8cf0', '#7cffb2', '#ffd166'];
+
+        // Objetos especiales estilo osu!: sliders (mantener) y spinners (machacar)
+        const sliderChance = options.sliderChance || 0;   // prob. de que una nota sea slider
+        const sliderBeats = options.sliderBeats || 2;     // longitud del slider en beats
+        const spinnerCount = options.spinnerCount || 0;   // nº de spinners en la tanda
+        const spinnerTaps = options.spinnerTaps || 14;    // toques necesarios para el spinner
+        const spinnerBeats = options.spinnerBeats || 3;   // duración del spinner en beats
+
+        // Horario de notas: cada nota (o su cabeza) debe CRUZAR la línea en su beat.
+        const schedule = [];
+        const spinnerAt = new Set();
+        for (let s = 1; s <= spinnerCount; s++) {
+            spinnerAt.add(Math.floor(totalNotes * s / (spinnerCount + 1)));
+        }
+        let beatCursor = 0;
+        for (let i = 0; i < totalNotes; i++) {
+            const hitMs = beatOffsetMs + beatCursor * beatMs;
+            if (spinnerAt.has(i)) {
+                const durMs = spinnerBeats * beatMs;
+                schedule.push({ type: 'spinner', hitMs, endMs: hitMs + durMs, required: spinnerTaps });
+                beatCursor += spinnerBeats + beatStep * 2;
+            } else if (Math.random() < sliderChance) {
+                const durMs = sliderBeats * beatMs;
+                schedule.push({ type: 'slider', hitMs, endMs: hitMs + durMs, durMs, lane: Math.floor(Math.random() * lanes) });
+                beatCursor += sliderBeats + beatStep;
+            } else {
+                schedule.push({ type: 'tap', hitMs, lane: Math.floor(Math.random() * lanes) });
+                beatCursor += beatStep;
+            }
+        }
+
+        this.isWaitingForInput = false;
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay rhythm-minigame';
+            overlay.innerHTML = `
+                <div class="rhythm-bg"></div>
+                <div class="rhythm-avatar" id="rhythm-avatar">
+                    <img id="rhythm-avatar-img" src="${this.cacheBustAsset(avatarPoses.idle)}" alt="Samu">
+                </div>
+                <div class="minigame-hud neon-font">
+                    <span class="mg-score">0 / ${totalNotes}</span>
+                    <span class="mg-combo">Combo 0</span>
+                    <span class="mg-status">Precisión objetivo: ${Math.round(minAccuracy * 100)}%</span>
+                </div>
+                <div class="rhythm-stage">
+                    <div class="rhythm-field" id="rhythm-field">
+                        <div class="rhythm-grid"></div>
+                        ${Array.from({ length: lanes }).map((_, i) => `
+                            <div class="rhythm-lane" data-lane="${i}" style="--lane-color:${laneColors[i]}"></div>
+                        `).join('')}
+                        <div class="rhythm-hitline" id="rhythm-hitline"></div>
+                    </div>
+                </div>
+                <div class="rhythm-keys">
+                    ${Array.from({ length: lanes }).map((_, i) => `
+                        <button class="rhythm-key" data-lane="${i}" style="--lane-color:${laneColors[i]}">${keys[i]}</button>
+                    `).join('')}
+                </div>
+                <div class="minigame-instructions">🎧 Pulsa ${keys.join(' · ')} (o toca las teclas) cuando la nota llegue a la línea.</div>
+            `;
+            document.getElementById('game-container').appendChild(overlay);
+
+            const field = overlay.querySelector('#rhythm-field');
+            const hitlineEl = overlay.querySelector('#rhythm-hitline');
+            const scoreEl = overlay.querySelector('.mg-score');
+            const comboEl = overlay.querySelector('.mg-combo');
+            const statusEl = overlay.querySelector('.mg-status');
+            const avatarBox = overlay.querySelector('#rhythm-avatar');
+            const avatarImg = overlay.querySelector('#rhythm-avatar-img');
+            const laneEls = Array.from(overlay.querySelectorAll('.rhythm-lane'));
+            const keyEls = Array.from(overlay.querySelectorAll('.rhythm-key'));
+
+            const swallow = (e) => { e.stopPropagation(); };
+            overlay.addEventListener('click', swallow, true);
+
+            // Geometría del campo
+            const fieldH = () => field.clientHeight;
+            const hitY = () => fieldH() * 0.82;              // línea de acierto (px)
+            overlay.querySelector('#rhythm-hitline').style.top = '82%';
+
+            let notes = [];       // { el, lane, hitMs, type, hit, ... }
+            let spawnedIdx = 0;   // índice de la próxima nota del horario
+            let judged = 0;       // notas resueltas (hit o miss)
+            let hits = 0;
+            let combo = 0;
+            let running = true;
+            let ticker = null;
+            let activeSpinner = null; // spinner en curso (captura los toques)
+            const startTime = performance.now();
+
+            // Reloj maestro en ms: si hay audio sonando, manda audio.currentTime
+            // (los toques van al ritmo de la canción); si no, reloj interno.
+            const nowMs = () => {
+                if (audioEl && !audioEl.paused && audioEl.currentTime > 0.02) {
+                    return audioEl.currentTime * 1000;
+                }
+                return performance.now() - startTime;
+            };
+
+            // Efectos de sonido cortitos y suaves (Web Audio, sin archivos)
+            let sfxCtx = null;
+            const ensureSfx = () => {
+                if (!sfxOn) return null;
+                if (!sfxCtx) {
+                    try { sfxCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+                    catch (e) { sfxCtx = null; }
+                }
+                if (sfxCtx && sfxCtx.state === 'suspended') sfxCtx.resume();
+                return sfxCtx;
+            };
+            const beep = (freq, dur, delay, type, vol) => {
+                const ctx = ensureSfx(); if (!ctx) return;
+                const t = ctx.currentTime + (delay || 0);
+                const osc = ctx.createOscillator();
+                const g = ctx.createGain();
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq, t);
+                g.gain.setValueAtTime(0.0001, t);
+                g.gain.exponentialRampToValueAtTime((vol || 0.1) * sfxVol, t + 0.008);
+                g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+                osc.connect(g); g.connect(ctx.destination);
+                osc.start(t); osc.stop(t + dur + 0.02);
+            };
+            const sfx = {
+                perfect: () => { beep(1046, 0.09, 0, 'triangle', 0.12); beep(1568, 0.10, 0.05, 'triangle', 0.10); },
+                good:    () => { beep(784, 0.10, 0, 'triangle', 0.10); },
+                miss:    () => { beep(196, 0.14, 0, 'sawtooth', 0.08); },
+                break:   () => { beep(392, 0.09, 0, 'square', 0.08); beep(174, 0.16, 0.06, 'square', 0.08); }
+            };
+
+            const updateHud = () => {
+                scoreEl.textContent = `${hits} / ${totalNotes}`;
+                comboEl.textContent = `Combo ${combo}`;
+            };
+
+            const flashLane = (lane, cls) => {
+                laneEls[lane].classList.add(cls);
+                setTimeout(() => laneEls[lane].classList.remove(cls), 140);
+            };
+
+            const flashKey = (lane) => {
+                const k = keyEls[lane];
+                if (!k) return;
+                k.classList.add('rhythm-key-press');
+                setTimeout(() => k.classList.remove('rhythm-key-press'), 130);
+            };
+
+            // Estallido de chispas neón en la línea de acierto del carril
+            const burst = (lane, count = 9) => {
+                const laneEl = laneEls[lane];
+                for (let p = 0; p < count; p++) {
+                    const s = document.createElement('div');
+                    s.className = 'rhythm-spark';
+                    s.style.background = laneColors[lane];
+                    s.style.setProperty('--dx', `${Math.random() * 150 - 75}px`);
+                    s.style.setProperty('--dy', `${-Math.random() * 100 - 15}px`);
+                    laneEl.appendChild(s);
+                    setTimeout(() => s.remove(), 540);
+                }
+            };
+
+            // Texto de juicio (PERFECT / GOOD / ✕) sobre la línea del carril
+            const JUDGE = {
+                perfect: { t: 'PERFECT', c: '#4fe8ff' },
+                good:    { t: 'GOOD',    c: '#7cffb2' },
+                miss:    { t: '✕',       c: '#ff466b' }
+            };
+            const showJudgment = (lane, kind) => {
+                const info = JUDGE[kind]; if (!info) return;
+                const j = document.createElement('div');
+                j.className = 'rhythm-judge neon-font rj-' + kind;
+                j.textContent = info.t;
+                j.style.color = info.c;
+                // Plano sobre el escenario (no dentro del carril inclinado, para que no se tuerza)
+                overlay.appendChild(j);
+                setTimeout(() => j.remove(), 620);
+            };
+
+            // Avatar de Samu: cambia de expresión según el acierto y vuelve a idle
+            let avatarTimer = null;
+            const setAvatar = (kind) => {
+                if (!avatarImg) return;
+                avatarImg.src = this.cacheBustAsset(avatarPoses[kind] || avatarPoses.idle);
+                avatarBox.classList.remove('av-perfect', 'av-good', 'av-miss');
+                avatarBox.classList.add('av-' + kind);
+                if (avatarTimer) clearTimeout(avatarTimer);
+                avatarTimer = setTimeout(() => {
+                    avatarImg.src = this.cacheBustAsset(avatarPoses.idle);
+                    avatarBox.classList.remove('av-perfect', 'av-good', 'av-miss');
+                }, 680);
+            };
+
+            // Cartel de hito de combo (cada 10 seguidos)
+            const showComboMilestone = () => {
+                const b = document.createElement('div');
+                b.className = 'rhythm-combo-banner neon-font';
+                b.textContent = `🔥 COMBO ${combo}`;
+                overlay.appendChild(b);
+                setTimeout(() => b.remove(), 850);
+            };
+
+            const pulseCombo = () => {
+                comboEl.classList.remove('mg-combo-pulse');
+                void comboEl.offsetWidth; // reiniciar animación
+                comboEl.classList.add('mg-combo-pulse');
+                // Escala el brillo con el combo
+                comboEl.style.setProperty('--combo-glow', `${Math.min(1, 0.3 + combo * 0.06)}`);
+            };
+
+            const pulseHitline = (good) => {
+                hitlineEl.classList.remove('rhythm-hitline-hit', 'rhythm-hitline-miss');
+                void hitlineEl.offsetWidth;
+                hitlineEl.classList.add(good ? 'rhythm-hitline-hit' : 'rhythm-hitline-miss');
+            };
+
+            const finish = (won) => {
+                if (!running) return;
+                running = false;
+                if (ticker) clearInterval(ticker);
+                overlay.removeEventListener('click', swallow, true);
+                document.removeEventListener('keydown', onKey);
+                notes.forEach(n => n.el.remove());
+                notes = [];
+                const acc = totalNotes ? Math.round((hits / totalNotes) * 100) : 0;
+                const result = document.createElement('div');
+                result.className = 'minigame-result';
+                result.textContent = won
+                    ? `¡Abriste paso! 🎉 Precisión ${acc}%`
+                    : `¡Te absorbió el trance! 🌀 Precisión ${acc}%`;
+                overlay.appendChild(result);
+                setTimeout(() => { overlay.remove(); resolve(won); }, won ? 1600 : 900);
+            };
+
+            // Acierto de nota normal (o resolución con éxito de cabeza/cola)
+            const resolveHit = (lane, perfect) => {
+                hits++; judged++; combo++;
+                sfx[perfect ? 'perfect' : 'good']();
+                flashLane(lane, 'rhythm-lane-good');
+                burst(lane, perfect ? 15 : 8);
+                showJudgment(lane, perfect ? 'perfect' : 'good');
+                setAvatar(perfect ? 'perfect' : 'good');
+                pulseCombo();
+                pulseHitline(true);
+                if (combo > 0 && combo % 10 === 0) showComboMilestone();
+                updateHud();
+            };
+
+            // Toque durante un spinner: gira el anillo y llena la barra
+            const spinnerTap = () => {
+                const sp = activeSpinner;
+                if (!sp) return;
+                sp.taps++;
+                if (sp.ring) sp.ring.style.transform = `rotate(${sp.taps * 45}deg)`;
+                const frac = Math.min(1, sp.taps / sp.required);
+                if (sp.fill) sp.fill.style.width = `${frac * 100}%`;
+                if (sp.count) sp.count.textContent = `${sp.taps} / ${sp.required}`;
+                if (frac >= 1) sp.el.classList.add('rhythm-spinner-full');
+            };
+
+            // Soltar tecla: si había un slider mantenido en ese carril, suéltalo
+            const releaseLane = (lane) => {
+                if (keyEls[lane]) keyEls[lane].classList.remove('rhythm-key-hold');
+                for (const n of notes) {
+                    if (n.type === 'slider' && n.lane === lane && n.headHit && n.holding && !n.hit) {
+                        n.holding = false;
+                        n.el.classList.remove('rhythm-slider-holding');
+                    }
+                }
+            };
+
+            const judgeHit = (lane) => {
+                if (!running) return;
+                if (activeSpinner) { spinnerTap(); flashKey(lane); return; }
+                flashLane(lane, 'rhythm-lane-press');
+                flashKey(lane);
+                const now = nowMs();
+                // nota del carril más cercana en el tiempo (tap o cabeza de slider)
+                let best = null, bestDt = Infinity;
+                for (const n of notes) {
+                    if (n.lane !== lane || n.hit || n.type === 'spinner') continue;
+                    if (n.type === 'slider' && n.headHit) continue;
+                    const dt = Math.abs(now - n.hitMs);
+                    if (dt < bestDt) { bestDt = dt; best = n; }
+                }
+                if (best && bestDt <= hitWindowMs) {
+                    const perfect = bestDt <= perfectWindowMs;
+                    if (best.type === 'slider') {
+                        // coger la cabeza: empezar a MANTENER (se juzga al llegar la cola)
+                        best.headHit = true;
+                        best.holding = true;
+                        best.headPerfect = perfect;
+                        best.el.classList.add('rhythm-slider-holding');
+                        if (keyEls[lane]) keyEls[lane].classList.add('rhythm-key-hold');
+                        burst(lane, 6);
+                        pulseHitline(true);
+                    } else {
+                        best.hit = true;
+                        best.el.classList.add('rhythm-note-hit');
+                        resolveHit(lane, perfect);
+                    }
+                } else {
+                    if (combo > 0) sfx.break();   // pulsación en vano que corta la racha
+                    combo = 0;
+                    pulseHitline(false);
+                    updateHud();
+                }
+            };
+
+            const checkEnd = () => {
+                if (judged >= totalNotes) {
+                    const acc = hits / totalNotes;
+                    finish(acc >= minAccuracy);
+                }
+            };
+
+            const onKey = (e) => {
+                const lane = keys.indexOf((e.key || '').toUpperCase());
+                if (lane === -1) return;
+                e.preventDefault();
+                if (activeSpinner) { spinnerTap(); flashKey(lane); return; }
+                if (!e.repeat) judgeHit(lane);   // ignorar auto-repetición (mantener slider)
+            };
+            const onKeyUp = (e) => {
+                const lane = keys.indexOf((e.key || '').toUpperCase());
+                if (lane !== -1) releaseLane(lane);
+            };
+            document.addEventListener('keydown', onKey);
+            document.addEventListener('keyup', onKeyUp);
+            laneEls.forEach((laneEl, i) => {
+                laneEl.addEventListener('click', (e) => { e.stopPropagation(); judgeHit(i); });
+            });
+            keyEls.forEach((keyEl, i) => {
+                keyEl.addEventListener('pointerdown', (e) => { e.stopPropagation(); judgeHit(i); });
+                keyEl.addEventListener('pointerup', (e) => { e.stopPropagation(); releaseLane(i); });
+            });
+
+            // Crea el elemento DOM de una entrada del horario según su tipo
+            const spawnEntry = (s) => {
+                if (s.type === 'spinner') {
+                    const el = document.createElement('div');
+                    el.className = 'rhythm-spinner neon-font';
+                    el.innerHTML =
+                        '<div class="rhythm-spinner-ring"></div>' +
+                        '<div class="rhythm-spinner-label">¡MACHACA!</div>' +
+                        '<div class="rhythm-spinner-count">0 / ' + s.required + '</div>' +
+                        '<div class="rhythm-spinner-bar"><div class="rhythm-spinner-fill"></div></div>' +
+                        '<div class="rhythm-spinner-timerbar"><div class="rhythm-spinner-timer"></div></div>';
+                    overlay.appendChild(el);
+                    notes.push({ el, type: 'spinner', hitMs: s.hitMs, endMs: s.endMs, required: s.required, taps: 0, hit: false, active: false,
+                        ring: el.querySelector('.rhythm-spinner-ring'), fill: el.querySelector('.rhythm-spinner-fill'),
+                        count: el.querySelector('.rhythm-spinner-count'), timer: el.querySelector('.rhythm-spinner-timer') });
+                } else if (s.type === 'slider') {
+                    const el = document.createElement('div');
+                    el.className = 'rhythm-note rhythm-slider';
+                    el.style.background = laneColors[s.lane];
+                    laneEls[s.lane].appendChild(el);
+                    notes.push({ el, type: 'slider', lane: s.lane, hitMs: s.hitMs, endMs: s.endMs, durMs: s.durMs, hit: false, headHit: false, holding: false, headPerfect: false });
+                } else {
+                    const el = document.createElement('div');
+                    el.className = 'rhythm-note';
+                    el.style.background = laneColors[s.lane];
+                    laneEls[s.lane].appendChild(el);
+                    notes.push({ el, type: 'tap', lane: s.lane, hitMs: s.hitMs, hit: false });
+                }
+            };
+
+            // Ticker por reloj de audio. Cada nota nace `travelMs` antes de su beat
+            // y su cabeza cruza la línea en el beat (los toques van a la música).
+            const tick = () => {
+                if (!running) return;
+                const now = nowMs();
+
+                while (spawnedIdx < schedule.length && now >= schedule[spawnedIdx].hitMs - travelMs) {
+                    spawnEntry(schedule[spawnedIdx]);
+                    spawnedIdx++;
+                }
+
+                const y = hitY();
+                for (const n of notes) {
+                    if (n.hit) continue;
+
+                    if (n.type === 'spinner') {
+                        if (!n.active && now >= n.hitMs) { n.active = true; activeSpinner = n; n.el.classList.add('rhythm-spinner-active'); }
+                        if (n.active) {
+                            const total = n.endMs - n.hitMs;
+                            if (n.timer) n.timer.style.width = `${Math.max(0, (n.endMs - now) / total) * 100}%`;
+                            if (now >= n.endMs) {
+                                n.hit = true;
+                                if (activeSpinner === n) activeSpinner = null;
+                                judged++;
+                                if (n.taps >= n.required) {
+                                    const pf = n.taps >= n.required * 1.4;
+                                    hits++; combo++;
+                                    sfx[pf ? 'perfect' : 'good']();
+                                    showJudgment(0, pf ? 'perfect' : 'good'); setAvatar(pf ? 'perfect' : 'good');
+                                    pulseCombo(); if (combo > 0 && combo % 10 === 0) showComboMilestone();
+                                } else {
+                                    sfx.miss(); combo = 0; showJudgment(0, 'miss'); setAvatar('miss');
+                                }
+                                n.el.classList.add('rhythm-spinner-done');
+                                const sEl = n.el; setTimeout(() => sEl.remove(), 260);
+                                updateHud();
+                            }
+                        }
+                    } else if (n.type === 'slider') {
+                        const barLen = (n.durMs / travelMs) * y;
+                        const headTop = (1 - (n.hitMs - now) / travelMs) * y;
+                        n.el.style.height = `${barLen}px`;
+                        n.el.style.top = `${headTop - barLen}px`;
+                        if (now >= n.endMs) {
+                            n.hit = true; judged++;
+                            const success = n.headHit && n.holding;
+                            if (success) {
+                                hits++; combo++;
+                                sfx[n.headPerfect ? 'perfect' : 'good']();
+                                showJudgment(n.lane, n.headPerfect ? 'perfect' : 'good'); setAvatar(n.headPerfect ? 'perfect' : 'good');
+                                burst(n.lane, n.headPerfect ? 15 : 8); flashLane(n.lane, 'rhythm-lane-good'); pulseCombo(); pulseHitline(true);
+                                if (combo > 0 && combo % 10 === 0) showComboMilestone();
+                            } else {
+                                sfx.miss(); combo = 0; showJudgment(n.lane, 'miss'); setAvatar('miss'); flashLane(n.lane, 'rhythm-lane-miss');
+                            }
+                            if (keyEls[n.lane]) keyEls[n.lane].classList.remove('rhythm-key-hold');
+                            n.el.remove();
+                            updateHud();
+                        } else if (!n.headHit && now > n.hitMs + hitWindowMs) {
+                            n.el.classList.add('rhythm-slider-missed');
+                        }
+                    } else { // tap
+                        const prog = Math.min(1.15, 1 - (n.hitMs - now) / travelMs);
+                        n.el.style.top = `${prog * y}px`;
+                        if (now > n.hitMs + hitWindowMs) {
+                            n.hit = true; n.el.classList.add('rhythm-note-miss'); n.el.remove();
+                            judged++; combo = 0;
+                            sfx.miss();
+                            flashLane(n.lane, 'rhythm-lane-miss'); showJudgment(n.lane, 'miss'); setAvatar('miss');
+                            updateHud();
+                        }
+                    }
+                }
+                notes = notes.filter(n => !n.hit);
+
+                checkEnd();
+            };
+
+            updateHud();
+            ticker = setInterval(tick, 16);
         });
     }
 

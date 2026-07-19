@@ -37,7 +37,7 @@ async function initGame() {
 }
 
 async function loadAllCharacters() {
-    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5', 'loca', 'nate', 'jose'];
+    const characters = ['luna', 'alex', '2b', 'pod', 'emil', 'samu', 'iphone5', 'loca', 'nate', 'jose', 'edu', 'tony'];
     for (const character of characters) {
         await engine.loadCharacter(character);
     }
@@ -48,9 +48,10 @@ async function startNewGame() {
     isGameRunning = true;
     currentChapterNumber = 0;
 
-    // Partida nueva: limpiar el progreso de rescates y llamadas
+    // Partida nueva: limpiar el progreso de rescates, llamadas e inventario
     engine.rescued = [];
     engine.completedCalls = [];
+    engine.inventory = [];
 
     // Cargar todos los personajes disponibles
     await loadAllCharacters();
@@ -279,6 +280,7 @@ async function startChapterFromSelector(chapterId) {
     engine.lastChapterName = null;
     engine.rescued = [];
     engine.completedCalls = [];
+    engine.inventory = [];
 
     isGameRunning = true;
 

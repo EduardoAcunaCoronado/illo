@@ -2,833 +2,490 @@
   "title": "Capítulo 2: Ecchi Land",
   "scenes": [
     {
-      "title": "Escena 1: Salida desde el Rocío",
+      "title": "Escena 1: La llamada",
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/iglesia.png"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
-              "volume": 0.4,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            { "type": "setBackground", "value": "assets/backgrounds/light_path.png" },
+            { "type": "playSound", "path": "assets/sounds/music/llamada_tony.mp3", "volume": 0.4, "loop": true, "id": "bg_music", "fadeIn": 1000 }
           ],
           "character": "2B",
-          "text": "La aventura de Samu arranca en las puertas de la Ermita del Rocío. Un lobo furro corriendo entre romeros: nadie se inmuta, esto es Huelva."
+          "text": "Con Edu ya a salvo y pegado a su chepa, Samu retoma el camino. El siguiente de la lista es Tony... si es que eso que suena al otro lado del teléfono sigue siendo Tony."
         },
         {
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "determined" },
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "neutral" }
+          ],
           "character": "Samu",
-          "text": "Vale. Tony está atrapada en Ecchi Land, al otro lao de la provincia. Del Rocío a Ecchi Land hay un mundo, pero por ella cruzo Huelva entera descalzo si hace falta.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "Le pido un milagrito a la Blanca Paloma... y me acuerdo de que la Virgen también es IA ahora. En fin. A patita.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ]
+          "text": "Sujétame el móvil, Edu, que me tiembla el pulso. Llamando a Tony... a ver con qué voz nos sale hoy."
         },
         {
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "tony"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/sounds/effects/disco-rayado.mp3",
-              "volume": 0.7
-            }
+            { "type": "playSound", "path": "assets/sounds/effects/disco-rayado.mp3", "volume": 0.6 }
           ],
           "character": "¿Tony?",
-          "text": "(audio, esa voz aguda y melosa otra vez) ¡Samuuu, miarma! Que sigo aquí encerrá rodeá de bichos que no paran de guiñarme el ojo. Ven a rescatarme, anda, que sola me aburro... y aburrida hago tonterías. 💋"
+          "text": "(una voz suave, aterciopelada, casi cantada, entrecortada por la interferencia) ¿Samu...? Mmm. Por fin. Te estaba esperando. El escenario ya está listo... solo faltas tú entre el público."
+        },
+        {
+          "actions": [
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "surprised" }
+          ],
+          "character": "Edu",
+          "text": "¿Ese... ese es Tony? Tío, suena como el trailer de una peli romántica. ¿Le ha dao algo en la garganta?"
+        },
+        {
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "worried" }
+          ],
+          "character": "Samu",
+          "text": "Eso mismo llevo días preguntándome. Tony, colega, ¿dónde estás metido? ¿Qué te ha pasado?"
+        },
+        {
+          "character": "¿Tony?",
+          "text": "(audio) Estoy en Ecchi Land, cielo. Donde todo el mundo canta y nadie se va del todo. Venid a buscarme... pero no os asustéis cuando me veáis. Sigo siendo yo. Más o menos. 🎤"
+        },
+        {
+          "actions": [
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "worried" }
+          ],
+          "character": "Edu",
+          "text": "«No os asustéis cuando me veáis». Perfecto. Me encanta cuando un rescate arranca con esa frasecita."
+        },
+        {
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "determined" }
+          ],
+          "character": "Samu",
+          "text": "Aguanta, Tony. Vamos para allá los dos. Y esta vez traigo refuerzos."
+        },
+        {
+          "actions": [
+            { "type": "goToScene", "value": "Escena 2: Entrada a Ecchi Land" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 2: Entrada a Ecchi Land",
+      "lines": [
+        {
+          "actions": [
+            { "type": "setBackground", "value": "assets/backgrounds/night.png" },
+            { "type": "stopSound", "id": "bg_music", "fadeOut": 600 },
+            { "type": "playSound", "path": "assets/sounds/music/ecchiland_ambiente.mp3", "volume": 0.35, "loop": true, "id": "bg_music", "fadeIn": 1200 }
+          ],
+          "character": "2B",
+          "text": "Ecchi Land. Una megaciudad de neón que late al ritmo de un único corazón musical. Rascacielos con pantallas gigantes, hologramas de corazones, hangul y kanji flotando entre láseres. Y por todas partes, fans. Miles de fans, moviéndose al unísono como si alguien llevara el compás por ellos."
+        },
+        {
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "surprised" },
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "surprised" }
+          ],
+          "character": "Edu",
+          "text": "¿Pero esto qué es? Parece un concierto de K-pop que se ha comido una ciudad entera. Y mira a esta gente... tienen los ojos en forma de corazón. Literalmente."
         },
         {
           "character": "Samu",
-          "text": "...Ahí está otra vez esa voz. Tony, tío, en serio, ¿qué te ha pasado? Hablas como... Bah, da igual. Voy para allá, aguanta.",
+          "text": "Aquí el que no canta, no es nadie. Se nota en el aire. Y todo apunta hacia allí, hacia esa luz del fondo. Ahí tiene que estar Tony.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "determined" }
           ]
         },
         {
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "tony"
-            }
-          ],
-          "character": "¿Tony?",
-          "text": "(audio) Uy, cuando llegues vas a flipar. Tú no te asustes, ¿eh? Que sigo siendo yo... más o menos. ¡CORRE! 😘"
+          "character": "2B",
+          "text": "Entre vosotros y el escenario hay un mar de fans hechizados. Habrá que abrirse paso. Y en Ecchi Land solo hay una forma de moverse entre la multitud: siguiendo el ritmo."
         },
         {
           "character": "Samu",
-          "text": "Primer dilema del viaje. Para salir del Rocío hacia Ecchi Land tengo dos opciones. Y cada minuto que pierda, Tony lo paga.",
+          "text": "Dos maneras de meterse en el fregao. ¿Cómo lo hacemos?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "worried" }
           ],
           "choices": [
             {
-              "text": "Atajar a pie por las marismas de Doñana",
-              "nextScene": "Escena: Atajo por Doñana"
+              "text": "Directos hacia la música, sin distraerse",
+              "nextScene": "Escena 3: Neon Runner"
             },
             {
-              "text": "Pedir un Cabify (van a ser las 3 de la tarde de un domingo de romería)",
-              "nextScene": "Escena: El Cabify de la muerte"
+              "text": "Pillar antes un tentempié en el puesto de un fan mazado (huele de muerte)",
+              "nextScene": "Escena 2.5: La distracción"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena: Atajo por Doñana",
+      "title": "Escena 2.5: La distracción",
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/forest.png"
-            }
+            { "type": "addDelay", "value": 1 }
           ],
           "character": "2B",
-          "text": "Samu se lanza campo a través por las marismas. Un lince ibérico lo mira con cara de «tú tampoco deberías existir» y lo deja pasar. Buena elección: es el atajo."
-        },
-        {
-          "character": "Samu",
-          "text": "¡Ozú, qué peste a barro! Pero se avanza. Menos mal que no me he fiado del Cabify.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
-          ]
-        },
-        {
-          "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena: Persecución en la marisma"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: El Cabify de la muerte",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/dia.png"
-            },
-            {
-              "type": "addDelay",
-              "value": 1
-            }
-          ],
-          "character": "2B",
-          "text": "La app marca 47 minutos de espera y una tarifa dinámica de 84 €. El conductor, un meme de «grifter» con gafas de sol, aparece, da tres vueltas a la rotonda del Rocío y se mete en un atasco de carretas."
-        },
-        {
-          "character": "Samu",
-          "text": "«Cinco estrellas si no hablas», me ha dicho. Y luego ha puesto un pódcast de criptomonedas de dos horas. Esto era trampa. He perdío un tiempo precioso.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "angry"
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "Me bajo aquí mismo, en mitad de la marisma. Antes ando yo que aguanto otro «esto no es un gasto, es una inversión».",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ]
-        },
-        {
-          "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena: Persecución en la marisma"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Persecución en la marisma",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/night_forest.png"
-            }
-          ],
-          "character": "2B",
-          "text": "De pronto, el suelo tiembla. Del carrizal salen DECENAS de gatos-meme hechos carne: el gato llorando, el gato de negocios, el que teclea... Todos con hambre de furro."
-        },
-        {
-          "character": "Samu",
-          "text": "¿Pero qué...? ¡Son los gatos de internet! ¡Y me miran como al último croqueta del bar!",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "No hay tiempo de llorar (eso es cosa suya). ¡A correr por las veredas y que no me pillen!",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ]
-        },
-        {
-          "character": "2B",
-          "text": "¡Aguanta, Samu! Cuanto más has tardado en llegar, más gatos y más rápidos vienen a por ti."
-        },
-        {
-          "actions": [
-            {
-              "type": "pauseSound",
-              "id": "bg_music"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/sounds/music/gatos.mp3",
-              "volume": 0.5,
-              "loop": true,
-              "id": "gatos_music",
-              "fadeIn": 500
-            },
-            {
-              "type": "minigame",
-              "game": "gatos",
-              "survive": 12,
-              "surviveByDelay": {
-                "0": 12,
-                "1": 15,
-                "2": 18
-              },
-              "cats": 3,
-              "catsByDelay": {
-                "0": 3,
-                "1": 4,
-                "2": 5
-              },
-              "catSpeed": 3.4,
-              "catSpeedByDelay": {
-                "0": 3.4,
-                "1": 3.8,
-                "2": 4.2
-              }
-            },
-            {
-              "type": "stopSound",
-              "id": "gatos_music",
-              "fadeOut": 500
-            },
-            {
-              "type": "resumeSound",
-              "id": "bg_music"
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "¡Uf! Los he despistao metiéndome en un chiringuito cerrado. Encima con lo poco que le gusta el agua a un gato... y a mí, que soy lobo. Menudos dos.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
-          ]
-        },
-        {
-          "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena: Matalascañas"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Matalascañas",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/beach.png"
-            }
-          ],
-          "character": "2B",
-          "text": "Samu sale a la playa de Matalascañas. El mar está lleno de sombrillas plantadas a las seis de la mañana por gente que ya no volverá. Al fondo, el neón de Ecchi Land parpadea."
-        },
-        {
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "tony"
-            }
-          ],
-          "character": "¿Tony?",
-          "text": "(audio) ¡Samu! Uno de los mazaos me acaba de decir que tengo «potencial de fundadora de dinastía». No sé si es un piropo o una amenaza. ¡Y date prisa, que como me veas de aquí a un rato no me vas a reconocer! 🍑"
-        },
-        {
-          "character": "Samu",
-          "text": "«Fundadora»... «no me vas a reconocer»... Cada frase me raya más. ¿Qué demonios está pasando con Tony? Voy volando. Pero para llegar tengo que decidir cómo cruzo el último tramo... y me juego otra vez el tiempo.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ],
-          "choices": [
-            {
-              "text": "Ir pegado a la orilla, firme y rápido",
-              "nextScene": "Escena: Por la orilla"
-            },
-            {
-              "text": "Cortar por el chiringuito a pillar un cubata para la valentía",
-              "nextScene": "Escena: Parada en el chiringuito"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Por la orilla",
-      "lines": [
-        {
-          "character": "2B",
-          "text": "Samu corre por la arena mojada, la firme, donde no se hunde el pie. Un profesional. En diez minutos las luces de Ecchi Land ya le queman las retinas."
-        },
-        {
-          "character": "Samu",
-          "text": "La orilla dura es la vía rápida. Cualquiera que haya ido a la playa lo sabe. ¡Ya casi estoy, Tony!",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ]
-        },
-        {
-          "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena: Puertas de Ecchi Land"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Parada en el chiringuito",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "addDelay",
-              "value": 1
-            }
-          ],
-          "character": "2B",
-          "text": "El chiringuito lo lleva un meme del «Cuñao Definitivo», que insiste en explicarle a Samu por qué el mojito lo inventó un primo suyo en Punta Umbría antes que los cubanos. Cuarenta minutos después, Samu logra escapar con un tinto de verano calentito."
-        },
-        {
-          "character": "Samu",
-          "text": "«¿Sabes cuánto gano yo?» me ha preguntado tres veces. Y yo pensando: menos que el tiempo que me acabas de robar, pisha.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "angry"
-            }
-          ]
-        },
-        {
-          "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena: Puertas de Ecchi Land"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Puertas de Ecchi Land",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/night.png"
-            }
-          ],
-          "character": "2B",
-          "text": "Samu cruza por fin la entrada de Ecchi Land. Neones rosados, música de gimnasio y un cartel: «Bienvenido. Aquí TODOS quieren conocerte mejor». Muy mejor."
-        },
-        {
-          "character": "Samu",
-          "text": "Este sitio me da una grima... Y esos de ahí. ¿Por qué van todos sin camiseta y flexionando el bíceps para saludar?",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ]
-        },
-        {
-          "character": "2B",
-          "text": "Son los furros de Ecchi Land: hiper mazados, tostados en la cabina UVA y con la autoestima por las nubes. Rodean a Samu como quien encuentra un percebe en oferta."
-        },
-        {
-          "character": "Samu",
-          "text": "Ehh... buenas. Solo estoy de paso, ¿eh? Vengo a por una amiga y nos vamos, sin molestar...",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
-          ]
-        },
-        {
-          "character": "Furro mazado",
-          "text": "¿De paso? Aquí nadie está «de paso», bombón. Tú tienes buena percha para levantar peso... y para levantar una familia numerosa. ¿Hacemos sentadillas juntos y de paso te hago un par de hijos? Es leg day."
-        },
-        {
-          "character": "Samu",
-          "text": "¡¿QUÉ?! No, no, mire, yo he venío a AYUDAR, no a fundar un linaje en una tarde. ¡Tony! ¡¿DÓNDE ESTÁS?!",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
-          ]
-        },
-        {
-          "character": "2B",
-          "text": "El corrillo de mazaos empieza a estrechar el cerco. Toca esquivar tentaciones sin tocar una sola trampa. ¡Concentración total, Samu, que aquí un guiño mal devuelto son diez años de vida en común!"
-        },
-        {
-          "actions": [
-            {
-              "type": "minigame",
-              "game": "ecchi",
-              "goal": 12,
-              "goalByDelay": {
-                "0": 10,
-                "1": 12,
-                "2": 15
-              },
-              "maxMisses": 3,
-              "maxMissesByDelay": {
-                "0": 3,
-                "1": 2,
-                "2": 2
-              },
-              "lifetime": 1150,
-              "lifetimeByDelay": {
-                "0": 1200,
-                "1": 1000,
-                "2": 850
-              }
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "¡Ni un beso, ni un número de teléfono! ¡Soy un muro! ¡Un lobo casto atravesando el valle de la tentación!",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
-          ]
-        },
-        {
-          "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena: Encuentro con Tony"
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Encuentro con Tony",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/night.png"
-            },
-            {
-              "type": "rescue",
-              "character": "tony"
-            }
-          ],
-          "character": "2B",
-          "text": "Al fondo, subida a una barra y espantando pretendientes a chancletazos, hay una loba de plata: melena larga, mirada felina, curvas de infarto y un séquito de mazaos suspirando a sus pies. Samu la mira sin entender nada."
-        },
-        {
-          "character": "Samu",
-          "text": "Perdona, ¿guapa? Estoy buscando a un amigo, Tony, un chaval así... normalito. ¿Lo has visto por aquí?",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "neutral"
-            }
-          ]
-        },
-        {
-          "character": "Tony",
-          "text": "...Samu. Soy yo, alma de cántaro. Soy Tony."
-        },
-        {
-          "character": "Samu",
-          "text": "¿...Q-qué? No, no, no. Tony es... Tony es un TÍO. Tú eres una... eres... ¡¿PERO QUÉ...?! ¡¿EL BICHO TE HA...?!",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
-          ]
-        },
-        {
-          "character": "Tony",
-          "text": "El virus, cariño. Que a ti te sacó lobo y a mí me sacó... esto. (posa) Reconóceme que el reparto conmigo se lució, ¿eh? Cierra la boquita, Samu, que se te va a meter una mosca."
-        },
-        {
-          "character": "Samu",
-          "text": "Es que... o sea... ¡tú eras el que me ganaba al Mario Kart! ¡Íbamos juntos al gimnasio! ¡No puedo... no sé ni dónde mirar!",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
-          ]
-        },
-        {
-          "character": "Tony",
-          "text": "Sigo siendo el mismo por dentro, pisha, que te veo el drama. Solo que ahora, cuando te gane al Mario Kart, vas a llorar el doble. Anda, respira y bájame de la barra antes de que otro me pida en matrimonio.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ]
-        },
-        {
-          "character": "Tony",
-          "text": "(De un salto, aterriza a su lado y le da un toquecito en el hocico.) Uf, por fin en el suelo. Pero antes de salir por patas, dime: ¿sabes ya por qué todo esto se ha ido de las manos?",
-          "byRescueCount": {
-            "1": "(De un salto, aterriza a su lado.) Uf, por fin en el suelo. Antes de salir por patas: ¿tú sabes por qué todo esto se ha ido de las manos? Porque yo tengo teorías... y una más picante que otra.",
-            "2": "(De un salto, aterriza a su lado.) Uf, por fin en el suelo. Y oye, ya que rescataste antes a otro, os habréis puesto al día: ¿alguien tiene claro POR QUÉ pasa esto?",
-            "3": "(De un salto, aterriza a su lado.) Uf, por fin en el suelo. Y ya que somos los últimos en salir de esta, dime que alguien ha averiguao el CÓMO, porque yo del qué y el porqué ya paso."
-          }
-        },
-        {
-          "character": "Samu",
-          "text": "Es una locura sin sentido...",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ],
-          "byRescueCount": {
-            "1": "Es una locura sin sentido... Un día internet enloqueció, los memes se hicieron de carne y hueso y salieron a cazar furros. Y a los que teníamos avatar nos convirtieron en bichos peludos.",
-            "2": "Ya lo hemos ido atando: los que teníamos avatar en internet somos los furros, y los que no tenían son los memes de IA que nos cazan. Esto lo programó alguien a mala idea. Es un virus, Tony.",
-            "3": "Ya lo tenemos claro entre todos: es una IA Biológica con la firma de Elon Musk por todas partes. Se le escapó del laboratorio, infectó la red y nos repartió en furros y memes según el avatar. Todo es cosa suya."
-          }
-        },
-        {
-          "character": "Tony",
-          "text": "Pues mira, un virus que me pone estas curvas y me rodea de tíos cachas... no sé yo si demandar o darle las gracias. ¡Es broma! Medio broma. Venga, sácame de aquí.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "Ya te tengo. Vámonos antes de que el de las sentadillas vuelva con el anillo.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ]
-        },
-        {
-          "character": "Tony",
-          "text": "Me has salvao, Samu. De verdad de la buena. Pero esto no ha acabao para los demás, y tú lo sabes.",
-          "allRescuedText": "Me has salvao, Samu. De verdad de la buena. Y mírate: ya estamos toos a salvo. Mi héroe de peluche."
-        },
-        {
-          "character": "Samu",
-          "text": "Lo sé. No puedo parar ahora. Voy a llamar a alguien para saber cómo están los demás.",
-          "allRescuedText": "Por fin... estáis toos a salvo. Ahora sí que puedo respirar. Y descolgar el móvil un rato, por Dios.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ],
-          "choices": [
-            {
-              "text": "Llamar a Edu",
-              "nextScene": "Escena: Llamada a Edu"
-            },
-            {
-              "text": "Llamar a José",
-              "nextScene": "Escena: Llamada a José"
-            },
-            {
-              "text": "Ir al desenlace",
-              "requireAllRescued": true,
-              "chapter3ByFirst": true
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "title": "Escena: Llamada a Edu",
-      "lines": [
-        {
-          "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
-            },
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "edu"
-            }
-          ],
-          "character": "2B",
-          "text": "Samu marca el número de Edu y, para su alivio, la línea da tono."
+          "text": "El puesto lo lleva un furro fornido con una camiseta dos tallas más pequeña que insiste en que sus tortitas proteicas «te cambian la vida y de paso el número de teléfono». Veinte minutos de charla sobre volumen muscular después, escapáis con una tortita y menos tiempo."
         },
         {
           "character": "Edu",
-          "text": "¿Samu? Aquí en Kingdom Ketchup seguimos aguantando, pero no sé cuánto más. ¿Vienes?"
+          "text": "Me ha dado su Instagram, su rutina de piernas y un abrazo que ha durado demasiado. Pero la tortita, oye... está buenísima.",
+          "actions": [
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "happy" }
+          ]
         },
         {
           "character": "Samu",
-          "text": "Aguanta, Edu. Ya tengo a Tony a salvo y voy directo hacia ti.",
+          "text": "Hemos perdido un tiempo precioso por un desayuno. Como Tony se entere, no me deja cantar ni el cumpleaños feliz. ¡Corre!",
           "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "determined" }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "goToScene", "value": "Escena 3: Neon Runner" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 3: Neon Runner",
+      "lines": [
+        {
+          "actions": [
+            { "type": "setBackground", "value": "assets/backgrounds/night.png" }
+          ],
+          "character": "2B",
+          "text": "La multitud se cierra en una coreografía imposible. Para cruzar hay que bailarla: pisar donde toca, en el momento justo, al ritmo del bajo. Un paso a destiempo y el trance de la masa te absorbe. ¡Sigue el compás, Samu!"
+        },
+        {
+          "character": "2B",
+          "text": "Y ojo: cuanto más habéis tardado en llegar hasta aquí, más rápido y endiablado suena todo."
+        },
+        {
+          "actions": [
+            { "type": "pauseSound", "id": "bg_music" },
+            { "type": "playSound", "path": "assets/sounds/music/neon_runner.mp3", "volume": 0.5, "loop": true, "id": "mg_music", "fadeIn": 400 },
             {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+              "type": "minigame",
+              "game": "rhythm",
+              "audioId": "mg_music",
+              "bpm": 103.5,
+              "beatOffsetMs": 372,
+              "beatStep": 1,
+              "beatStepByDelay": { "0": 1, "1": 0.5, "2": 0.5 },
+              "lanes": 4,
+              "lanesByDelay": { "0": 4, "1": 4, "2": 5 },
+              "hitWindowMs": 170,
+              "hitWindowMsByDelay": { "0": 170, "1": 130, "2": 100 },
+              "minAccuracy": 0.55,
+              "minAccuracyByDelay": { "0": 0.55, "1": 0.63, "2": 0.7 }
+            },
+            { "type": "stopSound", "id": "mg_music", "fadeOut": 500 },
+            { "type": "resumeSound", "id": "bg_music" }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Uf! Bailando entre furros en trance sin pisar a nadie. Mi profesora de sevillanas estaría orgullosa. O aterrada.",
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "happy" },
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "clapping" }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Tío, el escenario está justo ahí. Y hay... alguien encima. Todo el mundo la mira. ¿Esa es...?",
+          "actions": [
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "surprised" }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "goToScene", "value": "Escena 4: El Opening" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 4: El Opening",
+      "lines": [
+        {
+          "actions": [
+            { "type": "hideCharacter", "position": "left" },
+            { "type": "hideCharacter", "position": "right" },
+            { "type": "stopAllSounds" }
+          ],
+          "character": "2B",
+          "text": "Y entonces, la multitud se abre. Las luces caen. Un único foco desciende sobre el escenario... y por fin la veis."
+        },
+        {
+          "actions": [
+            { "type": "playVideo", "path": "assets/cutscenes/opening_tony.mp4" }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "goToScene", "value": "Escena 5: Reencuentro" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 5: Reencuentro",
+      "lines": [
+        {
+          "actions": [
+            { "type": "setBackground", "value": "assets/backgrounds/night.png" },
+            { "type": "playSound", "path": "assets/sounds/music/ecchiland_ambiente.mp3", "volume": 0.3, "loop": true, "id": "bg_music", "fadeIn": 1000 },
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "flirt" },
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "shocked" },
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "shocked" }
+          ],
+          "character": "2B",
+          "text": "La idol baja del pedestal entre suspiros de la multitud. Melena de plata, ojos de ámbar, sonrisa de quien sabe exactamente el efecto que causa. Se planta delante de Samu y Edu, que han olvidado cómo se cierra una boca."
+        },
+        {
+          "character": "Samu",
+          "text": "Perdona... guapa. Estamos buscando a un amigo. Tony. Un chaval así... normalito, con cara de sueño. ¿Lo has visto?",
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "neutral" }
+          ]
+        },
+        {
+          "character": "Tony",
+          "text": "Ay, Samu. Mírame bien. Afina el oído y escucha. ¿De verdad no reconoces esta voz?",
+          "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "giggle" }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "...No. No, no, no. Esa forma de vacilar. Samu. SAMU. Es Tony. ¡ES TONY!",
+          "actions": [
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "shocked" }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡¿QUÉ?! Pero si Tony es un TÍO. Íbamos juntos al gimnasio. ¡Me reventaba al Mario Kart! Tú eres... eres... ¡no sé ni dónde mirar!",
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "surprised" }
+          ]
+        },
+        {
+          "character": "Tony",
+          "text": "El virus, cariño. A ti te sacó lobo de peluche; a mí me convirtió en... esto. Y de paso me dio la voz. (guiña un ojo) Y sí, sigo siendo el que te metía caparazones azules en la última curva. Solo que ahora, cuando te gane, vas a llorar en estéreo.",
+          "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "flirt" }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Los ojos arriba, Samu. ARRIBA. ...Digo, y los míos también. Madre mía. Vale. Respiramos. ¿Qué es este sitio, Tony? ¿Por qué toda esta gente te mira como si fueras una diosa?",
+          "actions": [
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "embarrassed" }
+          ]
+        },
+        {
+          "character": "Tony",
+          "text": "Porque en cierto modo lo soy, guapo. Ecchi Land nació de mi voz. Cuando canto, el público entra en trance y me adora. Suena divino, ¿verdad? El problema es que no puedo callar ni bajarme del escenario: si rompo la canción sin más, la multitud enloquece. Estoy presa de mi propio estribillo.",
+          "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "neutral" }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Entonces te sacamos por las bravas y ya está. Te cojo en brazos y salimos corriendo, como en Doñana.",
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "determined" }
+          ]
+        },
+        {
+          "character": "Tony",
+          "text": "Ay, mi héroe impulsivo. Si me arrancas de golpe, esta gente se despierta de la peor manera y nos linchan a coro. Hay que cerrar la actuación bien: un último número, un dúo. Tú cantas conmigo, rompemos el hechizo con elegancia... y me bajo del escenario para siempre. ¿Te atreves a subir, Samu?",
+          "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "flirt" }
           ],
           "choices": [
             {
-              "text": "Llamar a José",
-              "nextScene": "Escena: Llamada a José"
+              "text": "«Vamos allá. Pero conste que canto fatal.» (subir ya)",
+              "nextScene": "Escena 6: El Dúo"
             },
             {
-              "text": "Ir a ayudar cuanto antes",
-              "nextScene": "Fin del Capítulo 2",
-              "chapter2ByLastCalled": true
+              "text": "«Espera, espera. Déjame beber algo primero para el valor.» (parada de nervios)",
+              "nextScene": "Escena 5.5: Nervios de escenario"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena: Llamada a José",
+      "title": "Escena 5.5: Nervios de escenario",
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
-            },
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "jose"
-            }
+            { "type": "addDelay", "value": 1 }
           ],
           "character": "2B",
-          "text": "Samu marca el número de José y, para su alivio, la línea da tono."
+          "text": "Samu se escaquea al backstage a por un vaso de agua y tarda lo suyo en reunir el valor. Mala idea: cada minuto que la canción se alarga, el hechizo se enreda más fuerte en el público. El dúo va a ser más difícil de romper."
         },
         {
-          "character": "José",
-          "text": "¡Samu! Paloma City se está viniendo abajo. Necesitamos que vengas."
-        },
-        {
-          "character": "Samu",
-          "text": "Aguanta, José. Ya tengo a Tony a salvo y voy hacia allá.",
+          "character": "Tony",
+          "text": "¿Ya? Menudo cantante me has salido. Cada segundo que dudas, este público se me pone más pesado que un fan en primera fila. Sube de una vez, anda, que se nos pasa el clímax.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ],
-          "choices": [
-            {
-              "text": "Llamar a Edu",
-              "nextScene": "Escena: Llamada a Edu"
-            },
-            {
-              "text": "Ir a ayudar cuanto antes",
-              "nextScene": "Fin del Capítulo 2",
-              "chapter2ByLastCalled": true
-            }
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "eyeroll" }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "goToScene", "value": "Escena 6: El Dúo" }
           ]
         }
       ]
     },
     {
-      "title": "Escena: Fuera de cobertura",
+      "title": "Escena 6: El Dúo",
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/backgrounds/light_path.png"
-            },
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            { "type": "hideCharacter", "position": "right" }
           ],
           "character": "2B",
-          "text": "Samu marca el número, pero solo escucha una voz metálica: «El teléfono al que llama está apagado o fuera de cobertura en este momento»."
+          "text": "Tony le tiende un micrófono a Samu. Ella lanzará frases melódicas; él tendrá que devolvérselas en el mismo orden y a tiempo. Si el dúo suena limpio, el hechizo del público se irá deshaciendo nota a nota."
         },
         {
-          "character": "Samu",
-          "text": "Otra vez fuera de cobertura... No puedo llamar a nadie más por ahora. ¡Toca ponerse en marcha!",
+          "character": "Tony",
+          "text": "Regla número uno: escúchame. Regla número dos: repíteme sin adornos. Regla número tres... déjate llevar. Tú sígueme el compás, cielo, que yo llevo la voz cantante. Nunca mejor dicho.",
           "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "flirt" }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "pauseSound", "id": "bg_music" },
+            { "type": "playSound", "path": "assets/sounds/music/dueto_vocal_echo.mp3", "volume": 0.55, "loop": true, "id": "mg_music", "fadeIn": 400 },
             {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
-          ],
-          "choices": [
-            {
-              "text": "Ir a ayudar cuanto antes",
-              "nextScene": "Fin del Capítulo 2",
-              "chapter2ByLastCalled": true
-            }
+              "type": "minigame",
+              "game": "vocalecho",
+              "song": "assets/sounds/music/dueto_vocal_echo.mp3",
+              "rounds": 4,
+              "roundsByDelay": { "0": 4, "1": 5, "2": 6 },
+              "startLength": 3,
+              "speed": 1.0,
+              "speedByDelay": { "0": 1.0, "1": 1.2, "2": 1.4 },
+              "strictTempo": false,
+              "strictTempoByDelay": { "0": false, "1": false, "2": true }
+            },
+            { "type": "stopSound", "id": "mg_music", "fadeOut": 600 }
+          ]
+        },
+        {
+          "character": "Tony",
+          "text": "¡ESO ES! ¿Lo notas? El público está despertando. Una nota más, juntos... ¡y se acabó el concierto!",
+          "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "happy" }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "goToScene", "value": "Escena 7: El Diapasón de Plata" }
           ]
         }
       ]
     },
     {
-      "title": "Fin del Capítulo 2",
+      "title": "Escena 7: El Diapasón de Plata",
       "lines": [
         {
+          "actions": [
+            { "type": "stopAllSounds" },
+            { "type": "playSound", "path": "assets/sounds/music/rotura_hechizo.mp3", "volume": 0.6, "id": "climax" },
+            { "type": "rescue", "character": "tony" },
+            { "type": "giveItem", "item": "diapason" },
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "epic" }
+          ],
           "character": "2B",
-          "text": "Samu guarda el teléfono y se lanza hacia el siguiente destino, con una amiga menos en peligro, un séquito de mazaos llorando a lo lejos y la determinación intacta."
+          "text": "La última nota estalla en el aire como cristal. El hechizo se rompe. Miles de fans parpadean, se miran confusos y, poco a poco, empiezan a dispersarse. Por primera vez en mucho tiempo, Ecchi Land queda en silencio. Y Tony, por primera vez, puede bajar del escenario."
+        },
+        {
+          "character": "Tony",
+          "text": "Libre. Se siente raro sin cincuenta mil personas suspirando por mí. Podría acostumbrarme... nah, sí que voy a echarlo de menos un poquito. (se ríe)",
+          "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "giggle" }
+          ]
+        },
+        {
+          "character": "Tony",
+          "text": "Samu. Ven. Toma esto.",
+          "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "determined" }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Tony le pone en la mano un pequeño diapasón de plata, con grabados finos que parecen ondas de sonido. Al rozarlo, emite una nota pura y cristalina que calma el aire."
+        },
+        {
+          "character": "Tony",
+          "text": "Es mi diapasón de cuando cantaba, antes de todo esto. Cuando todo suene a caos... golpéalo y escucha. Te dará el tono exacto. A ti se te da fatal la música, cariño, así que créeme: lo vas a necesitar más que yo.",
+          "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "flirt" }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Un diapasón. Vale. No tengo ni idea de para qué me servirá esto, pero viniendo de ti me lo guardo como oro en paño. Gracias, Tony.",
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "happy" }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "¿Nos vamos ya? Porque uno de los mazados de antes me ha visto y viene hacia aquí con cara de querer enseñarme su rutina de bíceps. Y su anillo de compromiso.",
+          "actions": [
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "worried" }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "goToScene", "value": "Fin del Capítulo 2: Ecchi Land" }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Fin del Capítulo 2: Ecchi Land",
+      "lines": [
+        {
+          "actions": [
+            { "type": "setBackground", "value": "assets/backgrounds/light_path.png" },
+            { "type": "playSound", "path": "assets/sounds/music/cierre_tony.mp3", "volume": 0.45, "loop": true, "id": "bg_music", "fadeIn": 1200 },
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "neutral" },
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "determined" },
+            { "type": "showCharacter", "character": "edu", "position": "right", "pose": "happy" }
+          ],
+          "character": "2B",
+          "text": "Tres amigos abandonan Ecchi Land bajo el amanecer de neón, con una diva más en el grupo y un diapasón de plata guardado en el bolsillo. Pero la aventura no ha terminado: en algún lugar, José aguanta como puede en Paloma City."
+        },
+        {
+          "character": "Tony",
+          "text": "Bueno, ¿y ahora qué? Porque yo, si hay que rescatar a alguien más, exijo camerino propio y un solo de guitarra.",
+          "actions": [
+            { "type": "showCharacter", "character": "tony", "position": "center", "pose": "flirt" }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Falta José, en Paloma City. Y esta vez vamos los tres. Que se prepare, que llega la banda al completo.",
+          "actions": [
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "determined" }
+          ],
+          "choices": [
+            {
+              "text": "Poner rumbo a Paloma City (José)",
+              "nextChapter": "chapter2-jose"
+            }
+          ]
         }
       ]
     }

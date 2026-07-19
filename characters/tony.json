@@ -1,0 +1,20 @@
+{
+  "name": "Tony",
+  "color": "#ff4fa3",
+  "poses": {
+    "neutral": "assets/characters/Tony.png",
+    "happy": "assets/characters/tony_happy.png",
+    "sad": "assets/characters/tony_sad.png",
+    "angry": "assets/characters/tony_angry.png",
+    "surprised": "assets/characters/tony_surprised.png",
+    "alarmed": "assets/characters/tony_alarmed.png",
+    "determined": "assets/characters/tony_determined.png",
+    "embarrassed": "assets/characters/tony_embarrassed.png",
+    "shocked": "assets/characters/tony_shocked.png",
+    "worried": "assets/characters/tony_worried.png",
+    "flirt": "assets/characters/tony_flirt.png",
+    "giggle": "assets/characters/tony_giggle.png",
+    "eyeroll": "assets/characters/tony_eyeroll.png"
+  },
+  "defaultPose": "flirt"
+}

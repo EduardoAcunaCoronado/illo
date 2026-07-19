@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de minijuegos — Con pelos y a lo loco</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { background: #05010f; }
+        #test-panel {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 22px;
+            color: #fff;
+            font-family: Arial, Helvetica, sans-serif;
+            background: radial-gradient(60% 60% at 50% 30%, rgba(176,79,255,0.25), transparent 70%), #05010f;
+            text-align: center;
+        }
+        #test-panel.hidden { display: none; }
+        #test-panel h1 {
+            font-size: clamp(24px, 5vw, 40px);
+            color: #ff4fa3;
+            text-shadow: 0 0 18px rgba(255,79,163,0.7);
+            margin-bottom: 4px;
+        }
+        #test-panel h2 {
+            font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+            color: #4fd0ff; margin-top: 18px; opacity: 0.9;
+        }
+        .tp-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+        .tp-btn {
+            border: 2px solid var(--c, #b04fff);
+            background: color-mix(in srgb, var(--c, #b04fff) 16%, #000);
+            color: #fff; font-weight: bold; font-size: 15px;
+            padding: 14px 22px; border-radius: 12px; cursor: pointer;
+            box-shadow: 0 0 14px color-mix(in srgb, var(--c,#b04fff) 45%, transparent);
+            transition: transform .08s ease, filter .12s ease; filter: brightness(.9);
+            min-width: 120px;
+        }
+        .tp-btn:hover { filter: brightness(1.15); transform: translateY(-2px); }
+        .tp-btn:active { transform: translateY(1px); }
+        .tp-music { display: flex; align-items: center; gap: 8px; font-size: 13px; opacity: .85; margin-top: 6px; }
+        .tp-hint { font-size: 12px; opacity: .55; max-width: 460px; line-height: 1.5; }
+        #tp-result {
+            min-height: 22px; font-size: 15px; color: #ffd166; font-weight: bold;
+            text-shadow: 0 0 10px rgba(255,209,102,.6);
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+
+    <div id="test-panel">
+        <h1>🎮 Prueba de minijuegos</h1>
+        <div class="tp-hint">Lanza cualquier minijuego de forma aislada. En <b>Neon Runner</b> pulsa las teclas (D·F·G·J·K) o toca las teclas de pantalla. En <b>Vocal Echo</b> escucha la melodía y repítela clicando los pads.</div>
+
+        <div id="tp-result"></div>
+
+        <h2>🏃 Neon Runner (ritmo 3D)</h2>
+        <div class="tp-row">
+            <button class="tp-btn" style="--c:#7cffb2" onclick="launchRhythm('facil')">Fácil</button>
+            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchRhythm('medio')">Medio</button>
+            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchRhythm('dificil')">Difícil</button>
+            <button class="tp-btn" style="--c:#ffd166" onclick="launchRhythm('demo')">Demo (auto)</button>
+        </div>
+
+        <h2>🎤 Vocal Echo / Dúo (Simon musical)</h2>
+        <div class="tp-row">
+            <button class="tp-btn" style="--c:#7cffb2" onclick="launchVocal('facil')">Fácil</button>
+            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchVocal('medio')">Medio</button>
+            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchVocal('dificil')">Difícil</button>
+        </div>
+
+        <label class="tp-music">
+            <input type="checkbox" id="tp-music-on" checked> Música de fondo durante el minijuego
+        </label>
+        <label class="tp-music">
+            <input type="checkbox" id="tp-auto"> 🤖 Modo auto (se juega solo, para comprobar el ritmo)
+        </label>
+    </div>
+
+    <script src="engine.js"></script>
+    <script>
+        const engine = new VisualNovelEngine();
+        const panel = document.getElementById('test-panel');
+        const resultEl = document.getElementById('tp-result');
+
+        const RHYTHM = {
+            // bpm/beatOffsetMs = rejilla musical de neon_runner.mp3 (sincronía)
+            // sliderChance/sliderBeats = notas mantenidas; spinner* = notas de machaque
+            facil:   { bpm: 103.5, beatOffsetMs: 372, beatStep: 1,   lanes: 4, hitWindowMs: 190, perfectWindowMs: 95, minAccuracy: 0.45, totalNotes: 34, travelMs: 2000, sliderChance: 0.18, sliderBeats: 2,   spinnerCount: 1, spinnerTaps: 12, spinnerBeats: 3 },
+            medio:   { bpm: 103.5, beatOffsetMs: 372, beatStep: 0.5, lanes: 4, hitWindowMs: 140, perfectWindowMs: 65, minAccuracy: 0.60, totalNotes: 48, travelMs: 1700, sliderChance: 0.20, sliderBeats: 2,   spinnerCount: 1, spinnerTaps: 16, spinnerBeats: 3 },
+            dificil: { bpm: 103.5, beatOffsetMs: 372, beatStep: 0.5, lanes: 5, hitWindowMs: 100, perfectWindowMs: 45, minAccuracy: 0.70, totalNotes: 64, travelMs: 1500, sliderChance: 0.25, sliderBeats: 1.5, spinnerCount: 2, spinnerTaps: 20, spinnerBeats: 2.5 }
+        };
+        const VOCAL = {
+            facil:   { rounds: 3, startLength: 2, speed: 1.0, strictTempo: false },
+            medio:   { rounds: 4, startLength: 3, speed: 1.2, strictTempo: false },
+            dificil: { rounds: 6, startLength: 3, speed: 1.5, strictTempo: true }
+        };
+
+        function musicOn() { return document.getElementById('tp-music-on').checked; }
+
+        function startMusic(file) {
+            if (!musicOn()) return;
+            engine.playSound('assets/sounds/music/' + file, { loop: true, id: 'mg_test', volume: 0.5, fadeIn: 300 });
+        }
+        function stopMusic() { try { engine.stopSound('mg_test', 400); } catch (e) {} }
+
+        // Auto-jugador: pulsa la tecla REAL de cada carril (la lee del teclado en
+        // pantalla), así funciona con 4 o 5 carriles. Sirve para comprobar el ritmo.
+        let autoTimer = null;
+        function startAuto() {
+            stopAuto();
+            autoTimer = setInterval(() => {
+                const field = document.querySelector('#rhythm-field'); if (!field) return;
+                const hp = field.clientHeight * 0.82;
+                const keyEls = document.querySelectorAll('.rhythm-key');
+                const keyOf = (lane) => keyEls[lane] ? keyEls[lane].textContent.trim().toLowerCase() : null;
+                // Spinner activo → machacar
+                const sp = document.querySelector('.rhythm-spinner-active:not(.rhythm-spinner-done)');
+                if (sp && keyEls[0]) {
+                    for (let i = 0; i < 2; i++) document.dispatchEvent(new KeyboardEvent('keydown', { key: keyOf(0) }));
+                }
+                document.querySelectorAll('.rhythm-note').forEach(n => {
+                    const lane = parseInt(n.parentElement.getAttribute('data-lane'), 10);
+                    const key = keyOf(lane); if (!key) return;
+                    if (n.classList.contains('rhythm-slider')) {
+                        // pulsar (y mantener, sin soltar) cuando la CABEZA llega a la línea
+                        const headBottom = n.offsetTop + n.offsetHeight;
+                        if (Math.abs(headBottom - hp) < 26 && !n.dataset.a) {
+                            n.dataset.a = '1';
+                            document.dispatchEvent(new KeyboardEvent('keydown', { key }));
+                        }
+                    } else if (Math.abs(n.offsetTop - hp) < 24 && !n.dataset.a) {
+                        n.dataset.a = '1';
+                        document.dispatchEvent(new KeyboardEvent('keydown', { key }));
+                    }
+                });
+            }, 12);
+        }
+        function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
+
+        async function launchRhythm(preset) {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            const opts = preset === 'demo' ? RHYTHM.facil : RHYTHM[preset];
+            startMusic('neon_runner.mp3');
+            // Pasar el audio para que las notas vayan al ritmo de la canción
+            const audio = musicOn() ? engine.audioInstances['mg_test'] : null;
+            const auto = preset === 'demo' || document.getElementById('tp-auto').checked;
+            if (auto) startAuto();
+            const won = await engine.runRhythmRound(Object.assign({}, opts, { audio }));
+            stopAuto();
+            stopMusic();
+            resultEl.textContent = won ? '✅ ¡Superado el Neon Runner!' : '❌ Te absorbió el trance. ¡Otra vez!';
+            panel.classList.remove('hidden');
+        }
+
+        async function launchVocal(preset) {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            startMusic('dueto_vocal_echo.mp3');
+            const won = await engine.runVocalEchoRound(Object.assign({}, VOCAL[preset]));
+            stopMusic();
+            resultEl.textContent = won ? '✅ ¡Dúo perfecto!' : '❌ Desafinaste. ¡Inténtalo otra vez!';
+            panel.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
