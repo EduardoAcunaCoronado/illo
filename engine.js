@@ -379,6 +379,12 @@ class VisualNovelEngine {
             case 'battle':
                 await this.playBattleMinigame(action);
                 break;
+            case 'chase':
+                await this.playChaseMinigame(action);
+                break;
+            case 'eduvuelo':
+                await this.playEduVueloMinigame(action);
+                break;
             default:
                 console.warn(`Minijuego desconocido: ${action.game}`);
         }
@@ -2097,6 +2103,316 @@ class VisualNovelEngine {
 
             updateHud();
             ticker = setInterval(tick, 16);
+        });
+    }
+
+    // ============================================================
+    // Minijuego "chase" (persecución en coche): esquiva obstáculos y a los memes
+    // en moto durante una distancia. Reutiliza el motor side-scroller.
+    // ============================================================
+    async playChaseMinigame(options = {}) {
+        this.isWaitingForInput = false;
+        let won = false;
+        while (!won) {
+            won = await this.runSideScroller({
+                mode: 'chase',
+                goal: options.distance || 60,
+                speed: options.speed || 6,
+                maxHits: options.maxHits || 3,
+                playerFrames: ['coche_0', 'coche_1', 'coche_2'],
+                playerHeight: 0.19, playerRatio: 1.55,
+                yMin: 0.70, yMax: 0.94,
+                bgFar: 'carretera_loop_fondo', bgNear: 'carretera_loop',
+                obstacles: ['obs_bidon', 'obs_valla', 'obs_rocas', 'obs_cable'],
+                enemies: [['meme_bob_0', 'meme_bob_1'], ['meme_knucles_0', 'meme_knucles_1'],
+                          ['meme_pepe_0', 'meme_pepe_1'], ['meme_troll_0', 'meme_troll_1']],
+                collectible: null,
+                title: '🏎️ Mueve el coche con el RATÓN (o ↑/↓) y esquiva obstáculos y a los memes.',
+                winMsg: '¡Los habéis perdío en la rotonda! 🏁',
+                loseMsg: '¡Os han embestido! 🏍️'
+            });
+            if (!won) {
+                await this.showMinigameRetry('¡Os han pillado los memes! 🏍️');
+            }
+        }
+        return won;
+    }
+
+    // ============================================================
+    // Minijuego "eduvuelo" (Edu volando): recoge partituras esquivando focos que
+    // caen y cables eléctricos. Reutiliza el motor side-scroller (modo vuelo).
+    // ============================================================
+    async playEduVueloMinigame(options = {}) {
+        this.isWaitingForInput = false;
+        let won = false;
+        while (!won) {
+            won = await this.runSideScroller({
+                mode: 'fly',
+                goal: options.goal || 8,
+                speed: options.speed || 5,
+                maxHits: options.maxHits || 3,
+                playerFrames: ['edu_fly_0', 'edu_fly_1', 'edu_fly_2', 'edu_fly_3'],
+                playerHeight: 0.19, playerRatio: 0.72,
+                yMin: 0.12, yMax: 0.86,
+                bgFar: null, bgNear: null,
+                obstacles: ['aire_foco', 'aire_foco_on', 'aire_cable', 'aire_cable_spark'],
+                enemies: [],
+                collectible: ['partitura', 'partitura_glow'],
+                title: '🐉 Vuela con el RATÓN (o ↑/↓): RECOGE las partituras y esquiva focos y cables.',
+                winMsg: '¡Partituras completas! 🎼',
+                loseMsg: '¡Te electrocutaste! ⚡'
+            });
+            if (!won) {
+                await this.showMinigameRetry('¡Se te han escapado las partituras! ⚡');
+            }
+        }
+        return won;
+    }
+
+    // Motor común de los side-scrollers. Devuelve Promise<boolean> (ganado).
+    runSideScroller(cfg) {
+        this.isWaitingForInput = false;
+        const SP = 'assets/minigames/cap3/sprites/';
+        const CAP = 'assets/minigames/cap3/';
+        const url = (n, base = SP) => `url('${this.cacheBustAsset(base + n + '.png')}')`;
+        const speed = cfg.speed || 6;
+        const maxHits = cfg.maxHits || 3;
+        const goal = cfg.goal || 60;
+        const isFly = cfg.mode === 'fly';
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay sidescroller-minigame ' + (isFly ? 'ss-fly' : 'ss-chase');
+            overlay.innerHTML = `
+                <div class="minigame-hud neon-font">
+                    <span class="mg-score"></span>
+                    <span class="ss-lives"></span>
+                    <span class="mg-status"></span>
+                </div>
+                <div class="ss-stage" id="ss-stage">
+                    ${cfg.bgNear ? '<div class="ss-bg ss-bg-far"></div><div class="ss-bg ss-bg-near"></div>' : ''}
+                    <div class="ss-player" id="ss-player"></div>
+                    <div class="ss-progress-wrap"><div class="ss-progress-fill" id="ss-progress"></div></div>
+                </div>
+                <div class="minigame-instructions">${cfg.title}</div>
+            `;
+            document.getElementById('game-container').appendChild(overlay);
+            const swallow = (e) => e.stopPropagation();
+            overlay.addEventListener('click', swallow, true);
+
+            const stage = overlay.querySelector('#ss-stage');
+            const playerEl = overlay.querySelector('#ss-player');
+            const scoreEl = overlay.querySelector('.mg-score');
+            const livesEl = overlay.querySelector('.ss-lives');
+            const statusEl = overlay.querySelector('.mg-status');
+            const progressEl = overlay.querySelector('#ss-progress');
+            const bgFarEl = overlay.querySelector('.ss-bg-far');
+            const bgNearEl = overlay.querySelector('.ss-bg-near');
+            if (bgFarEl && cfg.bgFar) bgFarEl.style.backgroundImage = url(cfg.bgFar, CAP);
+            if (bgNearEl && cfg.bgNear) bgNearEl.style.backgroundImage = url(cfg.bgNear, CAP);
+
+            const fieldW = () => stage.clientWidth || 1;
+            const fieldH = () => stage.clientHeight || 1;
+
+            // Banda vertical de juego (0..1). En "chase" se limita a la carretera;
+            // en vuelo abarca casi todo el cielo. Se aplica al jugador Y a los spawns.
+            const yMin = cfg.yMin != null ? cfg.yMin : 0.09;
+            const yMax = cfg.yMax != null ? cfg.yMax : 0.91;
+
+            const pRatio = cfg.playerRatio || 1.5;
+            const pFrac = cfg.playerHeight || 0.26;
+            const sizePlayer = () => {
+                const h = fieldH() * pFrac;
+                playerEl.style.height = h + 'px';
+                playerEl.style.width = (h * pRatio) + 'px';
+            };
+            playerEl.style.backgroundImage = url(cfg.playerFrames[0]);
+            sizePlayer();
+            let playerY = (yMin + yMax) / 2, targetY = playerY;
+            // z-index por profundidad: quien va más abajo (mayor Y) se dibuja delante.
+            // Así, si un objeto pasa por debajo del centro del coche va por encima, y
+            // si pasa por encima, el coche queda delante (efecto pseudo-3D).
+            const zByY = (y) => Math.round(y * 100) + 10;
+            const setPlayerY = () => {
+                playerEl.style.top = (playerY * 100) + '%';
+                playerEl.style.zIndex = zByY(playerY);
+            };
+            setPlayerY();
+
+            let frameIdx = 0, frameT = 0;
+            const animatePlayer = (dt) => {
+                frameT += dt;
+                if (frameT >= (isFly ? 0.11 : 0.15)) {
+                    frameT = 0;
+                    frameIdx = (frameIdx + 1) % cfg.playerFrames.length;
+                    playerEl.style.backgroundImage = url(cfg.playerFrames[frameIdx]);
+                }
+            };
+
+            const onMove = (e) => {
+                const r = stage.getBoundingClientRect();
+                targetY = Math.max(yMin, Math.min(yMax, (e.clientY - r.top) / r.height));
+            };
+            stage.addEventListener('pointermove', onMove);
+            const keys = {};
+            const onKey = (e) => {
+                const k = (e.key || '').toLowerCase();
+                if (['arrowup', 'w', 'arrowdown', 's'].includes(k)) {
+                    e.preventDefault();
+                    keys[k] = (e.type === 'keydown');
+                }
+            };
+            document.addEventListener('keydown', onKey);
+            document.addEventListener('keyup', onKey);
+
+            let objs = [];
+            const spawnObj = () => {
+                if (!running) return;
+                const el = document.createElement('div');
+                el.className = 'ss-obj';
+                let name, kind, hFrac, wRatio;
+                const roll = Math.random();
+                if (cfg.collectible && roll < 0.55) {
+                    kind = 'collect'; name = cfg.collectible[0];
+                    el.classList.add('ss-collect'); hFrac = 0.12; wRatio = 1.05;
+                } else if (cfg.enemies && cfg.enemies.length && roll < 0.75) {
+                    kind = 'enemy';
+                    const en = cfg.enemies[Math.floor(Math.random() * cfg.enemies.length)];
+                    el.classList.add('ss-enemy'); el._frames = en; name = en[0];
+                    hFrac = 0.18; wRatio = 1.75;
+                } else {
+                    kind = 'obstacle';
+                    name = cfg.obstacles[Math.floor(Math.random() * cfg.obstacles.length)];
+                    hFrac = 0.14; wRatio = 1.1;
+                }
+                el.style.backgroundImage = url(name);
+                const h = fieldH() * hFrac;
+                el.style.height = h + 'px';
+                el.style.width = (h * wRatio) + 'px';
+                const y = yMin + Math.random() * (yMax - yMin);
+                el.style.top = (y * 100) + '%';
+                el.style.left = '108%';
+                el.style.zIndex = zByY(y);
+                stage.appendChild(el);
+                objs.push({ el, x: 1.08, y, kind, taken: false, frameT: 0, frameIdx: 0 });
+            };
+
+            let hits = 0, collected = 0, dist = 0, running = true;
+            const updateHud = () => {
+                if (isFly) { scoreEl.textContent = `🎼 ${collected} / ${goal}`; statusEl.textContent = 'Recoge'; }
+                else { scoreEl.textContent = '🏁 ESCAPA'; statusEl.textContent = ''; }
+                progressEl.style.width = ((isFly ? collected / goal : dist / goal) * 100) + '%';
+                let s = '';
+                for (let i = 0; i < maxHits; i++) s += `<span class="ss-heart${i < hits ? ' ss-lost' : ''}">❤</span>`;
+                livesEl.innerHTML = s;
+            };
+            updateHud();
+
+            let sctx = null;
+            const beep = (f, d, t, v) => {
+                try {
+                    if (!sctx) sctx = new (window.AudioContext || window.webkitAudioContext)();
+                    if (sctx.state === 'suspended') sctx.resume();
+                    const o = sctx.createOscillator(), g = sctx.createGain(), n = sctx.currentTime + (t || 0);
+                    o.type = v && v.type || 'sine';
+                    o.frequency.value = f;
+                    g.gain.setValueAtTime(0.0001, n);
+                    g.gain.exponentialRampToValueAtTime((v && v.vol) || 0.07, n + 0.01);
+                    g.gain.exponentialRampToValueAtTime(0.0001, n + d);
+                    o.connect(g).connect(sctx.destination);
+                    o.start(n); o.stop(n + d + 0.02);
+                } catch (e) {}
+            };
+
+            let spawnTimer = null, raf = null;
+            const finish = (won) => {
+                if (!running) return;
+                running = false;
+                if (spawnTimer) clearInterval(spawnTimer);
+                if (raf) clearInterval(raf);
+                stage.removeEventListener('pointermove', onMove);
+                document.removeEventListener('keydown', onKey);
+                document.removeEventListener('keyup', onKey);
+                overlay.removeEventListener('click', swallow, true);
+                objs.forEach(o => o.el.remove()); objs = [];
+                const result = document.createElement('div');
+                result.className = 'minigame-result';
+                result.textContent = won ? cfg.winMsg : cfg.loseMsg;
+                overlay.appendChild(result);
+                setTimeout(() => { overlay.remove(); resolve(won); }, won ? 1500 : 950);
+            };
+
+            const hitPlayer = () => {
+                hits++; updateHud();
+                playerEl.classList.remove('ss-hurt'); void playerEl.offsetWidth; playerEl.classList.add('ss-hurt');
+                stage.classList.remove('ss-hit'); void stage.offsetWidth; stage.classList.add('ss-hit');
+                beep(150, 0.18, 0, { type: 'sawtooth', vol: 0.08 });
+                if (hits >= maxHits) finish(false);
+            };
+            const grab = (o) => {
+                collected++; o.taken = true; o.el.classList.add('ss-taken');
+                if (cfg.collectible && cfg.collectible[1]) o.el.style.backgroundImage = url(cfg.collectible[1]);
+                beep(880, 0.09, 0, { type: 'triangle', vol: 0.08 });
+                beep(1320, 0.09, 0.05, { type: 'triangle', vol: 0.06 });
+                updateHud();
+                const el = o.el; setTimeout(() => el.remove(), 320);
+                if (collected >= goal) finish(true);
+            };
+
+            let bgX = 0, last = performance.now();
+            const objSpeed = 0.12 + speed * 0.055;   // fracción de ancho por segundo
+            const distRate = speed * 0.62;
+            spawnTimer = setInterval(spawnObj, Math.max(480, 1150 - speed * 75));
+
+            const tick = () => {
+                if (!running) return;
+                const now = performance.now();
+                const dt = Math.min(0.05, (now - last) / 1000); last = now;
+
+                if (keys['arrowup'] || keys['w']) targetY -= dt * 1.15;
+                if (keys['arrowdown'] || keys['s']) targetY += dt * 1.15;
+                targetY = Math.max(yMin, Math.min(yMax, targetY));
+                playerY += (targetY - playerY) * Math.min(1, dt * 10);
+                setPlayerY();
+                animatePlayer(dt);
+
+                bgX -= speed * 55 * dt;
+                if (bgFarEl) bgFarEl.style.backgroundPositionX = (bgX * 0.4) + 'px';
+                if (bgNearEl) bgNearEl.style.backgroundPositionX = bgX + 'px';
+
+                if (!isFly) {
+                    dist += distRate * dt;
+                    if (dist >= goal) { finish(true); return; }
+                }
+
+                const fw = fieldW(), fh = fieldH();
+                const pw = playerEl.offsetWidth, ph = playerEl.offsetHeight;
+                const pcx = 0.12 * fw + pw / 2, pcy = playerY * fh;
+                const psh = 0.5;
+                const pL = pcx - pw * psh / 2, pR = pcx + pw * psh / 2, pT = pcy - ph * psh / 2, pB = pcy + ph * psh / 2;
+
+                for (const o of objs) {
+                    if (o.taken) continue;
+                    o.x -= objSpeed * dt;
+                    o.el.style.left = (o.x * 100) + '%';
+                    if (o.kind === 'enemy' && o.el._frames) {
+                        o.frameT += dt;
+                        if (o.frameT >= 0.14) { o.frameT = 0; o.frameIdx ^= 1; o.el.style.backgroundImage = url(o.el._frames[o.frameIdx]); }
+                    }
+                    const ow = o.el.offsetWidth, oh = o.el.offsetHeight;
+                    const ocx = o.x * fw, ocy = o.y * fh;
+                    const osh = o.kind === 'collect' ? 0.75 : 0.52;
+                    const oL = ocx - ow * osh / 2, oR = ocx + ow * osh / 2, oT = ocy - oh * osh / 2, oB = ocy + oh * osh / 2;
+                    if (pL < oR && pR > oL && pT < oB && pB > oT) {
+                        if (o.kind === 'collect') { grab(o); if (!running) return; }
+                        else { o.taken = true; o.el.remove(); hitPlayer(); if (!running) return; }
+                    }
+                }
+                objs = objs.filter(o => !o.taken && o.x > -0.25);
+
+                updateHud();
+            };
+            raf = setInterval(tick, 16);
         });
     }
 

@@ -132,6 +132,20 @@
             <input type="checkbox" id="tp-auto"> 🤖 Modo auto (se juega solo, para comprobar el ritmo)
         </label>
 
+        <h2>🏎️ Persecución (chase)</h2>
+        <div class="tp-row">
+            <button class="tp-btn" style="--c:#7cffb2" onclick="launchChase('facil')">Fácil</button>
+            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchChase('medio')">Medio</button>
+            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchChase('dificil')">Difícil</button>
+        </div>
+
+        <h2>🐉 Edu volando (eduvuelo)</h2>
+        <div class="tp-row">
+            <button class="tp-btn" style="--c:#7cffb2" onclick="launchEduVuelo('facil')">Fácil</button>
+            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchEduVuelo('medio')">Medio</button>
+            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchEduVuelo('dificil')">Difícil</button>
+        </div>
+
         <h2>⚔️ Battle</h2>
         <div class="tp-row tp-battle-row">
             <div class="tp-battle-card" style="--c:#d8a05c">
@@ -253,6 +267,35 @@
             const won = await engine.runVocalEchoRound(Object.assign({}, VOCAL[preset]));
             stopMusic();
             resultEl.textContent = won ? '✅ ¡Dúo perfecto!' : '❌ Desafinaste. ¡Inténtalo otra vez!';
+            panel.classList.remove('hidden');
+        }
+
+        const CHASE = {
+            facil:   { speed: 5,   distance: 45, maxHits: 4 },
+            medio:   { speed: 6.5, distance: 60, maxHits: 3 },
+            dificil: { speed: 8.5, distance: 85, maxHits: 2 }
+        };
+        const FLY = {
+            facil:   { speed: 4.5, goal: 6,  maxHits: 4 },
+            medio:   { speed: 6,   goal: 9,  maxHits: 3 },
+            dificil: { speed: 7.5, goal: 12, maxHits: 2 }
+        };
+        async function launchChase(preset) {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            startMusic('persecucion_carretera.mp3');
+            await engine.playChaseMinigame(CHASE[preset]);
+            stopMusic();
+            resultEl.textContent = '✅ ¡Escapaste de los memes!';
+            panel.classList.remove('hidden');
+        }
+        async function launchEduVuelo(preset) {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            startMusic('vuelo_edu.mp3');
+            await engine.playEduVueloMinigame(FLY[preset]);
+            stopMusic();
+            resultEl.textContent = '✅ ¡Partituras recogidas!';
             panel.classList.remove('hidden');
         }
 
