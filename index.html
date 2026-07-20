@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Con pelos y a lo loco</title>
-    <link rel="stylesheet" href="styles.css?v=20260720-19">
+    <title>Project AI.ri: Transfurmados</title>
+    <link rel="stylesheet" href="styles.css?v=20260720-26">
     <link rel="stylesheet" href="battle-styles.css?v=20260720-16">
 </head>
 <body>
@@ -12,6 +12,15 @@
     <div id="game-container">
         <!-- Fondo de la escena -->
         <div id="background" class="background"></div>
+
+        <!-- Vídeo de fondo del MENÚ PRINCIPAL (loop, ralentizado por game.js y
+             SIEMPRE mudo: su sonido de base se reproduce aparte como
+             ambiente_menu.mp3 a velocidad normal, bajito, tras el primer
+             clic/tecla — los navegadores no permiten audio antes de un gesto).
+             Se oculta al empezar a jugar. -->
+        <video id="menu-video" class="menu-video" autoplay muted loop playsinline
+               poster="assets/backgrounds/menu_cover.png?v=20260720-21"
+               src="assets/videos/menu_loop.mp4?v=20260720-21"></video>
 
         <!-- Personajes -->
         <div id="characters-container" class="characters-container">
@@ -37,22 +46,22 @@
         <!-- Menú de elecciones con estilo Persona 5 -->
         <div id="choices-container" class="choices-container p5-choices"></div>
 
-        <!-- Menú principal -->
-        <div id="main-menu" class="main-menu p5-main-menu">
-            <div class="p5-menu-header">
-                <h1>Con pelos y a lo loco</h1>
+        <!-- Menú principal (diseño "Neón de Medianoche": el logo es un letrero de
+             neón sobre la ciudad y las opciones una lista limpia abajo-izquierda) -->
+        <div id="main-menu" class="main-menu neon-menu">
+            <div class="nm-scrim"></div>
+            <div class="nm-grain"></div>
+            <div class="nm-logo">
+                <div class="nm-over">Project AI.ri</div>
+                <h1>Trans<span class="nm-fur">fur</span>mados</h1>
+                <div class="nm-tag">más de lo que ven tus ojos</div>
             </div>
-            <nav class="p5-menu-nav">
-                <button id="start-btn" class="menu-btn p5-menu-btn">
-                    <span class="p5-btn-text">Comenzar</span>
-                </button>
-                <button id="load-btn" class="menu-btn p5-menu-btn">
-                    <span class="p5-btn-text">Capítulos</span>
-                </button>
-                <button id="settings-btn" class="menu-btn p5-menu-btn">
-                    <span class="p5-btn-text">Configuración</span>
-                </button>
+            <nav class="nm-nav">
+                <button id="start-btn" class="nm-item">Comenzar</button>
+                <button id="load-btn" class="nm-item">Capítulos</button>
+                <button id="settings-btn" class="nm-item">Configuración</button>
             </nav>
+            <button id="menu-theme-btn" class="menu-theme-btn" title="Volver a escuchar el tema">♪</button>
         </div>
 
         <!-- Panel de Debug -->
@@ -81,7 +90,7 @@
     <script src="battle-minigame.js?v=20260720-12"></script>
     <script src="juice.js?v=20260719-3"></script>
     <script src="engine.js?v=20260720-19"></script>
-    <script src="game.js?v=20260720-11"></script>
+    <script src="game.js?v=20260720-24"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->

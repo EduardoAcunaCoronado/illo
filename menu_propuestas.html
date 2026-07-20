@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Propuestas de menú — Project AI.ri: Transfurmados</title>
+<style>
+/* ===== Fuentes autoalojadas (Google Fonts, OFL/gratis, subset latin con ñ/tildes) ===== */
+@font-face { font-family:'Monoton';   src:url('assets/fonts/ui/Monoton.woff2') format('woff2'); font-display:swap; }
+@font-face { font-family:'Righteous'; src:url('assets/fonts/ui/Righteous.woff2') format('woff2'); font-display:swap; }
+@font-face { font-family:'Pacifico';  src:url('assets/fonts/ui/Pacifico.woff2') format('woff2'); font-display:swap; }
+@font-face { font-family:'Bungee';    src:url('assets/fonts/ui/Bungee.woff2') format('woff2'); font-display:swap; }
+@font-face { font-family:'Bebas Neue';src:url('assets/fonts/ui/BebasNeue.woff2') format('woff2'); font-display:swap; }
+@font-face { font-family:'Outfit';    src:url('assets/fonts/ui/Outfit-var.woff2') format('woff2'); font-weight:100 900; font-display:swap; }
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html,body { width:100%; height:100%; background:#000; overflow:hidden; font-family:'Outfit',sans-serif; }
+
+#viewport { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
+#stage {
+  width:1280px; height:720px; position:relative; overflow:hidden; background:#000;
+  transform:scale(var(--s,1)); transform-origin:center center; flex:0 0 auto;
+}
+#bgvid { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+
+.variant { position:absolute; inset:0; display:none; }
+body[data-v="1"] .v1, body[data-v="2"] .v2, body[data-v="3"] .v3 { display:block; }
+
+/* ============ PROPUESTA 1 — NEÓN DE MEDIANOCHE ============ */
+.v1 .scrim {
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(90deg, rgba(6,6,24,.62) 0%, rgba(6,6,24,.28) 34%, transparent 58%),
+    linear-gradient(0deg, rgba(4,4,18,.66) 0%, transparent 32%),
+    radial-gradient(120% 90% at 50% 50%, transparent 60%, rgba(2,2,12,.5) 100%);
+}
+.v1 .logo { position:absolute; left:64px; top:58px; }
+.v1 .over {
+  font-weight:600; font-size:15px; letter-spacing:9px; text-transform:uppercase;
+  color:#9be8ff; text-shadow:0 0 10px rgba(79,208,255,.65); margin-bottom:10px;
+}
+.v1 h1 {
+  font-family:'Monoton'; font-weight:400; font-size:64px; letter-spacing:2px;
+  color:#fff0f7; line-height:1.05; text-transform:uppercase;
+  text-shadow:
+    0 0 6px rgba(255,255,255,.85),
+    0 0 16px #ff4fa3,
+    0 0 34px #ff4fa3,
+    0 0 70px rgba(255,79,163,.55),
+    0 0 110px rgba(176,79,255,.45);
+}
+.v1 .tag {
+  font-family:'Pacifico'; font-size:27px; margin-top:14px; transform:rotate(-2deg);
+  color:#ffe9b0; text-shadow:0 0 10px rgba(255,209,102,.85), 0 0 26px rgba(255,170,60,.5);
+}
+.v1 nav { position:absolute; left:66px; bottom:64px; display:flex; flex-direction:column; gap:20px; }
+.v1 .item {
+  font-weight:700; font-size:21px; letter-spacing:5px; text-transform:uppercase;
+  color:rgba(255,255,255,.62); cursor:pointer; width:max-content; position:relative;
+  transition:all .2s ease; padding-left:0;
+}
+.v1 .item::after {
+  content:''; position:absolute; left:0; bottom:-7px; height:2px; width:0;
+  background:linear-gradient(90deg,#4fd0ff,#ff4fa3); box-shadow:0 0 12px #4fd0ff;
+  transition:width .25s ease;
+}
+.v1 .item.on, .v1 .item:hover {
+  color:#fff; text-shadow:0 0 12px rgba(79,208,255,.8);
+}
+.v1 .item.on::after, .v1 .item:hover::after { width:100%; }
+.v1 .item.on::before {
+  content:'♪'; position:absolute; left:-34px; top:-2px; color:#ffd166;
+  text-shadow:0 0 10px rgba(255,209,102,.9);
+}
+.v1 .note-btn { position:absolute; right:46px; bottom:46px; }
+
+/* ============ PROPUESTA 2 — CRISTAL DE LUNA ============ */
+.v2 .scrim {
+  position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(130% 100% at 50% 40%, transparent 55%, rgba(3,3,14,.55) 100%);
+}
+.v2 .panel {
+  position:absolute; left:56px; top:50%; transform:translateY(-50%);
+  width:392px; padding:42px 38px 30px;
+  border-radius:24px;
+  background:linear-gradient(165deg, rgba(28,22,58,.52), rgba(8,7,26,.38));
+  -webkit-backdrop-filter:blur(18px) saturate(1.25);
+  backdrop-filter:blur(18px) saturate(1.25);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 30px 70px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.14);
+}
+.v2 .over {
+  font-weight:600; font-size:12px; letter-spacing:7px; text-transform:uppercase;
+  color:rgba(155,232,255,.9); margin-bottom:8px;
+}
+.v2 h1 {
+  font-family:'Righteous'; font-weight:400; font-size:47px; color:#fff; letter-spacing:.5px;
+  text-shadow:0 0 26px rgba(255,209,102,.4), 0 4px 26px rgba(0,0,0,.5);
+}
+.v2 .tag {
+  font-weight:300; font-style:italic; font-size:15.5px; letter-spacing:.6px;
+  color:rgba(255,231,178,.92); margin-top:6px;
+}
+.v2 .sep {
+  height:1px; margin:26px 0 14px;
+  background:linear-gradient(90deg, transparent, rgba(255,209,102,.55), transparent);
+}
+.v2 nav { display:flex; flex-direction:column; gap:6px; }
+.v2 .item {
+  position:relative; padding:13px 16px 13px 22px; border-radius:12px; cursor:pointer;
+  font-weight:600; font-size:16.5px; letter-spacing:2.5px; text-transform:uppercase;
+  color:rgba(255,255,255,.78); transition:all .2s ease;
+}
+.v2 .item::before {
+  content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  width:3px; height:0; border-radius:3px; background:#ffd166;
+  box-shadow:0 0 10px rgba(255,209,102,.9); transition:height .2s ease;
+}
+.v2 .item.on, .v2 .item:hover { background:rgba(255,209,102,.10); color:#ffd166; padding-left:28px; }
+.v2 .item.on::before, .v2 .item:hover::before { height:60%; }
+.v2 .foot {
+  margin-top:24px; font-size:11.5px; letter-spacing:1.5px; color:rgba(255,255,255,.4);
+  display:flex; justify-content:space-between; align-items:center;
+}
+.v2 .note-btn { position:absolute; right:-24px; top:-24px; }
+
+/* ============ PROPUESTA 3 — CARTEL DE CONCIERTO ============ */
+.v3 .scrim {
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(0deg, rgba(8,4,16,.72) 0%, transparent 34%),
+    linear-gradient(180deg, rgba(8,4,16,.55) 0%, transparent 26%),
+    radial-gradient(120% 90% at 50% 50%, transparent 55%, rgba(4,2,10,.5) 100%);
+}
+.v3 .grain {
+  position:absolute; inset:0; pointer-events:none; opacity:.06; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.v3 .logo { position:absolute; top:44px; left:0; right:0; text-align:center; }
+.v3 .over {
+  display:inline-block; font-weight:600; font-size:13px; letter-spacing:10px; text-transform:uppercase;
+  color:rgba(255,255,255,.78); padding:5px 18px; border:1px solid rgba(255,255,255,.35);
+  border-radius:999px; margin-bottom:14px; background:rgba(10,6,20,.35);
+}
+.v3 h1 {
+  font-family:'Bebas Neue'; font-size:118px; line-height:.92; letter-spacing:7px;
+  background:linear-gradient(180deg,#fff6e6 18%, #ffd166 62%, #ff9e3d 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+  filter:drop-shadow(4px 5px 0 rgba(255,45,105,.55)) drop-shadow(0 12px 34px rgba(0,0,0,.55));
+}
+.v3 .tag {
+  display:inline-block; margin-top:12px; transform:rotate(-1.6deg);
+  font-family:'Pacifico'; font-size:24px; color:#2a0a18;
+  background:linear-gradient(90deg,#ffd166,#ffb03d); padding:8px 26px; border-radius:4px;
+  box-shadow:0 8px 26px rgba(0,0,0,.45), 0 0 22px rgba(255,177,61,.35);
+}
+.v3 nav {
+  position:absolute; left:0; right:0; bottom:56px;
+  display:flex; justify-content:center; gap:26px;
+}
+.v3 .item {
+  position:relative; cursor:pointer;
+  font-family:'Bebas Neue'; font-size:27px; letter-spacing:3.5px;
+  color:#ffe9c4; padding:14px 34px;
+  border:2px dashed rgba(255,209,102,.65); border-radius:10px;
+  background:rgba(14,8,24,.66); transition:all .18s ease;
+}
+.v3 .item::before, .v3 .item::after {
+  content:''; position:absolute; top:50%; width:16px; height:16px; border-radius:50%;
+  background:#0c0716; transform:translateY(-50%);
+  box-shadow:inset 0 0 0 2px rgba(255,209,102,.5);
+}
+.v3 .item::before { left:-9px; } .v3 .item::after { right:-9px; }
+.v3 .item.on, .v3 .item:hover {
+  background:linear-gradient(90deg,#ffd166,#ffb03d); color:#2a0a18;
+  border-color:transparent; box-shadow:0 0 30px rgba(255,177,61,.5);
+}
+.v3 .note-btn { position:absolute; right:46px; bottom:52px; }
+
+/* ===== botón ♪ común ===== */
+.note-btn {
+  width:52px; height:52px; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:21px; color:#ffd166;
+  background:rgba(12,10,30,.55);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  border:1px solid rgba(255,209,102,.5);
+  box-shadow:0 0 18px rgba(255,209,102,.35);
+  animation:notepulse 1.6s ease-in-out infinite;
+}
+@keyframes notepulse {
+  0%,100% { box-shadow:0 0 10px rgba(255,209,102,.3); }
+  50% { box-shadow:0 0 26px rgba(255,209,102,.75); }
+}
+
+/* ===== selector de propuesta (se oculta con ?clean=1) ===== */
+#switch {
+  position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:99;
+  display:flex; gap:8px; background:rgba(0,0,0,.7); padding:8px 10px; border-radius:999px;
+  border:1px solid rgba(255,255,255,.2);
+}
+#switch button {
+  border:1px solid #666; background:#111; color:#ddd; padding:6px 14px; border-radius:999px;
+  cursor:pointer; font-family:'Outfit'; font-size:13px;
+}
+#switch button.on { background:#ffd166; color:#000; border-color:#ffd166; font-weight:700; }
+body.clean #switch { display:none; }
+</style>
+</head>
+<body data-v="1">
+<div id="viewport">
+  <div id="stage">
+    <video id="bgvid" autoplay muted loop playsinline
+           poster="assets/backgrounds/menu_cover.png"
+           src="assets/videos/menu_loop.mp4"></video>
+
+    <!-- ===== 1: NEÓN DE MEDIANOCHE ===== -->
+    <div class="variant v1">
+      <div class="scrim"></div>
+      <div class="logo">
+        <div class="over">Project AI.ri</div>
+        <h1>Transfurmados</h1>
+        <div class="tag">más de lo que ven tus ojos</div>
+      </div>
+      <nav>
+        <div class="item on">Comenzar</div>
+        <div class="item">Capítulos</div>
+        <div class="item">Configuración</div>
+      </nav>
+      <div class="note-btn">♪</div>
+    </div>
+
+    <!-- ===== 2: CRISTAL DE LUNA ===== -->
+    <div class="variant v2">
+      <div class="scrim"></div>
+      <div class="panel">
+        <div class="note-btn">♪</div>
+        <div class="over">Project AI.ri</div>
+        <h1>Transfurmados</h1>
+        <div class="tag">más de lo que ven tus ojos</div>
+        <div class="sep"></div>
+        <nav>
+          <div class="item on">Comenzar</div>
+          <div class="item">Capítulos</div>
+          <div class="item">Configuración</div>
+        </nav>
+        <div class="foot"><span>un cuento de Furrielva</span><span>v0.9</span></div>
+      </div>
+    </div>
+
+    <!-- ===== 3: CARTEL DE CONCIERTO ===== -->
+    <div class="variant v3">
+      <div class="scrim"></div>
+      <div class="grain"></div>
+      <div class="logo">
+        <div class="over">Project AI.ri presenta</div>
+        <h1>Transfurmados</h1>
+        <div><span class="tag">más de lo que ven tus ojos</span></div>
+      </div>
+      <nav>
+        <div class="item on">Comenzar</div>
+        <div class="item">Capítulos</div>
+        <div class="item">Configuración</div>
+      </nav>
+      <div class="note-btn">♪</div>
+    </div>
+  </div>
+</div>
+
+<div id="switch">
+  <button data-v="1" class="on">1 · Neón</button>
+  <button data-v="2">2 · Cristal</button>
+  <button data-v="3">3 · Cartel</button>
+</div>
+
+<script>
+  // escala del escenario 1280x720
+  function fit(){ document.getElementById('viewport').style.setProperty('--s',
+    Math.min(innerWidth/1280, innerHeight/720));
+    document.getElementById('stage').style.setProperty('--s',
+    Math.min(innerWidth/1280, innerHeight/720)); }
+  addEventListener('resize', fit); fit();
+  // vídeo lento como en el juego
+  const v=document.getElementById('bgvid'); v.playbackRate=0.5;
+  // selector
+  const params=new URLSearchParams(location.search);
+  if(params.get('v')) document.body.dataset.v=params.get('v');
+  if(params.get('clean')) document.body.classList.add('clean');
+  document.querySelectorAll('#switch button').forEach(b=>{
+    b.onclick=()=>{ document.body.dataset.v=b.dataset.v;
+      document.querySelectorAll('#switch button').forEach(x=>x.classList.toggle('on',x===b)); };
+  });
+</script>
+</body>
+</html>

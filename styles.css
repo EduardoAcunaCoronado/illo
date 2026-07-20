@@ -373,6 +373,72 @@ html, body {
     background: linear-gradient(90deg, transparent, #ff1744, transparent);
 }
 
+/* Vídeo de fondo del menú principal (loop, escala con el escenario) */
+.menu-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.menu-video.hidden { display: none; }
+
+/* Botón ♪ del menú: vuelve a reproducir el tema (que solo suena una vez) */
+.menu-theme-btn {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 2px solid #ffcc00;
+    background: #000;
+    color: #ffcc00;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 2;
+}
+.menu-theme-btn:hover {
+    background: #ffcc00;
+    color: #000;
+    box-shadow: 0 0 14px rgba(255, 204, 0, 0.8);
+    transform: scale(1.08);
+}
+.menu-theme-btn.playing {
+    animation: menu-theme-pulse 1.2s ease-in-out infinite;
+}
+@keyframes menu-theme-pulse {
+    0%, 100% { box-shadow: 0 0 6px rgba(255, 204, 0, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(255, 204, 0, 1), 0 0 34px rgba(255, 23, 68, 0.5); }
+}
+
+/* Sobretítulo del menú (nombre de proyecto) */
+.p5-menu-overline {
+    margin-bottom: 6px;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    font-style: italic;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    opacity: 0.75;
+    text-shadow: 0 0 10px rgba(79, 208, 255, 0.6);
+}
+
+/* Lema bajo el título del menú */
+.p5-menu-subtitle {
+    margin-top: 10px;
+    color: #fff;
+    font-size: 15px;
+    font-style: italic;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    opacity: 0.85;
+    text-shadow: 0 0 10px rgba(255, 23, 68, 0.55);
+}
+
 .main-menu h1 {
     font-size: 54px;
     color: #ffcc00;
@@ -1837,6 +1903,524 @@ html, body {
     opacity: 0;
     transform: translate(-50%, -50%) scale(1.3);
     transition: all 0.26s ease;
+}
+
+/* ============================================
+   MENÚ PRINCIPAL — "Neón de Medianoche"
+   Fuentes gratuitas (OFL) autoalojadas en assets/fonts/ui/ (subset latin con ñ/tildes)
+   ============================================ */
+@font-face { font-family: 'Monoton';   src: url('assets/fonts/ui/Monoton.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Pacifico';  src: url('assets/fonts/ui/Pacifico.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Righteous'; src: url('assets/fonts/ui/Righteous.woff2') format('woff2'); font-display: swap; }
+@font-face { font-family: 'Outfit';    src: url('assets/fonts/ui/Outfit-var.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+
+/* El menú deja de ser un panel centrado: ocupa todo el escenario y deja ver la ciudad */
+.main-menu.neon-menu {
+    top: 0; left: 0; right: 0; bottom: 0;
+    transform: none;
+    padding: 0;
+    text-align: left;
+    background: none;
+    border: none;
+    box-shadow: none;
+    clip-path: none;
+    min-width: 0;
+    animation: none;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Degradados sutiles para que logo y opciones se lean sobre el vídeo */
+.nm-scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(90deg, rgba(6, 6, 24, 0.62) 0%, rgba(6, 6, 24, 0.28) 34%, transparent 58%),
+        linear-gradient(0deg, rgba(4, 4, 18, 0.66) 0%, transparent 32%),
+        radial-gradient(120% 90% at 50% 50%, transparent 60%, rgba(2, 2, 12, 0.5) 100%);
+}
+
+@keyframes nm-rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.nm-logo {
+    position: absolute;
+    left: 64px;
+    top: 58px;
+    animation: nm-rise 0.9s ease-out both;
+}
+
+.nm-over {
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 9px;
+    text-transform: uppercase;
+    color: #9be8ff;
+    text-shadow: 0 0 10px rgba(79, 208, 255, 0.65);
+    margin-bottom: 10px;
+}
+
+/* El título como letrero de neón (tubo real: fuente Monoton) */
+.neon-menu h1 {
+    font-family: 'Monoton', cursive;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 64px;
+    letter-spacing: 2px;
+    color: #fff0f7;
+    line-height: 1.05;
+    text-transform: uppercase;
+    text-shadow:
+        0 0 6px rgba(255, 255, 255, 0.85),
+        0 0 16px #ff4fa3,
+        0 0 34px #ff4fa3,
+        0 0 70px rgba(255, 79, 163, 0.55),
+        0 0 110px rgba(176, 79, 255, 0.45);
+}
+
+.nm-tag {
+    font-family: 'Pacifico', cursive;
+    font-size: 27px;
+    margin-top: 14px;
+    transform: rotate(-2deg);
+    color: #ffe9b0;
+    text-shadow: 0 0 10px rgba(255, 209, 102, 0.85), 0 0 26px rgba(255, 170, 60, 0.5);
+}
+
+.nm-nav {
+    position: absolute;
+    left: 66px;
+    bottom: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.nm-item {
+    appearance: none;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    font-size: 21px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.62);
+    cursor: pointer;
+    position: relative;
+    width: max-content;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+    animation: nm-rise 0.7s ease-out both;
+}
+.nm-item:nth-child(1) { animation-delay: 0.15s; }
+.nm-item:nth-child(2) { animation-delay: 0.25s; }
+.nm-item:nth-child(3) { animation-delay: 0.35s; }
+
+.nm-item::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -7px;
+    height: 2px;
+    width: 0;
+    background: linear-gradient(90deg, #4fd0ff, #ff4fa3);
+    box-shadow: 0 0 12px #4fd0ff;
+    transition: width 0.25s ease;
+}
+
+.nm-item:hover, .nm-item:focus-visible {
+    color: #fff;
+    text-shadow: 0 0 12px rgba(79, 208, 255, 0.8);
+    outline: none;
+}
+.nm-item:hover::after, .nm-item:focus-visible::after { width: 100%; }
+
+.nm-item::before {
+    content: '♪';
+    position: absolute;
+    left: -34px;
+    top: -2px;
+    color: #ffd166;
+    text-shadow: 0 0 10px rgba(255, 209, 102, 0.9);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+.nm-item:hover::before, .nm-item:focus-visible::before { opacity: 1; }
+
+/* Botón ♪ del menú: burbuja de cristal abajo-derecha */
+.neon-menu .menu-theme-btn {
+    top: auto;
+    left: auto;
+    right: 46px;
+    bottom: 46px;
+    width: 52px;
+    height: 52px;
+    font-size: 21px;
+    color: #ffd166;
+    background: rgba(12, 10, 30, 0.55);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 209, 102, 0.5);
+    box-shadow: 0 0 18px rgba(255, 209, 102, 0.35);
+}
+.neon-menu .menu-theme-btn:hover {
+    background: rgba(255, 209, 102, 0.9);
+    color: #1a1030;
+    transform: scale(1.08);
+}
+
+/* ============================================
+   SELECTOR DE CAPÍTULOS — cristal de luna (a juego con el menú neón)
+   ============================================ */
+.chapter-selector {
+    background: rgba(4, 4, 16, 0.45);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+.chapter-selector-panel {
+    background: linear-gradient(165deg, rgba(28, 22, 58, 0.72), rgba(8, 7, 26, 0.62));
+    -webkit-backdrop-filter: blur(18px) saturate(1.25);
+    backdrop-filter: blur(18px) saturate(1.25);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 24px;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    clip-path: none;
+    padding: 36px 44px;
+    animation: nm-rise 0.5s ease-out both;
+    font-family: 'Outfit', sans-serif;
+}
+
+.chapter-selector-title {
+    font-family: 'Righteous', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    letter-spacing: 1px;
+    text-transform: none;
+    color: #fff;
+    text-shadow: 0 0 26px rgba(255, 209, 102, 0.4);
+    border-bottom: 1px solid rgba(255, 209, 102, 0.4);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+}
+.chapter-selector-title::before { display: none; }
+
+.chapter-select-btn {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 15.5px;
+    letter-spacing: 1.5px;
+    text-transform: none;
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    clip-path: none;
+    padding: 14px 22px;
+    transition: all 0.2s ease;
+}
+.chapter-select-btn:hover {
+    background: rgba(255, 209, 102, 0.14);
+    border-color: rgba(255, 209, 102, 0.6);
+    color: #ffd166;
+    transform: translateX(6px);
+    box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
+}
+
+.chapter-selector-back {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: rgba(255, 135, 145, 0.9);
+    border: 1px solid rgba(255, 91, 103, 0.55);
+    border-radius: 999px;
+    clip-path: none;
+    background: transparent;
+    padding: 12px 34px;
+    transition: all 0.2s ease;
+}
+.chapter-selector-back:hover {
+    background: rgba(255, 91, 103, 0.85);
+    color: #fff;
+    transform: none;
+    box-shadow: 0 0 18px rgba(255, 91, 103, 0.45);
+}
+
+/* ===== Refinos del menú neón (de la investigación de diseño) ===== */
+
+/* Grano de película sutil: autenticidad lo-fi y disimula el banding del vídeo */
+.nm-grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.055;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* "FUR" en cian dentro del letrero magenta: tubo de otro color, como en los
+   neones reales — e ilumina el juego de palabras del título */
+.neon-menu h1 .nm-fur {
+    color: #eafcff;
+    text-shadow:
+        0 0 6px rgba(255, 255, 255, 0.85),
+        0 0 16px #4fd0ff,
+        0 0 34px #4fd0ff,
+        0 0 70px rgba(79, 208, 255, 0.55),
+        0 0 110px rgba(79, 232, 255, 0.45);
+}
+
+/* El letrero "se enciende" una vez al aparecer (parpadeo de tubo) y queda fijo */
+@keyframes nm-flicker {
+    0% { opacity: 0; }
+    7% { opacity: 1; }
+    11% { opacity: 0.3; }
+    15% { opacity: 1; }
+    21% { opacity: 0.5; }
+    26% { opacity: 1; }
+    34% { opacity: 0.85; }
+    40%, 100% { opacity: 1; }
+}
+.neon-menu h1 { animation: nm-flicker 1.6s ease-in-out 1 both; }
+
+/* Accesibilidad: sin animaciones decorativas si el sistema lo pide */
+@media (prefers-reduced-motion: reduce) {
+    .nm-logo, .nm-item, .neon-menu h1, .chapter-selector-panel, .menu-theme-btn { animation: none; }
+}
+
+/* ============================================
+   SISTEMA "NEÓN DE MEDIANOCHE" EN TODO EL JUEGO
+   (diálogo, elecciones, intro/fin de capítulo, modales y minijuegos)
+   Paleta: índigo profundo + oro #ffd166 + magenta #ff4fa3 + cian #4fd0ff
+   ============================================ */
+
+/* ---- Caja de diálogo: cristal índigo en vez de caja amarilla ---- */
+.dialog-box.p5-style {
+    background: linear-gradient(165deg, rgba(24, 19, 52, 0.90), rgba(9, 8, 28, 0.88));
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    clip-path: none;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    padding: 13px 26px;
+    max-width: 78%;
+    margin-bottom: 16px;
+    font-family: 'Outfit', sans-serif;
+}
+
+.p5-dialog-header {
+    border-bottom: 1px solid rgba(255, 209, 102, 0.28);
+    margin-bottom: 8px;
+    padding-bottom: 7px;
+}
+
+.character-name {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-style: normal;
+    font-size: 15px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #ffd166; /* el engine lo pinta del color del personaje por inline style */
+    text-shadow: 0 0 12px rgba(255, 209, 102, 0.35);
+}
+
+.p5-nameplate {
+    background: linear-gradient(90deg, rgba(255, 209, 102, 0.45), transparent 70%);
+}
+
+.dialog-text {
+    font-family: 'Outfit', sans-serif;
+    font-size: 21px;
+    line-height: 1.45;
+    color: #f5f1ff;
+}
+
+.dialog-continue {
+    color: #ffd166;
+    font-size: 14px;
+}
+.dialog-continue.p5-continue { text-shadow: 0 0 10px rgba(255, 209, 102, 0.6); }
+
+/* ---- Elecciones: filas de cristal con hover dorado y ♪ ---- */
+.choice-btn {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 15.5px;
+    letter-spacing: 1.2px;
+    text-transform: none;
+    background: linear-gradient(165deg, rgba(28, 22, 58, 0.88), rgba(8, 7, 26, 0.84));
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 12px;
+    clip-path: none;
+    color: rgba(255, 255, 255, 0.88);
+    padding: 14px 22px 14px 38px;
+    text-align: left;
+}
+.choice-btn::before {
+    content: '♪';
+    left: 15px;
+    color: #ffd166;
+    text-shadow: 0 0 10px rgba(255, 209, 102, 0.9);
+}
+.choice-btn::after { content: none; }
+.choice-btn:hover {
+    background: rgba(255, 209, 102, 0.14);
+    border-color: rgba(255, 209, 102, 0.6);
+    color: #ffd166;
+    transform: translateX(6px);
+    box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
+    font-weight: 600;
+}
+.choice-btn:hover::before { color: #ffd166; }
+.choice-btn:active { transform: translateX(3px); box-shadow: 0 0 22px rgba(255, 209, 102, 0.4); }
+
+/* ---- Intro y fin de capítulo: título Righteous + líneas neón ---- */
+.chapter-intro-overlay, .chapter-end-overlay { background: #080618; }
+
+.chapter-intro-title, .chapter-end-title {
+    font-family: 'Righteous', sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    text-transform: none;
+    letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 0 0 34px rgba(255, 209, 102, 0.5), 0 6px 30px rgba(0, 0, 0, 0.6);
+}
+
+.chapter-intro-line, .chapter-end-line {
+    background: linear-gradient(90deg, #4fd0ff, #ffd166, #ff4fa3);
+    box-shadow: 0 0 14px rgba(255, 209, 102, 0.5);
+}
+
+.chapter-end-subtitle { font-family: 'Outfit', sans-serif; font-style: normal; color: rgba(245, 241, 255, 0.85); }
+
+.chapter-end-btn {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #ffd166;
+    background: rgba(255, 209, 102, 0.10);
+    border: 1px solid rgba(255, 209, 102, 0.55);
+    border-radius: 999px;
+    clip-path: none;
+}
+.chapter-end-btn:hover {
+    background: rgba(255, 209, 102, 0.9);
+    color: #1a1030;
+    transform: scale(1.05);
+    box-shadow: 0 0 24px rgba(255, 209, 102, 0.5);
+    font-weight: 700;
+}
+
+/* ---- Modal genérico (¿Continuar?) ---- */
+.nm-modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 500;
+    padding: 34px 46px;
+    text-align: center;
+    background: linear-gradient(165deg, rgba(28, 22, 58, 0.92), rgba(8, 7, 26, 0.9));
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 22px;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    font-family: 'Outfit', sans-serif;
+    /* Animación propia: incluye el translate de centrado, porque una keyframe
+       que anime transform lo sustituye entero (nm-rise lo descentraba). */
+    animation: nm-modal-rise 0.4s ease-out both;
+}
+@keyframes nm-modal-rise {
+    from { opacity: 0; transform: translate(-50%, calc(-50% + 18px)); }
+    to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+.nm-modal-title {
+    font-family: 'Righteous', sans-serif;
+    font-weight: 400;
+    font-size: 26px;
+    letter-spacing: 1px;
+    color: #fff;
+    text-shadow: 0 0 26px rgba(255, 209, 102, 0.4);
+    margin-bottom: 26px;
+}
+.nm-modal-buttons { display: flex; gap: 16px; justify-content: center; }
+.nm-modal-buttons button {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 1.5px;
+    color: #ffd166;
+    background: rgba(255, 209, 102, 0.10);
+    border: 1px solid rgba(255, 209, 102, 0.55);
+    border-radius: 999px;
+    padding: 13px 30px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.nm-modal-buttons button:hover {
+    background: rgba(255, 209, 102, 0.9);
+    color: #1a1030;
+    box-shadow: 0 0 22px rgba(255, 209, 102, 0.5);
+}
+
+/* ---- Minijuegos: HUD, instrucciones, cartel de resultado y reintento ----
+   (el Neon Runner y los side-scrollers conservan su HUD NeonSans: se excluyen
+   con :not(.neon-font)) ---- */
+.minigame-hud:not(.neon-font) {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #ffd166;
+    text-shadow: 0 0 14px rgba(255, 209, 102, 0.45);
+}
+
+.minigame-instructions {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: 0.5px;
+}
+
+.minigame-result {
+    font-family: 'Righteous', sans-serif;
+    font-weight: 400;
+    font-size: 34px;
+    letter-spacing: 0.5px;
+    color: #ffd166;
+    text-shadow: 0 0 22px rgba(255, 209, 102, 0.5);
+    background: linear-gradient(165deg, rgba(28, 22, 58, 0.94), rgba(8, 7, 26, 0.92));
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 20px;
+    clip-path: none;
+    padding: 26px 46px;
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+}
+
+.mg-retry-buttons button {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    letter-spacing: 1.5px;
+    text-transform: none;
+    color: #ffd166;
+    background: rgba(255, 209, 102, 0.10);
+    border: 1px solid rgba(255, 209, 102, 0.55);
+    border-radius: 999px;
+    clip-path: none;
+    padding: 13px 32px;
+}
+.mg-retry-buttons button:hover {
+    background: rgba(255, 209, 102, 0.9);
+    color: #1a1030;
 }
 
 /* ============================================

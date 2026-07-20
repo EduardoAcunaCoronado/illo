@@ -20,6 +20,93 @@ const gameArea = document.querySelector("#game-container > :not(#main-menu)");
 startBtn.addEventListener("click", () => startNewGame());
 loadBtn.addEventListener("click", () => loadGame());
 
+// ===== Menú principal: vídeo de fondo + tema "Más de lo que ven tus ojos" =====
+// El vídeo arranca en bucle y silenciado (autoplay). Al primer clic/tecla se
+// activa su sonido base BAJITO y arranca el tema del menú (los navegadores no
+// permiten audio antes del primer gesto del usuario). Al empezar a jugar, todo
+// se funde y el vídeo se oculta; al volver al menú, vuelve.
+const MENU_MUSIC_SRC = "assets/sounds/music/tema_menu.mp3"; // alternativa: tema_menu_v2.mp3
+const MENU_AMBIENCE_SRC = "assets/sounds/music/ambiente_menu.mp3"; // audio base del vídeo, extraído
+const MENU_VIDEO_RATE = 0.5;   // velocidad del vídeo (1 = normal; más bajo = más lento)
+const MENU_AMBIENCE_VOL = 0.12; // sonido de base (bajito, SIEMPRE a velocidad normal)
+const MENU_MUSIC_VOL = 0.5;     // tema principal
+let menuAudioUnlocked = false;
+
+function menuVideoEl() {
+  return document.getElementById("menu-video");
+}
+
+// El vídeo va SIEMPRE mudo y ralentizado; su sonido de base se reproduce aparte
+// (ambiente_menu.mp3) para que no se estire ni cambie de tono al frenar el vídeo.
+function applyMenuVideoRate() {
+  const vid = menuVideoEl();
+  if (vid) vid.playbackRate = MENU_VIDEO_RATE;
+}
+applyMenuVideoRate();
+
+function startMenuAmbience() {
+  engine.playSound(MENU_AMBIENCE_SRC, { id: "menu_ambience", loop: true, volume: MENU_AMBIENCE_VOL, fadeIn: 900 });
+}
+
+// El tema del menú suena UNA sola vez (como una intro); al terminar queda solo
+// el ambiente. El botón ♪ permite volver a escucharlo cuando se quiera.
+function playMenuTheme() {
+  const audio = engine.playSound(MENU_MUSIC_SRC, { id: "menu_music", loop: false, volume: MENU_MUSIC_VOL, fadeIn: 600 });
+  const btn = document.getElementById("menu-theme-btn");
+  if (btn) btn.classList.add("playing");
+  if (audio) {
+    audio.onended = () => { if (btn) btn.classList.remove("playing"); };
+  }
+}
+
+function unlockMenuAudio(e) {
+  if (menuAudioUnlocked) return;
+  if (mainMenu.classList.contains("hidden")) return; // ya no estamos en el menú
+  menuAudioUnlocked = true;
+  // Si el primer gesto es justo "Comenzar", no arrancamos nada para un instante
+  // (quedaría un chispazo); el gesto ya deja el audio desbloqueado.
+  if (e && e.target && e.target.closest && e.target.closest("#start-btn")) return;
+  startMenuAmbience();
+  // Si el primer gesto es el propio botón ♪, el tema lo lanza su click (evita doble arranque)
+  if (e && e.target && e.target.closest && e.target.closest("#menu-theme-btn")) return;
+  playMenuTheme();
+}
+document.addEventListener("pointerdown", unlockMenuAudio, true);
+document.addEventListener("keydown", unlockMenuAudio, true);
+
+// Botón ♪: volver a escuchar el tema desde el principio
+document.getElementById("menu-theme-btn").addEventListener("click", (e) => {
+  e.stopPropagation();
+  playMenuTheme();
+});
+
+// Fundir y ocultar el vídeo + sonidos del menú (al empezar a jugar)
+function stopMenuMedia() {
+  try { engine.stopSound("menu_music", 700); } catch (err) {}
+  try { engine.stopSound("menu_ambience", 700); } catch (err) {}
+  const themeBtn = document.getElementById("menu-theme-btn");
+  if (themeBtn) themeBtn.classList.remove("playing");
+  const vid = menuVideoEl();
+  if (vid && !vid.classList.contains("hidden")) {
+    setTimeout(() => {
+      vid.pause();
+      vid.classList.add("hidden");
+    }, 700);
+  }
+}
+
+// Volver a mostrar el menú con su vídeo y su ambiente (al regresar al menú).
+// El tema NO se relanza solo: para volver a oírlo está el botón ♪.
+function showMenuMedia() {
+  const vid = menuVideoEl();
+  if (vid) {
+    vid.classList.remove("hidden");
+    applyMenuVideoRate();
+    vid.play().catch(() => {});
+  }
+  if (menuAudioUnlocked) startMenuAmbience();
+}
+
 // Inicializar
 document.addEventListener("DOMContentLoaded", initGame);
 
@@ -55,11 +142,12 @@ async function loadAvailableChapters() {
 }
 
 async function loadAllCharacters() {
+  // Nota: "luna" y "alex" se quitaron de la lista (no existe su ficha JSON y
+  // generaban errores 404 en cada partida; si algún día se crean, el engine
+  // los carga igualmente a demanda con showCharacter).
   const characters = [
-    "luna",
     "edu",
     "zip",
-    "alex",
     "pod",
     "emil",
     "samu",
@@ -79,6 +167,7 @@ async function loadAllCharacters() {
 }
 
 async function startNewGame() {
+  stopMenuMedia();
   mainMenu.classList.add("hidden");
   isGameRunning = true;
   currentChapterNumber = 0;
@@ -166,6 +255,7 @@ async function endGame() {
   // Si el capítulo es el final del juego, volver directamente al menú
   if (isFinalChapter) {
     mainMenu.classList.remove("hidden");
+    showMenuMedia();
     return;
   }
 
@@ -180,6 +270,7 @@ async function endGame() {
   } else {
     // No hay más capítulos, volver al menú
     mainMenu.classList.remove("hidden");
+    showMenuMedia();
   }
 }
 
@@ -199,51 +290,14 @@ async function checkChapterExists(chapterName) {
 
 async function showContinueOptions(nextChapterId) {
   return new Promise((resolve) => {
-    // Crear un panel de opciones
+    // Panel de opciones con el sistema "Neón de Medianoche" (clases en styles.css)
     const optionsContainer = document.createElement("div");
-    optionsContainer.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #000;
-            border: 3px solid #ffcc00;
-            padding: 40px;
-            text-align: center;
-            z-index: 500;
-            border-radius: 0;
-            clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 0 100%);
-        `;
-
+    optionsContainer.className = "nm-modal";
     optionsContainer.innerHTML = `
-            <h2 style="color: #ffcc00; font-size: 28px; margin-bottom: 30px; text-transform: uppercase; letter-spacing: 2px;">
-                ¿Continuar?
-            </h2>
-            <div style="display: flex; gap: 20px; justify-content: center;">
-                <button id="continue-next-chapter" style="
-                    background: #000;
-                    border: 3px solid #ffcc00;
-                    color: #ffcc00;
-                    padding: 15px 40px;
-                    font-size: 18px;
-                    cursor: pointer;
-                    font-weight: bold;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                    transition: all 0.3s ease;
-                ">Siguiente Capítulo</button>
-                <button id="return-to-menu" style="
-                    background: #000;
-                    border: 3px solid #ffcc00;
-                    color: #ffcc00;
-                    padding: 15px 40px;
-                    font-size: 18px;
-                    cursor: pointer;
-                    font-weight: bold;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                    transition: all 0.3s ease;
-                ">Menú Principal</button>
+            <h2 class="nm-modal-title">¿Continuar?</h2>
+            <div class="nm-modal-buttons">
+                <button id="continue-next-chapter">Siguiente capítulo</button>
+                <button id="return-to-menu">Menú principal</button>
             </div>
         `;
 
@@ -266,6 +320,7 @@ async function showContinueOptions(nextChapterId) {
       playChapter(nextChapterId);
     } else {
       mainMenu.classList.remove("hidden");
+      showMenuMedia();
     }
   });
 }
@@ -322,6 +377,7 @@ function showChapterSelector() {
 }
 
 async function startChapterFromSelector(chapterId) {
+  stopMenuMedia();
   mainMenu.classList.add("hidden");
 
   // Asegurar un estado limpio antes de empezar el capítulo elegido
