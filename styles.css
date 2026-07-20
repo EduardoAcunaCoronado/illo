@@ -8,14 +8,58 @@ html, body {
     width: 100%;
     height: 100%;
     font-family: 'Arial', 'Helvetica', sans-serif;
+    background: #000;
+    overflow: hidden;
 }
 
+/* Marco que llena la ventana y centra el escenario (bandas negras si el ratio
+   no es 16:9). */
+#viewport {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #000;
+}
+
+/* El escenario: se dibuja SIEMPRE a 1280x720 y se escala como un bloque con
+   --stage-scale (lo calcula el script de index.html al cargar y al redimensionar).
+   Así fondo, personajes, diálogo, fuentes y minijuegos escalan en proporción. */
 #game-container {
-    width: 100%;
-    height: 100vh;
+    width: 1280px;
+    height: 720px;
+    flex: 0 0 auto;
     background: #000;
     position: relative;
     overflow: hidden;
+    /* La escala responsive (--stage-scale) se COMPONE con el shake de juice.js
+       (--shake-*), que por defecto son 0. Así sacudir la pantalla nunca pisa el
+       escalado. */
+    transform: scale(var(--stage-scale, 1))
+               translate(var(--shake-x, 0px), var(--shake-y, 0px))
+               rotate(var(--shake-r, 0deg));
+    transform-origin: center center;
+}
+
+/* ===== juice.js: overlays de efectos (flash y viñeta) ===== */
+.juice-flash {
+    position: absolute;
+    inset: 0;
+    z-index: 900;               /* encima del gameplay, debajo de overlays de capítulo (1000) */
+    background: #fff;
+    opacity: 0;
+    pointer-events: none;
+}
+.juice-vignette {
+    position: absolute;
+    inset: 0;
+    z-index: 40;                /* sobre la escena, debajo del diálogo (100) */
+    background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.85) 100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
 }
 
 /* Fondo */
@@ -41,50 +85,44 @@ html, body {
 
 .character {
     position: absolute;
-    height: 100vh;
-    width: 50%;
+    bottom: 0;
+    height: 88%;
+    width: 42%;
     background-size: contain;
     background-repeat: no-repeat;
     background-position: bottom center;
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    /* La posición horizontal (left / margin-left) la calcula el engine en
+       layoutCharacters() para repartir a los personajes en franjas iguales.
+       El ANCHO NO se toca (queda en 42%): con 3 personajes NO se encogen, solo
+       se separan; el foco se resuelve iluminando al que habla. El transform
+       queda libre para el flip (scaleX). */
+    transition: opacity 0.4s ease, left 0.35s ease, margin-left 0.35s ease, filter 0.35s ease;
     opacity: 0;
+    z-index: 1;
 }
 
-.character.left {
-    bottom: 0;
-    left: 0;
-}
-
-.character.right {
-    bottom: 0;
-    right: 0;
-}
-
-.character.center {
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-}
+/* Posiciones de respaldo por si el engine no reordena (1 personaje) */
+.character.left { left: 0; }
+.character.right { left: 58%; }
+.character.center { left: 29%; }
 
 .character.active {
     opacity: 1;
 }
 
+/* El personaje que HABLA: a todo color, un pelín más brillante, con un halo
+   cálido siguiendo su silueta y por delante de los demás. */
 .character.speaking {
-    transform: scale(1.05);
-    filter: brightness(1.1);
-    transition: transform 0.3s ease, filter 0.3s ease;
+    filter: brightness(1.06) saturate(1.08) drop-shadow(0 0 18px rgba(255, 204, 0, 0.30));
+    z-index: 3;
 }
 
-/* El personaje central debe conservar su centrado también al hablar */
-.character.center.speaking {
-    transform: translateX(-50%) scale(1.05);
-}
-
-.character:not(.speaking).active {
-    filter: brightness(0.6);
-    transition: filter 0.3s ease;
+/* Los que NO hablan: en gris y apagados, por detrás. Solo se aplica cuando hay
+   un hablante EN PANTALLA (clase .has-speaker); durante la narración de 2B, o
+   si quien habla no tiene sprite, nadie se apaga. */
+.characters-container.has-speaker .character:not(.speaking).active {
+    filter: grayscale(0.85) brightness(0.55) contrast(0.96);
+    z-index: 1;
 }
 
 /* ============================================
@@ -121,21 +159,21 @@ html, body {
 .dialog-box.p5-style {
     background: rgba(0, 0, 0, 0.95);
     border: 3px solid #ffcc00;
-    padding: 20px 30px;
+    padding: 12px 24px;
     clip-path: polygon(0 0, calc(100% - 25px) 0, 100% 25px, 100% 100%, 0 100%);
     box-shadow: 0 0 20px rgba(255, 204, 0, 0.4), inset 0 0 10px rgba(255, 204, 0, 0.1);
-    max-width: 90%;
+    max-width: 78%;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
 }
 
 .p5-dialog-header {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 12px;
-    padding-bottom: 10px;
+    margin-bottom: 7px;
+    padding-bottom: 6px;
     border-bottom: 2px solid rgba(255, 204, 0, 0.5);
 }
 
@@ -169,11 +207,11 @@ html, body {
     display: -webkit-box;
     -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
-    font-size: 30px;
-    line-height: 1.6;
+    font-size: 21px;
+    line-height: 1.4;
     color: #ffffff;
     font-family: Arial, Helvetica, sans-serif;
-    margin: 10px 0;
+    margin: 5px 0;
 }
 
 .p5-border-bottom {
@@ -183,10 +221,10 @@ html, body {
 .dialog-continue {
     text-align: center;
     color: #ffcc00;
-    font-size: 20px;
+    font-size: 15px;
     font-weight: bold;
     animation: p5-bounce 0.8s infinite;
-    margin-top: 8px;
+    margin-top: 3px;
 }
 
 .dialog-continue.p5-continue {
@@ -714,39 +752,10 @@ html, body {
     animation: chapter-fade-out 0.5s ease-out forwards;
 }
 
-/* Ajustes responsivos */
-@media (max-width: 768px) {
-    .main-menu.p5-main-menu {
-        min-width: 320px;
-        padding: 40px 30px;
-    }
-
-    .main-menu h1 {
-        font-size: 36px;
-    }
-
-    .dialog-box.p5-style {
-        padding: 20px 25px;
-    }
-
-    .character-name {
-        font-size: 16px;
-    }
-
-    .dialog-text {
-        font-size: 14px;
-    }
-
-    .choice-btn {
-        font-size: 14px;
-        padding: 12px 15px;
-    }
-
-    .menu-btn {
-        font-size: 16px;
-        padding: 15px 20px;
-    }
-}
+/* Nota: antes había una media query (max-width:768px) que encogía las fuentes
+   del menú/diálogo en ventanas pequeñas. Ya no hace falta: el escenario completo
+   se escala como un bloque con --stage-scale, así que todo el texto encoge o
+   crece en proporción automáticamente. */
 
 /* ===== Minijuego: Ketchup vs Guindillas ===== */
 .minigame-overlay {
@@ -986,7 +995,7 @@ html, body {
 .runa-label {
     display: block;
     max-width: 100%;
-    font-size: clamp(13px, 1.5vw, 18px);
+    font-size: 18px;
     line-height: 1.2;
     text-align: center;
     text-transform: uppercase;
@@ -1389,7 +1398,7 @@ html, body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 22px;
-    width: min(70vw, 460px);
+    width: 460px;
     aspect-ratio: 1 / 1;
     margin: auto 0;
 }
@@ -1398,7 +1407,7 @@ html, body {
     border: 3px solid var(--pad-color);
     background: color-mix(in srgb, var(--pad-color) 18%, #000);
     border-radius: 22px;
-    font-size: clamp(32px, 7vw, 60px);
+    font-size: 60px;
     color: #fff;
     cursor: pointer;
     box-shadow: 0 0 12px color-mix(in srgb, var(--pad-color) 45%, transparent);
@@ -1467,8 +1476,8 @@ html, body {
     position: relative;
     display: flex;
     gap: 4px;
-    width: min(86vw, 520px);
-    height: 78vh;
+    width: 520px;
+    height: 562px;
     transform: rotateX(56deg);
     transform-origin: center bottom;
     background: linear-gradient(180deg, rgba(120, 0, 160, 0.05) 0%, rgba(0, 0, 0, 0.55) 60%, rgba(0, 0, 0, 0.85) 100%);
@@ -1578,7 +1587,7 @@ html, body {
 }
 
 .rhythm-key {
-    width: clamp(48px, 12vw, 78px);
+    width: 78px;
     aspect-ratio: 1 / 1;
     display: flex;
     align-items: center;
@@ -1587,7 +1596,7 @@ html, body {
     border-radius: 14px;
     color: #fff;
     font-weight: bold;
-    font-size: clamp(18px, 4vw, 30px);
+    font-size: 30px;
     cursor: pointer;
     background: color-mix(in srgb, var(--lane-color) 16%, #000);
     box-shadow: 0 0 14px color-mix(in srgb, var(--lane-color) 45%, transparent);
@@ -1635,7 +1644,7 @@ html, body {
     text-transform: uppercase;
 }
 
-.rhythm-minigame .minigame-hud { font-size: clamp(20px, 3.6vw, 34px); gap: 24px; padding-top: 6px; }
+.rhythm-minigame .minigame-hud { font-size: 34px; gap: 24px; padding-top: 6px; }
 .rhythm-minigame .mg-score  { color: #ff4fa3; text-shadow: 0 0 5px #fff, 0 0 12px #ff4fa3, 0 0 24px #ff4fa3; }
 .rhythm-minigame .mg-combo  { font-size: 1.25em; }
 .rhythm-minigame .mg-status { color: #4fd0ff; font-size: 0.7em; text-shadow: 0 0 4px rgba(255,255,255,.7), 0 0 10px #4fd0ff; }
@@ -1646,15 +1655,15 @@ html, body {
     left: 50%;
     top: 60%;
     transform: translateX(-50%);
-    font-size: clamp(22px, 4.4vw, 38px);
+    font-size: 38px;
     text-shadow: 0 0 6px #fff, 0 0 16px currentColor, 0 0 30px currentColor;
     z-index: 7;
     pointer-events: none;
     white-space: nowrap;
     animation: rhythm-judge-pop 0.62s ease-out forwards;
 }
-.rhythm-judge.rj-perfect { font-size: clamp(26px, 5.2vw, 46px); letter-spacing: 3px; }
-.rhythm-judge.rj-miss    { font-size: clamp(30px, 6vw, 52px); top: 58%; }
+.rhythm-judge.rj-perfect { font-size: 46px; letter-spacing: 3px; }
+.rhythm-judge.rj-miss    { font-size: 52px; top: 58%; }
 
 @keyframes rhythm-judge-pop {
     0%   { opacity: 0; transform: translateX(-50%) translateY(12px) scale(0.55); }
@@ -1669,7 +1678,7 @@ html, body {
     left: 50%;
     top: 28%;
     transform: translateX(-50%);
-    font-size: clamp(26px, 6vw, 52px);
+    font-size: 52px;
     color: #ffd166;
     text-shadow: 0 0 8px #fff, 0 0 20px #ffb703, 0 0 38px #ff8800;
     z-index: 7;
@@ -1688,8 +1697,8 @@ html, body {
     position: absolute;
     left: 22px;
     bottom: 100px;
-    width: clamp(104px, 16vw, 164px);
-    height: clamp(104px, 16vw, 164px);
+    width: 164px;
+    height: 164px;
     z-index: 6;
     border-radius: 16px;
     overflow: hidden;
@@ -1747,8 +1756,8 @@ html, body {
     top: 46%;
     left: 50%;
     transform: translate(-50%, -50%) scale(0.9);
-    width: min(64vw, 340px);
-    height: min(64vw, 340px);
+    width: 340px;
+    height: 340px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1781,13 +1790,13 @@ html, body {
     transition: transform 0.06s linear;
 }
 .rhythm-spinner-label {
-    font-size: clamp(26px, 5vw, 44px);
+    font-size: 44px;
     color: #ffd166;
     text-shadow: 0 0 8px #fff, 0 0 20px #ffb703;
     letter-spacing: 3px;
 }
 .rhythm-spinner-count {
-    font-size: clamp(18px, 3vw, 28px);
+    font-size: 28px;
     color: #4fe8ff;
     text-shadow: 0 0 6px #fff, 0 0 14px #4fe8ff;
 }

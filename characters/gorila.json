@@ -1,0 +1,11 @@
+{
+  "name": "Gorila",
+  "color": "#6b6b6b",
+  "poses": {
+    "neutral": "assets/characters/gorila/gorila.png",
+    "sospecha": "assets/characters/gorila/gorila_sospecha.png",
+    "contento": "assets/characters/gorila/gorila_contento.png",
+    "enfadado": "assets/characters/gorila/gorila_enfadado.png"
+  },
+  "defaultPose": "neutral"
+}

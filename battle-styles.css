@@ -32,8 +32,8 @@
     position: absolute;
     top: 18%;
     left: 50%;
-    width: min(48vw, 680px);
-    max-height: 62vh;
+    width: 614px;
+    max-height: 446px;
     object-fit: contain;
     transform: translateX(-50%);
     filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.65));
@@ -61,7 +61,7 @@
     position: absolute;
     top: 22px;
     left: 50%;
-    width: min(520px, 42vw);
+    width: 520px;
     min-width: 320px;
     transform: translateX(-50%);
     padding: 10px 14px;
@@ -160,7 +160,7 @@
     position: absolute;
     left: 50%;
     bottom: 138px;
-    width: min(760px, 54vw);
+    width: 691px;
     min-height: 50px;
     transform: translateX(-50%);
     padding: 12px 18px;
@@ -184,7 +184,7 @@
 .battle-skill-panel {
     top: 18px;
     left: 18px;
-    width: min(340px, 26vw);
+    width: 333px;
     min-height: 430px;
     padding: 14px;
 }
@@ -192,7 +192,7 @@
 .battle-order-panel {
     top: 18px;
     right: 18px;
-    width: min(190px, 15vw);
+    width: 140px;
     padding: 12px;
 }
 
@@ -349,17 +349,19 @@
 }
 
 .battle-order-entry {
-    width: 80%;
-    height: 52px;
+    width: 100%;
+    /* Misma proporción que el sprite (200x92): así el retrato llena la caja
+       entera sin dejar fondo a los lados ni recortar la cara. Todas iguales. */
+    aspect-ratio: 200 / 92;
     border: 1px solid rgba(255, 255, 255, 0.28);
     background: rgba(255, 255, 255, 0.08);
     overflow: hidden;
     opacity: 0.72;
-    transition: width 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
+    transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .battle-order-entry.is-current {
-    width: 100%;
+    /* El turno actual se resalta con brillo/borde, no con más ancho. */
     opacity: 1;
     box-shadow: 0 0 18px rgba(255, 230, 163, 0.18);
 }
@@ -402,15 +404,13 @@
 
 .battle-order-portrait {
     width: 100%;
-    max-width: 120px;
-    aspect-ratio: 200 / 92;
-    height: auto;
-    object-fit: contain;
+    height: 100%;
+    /* Llenar la entrada: la caja de la entrada es más ancha que el sprite, así
+       que con "cover" el retrato ocupa todo el hueco (recortando lo justo) en
+       vez de dejar fondo de color a los lados. La cara va centrada. */
+    object-fit: cover;
+    object-position: center;
     filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.5));
-}
-
-.battle-order-entry:not(.is-current) .battle-order-portrait {
-    max-width: 92px;
 }
 
 .battle-order-entry strong {
@@ -438,8 +438,9 @@
     position: relative;
     display: grid;
     grid-template-columns: minmax(116px, 46%) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     align-items: center;
-    min-height: 108px;
+    height: 108px;
     padding: 7px 10px 7px 6px;
     border: 1px solid rgba(255, 255, 255, 0.22);
     background: linear-gradient(135deg, rgba(5, 8, 18, 0.94), rgba(10, 19, 38, 0.92));
@@ -500,11 +501,12 @@
 
 .battle-ally-card img {
     width: 100%;
-    max-width: 200px;
-    aspect-ratio: 200 / 92;
-    height: auto;
-    max-height: 92px;
-    object-fit: contain;
+    height: 100%;
+    align-self: stretch;
+    /* Llenar el alto de la tarjeta: el sprite es apaisado, así que "cover"
+       rellena la altura recortando un pelín los lados (cara centrada). */
+    object-fit: cover;
+    object-position: center;
     filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.55));
 }
 
@@ -621,7 +623,7 @@
 }
 
 .battle-result-panel {
-    width: min(480px, 90vw);
+    width: 480px;
     padding: 30px;
     background: rgba(5, 8, 18, 0.96);
     text-align: center;
@@ -651,67 +653,6 @@
     border-color: #9cff4e;
 }
 
-@media (max-width: 900px) {
-    .battle-skill-panel {
-        top: 10px;
-        left: 10px;
-        width: 48vw;
-        min-height: 300px;
-    }
-
-    .battle-order-panel {
-        top: 10px;
-        right: 10px;
-        width: 28vw;
-    }
-
-    .battle-enemy-hp {
-        top: 322px;
-        width: 58vw;
-        min-width: 260px;
-    }
-
-    .battle-enemy {
-        top: 38%;
-        width: min(46vw, 320px);
-    }
-
-    .battle-message {
-        bottom: 128px;
-        width: 86vw;
-        font-size: 14px;
-    }
-
-    .battle-party {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .battle-ally-card {
-        grid-template-columns: minmax(86px, 42%) minmax(0, 1fr);
-        min-height: 78px;
-        padding: 6px;
-    }
-
-    .battle-ally-card img {
-        max-height: 62px;
-    }
-
-    .battle-ally-nameplate {
-        padding: 3px 6px;
-        font-size: 10px;
-    }
-
-    .battle-stat {
-        grid-template-columns: 24px minmax(0, 1fr);
-        gap: 5px;
-    }
-
-    .battle-stat-label,
-    .battle-stat-value {
-        font-size: 10px;
-    }
-
-    .battle-stat-bar {
-        height: 6px;
-    }
-}
+/* Nota: aquí había una media query (max-width:900px) que reorganizaba el combate
+   en ventanas estrechas. Ya no hace falta: el escenario 1280x720 se escala como
+   un bloque, así que el combate mantiene su composición a cualquier tamaño. */

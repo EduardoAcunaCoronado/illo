@@ -13,6 +13,7 @@ class VisualNovelEngine {
         this.speakingCharacter = null;
         this.speakingPosition = null;
         this.characterPositions = {}; // Rastrear qué personaje está en qué posición
+        this._charColorMissing = new Set(); // Claves de personaje sin ficha (evita 404 repetidos al colorear el nombre)
         this.audioInstances = {}; // Rastrear instancias de audio
         this.currentMusic = null; // Música de fondo actual
         this.sceneEndedByChoice = false; // Indica si la escena terminó por una elección
@@ -216,6 +217,26 @@ class VisualNovelEngine {
             case 'playVideo':
             case 'cutscene':
                 await this.playVideo(action);
+                break;
+            // ---- Efectos de "game feel" (juice.js) ----
+            case 'shake':
+            case 'screenShake':
+                if (window.Juice) window.Juice.shake(action.intensity || action.value || 8, action.duration || 350);
+                break;
+            case 'flash':
+                if (window.Juice) window.Juice.flash(action.color || action.value, action.duration);
+                break;
+            case 'grade':
+            case 'colorGrade':
+            case 'tinte':
+                if (window.Juice) window.Juice.grade(action.value || action.filter || 'none', action.duration);
+                break;
+            case 'vignette':
+            case 'vigneta':
+                if (window.Juice) {
+                    const s = (action.value != null) ? action.value : action.strength;
+                    window.Juice.vignette(s, action.duration);
+                }
                 break;
         }
     }
@@ -1556,6 +1577,10 @@ class VisualNovelEngine {
     // ============================================================
     async playRhythmMinigame(options = {}) {
         this.isWaitingForInput = false;
+        // Asegurar que el avatar (p.ej. samu) está cargado para resolver bien las
+        // rutas de sus poses (si no, el avatar saldría vacío / con 404).
+        const avKey = this.getCharacterKey(options.avatar || 'samu');
+        if (!this.characters[avKey]) { await this.loadCharacter(avKey); }
         let won = false;
         while (!won) {
             won = await this.runRhythmRound(options);
@@ -1589,13 +1614,20 @@ class VisualNovelEngine {
         const sfxOn = options.sfx !== false;
         const sfxVol = options.sfxVolume !== undefined ? options.sfxVolume : 1;
 
-        // Avatar (Samu) que reacciona a cada acierto/fallo
-        const avatarKey = options.avatar || 'samu';
+        // Avatar (Samu) que reacciona a cada acierto/fallo. Las rutas salen de la
+        // FICHA del personaje (poses), que viven en assets/characters/<key>/...
+        // (antes se construían sin la subcarpeta -> 404 en bucle y avatar vacío).
+        // Se cache-bustean UNA sola vez aquí, no en cada cambio, para no
+        // redescargar ni disparar 404 repetidos.
+        const avatarKey = this.getCharacterKey(options.avatar || 'samu');
+        const avatarChar = this.characters[avatarKey] || {};
+        const aPose = (name, fallback) =>
+            this.cacheBustAsset((avatarChar.poses && avatarChar.poses[name]) || fallback);
         const avatarPoses = {
-            idle:    `assets/characters/${avatarKey}.png`,
-            perfect: `assets/characters/${avatarKey}_happy.png`,
-            good:    `assets/characters/${avatarKey}_determined.png`,
-            miss:    `assets/characters/${avatarKey}_worried.png`
+            idle:    aPose('neutral',    `assets/characters/${avatarKey}/${avatarKey}.png`),
+            perfect: aPose('happy',      `assets/characters/${avatarKey}/${avatarKey}_happy.png`),
+            good:    aPose('determined', `assets/characters/${avatarKey}/${avatarKey}_determined.png`),
+            miss:    aPose('worried',    `assets/characters/${avatarKey}/${avatarKey}_worried.png`)
         };
 
         // Teclas por carril según número de carriles
@@ -1646,7 +1678,7 @@ class VisualNovelEngine {
             overlay.innerHTML = `
                 <div class="rhythm-bg"></div>
                 <div class="rhythm-avatar" id="rhythm-avatar">
-                    <img id="rhythm-avatar-img" src="${this.cacheBustAsset(avatarPoses.idle)}" alt="Samu">
+                    <img id="rhythm-avatar-img" src="${avatarPoses.idle}" alt="Samu">
                 </div>
                 <div class="minigame-hud neon-font">
                     <span class="mg-score">0 / ${totalNotes}</span>
@@ -1698,6 +1730,16 @@ class VisualNovelEngine {
             let ticker = null;
             let activeSpinner = null; // spinner en curso (captura los toques)
             const startTime = performance.now();
+
+            // CLAVE para el reintento: reiniciar la canción al principio en CADA
+            // ronda. Si no, tras perder la música sigue avanzando y
+            // audio.currentTime queda muy por delante del horario de notas nuevo,
+            // así que todas nacen ya "pasadas" y se pierde al instante con 0%.
+            if (audioEl) {
+                try { audioEl.currentTime = 0; } catch (e) {}
+                const _p = audioEl.play();
+                if (_p && _p.catch) _p.catch(() => {});
+            }
 
             // Reloj maestro en ms: si hay audio sonando, manda audio.currentTime
             // (los toques van al ritmo de la canción); si no, reloj interno.
@@ -1791,12 +1833,12 @@ class VisualNovelEngine {
             let avatarTimer = null;
             const setAvatar = (kind) => {
                 if (!avatarImg) return;
-                avatarImg.src = this.cacheBustAsset(avatarPoses[kind] || avatarPoses.idle);
+                avatarImg.src = avatarPoses[kind] || avatarPoses.idle;
                 avatarBox.classList.remove('av-perfect', 'av-good', 'av-miss');
                 avatarBox.classList.add('av-' + kind);
                 if (avatarTimer) clearTimeout(avatarTimer);
                 avatarTimer = setTimeout(() => {
-                    avatarImg.src = this.cacheBustAsset(avatarPoses.idle);
+                    avatarImg.src = avatarPoses.idle;
                     avatarBox.classList.remove('av-perfect', 'av-good', 'av-miss');
                 }, 680);
             };
@@ -2103,6 +2145,32 @@ class VisualNovelEngine {
             // Rastrear posición del personaje
             this.characterPositions[characterKey] = position;
         }
+        this.layoutCharacters();
+    }
+
+    // Reparte a los personajes ACTIVOS en franjas horizontales iguales.
+    // IMPORTANTE: el ancho es FIJO (no depende de cuántos haya), así con 3
+    // personajes NO se encogen; solo se separan. Como los sprites son verticales
+    // y usan background-size: contain, a tamaño completo apenas se solapan, y el
+    // foco lo da el iluminado del que habla. Posiciona con left + margin-left
+    // (el transform se reserva para el flip scaleX).
+    layoutCharacters() {
+        const order = ['left', 'center', 'right'];
+        const active = order.filter(p => {
+            const el = document.getElementById(`character-${p}`);
+            return el && el.classList.contains('active');
+        });
+        const N = active.length;
+        if (N === 0) return;
+        const W = 42; // ancho fijo de cada personaje (%), igual que el CSS base
+        active.forEach((p, i) => {
+            const el = document.getElementById(`character-${p}`);
+            const cx = ((2 * i + 1) / (2 * N)) * 100; // centro de su franja (%)
+            el.style.left = `${cx}%`;
+            el.style.right = 'auto';
+            el.style.width = `${W}%`;
+            el.style.marginLeft = `${-W / 2}%`;
+        });
     }
 
     setPose(characterName, position, pose = 'neutral') {
@@ -2155,6 +2223,7 @@ class VisualNovelEngine {
                 if (this.characterPositions[k] === position) delete this.characterPositions[k];
             }
         }
+        this.layoutCharacters();
     }
 
     focusCharacter(characterName, position) {
@@ -2169,6 +2238,40 @@ class VisualNovelEngine {
         if (charElement) {
             charElement.classList.remove('speaking');
         }
+    }
+
+    // Devuelve el color del personaje asegurando un mínimo de luminosidad para
+    // que el nombre se lea sobre la caja oscura (aclara los colores oscuros
+    // mezclándolos hacia el blanco, conservando el tono). Acepta cualquier
+    // formato CSS (hex, nombre como "gray", rgb()). Sin color -> dorado.
+    readableNameColor(color) {
+        if (!color || typeof color !== 'string') return '#ffcc00';
+        // Resolver cualquier formato CSS a RGB usando el canvas como parser.
+        if (!this._colorParser) {
+            this._colorParser = document.createElement('canvas').getContext('2d');
+        }
+        const ctx = this._colorParser;
+        ctx.fillStyle = '#000';       // reset (si el color es inválido, queda este)
+        ctx.fillStyle = color;
+        const resolved = ctx.fillStyle; // normalizado a #rrggbb o rgba(...)
+        let r, g, b;
+        if (resolved[0] === '#') {
+            r = parseInt(resolved.slice(1, 3), 16);
+            g = parseInt(resolved.slice(3, 5), 16);
+            b = parseInt(resolved.slice(5, 7), 16);
+        } else {
+            const m = resolved.match(/\d+/g);
+            if (!m || m.length < 3) return '#ffcc00';
+            r = +m[0]; g = +m[1]; b = +m[2];
+        }
+        const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+        if (lum < 0.55) {
+            const k = ((0.55 - lum) / 0.55) * 0.75; // cuánto mezclar hacia blanco
+            r = Math.round(r + (255 - r) * k);
+            g = Math.round(g + (255 - g) * k);
+            b = Math.round(b + (255 - b) * k);
+        }
+        return `rgb(${r}, ${g}, ${b})`;
     }
 
     playSound(soundPath, options = {}) {
@@ -2189,25 +2292,32 @@ class VisualNovelEngine {
             this.currentMusic = audio;
         }
 
-        // Rastrear por ID si se proporciona
+        // Rastrear por ID si se proporciona.
         if (id) {
+            // Si ya había un audio con este id, DESVANECERLO antes de reemplazarlo.
+            // Si no, el track viejo queda huérfano (sin referencia) sonando en
+            // bucle para siempre y se solapa con el nuevo (por eso las músicas
+            // "no se paraban" al cambiar de escena). Un fade corto evita cortes
+            // secos y, si el nuevo entra con fadeIn, queda un crossfade limpio.
+            const prev = this.audioInstances[id];
+            if (prev && prev !== audio) {
+                this.fadeOutAndStop(prev, 350);
+            }
             this.audioInstances[id] = audio;
         }
 
-        // Fade in si se especifica
+        // Fade in si se especifica. El intervalo se guarda en audio._fadeInterval
+        // para que un fade-out posterior pueda cancelarlo (evita que dos fades
+        // compitan por el volumen del mismo audio).
         if (fadeIn > 0) {
+            if (audio._fadeInterval) clearInterval(audio._fadeInterval);
             audio.volume = 0;
-            let startTime = Date.now();
+            const startTime = Date.now();
             const targetVolume = Math.max(0, Math.min(1, volume));
-
-            const fadeInterval = setInterval(() => {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / fadeIn, 1);
+            audio._fadeInterval = setInterval(() => {
+                const progress = Math.min((Date.now() - startTime) / fadeIn, 1);
                 audio.volume = targetVolume * progress;
-
-                if (progress >= 1) {
-                    clearInterval(fadeInterval);
-                }
+                if (progress >= 1) { clearInterval(audio._fadeInterval); audio._fadeInterval = null; }
             }, 20);
         }
 
@@ -2216,6 +2326,29 @@ class VisualNovelEngine {
         }
 
         return audio;
+    }
+
+    // Desvanece el volumen a 0 en `ms` y luego pausa y rebobina. Cancela
+    // cualquier fade anterior sobre el mismo audio (evita intervalos compitiendo
+    // por el volumen). Con ms<=0, o si ya está pausado, para de inmediato.
+    fadeOutAndStop(audio, ms = 300) {
+        if (!audio) return;
+        if (audio._fadeInterval) { clearInterval(audio._fadeInterval); audio._fadeInterval = null; }
+        if (ms <= 0 || audio.paused) {
+            try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+            return;
+        }
+        const startTime = Date.now();
+        const initialVolume = audio.volume;
+        audio._fadeInterval = setInterval(() => {
+            const progress = Math.min((Date.now() - startTime) / ms, 1);
+            audio.volume = initialVolume * (1 - progress);
+            if (progress >= 1) {
+                clearInterval(audio._fadeInterval);
+                audio._fadeInterval = null;
+                try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+            }
+        }, 20);
     }
 
     stopSound(audioOrId, fadeOut = 0) {
@@ -2230,44 +2363,19 @@ class VisualNovelEngine {
             }
         }
 
-        if (!audio) return;
-
-        if (fadeOut > 0) {
-            // Fade out gradual
-            let startTime = Date.now();
-            const initialVolume = audio.volume;
-
-            const fadeInterval = setInterval(() => {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / fadeOut, 1);
-                audio.volume = initialVolume * (1 - progress);
-
-                if (progress >= 1) {
-                    clearInterval(fadeInterval);
-                    audio.pause();
-                    audio.currentTime = 0;
-                }
-            }, 20);
-        } else {
-            // Parar inmediatamente
-            audio.pause();
-            audio.currentTime = 0;
-        }
+        this.fadeOutAndStop(audio, fadeOut);
     }
 
     stopAllSounds() {
-        // Parar toda la música y efectos
-        if (this.currentMusic) {
-            this.currentMusic.pause();
-            this.currentMusic.currentTime = 0;
-            this.currentMusic = null;
-        }
-
-        // Parar todos los efectos registrados
-        for (const id in this.audioInstances) {
-            this.audioInstances[id].pause();
-            this.audioInstances[id].currentTime = 0;
-        }
+        // Parar de inmediato cancelando cualquier fade en curso.
+        const kill = (a) => {
+            if (!a) return;
+            if (a._fadeInterval) { clearInterval(a._fadeInterval); a._fadeInterval = null; }
+            try { a.pause(); a.currentTime = 0; } catch (e) {}
+        };
+        kill(this.currentMusic);
+        this.currentMusic = null;
+        for (const id in this.audioInstances) kill(this.audioInstances[id]);
         this.audioInstances = {};
     }
 
@@ -2342,14 +2450,40 @@ class VisualNovelEngine {
         // sprite en pantalla es el móvil "iphone5", que es el que debe resaltarse).
         const speakerName = this.getCharacterKey(line.speakingAs || line.character);
 
-        // Limpiar efectos de todos los personajes
-        ['left', 'right'].forEach(pos => {
+        // Nombre del hablante en SU color (identidad + reconocimiento inmediato).
+        // Si sus datos aún no están cargados (habla sin sprite en pantalla), se
+        // cargan en segundo plano y se aplica el color al llegar, salvo que ya
+        // haya cambiado el hablante.
+        const applyNameColor = (data) => {
+            characterName.style.color = this.readableNameColor(data && data.color);
+        };
+        const spData = this.characters[speakerName];
+        if (spData) {
+            applyNameColor(spData);
+        } else if (this._charColorMissing.has(speakerName)) {
+            applyNameColor(null); // ya sabemos que no tiene ficha -> dorado, sin re-pedir
+        } else {
+            applyNameColor(null); // dorado por defecto mientras carga
+            const nm = line.character;
+            this.loadCharacter(speakerName)
+                .then(d => {
+                    if (d) { if (characterName.textContent === nm) applyNameColor(d); }
+                    else { this._charColorMissing.add(speakerName); }
+                })
+                .catch(() => { this._charColorMissing.add(speakerName); });
+        }
+
+        // Limpiar el estado "speaking" de TODOS los huecos (incluido center,
+        // que antes se olvidaba: por eso el del centro no se apagaba al hablar otro).
+        ['left', 'center', 'right'].forEach(pos => {
             const elem = document.getElementById(`character-${pos}`);
             if (elem) elem.classList.remove('speaking');
         });
 
         // Buscar la posición del personaje que habla usando el rastreo
         const speakerPosition = this.characterPositions[speakerName];
+        const charactersContainer = document.getElementById('characters-container');
+        let speakerOnScreen = false;
 
         if (speakerPosition) {
             const speakerElement = document.getElementById(`character-${speakerPosition}`);
@@ -2357,7 +2491,18 @@ class VisualNovelEngine {
                 speakerElement.classList.add('speaking');
                 this.speakingCharacter = speakerName;
                 this.speakingPosition = speakerPosition;
+                speakerOnScreen = true;
             }
+        }
+
+        // Solo grisamos/apagamos a los demás cuando hay un hablante EN PANTALLA.
+        // Durante la narración (2B) o si quien habla no tiene sprite, nadie se apaga.
+        if (charactersContainer) {
+            charactersContainer.classList.toggle('has-speaker', speakerOnScreen);
+        }
+        if (!speakerOnScreen) {
+            this.speakingCharacter = null;
+            this.speakingPosition = null;
         }
 
         this.isWaitingForInput = false;
@@ -2377,9 +2522,17 @@ class VisualNovelEngine {
                 }
 
                 if (charIndex < text.length) {
-                    dialogText.textContent += text[charIndex];
+                    const ch = text[charIndex];
+                    dialogText.textContent += ch;
                     charIndex++;
-                    timeoutId = setTimeout(typeChar, this.typingSpeed);
+                    // Blip por letra (tono según el que habla) y pausa extra en la
+                    // puntuación para dar ritmo al texto.
+                    let delay = this.typingSpeed;
+                    if (window.Juice) {
+                        window.Juice.blip(ch, speakerName);
+                        delay += window.Juice.punctuationPause(ch);
+                    }
+                    timeoutId = setTimeout(typeChar, delay);
                 } else {
                     this.isWaitingForInput = true;
                     resolve();
@@ -2641,6 +2794,11 @@ class VisualNovelEngine {
             centerChar.classList.remove('active');
             centerChar.classList.remove('speaking');
         }
+        const charactersContainer = document.getElementById('characters-container');
+        if (charactersContainer) charactersContainer.classList.remove('has-speaker');
+
+        // Limpiar efectos de juice (tinte, viñeta, shake)
+        if (window.Juice) window.Juice.reset();
 
         // Limpiar fondo
         const bg = document.getElementById('background');

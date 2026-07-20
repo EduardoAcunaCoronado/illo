@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba de minijuegos — Con pelos y a lo loco</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="battle-styles.css?v=20260720-9">
+    <link rel="stylesheet" href="battle-styles.css?v=20260720-16">
     <style>
         body { background: #05010f; }
         #test-panel {
@@ -87,7 +87,22 @@
     </style>
 </head>
 <body>
+    <div id="viewport">
     <div id="game-container"></div>
+    </div>
+    <script>
+      // Escenario responsive (igual que index.html): escala el 1280x720 a la ventana.
+      (function () {
+        var DW = 1280, DH = 720;
+        function fit() {
+          document.documentElement.style.setProperty(
+            '--stage-scale', Math.min(window.innerWidth / DW, window.innerHeight / DH));
+        }
+        window.addEventListener('resize', fit);
+        window.addEventListener('orientationchange', fit);
+        fit();
+      })();
+    </script>
 
     <div id="test-panel">
         <h1>🎮 Prueba de minijuegos</h1>
@@ -153,7 +168,7 @@
     </div>
 
     <script src="engine.js"></script>
-    <script src="battle-minigame.js?v=20260720-8"></script>
+    <script src="battle-minigame.js?v=20260720-12"></script>
     <script>
         const engine = new VisualNovelEngine();
         const panel = document.getElementById('test-panel');
