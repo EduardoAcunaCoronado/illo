@@ -100,6 +100,40 @@ html, body {
     transition: opacity 0.4s ease, left 0.35s ease, margin-left 0.35s ease, filter 0.35s ease, transform 0.25s ease;
     opacity: 0;
     z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Contenedor de video para poses especiales (ej. iPhone 5) */
+.character-video-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.character-video {
+    position: absolute;
+    object-fit: cover;
+    z-index: -1; /* Detrás del sprite que tiene el "agujero" transparente */
+}
+
+/* Ajustes específicos para iPhone 5 */
+.character[data-character="iphone5"] .character-video {
+    /* La pantalla del iPhone 5 en el sprite concierto: calculado a partir del
+       hueco real de pantalla en iphone5_concierto.png (843x1264, pantalla en
+       px 168,157 a 660,1043) proyectado sobre el hueco que deja
+       background-size: contain dentro de la caja de personaje (42% x 88% de
+       1280x720, imagen anclada abajo y centrada). */
+    top: 35%;
+    left: 28%;
+    width: 43%;
+    height: 43%;
+    border-radius: 2px;
 }
 
 /* Posiciones de respaldo por si el engine no reordena (1 personaje) */

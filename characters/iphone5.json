@@ -2,8 +2,12 @@
   "name": "iphone5",
   "color": "gray",
   "poses": {
-    "neutral": "assets/characters/others/iphone5.png",
-    "concierto": "assets/characters/others/iphone5-concierto.png"
+    "neutral": "assets/characters/iphone5/iphone5.png",
+    "concierto": "assets/characters/iphone5/iphone5_concierto.png",
+    "concierto_video": "assets/videos/mas_de_lo_que_ven_tus_ojos.mp4",
+    "edu": "assets/characters/iphone5/iphone5_edu.png",
+    "jose": "assets/characters/iphone5/iphone5_jose.png",
+    "tony": "assets/characters/iphone5/iphone5_tony.png"
   },
   "defaultPose": "neutral"
 }

@@ -423,18 +423,25 @@ class VisualNovelEngine {
         const goal = options.goal || 10;          // ketchups necesarios para ganar
         const maxHits = options.maxHits || 3;     // golpes de guindilla permitidos
         const duration = options.duration || 0;   // 0 = sin límite de tiempo
+        const spawnRate = options.spawnRate || 1.0; // multiplicador de frecuencia de aparición
+        const speedMult = options.speedMult || 1.0; // multiplicador de velocidad de caída
+        const chiliChance = options.chiliChance !== undefined ? options.chiliChance : 0.6;
+        const showExtraInfo = options.showExtraInfo || false; // mostrar info de debug/test
         const ketchupIcon = this.cacheBustAsset('assets/minigames/ketchup.png');
         const chiliIcon = this.cacheBustAsset('assets/minigames/chili.png');
-        const musicTrack = options.music || 'assets/music/ketchup.mp3';
+        const musicTrack = options.music;
 
         return new Promise(resolve => {
-            // Reproducir música del minijuego
-            const musicAudio = new Audio(musicTrack);
-            musicAudio.loop = true;
-            musicAudio.volume = 0.6;
-            musicAudio.play().catch(() => {
-                // Silenciosamente fallar si no se puede reproducir
-            });
+            // Reproducir música del minijuego (si se proporciona)
+            let musicAudio = null;
+            if (musicTrack) {
+                musicAudio = new Audio(musicTrack);
+                musicAudio.loop = true;
+                musicAudio.volume = 0.6;
+                musicAudio.play().catch(() => {
+                    // Silenciosamente fallar si no se puede reproducir
+                });
+            }
             // --- Crear overlay del minijuego ---
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay';
@@ -442,6 +449,7 @@ class VisualNovelEngine {
                 <div class="minigame-hud">
                     <span class="mg-score"><img class="mg-hud-icon" src="${ketchupIcon}" alt="ketchup"><span class="mg-score-text">0 / ${goal}</span></span>
                     <span class="mg-lives">❤️ ${maxHits}</span>
+                    ${showExtraInfo ? `<span class="mg-extra-info" style="margin-left:20px; font-size:0.8em; color:#ffb4b4">🌶️ Vel: ${(speedMult * 1.5).toFixed(2)}x</span>` : ''}
                 </div>
                 <div class="minigame-field" id="mg-field">
                     <div class="mg-player" id="mg-player"><img src="${this.cacheBustAsset('assets/minigames/samu_player.png')}" alt="Samu" draggable="false"></div>
@@ -497,7 +505,7 @@ class VisualNovelEngine {
             overlay.addEventListener('click', swallowClick, true);
 
             const spawnItem = () => {
-                const isChili = Math.random() < 0.4; // 40% guindillas, 60% ketchup
+                const isChili = Math.random() < chiliChance;
                 const el = document.createElement('div');
                 el.className = 'mg-item';
                 const img = document.createElement('img');
@@ -505,15 +513,16 @@ class VisualNovelEngine {
                 img.alt = isChili ? 'guindilla' : 'ketchup';
                 img.draggable = false;
                 el.appendChild(img);
-                const x = Math.random() * 0.9 + 0.02;
+                const x = Math.random() * 0.9 + 0.05;
                 el.style.left = `${x * 100}%`;
                 el.style.top = '-10%';
                 field.appendChild(el);
+                const speedBase = (0.25 + Math.random() * 0.25) * speedMult;
                 items.push({
                     el,
                     x,
                     y: -0.1,
-                    speed: 0.25 + Math.random() * 0.25, // fracción de campo por segundo
+                    speed: speedBase,
                     type: isChili ? 'chili' : 'ketchup'
                 });
             };
@@ -525,8 +534,10 @@ class VisualNovelEngine {
                 field.removeEventListener('mousemove', mouseMove);
 
                 // Detener música
-                musicAudio.pause();
-                musicAudio.currentTime = 0;
+                if (musicAudio) {
+                    musicAudio.pause();
+                    musicAudio.currentTime = 0;
+                }
 
                 // Mensaje final breve
                 const result = document.createElement('div');
@@ -560,7 +571,7 @@ class VisualNovelEngine {
                 spawnTimer -= dt;
                 if (spawnTimer <= 0) {
                     spawnItem();
-                    spawnTimer = 0.7 + Math.random() * 0.6;
+                    spawnTimer = (0.7 + Math.random() * 0.6) / spawnRate;
                 }
 
                 // Mover ítems y detectar colisiones
@@ -570,8 +581,9 @@ class VisualNovelEngine {
                     it.el.style.top = `${it.y * 100}%`;
 
                     // Colisión con el jugador (zona inferior del campo)
+                    const hitboxWidth = it.type === 'chili' ? 0.04 : playerW;
                     const caught = it.y >= 0.82 && it.y <= 0.98 &&
-                        Math.abs(it.x - playerX) < playerW;
+                        Math.abs(it.x - playerX) < hitboxWidth;
 
                     if (caught) {
                         if (it.type === 'ketchup') {
@@ -598,9 +610,6 @@ class VisualNovelEngine {
                 // Condiciones de fin
                 if (score >= goal) return cleanup(true);
                 if (lives <= 0) return cleanup(false);
-                if (duration > 0 && (time - startTime) >= duration) {
-                    return cleanup(score >= goal);
-                }
 
                 requestAnimationFrame(loop);
             };
@@ -2446,6 +2455,7 @@ class VisualNovelEngine {
 
         const charElement = document.getElementById(`character-${position}`);
         if (charElement) {
+            charElement.setAttribute('data-character', characterKey);
             const poseImage = character.poses && character.poses[pose]
                 ? character.poses[pose]
                 : (character.poses && character.poses[character.defaultPose])
@@ -2454,6 +2464,10 @@ class VisualNovelEngine {
 
             charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
             charElement.classList.add('active');
+
+            // Manejar video integrado si la pose tiene un video asociado
+            const videoPath = character.poses && character.poses[`${pose}_video`];
+            this.updateCharacterVideo(charElement, videoPath);
 
             const characterScale = this.getCharacterScale(characterKey);
             charElement.style.transform = `${flipped ? 'scaleX(-1)' : 'scaleX(1)'} scale(${characterScale})`;
@@ -2510,6 +2524,43 @@ class VisualNovelEngine {
                 : character.image || character.poses?.neutral;
 
             charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
+
+            // Manejar video integrado si la pose tiene un video asociado
+            const videoPath = character.poses && character.poses[`${pose}_video`];
+            this.updateCharacterVideo(charElement, videoPath);
+        }
+    }
+
+    // Gestiona un elemento de vídeo integrado dentro de un personaje (ej. pantalla móvil)
+    updateCharacterVideo(charElement, videoPath) {
+        let videoContainer = charElement.querySelector('.character-video-container');
+
+        if (!videoPath) {
+            if (videoContainer) videoContainer.remove();
+            return;
+        }
+
+        if (!videoContainer) {
+            videoContainer = document.createElement('div');
+            videoContainer.className = 'character-video-container';
+            charElement.appendChild(videoContainer);
+        }
+
+        let video = videoContainer.querySelector('video');
+        if (!video) {
+            video = document.createElement('video');
+            video.className = 'character-video';
+            video.autoplay = true;
+            video.loop = true;
+            video.muted = true;
+            video.setAttribute('playsinline', '');
+            videoContainer.appendChild(video);
+        }
+
+        const fullPath = this.cacheBustAsset(videoPath);
+        if (video.src !== fullPath && !video.src.endsWith(videoPath)) {
+            video.src = fullPath;
+            video.play().catch(e => console.warn('Error auto-playing character video:', e));
         }
     }
 
@@ -2524,6 +2575,8 @@ class VisualNovelEngine {
             if (el) {
                 el.classList.remove('active', 'speaking');
                 el.style.backgroundImage = '';
+                const videoContainer = el.querySelector('.character-video-container');
+                if (videoContainer) videoContainer.remove();
             }
         };
 
