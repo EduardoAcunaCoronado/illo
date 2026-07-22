@@ -1913,6 +1913,7 @@ html, body {
 @font-face { font-family: 'Pacifico';  src: url('assets/fonts/ui/Pacifico.woff2') format('woff2'); font-display: swap; }
 @font-face { font-family: 'Righteous'; src: url('assets/fonts/ui/Righteous.woff2') format('woff2'); font-display: swap; }
 @font-face { font-family: 'Outfit';    src: url('assets/fonts/ui/Outfit-var.woff2') format('woff2'); font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Exo 2';     src: url('assets/fonts/ui/Exo2-BlackItalic.woff2') format('woff2'); font-weight: 900; font-style: italic; font-display: swap; }
 
 /* El menú deja de ser un panel centrado: ocupa todo el escenario y deja ver la ciudad */
 .main-menu.neon-menu {
@@ -2073,6 +2074,54 @@ html, body {
     transform: scale(1.08);
 }
 
+/* Sello de la empresa (WildSoft): emblema + rótulo alado, abajo-centro.
+   El rótulo es SVG con Exo 2 Black Italic (las letras "deportivas" del logo
+   horizontal) y el ala dibujada a mano; el emblema lleva halo para leerse
+   sobre la ciudad oscura. */
+.nm-credit {
+    position: absolute;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.94;
+    pointer-events: none;
+    animation: nm-credit-rise 0.7s ease-out 0.45s both;
+}
+@keyframes nm-credit-rise {
+    from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+    to   { opacity: 0.94; transform: translateX(-50%) translateY(0); }
+}
+.nm-credit-over {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 11px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: rgba(255, 233, 176, 0.72);
+    text-shadow: 0 0 8px rgba(255, 209, 102, 0.4);
+}
+.nm-credit-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+}
+.nm-credit-emblema {
+    height: 54px;
+    width: auto;
+    filter: drop-shadow(0 0 1px rgba(214, 238, 255, 0.7))
+            drop-shadow(0 0 12px rgba(122, 208, 255, 0.45));
+}
+.nm-credit-word {
+    width: 218px;
+    height: auto;
+    filter: drop-shadow(0 0 6px rgba(79, 208, 255, 0.5))
+            drop-shadow(0 0 20px rgba(255, 79, 163, 0.3));
+}
+
 /* ============================================
    SELECTOR DE CAPÍTULOS — cristal de luna (a juego con el menú neón)
    ============================================ */
@@ -2191,6 +2240,7 @@ html, body {
 /* Accesibilidad: sin animaciones decorativas si el sistema lo pide */
 @media (prefers-reduced-motion: reduce) {
     .nm-logo, .nm-item, .neon-menu h1, .chapter-selector-panel, .menu-theme-btn { animation: none; }
+    .nm-credit { animation: none; }
 }
 
 /* ============================================
