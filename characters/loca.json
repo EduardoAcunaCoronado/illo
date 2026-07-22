@@ -1,6 +1,6 @@
 {
   "name": "Loca de los gatos",
-  "color": "#c94fd4",
+  "color": "purple",
   "poses": {
     "neutral": "assets/characters/others/loca.png"
   },

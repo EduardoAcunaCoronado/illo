@@ -1,6 +1,6 @@
 {
   "name": "Samu",
-  "color": "gray",
+  "color": "red",
   "poses": {
     "neutral": "assets/characters/samu/samu.png",
     "happy": "assets/characters/samu/samu_happy.png",

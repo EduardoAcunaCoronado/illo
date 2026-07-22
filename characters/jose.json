@@ -1,6 +1,6 @@
 {
   "name": "Jose",
-  "color": "#00d4ff",
+  "color": "green",
   "poses": {
     "neutral": "assets/characters/jose/jose.png",
     "happy": "assets/characters/jose/jose_happy.png",

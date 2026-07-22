@@ -1,6 +1,6 @@
 {
   "name": "Edu",
-  "color": "#FF6B9D",
+  "color": "blue",
   "poses": {
     "neutral": "assets/characters/edu/edu.png",
     "happy": "assets/characters/edu/edu_happy.png",
