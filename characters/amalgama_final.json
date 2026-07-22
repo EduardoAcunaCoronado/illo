@@ -1,0 +1,8 @@
+{
+  "name": "Amalgama forma final",
+  "color": "#2b003f",
+  "poses": {
+    "neutral": "assets/characters/amalgama/amalgama_final.png"
+  },
+  "defaultPose": "neutral"
+}

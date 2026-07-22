@@ -7,7 +7,7 @@
     evasion_up: { icon: "💨", direction: "up" },
     speed_down: { icon: "⚡", direction: "down" },
     attack_down: { icon: "⚔️", direction: "down" },
-    taunt: { icon: "🎯" }
+    taunt: { icon: "🎯" },
   };
 
   const ALLIES = [
@@ -31,7 +31,8 @@
           power: 32,
           target: "enemy",
           accuracy: 0.92,
-          description: "Lanza una esfera de fuego contra el enemigo. Buen daño mágico por 8 PM."
+          description:
+            "Lanza una esfera de fuego contra el enemigo. Buen daño mágico por 8 PM.",
         },
         {
           id: "escarcha",
@@ -44,7 +45,8 @@
           duration: 2,
           target: "enemy",
           accuracy: 0.9,
-          description: "Inflige daño de hielo y reduce la velocidad del enemigo durante 2 turnos."
+          description:
+            "Inflige daño de hielo y reduce la velocidad del enemigo durante 2 turnos.",
         },
         {
           id: "relampago",
@@ -55,7 +57,8 @@
           power: 38,
           target: "enemy",
           accuracy: 0.86,
-          description: "Golpea al enemigo con un rayo potente. Alto daño por 10 PM."
+          description:
+            "Golpea al enemigo con un rayo potente. Alto daño por 10 PM.",
         },
         {
           id: "rafaga_arcana",
@@ -66,9 +69,10 @@
           power: 18,
           target: "enemy",
           accuracy: 0.95,
-          description: "Ataque mágico básico. Hace daño moderado y no consume PM."
-        }
-      ]
+          description:
+            "Ataque mágico básico. Hace daño moderado y no consume PM.",
+        },
+      ],
     },
     {
       id: "edu",
@@ -92,7 +96,8 @@
           mpRestore: 6,
           target: "enemy",
           accuracy: 0.95,
-          description: "Ataca, reduce 10 PM del enemigo y Edu recupera hasta 6 PM."
+          description:
+            "Ataca, reduce 10 PM del enemigo y Edu recupera hasta 6 PM.",
         },
         {
           id: "prisa",
@@ -104,7 +109,8 @@
           speedModifier: 4,
           duration: 2,
           target: "ally",
-          description: "Aumenta la velocidad del aliado elegido durante 2 turnos."
+          description:
+            "Aumenta la velocidad del aliado elegido durante 2 turnos.",
         },
         {
           id: "doble_ilusorio",
@@ -116,7 +122,8 @@
           evasionModifier: 0.35,
           duration: 2,
           target: "ally",
-          description: "Aumenta mucho la evasión del aliado elegido durante 2 turnos."
+          description:
+            "Aumenta mucho la evasión del aliado elegido durante 2 turnos.",
         },
         {
           id: "corte_relampago",
@@ -127,13 +134,14 @@
           power: 20,
           target: "enemy",
           accuracy: 0.93,
-          description: "Un corte eléctrico rápido. Hace 20 de poder y no consume PM."
-        }
-      ]
+          description:
+            "Un corte eléctrico rápido. Hace 20 de poder y no consume PM.",
+        },
+      ],
     },
     {
       id: "seraphyne",
-      name: "Seraphyne",
+      name: "Seraphyna",
       speakingAs: "Tony",
       role: "Maga Blanca / Cantora",
       portrait: "assets/characters/tony/tony_hud_battle_1.png",
@@ -151,7 +159,7 @@
           element: "holy",
           power: 35,
           target: "ally",
-          description: "Restaura 35 HP al aliado elegido por 8 PM."
+          description: "Restaura 35 HP al aliado elegido por 8 PM.",
         },
         {
           id: "escudo",
@@ -163,7 +171,8 @@
           damageReduction: 0.4,
           duration: 2,
           target: "ally",
-          description: "Reduce un 40% el daño recibido por el aliado elegido durante 2 turnos."
+          description:
+            "Reduce un 40% el daño recibido por el aliado elegido durante 2 turnos.",
         },
         {
           id: "canto_purificador",
@@ -173,7 +182,7 @@
           element: "holy_music",
           power: 10,
           target: "all_allies",
-          description: "Cura 10 HP a cada miembro del equipo. No consume PM."
+          description: "Cura 10 HP a cada miembro del equipo. No consume PM.",
         },
         {
           id: "canto_debilitante",
@@ -186,9 +195,10 @@
           duration: 2,
           target: "enemy",
           accuracy: 0.94,
-          description: "Daña ligeramente al enemigo y reduce su poder ofensivo durante 2 turnos."
-        }
-      ]
+          description:
+            "Daña ligeramente al enemigo y reduce su poder ofensivo durante 2 turnos.",
+        },
+      ],
     },
     {
       id: "jose",
@@ -210,7 +220,8 @@
           power: 30,
           target: "enemy",
           accuracy: 0.9,
-          description: "Golpe contundente con la gran espada. Buen daño y no consume PM."
+          description:
+            "Golpe contundente con la gran espada. Buen daño y no consume PM.",
         },
         {
           id: "guardia_ferrea",
@@ -222,7 +233,8 @@
           damageReduction: 0.5,
           duration: 2,
           target: "ally",
-          description: "Reduce un 50% el daño recibido por el aliado elegido durante 2 turnos."
+          description:
+            "Reduce un 50% el daño recibido por el aliado elegido durante 2 turnos.",
         },
         {
           id: "provocar",
@@ -233,7 +245,7 @@
           power: 0,
           duration: 1,
           target: "enemy",
-          description: "Obliga al enemigo a atacar a Jose en su próximo turno."
+          description: "Obliga al enemigo a atacar a Jose en su próximo turno.",
         },
         {
           id: "embestida_de_piyon",
@@ -244,10 +256,10 @@
           power: 45,
           target: "enemy",
           accuracy: 0.82,
-          description: "Carga brutal de alto daño contra el enemigo por 12 PM."
-        }
-      ]
-    }
+          description: "Carga brutal de alto daño contra el enemigo por 12 PM.",
+        },
+      ],
+    },
   ];
 
   const ENEMIES = {
@@ -264,7 +276,7 @@
       defense: 6,
       finalAttackPattern: {
         normalTurnsBeforeCharge: 3,
-        warningText: "Ballerina Capuchina se está preparando..."
+        warningText: "Ballerina Capuchina se está preparando...",
       },
       skills: [
         {
@@ -274,7 +286,7 @@
           type: "damage",
           power: 24,
           target: "ally",
-          accuracy: 0.9
+          accuracy: 0.9,
         },
         {
           id: "pirueta_capuchina",
@@ -283,7 +295,7 @@
           type: "multi_damage",
           power: 14,
           target: "all_allies",
-          accuracy: 0.85
+          accuracy: 0.85,
         },
         {
           id: "espresso_distorsionado",
@@ -293,7 +305,7 @@
           power: 8,
           mpDamage: 12,
           target: "ally",
-          accuracy: 0.9
+          accuracy: 0.9,
         },
         {
           id: "grand_jete_del_caos",
@@ -303,16 +315,16 @@
           power: 36,
           target: "ally",
           accuracy: 0.75,
-          isFinalAttack: true
-        }
-      ]
+          isFinalAttack: true,
+        },
+      ],
     },
     tralalelo_tralala: {
       id: "tralalelo_tralala",
       name: "Tralalero Tralala",
       role: "Jefe Brainrot",
       image: "assets/characters/tralalelo_tralala_battle_1.png",
-      background: "assets/backgrounds/plaza_circular_brainrot_ataque.png",
+      background: "assets/backgrounds/airi_sala_interior_santuario.png",
       hp: 520,
       pm: 90,
       speed: 12,
@@ -320,21 +332,56 @@
       defense: 8,
       finalAttackPattern: {
         normalTurnsBeforeCharge: 3,
-        warningText: "Tralalero Tralala se está preparando..."
+        warningText: "Tralalero Tralala se está preparando...",
       },
       skills: [
-        { id: "mordisco_tralala", name: "Mordisco Tralala", pmCost: 0, type: "damage", power: 28, target: "ally", accuracy: 0.88 },
-        { id: "zapatillazo", name: "Zapatillazo", pmCost: 8, type: "damage_speed_down", power: 22, speedModifier: -2, duration: 2, target: "ally", accuracy: 0.86 },
-        { id: "oleada_absurda", name: "Oleada absurda", pmCost: 12, type: "multi_damage", power: 16, target: "all_allies", accuracy: 0.84 },
-        { id: "tralaleo_terminal", name: "Tralaleo terminal", pmCost: 18, type: "multi_damage", power: 32, target: "all_allies", accuracy: 0.78, isFinalAttack: true }
-      ]
+        {
+          id: "mordisco_tralala",
+          name: "Mordisco Tralala",
+          pmCost: 0,
+          type: "damage",
+          power: 28,
+          target: "ally",
+          accuracy: 0.88,
+        },
+        {
+          id: "zapatillazo",
+          name: "Zapatillazo",
+          pmCost: 8,
+          type: "damage_speed_down",
+          power: 22,
+          speedModifier: -2,
+          duration: 2,
+          target: "ally",
+          accuracy: 0.86,
+        },
+        {
+          id: "oleada_absurda",
+          name: "Oleada absurda",
+          pmCost: 12,
+          type: "multi_damage",
+          power: 16,
+          target: "all_allies",
+          accuracy: 0.84,
+        },
+        {
+          id: "tralaleo_terminal",
+          name: "Tralaleo terminal",
+          pmCost: 18,
+          type: "multi_damage",
+          power: 32,
+          target: "all_allies",
+          accuracy: 0.78,
+          isFinalAttack: true,
+        },
+      ],
     },
     tung_tung_tung_sahur: {
       id: "tung_tung_tung_sahur",
       name: "Tung Tung Tung Sahur",
       role: "Lider Brainrot",
       image: "assets/characters/tung_tung_tung_sahur_battle_1.png",
-      background: "assets/backgrounds/plaza_circular_brainrot_ataque.png",
+      background: "assets/backgrounds/fuente_ciudad_paloma.png",
       hp: 620,
       pm: 110,
       speed: 9,
@@ -342,21 +389,55 @@
       defense: 10,
       finalAttackPattern: {
         normalTurnsBeforeCharge: 3,
-        warningText: "Tung Tung Tung Sahur se está preparando..."
+        warningText: "Tung Tung Tung Sahur se está preparando...",
       },
       skills: [
-        { id: "golpe_tung", name: "Golpe Tung", pmCost: 0, type: "damage", power: 32, target: "ally", accuracy: 0.9 },
-        { id: "tambor_sahur", name: "Tambor Sahur", pmCost: 10, type: "multi_damage", power: 15, target: "all_allies", accuracy: 0.88 },
-        { id: "mirada_madera", name: "Mirada de madera", pmCost: 12, type: "mp_damage", power: 10, mpDamage: 14, target: "ally", accuracy: 0.9 },
-        { id: "tung_tung_apocaliptico", name: "Tung Tung apocalíptico", pmCost: 20, type: "multi_damage", power: 35, target: "all_allies", accuracy: 0.78, isFinalAttack: true }
-      ]
+        {
+          id: "golpe_tung",
+          name: "Golpe Tung",
+          pmCost: 0,
+          type: "damage",
+          power: 32,
+          target: "ally",
+          accuracy: 0.9,
+        },
+        {
+          id: "tambor_sahur",
+          name: "Tambor Sahur",
+          pmCost: 10,
+          type: "multi_damage",
+          power: 15,
+          target: "all_allies",
+          accuracy: 0.88,
+        },
+        {
+          id: "mirada_madera",
+          name: "Mirada de madera",
+          pmCost: 12,
+          type: "mp_damage",
+          power: 10,
+          mpDamage: 14,
+          target: "ally",
+          accuracy: 0.9,
+        },
+        {
+          id: "tung_tung_apocaliptico",
+          name: "Tung Tung apocalíptico",
+          pmCost: 20,
+          type: "multi_damage",
+          power: 35,
+          target: "all_allies",
+          accuracy: 0.78,
+          isFinalAttack: true,
+        },
+      ],
     },
     amalgama: {
       id: "amalgama",
       name: "Amalgama",
       role: "Horror Brainrot",
-      image: "assets/characters/amalgama_1.png",
-      background: "assets/backgrounds/amalgama.png",
+      image: "assets/characters/amalgama/amalgama_base.png",
+      background: "assets/backgrounds/fuente_ciudad_paloma_corrupta.png",
       hp: 760,
       pm: 140,
       speed: 8,
@@ -364,32 +445,138 @@
       defense: 12,
       finalAttackPattern: {
         normalTurnsBeforeCharge: 3,
-        warningText: "La Amalgama se está preparando..."
+        warningText: "La Amalgama se está preparando...",
       },
       skills: [
-        { id: "masa_inestable", name: "Masa inestable", pmCost: 0, type: "damage", power: 34, target: "ally", accuracy: 0.86 },
-        { id: "ruido_de_internet", name: "Ruido de internet", pmCost: 14, type: "multi_damage", power: 18, target: "all_allies", accuracy: 0.84 },
-        { id: "drenaje_glitch", name: "Drenaje glitch", pmCost: 16, type: "mp_damage", power: 12, mpDamage: 18, target: "ally", accuracy: 0.88 },
-        { id: "colapso_memetico", name: "Colapso memético", pmCost: 24, type: "multi_damage", power: 42, target: "all_allies", accuracy: 0.76, isFinalAttack: true }
-      ]
-    }
+        {
+          id: "masa_inestable",
+          name: "Masa inestable",
+          pmCost: 0,
+          type: "damage",
+          power: 34,
+          target: "ally",
+          accuracy: 0.86,
+        },
+        {
+          id: "ruido_de_internet",
+          name: "Ruido de internet",
+          pmCost: 14,
+          type: "multi_damage",
+          power: 18,
+          target: "all_allies",
+          accuracy: 0.84,
+        },
+        {
+          id: "drenaje_glitch",
+          name: "Drenaje glitch",
+          pmCost: 16,
+          type: "mp_damage",
+          power: 12,
+          mpDamage: 18,
+          target: "ally",
+          accuracy: 0.88,
+        },
+        {
+          id: "colapso_memetico",
+          name: "Partición del Cielo Negro",
+          pmCost: 24,
+          type: "halve_party_hp",
+          power: 0,
+          target: "all_allies",
+          unavoidable: true,
+          isFinalAttack: true,
+        },
+      ],
+    },
+    amalgama_final: {
+      id: "amalgama_final",
+      name: "Amalgama forma final",
+      role: "Nucleo final",
+      image: "assets/characters/amalgama/amalgama_final.png",
+      background: "assets/backgrounds/fuente_ciudad_paloma_corrupta_total.png",
+      hp: 1200,
+      pm: 260,
+      speed: 11,
+      evasion: 0.08,
+      defense: 16,
+      finalAttackPattern: {
+        normalTurnsBeforeCharge: 3,
+        warningText: "La Amalgama forma final concentra toda la corrupción digital...",
+      },
+      skills: [
+        {
+          id: "garra_de_pixeles_muertos",
+          name: "Garra de píxeles muertos",
+          pmCost: 0,
+          type: "damage",
+          power: 42,
+          target: "ally",
+          accuracy: 0.88,
+        },
+        {
+          id: "lluvia_de_memes_rotos",
+          name: "Lluvia de memes rotos",
+          pmCost: 18,
+          type: "multi_damage",
+          power: 24,
+          target: "all_allies",
+          accuracy: 0.84,
+        },
+        {
+          id: "silencio_del_santuario",
+          name: "Silencio del santuario",
+          pmCost: 22,
+          type: "mp_damage",
+          power: 18,
+          mpDamage: 26,
+          target: "ally",
+          accuracy: 0.9,
+        },
+        {
+          id: "pulso_negro_morado",
+          name: "Pulso negro morado",
+          pmCost: 24,
+          type: "damage_attack_down",
+          power: 28,
+          attackModifier: -4,
+          duration: 2,
+          target: "ally",
+          accuracy: 0.86,
+        },
+        {
+          id: "veredicto_del_nucleo_absoluto",
+          name: "Veredicto del Núcleo Absoluto",
+          pmCost: 40,
+          type: "random_ally_to_one_hp",
+          power: 0,
+          target: "ally",
+          unavoidable: true,
+          isFinalAttack: true,
+        },
+      ],
+    },
   };
 
   class BattleMinigame {
     constructor(options = {}) {
       this.options = options;
       this.debugStats = options.debugStats === true;
-      this.enemyTemplate = ENEMIES[options.enemy] || ENEMIES.ballerina_capuchina;
+      this.enemyTemplate =
+        ENEMIES[options.enemy] || ENEMIES.ballerina_capuchina;
       const configuredEnemyHp = Number(options.enemyHp);
-      const enemyHp = Number.isFinite(configuredEnemyHp) && configuredEnemyHp > 0
-        ? configuredEnemyHp
-        : this.enemyTemplate.hp;
+      const enemyHp =
+        Number.isFinite(configuredEnemyHp) && configuredEnemyHp > 0
+          ? configuredEnemyHp
+          : this.enemyTemplate.hp;
       this.allies = ALLIES.map((ally) => this.createFighter(ally, "ally"));
-      this.enemy = this.createFighter({
-        ...this.enemyTemplate,
-        hp: enemyHp,
-        maxHp: enemyHp
-      }, "enemy");
+      this.enemy = this.createFighter(
+        {
+          ...this.enemyTemplate,
+          hp: enemyHp,
+          maxHp: enemyHp,
+        },
+        "enemy",
+      );
       this.fighters = [...this.allies, this.enemy];
       this.turnClock = new Map(this.fighters.map((fighter) => [fighter.id, 0]));
       this.activeFighter = null;
@@ -412,7 +599,7 @@
         baseSpeed: template.speed,
         statuses: [],
         normalTurnsSinceFinal: 0,
-        preparingFinalAttack: false
+        preparingFinalAttack: false,
       };
     }
 
@@ -450,14 +637,15 @@
             <div class="battle-bar"><span class="battle-hp-fill"></span></div>
             <span class="battle-enemy-numbers ${this.debugStats ? "" : "hidden"}"></span>
           </div>
-          <img class="battle-enemy" src="${cacheBust(this.enemy.image)}" alt="${this.enemy.name}">
+          <img class="battle-enemy battle-enemy-${this.enemy.id}" src="${cacheBust(this.enemy.image)}" alt="${this.enemy.name}">
           <div class="battle-message"></div>
         </main>
         <section class="battle-party" aria-label="Equipo"></section>
       `;
 
       const background = this.options.background || this.enemy.background;
-      this.overlay.querySelector(".battle-background").style.backgroundImage = `url("${cacheBust(background)}")`;
+      this.overlay.querySelector(".battle-background").style.backgroundImage =
+        `url("${cacheBust(background)}")`;
       document.getElementById("game-container").appendChild(this.overlay);
       this.updateHud();
     }
@@ -470,7 +658,9 @@
 
     renderParty() {
       const party = this.overlay.querySelector(".battle-party");
-      party.innerHTML = this.allies.map((ally) => `
+      party.innerHTML = this.allies
+        .map(
+          (ally) => `
         <button class="battle-ally-card ${ally.currentHp <= 0 ? "is-ko" : ""} ${this.activeFighter?.id === ally.id ? "is-active" : ""}" data-ally="${ally.id}" ${ally.currentHp <= 0 ? "disabled" : ""}>
           <img src="${cacheBust(ally.portrait)}" alt="${ally.name}">
           <div class="battle-ally-info">
@@ -494,7 +684,9 @@
             </div>
           </div>
         </button>
-      `).join("");
+      `,
+        )
+        .join("");
     }
 
     getPercent(current, max) {
@@ -502,19 +694,31 @@
     }
 
     renderStatusIcons(fighter) {
-      const visualStatuses = fighter.statuses.filter((status) => status.type !== "taunt");
-      const isTauntTarget = fighter.team === "ally"
-        && this.enemy.statuses.some((status) => status.type === "taunt" && status.targetId === fighter.id && status.turns > 0);
+      const visualStatuses = fighter.statuses.filter(
+        (status) => status.type !== "taunt",
+      );
+      const isTauntTarget =
+        fighter.team === "ally" &&
+        this.enemy.statuses.some(
+          (status) =>
+            status.type === "taunt" &&
+            status.targetId === fighter.id &&
+            status.turns > 0,
+        );
       if (isTauntTarget) {
         visualStatuses.push({ type: "taunt" });
       }
 
-      const activeTypes = [...new Set(visualStatuses.map((status) => status.type))];
+      const activeTypes = [
+        ...new Set(visualStatuses.map((status) => status.type)),
+      ];
       return activeTypes
         .map((type) => ({ type, config: STATUS_ICONS[type] }))
         .filter((status) => status.config)
         .map(({ type, config }) => {
-          const directionClass = config.direction ? ` is-${config.direction}` : "";
+          const directionClass = config.direction
+            ? ` is-${config.direction}`
+            : "";
           const arrow = config.direction
             ? `<span class="battle-status-arrow">${config.direction === "up" ? "▲" : "▼"}</span>`
             : "";
@@ -524,44 +728,61 @@
     }
 
     renderEnemyHp() {
-      const hpPercent = this.enemy.maxHp > 0 ? (this.enemy.currentHp / this.enemy.maxHp) * 100 : 0;
-      this.overlay.querySelector(".battle-hp-fill").style.width = `${clamp(hpPercent, 0, 100)}%`;
-      this.overlay.querySelector(".battle-status-icons.enemy").innerHTML = this.renderStatusIcons(this.enemy);
+      const hpPercent =
+        this.enemy.maxHp > 0
+          ? (this.enemy.currentHp / this.enemy.maxHp) * 100
+          : 0;
+      this.overlay.querySelector(".battle-hp-fill").style.width =
+        `${clamp(hpPercent, 0, 100)}%`;
+      this.overlay.querySelector(".battle-status-icons.enemy").innerHTML =
+        this.renderStatusIcons(this.enemy);
       if (this.debugStats) {
-        this.overlay.querySelector(".battle-enemy-numbers").textContent = `HP ${this.enemy.currentHp}/${this.enemy.maxHp} - PM ${this.enemy.currentPm}/${this.enemy.maxPm}`;
+        this.overlay.querySelector(".battle-enemy-numbers").textContent =
+          `HP ${this.enemy.currentHp}/${this.enemy.maxHp} - PM ${this.enemy.currentPm}/${this.enemy.maxPm}`;
       }
     }
 
     renderOrder() {
       const order = this.getUpcomingOrder(8);
       const list = this.overlay.querySelector(".battle-order-list");
-      list.innerHTML = order.map((fighter, index) => `
+      list.innerHTML = order
+        .map(
+          (fighter, index) => `
         <div class="battle-order-entry ${fighter.team} ${index === 0 ? "is-current" : ""}">
-          ${fighter.team === "ally"
-            ? `<img class="battle-order-portrait" src="${cacheBust(fighter.portrait)}" alt="${fighter.name}">`
-            : `<span class="battle-order-boss">BOSS</span>`}
+          ${
+            fighter.team === "ally"
+              ? `<img class="battle-order-portrait" src="${cacheBust(fighter.portrait)}" alt="${fighter.name}">`
+              : `<span class="battle-order-boss">BOSS</span>`
+          }
         </div>
-      `).join("");
+      `,
+        )
+        .join("");
     }
 
     renderSkills(fighter) {
       const activeName = this.overlay.querySelector(".battle-active-name");
       const skillList = this.overlay.querySelector(".battle-skill-list");
-      const description = this.overlay.querySelector(".battle-skill-description");
+      const description = this.overlay.querySelector(
+        ".battle-skill-description",
+      );
       const cancelButton = this.overlay.querySelector(".battle-target-cancel");
       activeName.textContent = fighter.name;
       cancelButton.classList.add("hidden");
       cancelButton.onclick = null;
-      skillList.innerHTML = fighter.skills.map((skill, index) => {
-        const disabled = fighter.currentPm < skill.pmCost;
-        return `
+      skillList.innerHTML = fighter.skills
+        .map((skill, index) => {
+          const disabled = fighter.currentPm < skill.pmCost;
+          return `
           <button class="battle-skill-button" data-skill="${index}" ${disabled ? "disabled" : ""}>
             <span>${skill.name}</span>
             <small>${skill.pmCost} PM</small>
           </button>
         `;
-      }).join("");
-      description.textContent = "Selecciona una habilidad para leer lo que hace.";
+        })
+        .join("");
+      description.textContent =
+        "Selecciona una habilidad para leer lo que hace.";
 
       skillList.querySelectorAll(".battle-skill-button").forEach((button) => {
         const skill = fighter.skills[Number(button.dataset.skill)];
@@ -589,12 +810,16 @@
         .filter((fighter) => fighter.currentHp > 0)
         .map((fighter) => ({
           fighter,
-          clock: this.turnClock.get(fighter.id) || 0
+          clock: this.turnClock.get(fighter.id) || 0,
         }));
       const order = [];
 
       for (let i = 0; i < count; i++) {
-        snapshots.sort((a, b) => a.clock - b.clock || this.getSpeed(b.fighter) - this.getSpeed(a.fighter));
+        snapshots.sort(
+          (a, b) =>
+            a.clock - b.clock ||
+            this.getSpeed(b.fighter) - this.getSpeed(a.fighter),
+        );
         const next = snapshots[0];
         order.push(next.fighter);
         next.clock += this.getTurnDelay(next.fighter);
@@ -614,7 +839,10 @@
     }
 
     advanceFighterClock(fighter) {
-      this.turnClock.set(fighter.id, (this.turnClock.get(fighter.id) || 0) + this.getTurnDelay(fighter));
+      this.turnClock.set(
+        fighter.id,
+        (this.turnClock.get(fighter.id) || 0) + this.getTurnDelay(fighter),
+      );
     }
 
     getTurnDelay(fighter) {
@@ -622,11 +850,18 @@
     }
 
     getSpeed(fighter) {
-      return Math.max(1, fighter.baseSpeed + this.getStatusTotal(fighter, "speed"));
+      return Math.max(
+        1,
+        fighter.baseSpeed + this.getStatusTotal(fighter, "speed"),
+      );
     }
 
     getEvasion(fighter) {
-      return clamp(fighter.evasion + this.getStatusTotal(fighter, "evasion"), 0, 0.75);
+      return clamp(
+        fighter.evasion + this.getStatusTotal(fighter, "evasion"),
+        0,
+        0.75,
+      );
     }
 
     getStatusTotal(fighter, stat) {
@@ -667,7 +902,9 @@
     enableAllyTargeting(actor, skill) {
       const party = this.overlay.querySelector(".battle-party");
       const cancelButton = this.overlay.querySelector(".battle-target-cancel");
-      const skillButtons = this.overlay.querySelectorAll(".battle-skill-button");
+      const skillButtons = this.overlay.querySelectorAll(
+        ".battle-skill-button",
+      );
       const token = Symbol("target-selection");
       this.targetSelectionToken = token;
       party.classList.add("is-targeting");
@@ -677,16 +914,28 @@
       cancelButton.classList.remove("hidden");
       cancelButton.onclick = () => this.cancelTargetSelection(actor, token);
       party.querySelectorAll(".battle-ally-card").forEach((card) => {
-        card.addEventListener("click", () => {
-          const target = this.allies.find((ally) => ally.id === card.dataset.ally);
-          if (!target || target.currentHp <= 0 || !this.awaitingTarget || this.targetSelectionToken !== token) return;
-          this.awaitingTarget = false;
-          this.targetSelectionToken = null;
-          party.classList.remove("is-targeting");
-          cancelButton.classList.add("hidden");
-          cancelButton.onclick = null;
-          this.performPlayerSkill(actor, skill, target);
-        }, { once: true });
+        card.addEventListener(
+          "click",
+          () => {
+            const target = this.allies.find(
+              (ally) => ally.id === card.dataset.ally,
+            );
+            if (
+              !target ||
+              target.currentHp <= 0 ||
+              !this.awaitingTarget ||
+              this.targetSelectionToken !== token
+            )
+              return;
+            this.awaitingTarget = false;
+            this.targetSelectionToken = null;
+            party.classList.remove("is-targeting");
+            cancelButton.classList.add("hidden");
+            cancelButton.onclick = null;
+            this.performPlayerSkill(actor, skill, target);
+          },
+          { once: true },
+        );
       });
     }
 
@@ -727,7 +976,8 @@
       const cancelButton = this.overlay.querySelector(".battle-target-cancel");
       cancelButton.classList.add("hidden");
       cancelButton.onclick = null;
-      this.overlay.querySelector(".battle-skill-description").textContent = "Espera al siguiente turno aliado.";
+      this.overlay.querySelector(".battle-skill-description").textContent =
+        "Espera al siguiente turno aliado.";
     }
 
     renderEnemyTurn() {
@@ -749,7 +999,9 @@
           this.flashAllies(result.hitAllies);
           actor.normalTurnsSinceFinal = 0;
         } else {
-          await this.actionMessage(`${actor.name} pierde la concentración y vuelve a atacar normal.`);
+          await this.actionMessage(
+            `${actor.name} pierde la concentración y vuelve a atacar normal.`,
+          );
           actor.normalTurnsSinceFinal = 0;
           await this.useEnemyNormalSkill(actor);
         }
@@ -760,10 +1012,16 @@
       }
 
       const pattern = actor.finalAttackPattern;
-      if (finalSkill && pattern && actor.normalTurnsSinceFinal >= pattern.normalTurnsBeforeCharge) {
+      if (
+        finalSkill &&
+        pattern &&
+        actor.normalTurnsSinceFinal >= pattern.normalTurnsBeforeCharge
+      ) {
         if (actor.currentPm >= finalSkill.pmCost) {
           actor.preparingFinalAttack = true;
-          await this.actionMessage(pattern.warningText || `${actor.name} se está preparando...`);
+          await this.actionMessage(
+            pattern.warningText || `${actor.name} se está preparando...`,
+          );
         } else {
           actor.normalTurnsSinceFinal = 0;
           await this.useEnemyNormalSkill(actor);
@@ -782,11 +1040,16 @@
     }
 
     async useEnemyNormalSkill(actor) {
-      const available = actor.skills.filter((skill) => !skill.isFinalAttack && actor.currentPm >= skill.pmCost);
-      const free = actor.skills.filter((skill) => !skill.isFinalAttack && skill.pmCost === 0);
-      const skill = available.length > 0
-        ? available[Math.floor(Math.random() * available.length)]
-        : free[0];
+      const available = actor.skills.filter(
+        (skill) => !skill.isFinalAttack && actor.currentPm >= skill.pmCost,
+      );
+      const free = actor.skills.filter(
+        (skill) => !skill.isFinalAttack && skill.pmCost === 0,
+      );
+      const skill =
+        available.length > 0
+          ? available[Math.floor(Math.random() * available.length)]
+          : free[0];
       actor.currentPm = Math.max(0, actor.currentPm - skill.pmCost);
       const target = this.pickEnemyTarget(skill);
       const result = this.applySkill(actor, skill, target);
@@ -795,10 +1058,19 @@
     }
 
     pickEnemyTarget(skill) {
-      if (skill.target === "all_allies") return this.allies.filter((ally) => ally.currentHp > 0);
-      const tauntTarget = this.enemy.statuses.find((status) => status.type === "taunt" && status.turns > 0);
+      if (skill.target === "all_allies")
+        return this.allies.filter((ally) => ally.currentHp > 0);
+      if (skill.type === "random_ally_to_one_hp") {
+        const alive = this.allies.filter((ally) => ally.currentHp > 0);
+        return alive[Math.floor(Math.random() * alive.length)];
+      }
+      const tauntTarget = this.enemy.statuses.find(
+        (status) => status.type === "taunt" && status.turns > 0,
+      );
       if (tauntTarget) {
-        const target = this.allies.find((ally) => ally.id === tauntTarget.targetId && ally.currentHp > 0);
+        const target = this.allies.find(
+          (ally) => ally.id === tauntTarget.targetId && ally.currentHp > 0,
+        );
         if (target) return target;
       }
       const alive = this.allies.filter((ally) => ally.currentHp > 0);
@@ -807,12 +1079,16 @@
 
     applySkill(actor, skill, target) {
       if (skill.target === "all_allies" || skill.type === "party_heal") {
-        const targets = Array.isArray(target) ? target : this.allies.filter((ally) => ally.currentHp > 0);
-        const results = targets.map((singleTarget) => this.applySingleTargetSkill(actor, skill, singleTarget));
-      return {
-        text: `${actor.name} usa ${skill.name}. ${results.map((result) => result.text).join(" ")}`,
+        const targets = Array.isArray(target)
+          ? target
+          : this.allies.filter((ally) => ally.currentHp > 0);
+        const results = targets.map((singleTarget) =>
+          this.applySingleTargetSkill(actor, skill, singleTarget),
+        );
+        return {
+          text: `${actor.name} usa ${skill.name}. ${results.map((result) => result.text).join(" ")}`,
           hitEnemy: results.some((result) => result.hitEnemy),
-          hitAllies: results.flatMap((result) => result.hitAllies)
+          hitAllies: results.flatMap((result) => result.hitAllies),
         };
       }
 
@@ -820,53 +1096,135 @@
       return {
         text: `${actor.name} usa ${skill.name}. ${result.text}`,
         hitEnemy: result.hitEnemy,
-        hitAllies: result.hitAllies
+        hitAllies: result.hitAllies,
       };
     }
 
     applySingleTargetSkill(actor, skill, target) {
-      if (!target || target.currentHp <= 0) return { text: "Pero no hay objetivo válido.", hitEnemy: false, hitAllies: [] };
+      if (!target || target.currentHp <= 0)
+        return {
+          text: "Pero no hay objetivo válido.",
+          hitEnemy: false,
+          hitAllies: [],
+        };
 
       if (skill.type === "heal") {
         const amount = Math.min(skill.power, target.maxHp - target.currentHp);
         target.currentHp += amount;
-        return { text: `${target.name} recupera ${amount} HP.`, hitEnemy: false, hitAllies: [] };
+        return {
+          text: `${target.name} recupera ${amount} HP.`,
+          hitEnemy: false,
+          hitAllies: [],
+        };
       }
 
       if (skill.type === "party_heal") {
         const amount = Math.min(skill.power, target.maxHp - target.currentHp);
         target.currentHp += amount;
-        return { text: `${target.name} recupera ${amount} HP.`, hitEnemy: false, hitAllies: [] };
+        return {
+          text: `${target.name} recupera ${amount} HP.`,
+          hitEnemy: false,
+          hitAllies: [],
+        };
       }
 
       if (skill.type === "ally_shield") {
-        this.addStatus(target, { type: "shield", stat: "shield", value: skill.damageReduction, turns: skill.duration });
-        return { text: `${target.name} queda protegido.`, hitEnemy: false, hitAllies: [] };
+        this.addStatus(target, {
+          type: "shield",
+          stat: "shield",
+          value: skill.damageReduction,
+          turns: skill.duration,
+        });
+        return {
+          text: `${target.name} queda protegido.`,
+          hitEnemy: false,
+          hitAllies: [],
+        };
       }
 
       if (skill.type === "ally_speed_up") {
-        this.addStatus(target, { type: "speed_up", stat: "speed", value: skill.speedModifier, turns: skill.duration });
-        return { text: `${target.name} gana velocidad.`, hitEnemy: false, hitAllies: [] };
+        this.addStatus(target, {
+          type: "speed_up",
+          stat: "speed",
+          value: skill.speedModifier,
+          turns: skill.duration,
+        });
+        return {
+          text: `${target.name} gana velocidad.`,
+          hitEnemy: false,
+          hitAllies: [],
+        };
       }
 
       if (skill.type === "ally_evasion_up") {
-        this.addStatus(target, { type: "evasion_up", stat: "evasion", value: skill.evasionModifier, turns: skill.duration });
-        return { text: `${target.name} se vuelve mucho más difícil de acertar.`, hitEnemy: false, hitAllies: [] };
+        this.addStatus(target, {
+          type: "evasion_up",
+          stat: "evasion",
+          value: skill.evasionModifier,
+          turns: skill.duration,
+        });
+        return {
+          text: `${target.name} se vuelve mucho más difícil de acertar.`,
+          hitEnemy: false,
+          hitAllies: [],
+        };
       }
 
       if (skill.type === "taunt") {
-        this.addStatus(this.enemy, { type: "taunt", targetId: actor.id, turns: skill.duration });
-        return { text: `${this.enemy.name} fija su atención en ${actor.name}.`, hitEnemy: false, hitAllies: [] };
+        this.addStatus(this.enemy, {
+          type: "taunt",
+          targetId: actor.id,
+          turns: skill.duration,
+        });
+        return {
+          text: `${this.enemy.name} fija su atención en ${actor.name}.`,
+          hitEnemy: false,
+          hitAllies: [],
+        };
+      }
+
+      if (skill.type === "halve_party_hp") {
+        const newHp = Math.max(1, Math.ceil(target.currentHp / 2));
+        const damage = target.currentHp - newHp;
+        target.currentHp = newHp;
+        return {
+          text: `${target.name} queda reducido al 50% de sus PV.`,
+          hitEnemy: false,
+          hitAllies: damage > 0 ? [target.id] : [],
+        };
+      }
+
+      if (skill.type === "random_ally_to_one_hp") {
+        const damage = Math.max(0, target.currentHp - 1);
+        target.currentHp = 1;
+        return {
+          text: `${target.name} queda al borde del colapso con 1 PV.`,
+          hitEnemy: false,
+          hitAllies: damage > 0 ? [target.id] : [],
+        };
       }
 
       if (!this.rollHit(actor, skill, target)) {
-        return { text: `${target.name} esquiva el ataque.`, hitEnemy: false, hitAllies: [] };
+        return {
+          text: `${target.name} esquiva el ataque.`,
+          hitEnemy: false,
+          hitAllies: [],
+        };
       }
 
       let result = "";
       let hitEnemy = false;
       let hitAllies = [];
-      if (["damage", "damage_speed_down", "mp_drain", "mp_damage", "damage_attack_down", "multi_damage"].includes(skill.type)) {
+      if (
+        [
+          "damage",
+          "damage_speed_down",
+          "mp_drain",
+          "mp_damage",
+          "damage_attack_down",
+          "multi_damage",
+        ].includes(skill.type)
+      ) {
         const damage = this.calculateDamage(actor, skill, target);
         target.currentHp = Math.max(0, target.currentHp - damage);
         hitEnemy = target.team === "enemy" && damage > 0;
@@ -875,14 +1233,22 @@
       }
 
       if (skill.type === "damage_speed_down" && target.currentHp > 0) {
-        this.addStatus(target, { type: "speed_down", stat: "speed", value: skill.speedModifier, turns: skill.duration });
+        this.addStatus(target, {
+          type: "speed_down",
+          stat: "speed",
+          value: skill.speedModifier,
+          turns: skill.duration,
+        });
         result += ` Su velocidad baja.`;
       }
 
       if (skill.type === "mp_drain") {
         const drained = Math.min(skill.mpDamage, target.currentPm);
         target.currentPm -= drained;
-        const restored = Math.min(skill.mpRestore, actor.maxPm - actor.currentPm);
+        const restored = Math.min(
+          skill.mpRestore,
+          actor.maxPm - actor.currentPm,
+        );
         actor.currentPm += restored;
         result += ` Pierde ${drained} PM y ${actor.name} recupera ${restored} PM.`;
       }
@@ -894,7 +1260,12 @@
       }
 
       if (skill.type === "damage_attack_down" && target.currentHp > 0) {
-        this.addStatus(target, { type: "attack_down", stat: "attack", value: skill.attackModifier, turns: skill.duration });
+        this.addStatus(target, {
+          type: "attack_down",
+          stat: "attack",
+          value: skill.attackModifier,
+          turns: skill.duration,
+        });
         result += ` Su ataque baja.`;
       }
 
@@ -913,7 +1284,9 @@
     flashAllies(allyIds = []) {
       setTimeout(() => {
         [...new Set(allyIds)].forEach((allyId) => {
-          const allyEl = this.overlay.querySelector(`.battle-ally-card[data-ally="${allyId}"]`);
+          const allyEl = this.overlay.querySelector(
+            `.battle-ally-card[data-ally="${allyId}"]`,
+          );
           if (!allyEl) return;
           allyEl.classList.remove("battle-ally-hit");
           void allyEl.offsetWidth;
@@ -925,7 +1298,11 @@
 
     rollHit(actor, skill, target) {
       const baseAccuracy = skill.accuracy === undefined ? 0.9 : skill.accuracy;
-      const hitChance = clamp(baseAccuracy - this.getEvasion(target), 0.15, 0.98);
+      const hitChance = clamp(
+        baseAccuracy - this.getEvasion(target),
+        0.15,
+        0.98,
+      );
       return Math.random() <= hitChance;
     }
 
@@ -940,7 +1317,9 @@
     }
 
     addStatus(target, status) {
-      target.statuses = target.statuses.filter((active) => active.type !== status.type);
+      target.statuses = target.statuses.filter(
+        (active) => active.type !== status.type,
+      );
       target.statuses.push({ ...status });
     }
 
@@ -949,7 +1328,9 @@
       actor.statuses.forEach((status) => {
         if (status.turns !== undefined) status.turns -= 1;
       });
-      actor.statuses = actor.statuses.filter((status) => status.turns === undefined || status.turns > 0);
+      actor.statuses = actor.statuses.filter(
+        (status) => status.turns === undefined || status.turns > 0,
+      );
     }
 
     message(text) {
@@ -999,10 +1380,12 @@
         </div>
       `;
       this.overlay.appendChild(result);
-      result.querySelector(".battle-result-button").addEventListener("click", () => {
-        this.overlay.remove();
-        this.resolve(won);
-      });
+      result
+        .querySelector(".battle-result-button")
+        .addEventListener("click", () => {
+          this.overlay.remove();
+          this.resolve(won);
+        });
     }
   }
 
@@ -1012,6 +1395,6 @@
       return minigame.play();
     },
     allies: ALLIES,
-    enemies: ENEMIES
+    enemies: ENEMIES,
   };
 })();

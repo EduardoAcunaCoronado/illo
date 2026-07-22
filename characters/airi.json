@@ -1,0 +1,19 @@
+{
+  "name": "Airi",
+  "color": "#9fdcff",
+  "poses": {
+    "neutral": "assets/characters/airi/airi.png",
+    "happy": "assets/characters/airi/airi_happy.png",
+    "sad": "assets/characters/airi/airi_sad.png",
+    "angry": "assets/characters/airi/airi_angry.png",
+    "surprised": "assets/characters/airi/airi_surprised.png",
+    "determined": "assets/characters/airi/airi_determined.png",
+    "embarrassed": "assets/characters/airi/airi_embarrased.png",
+    "thinking": "assets/characters/airi/airi_thinking.png",
+    "bua": "assets/characters/airi/airi_bua.png",
+    "pray": "assets/characters/airi/airi_pray.png",
+    "worried": "assets/characters/airi/airi_worried.png",
+    "error": "assets/characters/airi/airi_error.png"
+  },
+  "defaultPose": "neutral"
+}

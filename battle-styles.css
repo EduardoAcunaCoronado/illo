@@ -39,6 +39,33 @@
     filter: drop-shadow(0 18px 20px rgba(0, 0, 0, 0.65));
 }
 
+.battle-enemy-amalgama {
+    top: 8%;
+    width: 1094px;
+    max-height: 806px;
+}
+
+.battle-enemy-amalgama_final {
+    top: 8%;
+    width: 1094px;
+    max-height: 806px;
+}
+
+.battle-enemy-tralalelo_tralala {
+    width: 737px;
+    max-height: 535px;
+}
+
+.battle-enemy-ballerina_capuchina {
+    width: 737px;
+    max-height: 535px;
+}
+
+.battle-enemy-tung_tung_tung_sahur {
+    width: 737px;
+    max-height: 535px;
+}
+
 .battle-enemy.battle-enemy-hit {
     animation: battle-enemy-flash 0.42s ease-out;
 }

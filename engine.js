@@ -1321,7 +1321,7 @@ class VisualNovelEngine {
         const runas = [
             { image: 'assets/minigames/runa_samu.png', label: 'Magia de Samu' },
             { image: 'assets/minigames/runa_edu.png', label: 'Prisa de Edu' },
-            { image: 'assets/minigames/runa_tony.png', label: 'Purificación de Seraphine' },
+            { image: 'assets/minigames/runa_tony.png', label: 'Purificación de Seraphyna' },
             { image: 'assets/minigames/runa_jose.png', label: 'Fuerza de Jose' }
         ];
 
@@ -2654,15 +2654,6 @@ class VisualNovelEngine {
         this.layoutCharacters();
     }
 
-    // Escala visual por personaje (cambios de los compañeros): permite que un
-    // personaje concreto se dibuje más grande sin tocar su sprite.
-    getCharacterScale(characterKey) {
-        const characterScales = {
-            jose: 1.18
-        };
-        return characterScales[characterKey] || 1;
-    }
-
     // Reparte a los personajes ACTIVOS en franjas horizontales iguales.
     // IMPORTANTE: el ancho es FIJO (no depende de cuántos haya), así con 3
     // personajes NO se encogen; solo se separan. Como los sprites son verticales
@@ -2686,6 +2677,17 @@ class VisualNovelEngine {
             el.style.width = `${W}%`;
             el.style.marginLeft = `${-W / 2}%`;
         });
+    }
+
+    getCharacterScale(characterKey) {
+        const characterScales = {
+            airi: 0.7,
+            tung_tung_tung_sahur: 0.85,
+            jose: 1.18,
+            amalgama: 1.2,
+            amalgama_final: 1.2
+        };
+        return characterScales[characterKey] || 1;
     }
 
     setPose(characterName, position, pose = 'neutral') {

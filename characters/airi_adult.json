@@ -1,0 +1,8 @@
+{
+  "name": "Airi adulta",
+  "color": "#9fdcff",
+  "poses": {
+    "neutral": "assets/characters/airi_adult/airi_adult_no_3d_cg.png"
+  },
+  "defaultPose": "neutral"
+}
