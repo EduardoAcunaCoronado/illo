@@ -95,8 +95,9 @@ html, body {
        layoutCharacters() para repartir a los personajes en franjas iguales.
        El ANCHO NO se toca (queda en 42%): con 3 personajes NO se encogen, solo
        se separan; el foco se resuelve iluminando al que habla. El transform
-       queda libre para el flip (scaleX). */
-    transition: opacity 0.4s ease, left 0.35s ease, margin-left 0.35s ease, filter 0.35s ease;
+       queda libre para el flip y escalado por personaje. */
+    transform-origin: bottom center;
+    transition: opacity 0.4s ease, left 0.35s ease, margin-left 0.35s ease, filter 0.35s ease, transform 0.25s ease;
     opacity: 0;
     z-index: 1;
 }

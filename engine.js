@@ -2455,8 +2455,8 @@ class VisualNovelEngine {
             charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
             charElement.classList.add('active');
 
-            // Aplicar flip horizontal si está especificado (sin animación)
-            charElement.style.transform = flipped ? 'scaleX(-1)' : 'scaleX(1)';
+            const characterScale = this.getCharacterScale(characterKey);
+            charElement.style.transform = `${flipped ? 'scaleX(-1)' : 'scaleX(1)'} scale(${characterScale})`;
 
             // Rastrear posición del personaje
             this.characterPositions[characterKey] = position;
@@ -2469,7 +2469,7 @@ class VisualNovelEngine {
     // personajes NO se encogen; solo se separan. Como los sprites son verticales
     // y usan background-size: contain, a tamaño completo apenas se solapan, y el
     // foco lo da el iluminado del que habla. Posiciona con left + margin-left
-    // (el transform se reserva para el flip scaleX).
+    // (el transform se reserva para el flip scaleX y el escalado por personaje).
     layoutCharacters() {
         const order = ['left', 'center', 'right'];
         const active = order.filter(p => {
@@ -2487,6 +2487,13 @@ class VisualNovelEngine {
             el.style.width = `${W}%`;
             el.style.marginLeft = `${-W / 2}%`;
         });
+    }
+
+    getCharacterScale(characterKey) {
+        const characterScales = {
+            jose: 1.18
+        };
+        return characterScales[characterKey] || 1;
     }
 
     setPose(characterName, position, pose = 'neutral') {
