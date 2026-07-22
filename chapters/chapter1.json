@@ -184,7 +184,7 @@
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "embarrassed"
+              "pose": "edu"
             }
           ],
           "speakingAs": "iphone5"
@@ -209,7 +209,7 @@
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "happy"
+              "pose": "edu"
             }
           ],
           "speakingAs": "iphone5"
@@ -234,7 +234,7 @@
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "happy"
+              "pose": "edu"
             }
           ],
           "speakingAs": "iphone5"

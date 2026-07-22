@@ -700,6 +700,14 @@
         {
           "actions": [
             {
+              "type": "playVideo",
+              "path": "assets/videos/intro_sala_del_trono_kk.mp4"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
               "type": "setBackground",
               "value": "assets/backgrounds/kingdom_ketchup_trono.png"
             },
