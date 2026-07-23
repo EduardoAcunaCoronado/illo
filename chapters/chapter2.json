@@ -872,6 +872,18 @@
           "text": "JAJAJA... al fin. La Fuerza Memética me libera. Soy Zip.",
           "actions": [
             {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 1000
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/zip.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "showCharacter",
               "character": "zip",
               "position": "right",
