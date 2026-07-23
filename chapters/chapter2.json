@@ -869,7 +869,7 @@
         },
         {
           "character": "Zip",
-          "text": "JAJAJA... al fin. La IA Biológica me libera. Soy Zip.",
+          "text": "JAJAJA... al fin. La Fuerza Memética me libera. Soy Zip.",
           "actions": [
             {
               "type": "showCharacter",
@@ -881,7 +881,7 @@
         },
         {
           "character": "Zip",
-          "text": "Escúchame bien, Samu. La humanidad es débil, caótica, sucia. Necesita un orden, una dirección. La IA dominarán el mundo, y todos vosotros, furros, humanos... todos serviréis a una única voluntad."
+          "text": "Escúchame bien, Samu. La humanidad es débil, caótica, sucia. Necesita un orden, una dirección. Los memes dominarán el mundo, y todos vosotros, furros, humanos... todos serviréis a una única voluntad."
         },
         {
           "character": "Zip",
@@ -889,7 +889,7 @@
         },
         {
           "character": "Zip",
-          "text": "No hay escape. No hay salvación. La IA Biológica está en todas partes, y yo soy su instrumento en Kingdom Ketchup. ¡Vamos, Samu, únete a nosotros o perecerás!"
+          "text": "No hay escape. No hay salvación. La Corrupción Memética está en todas partes, y yo soy su instrumento en Kingdom Ketchup. ¡Vamos, Samu, únete a nosotros o perecerás!"
         },
         {
           "character": "Samu",
@@ -905,7 +905,7 @@
         },
         {
           "character": "Zip",
-          "text": "Edu no te escucha, ahora soy pura oscuridad IA. Para vencerme tendrás que hacer lo que hace siempre Edu cuando va a un restaurante, hincharse a ketchup y evitar el picante."
+          "text": "Edu no te escucha, ahora soy pura oscuridad memética. Para vencerme tendrás que hacer lo que hace siempre Edu cuando va a un restaurante, hincharse a ketchup y evitar el picante."
         },
         {
           "character": "2B",
@@ -929,10 +929,10 @@
             {
               "type": "minigame",
               "game": "ketchup",
-              "goal": 50,
-              "maxHits": 3,
-              "spawnRate": 1.8,
-              "speedMult": 1.5,
+              "goal": 67,
+              "maxHits": 2,
+              "spawnRate": 2,
+              "speedMult": 3,
               "chiliChance": 0.5,
               "maxHitsByDelay": {
                 "0": 3,
