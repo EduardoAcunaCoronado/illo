@@ -5,18 +5,6 @@
       "title": "Escena 1: Descubrimiento de Furrielva",
       "lines": [
         {
-          "character": "2B",
-          "text": "La pantalla muestra el anuncio: 'CONCIERTO EXCLUSIVO - Seraphyna en Ecchi Land. Calle Hentai, nº 69. Una noche que no olvidarás.'",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "left",
-              "pose": "concierto"
-            }
-          ]
-        },
-        {
           "actions": [
             {
               "type": "setBackground",
