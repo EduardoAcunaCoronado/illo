@@ -136,15 +136,15 @@ class VisualNovelEngine {
 
         switch (action.type) {
             case 'setBackground':
-                this.setBackground(action.value);
+                this.setBackground(action.value, action);
                 break;
             case 'showCharacter':
-                await this.showCharacter(action.character, action.position, action.pose, action.flipped);
+                await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter);
                 break;
             case 'hideCharacter':
             case 'removeCharacter':
             case 'quitarPersonaje':
-                this.hideCharacter(action.character, action.position);
+                this.hideCharacter(action.character, action.position, action.exit);
                 break;
             case 'setPose':
                 this.setPose(action.character, action.position, action.pose);
@@ -189,7 +189,7 @@ class VisualNovelEngine {
                 this.setVolume(action.id || action.audio, action.volume);
                 break;
             case 'wait':
-                await this.wait(action.value);
+                await this.wait(action.ms != null ? action.ms : action.value);
                 break;
             case 'waitForClick':
             case 'waitClick':
@@ -236,6 +236,28 @@ class VisualNovelEngine {
                 if (window.Juice) {
                     const s = (action.value != null) ? action.value : action.strength;
                     window.Juice.vignette(s, action.duration);
+                }
+                break;
+            // ---- Juice II (jul 2026): dirección de escena ----
+            case 'fade':
+                // { to:"black", duration } funde A negro; { from:"black", duration }
+                // funde DESDE negro. Espera a que termine.
+                await this.fadeScene(action);
+                break;
+            case 'bgPan':
+                // Ken Burns del fondo: { zoomFrom, zoomTo, xFrom..yTo (%), duration }
+                this.bgPan(action);
+                break;
+            case 'showCG':
+                await this.showCG(action.path || action.value, action.duration);
+                break;
+            case 'hideCG':
+                this.hideCG(action.duration);
+                break;
+            case 'sfx':
+                // Capa Web Audio sintetizada (latido, rumble). { name, on, volume }
+                if (window.Juice && window.Juice.sfx) {
+                    window.Juice.sfx(action.name, action.on !== false, action);
                 }
                 break;
         }
@@ -325,6 +347,8 @@ class VisualNovelEngine {
         this.currentScene = sceneIndex;
         this.currentLine = 0;
         this.pendingSceneJump = true;
+        // Al cambiar de escena, cualquier CG a pantalla se retira solo
+        this.hideCG(250);
     }
 
     // Registrar un personaje como rescatado (mantiene el orden de rescate)
@@ -557,6 +581,10 @@ class VisualNovelEngine {
 
             const loop = (time) => {
                 if (!running) return;
+                // Límite de tiempo opcional (nuestro): duration 0 = sin límite
+                if (duration > 0 && (time - startTime) >= duration) {
+                    return cleanup(score >= goal);
+                }
                 if (lastTime === null) lastTime = time;
                 const dt = (time - lastTime) / 1000; // segundos
                 lastTime = time;
@@ -1890,6 +1918,8 @@ class VisualNovelEngine {
                 notes.forEach(n => n.el.remove());
                 notes = [];
                 const acc = totalNotes ? Math.round((hits / totalNotes) * 100) : 0;
+                // Registrar el resultado (para líneas con "showIf" después)
+                this.lastMinigameResult = { accuracy: totalNotes ? hits / totalNotes : 0 };
                 const result = document.createElement('div');
                 result.className = 'minigame-result';
                 result.textContent = won
@@ -2160,6 +2190,7 @@ class VisualNovelEngine {
                 goal: options.goal || 8,
                 speed: options.speed || 5,
                 maxHits: options.maxHits || 3,
+                backdrop: 'aire_fondo',
                 playerFrames: ['edu_fly_0', 'edu_fly_1', 'edu_fly_2', 'edu_fly_3'],
                 playerHeight: 0.19, playerRatio: 0.72,
                 yMin: 0.12, yMax: 0.86,
@@ -2219,6 +2250,12 @@ class VisualNovelEngine {
             const bgNearEl = overlay.querySelector('.ss-bg-near');
             if (bgFarEl && cfg.bgFar) bgFarEl.style.backgroundImage = url(cfg.bgFar, CAP);
             if (bgNearEl && cfg.bgNear) bgNearEl.style.backgroundImage = url(cfg.bgNear, CAP);
+            // Telón estático opcional (no hace scroll): ambienta sin costuras de loop
+            if (cfg.backdrop) {
+                stage.style.backgroundImage = url(cfg.backdrop, CAP);
+                stage.style.backgroundSize = 'cover';
+                stage.style.backgroundPosition = 'center';
+            }
 
             const fieldW = () => stage.clientWidth || 1;
             const fieldH = () => stage.clientHeight || 1;
@@ -2348,11 +2385,16 @@ class VisualNovelEngine {
                 result.className = 'minigame-result';
                 result.textContent = won ? cfg.winMsg : cfg.loseMsg;
                 overlay.appendChild(result);
+                // Registrar cómo fue la partida (para líneas con "showIf" después)
+                this.lastMinigameResult = { hits, maxHits, collected, goal };
                 setTimeout(() => { overlay.remove(); resolve(won); }, won ? 1500 : 950);
             };
 
+            // Invulnerabilidad: al empezar (spawn) y un respiro tras cada golpe.
+            let invulnUntil = performance.now() + (cfg.graceMs != null ? cfg.graceMs : 1200);
             const hitPlayer = () => {
                 hits++; updateHud();
+                invulnUntil = performance.now() + (cfg.hitGraceMs != null ? cfg.hitGraceMs : 800);
                 playerEl.classList.remove('ss-hurt'); void playerEl.offsetWidth; playerEl.classList.add('ss-hurt');
                 stage.classList.remove('ss-hit'); void stage.offsetWidth; stage.classList.add('ss-hit');
                 beep(150, 0.18, 0, { type: 'sawtooth', vol: 0.08 });
@@ -2414,10 +2456,14 @@ class VisualNovelEngine {
                     const oL = ocx - ow * osh / 2, oR = ocx + ow * osh / 2, oT = ocy - oh * osh / 2, oB = ocy + oh * osh / 2;
                     if (pL < oR && pR > oL && pT < oB && pB > oT) {
                         if (o.kind === 'collect') { grab(o); if (!running) return; }
-                        else { o.taken = true; o.el.remove(); hitPlayer(); if (!running) return; }
+                        else if (now >= invulnUntil) { o.taken = true; o.el.remove(); hitPlayer(); if (!running) return; }
+                        // Durante la invulnerabilidad los obstáculos pasan de largo
                     }
                 }
                 objs = objs.filter(o => !o.taken && o.x > -0.25);
+
+                // Parpadeo del jugador mientras dura la invulnerabilidad
+                playerEl.style.opacity = (now < invulnUntil && Math.floor(now / 120) % 2 === 0) ? '0.35' : '1';
 
                 updateHud();
             };
@@ -2425,9 +2471,127 @@ class VisualNovelEngine {
         });
     }
 
-    setBackground(imagePath) {
+    // Capas de dirección de escena (crossfade de fondo, fundido a negro y CG).
+    // Se crean perezosamente colgando de #game-container (regla del stage escalado).
+    ensureSceneLayers() {
+        const gc = document.getElementById('game-container');
+        if (!gc) return {};
+        let bgB = document.getElementById('background-b');
+        if (!bgB) {
+            bgB = document.createElement('div');
+            bgB.id = 'background-b';
+            bgB.className = 'background background-b';
+            const bg = document.getElementById('background');
+            if (bg && bg.nextSibling) gc.insertBefore(bgB, bg.nextSibling);
+            else gc.appendChild(bgB);
+        }
+        let fader = document.getElementById('scene-fader');
+        if (!fader) {
+            fader = document.createElement('div');
+            fader.id = 'scene-fader';
+            fader.className = 'scene-fader';
+            gc.appendChild(fader);
+        }
+        let cg = document.getElementById('cg-layer');
+        if (!cg) {
+            cg = document.createElement('div');
+            cg.id = 'cg-layer';
+            cg.className = 'cg-layer';
+            gc.appendChild(cg);
+        }
+        return { bgB, fader, cg };
+    }
+
+    // Cambia el fondo con CROSSFADE suave (400 ms) usando una segunda capa.
+    // Con { cut: true } se comporta como antes (corte seco intencionado).
+    setBackground(imagePath, opts = {}) {
         const bg = document.getElementById('background');
-        bg.style.backgroundImage = `url('${this.cacheBustAsset(imagePath)}')`;
+        const url = `url('${this.cacheBustAsset(imagePath)}')`;
+        // Resetear cualquier Ken Burns anterior al cambiar de fondo
+        this.bgPan({ reset: true });
+        if (opts.cut || !document.getElementById('game-container')) {
+            bg.style.backgroundImage = url;
+            return;
+        }
+        const { bgB } = this.ensureSceneLayers();
+        if (!bgB) { bg.style.backgroundImage = url; return; }
+        // Pintar el nuevo fondo en la capa B y fundirla por encima
+        bgB.style.transition = 'none';
+        bgB.style.opacity = '0';
+        bgB.style.backgroundImage = url;
+        // Forzar reflow para que la transición arranque desde 0
+        void bgB.offsetWidth;
+        const dur = opts.fadeMs != null ? opts.fadeMs : 400;
+        bgB.style.transition = `opacity ${dur}ms ease`;
+        bgB.style.opacity = '1';
+        clearTimeout(this._bgSwapTimer);
+        this._bgSwapTimer = setTimeout(() => {
+            bg.style.backgroundImage = url;
+            bgB.style.transition = 'none';
+            bgB.style.opacity = '0';
+        }, dur + 60);
+    }
+
+    // Fundido de escena: { to:"black"|color, duration } o { from:"black", duration }.
+    // Devuelve una promesa que espera el final del fundido.
+    fadeScene(action = {}) {
+        const { fader } = this.ensureSceneLayers();
+        if (!fader) return Promise.resolve();
+        const dur = action.duration != null ? action.duration : 800;
+        const color = (typeof action.to === 'string' && action.to !== 'black') ? action.to
+                    : (typeof action.from === 'string' && action.from !== 'black') ? action.from
+                    : '#000';
+        fader.style.background = color;
+        fader.style.transition = `opacity ${dur}ms ease`;
+        const goingDark = action.from == null; // "to" (u omitido) = oscurecer
+        // Estado inicial coherente
+        if (goingDark && fader.style.opacity === '') fader.style.opacity = '0';
+        if (!goingDark && fader.style.opacity === '') fader.style.opacity = '1';
+        void fader.offsetWidth;
+        fader.style.opacity = goingDark ? '1' : '0';
+        fader.style.pointerEvents = goingDark ? 'auto' : 'none';
+        return new Promise(r => setTimeout(r, dur + 40));
+    }
+
+    // Ken Burns del fondo: zoom/paneo lento. Se resetea al cambiar de fondo.
+    bgPan(action = {}) {
+        const bg = document.getElementById('background');
+        if (!bg) return;
+        if (action.reset) {
+            bg.style.transition = 'none';
+            bg.style.transform = '';
+            return;
+        }
+        const zf = action.zoomFrom != null ? action.zoomFrom : 1.05;
+        const zt = action.zoomTo != null ? action.zoomTo : 1.0;
+        const xf = action.xFrom || 0, xt = action.xTo || 0;
+        const yf = action.yFrom || 0, yt = action.yTo || 0;
+        const dur = action.duration != null ? action.duration : 6000;
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        bg.style.transition = 'none';
+        bg.style.transform = `scale(${zf}) translate(${xf}%, ${yf}%)`;
+        void bg.offsetWidth;
+        bg.style.transition = `transform ${dur}ms ease-out`;
+        bg.style.transform = `scale(${zt}) translate(${xt}%, ${yt}%)`;
+    }
+
+    // Lámina CG a pantalla (por encima de personajes, por debajo del diálogo).
+    showCG(path, duration = 600) {
+        const { cg } = this.ensureSceneLayers();
+        if (!cg || !path) return Promise.resolve();
+        cg.style.backgroundImage = `url('${this.cacheBustAsset(path)}')`;
+        cg.style.transition = `opacity ${duration}ms ease`;
+        cg.style.opacity = '1';
+        cg.classList.add('cg-visible');
+        return new Promise(r => setTimeout(r, duration + 40));
+    }
+
+    hideCG(duration = 500) {
+        const cg = document.getElementById('cg-layer');
+        if (!cg) return;
+        cg.style.transition = `opacity ${duration}ms ease`;
+        cg.style.opacity = '0';
+        cg.classList.remove('cg-visible');
     }
 
     cacheBustAsset(path) {
@@ -2445,7 +2609,7 @@ class VisualNovelEngine {
             .toLowerCase();
     }
 
-    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false) {
+    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null) {
         const characterKey = this.getCharacterKey(characterName);
         let character = this.characters[characterKey];
         if (!character) {
@@ -2455,7 +2619,6 @@ class VisualNovelEngine {
 
         const charElement = document.getElementById(`character-${position}`);
         if (charElement) {
-            charElement.setAttribute('data-character', characterKey);
             const poseImage = character.poses && character.poses[pose]
                 ? character.poses[pose]
                 : (character.poses && character.poses[character.defaultPose])
@@ -2464,18 +2627,40 @@ class VisualNovelEngine {
 
             charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
             charElement.classList.add('active');
+            charElement.setAttribute('data-character', characterKey);
 
-            // Manejar video integrado si la pose tiene un video asociado
+            // Manejar video integrado si la pose tiene un video asociado (compañeros)
             const videoPath = character.poses && character.poses[`${pose}_video`];
             this.updateCharacterVideo(charElement, videoPath);
 
+            // Aplicar flip horizontal si está especificado (sin animación) y el
+            // escalado por personaje de los compañeros (p. ej. José un 18% más grande)
             const characterScale = this.getCharacterScale(characterKey);
             charElement.style.transform = `${flipped ? 'scaleX(-1)' : 'scaleX(1)'} scale(${characterScale})`;
+
+            // Entrada animada opcional ("right"/"left"/"bottom"/"fade"). Usa la
+            // propiedad CSS `translate` (independiente de transform, no pisa el flip).
+            if (enter) {
+                const cls = `char-enter-${['right','left','bottom','fade'].includes(enter) ? enter : 'fade'}`;
+                charElement.classList.remove('char-enter-right','char-enter-left','char-enter-bottom','char-enter-fade');
+                void charElement.offsetWidth;
+                charElement.classList.add(cls);
+                setTimeout(() => charElement.classList.remove(cls), 550);
+            }
 
             // Rastrear posición del personaje
             this.characterPositions[characterKey] = position;
         }
         this.layoutCharacters();
+    }
+
+    // Escala visual por personaje (cambios de los compañeros): permite que un
+    // personaje concreto se dibuje más grande sin tocar su sprite.
+    getCharacterScale(characterKey) {
+        const characterScales = {
+            jose: 1.18
+        };
+        return characterScales[characterKey] || 1;
     }
 
     // Reparte a los personajes ACTIVOS en franjas horizontales iguales.
@@ -2503,13 +2688,6 @@ class VisualNovelEngine {
         });
     }
 
-    getCharacterScale(characterKey) {
-        const characterScales = {
-            jose: 1.18
-        };
-        return characterScales[characterKey] || 1;
-    }
-
     setPose(characterName, position, pose = 'neutral') {
         const characterKey = this.getCharacterKey(characterName);
         const character = this.characters[characterKey];
@@ -2525,13 +2703,12 @@ class VisualNovelEngine {
 
             charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
 
-            // Manejar video integrado si la pose tiene un video asociado
+            // Manejar video integrado si la pose tiene un video asociado (compañeros)
             const videoPath = character.poses && character.poses[`${pose}_video`];
             this.updateCharacterVideo(charElement, videoPath);
         }
     }
 
-    // Gestiona un elemento de vídeo integrado dentro de un personaje (ej. pantalla móvil)
     updateCharacterVideo(charElement, videoPath) {
         let videoContainer = charElement.querySelector('.character-video-container');
 
@@ -2569,14 +2746,22 @@ class VisualNovelEngine {
     //   que se mostró; si además se da position, solo quita si coincide).
     // - position (sin characterName): vacía directamente ese hueco (left/right/center).
     // Si no se indica ninguno, no hace nada.
-    hideCharacter(characterName, position) {
+    hideCharacter(characterName, position, exit = null) {
         const clearSlot = (pos) => {
             const el = document.getElementById(`character-${pos}`);
-            if (el) {
-                el.classList.remove('active', 'speaking');
+            if (!el) return;
+            const doClear = () => {
+                el.classList.remove('active', 'speaking', 'char-exit-fade');
                 el.style.backgroundImage = '';
                 const videoContainer = el.querySelector('.character-video-container');
                 if (videoContainer) videoContainer.remove();
+            };
+            if (exit) {
+                // Salida suave: fundido corto y luego limpieza real
+                el.classList.add('char-exit-fade');
+                setTimeout(doClear, 320);
+            } else {
+                doClear();
             }
         };
 
@@ -2836,8 +3021,10 @@ class VisualNovelEngine {
         const spData = this.characters[speakerName];
         if (spData) {
             applyNameColor(spData);
-        } else if (this._charColorMissing.has(speakerName)) {
-            applyNameColor(null); // ya sabemos que no tiene ficha -> dorado, sin re-pedir
+        } else if (this._charColorMissing.has(speakerName) || !/[a-z0-9]/.test(speakerName)) {
+            // Sin ficha conocida o clave sin letras (p. ej. hablante misterioso "???"):
+            // dorado por defecto y sin pedir ficha al servidor.
+            applyNameColor(null);
         } else {
             applyNameColor(null); // dorado por defecto mientras carga
             const nm = line.character;
@@ -2883,6 +3070,12 @@ class VisualNovelEngine {
 
         this.isWaitingForInput = false;
 
+        // Velocidad de texto por línea: "slow" (drama), "fast" (pánico) o un
+        // multiplicador numérico. Hereda el blip y las pausas de puntuación.
+        const speedMult = line.textSpeed === 'slow' ? 2.2
+                        : line.textSpeed === 'fast' ? 0.45
+                        : (typeof line.textSpeed === 'number' ? line.textSpeed : 1);
+
         return new Promise(resolve => {
             let charIndex = 0;
             const text = line.text;
@@ -2903,7 +3096,7 @@ class VisualNovelEngine {
                     charIndex++;
                     // Blip por letra (tono según el que habla) y pausa extra en la
                     // puntuación para dar ritmo al texto.
-                    let delay = this.typingSpeed;
+                    let delay = this.typingSpeed * speedMult;
                     if (window.Juice) {
                         window.Juice.blip(ch, speakerName);
                         delay += window.Juice.punctuationPause(ch);
@@ -3001,11 +3194,41 @@ class VisualNovelEngine {
         });
     }
 
+    // ¿Cumple la línea su condición "showIf"? Soporta:
+    // { result: "clean" | "close" } (resultado del último minijuego),
+    // { hasItem: "x" } y { delayAtLeast: n }.
+    lineConditionMet(cond) {
+        if (!cond) return true;
+        if (cond.result) {
+            const r = this.lastMinigameResult;
+            if (!r) return false;
+            const hits = r.hits != null ? r.hits : 0;
+            const maxHits = r.maxHits != null ? r.maxHits : 3;
+            const acc = r.accuracy != null ? r.accuracy : null;
+            const clean = (acc != null) ? acc >= 0.9 : hits === 0;
+            const close = (acc != null) ? false : hits >= maxHits - 1;
+            if (cond.result === 'clean' && !clean) return false;
+            if (cond.result === 'close' && !(close && !clean)) return false;
+            if (cond.result === 'normal' && (clean || hits >= maxHits - 1)) return false;
+        }
+        if (cond.hasItem && !(this.inventory || []).includes(cond.hasItem)) return false;
+        if (typeof cond.delayAtLeast === 'number' && this.storyDelay < cond.delayAtLeast) return false;
+        return true;
+    }
+
     async nextLine() {
         const scene = this.getCurrentScene();
         if (!scene || !scene.lines) return false;
 
-        const line = this.getCurrentLine();
+        let line = this.getCurrentLine();
+        if (!line) return false;
+
+        // Saltar líneas condicionales que no aplican (variantes de victoria, etc.).
+        // Regla de autoría: no poner líneas showIf al FINAL de una escena.
+        while (line && line.showIf && !this.lineConditionMet(line.showIf)) {
+            this.currentLine++;
+            line = this.getCurrentLine();
+        }
         if (!line) return false;
 
         // Resetear el flag de input esperando. Se re-seteará a true si la línea tiene diálogo

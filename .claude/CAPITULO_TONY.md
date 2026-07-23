@@ -1,5 +1,10 @@
 # 🎤 BIBLIA DE PRODUCCIÓN — Capítulo 3: Seraphyna (Ecchi Land)
 
+> **⭐ VER TAMBIÉN:** `CAPITULO_SERAPHYNA_DIRECTOR.md` (jul 2026) — el análisis Director's
+> Cut con el plan completo para elevar el capítulo (bugs B1-B17, rediseño escena a escena,
+> specs de engine §5, prompts de producción §6 y plan por fases §7). **Ese documento manda**
+> sobre la puesta en escena; este queda como registro de lo producido.
+
 > Documento vivo. TODO lo del capítulo de Tony/**Seraphyna** (ahora **`chapter3.json`**
 > en el esquema lineal 0-5). Marcado con estado: ✅ hecho · 🟡 pendiente · 💡 idea.
 > **⬇️ La sección "VERSIÓN DEFINITIVA" (abajo, la primera) MANDA sobre las §0-§11

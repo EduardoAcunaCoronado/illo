@@ -74,6 +74,51 @@ html, body {
     transition: opacity 0.8s ease;
 }
 
+/* ============================================================
+   Dirección de escena (Juice II, jul 2026): capa B para crossfade
+   de fondos, fundido a negro y lámina CG. Creadas por el engine
+   (ensureSceneLayers) colgando de #game-container.
+   ============================================================ */
+.background-b {
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1; /* justo encima del fondo base, debajo de personajes */
+}
+
+.scene-fader {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 60; /* tapa escena y personajes (1-45) pero DEJA VER el diálogo (100):
+                    así se puede narrar "en negro" durante un fundido */
+}
+
+.cg-layer {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 45; /* encima de personajes (z 1-3), debajo de la caja de diálogo */
+    box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.55); /* viñeta integrada */
+}
+
+/* Entradas/salidas de personajes: usan la propiedad `translate` (independiente
+   de transform, así no pisan el flip scaleX del engine). */
+.char-enter-right  { animation: char-in-right 0.4s ease-out; }
+.char-enter-left   { animation: char-in-left 0.4s ease-out; }
+.char-enter-bottom { animation: char-in-bottom 0.45s ease-out; }
+.char-enter-fade   { animation: char-in-fade 0.5s ease; }
+.char-exit-fade    { transition: opacity 0.3s ease; opacity: 0 !important; }
+
+@keyframes char-in-right  { from { translate: 70px 0; opacity: 0; } to { translate: 0 0; opacity: 1; } }
+@keyframes char-in-left   { from { translate: -70px 0; opacity: 0; } to { translate: 0 0; opacity: 1; } }
+@keyframes char-in-bottom { from { translate: 0 60px; opacity: 0; } to { translate: 0 0; opacity: 1; } }
+@keyframes char-in-fade   { from { opacity: 0; } to { opacity: 1; } }
+
 /* Personajes */
 .characters-container {
     position: absolute;
@@ -2276,6 +2321,7 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
     .nm-logo, .nm-item, .neon-menu h1, .chapter-selector-panel, .menu-theme-btn { animation: none; }
     .nm-credit { animation: none; }
+    .char-enter-right, .char-enter-left, .char-enter-bottom, .char-enter-fade { animation: none; }
 }
 
 /* ============================================

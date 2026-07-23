@@ -162,12 +162,95 @@
     return 0;
   }
 
+  // ============================================================
+  // Capa de SFX sintetizados en bucle (sin ficheros): latido de corazón
+  // ("heartbeat") y retumbe grave ("rumble"). Se encienden/apagan con
+  // Juice.sfx(nombre, on, {volume}). Pensados como cama de tensión.
+  // ============================================================
+  const sfxState = {}; // nombre -> { stop() }
+
+  function startHeartbeat(opts) {
+    const ctx = audioCtx();
+    if (!ctx) return null;
+    const master = ctx.createGain();
+    master.gain.value = (opts && opts.volume != null) ? opts.volume : 0.16;
+    master.connect(ctx.destination);
+    let alive = true;
+    const thump = (when, strong) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(58, when);
+      osc.frequency.exponentialRampToValueAtTime(38, when + 0.16);
+      g.gain.setValueAtTime(0.0001, when);
+      g.gain.exponentialRampToValueAtTime(strong ? 1 : 0.6, when + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + 0.22);
+      osc.connect(g); g.connect(master);
+      osc.start(when); osc.stop(when + 0.26);
+    };
+    let next = ctx.currentTime + 0.1;
+    const timer = setInterval(() => {
+      if (!alive) return;
+      // programar por adelantado (bum-BUM ... pausa)
+      while (next < ctx.currentTime + 1.2) {
+        thump(next, false);
+        thump(next + 0.28, true);
+        next += 0.95;
+      }
+    }, 300);
+    return { stop() { alive = false; clearInterval(timer);
+      try { master.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.4); } catch (e) {}
+      setTimeout(() => { try { master.disconnect(); } catch (e) {} }, 500); } };
+  }
+
+  function startRumble(opts) {
+    const ctx = audioCtx();
+    if (!ctx) return null;
+    const bufferSize = 2 * ctx.sampleRate;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    let lastOut = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      lastOut = (lastOut + 0.02 * white) / 1.02; // ruido marrón
+      data[i] = lastOut * 3.5;
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = buffer; src.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.frequency.value = 90;
+    const g = ctx.createGain();
+    g.gain.value = (opts && opts.volume != null) ? opts.volume : 0.10;
+    src.connect(filter); filter.connect(g); g.connect(ctx.destination);
+    src.start();
+    return { stop() { try { g.gain.linearRampToValueAtTime(0.0001, ctx.currentTime + 0.6); } catch (e) {}
+      setTimeout(() => { try { src.stop(); src.disconnect(); } catch (e) {} }, 700); } };
+  }
+
+  function sfx(name, on, opts) {
+    if (on === undefined) on = true;
+    if (!on) {
+      if (sfxState[name]) { sfxState[name].stop(); delete sfxState[name]; }
+      return;
+    }
+    if (sfxState[name]) return; // ya sonando
+    let inst = null;
+    if (name === 'heartbeat') inst = startHeartbeat(opts);
+    else if (name === 'rumble') inst = startRumble(opts);
+    if (inst) sfxState[name] = inst;
+  }
+
+  function stopAllSfx() {
+    for (const k of Object.keys(sfxState)) { sfxState[k].stop(); delete sfxState[k]; }
+  }
+
   // Limpia todos los efectos (al reiniciar / cambiar de capítulo).
   function reset() {
     if (!state.ready) return;
     clearGrade(0);
     clearVignette(0);
     state.trauma = 0;
+    stopAllSfx();
     const st = state.stage.style;
     st.setProperty('--shake-x', '0px');
     st.setProperty('--shake-y', '0px');
@@ -176,7 +259,8 @@
 
   window.Juice = {
     init: ensure, flash, shake, grade, clearGrade, vignette, clearVignette,
-    blip, punctuationPause, reset, isReduced: function () { return REDUCED; },
+    blip, punctuationPause, reset, sfx, stopAllSfx,
+    isReduced: function () { return REDUCED; },
   };
 
   if (document.readyState !== 'loading') ensure();

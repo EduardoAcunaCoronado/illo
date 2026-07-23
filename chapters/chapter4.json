@@ -24,7 +24,7 @@
             }
           ],
           "character": "2B",
-          "text": "Tras abandonar Ecchi Land, Samu, Edu y Seraphine siguen las indicaciones que José envió antes de que la comunicación se cortara."
+          "text": "Tras abandonar Ecchi Land, Samu, Edu y Seraphyna siguen las indicaciones que José envió antes de que la comunicación se cortara."
         },
         {
           "character": "Samu",
@@ -51,7 +51,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Mientras no acabemos convertidos en alpiste, yo voy tranquila. Bueno, tranquila dentro de lo que cabe después de Ecchi Land.",
           "actions": [
@@ -76,7 +76,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "José tiene pinta de guardar carpetas enteras de lore y soltarlo solo cuando alguien pregunta.",
           "actions": [
@@ -129,7 +129,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Sí, la verdad es que es típico que te lo diga José, pero Edu, créeme: mejor no lo sepas.",
           "actions": [
@@ -222,7 +222,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Dale cinco minutos. Toda ciudad tiene su zona turística.",
           "actions": [
@@ -251,7 +251,7 @@
           "text": "Bajo el nombre de la ciudad puede leerse su orgulloso lema: «Una ciudad... donde hay palomas...»."
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Contundente. Informativo. Imposible crear falsas expectativas.",
           "actions": [
@@ -340,7 +340,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "José, como seas tú, te juro que necesito una explicación larguísima.",
           "actions": [
@@ -429,7 +429,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "La misma que viste y calza.",
           "actions": [
@@ -454,9 +454,9 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "¿No te lo esperabas? Si siempre me han encantado los personajes femeninos. El virus solo ha tenido muy buen gusto. Y por cierto llamame Seraphine.",
+          "text": "¿No te lo esperabas? Si siempre me han encantado los personajes femeninos. El virus solo ha tenido muy buen gusto. Y por cierto llamame Seraphyna.",
           "actions": [
             {
               "type": "showCharacter",
@@ -571,7 +571,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "La verdad es que ibas dando bastantes pistas.",
           "actions": [
@@ -644,7 +644,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Y con gafas. No olvidemos las gafas. Dan seriedad al conjunto.",
           "actions": [
@@ -717,7 +717,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "O muy poco observadora.",
           "actions": [
@@ -856,7 +856,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Resumiendo: tienes fuerza, armadura y una espada enorme, pero necesitas que los demás te solucionemos los puzles.",
           "actions": [
@@ -1113,7 +1113,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Le pega. Siempre está con el miedo de llegar tarde a los sitios.",
           "actions": [
@@ -1155,7 +1155,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Lo de cantante si pero... ¿Maga Blanca?",
           "actions": [
@@ -1181,7 +1181,7 @@
         },
         {
           "character": "Edu",
-          "text": "Y se la han dado precisamente a Seraphine.",
+          "text": "Y se la han dado precisamente a Seraphyna.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1204,7 +1204,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Soy una maga blanca, no una monja. Puedo curaros y seguir teniendo pensamientos impuros perfectamente.",
           "actions": [
@@ -1385,7 +1385,7 @@
           "text": "Todos tienen la misma mirada agresiva. No vienen a hacer gracia: vienen a apoderarse de Ciudad Paloma."
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Genial. Cinco minutos siendo maga blanca y ya tengo pacientes.",
           "actions": [
@@ -1415,7 +1415,7 @@
         },
         {
           "character": "José",
-          "text": "Formación. Yo los mantengo ocupados. Samu, golpea a los grupos. Edu, busca sus puntos débiles. Seraphine, evita que muramos.",
+          "text": "Formación. Yo los mantengo ocupados. Samu, golpea a los grupos. Edu, busca sus puntos débiles. Seraphyna, evita que muramos.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1426,7 +1426,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Qué manera tan romántica de describir mi trabajo.",
           "actions": [
@@ -1519,7 +1519,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Los mismos. El tipo de contenido que ves dos segundos por accidente y luego tu cerebro tarda una semana en perdonarte.",
           "actions": [
@@ -1704,7 +1704,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Y todo ese esfuerzo para que ni siquiera cuente como victoria limpia. Me parece ofensivo y, por desgracia, muy bien coreografiado.",
           "actions": [
@@ -1834,7 +1834,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Perfecto. Ellos hacen trampa porque son basura de internet y nosotros tenemos que abrir la puerta como personas decentes.",
           "actions": [
@@ -1883,7 +1883,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "El sello reacciona a la mágia sagrada. Puedo purificarlo. Qué apropiado todo. Yo, purificando cosas.",
           "actions": [
@@ -1957,7 +1957,7 @@
         },
         {
           "character": "Jose",
-          "text": "De nuestras habilidades. La barrera encenderá los símbolos en una secuencia: magia de Samu, velocidad de Edu, luz de Seraphine y fuerza de Piyón osea yo Jose. Tenemos que repetirla sin fallar.",
+          "text": "De nuestras habilidades. La barrera encenderá los símbolos en una secuencia: magia de Samu, velocidad de Edu, luz de Seraphyna y fuerza de Piyón osea yo Jose. Tenemos que repetirla sin fallar.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1968,7 +1968,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "O sea, Simón dice, pero con crisis de identidad y una puerta medieval.",
           "actions": [
@@ -2109,7 +2109,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Y no olvidemos mi increíble concierto. Literalmente salvé el ambiente con talento, voz y una cantidad preocupante de autoestima.",
           "actions": [
@@ -2158,7 +2158,7 @@
           ]
         },
         {
-          "character": "Seraphine",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Edu, créeme: hay misterios que es mejor dejar enterrados. Y ahora mismo vamos hacia uno bastante más peligroso.",
           "actions": [

@@ -27,9 +27,11 @@ loadBtn.addEventListener("click", () => loadGame());
 // se funde y el vídeo se oculta; al volver al menú, vuelve.
 const MENU_MUSIC_SRC = "assets/sounds/music/tema_menu.mp3"; // alternativa: tema_menu_v2.mp3
 const MENU_AMBIENCE_SRC = "assets/sounds/music/ambiente_menu.mp3"; // audio base del vídeo, extraído
+const MENU_CHILL_SRC = "assets/sounds/music/menu_chill.mp3"; // instrumental chill que releva al tema
 const MENU_VIDEO_RATE = 0.5;   // velocidad del vídeo (1 = normal; más bajo = más lento)
 const MENU_AMBIENCE_VOL = 0.12; // sonido de base (bajito, SIEMPRE a velocidad normal)
 const MENU_MUSIC_VOL = 0.5;     // tema principal
+const MENU_CHILL_VOL = 0.32;    // el chill va por debajo del tema, como música de sala
 let menuAudioUnlocked = false;
 
 function menuVideoEl() {
@@ -44,18 +46,35 @@ function applyMenuVideoRate() {
 }
 applyMenuVideoRate();
 
+// DESACTIVADO (jul 2026): el ambiente de base ya no suena en el menú; la capa
+// musical queda en manos del tema (una vez) + menu_chill en bucle. Se conserva
+// la función por si algún día se quiere recuperar.
 function startMenuAmbience() {
   engine.playSound(MENU_AMBIENCE_SRC, { id: "menu_ambience", loop: true, volume: MENU_AMBIENCE_VOL, fadeIn: 900 });
 }
 
-// El tema del menú suena UNA sola vez (como una intro); al terminar queda solo
-// el ambiente. El botón ♪ permite volver a escucharlo cuando se quiera.
+// Música chill de relevo: entra cuando termina el tema (o al volver al menú) y
+// se aparta cuando el tema vuelve a sonar (botón ♪). Si el mp3 aún no existe,
+// falla en silencio y no pasa nada.
+function playMenuChill() {
+  if (!menuAudioUnlocked) return;
+  if (mainMenu.classList.contains("hidden")) return; // solo en el menú
+  const audio = engine.playSound(MENU_CHILL_SRC, { id: "menu_chill", loop: true, volume: MENU_CHILL_VOL, fadeIn: 1800 });
+  if (audio) audio.onerror = () => { try { engine.stopSound("menu_chill", 0); } catch (err) {} };
+}
+
+// El tema del menú suena UNA sola vez (como una intro); al terminar entra la
+// música chill de fondo. El botón ♪ permite volver a escucharlo cuando se quiera.
 function playMenuTheme() {
+  try { engine.stopSound("menu_chill", 800); } catch (err) {} // el tema manda
   const audio = engine.playSound(MENU_MUSIC_SRC, { id: "menu_music", loop: false, volume: MENU_MUSIC_VOL, fadeIn: 600 });
   const btn = document.getElementById("menu-theme-btn");
   if (btn) btn.classList.add("playing");
   if (audio) {
-    audio.onended = () => { if (btn) btn.classList.remove("playing"); };
+    audio.onended = () => {
+      if (btn) btn.classList.remove("playing");
+      playMenuChill(); // relevo suave al acabar la intro
+    };
   }
 }
 
@@ -66,7 +85,7 @@ function unlockMenuAudio(e) {
   // Si el primer gesto es justo "Comenzar", no arrancamos nada para un instante
   // (quedaría un chispazo); el gesto ya deja el audio desbloqueado.
   if (e && e.target && e.target.closest && e.target.closest("#start-btn")) return;
-  startMenuAmbience();
+  // (ambiente de base desactivado: solo tema + chill)
   // Si el primer gesto es el propio botón ♪, el tema lo lanza su click (evita doble arranque)
   if (e && e.target && e.target.closest && e.target.closest("#menu-theme-btn")) return;
   playMenuTheme();
@@ -84,6 +103,7 @@ document.getElementById("menu-theme-btn").addEventListener("click", (e) => {
 function stopMenuMedia() {
   try { engine.stopSound("menu_music", 700); } catch (err) {}
   try { engine.stopSound("menu_ambience", 700); } catch (err) {}
+  try { engine.stopSound("menu_chill", 700); } catch (err) {}
   const themeBtn = document.getElementById("menu-theme-btn");
   if (themeBtn) themeBtn.classList.remove("playing");
   const vid = menuVideoEl();
@@ -104,7 +124,9 @@ function showMenuMedia() {
     applyMenuVideoRate();
     vid.play().catch(() => {});
   }
-  if (menuAudioUnlocked) startMenuAmbience();
+  if (menuAudioUnlocked) {
+    playMenuChill(); // al volver al menú, el chill acompaña (el tema no se relanza)
+  }
 }
 
 // Inicializar

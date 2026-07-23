@@ -14,7 +14,8 @@
     "worried": "assets/characters/tony/tony_worried.png",
     "flirt": "assets/characters/tony/tony_flirt.png",
     "giggle": "assets/characters/tony/tony_giggle.png",
-    "eyeroll": "assets/characters/tony/tony_eyeroll.png"
+    "eyeroll": "assets/characters/tony/tony_eyeroll.png",
+    "derrumbe": "assets/characters/tony/tony_derrumbe.png"
   },
   "defaultPose": "flirt"
 }
