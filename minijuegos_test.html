@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba de minijuegos — Project AI.ri: Transfurmados</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="battle-styles.css?v=20260720-16">
+    <link rel="stylesheet" href="battle-styles.css?v=20260723-1">
     <style>
         body { background: #05010f; }
         #test-panel {
@@ -187,6 +187,12 @@
                 </label>
                 <button class="tp-btn" onclick="launchBattle('amalgama')" >Amalgama</button>
             </div>
+            <div class="tp-battle-card" style="--c:#5a1b86">
+                <label>HP Amalgama final
+                    <input id="hp-amalgama_final" type="number" min="1" step="1" value="1200">
+                </label>
+                <button class="tp-btn" onclick="launchBattle('amalgama_final')" >Amalgama final</button>
+            </div>
         </div>
 
 
@@ -197,7 +203,7 @@
     </div>
 
     <script src="engine.js"></script>
-    <script src="battle-minigame.js?v=20260720-12"></script>
+    <script src="battle-minigame.js?v=20260723-1"></script>
     <script>
         const engine = new VisualNovelEngine();
         const panel = document.getElementById('test-panel');
@@ -337,10 +343,18 @@
             return Number.isFinite(hp) && hp > 0 ? hp : undefined;
         }
 
+        const BATTLE_MUSIC = {
+            ballerina_capuchina: 'ballerina_capuchina_battle.mp3',
+            tralalelo_tralala: 'tralalero_theme.mp3',
+            tung_tung_tung_sahur: 'the-wooden-brainrot.mp3',
+            amalgama: 'the-amalgam.mp3',
+            amalgama_final: 'lux-airi.mp3'
+        };
+
         async function launchBattle(enemy) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic(enemy === 'ballerina_capuchina' ? 'ballerina_capuchina_battle.mp3' : 'brainrot_theme.mp3');
+            startMusic(BATTLE_MUSIC[enemy] || 'brainrot_theme.mp3');
             const options = { game: 'battle', enemy, debugStats: battleDebugStatsOn() };
             const enemyHp = getBattleHp(enemy);
             if (enemyHp) options.enemyHp = enemyHp;

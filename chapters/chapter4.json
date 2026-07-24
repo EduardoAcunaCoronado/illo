@@ -784,7 +784,7 @@
       "lines": [
         {
           "character": "José",
-          "text": "Me alegro de que hayáis venido, pero no os he llamado solo para enseñaros mi ficha de personaje. En ciudad paloma también han aparecido memes de IA, los he mantenido a raya. Pero hay algo más...",
+          "text": "Me alegro de que hayáis venido, pero no os he llamado solo para enseñaros mi ficha de personaje. En ciudad paloma también han aparecido memes, los he mantenido a raya. Pero hay algo más...",
           "actions": [
             {
               "type": "showCharacter",
@@ -845,7 +845,7 @@
         },
         {
           "character": "José",
-          "text": "Bajo la ciudad hay un santuario central, y los memes están intentando entrar. El problema es que sus accesos no se abren solo a espadazos: Piyón puede romper casi cualquier cosa y aguantar golpes, pero la magia, la velocidad y la luz no son precisamente su fuerte. Para eso os necesito.",
+          "text": "Bajo la ciudad hay algo y los memes están intentando entrar. El problema es que sus accesos no se abren solo a espadazos: Piyón puede romper casi cualquier cosa y aguantar golpes, pero la magia, la velocidad y la luz no son precisamente su fuerte. Para eso os necesito.",
           "actions": [
             {
               "type": "showCharacter",
@@ -929,7 +929,7 @@
         },
         {
           "character": "José",
-          "text": "Por eso os necesito. Esta ciudad reconoce las clases de los avatares. Si conseguimos que responda a vosotros, podremos abrir el camino al santuario.",
+          "text": "Por eso os necesito. Esta ciudad reconoce las clases de los avatares. Si conseguimos que responda a vosotros, podremos abrir el camino a la mazmorra.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1545,7 +1545,7 @@
         },
         {
           "character": "José",
-          "text": "Eso es lo que me preocupa. Si algo así está obsesionado con el santuario, entonces lo que hay ahí abajo debe ser mucho peor de lo que pensaba.",
+          "text": "Eso es lo que me preocupa. Si algo así está obsesionado con ese santuario, entonces lo que hay ahí abajo debe ser mucho peor de lo que pensaba.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1718,7 +1718,7 @@
         },
         {
           "character": "José",
-          "text": "Mirad el lado bueno: el camino normal al santuario estaba sellado, protegido por mecanismos antiguos y, en general, diseñado por alguien con una idea muy discutible de la accesibilidad.",
+          "text": "Mirad el lado bueno: el camino normal a la mazmorra estaba sellado, protegido por mecanismos antiguos y, en general, diseñado por alguien con una idea muy discutible de la accesibilidad.",
           "actions": [
             {
               "type": "showCharacter",

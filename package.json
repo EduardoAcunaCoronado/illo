@@ -1,0 +1,9 @@
+{
+    "scripts": {
+        "format:js": "prettier --write \"**/*.js\"",
+        "check:js": "prettier --check \"**/*.js\""
+    },
+    "devDependencies": {
+        "prettier": "^3.9.6"
+    }
+}

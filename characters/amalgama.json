@@ -1,0 +1,8 @@
+{
+  "name": "Amalgama",
+  "color": "#7b2cff",
+  "poses": {
+    "neutral": "assets/characters/amalgama/amalgama_base.png"
+  },
+  "defaultPose": "neutral"
+}
