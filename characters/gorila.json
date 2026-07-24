@@ -5,7 +5,9 @@
     "neutral": "assets/characters/gorila/gorila.png",
     "sospecha": "assets/characters/gorila/gorila_sospecha.png",
     "contento": "assets/characters/gorila/gorila_contento.png",
-    "enfadado": "assets/characters/gorila/gorila_enfadado.png"
+    "enfadado": "assets/characters/gorila/gorila_enfadado.png",
+    "caido": "assets/characters/gorila/gorila_caido.png",
+    "puerta": "assets/characters/gorila/gorila_puerta.png"
   },
   "defaultPose": "neutral"
 }

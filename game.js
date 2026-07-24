@@ -19,6 +19,52 @@ const gameArea = document.querySelector("#game-container > :not(#main-menu)");
 // Event listeners del menú
 startBtn.addEventListener("click", () => startNewGame());
 loadBtn.addEventListener("click", () => loadGame());
+document.getElementById("settings-btn")?.addEventListener("click", () => showSettingsPanel());
+
+// ===== Configuración: volúmenes de música y efectos (persistentes) =====
+function showSettingsPanel() {
+  if (document.getElementById("settings-panel")) return; // ya abierto
+  const volOf = (k, def) => {
+    const v = parseFloat(localStorage.getItem(k));
+    return isNaN(v) ? def : Math.round(v * 100);
+  };
+  const panel = document.createElement("div");
+  panel.className = "nm-modal";
+  panel.id = "settings-panel";
+  panel.innerHTML = `
+        <h2 class="nm-modal-title">Configuración</h2>
+        <div class="nm-settings">
+            <label class="nm-setting-row">🎵 Música
+                <input type="range" id="vol-music" min="0" max="100" value="${volOf("illo_vol_music", 100)}">
+                <span class="nm-setting-val" id="vol-music-val"></span>
+            </label>
+            <label class="nm-setting-row">🔊 Efectos
+                <input type="range" id="vol-sfx" min="0" max="100" value="${volOf("illo_vol_sfx", 100)}">
+                <span class="nm-setting-val" id="vol-sfx-val"></span>
+            </label>
+        </div>
+        <div class="nm-modal-buttons">
+            <button id="settings-close">Volver</button>
+        </div>
+    `;
+  document.getElementById("game-container").appendChild(panel);
+
+  const wire = (sliderId, storeKey) => {
+    const slider = panel.querySelector("#" + sliderId);
+    const label = panel.querySelector("#" + sliderId + "-val");
+    const paint = () => { label.textContent = slider.value + "%"; };
+    paint();
+    slider.addEventListener("input", () => {
+      localStorage.setItem(storeKey, String(slider.value / 100));
+      paint();
+      engine.applyVolumeSettings();
+    });
+  };
+  wire("vol-music", "illo_vol_music");
+  wire("vol-sfx", "illo_vol_sfx");
+
+  panel.querySelector("#settings-close").addEventListener("click", () => panel.remove());
+}
 
 // ===== Menú principal: vídeo de fondo + tema "Más de lo que ven tus ojos" =====
 // El vídeo arranca en bucle y silenciado (autoplay). Al primer clic/tecla se
@@ -193,6 +239,7 @@ async function loadAllCharacters() {
 }
 
 async function startNewGame() {
+  if (isGameRunning) return; // doble clic = una sola partida
   stopMenuMedia();
   mainMenu.classList.add("hidden");
   isGameRunning = true;
@@ -219,6 +266,13 @@ async function playChapter(chapterIdentifier) {
 
   if (typeof chapterIdentifier === "number") {
     currentChapterNumber = chapterIdentifier;
+  } else {
+    // También los ids en string ("chapter4") actualizan el contador: si no, el
+    // fallback numérico de endGame se queda clavado en 0 y, en capítulos sin
+    // setNextChapter (4 y 5), "Siguiente capítulo" devolvía al chapter1 y el
+    // juego entero entraba en bucle.
+    const numerico = String(chapterIdentifier).match(/^chapter(\d+)$/);
+    if (numerico) currentChapterNumber = parseInt(numerico[1], 10);
   }
   currentChapterName = chapterName;
 
@@ -403,6 +457,7 @@ function showChapterSelector() {
 }
 
 async function startChapterFromSelector(chapterId) {
+  if (isGameRunning) return; // doble clic = una sola partida
   stopMenuMedia();
   mainMenu.classList.add("hidden");
 

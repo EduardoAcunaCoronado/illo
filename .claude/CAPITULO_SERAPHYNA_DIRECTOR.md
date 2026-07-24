@@ -572,6 +572,182 @@ piano ballad reprise, tender female hum, 60 BPM, intimate, tearjerker`) — 100 
 
 ---
 
+# 6b · AMPLIACIÓN NOCTURNA (23-jul-2026, encargo del director antes de dormir) ✅ HECHA
+
+**Todo implementado, jugado y verificado esta noche:**
+
+1. **Combate de SUPERVIVENCIA contra la marea de fans** (`Escena 11b: La puerta`, nueva):
+   reutiliza el sistema de batalla de José con extensiones ADITIVAS en battle-minigame.js
+   (`surviveTurns` + `surviveTurnsByDelay` 5/6/7, `party: ['samu','edu']`, `interludes`
+   = burbujas de urgencia entre turnos con contador "⏳ AGUANTAD N embestidas" → "🎤 ¡YA
+   CANTA!", `victoryTitle/victoryText/defeatText`, `retryOnDefeat` en el engine). Enemigo
+   nuevo `marea_fans` (9999 hp, imbatible — solo aguantar; retrato recortado del fondo del
+   desmadre en assets/characters/marea_fans_battle_1.png). CSS de chip+burbujas en styles.css.
+2. **Arco del GORILA — GOYO**: siembra en E5 ("veinte años oyéndola ensayar"), llega a
+   salvarlos en 11b ("Pues un minuto tendréis"), burbujas suyas en la batalla, SACRIFICIO
+   tras la última oleada (empujón + la marea le cae encima + risa final), **duelo en la
+   escena nueva `12c: El precio`** (pose nueva `gorila_caido` generada; últimas palabras
+   "más de baladas"; Santi revela el nombre; Seraphyna promete una balada con su nombre),
+   **culpa en E13** ("¿qué clase de alguien cuesta una vida?") y **memorial en E14**
+   (gafas rotas sobre glowsticks, "GRACIAS, GOYO").
+3. **Vuelo de Edu 2.0**: cables que cuelgan del TECHO con longitud aleatoria (hueco por
+   debajo; sprite estirado 100%), focos que CAEN desde arriba en movimiento real
+   (2 frames), más duración (goal 12/14/16), spawn más denso (spawnMs 640/580/520),
+   partituras más raras (collectChance 0.40) y telón `aire_fondo`. Knobs con passthrough
+   en playEduVueloMinigame (ojo: antes los knobs del JSON NO llegaban al runner — bug cazado).
+4. **SFX de calidad** (sustituyen a los sintetizados flojos): mezclas desde fuentes libres
+   — Kenney Impact + RPG (CC0), Car Sound Effects Pack (CC0, OGA), derrape de Tom Haigh
+   (CC-BY 3.0), gruñidos desde "Zombie Noises" de DonkeyMan (CC-BY 4.0). NUEVO
+   `sfx_golpes_puerta`. Atribuciones en assets/sounds/CREDITOS_SFX.txt (¡incluir en
+   créditos si se publica!). Se conservan sintéticos: diapasón, vibración, estática,
+   multitud lejana, heartbeat/rumble.
+5. Capítulo ahora: **24 escenas / 150 líneas**. Playthrough completo verificado (rama
+   verdad+foto): puerta→batalla→sacrificio→opening→voz→duelo→derrumbe→memorial→choice,
+   consola limpia, diapasón en inventario. Versiones: engine -6, battle-minigame -1 (23jul).
+6. 🟡 Para José: battle-minigame.js tiene las extensiones de supervivencia (aditivas,
+   sus batallas normales NO cambian) — avisarle antes del próximo merge. El nombre
+   mostrado "Seraphyne" de su ALLIES sigue tal cual (su fichero; typo pendiente suyo).
+
+# 6c · REVISIÓN DIURNA 23-jul (encargo "revísalo todo") ✅
+
+1. **FIX CRÍTICO batalla**: la acción era `type:'battle'` pero el engine solo la
+   despacha como `type:'minigame', game:'battle'` → la batalla NO arrancaba en el
+   flujo real (en las pruebas nocturnas se invocó por consola y coló). Corregido en
+   builder + chapter3.json y verificado jugándola entera desde la escena: chip
+   5→4→…→"¡YA CANTA!", burbujas (Seraphyna/Santi/…), panel "¡HABÉIS AGUANTADO!",
+   vuelta limpia al diálogo del sacrificio.
+2. **Cables del vuelo 2.0 de verdad**: el sprite entero estirado se aplastaba en un
+   muñón. Ahora cable en 3 PIEZAS (aire_cable_cap/body/tip.png, canvas 200 eje 110):
+   soporte fijo al techo + tramo recto estirable + punta pelada fija; ancho mínimo
+   62px, halo eléctrico sutil (drop-shadow azul) para leerse sobre fondo oscuro; caja
+   de colisión estrecha (42% ancho) pero 86% del largo (la punta pelada mata).
+   Además, SIN obstáculos estáticos flotantes en el vuelo: la ruleta sin estáticos se
+   reparte 50/50 entre colgantes y cayentes.
+3. **Auditoría de audio completa** (monitor runtime que lista todo lo que suena):
+   menú tema→chill→♪ ✓, COMENZAR mata el menú ✓, cambio de capítulo por id ✓,
+   camerino→apagón→terror solo ✓, desmadre 2 capas exactas ✓, batalla pausa/resume
+   bg ✓, opening solo el vídeo y silencio después ✓, E13 abrazo ✓→E14 cierre ✓.
+   Hardening: engine.stopAllSounds ahora apaga también los beds WebAudio de juice
+   (heartbeat/rumble), y nextLine limpia pendingSceneJump al entrar (un flag colgado
+   podía abortar la cadena de acciones de la línea destino).
+4. **QA barrido completo** (auto-driver + monitor): Prólogo→1→2→3→4→5→menú entero
+   sin errores de consola ni 404s; TODAS las ramas del Gorila jugadas (verdad→foto,
+   verdad→suplicar, trola→farol, trola→duda, chulo→Bad Ending→reintentar→merge);
+   transición cap4→cap5 y vuelta final al menú verificadas a mano.
+5. Fixes extra de la pasada: alias de personajes por nombre visible en
+   getCharacterKey (speaker "Loca de los gatos" daba 404 de loca de los gatos.json
+   → resuelve a loca.json y hereda su púrpura); displayChoices vaciaba solo la
+   clase → botones fantasma invisibles con z-index 101 robando cursor (ahora
+   innerHTML='' + pointer-events none); guardas anti doble clic en
+   startNewGame/startChapterFromSelector; "Seraphyne"→"Seraphyna" en el name
+   visible de ALLIES (battle-minigame.js; el id interno queda igual).
+6. **Configuración funcional**: el botón del menú estaba MUERTO (sin handler).
+   Ahora abre un panel nm-modal con volúmenes de Música y Efectos, persistentes
+   (localStorage illo_vol_music/illo_vol_sfx) y aplicados EN VIVO; los volúmenes
+   del guión quedan como base y escalan por el ajuste del jugador. Verificado:
+   tema 0.5 → 30% → 0.15 exacto.
+7. Chase: passthrough de knobs añadido (spawnMs/graceMs/hitGraceMs — mismo hueco
+   que tenía el vuelo) y verificación visual a fps reales (cielo sin damero,
+   conos redibujados, parpadeo de invulnerabilidad). PDF de la biblia regenerado
+   (24 págs, incluye 6b/6c) en Downloads/CAPITULO_SERAPHYNA_DIRECTOR.pdf.
+8. **Barrido de regresión final** (todas las versiones nuevas): prólogo→cap5→menú
+   con CERO errores; la escena de la loca ya sin 404 (alias verificado en flujo);
+   audio solo con capas intencionadas. Se cazó y endureció además un límite del
+   navegador: los elementos de audio DESCARTADOS retenían su conexión de
+   streaming (Chrome corta en 6 conexiones por host y un fetch posterior puede
+   quedarse en cola infinita en sesiones muy largas) → ahora fadeOutAndStop y
+   stopAllSounds liberan el src del elemento al rematarlo. Ciclo del menú y
+   transición cap4→cap5→menú verificados con la liberación activa.
+9. **Coherencia narrativa de la batalla (petición del director)**: en el mundo de
+   Tony las clases AÚN no han despertado (eso ocurre en Paloma City, cap. 4), así
+   que Samu y Edu NO pueden usar los kits mágicos de José. Nueva opción aditiva
+   `skillsOverride`/`roleOverride` por batalla en battle-minigame.js y kits
+   pre-despertar en la batalla de la puerta: Samu "Técnico improvisado" (Vallazo
+   de obra —la valla que le dio Goyo—, Acople del micro, Cañón de confeti,
+   Botellazo del rider) y Edu "Repartidor volador" (Picado en vuelo, Ráfaga de
+   alas, Meme rancio al grito, Reparto exprés). Tipos de efecto reutilizados del
+   sistema de José (damage/damage_speed_down/ally_evasion_up) — cero mecánicas
+   nuevas. Batalla completa jugada y ganada con los kits nuevos.
+10. **Bug de Betanzos (iluminado del hablante), 24-jul**: (a) al narrar 2B ahora
+    TODOS los sprites quedan en gris (antes nadie se apagaba y "parecía que se
+    iluminaban"); (b) el intermitente al hablar el personaje CENTRAL era una
+    carrera — si el sprite aún no tenía la clase `active` (entrando/cargando)
+    al pintarse el diálogo, el resaltado se saltaba: ya no se exige `active`
+    (characterPositions garantiza que ahí hay personaje); (c) soporte de
+    `aliases` en el JSON de personaje (tony.json declara ["Seraphyna"]) para
+    que el nombre artístico resalte su sprite aunque falte speakingAs.
+    Verificado con estilos computados: 2B→todos gris; lateral→hablante
+    iluminado; Seraphyna centro→ella iluminada y lados grises.
+11. **Remesa de arte del director (24-jul, madrugada)**: el director regeneró con
+    IA (pack de prompts) y colocó a mano: `calle_espera.png` (calle atardecer),
+    `backstage_mesa.png` (mesa de sonido con rigging morado), `cg/abrazo_trio.png`
+    (¡abrazo nuevo espectacular, muy superior al anterior!) y un fondo NUEVO
+    `pasillo_backstage.png` (pasillo con la puerta metálica abollada en rojo de
+    emergencia) que quedó cableado como fondo de apertura de «Escena 11b: La
+    puerta» (antes reutilizaba backstage_mesa). Todo verificado en juego.
+12. **Remesa 2 del director (Imagenes_Restantes, 24-jul)** — 9 imágenes procesadas
+    (recorte alfa, alto normalizado 1400, damero de seraphyna_gafas eliminado con
+    flood-fill por tonos) e integradas con 6 poses nuevas registradas:
+    · samu `valla` → la coge en 11b cuando Goyo reparte órdenes
+    · edu `picado` → arranque del vuelo en E11
+    · gorila `puerta` → «¡AL ESCENARIO! ¡YAAA!» (sacrificio, 11b)
+    · tony `cantando` → «La voz» (12b, la loba de plata sobre el escenario)
+    · tony `balada` → la promesa a Goyo con sus gafas rotas al pecho (12c)
+    · santi `despedida` → su adiós en E14 (antes solo narrado — nit viejo resuelto)
+    Más: CG `diapason.png` al entregarse el objeto (E13, con su ting),
+    CG `tres_escenario.png` en el memorial de E14 (los tres al amanecer, se
+    retira al sonar la llamada de José), y `callejon_trasero.png` como fondo
+    del Bad Ending («los planta en la acera»). Todo verificado en juego.
+13. **MERGE #3 (24-jul, mediodía)** — pull del compi con Cap. 5 «Airi» terminado
+    (210 líneas, con batalla estándar), Cap. 6 «La última elección» (isFinal) y
+    créditos solo en el final bueno (credits-minigame.js nuevo). Integración:
+    game.js = suyo + nuestro panel Configuración y guardas; engine.js = NUESTRO
+    + sus 4 añadidos (acción/método clearBackground, minijuego credits, label
+    Seraphyna de la runa, escalas airi 0.7/tung 0.85/amalgama 1.2);
+    battle-minigame.js = SUYO reformateado (aliado Jose nuevo, jefa Ballerina
+    Capuchina, name Seraphyna ok) + reinjerto completo de supervivencia
+    (surviveTurns/interludes/party/skillsOverride/marea_fans/chip/burbujas);
+    index.html = suyo (script credits) + versiones nuevas; styles.css ya era
+    nuestro sin conflicto. Verificado en vivo: supervivencia del cap. 3 entera
+    («¡Habéis aguantado!», kits pre-despertar, chip), batalla estándar con 4
+    aliados sin chip, créditos abren, consola limpia. OJO: sed convierte CRLF→LF
+    en estos ficheros — usar python para ediciones masivas.
+14. **AUDITORÍA FINAL «de cabo a rabo» (24-jul, tarde)**:
+    a) [CRÍTICO ARREGLADO] El juego entraba en BUCLE tras el cap. 4: los caps
+       4 y 5 del compi no declaran setNextChapter y el fallback numérico usaba
+       currentChapterNumber, que solo se actualizaba con ids numéricos (la
+       cadena real pasa strings) → siempre chapter1. Fix en playChapter
+       (game.js 20260724-3): parsea "chapterN" también en string. Verificado:
+       playthrough completo 0→6→final bueno→créditos→cameo→menú y final malo
+       sin créditos, ambos con CERO errores.
+    b) 5 poses inexistentes arregladas con alias (loca crazy, samu curious,
+       zip angry, tony thinking, jose serious). «andrés» con tilde en cap6 es
+       inofensivo (getCharacterKey normaliza acentos).
+    c) Validador estático de los 7 capítulos (acciones/minijuegos/enemigos/
+       party/poses/audios/fondos/CGs/vídeos/goToScene/choices): cero roturas
+       del merge.
+    d) Para el equipo: sistema de llamadas vestigial (registerCall nunca se
+       dispara, cap1 es lineal y completedCalls siempre vacío) — decidir su
+       futuro; recomendar setNextChapter explícito en caps 4 y 5.
+15. **MERGE #4 (24-jul, tarde)** — pull con rebalance de batalla de José
+    («Mejoras menu batalla»: SFX de golpe/hover, Robar ahora tipo "steal" de
+    objeto único, buff attack_up, colores por aliado, números nuevos) + su fix
+    de continuidad del cap. 4 (texto conectado con nuestras baldosas amarillas).
+    engine.js y game.js sobrevivieron intactos; styles.css e index.html fueron
+    pisados (restaurado el nuestro / versiones re-aplicadas); battle-minigame
+    reinjertado por TERCERA vez (supervivencia completa + marea_fans +
+    skillsOverride), adaptado a su nuevo flujo finishBattle→showBattleResult
+    (en supervivencia se salta el efecto de muerte del enemigo: la marea no
+    muere, se calma). Verificado en vivo: supervivencia entera con kits sobre
+    su UI nueva («¡Habéis aguantado!») y batalla estándar 4 aliados sin chip.
+    BACKUP_ENGINE_STYLES refrescado con las versiones fusionadas (¡regla nueva:
+    refrescarlo tras CADA merge para que el próximo pull tenga base al día!).
+16. Versiones: engine 20260724-4, game 20260724-4, styles 20260724-4,
+    battle-minigame 20260724-24, battle-styles 20260724-19 (suyo), credits -1.
+   DOCUMENTACION.md corregida y ampliada (batalla type minigame + game battle,
+   knobs eduvuelo, panel Configuración). QA servido con python http.server 8000
+   (config launch.json "illo").
+
 # 7 · PLAN DE EJECUCIÓN POR FASES (el orden para llevarlo a cabo)
 
 > **⭐ ESTADO 22-jul-2026 (tarde): EJECUTADO DE F0 A F4 EN UNA SESIÓN AUTÓNOMA.** Todo lo

@@ -17,7 +17,8 @@
     "worried": "assets/characters/edu/edu_worried.png",
     "bua": "assets/characters/edu/edu_bua.png",
     "clapping": "assets/characters/edu/edu_clapping.png",
-    "riku": "assets/characters/edu/edu_riku.png"
+    "riku": "assets/characters/edu/edu_riku.png",
+    "picado": "assets/characters/edu/edu_picado.png"
   },
   "defaultPose": "happy"
 }

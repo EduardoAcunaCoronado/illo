@@ -2,7 +2,8 @@
   "name": "Zip",
   "color": "#FF6B9D",
   "poses": {
-    "neutral": "assets/characters/others/zip.png"
+    "neutral": "assets/characters/others/zip.png",
+    "angry": "assets/characters/others/zip.png"
   },
   "defaultPose": "neutral"
 }

@@ -2,7 +2,8 @@
   "name": "Loca de los gatos",
   "color": "purple",
   "poses": {
-    "neutral": "assets/characters/others/loca.png"
+    "neutral": "assets/characters/others/loca.png",
+    "crazy": "assets/characters/others/loca.png"
   },
   "defaultPose": "neutral"
 }

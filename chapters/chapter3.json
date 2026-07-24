@@ -747,6 +747,10 @@
           "text": "(a Edu, bajito) Vale. Un gorila de dos metros entre nosotros y Tony. Toca camelárselo... y sin cabrearlo, que tiene pinta de partir vallas con la mirada."
         },
         {
+          "character": "Gorila",
+          "text": "Y bajad la voz, que la jefa calienta a esta hora. Veinte años oyéndola ensayar desde esta puerta y todavía se me olvida respirar. ...Eso no lo repitáis."
+        },
+        {
           "actions": [
             {
               "type": "goToScene",
@@ -1082,6 +1086,14 @@
         },
         {
           "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/callejon_trasero.png"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/effects/sfx_portazo.mp3",
@@ -1782,6 +1794,15 @@
       "title": "Escena 11: Las partituras",
       "lines": [
         {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "picado",
+              "enter": "bottom"
+            }
+          ],
           "character": "2B",
           "text": "Edu despliega las alas y se lanza al vacío del escenario. Las hojas de partitura flotan por todas partes; entre ellas, focos que caen y cables eléctricos colgando."
         },
@@ -1834,23 +1855,35 @@
             {
               "type": "minigame",
               "game": "eduvuelo",
-              "goal": 8,
+              "goal": 12,
               "goalByDelay": {
-                "0": 8,
-                "1": 10,
-                "2": 12
+                "0": 12,
+                "1": 14,
+                "2": 16
               },
               "speed": 5,
               "speedByDelay": {
                 "0": 5,
                 "1": 6,
-                "2": 7.5
+                "2": 7
               },
               "maxHits": 3,
               "maxHitsByDelay": {
                 "0": 3,
                 "1": 3,
                 "2": 2
+              },
+              "collectChance": 0.4,
+              "hangChance": 0.24,
+              "hangMin": 0.25,
+              "hangMax": 0.6,
+              "fallerChance": 0.26,
+              "fallerVy": 0.26,
+              "spawnMs": 640,
+              "spawnMsByDelay": {
+                "0": 640,
+                "1": 580,
+                "2": 520
               }
             },
             {
@@ -1910,6 +1943,427 @@
           "showIf": {
             "result": "close"
           }
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 11b: La puerta"
+            }
+          ],
+          "character": "",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "title": "Escena 11b: La puerta",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/pasillo_backstage.png"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/sfx_golpes_puerta.mp3",
+              "volume": 0.6,
+              "loop": false
+            },
+            {
+              "type": "shake",
+              "intensity": 6,
+              "duration": 500
+            },
+            {
+              "type": "vignette",
+              "value": 0.5,
+              "duration": 700
+            },
+            {
+              "type": "setVolume",
+              "id": "terror",
+              "volume": 0.35
+            }
+          ],
+          "character": "2B",
+          "text": "BOOM. BOOM. La puerta de servicio del backstage se comba con cada golpe. Al otro lado ya no corean: EMBISTEN."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "alarmed",
+              "enter": "fade"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/sfx_golpes_puerta.mp3",
+              "volume": 0.65,
+              "loop": false
+            },
+            {
+              "type": "shake",
+              "intensity": 7,
+              "duration": 500
+            }
+          ],
+          "character": "Seraphyna",
+          "speakingAs": "tony",
+          "text": "¡Aún no puedo salir! ¡Si canto el hechizo a medias, se rompe MAL! ¡Necesito un minuto entero, UNO!",
+          "textSpeed": "fast"
+        },
+        {
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/sfx_pasos_pesados.mp3",
+              "volume": 0.6,
+              "loop": false
+            },
+            {
+              "type": "showCharacter",
+              "character": "gorila",
+              "position": "right",
+              "pose": "neutral",
+              "enter": "bottom"
+            }
+          ],
+          "character": "Gorila",
+          "text": "Pues un minuto tendréis."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ],
+          "character": "2B",
+          "text": "El gorila de la puerta. La chaqueta hecha jirones, el pinganillo colgando, y una valla de obra en cada mano como si fueran raquetas."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "gorila",
+              "position": "right",
+              "pose": "sospecha"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "valla"
+            }
+          ],
+          "character": "Gorila",
+          "text": "Jefa: cuando yo diga, USTED CANTA. Vosotros dos: esta línea de aquí. Lo que la cruce, lo devolvéis. Veinte años de ensayos no me los revienta una turba sin entrada."
+        },
+        {
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/sfx_crash_foco.mp3",
+              "volume": 0.55,
+              "loop": false
+            },
+            {
+              "type": "flash",
+              "color": "rgba(255,255,255,0.6)",
+              "duration": 200
+            },
+            {
+              "type": "shake",
+              "intensity": 12,
+              "duration": 700
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center",
+              "exit": "fade"
+            }
+          ],
+          "character": "2B",
+          "text": "La puerta salta de los goznes.",
+          "textSpeed": "fast"
+        },
+        {
+          "actions": [
+            {
+              "type": "pauseSound",
+              "id": "bg_music"
+            },
+            {
+              "type": "minigame",
+              "game": "battle",
+              "enemy": "marea_fans",
+              "retryOnDefeat": true,
+              "retryText": "¡La marea os ha arrollado! 🌊 Goyo no puede solo...",
+              "party": [
+                "samu",
+                "edu"
+              ],
+              "roleOverride": {
+                "samu": "Técnico improvisado",
+                "edu": "Repartidor volador"
+              },
+              "skillsOverride": {
+                "samu": [
+                  {
+                    "id": "vallazo",
+                    "name": "Vallazo de obra",
+                    "pmCost": 0,
+                    "type": "damage",
+                    "element": "physical",
+                    "power": 18,
+                    "target": "enemy",
+                    "accuracy": 0.94,
+                    "description": "La valla que os dio Goyo, usada como raqueta. PAM. Daño moderado y gratis."
+                  },
+                  {
+                    "id": "acople",
+                    "name": "Acople del micro",
+                    "pmCost": 8,
+                    "type": "damage_speed_down",
+                    "element": "lightning",
+                    "power": 20,
+                    "speedModifier": -2,
+                    "duration": 2,
+                    "target": "enemy",
+                    "accuracy": 0.9,
+                    "description": "Un chillido de feedback por la mesa de sonido. Daña y FRENA a la marea 2 turnos."
+                  },
+                  {
+                    "id": "confeti",
+                    "name": "Cañón de confeti",
+                    "pmCost": 10,
+                    "type": "ally_evasion_up",
+                    "element": "arcane",
+                    "power": 0,
+                    "evasionModifier": 0.3,
+                    "duration": 2,
+                    "target": "ally",
+                    "description": "Confeti del show a los ojos: el aliado elegido esquiva mucho mejor durante 2 turnos."
+                  },
+                  {
+                    "id": "rider",
+                    "name": "Botellazo del rider",
+                    "pmCost": 6,
+                    "type": "damage",
+                    "element": "physical",
+                    "power": 26,
+                    "target": "enemy",
+                    "accuracy": 0.88,
+                    "description": "Botellines del catering en parábola perfecta. Buen daño por 6 PM."
+                  }
+                ],
+                "edu": [
+                  {
+                    "id": "picado",
+                    "name": "Picado en vuelo",
+                    "pmCost": 0,
+                    "type": "damage",
+                    "element": "physical",
+                    "power": 20,
+                    "target": "enemy",
+                    "accuracy": 0.93,
+                    "description": "Edu SÍ sabe volar: picado desde el techo del backstage. Gratis."
+                  },
+                  {
+                    "id": "rafaga_alas",
+                    "name": "Ráfaga de alas",
+                    "pmCost": 8,
+                    "type": "damage_speed_down",
+                    "element": "ice",
+                    "power": 16,
+                    "speedModifier": -2,
+                    "duration": 2,
+                    "target": "enemy",
+                    "accuracy": 0.92,
+                    "description": "Aletazo huracanado que empuja a la primera fila. Daña y frena 2 turnos."
+                  },
+                  {
+                    "id": "meme_grito",
+                    "name": "Meme rancio al grito",
+                    "pmCost": 10,
+                    "type": "damage",
+                    "element": "arcane",
+                    "power": 30,
+                    "target": "enemy",
+                    "accuracy": 0.85,
+                    "description": "Grita un meme TAN malo que la marea entera se para a abuchear. Mucho daño."
+                  },
+                  {
+                    "id": "reparto",
+                    "name": "Reparto exprés",
+                    "pmCost": 6,
+                    "type": "damage",
+                    "element": "physical",
+                    "power": 24,
+                    "target": "enemy",
+                    "accuracy": 0.9,
+                    "description": "Cajas del reparto lanzadas en vuelo rasante. Pagas contra reembolso."
+                  }
+                ]
+              },
+              "surviveTurns": 5,
+              "surviveTurnsByDelay": {
+                "0": 5,
+                "1": 6,
+                "2": 7
+              },
+              "victoryTitle": "¡Habéis aguantado!",
+              "victoryText": "A vuestra espalda, un foco baja del cielo. Ya está aquí.",
+              "interludes": [
+                {
+                  "turn": 1,
+                  "speaker": "Gorila",
+                  "text": "¡¿Esto es todo, FANS DE PEGA?! ¡En mis tiempos se empujaba MEJOR!"
+                },
+                {
+                  "turn": 2,
+                  "speaker": "Seraphyna",
+                  "text": "¡Voz lista en tres compases! ¡Aguantad!"
+                },
+                {
+                  "turn": 3,
+                  "speaker": "Santi",
+                  "text": "¡El equipo aguanta, chavales! ¡No me lo rayéis ahora!"
+                },
+                {
+                  "turn": 4,
+                  "speaker": "Gorila",
+                  "text": "¡A la jefa... NI. TOCARLA!"
+                },
+                {
+                  "turn": 5,
+                  "speaker": "Seraphyna",
+                  "text": "¡UNO MÁS! ¡YA CASI!"
+                },
+                {
+                  "turn": 6,
+                  "speaker": "Gorila",
+                  "text": "¡¿ES QUE NO OS CANSÁIS NUNCA?!"
+                }
+              ]
+            },
+            {
+              "type": "resumeSound",
+              "id": "bg_music"
+            }
+          ],
+          "character": "",
+          "text": ""
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "gorila",
+              "position": "right",
+              "pose": "enfadado"
+            },
+            {
+              "type": "setVolume",
+              "id": "terror",
+              "volume": 0.4
+            }
+          ],
+          "character": "2B",
+          "text": "La última oleada no busca el escenario. Los busca a ELLOS. Y el gorila lo ve venir antes que nadie.",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "gorila",
+              "position": "right",
+              "pose": "puerta"
+            },
+            {
+              "type": "shake",
+              "intensity": 8,
+              "duration": 400
+            }
+          ],
+          "character": "Gorila",
+          "text": "¡AL ESCENARIO! ¡YAAA!",
+          "textSpeed": "fast"
+        },
+        {
+          "actions": [
+            {
+              "type": "flash",
+              "color": "rgba(255,255,255,0.75)",
+              "duration": 220
+            },
+            {
+              "type": "shake",
+              "intensity": 14,
+              "duration": 800
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/sfx_crash_foco.mp3",
+              "volume": 0.5,
+              "loop": false
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right",
+              "exit": "fade"
+            },
+            {
+              "type": "fade",
+              "to": "black",
+              "duration": 900
+            }
+          ],
+          "character": "2B",
+          "text": "Un empujón. Dos cuerpos volando hacia las tablas. Y donde estaban Samu y Edu, la marea entera cae sobre un solo portero que no retrocede.",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "stopAllSounds"
+            },
+            {
+              "type": "sfx",
+              "name": "heartbeat",
+              "on": false
+            },
+            {
+              "type": "wait",
+              "ms": 800
+            }
+          ],
+          "character": "2B",
+          "text": "Lo último que se oye de él es una risa. Y después... la primera nota.",
+          "textSpeed": "slow"
         },
         {
           "actions": [
@@ -2034,8 +2488,176 @@
           "textSpeed": "slow"
         },
         {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "cantando",
+              "enter": "fade"
+            }
+          ],
           "character": "2B",
           "text": "Delante del escenario ya no hay monstruos. Hay gente llorando de alegría sin saber por qué. Y encima del escenario, una loba de plata que canta como si le fuera la vida en ello... porque le va.",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 12c: El precio"
+            }
+          ],
+          "character": "",
+          "text": ""
+        }
+      ]
+    },
+    {
+      "title": "Escena 12c: El precio",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "center",
+              "exit": "fade"
+            },
+            {
+              "type": "vignette",
+              "value": 0.45,
+              "duration": 1200
+            },
+            {
+              "type": "grade",
+              "value": "saturate(0.9) contrast(1.05) brightness(0.9)",
+              "duration": 1200
+            }
+          ],
+          "character": "2B",
+          "text": "Entre los fans que despiertan sin recordar nada, hay un traje negro que no se levanta.",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "gorila",
+              "position": "center",
+              "pose": "caido",
+              "enter": "fade"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried",
+              "enter": "fade"
+            },
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "sad",
+              "enter": "fade"
+            }
+          ],
+          "character": "Gorila",
+          "text": "¿Ha cantado...? ...¿Y ha sonado bien?",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "bua"
+            }
+          ],
+          "character": "Samu",
+          "text": "Ha sonado... como nunca, tío. Como NUNCA."
+        },
+        {
+          "character": "Gorila",
+          "text": "Entonces la puerta aguantó lo que tenía que aguantar. Decidle a la jefa... que el de la puerta siempre fue más de baladas. Y que la entrada de esta noche... corre de mi cuenta.",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "wait",
+              "ms": 600
+            },
+            {
+              "type": "sfx",
+              "name": "heartbeat",
+              "on": false
+            }
+          ],
+          "character": "2B",
+          "text": "Las gafas rotas se le resbalan de la cara. El gorila de la puerta sonríe a un techo lleno de focos... y ya no vuelve a moverse.",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "center",
+              "exit": "fade"
+            },
+            {
+              "type": "wait",
+              "ms": 400
+            },
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "sad",
+              "enter": "fade"
+            }
+          ],
+          "character": "Seraphyna",
+          "speakingAs": "tony",
+          "text": "...¿Cómo se llamaba? Veinte años en mi puerta... y nunca le pregunté el nombre.",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "bua"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "showCharacter",
+              "character": "santi",
+              "position": "right",
+              "pose": "herido",
+              "enter": "fade"
+            }
+          ],
+          "character": "Santi",
+          "text": "Goyo. Se llamaba Goyo. Decía que tu voz era lo único que le quitaba el dolor de espalda. No se perdió un ensayo en veinte años... desde el otro lao de la puerta."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "balada"
+            }
+          ],
+          "character": "Seraphyna",
+          "speakingAs": "tony",
+          "text": "...Goyo. La próxima canción que escriba lleva tu nombre. Y va a ser una balada que va a hacer llorar hasta a las vallas de obra.",
           "textSpeed": "slow"
         },
         {
@@ -2135,6 +2757,12 @@
           "character": "Seraphyna",
           "speakingAs": "tony",
           "text": "(la voz le tiembla, se le rompe el papel de diva) No lo entendéis... Ahí fuera soy IMPORTANTE. Aquí soy alguien. Si me voy... vuelvo a ser nada. Otra vez solo. Otra vez la sombra que nadie mira.",
+          "textSpeed": "slow"
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "tony",
+          "text": "Y Goyo ha muerto sosteniendo la puerta de MI hechizo. Dime, Samu... ¿qué clase de «alguien» cuesta una vida? ¿QUÉ CLASE?",
           "textSpeed": "slow"
         },
         {
@@ -2257,6 +2885,11 @@
               "path": "assets/sounds/effects/sfx_diapason_ting.mp3",
               "volume": 0.5,
               "loop": false
+            },
+            {
+              "type": "showCG",
+              "path": "assets/backgrounds/cg/diapason.png",
+              "duration": 500
             }
           ],
           "character": "Seraphyna",
@@ -2265,6 +2898,9 @@
         },
         {
           "actions": [
+            {
+              "type": "hideCG"
+            },
             {
               "type": "showCharacter",
               "character": "samu",
@@ -2370,9 +3006,10 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "showCharacter",
+              "character": "santi",
               "position": "right",
-              "exit": "fade"
+              "pose": "despedida"
             }
           ],
           "character": "2B",
@@ -2380,6 +3017,35 @@
         },
         {
           "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "right",
+              "exit": "fade"
+            },
+            {
+              "type": "showCG",
+              "path": "assets/backgrounds/cg/tres_escenario.png",
+              "duration": 900
+            },
+            {
+              "type": "vignette",
+              "value": 0.3,
+              "duration": 900
+            },
+            {
+              "type": "wait",
+              "ms": 300
+            }
+          ],
+          "character": "2B",
+          "text": "En la puerta de la arena, alguien ha dejado unas gafas de sol rotas sobre una montaña de glowsticks. Debajo, una nota: «GRACIAS, GOYO». Nadie las toca. Nadie las tocará.",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "hideCG"
+            },
             {
               "type": "showCharacter",
               "character": "edu",

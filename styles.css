@@ -338,11 +338,13 @@ html, body {
     gap: 12px;
     z-index: 101;
     opacity: 0;
+    pointer-events: none; /* oculto = intocable (si no, roba clics/cursor) */
     transition: opacity 0.3s ease;
 }
 
 .choices-container.active {
     opacity: 1;
+    pointer-events: auto;
 }
 
 .choices-container.p5-choices {
@@ -550,7 +552,7 @@ html, body {
     position: relative;
     overflow: hidden;
     font-weight: bold;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     width: 100%;
     clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
@@ -853,7 +855,7 @@ html, body {
     position: relative;
     overflow: hidden;
     font-weight: bold;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-transform: uppercase;
     margin-top: 30px;
     clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
@@ -1786,7 +1788,7 @@ html, body {
 .neon-font {
     font-family: 'NeonSans', 'Arial Rounded MT Bold', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
     font-weight: normal;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-transform: uppercase;
 }
 
@@ -2049,7 +2051,7 @@ html, body {
     font-weight: 400;
     font-style: normal;
     font-size: 64px;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     color: #fff0f7;
     line-height: 1.05;
     text-transform: uppercase;
@@ -2264,7 +2266,7 @@ html, body {
 .chapter-selector-back {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     color: rgba(255, 135, 145, 0.9);
     border: 1px solid rgba(255, 91, 103, 0.55);
     border-radius: 999px;
@@ -2437,7 +2439,7 @@ html, body {
 .chapter-end-btn {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     color: #ffd166;
     background: rgba(255, 209, 102, 0.10);
     border: 1px solid rgba(255, 209, 102, 0.55);
@@ -2485,6 +2487,22 @@ html, body {
     text-shadow: 0 0 26px rgba(255, 209, 102, 0.4);
     margin-bottom: 26px;
 }
+/* Panel de Configuración: filas de volumen (misma estética nm) */
+.nm-settings { display: flex; flex-direction: column; gap: 18px; margin-bottom: 26px; min-width: 340px; }
+.nm-setting-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: #fff;
+    white-space: nowrap;
+}
+.nm-setting-row input[type="range"] { flex: 1; accent-color: #ffd166; cursor: pointer; }
+.nm-setting-val { color: #ffd166; min-width: 44px; text-align: right; }
+
 .nm-modal-buttons { display: flex; gap: 16px; justify-content: center; }
 .nm-modal-buttons button {
     font-family: 'Outfit', sans-serif;
@@ -2683,4 +2701,67 @@ html, body {
 .sidescroller-minigame.ss-fly .ss-progress-fill {
     background: linear-gradient(90deg, #b04fff, #4fd0ff);
     box-shadow: 0 0 12px #4fd0ff;
+}
+
+/* ============================================
+   MODO SUPERVIVENCIA del combate (cap. 3): contador de embestidas
+   y burbujas de urgencia que se entremezclan con los turnos.
+   ============================================ */
+.battle-survive-chip {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 40;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 19px;
+    letter-spacing: 1px;
+    color: #ffd166;
+    background: rgba(12, 10, 30, 0.82);
+    border: 1px solid rgba(255, 209, 102, 0.55);
+    border-radius: 999px;
+    padding: 8px 22px;
+    box-shadow: 0 0 18px rgba(255, 209, 102, 0.3);
+    pointer-events: none;
+}
+.battle-survive-chip strong { color: #fff; font-size: 22px; }
+.battle-survive-chip.survive-pulse { animation: survive-pulse 0.5s ease; }
+@keyframes survive-pulse {
+    0% { transform: translateX(-50%) scale(1); }
+    35% { transform: translateX(-50%) scale(1.14); box-shadow: 0 0 30px rgba(255, 209, 102, 0.65); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+
+.battle-urgent-bubble {
+    position: absolute;
+    top: 74px;
+    left: 50%;
+    translate: -50% 0;
+    z-index: 41;
+    max-width: 560px;
+    background: linear-gradient(165deg, rgba(28, 22, 58, 0.95), rgba(9, 8, 28, 0.92));
+    border: 1px solid rgba(79, 208, 255, 0.45);
+    border-radius: 16px;
+    padding: 10px 18px;
+    font-family: 'Outfit', sans-serif;
+    color: #fff;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 16px rgba(79, 208, 255, 0.25);
+    animation: bub-in 0.3s ease-out;
+    pointer-events: none;
+}
+.battle-urgent-bubble .bub-speaker {
+    display: block;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #4fd0ff;
+    margin-bottom: 2px;
+}
+.battle-urgent-bubble .bub-text { font-size: 17px; }
+.battle-urgent-bubble.bub-out { transition: opacity 0.45s ease, translate 0.45s ease; opacity: 0; translate: -50% -14px; }
+@keyframes bub-in { from { opacity: 0; translate: -50% 14px; } to { opacity: 1; translate: -50% 0; } }
+@media (prefers-reduced-motion: reduce) {
+    .battle-survive-chip.survive-pulse, .battle-urgent-bubble { animation: none; }
 }

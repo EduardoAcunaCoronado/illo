@@ -259,6 +259,62 @@
   ];
 
   const ENEMIES = {
+    marea_fans: {
+      id: "marea_fans",
+      name: "Marea de Fans Coléricos",
+      role: "Horda glitcheada",
+      image: "assets/characters/marea_fans_battle_1.png",
+      background: "assets/backgrounds/fans_desmadrandose.png",
+      hp: 9999,
+      pm: 999,
+      speed: 12,
+      evasion: 0.05,
+      defense: 4,
+      finalAttackPattern: {
+        normalTurnsBeforeCharge: 2,
+        warningText: "¡La marea entera se encabrita y coge carrerilla!",
+      },
+      skills: [
+        {
+          id: "zarpazo_glitch",
+          name: "Zarpazo glitcheado",
+          pmCost: 0,
+          type: "damage",
+          power: 20,
+          target: "ally",
+          accuracy: 0.88,
+        },
+        {
+          id: "alarido_corrupto",
+          name: "Alarido corrupto",
+          pmCost: 0,
+          type: "mp_damage",
+          power: 7,
+          mpDamage: 10,
+          target: "ally",
+          accuracy: 0.9,
+        },
+        {
+          id: "oleada",
+          name: "Oleada de cuerpos",
+          pmCost: 0,
+          type: "multi_damage",
+          power: 12,
+          target: "all_allies",
+          accuracy: 0.85,
+        },
+        {
+          id: "tsunami_de_fans",
+          name: "Tsunami de fans",
+          pmCost: 0,
+          type: "multi_damage",
+          power: 22,
+          target: "all_allies",
+          accuracy: 0.8,
+          isFinalAttack: true,
+        },
+      ],
+    },
     ballerina_capuchina: {
       id: "ballerina_capuchina",
       name: "Ballerina Capuchina",
@@ -588,7 +644,38 @@
         Number.isFinite(configuredEnemyHp) && configuredEnemyHp > 0
           ? configuredEnemyHp
           : this.enemyTemplate.hp;
-      this.allies = ALLIES.map((ally) => this.createFighter(ally, "ally"));
+      // Modo SUPERVIVENCIA (cap. 3): aguantar N turnos enemigos en vez de matar.
+      // interludes = burbujas de urgencia entre turnos [{turn, speaker, text}].
+      this.surviveTurns =
+        Number(options.surviveTurns) > 0 ? Number(options.surviveTurns) : 0;
+      this.turnsSurvived = 0;
+      this.surviveWon = false;
+      this.interludes = Array.isArray(options.interludes)
+        ? options.interludes
+        : [];
+      // Grupo configurable: options.party = ["samu","edu"] limita los aliados.
+      const partyIds =
+        Array.isArray(options.party) && options.party.length
+          ? options.party
+          : null;
+      const roster = partyIds
+        ? ALLIES.filter((ally) => partyIds.includes(ally.id))
+        : ALLIES;
+      // Kits alternativos POR BATALLA (p. ej. cap. 3: las clases aún no han
+      // despertado y luchan con el entorno, alas y memes). Aditivo: sin
+      // skillsOverride/roleOverride las batallas normales no cambian nada.
+      const conKit = (ally) => {
+        const skills = options.skillsOverride && options.skillsOverride[ally.id];
+        const role = options.roleOverride && options.roleOverride[ally.id];
+        if (!skills && !role) return ally;
+        const copia = Object.assign({}, ally);
+        if (skills) copia.skills = skills;
+        if (role) copia.role = role;
+        return copia;
+      };
+      this.allies = (roster.length ? roster : ALLIES).map((ally) =>
+        this.createFighter(conKit(ally), "ally"),
+      );
       this.enemy = this.createFighter(
         {
           ...this.enemyTemplate,
@@ -630,7 +717,12 @@
       return new Promise((resolve) => {
         this.resolve = resolve;
         this.render();
-        this.message(`${this.enemy.name} bloquea el camino.`);
+        this.ensureSurviveUi();
+        this.message(
+          this.surviveTurns > 0
+            ? `${this.enemy.name} embiste. ¡AGUANTAD hasta que cante!`
+            : `${this.enemy.name} bloquea el camino.`,
+        );
         setTimeout(() => this.nextTurn(), 800);
       });
     }
@@ -1822,6 +1914,59 @@
       actor.statuses = actor.statuses.filter(
         (status) => status.turns === undefined || status.turns > 0,
       );
+
+      // Modo supervivencia: cada turno enemigo superado acerca la victoria
+      if (this.surviveTurns > 0 && actor.team === "enemy") {
+        this.turnsSurvived += 1;
+        this.updateSurviveHud();
+        this.fireInterludes(this.turnsSurvived);
+        if (this.turnsSurvived >= this.surviveTurns) {
+          this.surviveWon = true;
+        }
+      }
+    }
+
+    // ---- UI del modo supervivencia (contador + burbujas de urgencia) ----
+    ensureSurviveUi() {
+      if (this.surviveTurns <= 0 || !this.overlay) return;
+      const chip = document.createElement("div");
+      chip.className = "battle-survive-chip";
+      this.overlay.appendChild(chip);
+      this.surviveChip = chip;
+      this.updateSurviveHud();
+    }
+
+    updateSurviveHud() {
+      if (!this.surviveChip) return;
+      const left = Math.max(0, this.surviveTurns - this.turnsSurvived);
+      this.surviveChip.innerHTML =
+        left > 0
+          ? `⏳ AGUANTAD <strong>${left}</strong> ${left === 1 ? "embestida" : "embestidas"}`
+          : "🎤 ¡YA CANTA!";
+      this.surviveChip.classList.remove("survive-pulse");
+      void this.surviveChip.offsetWidth;
+      this.surviveChip.classList.add("survive-pulse");
+    }
+
+    fireInterludes(turn) {
+      this.interludes
+        .filter((item) => Number(item.turn) === turn && item.text)
+        .forEach((item, index) => {
+          setTimeout(
+            () => this.showUrgentBubble(item.speaker, item.text),
+            350 + index * 1900,
+          );
+        });
+    }
+
+    showUrgentBubble(speaker, text) {
+      if (!this.overlay) return;
+      const bubble = document.createElement("div");
+      bubble.className = "battle-urgent-bubble";
+      bubble.innerHTML = `${speaker ? `<span class="bub-speaker">${speaker}</span>` : ""}<span class="bub-text">${text}</span>`;
+      this.overlay.appendChild(bubble);
+      setTimeout(() => bubble.classList.add("bub-out"), 2600);
+      setTimeout(() => bubble.remove(), 3100);
     }
 
     message(text) {
@@ -1852,6 +1997,10 @@
     }
 
     checkBattleEnd() {
+      if (this.surviveWon) {
+        this.finishBattle(true);
+        return true;
+      }
       if (this.enemy.currentHp <= 0) {
         this.finishBattle(true);
         return true;
@@ -1866,7 +2015,9 @@
     finishBattle(won) {
       this.awaitingPlayer = false;
       this.clearSkills();
-      if (won) {
+      // En supervivencia el enemigo NO muere (la marea se calma con la voz):
+      // saltar el efecto de derrota del enemigo y mostrar el panel directo.
+      if (won && !this.surviveWon) {
         this.playEnemyDefeatEffect();
         setTimeout(() => this.showBattleResult(won), this.getEnemyDefeatDuration());
         return;
@@ -1891,12 +2042,22 @@
     }
 
     showBattleResult(won) {
+      const winTitle =
+        this.options.victoryTitle ||
+        (this.surviveTurns > 0 ? "¡Habéis aguantado!" : "Victoria");
+      const winText =
+        this.options.victoryText ||
+        (this.surviveTurns > 0
+          ? "El escenario se enciende a vuestra espalda."
+          : `${this.enemy.name} ha sido derrotada.`);
+      const loseText =
+        this.options.defeatText || "El equipo ha caído en combate.";
       const result = document.createElement("div");
       result.className = `battle-result ${won ? "victory" : "game-over"}`;
       result.innerHTML = `
         <div class="battle-result-panel">
-          <h2>${won ? "Victoria" : "Game Over"}</h2>
-          <p>${won ? `${this.enemy.name} ha sido derrotada.` : "El equipo ha caído en combate."}</p>
+          <h2>${won ? winTitle : "Game Over"}</h2>
+          <p>${won ? winText : loseText}</p>
           <button class="battle-result-button">Continuar</button>
         </div>
       `;

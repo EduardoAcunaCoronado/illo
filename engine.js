@@ -135,12 +135,12 @@ class VisualNovelEngine {
         if (!action) return;
 
         switch (action.type) {
-            case 'setBackground':
-                this.setBackground(action.value, action);
-                break;
             case 'clearBackground':
             case 'removeBackground':
                 this.clearBackground();
+                break;
+            case 'setBackground':
+                this.setBackground(action.value, action);
                 break;
             case 'showCharacter':
                 await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter);
@@ -335,6 +335,19 @@ class VisualNovelEngine {
     // Salta a una escena por título (o índice) dentro del capítulo actual.
     // Marca un salto pendiente para que nextLine detenga el procesamiento
     // normal de la línea y no avance automáticamente.
+    // Vaciar el fondo del todo (lo usa el final del compi en cap. 6/créditos)
+    clearBackground() {
+        this.bgPan({ reset: true });
+        const bg = document.getElementById('background');
+        const bgB = document.getElementById('background-b');
+        if (bg) bg.style.backgroundImage = '';
+        if (bgB) {
+            bgB.style.transition = 'none';
+            bgB.style.opacity = '0';
+            bgB.style.backgroundImage = '';
+        }
+    }
+
     jumpToScene(target) {
         let sceneIndex;
         if (typeof target === 'string') {
@@ -407,21 +420,22 @@ class VisualNovelEngine {
             case 'battle':
                 await this.playBattleMinigame(action);
                 break;
+            case 'credits':
+            case 'creditos':
+                await this.playCreditsMinigame(action);
+                break;
             case 'chase':
                 await this.playChaseMinigame(action);
                 break;
             case 'eduvuelo':
                 await this.playEduVueloMinigame(action);
                 break;
-            case 'credits':
-            case 'creditos':
-                await this.playCreditsMinigame(action);
-                break;
             default:
                 console.warn(`Minijuego desconocido: ${action.game}`);
         }
     }
 
+    // Créditos finales del compi (credits-minigame.js). Solo en el final bueno.
     async playCreditsMinigame(options = {}) {
         this.isWaitingForInput = false;
 
@@ -441,7 +455,31 @@ class VisualNovelEngine {
             return false;
         }
 
-        return await window.BattleMinigame.play(options);
+        // Soportar propiedades <x>ByDelay también en batallas (igual que en
+        // playMinigame): p. ej. surviveTurnsByDelay {"0":5,"1":6,"2":7}.
+        for (const prop of Object.keys(options)) {
+            if (!prop.endsWith('ByDelay')) continue;
+            const base = prop.slice(0, -'ByDelay'.length);
+            const map = options[prop];
+            const thresholds = Object.keys(map)
+                .map(Number)
+                .filter(n => n <= this.storyDelay)
+                .sort((a, b) => a - b);
+            if (thresholds.length > 0) {
+                const key = thresholds[thresholds.length - 1];
+                options = Object.assign({}, options, { [base]: map[key] });
+            }
+        }
+
+        // retryOnDefeat: true -> al perder se reintenta (como el resto de
+        // minijuegos del cap. 3). Por defecto false: el Game Over resuelve y
+        // el capítulo decide (comportamiento original para las batallas de José).
+        let won = await window.BattleMinigame.play(options);
+        while (!won && options.retryOnDefeat) {
+            await this.showMinigameRetry(options.retryText || '¡La marea os ha arrollado! 🌊');
+            won = await window.BattleMinigame.play(options);
+        }
+        return won;
     }
 
     // Minijuego: Samu come ketchup y esquiva guindillas.
@@ -2185,6 +2223,10 @@ class VisualNovelEngine {
                 enemies: [['meme_bob_0', 'meme_bob_1'], ['meme_knucles_0', 'meme_knucles_1'],
                           ['meme_pepe_0', 'meme_pepe_1'], ['meme_troll_0', 'meme_troll_1']],
                 collectible: null,
+                // Knobs de dificultad/QA con passthrough (igual que en eduvuelo:
+                // si no se reenvían, los valores del JSON se ignoran en silencio)
+                spawnMs: options.spawnMs,
+                graceMs: options.graceMs, hitGraceMs: options.hitGraceMs,
                 title: '🏎️ Mueve el coche con el RATÓN (o ↑/↓) y esquiva obstáculos y a los memes.',
                 winMsg: '¡Los habéis perdío en la rotonda! 🏁',
                 loseMsg: '¡Os han embestido! 🏍️'
@@ -2214,7 +2256,20 @@ class VisualNovelEngine {
                 playerHeight: 0.19, playerRatio: 0.72,
                 yMin: 0.12, yMax: 0.86,
                 bgFar: null, bgNear: null,
-                obstacles: ['aire_foco', 'aire_foco_on', 'aire_cable', 'aire_cable_spark'],
+                // Peligros DINÁMICOS (jul 2026): cables colgando del techo con
+                // longitud aleatoria y focos que caen. SIN estáticos flotantes:
+                // todo lo peligroso cuelga o cae (lo pidió el director).
+                obstacles: [],
+                hangChance: options.hangChance != null ? options.hangChance : 0.22,
+                hangMin: options.hangMin != null ? options.hangMin : 0.25,
+                hangMax: options.hangMax != null ? options.hangMax : 0.60,
+                hangSprite: options.hangSprite || 'aire_cable',
+                fallerChance: options.fallerChance != null ? options.fallerChance : 0.24,
+                fallerVy: options.fallerVy != null ? options.fallerVy : 0.26,
+                fallerFrames: options.fallerFrames || ['aire_foco', 'aire_foco_on'],
+                collectChance: options.collectChance != null ? options.collectChance : 0.42,
+                spawnMs: options.spawnMs != null ? options.spawnMs : 640,
+                graceMs: options.graceMs, hitGraceMs: options.hitGraceMs,
                 enemies: [],
                 collectible: ['partitura', 'partitura_glow'],
                 title: '🐉 Vuela con el RATÓN (o ↑/↓): RECOGE las partituras y esquiva focos y cables.',
@@ -2336,11 +2391,64 @@ class VisualNovelEngine {
                 const el = document.createElement('div');
                 el.className = 'ss-obj';
                 let name, kind, hFrac, wRatio;
+                let y = yMin + Math.random() * (yMax - yMin);
+                let vy = 0, isHang = false;
                 const roll = Math.random();
-                if (cfg.collectible && roll < 0.55) {
+
+                // Peligros especiales del modo VUELO (jul 2026):
+                //  - "hang": cable que cuelga del TECHO estirándose hasta una altura
+                //    aleatoria (deja hueco por debajo para esquivar).
+                //  - "faller": foco que CAE desde arriba mientras avanza (movimiento real).
+                const hangC = isFly ? (cfg.hangChance || 0) : 0;
+                const fallC = isFly ? (cfg.fallerChance || 0) : 0;
+                const collC = cfg.collectible ? (cfg.collectChance != null ? cfg.collectChance : 0.55) : 0;
+                const enemyC = (cfg.enemies && cfg.enemies.length) ? 0.20 : 0;
+                // Ruleta en orden: colgante / cayente / partitura / enemigo / estático.
+                // Sin estáticos configurados (modo vuelo), el resto se reparte entre
+                // colgantes y cayentes: nada flota porque sí.
+                let mode;
+                if (isFly && roll < hangC) mode = 'hang';
+                else if (isFly && roll < hangC + fallC) mode = 'faller';
+                else if (cfg.collectible && roll < hangC + fallC + collC) mode = 'collect';
+                else if (enemyC && roll < hangC + fallC + collC + enemyC) mode = 'enemy';
+                else if (cfg.obstacles && cfg.obstacles.length) mode = 'static';
+                else mode = (Math.random() < 0.5) ? 'hang' : 'faller';
+                if (mode === 'hang') {
+                    kind = 'obstacle'; isHang = true;
+                    const largo = (cfg.hangMin != null ? cfg.hangMin : 0.25)
+                        + Math.random() * ((cfg.hangMax != null ? cfg.hangMax : 0.60) - (cfg.hangMin != null ? cfg.hangMin : 0.25));
+                    const h = fieldH() * largo;
+                    const w = Math.max(62, h * 0.22);
+                    el.style.height = h + 'px';
+                    el.style.width = w + 'px';
+                    el.style.top = '0%';
+                    // Halo eléctrico sutil: el cable debe LEERSE sobre fondo oscuro
+                    el.style.filter = 'drop-shadow(0 0 7px rgba(130,200,255,0.45))';
+                    // Cable en 3 piezas: soporte fijo + tramo recto estirable + punta
+                    // pelada fija. Así el largo aleatorio no deforma el dibujo.
+                    el.style.display = 'flex';
+                    el.style.flexDirection = 'column';
+                    const capH = w * (160 / 200), tipH = w * (221 / 200);
+                    [['aire_cable_cap', capH + 'px', '0 0 auto'],
+                     ['aire_cable_body', 'auto', '1 1 auto'],
+                     ['aire_cable_tip', tipH + 'px', '0 0 auto']].forEach(([piece, ph, flex]) => {
+                        const seg = document.createElement('div');
+                        seg.style.cssText = `width:100%;height:${ph};flex:${flex};` +
+                            `background-image:${url(piece)};background-size:100% 100%;background-repeat:no-repeat;`;
+                        el.appendChild(seg);
+                    });
+                    y = largo / 2; // centro aprox. para colisión/z
+                } else if (mode === 'faller') {
+                    kind = 'obstacle';
+                    el._frames = cfg.fallerFrames || ['aire_foco', 'aire_foco_on'];
+                    name = el._frames[0];
+                    hFrac = 0.16; wRatio = 0.7;
+                    y = 0.02;
+                    vy = (cfg.fallerVy != null ? cfg.fallerVy : 0.26) + Math.random() * 0.16;
+                } else if (mode === 'collect') {
                     kind = 'collect'; name = cfg.collectible[0];
                     el.classList.add('ss-collect'); hFrac = 0.12; wRatio = 1.05;
-                } else if (cfg.enemies && cfg.enemies.length && roll < 0.75) {
+                } else if (mode === 'enemy') {
                     kind = 'enemy';
                     const en = cfg.enemies[Math.floor(Math.random() * cfg.enemies.length)];
                     el.classList.add('ss-enemy'); el._frames = en; name = en[0];
@@ -2350,16 +2458,17 @@ class VisualNovelEngine {
                     name = cfg.obstacles[Math.floor(Math.random() * cfg.obstacles.length)];
                     hFrac = 0.14; wRatio = 1.1;
                 }
-                el.style.backgroundImage = url(name);
-                const h = fieldH() * hFrac;
-                el.style.height = h + 'px';
-                el.style.width = (h * wRatio) + 'px';
-                const y = yMin + Math.random() * (yMax - yMin);
-                el.style.top = (y * 100) + '%';
+                if (name) el.style.backgroundImage = url(name);
+                if (hFrac) {
+                    const h = fieldH() * hFrac;
+                    el.style.height = h + 'px';
+                    el.style.width = (h * wRatio) + 'px';
+                }
+                if (!isHang) el.style.top = (y * 100) + '%';
                 el.style.left = '108%';
                 el.style.zIndex = zByY(y);
                 stage.appendChild(el);
-                objs.push({ el, x: 1.08, y, kind, taken: false, frameT: 0, frameIdx: 0 });
+                objs.push({ el, x: 1.08, y, kind, vy, isHang, taken: false, frameT: 0, frameIdx: 0 });
             };
 
             let hits = 0, collected = 0, dist = 0, running = true;
@@ -2432,7 +2541,7 @@ class VisualNovelEngine {
             let bgX = 0, last = performance.now();
             const objSpeed = 0.12 + speed * 0.055;   // fracción de ancho por segundo
             const distRate = speed * 0.62;
-            spawnTimer = setInterval(spawnObj, Math.max(480, 1150 - speed * 75));
+            spawnTimer = setInterval(spawnObj, cfg.spawnMs != null ? cfg.spawnMs : Math.max(480, 1150 - speed * 75));
 
             const tick = () => {
                 if (!running) return;
@@ -2465,14 +2574,25 @@ class VisualNovelEngine {
                     if (o.taken) continue;
                     o.x -= objSpeed * dt;
                     o.el.style.left = (o.x * 100) + '%';
-                    if (o.kind === 'enemy' && o.el._frames) {
+                    // Focos que CAEN (y cualquier objeto con velocidad vertical)
+                    if (o.vy) {
+                        o.y += o.vy * dt;
+                        o.el.style.top = (o.y * 100) + '%';
+                        o.el.style.zIndex = zByY(o.y);
+                        if (o.y > 1.15) { o.taken = true; o.el.remove(); continue; }
+                    }
+                    // Animación por frames para cualquier objeto que las tenga
+                    if (o.el._frames && o.el._frames.length > 1) {
                         o.frameT += dt;
                         if (o.frameT >= 0.14) { o.frameT = 0; o.frameIdx ^= 1; o.el.style.backgroundImage = url(o.el._frames[o.frameIdx]); }
                     }
                     const ow = o.el.offsetWidth, oh = o.el.offsetHeight;
                     const ocx = o.x * fw, ocy = o.y * fh;
-                    const osh = o.kind === 'collect' ? 0.75 : 0.52;
-                    const oL = ocx - ow * osh / 2, oR = ocx + ow * osh / 2, oT = ocy - oh * osh / 2, oB = ocy + oh * osh / 2;
+                    // Cables colgantes: caja estrecha (el trazo) pero casi todo el
+                    // largo (la punta pelada TIENE que hacer daño).
+                    const oshX = o.kind === 'collect' ? 0.75 : (o.isHang ? 0.42 : 0.52);
+                    const oshY = o.kind === 'collect' ? 0.75 : (o.isHang ? 0.86 : 0.52);
+                    const oL = ocx - ow * oshX / 2, oR = ocx + ow * oshX / 2, oT = ocy - oh * oshY / 2, oB = ocy + oh * oshY / 2;
                     if (pL < oR && pR > oL && pT < oB && pB > oT) {
                         if (o.kind === 'collect') { grab(o); if (!running) return; }
                         else if (now >= invulnUntil) { o.taken = true; o.el.remove(); hitPlayer(); if (!running) return; }
@@ -2551,18 +2671,6 @@ class VisualNovelEngine {
         }, dur + 60);
     }
 
-    clearBackground() {
-        this.bgPan({ reset: true });
-        const bg = document.getElementById('background');
-        const bgB = document.getElementById('background-b');
-        if (bg) bg.style.backgroundImage = '';
-        if (bgB) {
-            bgB.style.transition = 'none';
-            bgB.style.opacity = '0';
-            bgB.style.backgroundImage = '';
-        }
-    }
-
     // Fundido de escena: { to:"black"|color, duration } o { from:"black", duration }.
     // Devuelve una promesa que espera el final del fundido.
     fadeScene(action = {}) {
@@ -2634,10 +2742,25 @@ class VisualNovelEngine {
     }
 
     getCharacterKey(characterName) {
-        return String(characterName || '')
+        const norm = (s) => String(s || '')
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase();
+        const key = norm(characterName);
+        // Alias por nombre visible: un speaker como "Loca de los gatos" no es
+        // clave de fichero, pero s\u00ed el "name" de loca.json \u2014 resolverlo ah\u00ed en
+        // vez de intentar un fetch de "loca de los gatos.json" (404 seguro).
+        // Tambi\u00e9n se aceptan "aliases" del JSON del personaje (p. ej. tony.json
+        // declara ["Seraphyna"]: su nombre art\u00edstico resalta SU sprite).
+        if (!this.characters[key]) {
+            for (const k in this.characters) {
+                const c = this.characters[k];
+                if (!c) continue;
+                if (norm(c.name) === key) return k;
+                if (Array.isArray(c.aliases) && c.aliases.some(a => norm(a) === key)) return k;
+            }
+        }
+        return key;
     }
 
     async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null) {
@@ -2685,6 +2808,19 @@ class VisualNovelEngine {
         this.layoutCharacters();
     }
 
+    // Escala visual por personaje (cambios de los compañeros): permite que un
+    // personaje concreto se dibuje más grande sin tocar su sprite.
+    getCharacterScale(characterKey) {
+        const characterScales = {
+            airi: 0.7,
+            tung_tung_tung_sahur: 0.85,
+            jose: 1.18,
+            amalgama: 1.2,
+            amalgama_final: 1.2
+        };
+        return characterScales[characterKey] || 1;
+    }
+
     // Reparte a los personajes ACTIVOS en franjas horizontales iguales.
     // IMPORTANTE: el ancho es FIJO (no depende de cuántos haya), así con 3
     // personajes NO se encogen; solo se separan. Como los sprites son verticales
@@ -2708,17 +2844,6 @@ class VisualNovelEngine {
             el.style.width = `${W}%`;
             el.style.marginLeft = `${-W / 2}%`;
         });
-    }
-
-    getCharacterScale(characterKey) {
-        const characterScales = {
-            airi: 0.7,
-            tung_tung_tung_sahur: 0.85,
-            jose: 1.18,
-            amalgama: 1.2,
-            amalgama_final: 1.2
-        };
-        return characterScales[characterKey] || 1;
     }
 
     setPose(characterName, position, pose = 'neutral') {
@@ -2868,6 +2993,24 @@ class VisualNovelEngine {
         return `rgb(${r}, ${g}, ${b})`;
     }
 
+    // Factor de volumen del panel de Configuración (0..1, persistido).
+    volFactor(kind) {
+        const raw = localStorage.getItem(kind === 'music' ? 'illo_vol_music' : 'illo_vol_sfx');
+        const v = parseFloat(raw);
+        return isNaN(v) ? 1 : Math.max(0, Math.min(1, v));
+    }
+
+    // Reaplicar los ajustes de volumen a todo lo que esté sonando (los fades
+    // en curso se dejan terminar con su objetivo antiguo; caso raro y breve).
+    applyVolumeSettings() {
+        const apply = (a) => {
+            if (!a || a._baseVol == null || a._fadeInterval) return;
+            a.volume = Math.max(0, Math.min(1, a._baseVol * this.volFactor(a._volKind || 'sfx')));
+        };
+        apply(this.currentMusic);
+        for (const id in this.audioInstances) apply(this.audioInstances[id]);
+    }
+
     playSound(soundPath, options = {}) {
         const {
             volume = 1.0,
@@ -2878,7 +3021,12 @@ class VisualNovelEngine {
         } = options;
 
         const audio = new Audio(soundPath);
-        audio.volume = Math.max(0, Math.min(1, volume)); // Clamp 0-1
+        // Música = bucles y pistas del menú; el resto cuenta como efecto.
+        const volKind = (loop || (id && String(id).startsWith('menu'))) ? 'music' : 'sfx';
+        audio._baseVol = volume;
+        audio._volKind = volKind;
+        const factor = this.volFactor(volKind);
+        audio.volume = Math.max(0, Math.min(1, volume * factor)); // Clamp 0-1
         audio.loop = loop;
 
         // Si es música (loop), guardar como música actual
@@ -2907,7 +3055,7 @@ class VisualNovelEngine {
             if (audio._fadeInterval) clearInterval(audio._fadeInterval);
             audio.volume = 0;
             const startTime = Date.now();
-            const targetVolume = Math.max(0, Math.min(1, volume));
+            const targetVolume = Math.max(0, Math.min(1, volume * factor));
             audio._fadeInterval = setInterval(() => {
                 const progress = Math.min((Date.now() - startTime) / fadeIn, 1);
                 audio.volume = targetVolume * progress;
@@ -2927,9 +3075,13 @@ class VisualNovelEngine {
     // por el volumen). Con ms<=0, o si ya está pausado, para de inmediato.
     fadeOutAndStop(audio, ms = 300) {
         if (!audio) return;
+        // Al terminar se libera el src: el elemento descartado no debe seguir
+        // reteniendo su conexión de streaming (límite de 6 por host).
+        const release = (a) => { try { a.removeAttribute('src'); a.load(); } catch (e) {} };
         if (audio._fadeInterval) { clearInterval(audio._fadeInterval); audio._fadeInterval = null; }
         if (ms <= 0 || audio.paused) {
             try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+            release(audio);
             return;
         }
         const startTime = Date.now();
@@ -2941,6 +3093,7 @@ class VisualNovelEngine {
                 clearInterval(audio._fadeInterval);
                 audio._fadeInterval = null;
                 try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+                release(audio);
             }
         }, 20);
     }
@@ -2961,16 +3114,25 @@ class VisualNovelEngine {
     }
 
     stopAllSounds() {
-        // Parar de inmediato cancelando cualquier fade en curso.
+        // Parar de inmediato cancelando cualquier fade en curso. Además se
+        // libera el recurso (src) del elemento: un audio parado que retiene su
+        // conexión de streaming cuenta contra el límite de 6 conexiones por
+        // host del navegador y puede llegar a bloquear fetches en sesiones
+        // largas. Estos elementos nunca se reutilizan (cada playSound crea uno).
         const kill = (a) => {
             if (!a) return;
             if (a._fadeInterval) { clearInterval(a._fadeInterval); a._fadeInterval = null; }
             try { a.pause(); a.currentTime = 0; } catch (e) {}
+            try { a.removeAttribute('src'); a.load(); } catch (e) {}
         };
         kill(this.currentMusic);
         this.currentMusic = null;
         for (const id in this.audioInstances) kill(this.audioInstances[id]);
         this.audioInstances = {};
+        // También los beds WebAudio de juice.js (heartbeat/rumble): "parar todo"
+        // tiene que significar TODO, o un latido huérfano se cuela en la
+        // siguiente escena.
+        if (window.Juice && Juice.stopAllSfx) Juice.stopAllSfx();
     }
 
     pauseSound(audioOrId) {
@@ -3005,7 +3167,11 @@ class VisualNovelEngine {
         }
 
         if (audio) {
-            audio.volume = Math.max(0, Math.min(1, volume));
+            // El volumen pedido es la nueva base; se escala por el ajuste del
+            // panel de Configuración según el tipo del audio.
+            audio._baseVol = volume;
+            const factor = this.volFactor(audio._volKind || 'sfx');
+            audio.volume = Math.max(0, Math.min(1, volume * factor));
         }
     }
 
@@ -3083,7 +3249,11 @@ class VisualNovelEngine {
 
         if (speakerPosition) {
             const speakerElement = document.getElementById(`character-${speakerPosition}`);
-            if (speakerElement && speakerElement.classList.contains('active')) {
+            // No exigimos 'active': si el sprite aún está entrando/cargando en
+            // este mismo instante, la clase llega un frame tarde y el resaltado
+            // se saltaba "a veces" (bug reportado por Betanzos). El rastreo de
+            // characterPositions ya garantiza que ahí hay un personaje.
+            if (speakerElement) {
                 speakerElement.classList.add('speaking');
                 this.speakingCharacter = speakerName;
                 this.speakingPosition = speakerPosition;
@@ -3091,10 +3261,12 @@ class VisualNovelEngine {
             }
         }
 
-        // Solo grisamos/apagamos a los demás cuando hay un hablante EN PANTALLA.
-        // Durante la narración (2B) o si quien habla no tiene sprite, nadie se apaga.
+        // Con hablante EN PANTALLA: él iluminado y el resto en gris. Durante la
+        // narración (2B) o voces sin sprite ("???", off-screen): TODOS en gris
+        // (petición de Betanzos — antes nadie se apagaba al narrar y parecía
+        // que "se iluminaban todos").
         if (charactersContainer) {
-            charactersContainer.classList.toggle('has-speaker', speakerOnScreen);
+            charactersContainer.classList.add('has-speaker');
         }
         if (!speakerOnScreen) {
             this.speakingCharacter = null;
@@ -3220,6 +3392,9 @@ class VisualNovelEngine {
                 button.style.animationDelay = `${index * 0.1}s`;
                 button.onclick = () => {
                     choicesContainer.classList.remove('active');
+                    // Vaciar YA: si no, los botones quedan invisibles (opacity 0)
+                    // pero vivos con z-index 101 robando el cursor.
+                    choicesContainer.innerHTML = '';
                     resolve(choice);
                 };
                 choicesContainer.appendChild(button);
@@ -3266,6 +3441,11 @@ class VisualNovelEngine {
 
         // Resetear el flag de input esperando. Se re-seteará a true si la línea tiene diálogo
         this.isWaitingForInput = false;
+
+        // A estas alturas cualquier salto de escena ya está aplicado; si el flag
+        // quedara colgado (p. ej. un jumpToScene externo), abortaría la cadena
+        // de acciones de ESTA línea tras la primera acción. Limpiarlo siempre.
+        this.pendingSceneJump = false;
 
         // Ejecutar acciones previas al diálogo
         if (line.actions) {

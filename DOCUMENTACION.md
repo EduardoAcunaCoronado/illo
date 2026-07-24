@@ -597,6 +597,67 @@ escape; si los 3 apuntaran siempre a Samu lo acorralarían y el juego sería imp
 La otra clave del equilibrio: Samu es más rápido que los gatos (`playerSpeed >
 catSpeed`) y gana **manteniéndose en movimiento** por las calles.
 
+#### Minijuego `eduvuelo` — peligros aéreos (cap. 3)
+
+Side-scroller volador (Edu recoge partituras 🎼 esquivando el techo del escenario).
+Además de `goal`/`goalByDelay`, acepta estos knobs (todos con `...ByDelay` opcional):
+
+| Parámetro | Descripción | Por defecto |
+|-----------|-------------|-------------|
+| `hangChance` | Prob. de cable colgando **desde el techo** hasta una altura aleatoria (deja hueco por debajo) | 0.22 |
+| `hangMin` / `hangMax` | Longitud del cable (fracción del alto, 0-1) | 0.25 / 0.60 |
+| `fallerChance` | Prob. de foco que **cae desde arriba** en movimiento | 0.24 |
+| `fallerVy` | Velocidad de caída del foco | 0.26 |
+| `collectChance` | Prob. de que el spawn sea partitura (bajarlo = más difícil) | 0.42 |
+| `spawnMs` | Ritmo de aparición en ms (bajarlo = más denso) | 640 |
+| `graceMs` | Invulnerabilidad inicial con parpadeo | 1200 |
+
+#### Batallas: modo supervivencia (extensión aditiva)
+
+Las batallas se lanzan como minijuego: `{ "type": "minigame", "game": "battle" }`
+(⚠️ NO existe la acción `type: "battle"` a secas — el engine la ignoraría en
+silencio). Opciones nuevas de supervivencia; si no se usan, las batallas normales
+funcionan EXACTAMENTE igual que antes:
+
+```json
+{
+  "type": "minigame",
+  "game": "battle",
+  "enemy": "marea_fans",
+  "party": ["samu", "edu"],
+  "surviveTurns": 5,
+  "surviveTurnsByDelay": { "0": 5, "1": 6, "2": 7 },
+  "interludes": [ { "turn": 1, "speaker": "Goyo", "text": "¡Aguantad!" } ],
+  "victoryTitle": "¡Habéis aguantado!",
+  "victoryText": "...",
+  "defeatText": "...",
+  "retryOnDefeat": true
+}
+```
+
+| Opción | Efecto |
+|--------|--------|
+| `surviveTurns` | En vez de matar al enemigo, hay que **aguantar N turnos enemigos**; HUD "⏳ AGUANTAD N embestidas" → "🎤 ¡YA CANTA!" |
+| `party` | Filtra qué aliados participan (ids de `ALLIES`) |
+| `interludes` | Burbujas de diálogo urgente que saltan al empezar el turno indicado |
+| `victoryTitle` / `victoryText` / `defeatText` | Textos custom del panel final |
+| `retryOnDefeat` | El engine repite la batalla al perder (con texto `retryText`) en vez del Game Over normal |
+| `skillsOverride` | Mapa `{allyId: [habilidades]}` que SUSTITUYE el kit de ese aliado solo en esta batalla (mismo esquema de habilidad que en ALLIES). Para coherencia narrativa: en el cap. 3 las clases aún no han despertado y luchan con el entorno (valla de obra, acople, confeti) y con el vuelo/memes de Edu |
+| `roleOverride` | Mapa `{allyId: "rol"}` que cambia el rol mostrado solo en esta batalla (p. ej. "Técnico improvisado") |
+
+Enemigo de ejemplo: `marea_fans` (hp 9999 — imbatible a propósito, solo se puede
+aguantar). Se usa en el cap. 3, «Escena 11b: La puerta».
+
+#### Configuración: volúmenes (jul 2026)
+
+El botón **Configuración** del menú abre un panel (estilo nm-modal) con dos
+deslizadores persistentes en localStorage: `illo_vol_music` y `illo_vol_sfx`
+(0..1). `engine.playSound` clasifica cada audio (bucle o id `menu*` → música;
+resto → efectos) y multiplica su volumen por el factor correspondiente;
+`engine.applyVolumeSettings()` reaplica en vivo a lo que esté sonando. Los
+volúmenes que piden los capítulos (`volume`, `setVolume`) se conservan como
+"base" y escalan por el ajuste del jugador.
+
 ---
 
 ## 🎯 Sistema de Elecciones
