@@ -64,8 +64,33 @@
           ]
         },
         {
+          "character": "Edu",
+          "text": "Uf, no sé... ¿y si este es el mundo de ensueño de José? Porque lo de seguir baldosas amarillas hacia una ciudad misteriosa suena bastante a partida rara.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "Tiene pinta de Dungeons & Dragons pasado por un filtro de palomas. Que, siendo José, tampoco me parece imposible.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
           "character": "Samu",
-          "text": "José nunca nos había hablado de este sitio. Ni de ningún personaje de rol suyo.",
+          "text": "José nunca me había hablado de ningún personaje de rol suyo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -142,7 +167,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Achís...",
           "actions": [
             {
@@ -162,7 +187,7 @@
           "text": "Este es el típico recurso de anime en el que un personaje estornuda porque están hablando de él."
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Normal que estornude... con tanto olor a guano."
         },
         {
@@ -418,7 +443,7 @@
         },
         {
           "character": "José",
-          "text": "Vale... y la zorra es... espera... ¿Tony?",
+          "text": "Vale... y la loba es... espera... ¿Tony?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1440,7 +1465,83 @@
         },
         {
           "character": "2B",
-          "text": "En ese momento, tres figuras cayeron sobre la plaza.",
+          "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez desde que llegaron a aquel mundo, sus avatares responden como si siempre hubieran sabido luchar juntos.",
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/plaza_cicular_meme_ataque_heroes.png"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Vale... después de huir de memes en coche, poder plantarme y lanzarles magia de verdad se siente bastante mejor.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "Y curar al grupo mientras canto tiene su punto. No pensaba decir esto tan pronto, pero ser maga blanca es absurdamente práctico.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "right",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Uf, no sé... antes esto daba bastante más miedo. Ahora con Prisa puedo entrar, salir y dejarles cara de no haber entendido nada.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "José",
+          "text": "Yo ya podía apañármelas con la espada, más o menos. Pero con vosotros cubriéndome... sí. Esto es muchísimo más fácil.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "2B",
+          "text": "Los últimos memes se deshacen entre chispas, plumas de luz y cortes limpios. Durante un instante, parece que los héroes han recuperado el control de la plaza."
+        },
+        {
+          "character": "2B",
+          "text": "Pero justo cuando parecía que lo tenían todo controlado, tres figuras cayeron sobre la plaza.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -1786,7 +1887,7 @@
           "actions": [{ "type": "hideDialog" }, { "type": "waitForClick" }]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Esto es lo que intentaba explicaros. La ciudad no deja avanzar a una sola clase. Necesita un grupo completo.",
           "actions": [
             {
@@ -1822,7 +1923,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "No la han abierto. Se han filtrado por las grietas del sello. Los brainrot no respetan las reglas de la ciudad: son contenido corrupto, ruido digital con patas. Pueden colarse por donde la barrera está dañada.",
           "actions": [
             {
@@ -1847,7 +1948,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Exacto. Ellos pueden colarse como glitch, pero nosotros no atravesamos una puerta de piedra de diez toneladas por mucho entusiasmo que le pongamos. Tenemos que abrirla usando nuestras habilidades a la vez.",
           "actions": [
             {
@@ -1860,7 +1961,7 @@
         },
         {
           "character": "Samu",
-          "text": "La cerradura rúnica reacciona a mi magia.",
+          "text": "La cerradura rúnica reacciona a mi magia. No quiere que la golpeemos: quiere que la alimentemos sin pasarnos.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1872,7 +1973,7 @@
         },
         {
           "character": "Edu",
-          "text": "Si uso Prisa sobre esa corriente, puedo acelerarla más de lo que el sello aguanta. Debería sobrecargar mi parte y romperla.",
+          "text": "Yo usaré Prisa sobre el mecanismo, pero sin que se descontrole.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1885,7 +1986,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "El sello reacciona a la mágia sagrada. Puedo purificarlo. Qué apropiado todo. Yo, purificando cosas.",
+          "text": "El sello responde a la magia sagrada. Puedo estabilizar las grietas y mantener la energía limpia. Qué apropiado todo. Yo, arreglando cosas.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1896,8 +1997,8 @@
           ]
         },
         {
-          "character": "Jose",
-          "text": "Y yo golpearé mi losa.",
+          "character": "José",
+          "text": "Y yo golpearé mi losa. Fuerza constante. Sin romper nada.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1909,7 +2010,7 @@
         },
         {
           "character": "Edu",
-          "text": "El trabajo delicado para nosotros y la losa gorda para Jose.",
+          "text": "El trabajo delicado para nosotros y la losa gorda para José.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1920,7 +2021,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Conozco mis virtudes.",
           "actions": [
             {
@@ -1932,8 +2033,8 @@
           ]
         },
         {
-          "character": "Jose",
-          "text": "La puerta no se abre con cualquier orden.",
+          "character": "José",
+          "text": "La puerta no se abre por fuerza bruta. Ni por magia sola. Tiene que notar los cuatro poderes al mismo nivel.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1945,7 +2046,7 @@
         },
         {
           "character": "Samu",
-          "text": "¿El orden de qué?",
+          "text": "¿Al mismo nivel cómo?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1956,8 +2057,8 @@
           ]
         },
         {
-          "character": "Jose",
-          "text": "De nuestras habilidades. La barrera encenderá los símbolos en una secuencia: magia de Samu, velocidad de Edu, luz de Seraphyna y fuerza de Piyón osea yo Jose. Tenemos que repetirla sin fallar.",
+          "character": "José",
+          "text": "Magia de Samu, velocidad de Edu, sanación de Seraphyna y fuerza de Piyón, o sea, yo. Si una sube demasiado o se queda corta, el sello se descompensa. Tenemos que mantenerlas equilibradas a la vez.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1970,7 +2071,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "O sea, Simón dice, pero con crisis de identidad y una puerta medieval.",
+          "text": "O sea, es una mesa coja, pero con poderes mágicos y una puerta medieval.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1982,7 +2083,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... Si parpadea muy rápido, yo niego haber entendido las normas.",
+          "text": "Uf, no sé... Mantener cuatro cosas equilibradas a la vez suena a uno de esos minijuegos que empiezan fácil y luego te hacen sudar las manos.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1993,7 +2094,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Bien. Ahora sí: cada uno a su mecanismo.",
           "actions": [
             {
@@ -2006,7 +2107,7 @@
         },
         {
           "character": "2B",
-          "text": "En la puerta aparecen cuatro símbolos. Los cuatro símbolos se iluminan. Observa el patrón de habilidades y repítelo en el mismo orden."
+          "text": "Los cuatro mecanismos despiertan a la vez. Cada runa empieza a cargar su propio poder: magia, velocidad, sanación y fuerza. Para abrir la puerta, el grupo debe mantenerlas dentro del mismo equilibrio."
         },
         {
           "actions": [
@@ -2025,10 +2126,9 @@
             },
             {
               "type": "minigame",
-              "game": "runa",
-              "rounds": 10,
-              "flashMs": 600,
-              "gapMs": 250
+              "game": "runeChanneling",
+              "levels": 7,
+              "holdRequired": 1.55
             }
           ]
         },
@@ -2122,7 +2222,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "También podríamos mencionar que yo he pasado de persona normal a guerrero mazadísimo con armadura y una espada enorme.",
           "actions": [
             {
@@ -2147,7 +2247,7 @@
         },
         {
           "character": "Edu",
-          "text": "Y aun así, con rescates, conciertos, brainrot y Jose convertido en armario de combate, todavía nadie me ha explicado qué narices es el guano.",
+          "text": "Y aun así, con rescates, conciertos, brainrot y José convertido en armario de combate, todavía nadie me ha explicado qué narices es el guano.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2171,7 +2271,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Si Tung Tung Tung Sahur y Tralalelo Tralala han bajado por aquí, lo más probable es que volvamos a encontrarnos con los brainrot dentro del santuario.",
           "actions": [
             {
@@ -2195,7 +2295,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "No sé qué nos espera al otro lado de este túnel, pero esta vez no voy solo. Pase lo que pase ahí abajo, lo enfrentaremos juntos.",
           "actions": [
             {

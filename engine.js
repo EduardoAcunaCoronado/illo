@@ -408,6 +408,11 @@ class VisualNovelEngine {
             case 'runa':
                 await this.playRunaMinigame(action);
                 break;
+            case 'runeChanneling':
+            case 'rune_channeling':
+            case 'canalizacionRunas':
+                await this.playRuneChannelingMinigame(action);
+                break;
             case 'gatos':
                 await this.playGatosMinigame(action);
                 break;
@@ -478,6 +483,24 @@ class VisualNovelEngine {
         while (!won && options.retryOnDefeat) {
             await this.showMinigameRetry(options.retryText || '¡La marea os ha arrollado! 🌊');
             won = await window.BattleMinigame.play(options);
+        }
+        return won;
+    }
+
+    async playRuneChannelingMinigame(options = {}) {
+        this.isWaitingForInput = false;
+
+        if (!window.RuneChannelingMinigame) {
+            console.warn('RuneChannelingMinigame no está cargado.');
+            return false;
+        }
+
+        let won = false;
+        while (!won) {
+            won = await window.RuneChannelingMinigame.play(options);
+            if (!won) {
+                await this.showMinigameRetry('¡El santuario ha rechazado la canalización!');
+            }
         }
         return won;
     }
@@ -1379,7 +1402,7 @@ class VisualNovelEngine {
             { image: 'assets/minigames/runa_samu.png', label: 'Magia de Samu' },
             { image: 'assets/minigames/runa_edu.png', label: 'Prisa de Edu' },
             { image: 'assets/minigames/runa_tony.png', label: 'Purificación de Seraphyna' },
-            { image: 'assets/minigames/runa_jose.png', label: 'Fuerza de Jose' }
+            { image: 'assets/minigames/runa_jose.png', label: 'Fuerza de José' }
         ];
 
         this.isWaitingForInput = false;

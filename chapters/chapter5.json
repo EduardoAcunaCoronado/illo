@@ -27,7 +27,7 @@
           "text": "El grupo avanza por el túnel que se abre tras la puerta del santuario. El aire cambia por completo: allí abajo se respira paz."
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Este sitio... no debería estar tan tranquilo.",
           "actions": [
             {
@@ -92,7 +92,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Porque no lo sabía. Sabía que existía una mazmorra bajo la ciudad porque los memes estaban intentando entrar, y yo también intenté acceder para frenarlos. Pero lo que había dentro... esto es una sorpresa para mí igual que para vosotros.",
           "actions": [
             {
@@ -133,7 +133,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "No toquéis nada. Si algo brilla, flota o parece diseñado para castigar la curiosidad, asumid que es exactamente eso.",
           "actions": [
             {
@@ -236,7 +236,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Eso parece. Y si los memes intentaban llegar hasta aquí, puede que no buscaran una puerta ni un tesoro. Puede que la buscaran a ella.",
           "actions": [
             {
@@ -285,7 +285,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "A mí también. No sé de dónde, pero es como si ya la hubiéramos visto antes.",
           "actions": [
             {
@@ -371,7 +371,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Espera, espera... ¿ha dicho que la niña los expulsó una vez?",
           "actions": [
             {
@@ -571,7 +571,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Tranquila. No vamos a hacerte daño.",
           "actions": [
             {
@@ -631,7 +631,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "No importa lo que haya pasado antes. Ahora estás con nosotros.",
           "actions": [
             {
@@ -645,7 +645,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Jose acaba de adoptar emocionalmente a una niña misteriosa en menos de treinta segundos.",
+          "text": "José acaba de adoptar emocionalmente a una niña misteriosa en menos de treinta segundos.",
           "actions": [
             {
               "type": "showCharacter",
@@ -668,7 +668,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Es una niña encerrada en un cristal bajo tierra. Perdonadme por activar el modo caballero protector.",
           "actions": [
             {
@@ -704,7 +704,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Y una niña no debería quedarse encerrada aquí sola.",
           "actions": [
             {
@@ -741,7 +741,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Lo de padre primerizo... sobra.",
           "actions": [
             {
@@ -851,7 +851,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Y después llegaron a Ciudad Paloma. Los brainrot estaban cayendo del cielo e intentando llegar hasta este santuario.",
           "actions": [
             {
@@ -875,7 +875,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Sí. Pero ahora sabemos por qué, y eso significa que podemos impedirlo.",
           "actions": [
             {
@@ -911,7 +911,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Y cuando salgamos, veremos qué queda fuera. Despacio. Sin obligarte a recordar más de lo que puedas soportar.",
           "actions": [
             {
@@ -967,7 +967,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "No. Ciudad Paloma era tranquila. Rara, sí, y con demasiadas palomas tomando decisiones urbanísticas, pero tranquila.",
           "actions": [
             {
@@ -1053,7 +1053,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Airi, espera. No tienes que forzarte.",
           "actions": [
             {
@@ -1138,7 +1138,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Y por qué ella se encerró para que nadie pudiera usar ese poder.",
           "actions": [
             {
@@ -1358,7 +1358,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Pues no se pudo resistir a hacer un chiste...",
           "actions": [
             {
@@ -1560,7 +1560,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Tung Tung como se diga. Da otro paso hacia ella y vas a descubrir lo poco negociable que soy con esto.",
           "actions": [
             {
@@ -1663,7 +1663,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "¿Y luego alguien intentó controlar ese poder?",
           "actions": [
             {
@@ -1772,7 +1772,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "¿Y por qué tomaste esta forma?",
           "actions": [
             {
@@ -1991,7 +1991,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Yo le daría valoración positiva. Por calidad artística. Y por motivos que no pienso desarrollar delante de Jose.",
+          "text": "Yo le daría valoración positiva. Por calidad artística. Y por motivos que no pienso desarrollar delante de José.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2014,7 +2014,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Alto ahí. Pausa técnica, narrativa y moral.",
           "actions": [
             { "type": "playSound", "path": "assets/sounds/effects/disco-rayado.mp3", "volume": 0.5 },
@@ -2027,7 +2027,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Airi sigue siendo Airi. Este es su capítulo, no una excusa para que el juego pierda el norte. Cuarta pared cerrada y todo el mundo a la siguiente escena."
         },
         {
@@ -2348,7 +2348,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "No... Lo ha hecho a propósito. No quería atacarla de frente. Quería obligarla a proteger a alguien.",
           "actions": [
             {
@@ -2430,7 +2430,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Airi protegió este mundo cuando nadie podía hacerlo por ella. Ahora nos toca devolverle el favor.",
           "actions": [
             {
@@ -2555,7 +2555,7 @@
           ]
         },
         {
-          "character": "Jose",
+          "character": "José",
           "text": "Porque esto no va de explorar nada. Va de poseerlo todo.",
           "actions": [
             {
