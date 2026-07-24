@@ -219,7 +219,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/gatos.mp3",
+              "path": "assets/sounds/music/te-comprometes.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -228,7 +228,7 @@
             {
               "type": "minigame",
               "game": "gatos",
-              "survive": 60,
+              "survive": 62,
               "cats": 3,
               "playerSpeed": 5.0,
               "catSpeed": 3.0
@@ -245,6 +245,18 @@
               "loop": true,
               "id": "bg_music",
               "fadeIn": 500
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Ese sonido me recuerda a algo...",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "thinking"
             }
           ]
         },
