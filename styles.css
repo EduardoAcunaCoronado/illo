@@ -550,7 +550,7 @@ html, body {
     position: relative;
     overflow: hidden;
     font-weight: bold;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     width: 100%;
     clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
@@ -853,7 +853,7 @@ html, body {
     position: relative;
     overflow: hidden;
     font-weight: bold;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     margin-top: 30px;
     clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%);
@@ -1786,7 +1786,7 @@ html, body {
 .neon-font {
     font-family: 'NeonSans', 'Arial Rounded MT Bold', 'Trebuchet MS', 'Segoe UI', system-ui, sans-serif;
     font-weight: normal;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     text-transform: uppercase;
 }
 
@@ -2049,7 +2049,7 @@ html, body {
     font-weight: 400;
     font-style: normal;
     font-size: 64px;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     color: #fff0f7;
     line-height: 1.05;
     text-transform: uppercase;
@@ -2264,7 +2264,7 @@ html, body {
 .chapter-selector-back {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     color: rgba(255, 135, 145, 0.9);
     border: 1px solid rgba(255, 91, 103, 0.55);
     border-radius: 999px;
@@ -2437,7 +2437,7 @@ html, body {
 .chapter-end-btn {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     color: #ffd166;
     background: rgba(255, 209, 102, 0.10);
     border: 1px solid rgba(255, 209, 102, 0.55);

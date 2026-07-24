@@ -5,6 +5,7 @@
     shield: { icon: "🛡️", direction: "up" },
     speed_up: { icon: "⚡", direction: "up" },
     evasion_up: { icon: "💨", direction: "up" },
+    attack_up: { icon: "⚔️", direction: "up" },
     speed_down: { icon: "⚡", direction: "down" },
     attack_down: { icon: "⚔️", direction: "down" },
     taunt: { icon: "🎯" },
@@ -14,10 +15,11 @@
     {
       id: "samu",
       name: "Samu",
+      color: "red",
       role: "Mago",
       portrait: "assets/characters/samu/samu_hud_battle_1.png",
       hp: 120,
-      pm: 90,
+      pm: 120,
       speed: 8,
       evasion: 0.08,
       defense: 6,
@@ -28,35 +30,32 @@
           pmCost: 8,
           type: "damage",
           element: "fire",
-          power: 32,
+          power: 40,
           target: "enemy",
-          accuracy: 0.92,
           description:
             "Lanza una esfera de fuego contra el enemigo. Buen daño mágico por 8 PM.",
         },
         {
           id: "escarcha",
           name: "Escarcha",
-          pmCost: 6,
+          pmCost: 10,
           type: "damage_speed_down",
           element: "ice",
-          power: 22,
+          power: 50,
           speedModifier: -2,
           duration: 2,
           target: "enemy",
-          accuracy: 0.9,
           description:
             "Inflige daño de hielo y reduce la velocidad del enemigo durante 2 turnos.",
         },
         {
           id: "relampago",
           name: "Relámpago",
-          pmCost: 10,
+          pmCost: 12,
           type: "damage",
           element: "lightning",
-          power: 38,
+          power: 60,
           target: "enemy",
-          accuracy: 0.86,
           description:
             "Golpea al enemigo con un rayo potente. Alto daño por 10 PM.",
         },
@@ -66,9 +65,8 @@
           pmCost: 0,
           type: "damage",
           element: "arcane",
-          power: 18,
+          power: 30,
           target: "enemy",
-          accuracy: 0.95,
           description:
             "Ataque mágico básico. Hace daño moderado y no consume PM.",
         },
@@ -77,10 +75,11 @@
     {
       id: "edu",
       name: "Edu",
-      role: "Pícaro Arcano",
+      color: "blue",
+      role: "Pícaro / Arcano",
       portrait: "assets/characters/edu/edu_hud_battle_1.png",
       hp: 105,
-      pm: 70,
+      pm: 80,
       speed: 14,
       evasion: 0.18,
       defense: 5,
@@ -89,15 +88,13 @@
           id: "robar",
           name: "Robar",
           pmCost: 0,
-          type: "mp_drain",
+          type: "steal",
           element: "physical",
-          power: 10,
-          mpDamage: 10,
-          mpRestore: 6,
+          power: 0,
           target: "enemy",
-          accuracy: 0.95,
+          accuracy: 0.75,
           description:
-            "Ataca, reduce 10 PM del enemigo y Edu recupera hasta 6 PM.",
+            "Tiene un 75% de acierto antes de la evasión. Roba el objeto único del enemigo.",
         },
         {
           id: "prisa",
@@ -131,11 +128,10 @@
           pmCost: 0,
           type: "damage",
           element: "lightning",
-          power: 20,
+          power: 30,
           target: "enemy",
-          accuracy: 0.93,
           description:
-            "Un corte eléctrico rápido. Hace 20 de poder y no consume PM.",
+            "Un corte eléctrico rápido. Hace 30 de poder y no consume PM.",
         },
       ],
     },
@@ -143,10 +139,11 @@
       id: "seraphyne",
       name: "Seraphyna",
       speakingAs: "Tony",
+      color: "#ff69b4",
       role: "Maga Blanca / Cantora",
       portrait: "assets/characters/tony/tony_hud_battle_1.png",
       hp: 95,
-      pm: 110,
+      pm: 150,
       speed: 10,
       evasion: 0.1,
       defense: 4,
@@ -157,9 +154,9 @@
           pmCost: 8,
           type: "heal",
           element: "holy",
-          power: 35,
+          power: 45,
           target: "ally",
-          description: "Restaura 35 HP al aliado elegido por 8 PM.",
+          description: "Restaura 45 HP al aliado elegido por 8 PM.",
         },
         {
           id: "escudo",
@@ -175,8 +172,8 @@
             "Reduce un 40% el daño recibido por el aliado elegido durante 2 turnos.",
         },
         {
-          id: "canto_purificador",
-          name: "Canto purificador",
+          id: "canto_sanador",
+          name: "Canto sanador",
           pmCost: 0,
           type: "party_heal",
           element: "holy_music",
@@ -188,25 +185,26 @@
           id: "canto_debilitante",
           name: "Canto debilitante",
           pmCost: 0,
-          type: "damage_attack_down",
+          type: "attack_down",
           element: "music",
-          power: 14,
+          power: 0,
           attackModifier: -3,
           duration: 2,
           target: "enemy",
-          accuracy: 0.94,
+          accuracy: 0.75,
           description:
-            "Daña ligeramente al enemigo y reduce su poder ofensivo durante 2 turnos.",
+            "Tiene un 75% de acierto antes de la evasión. Reduce el poder ofensivo del enemigo durante 2 turnos. No causa daño.",
         },
       ],
     },
     {
       id: "jose",
       name: "Jose",
+      color: "green",
       role: "Guerrero",
       portrait: "assets/characters/jose/jose_hud_battle_1.png",
-      hp: 165,
-      pm: 45,
+      hp: 170,
+      pm: 60,
       speed: 6,
       evasion: 0.05,
       defense: 12,
@@ -217,29 +215,28 @@
           pmCost: 0,
           type: "damage",
           element: "physical",
-          power: 30,
+          power: 40,
           target: "enemy",
-          accuracy: 0.9,
           description:
             "Golpe contundente con la gran espada. Buen daño y no consume PM.",
         },
         {
-          id: "guardia_ferrea",
-          name: "Guardia férrea",
-          pmCost: 8,
-          type: "ally_shield",
+          id: "grito_alentador",
+          name: "Grito alentador",
+          pmCost: 6,
+          type: "ally_attack_up",
           element: "physical",
           power: 0,
-          damageReduction: 0.5,
+          attackModifier: 6,
           duration: 2,
           target: "ally",
           description:
-            "Reduce un 50% el daño recibido por el aliado elegido durante 2 turnos.",
+            "Aumenta el ataque del aliado elegido durante 2 turnos por 6 PM.",
         },
         {
           id: "provocar",
           name: "Provocar",
-          pmCost: 6,
+          pmCost: 0,
           type: "taunt",
           element: "physical",
           power: 0,
@@ -253,9 +250,8 @@
           pmCost: 12,
           type: "damage",
           element: "physical",
-          power: 45,
+          power: 70,
           target: "enemy",
-          accuracy: 0.82,
           description: "Carga brutal de alto daño contra el enemigo por 12 PM.",
         },
       ],
@@ -274,6 +270,16 @@
       speed: 13,
       evasion: 0.16,
       defense: 6,
+      stealItem: {
+        id: "cafe_capuccino",
+        name: "Café capuccino",
+        description: "Recupera 40 HP y sube la velocidad durante 2 turnos.",
+        type: "heal_speed_up",
+        heal: 40,
+        speedModifier: 3,
+        duration: 2,
+        target: "ally",
+      },
       finalAttackPattern: {
         normalTurnsBeforeCharge: 3,
         warningText: "Ballerina Capuchina se está preparando...",
@@ -284,37 +290,33 @@
           name: "Arabesco agresivo",
           pmCost: 0,
           type: "damage",
-          power: 24,
+          power: 34,
           target: "ally",
-          accuracy: 0.9,
         },
         {
           id: "pirueta_capuchina",
           name: "Pirueta capuchina",
           pmCost: 8,
           type: "multi_damage",
-          power: 14,
+          power: 24,
           target: "all_allies",
-          accuracy: 0.85,
         },
         {
           id: "espresso_distorsionado",
           name: "Espresso distorsionado",
           pmCost: 10,
           type: "mp_damage",
-          power: 8,
-          mpDamage: 12,
+          power: 18,
+          mpDamage: 16,
           target: "ally",
-          accuracy: 0.9,
         },
         {
           id: "grand_jete_del_caos",
           name: "Grand jeté del caos",
           pmCost: 14,
           type: "damage",
-          power: 36,
+          power: 52,
           target: "ally",
-          accuracy: 0.75,
           isFinalAttack: true,
         },
       ],
@@ -330,6 +332,16 @@
       speed: 12,
       evasion: 0.12,
       defense: 8,
+      stealItem: {
+        id: "sushi_de_tiburon",
+        name: "Sushi de tiburón",
+        description: "Recupera 45 HP y sube el ataque durante 2 turnos.",
+        type: "heal_attack_up",
+        heal: 45,
+        attackModifier: 5,
+        duration: 2,
+        target: "ally",
+      },
       finalAttackPattern: {
         normalTurnsBeforeCharge: 3,
         warningText: "Tralalero Tralala se está preparando...",
@@ -340,38 +352,34 @@
           name: "Mordisco Tralala",
           pmCost: 0,
           type: "damage",
-          power: 28,
+          power: 40,
           target: "ally",
-          accuracy: 0.88,
         },
         {
           id: "zapatillazo",
           name: "Zapatillazo",
           pmCost: 8,
           type: "damage_speed_down",
-          power: 22,
+          power: 34,
           speedModifier: -2,
           duration: 2,
           target: "ally",
-          accuracy: 0.86,
         },
         {
           id: "oleada_absurda",
           name: "Oleada absurda",
           pmCost: 12,
           type: "multi_damage",
-          power: 16,
+          power: 26,
           target: "all_allies",
-          accuracy: 0.84,
         },
         {
           id: "tralaleo_terminal",
           name: "Tralaleo terminal",
           pmCost: 18,
           type: "multi_damage",
-          power: 32,
+          power: 46,
           target: "all_allies",
-          accuracy: 0.78,
           isFinalAttack: true,
         },
       ],
@@ -384,9 +392,18 @@
       background: "assets/backgrounds/fuente_ciudad_paloma.png",
       hp: 620,
       pm: 110,
-      speed: 9,
+      speed: 11,
       evasion: 0.08,
-      defense: 10,
+      defense: 9,
+      stealItem: {
+        id: "sirope_de_arce",
+        name: "Sirope de arce",
+        description: "Recupera 35 HP y 25 PM.",
+        type: "heal_pm",
+        heal: 35,
+        pmRestore: 25,
+        target: "ally",
+      },
       finalAttackPattern: {
         normalTurnsBeforeCharge: 3,
         warningText: "Tung Tung Tung Sahur se está preparando...",
@@ -397,37 +414,33 @@
           name: "Golpe Tung",
           pmCost: 0,
           type: "damage",
-          power: 32,
+          power: 44,
           target: "ally",
-          accuracy: 0.9,
         },
         {
           id: "tambor_sahur",
           name: "Tambor Sahur",
           pmCost: 10,
           type: "multi_damage",
-          power: 15,
+          power: 28,
           target: "all_allies",
-          accuracy: 0.88,
         },
         {
           id: "mirada_madera",
           name: "Mirada de madera",
           pmCost: 12,
           type: "mp_damage",
-          power: 10,
-          mpDamage: 14,
+          power: 26,
+          mpDamage: 20,
           target: "ally",
-          accuracy: 0.9,
         },
         {
           id: "tung_tung_apocaliptico",
           name: "Tung Tung apocalíptico",
           pmCost: 20,
           type: "multi_damage",
-          power: 35,
+          power: 52,
           target: "all_allies",
-          accuracy: 0.78,
           isFinalAttack: true,
         },
       ],
@@ -443,6 +456,13 @@
       speed: 8,
       evasion: 0.06,
       defense: 12,
+      stealItem: {
+        id: "cura_de_airi",
+        name: "Cura de Airi",
+        description: "Recupera toda la vida y todo el PM de un personaje.",
+        type: "full_restore",
+        target: "ally",
+      },
       finalAttackPattern: {
         normalTurnsBeforeCharge: 3,
         warningText: "La Amalgama se está preparando...",
@@ -453,28 +473,25 @@
           name: "Masa inestable",
           pmCost: 0,
           type: "damage",
-          power: 34,
+          power: 48,
           target: "ally",
-          accuracy: 0.86,
         },
         {
           id: "ruido_de_internet",
           name: "Ruido de internet",
           pmCost: 14,
           type: "multi_damage",
-          power: 18,
+          power: 32,
           target: "all_allies",
-          accuracy: 0.84,
         },
         {
           id: "drenaje_glitch",
           name: "Drenaje glitch",
           pmCost: 16,
           type: "mp_damage",
-          power: 12,
-          mpDamage: 18,
+          power: 30,
+          mpDamage: 24,
           target: "ally",
-          accuracy: 0.88,
         },
         {
           id: "colapso_memetico",
@@ -499,6 +516,13 @@
       speed: 11,
       evasion: 0.08,
       defense: 16,
+      stealItem: {
+        id: "bendicion_de_airi",
+        name: "Bendición de Airi",
+        description: "Revive hasta 3 aliados caídos con el 50% de su vida.",
+        type: "revive_three",
+        target: "auto",
+      },
       finalAttackPattern: {
         normalTurnsBeforeCharge: 3,
         warningText: "La Amalgama forma final concentra toda la corrupción digital...",
@@ -509,39 +533,35 @@
           name: "Garra de píxeles muertos",
           pmCost: 0,
           type: "damage",
-          power: 42,
+          power: 58,
           target: "ally",
-          accuracy: 0.88,
         },
         {
           id: "lluvia_de_memes_rotos",
           name: "Lluvia de memes rotos",
           pmCost: 18,
           type: "multi_damage",
-          power: 24,
+          power: 38,
           target: "all_allies",
-          accuracy: 0.84,
         },
         {
           id: "silencio_del_santuario",
           name: "Silencio del santuario",
           pmCost: 22,
           type: "mp_damage",
-          power: 18,
-          mpDamage: 26,
+          power: 34,
+          mpDamage: 30,
           target: "ally",
-          accuracy: 0.9,
         },
         {
           id: "pulso_negro_morado",
           name: "Pulso negro morado",
           pmCost: 24,
           type: "damage_attack_down",
-          power: 28,
+          power: 42,
           attackModifier: -4,
           duration: 2,
           target: "ally",
-          accuracy: 0.86,
         },
         {
           id: "veredicto_del_nucleo_absoluto",
@@ -584,6 +604,9 @@
       this.awaitingPlayer = false;
       this.awaitingTarget = false;
       this.targetSelectionToken = null;
+      this.awaitingItemTarget = false;
+      this.battleInventory = [];
+      this.enemyItemStolen = false;
       this.messageToken = 0;
       this.resolve = null;
     }
@@ -618,10 +641,14 @@
       this.overlay.innerHTML = `
         <div class="battle-background"></div>
         <section class="battle-skill-panel" aria-label="Habilidades">
-          <div class="battle-active-name">-</div>
+          <div class="battle-active-name">
+            <span class="battle-active-character">-</span>
+            <span class="battle-active-separator" aria-hidden="true"></span>
+            <span class="battle-active-role">-</span>
+          </div>
           <div class="battle-skill-list"></div>
           <button class="battle-target-cancel hidden" type="button">Cancelar</button>
-          <button class="battle-item-button" disabled>Objetos</button>
+          <button class="battle-item-button" type="button" disabled>Objetos</button>
           <div class="battle-skill-description">Selecciona una habilidad para leer lo que hace.</div>
         </section>
         <section class="battle-order-panel" aria-label="Orden de turnos">
@@ -647,7 +674,31 @@
       this.overlay.querySelector(".battle-background").style.backgroundImage =
         `url("${cacheBust(background)}")`;
       document.getElementById("game-container").appendChild(this.overlay);
+      this.bindHoverSounds();
       this.updateHud();
+    }
+
+    bindHoverSounds() {
+      this.overlay.addEventListener("mouseover", (event) => {
+        const target = event.target.closest("button");
+        if (!target || !this.overlay.contains(target) || target.disabled) return;
+        if (event.relatedTarget && target.contains(event.relatedTarget)) return;
+        if (!this.isClickableHoverTarget(target)) return;
+        this.playHoverSound();
+      });
+    }
+
+    isClickableHoverTarget(target) {
+      if (target.classList.contains("battle-ally-card")) {
+        return Boolean(target.closest(".battle-party.is-targeting"));
+      }
+      if (target.classList.contains("battle-target-cancel")) {
+        return !target.classList.contains("hidden");
+      }
+      if (target.classList.contains("battle-item-button")) {
+        return target.classList.contains("has-items");
+      }
+      return true;
     }
 
     updateHud() {
@@ -661,7 +712,7 @@
       party.innerHTML = this.allies
         .map(
           (ally) => `
-        <button class="battle-ally-card ${ally.currentHp <= 0 ? "is-ko" : ""} ${this.activeFighter?.id === ally.id ? "is-active" : ""}" data-ally="${ally.id}" ${ally.currentHp <= 0 ? "disabled" : ""}>
+        <button class="battle-ally-card ${ally.currentHp <= 0 ? "is-ko" : ""} ${this.activeFighter?.id === ally.id ? "is-active" : ""}" data-ally="${ally.id}" style="--ally-color: ${ally.color || "var(--battle-gold)"};" ${ally.currentHp <= 0 ? "disabled" : ""}>
           <img src="${cacheBust(ally.portrait)}" alt="${ally.name}">
           <div class="battle-ally-info">
             <strong class="battle-ally-nameplate">
@@ -767,9 +818,23 @@
         ".battle-skill-description",
       );
       const cancelButton = this.overlay.querySelector(".battle-target-cancel");
-      activeName.textContent = fighter.name;
+      const itemButton = this.overlay.querySelector(".battle-item-button");
+      activeName.innerHTML = `
+        <span class="battle-active-character">${fighter.name}</span>
+        <span class="battle-active-separator" aria-hidden="true"></span>
+        <span class="battle-active-role">${fighter.role}</span>
+      `;
+      activeName.style.setProperty(
+        "--ally-color",
+        fighter.color || "var(--battle-gold)",
+      );
       cancelButton.classList.add("hidden");
       cancelButton.onclick = null;
+      const hasItems = this.battleInventory.length > 0;
+      itemButton.disabled = !hasItems;
+      itemButton.classList.toggle("has-items", hasItems);
+      itemButton.textContent = "Objetos";
+      itemButton.onclick = hasItems ? () => this.renderItems(fighter) : null;
       skillList.innerHTML = fighter.skills
         .map((skill, index) => {
           const disabled = fighter.currentPm < skill.pmCost;
@@ -796,6 +861,58 @@
           this.selectSkill(fighter, skill);
         });
       });
+    }
+
+    renderItems(actor) {
+      const skillList = this.overlay.querySelector(".battle-skill-list");
+      const description = this.overlay.querySelector(
+        ".battle-skill-description",
+      );
+      const cancelButton = this.overlay.querySelector(".battle-target-cancel");
+      const itemButton = this.overlay.querySelector(".battle-item-button");
+
+      cancelButton.classList.remove("hidden");
+      cancelButton.onclick = () => this.renderSkills(actor);
+      itemButton.disabled = true;
+      itemButton.classList.remove("has-items");
+      itemButton.textContent = "Objetos";
+      skillList.innerHTML = this.battleInventory
+        .map(
+          (item, index) => `
+          <button class="battle-skill-button" data-item="${index}">
+            <span>${item.name}</span>
+            <small>Usar</small>
+          </button>
+        `,
+        )
+        .join("");
+      description.textContent =
+        this.battleInventory.length > 0
+          ? "Selecciona un objeto para ver su efecto."
+          : "No tienes objetos.";
+
+      skillList.querySelectorAll(".battle-skill-button").forEach((button) => {
+        const item = this.battleInventory[Number(button.dataset.item)];
+        button.addEventListener("mouseenter", () => {
+          description.textContent = item.description;
+        });
+        button.addEventListener("focus", () => {
+          description.textContent = item.description;
+        });
+        button.addEventListener("click", () => this.selectItem(actor, item));
+      });
+    }
+
+    selectItem(actor, item) {
+      if (!item) return;
+      if (item.target === "auto") {
+        this.performItemUse(actor, item, null);
+        return;
+      }
+      this.awaitingPlayer = false;
+      this.awaitingItemTarget = true;
+      this.message(`Elige a quién aplicar ${item.name}.`);
+      this.enableItemTargeting(actor, item);
     }
 
     getTargetText(target) {
@@ -939,6 +1056,44 @@
       });
     }
 
+    enableItemTargeting(actor, item) {
+      const party = this.overlay.querySelector(".battle-party");
+      const cancelButton = this.overlay.querySelector(".battle-target-cancel");
+      const itemButtons = this.overlay.querySelectorAll(".battle-skill-button");
+      const token = Symbol("item-target-selection");
+      this.targetSelectionToken = token;
+      party.classList.add("is-targeting");
+      itemButtons.forEach((button) => {
+        button.disabled = true;
+      });
+      cancelButton.classList.remove("hidden");
+      cancelButton.onclick = () => this.cancelItemTargetSelection(actor, token);
+      party.querySelectorAll(".battle-ally-card").forEach((card) => {
+        card.addEventListener(
+          "click",
+          () => {
+            const target = this.allies.find(
+              (ally) => ally.id === card.dataset.ally,
+            );
+            if (
+              !target ||
+              target.currentHp <= 0 ||
+              !this.awaitingItemTarget ||
+              this.targetSelectionToken !== token
+            )
+              return;
+            this.awaitingItemTarget = false;
+            this.targetSelectionToken = null;
+            party.classList.remove("is-targeting");
+            cancelButton.classList.add("hidden");
+            cancelButton.onclick = null;
+            this.performItemUse(actor, item, target);
+          },
+          { once: true },
+        );
+      });
+    }
+
     cancelTargetSelection(actor, token) {
       if (!this.awaitingTarget || this.targetSelectionToken !== token) return;
       this.awaitingTarget = false;
@@ -956,26 +1111,108 @@
       this.message(`Turno de ${actor.name}.`);
     }
 
+    cancelItemTargetSelection(actor, token) {
+      if (!this.awaitingItemTarget || this.targetSelectionToken !== token) return;
+      this.awaitingItemTarget = false;
+      this.awaitingPlayer = true;
+      this.targetSelectionToken = null;
+
+      const party = this.overlay.querySelector(".battle-party");
+      const cancelButton = this.overlay.querySelector(".battle-target-cancel");
+      party.classList.remove("is-targeting");
+      cancelButton.classList.add("hidden");
+      cancelButton.onclick = null;
+
+      this.renderItems(actor);
+      this.message(`Turno de ${actor.name}.`);
+    }
+
     async performPlayerSkill(actor, skill, target) {
       this.awaitingPlayer = false;
       this.awaitingTarget = false;
       this.targetSelectionToken = null;
       actor.currentPm = Math.max(0, actor.currentPm - skill.pmCost);
-      this.clearSkills();
+      this.lockSkillPanel();
       const result = this.applySkill(actor, skill, target);
       await this.actionMessage(result.text);
-      if (result.hitEnemy) this.flashEnemy();
+      if (result.hitEnemy) {
+        this.playHitSound();
+        this.flashEnemy();
+        this.showEnemyDamageNumber(result.enemyDamage);
+      }
       this.endActorTurn(actor);
       this.updateHud();
       setTimeout(() => this.nextTurn(), 2000);
     }
 
+    async performItemUse(actor, item, target) {
+      this.awaitingPlayer = false;
+      this.awaitingItemTarget = false;
+      this.targetSelectionToken = null;
+      this.lockSkillPanel();
+
+      const result = this.applyItem(item, target);
+      if (result.consumed) this.consumeBattleItem(item);
+      await this.actionMessage(`${actor.name} usa ${item.name}. ${result.text}`);
+      if (!result.consumed) {
+        this.awaitingPlayer = true;
+        this.updateHud();
+        this.renderItems(actor);
+        this.message(`Turno de ${actor.name}.`);
+        return;
+      }
+      this.endActorTurn(actor);
+      this.updateHud();
+      setTimeout(() => this.nextTurn(), 1600);
+    }
+
+    consumeBattleItem(item) {
+      const index = this.battleInventory.findIndex(
+        (inventoryItem) => inventoryItem.id === item.id,
+      );
+      if (index !== -1) this.battleInventory.splice(index, 1);
+    }
+
     clearSkills() {
-      this.overlay.querySelector(".battle-skill-list").innerHTML = "";
-      this.overlay.querySelector(".battle-active-name").textContent = "-";
+      const skillList = this.overlay.querySelector(".battle-skill-list");
+      if (skillList.children.length > 0) {
+        this.lockSkillPanel();
+        return;
+      }
+      skillList.innerHTML = "";
+      this.overlay.querySelector(".battle-active-name").innerHTML = `
+        <span class="battle-active-character">-</span>
+        <span class="battle-active-separator" aria-hidden="true"></span>
+        <span class="battle-active-role">-</span>
+      `;
       const cancelButton = this.overlay.querySelector(".battle-target-cancel");
+      const itemButton = this.overlay.querySelector(".battle-item-button");
       cancelButton.classList.add("hidden");
       cancelButton.onclick = null;
+      itemButton.disabled = true;
+      itemButton.classList.remove("has-items");
+      itemButton.textContent = "Objetos";
+      itemButton.onclick = null;
+      this.overlay.querySelector(".battle-skill-description").textContent =
+        "Espera al siguiente turno aliado.";
+    }
+
+    lockSkillPanel() {
+      const party = this.overlay.querySelector(".battle-party");
+      const cancelButton = this.overlay.querySelector(".battle-target-cancel");
+      const itemButton = this.overlay.querySelector(".battle-item-button");
+      party.classList.remove("is-targeting");
+      cancelButton.classList.add("hidden");
+      cancelButton.onclick = null;
+      itemButton.disabled = true;
+      itemButton.classList.remove("has-items");
+      itemButton.textContent = "Objetos";
+      itemButton.onclick = null;
+      this.overlay
+        .querySelectorAll(".battle-skill-button")
+        .forEach((button) => {
+          button.disabled = true;
+        });
       this.overlay.querySelector(".battle-skill-description").textContent =
         "Espera al siguiente turno aliado.";
     }
@@ -996,7 +1233,12 @@
           const target = this.pickEnemyTarget(finalSkill);
           const result = this.applySkill(actor, finalSkill, target);
           await this.actionMessage(result.text);
+          const hitSound = this.isAmalgamaFinalAttack(actor, finalSkill)
+            ? "assets/sounds/effects/heavy_impact.mp3"
+            : undefined;
+          this.playHitSound(result.allyDamages?.length || 0, hitSound);
           this.flashAllies(result.hitAllies);
+          this.showAllyDamageNumbers(result.allyDamages);
           actor.normalTurnsSinceFinal = 0;
         } else {
           await this.actionMessage(
@@ -1054,7 +1296,9 @@
       const target = this.pickEnemyTarget(skill);
       const result = this.applySkill(actor, skill, target);
       await this.actionMessage(result.text);
+      this.playHitSound(result.allyDamages?.length || 0);
       this.flashAllies(result.hitAllies);
+      this.showAllyDamageNumbers(result.allyDamages);
     }
 
     pickEnemyTarget(skill) {
@@ -1089,6 +1333,11 @@
           text: `${actor.name} usa ${skill.name}. ${results.map((result) => result.text).join(" ")}`,
           hitEnemy: results.some((result) => result.hitEnemy),
           hitAllies: results.flatMap((result) => result.hitAllies),
+          allyDamages: results.flatMap((result) => result.allyDamages || []),
+          enemyDamage: results.reduce(
+            (sum, result) => sum + (result.enemyDamage || 0),
+            0,
+          ),
         };
       }
 
@@ -1097,6 +1346,8 @@
         text: `${actor.name} usa ${skill.name}. ${result.text}`,
         hitEnemy: result.hitEnemy,
         hitAllies: result.hitAllies,
+        allyDamages: result.allyDamages || [],
+        enemyDamage: result.enemyDamage || 0,
       };
     }
 
@@ -1106,6 +1357,7 @@
           text: "Pero no hay objetivo válido.",
           hitEnemy: false,
           hitAllies: [],
+          enemyDamage: 0,
         };
 
       if (skill.type === "heal") {
@@ -1115,6 +1367,7 @@
           text: `${target.name} recupera ${amount} HP.`,
           hitEnemy: false,
           hitAllies: [],
+          enemyDamage: 0,
         };
       }
 
@@ -1125,6 +1378,7 @@
           text: `${target.name} recupera ${amount} HP.`,
           hitEnemy: false,
           hitAllies: [],
+          enemyDamage: 0,
         };
       }
 
@@ -1139,6 +1393,7 @@
           text: `${target.name} queda protegido.`,
           hitEnemy: false,
           hitAllies: [],
+          enemyDamage: 0,
         };
       }
 
@@ -1153,6 +1408,22 @@
           text: `${target.name} gana velocidad.`,
           hitEnemy: false,
           hitAllies: [],
+          enemyDamage: 0,
+        };
+      }
+
+      if (skill.type === "ally_attack_up") {
+        this.addStatus(target, {
+          type: "attack_up",
+          stat: "attack",
+          value: skill.attackModifier,
+          turns: skill.duration,
+        });
+        return {
+          text: `${target.name} siente el ánimo de Piyón y su ataque sube.`,
+          hitEnemy: false,
+          hitAllies: [],
+          enemyDamage: 0,
         };
       }
 
@@ -1167,6 +1438,7 @@
           text: `${target.name} se vuelve mucho más difícil de acertar.`,
           hitEnemy: false,
           hitAllies: [],
+          enemyDamage: 0,
         };
       }
 
@@ -1180,6 +1452,7 @@
           text: `${this.enemy.name} fija su atención en ${actor.name}.`,
           hitEnemy: false,
           hitAllies: [],
+          enemyDamage: 0,
         };
       }
 
@@ -1191,6 +1464,8 @@
           text: `${target.name} queda reducido al 50% de sus PV.`,
           hitEnemy: false,
           hitAllies: damage > 0 ? [target.id] : [],
+          allyDamages: damage > 0 ? [{ id: target.id, damage }] : [],
+          enemyDamage: 0,
         };
       }
 
@@ -1201,6 +1476,8 @@
           text: `${target.name} queda al borde del colapso con 1 PV.`,
           hitEnemy: false,
           hitAllies: damage > 0 ? [target.id] : [],
+          allyDamages: damage > 0 ? [{ id: target.id, damage }] : [],
+          enemyDamage: 0,
         };
       }
 
@@ -1209,12 +1486,35 @@
           text: `${target.name} esquiva el ataque.`,
           hitEnemy: false,
           hitAllies: [],
+          enemyDamage: 0,
         };
       }
 
       let result = "";
       let hitEnemy = false;
       let hitAllies = [];
+      let allyDamages = [];
+      let enemyDamage = 0;
+
+      if (skill.type === "steal") {
+        return this.stealFromEnemy(actor);
+      }
+
+      if (skill.type === "attack_down") {
+        this.addStatus(target, {
+          type: "attack_down",
+          stat: "attack",
+          value: skill.attackModifier,
+          turns: skill.duration,
+        });
+        return {
+          text: `${target.name} pierde fuerza ofensiva.`,
+          hitEnemy: false,
+          hitAllies: [],
+          enemyDamage: 0,
+        };
+      }
+
       if (
         [
           "damage",
@@ -1228,7 +1528,11 @@
         const damage = this.calculateDamage(actor, skill, target);
         target.currentHp = Math.max(0, target.currentHp - damage);
         hitEnemy = target.team === "enemy" && damage > 0;
-        if (target.team === "ally" && damage > 0) hitAllies.push(target.id);
+        if (hitEnemy) enemyDamage += damage;
+        if (target.team === "ally" && damage > 0) {
+          hitAllies.push(target.id);
+          allyDamages.push({ id: target.id, damage });
+        }
         result += `${target.name} recibe ${damage} de daño.`;
       }
 
@@ -1269,7 +1573,125 @@
         result += ` Su ataque baja.`;
       }
 
-      return { text: result, hitEnemy, hitAllies };
+      return { text: result, hitEnemy, hitAllies, allyDamages, enemyDamage };
+    }
+
+    stealFromEnemy(actor) {
+      if (this.enemyItemStolen) {
+        return {
+          text: "No queda nada útil que robar.",
+          hitEnemy: false,
+          hitAllies: [],
+        };
+      }
+
+      const item = this.enemy.stealItem;
+      if (!item) {
+        return {
+          text: `${this.enemy.name} no lleva nada útil.`,
+          hitEnemy: false,
+          hitAllies: [],
+        };
+      }
+
+      this.enemyItemStolen = true;
+      this.battleInventory.push({ ...item });
+      return {
+        text: `${actor.name} roba ${item.name}.`,
+        hitEnemy: false,
+        hitAllies: [],
+      };
+    }
+
+    applyItem(item, target) {
+      if (item.type === "revive_three") {
+        const fallen = this.allies
+          .filter((ally) => ally.currentHp <= 0)
+          .slice(0, 3);
+        if (fallen.length === 0) {
+          return { text: "Pero no hay aliados caídos.", consumed: false };
+        }
+        fallen.forEach((ally) => {
+          ally.currentHp = Math.max(1, Math.ceil(ally.maxHp * 0.5));
+          this.resetRevivedFighterTurn(ally);
+        });
+        return {
+          text: `${fallen.map((ally) => ally.name).join(", ")} vuelven al combate.`,
+          consumed: true,
+        };
+      }
+
+      if (!target || target.currentHp <= 0) {
+        return { text: "Pero no hay objetivo válido.", consumed: false };
+      }
+
+      if (item.type === "heal_speed_up") {
+        const recovered = this.restoreHp(target, item.heal);
+        this.addStatus(target, {
+          type: "speed_up",
+          stat: "speed",
+          value: item.speedModifier,
+          turns: item.duration,
+        });
+        return {
+          text: `${target.name} recupera ${recovered} HP y gana velocidad.`,
+          consumed: true,
+        };
+      }
+
+      if (item.type === "heal_attack_up") {
+        const recovered = this.restoreHp(target, item.heal);
+        this.addStatus(target, {
+          type: "attack_up",
+          stat: "attack",
+          value: item.attackModifier,
+          turns: item.duration,
+        });
+        return {
+          text: `${target.name} recupera ${recovered} HP y gana ataque.`,
+          consumed: true,
+        };
+      }
+
+      if (item.type === "heal_pm") {
+        const recoveredHp = this.restoreHp(target, item.heal);
+        const recoveredPm = this.restorePm(target, item.pmRestore);
+        return {
+          text: `${target.name} recupera ${recoveredHp} HP y ${recoveredPm} PM.`,
+          consumed: true,
+        };
+      }
+
+      if (item.type === "full_restore") {
+        const recoveredHp = this.restoreHp(target, target.maxHp);
+        const recoveredPm = this.restorePm(target, target.maxPm);
+        return {
+          text: `${target.name} recupera ${recoveredHp} HP y ${recoveredPm} PM.`,
+          consumed: true,
+        };
+      }
+
+      return { text: "Pero no ocurre nada.", consumed: false };
+    }
+
+    restoreHp(target, amount) {
+      const recovered = Math.min(amount, target.maxHp - target.currentHp);
+      target.currentHp += recovered;
+      return recovered;
+    }
+
+    restorePm(target, amount) {
+      const recovered = Math.min(amount, target.maxPm - target.currentPm);
+      target.currentPm += recovered;
+      return recovered;
+    }
+
+    resetRevivedFighterTurn(fighter) {
+      const activeClocks = this.fighters
+        .filter((candidate) => candidate.currentHp > 0 && candidate.id !== fighter.id)
+        .map((candidate) => this.turnClock.get(candidate.id) || 0);
+      const latestClock = activeClocks.length > 0 ? Math.max(...activeClocks) : 0;
+      this.turnClock.set(fighter.id, latestClock + this.getTurnDelay(fighter));
     }
 
     flashEnemy() {
@@ -1279,6 +1701,75 @@
       void enemyEl.offsetWidth;
       enemyEl.classList.add("battle-enemy-hit");
       setTimeout(() => enemyEl.classList.remove("battle-enemy-hit"), 420);
+    }
+
+    showEnemyDamageNumber(amount) {
+      if (!amount || amount <= 0) return;
+      const stage = this.overlay.querySelector(".battle-stage");
+      if (!stage) return;
+      const damageEl = document.createElement("div");
+      damageEl.className = "battle-damage-number";
+      damageEl.textContent = `-${amount} HP`;
+      damageEl.style.left = `${48 + Math.random() * 8}%`;
+      damageEl.style.top = `${30 + Math.random() * 10}%`;
+      stage.appendChild(damageEl);
+      setTimeout(() => damageEl.remove(), 1100);
+    }
+
+    showAllyDamageNumbers(damages = []) {
+      damages.forEach(({ id, damage }) => {
+        if (!id || !damage || damage <= 0) return;
+        const allyEl = this.overlay.querySelector(
+          `.battle-ally-card[data-ally="${id}"]`,
+        );
+        if (!allyEl) return;
+        const portraitEl = allyEl.querySelector("img");
+        const anchorEl = portraitEl || allyEl;
+        const overlayRect = this.overlay.getBoundingClientRect();
+        const anchorRect = anchorEl.getBoundingClientRect();
+        const damageEl = document.createElement("div");
+        damageEl.className = "battle-damage-number battle-ally-damage-number";
+        damageEl.textContent = `-${damage} HP`;
+        const left =
+          anchorRect.left -
+          overlayRect.left +
+          anchorRect.width * (0.45 + Math.random() * 0.18);
+        const top =
+          anchorRect.top -
+          overlayRect.top +
+          anchorRect.height * (0.04 + Math.random() * 0.08);
+        damageEl.style.left = `${left}px`;
+        damageEl.style.top = `${top}px`;
+        this.overlay.appendChild(damageEl);
+        setTimeout(() => damageEl.remove(), 1100);
+      });
+    }
+
+    isAmalgamaFinalAttack(actor, skill) {
+      return (
+        skill?.isFinalAttack &&
+        ["amalgama", "amalgama_final"].includes(actor?.id)
+      );
+    }
+
+    playHitSound(count = 1, path = "assets/sounds/effects/hit.mp3") {
+      const hits = Math.max(0, Math.min(count || 0, 4));
+      for (let index = 0; index < hits; index++) {
+        setTimeout(() => {
+          const audio = new Audio(path);
+          audio.volume = 0.72;
+          audio.play().catch(() => {});
+        }, index * 70);
+      }
+    }
+
+    playHoverSound() {
+      const now = performance.now();
+      if (this.lastHoverSoundAt && now - this.lastHoverSoundAt < 55) return;
+      this.lastHoverSoundAt = now;
+      const audio = new Audio("assets/sounds/effects/hover_button.mp3");
+      audio.volume = 0.8;
+      audio.play().catch(() => {});
     }
 
     flashAllies(allyIds = []) {
@@ -1297,11 +1788,11 @@
     }
 
     rollHit(actor, skill, target) {
-      const baseAccuracy = skill.accuracy === undefined ? 0.9 : skill.accuracy;
+      const baseAccuracy = skill.accuracy === undefined ? 1 : skill.accuracy;
       const hitChance = clamp(
         baseAccuracy - this.getEvasion(target),
-        0.15,
-        0.98,
+        0,
+        1,
       );
       return Math.random() <= hitChance;
     }
@@ -1347,7 +1838,12 @@
       for (const char of text) {
         if (this.messageToken !== token) return;
         messageEl.textContent += char;
-        await this.wait(28);
+        let delay = 28;
+        if (window.Juice) {
+          window.Juice.blip(char, "battle");
+          delay += window.Juice.punctuationPause(char);
+        }
+        await this.wait(delay);
       }
     }
 
@@ -1370,6 +1866,31 @@
     finishBattle(won) {
       this.awaitingPlayer = false;
       this.clearSkills();
+      if (won) {
+        this.playEnemyDefeatEffect();
+        setTimeout(() => this.showBattleResult(won), this.getEnemyDefeatDuration());
+        return;
+      }
+      this.showBattleResult(won);
+    }
+
+    getEnemyDefeatDuration() {
+      const durations = {
+        amalgama: 1600,
+        amalgama_final: 2400,
+      };
+      return durations[this.enemy.id] || 1200;
+    }
+
+    playEnemyDefeatEffect() {
+      const enemyEl = this.overlay.querySelector(".battle-enemy");
+      if (!enemyEl) return;
+      enemyEl.classList.remove("battle-enemy-hit");
+      void enemyEl.offsetWidth;
+      enemyEl.classList.add("is-defeated");
+    }
+
+    showBattleResult(won) {
       const result = document.createElement("div");
       result.className = `battle-result ${won ? "victory" : "game-over"}`;
       result.innerHTML = `
