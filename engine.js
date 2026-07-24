@@ -409,9 +409,24 @@ class VisualNovelEngine {
             case 'eduvuelo':
                 await this.playEduVueloMinigame(action);
                 break;
+            case 'credits':
+            case 'creditos':
+                await this.playCreditsMinigame(action);
+                break;
             default:
                 console.warn(`Minijuego desconocido: ${action.game}`);
         }
+    }
+
+    async playCreditsMinigame(options = {}) {
+        this.isWaitingForInput = false;
+
+        if (!window.CreditsMinigame) {
+            console.warn('CreditsMinigame no está cargado.');
+            return false;
+        }
+
+        return await window.CreditsMinigame.play(options);
     }
 
     async playBattleMinigame(options = {}) {

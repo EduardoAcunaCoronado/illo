@@ -200,10 +200,16 @@
             <input type="checkbox" id="tp-battle-debug-stats"> Mostrar HP/PM del enemigo en Battle
         </label>
 
+        <h2>🎬 Créditos</h2>
+        <div class="tp-row">
+            <button class="tp-btn" style="--c:#ffd166" onclick="launchCredits()">Ver créditos</button>
+        </div>
+
     </div>
 
     <script src="engine.js"></script>
     <script src="battle-minigame.js?v=20260723-1"></script>
+    <script src="credits-minigame.js?v=20260724-1"></script>
     <script>
         const engine = new VisualNovelEngine();
         const panel = document.getElementById('test-panel');
@@ -361,6 +367,14 @@
             const won = await engine.playBattleMinigame(options);
             stopMusic();
             resultEl.textContent = won ? '✅ ¡Victoria en combate!' : '❌ Game Over en combate.';
+            panel.classList.remove('hidden');
+        }
+
+        async function launchCredits() {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            await engine.playCreditsMinigame();
+            resultEl.textContent = '✅ Créditos finalizados.';
             panel.classList.remove('hidden');
         }
     </script>

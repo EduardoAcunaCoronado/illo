@@ -2,7 +2,7 @@
   "title": "Capítulo 5: Airi",
   "isFinal": true,
   "scenes": [
-      {
+    {
       "title": "Acto I: El santuario del núcleo",
       "lines": [
         {
@@ -3252,12 +3252,26 @@
         },
         {
           "character": "2B",
-          "text": "Final bueno: Airi sale junto al grupo de ciudad Paloma. La corrupción no ha terminado, pero por primera vez ya no avanza contra una niña sola."
+          "text": "Final bueno: Airi sale junto al grupo de ciudad Paloma. La corrupción no ha terminado, pero por primera vez ya no avanza contra una niña sola.",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            }
+          ]
         },
         {
           "actions": [{ "type": "stopAllSounds" }],
           "character": "2B",
           "text": "Fin."
+        },
+        {
+          "actions": [
+            {
+              "type": "minigame",
+              "game": "credits"
+            }
+          ]
         }
       ]
     },
@@ -3347,7 +3361,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/paseo_ciudad_paloma.PNG"
+              "value": "assets/backgrounds/paseo_ciudad_paloma.png"
             },
             {
               "type": "hideCharacter",
