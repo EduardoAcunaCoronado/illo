@@ -648,6 +648,202 @@
             {
               "type": "minigame",
               "game": "credits"
+            },
+            {
+              "type": "goToScene",
+              "value": "Escena especial: Los que faltaban"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena especial: Los que faltaban",
+      "lines": [
+        {
+          "character": "2B",
+          "text": "Después de los créditos, la pantalla queda en negro. Tres siluetas aparecen en silencio, como si llevaran todo el juego esperando su turno.",
+          "actions": [
+            {
+              "type": "stopAllSounds"
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/escenario.png"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "showCharacter",
+              "character": "carlos",
+              "position": "left",
+              "pose": "silueta",
+              "enter": "fade"
+            },
+            {
+              "type": "showCharacter",
+              "character": "andres",
+              "position": "center",
+              "pose": "silueta",
+              "enter": "fade"
+            },
+            {
+              "type": "showCharacter",
+              "character": "sebas",
+              "position": "right",
+              "pose": "silueta",
+              "enter": "fade"
+            }
+          ]
+        },
+        {
+          "character": "???",
+          "speakingAs": "Carlos",
+          "text": "Perdona, una cuestión metodológica: ¿hemos salido en los créditos sin haber salido en el juego, o eso cuenta como una aparición técnica?"
+        },
+        {
+          "character": "???",
+          "speakingAs": "Andrés",
+          "text": "Porque si cuenta como aparición técnica habría que matizarlo mucho. Aparecer, lo que se dice aparecer, no hemos aparecido. Hemos sido más bien una promesa narrativa pendiente."
+        },
+        {
+          "character": "???",
+          "speakingAs": "Sebas",
+          "text": "Yo venía a mirar y ya. Tampoco hacía falta montar una comisión."
+        },
+        {
+          "character": "???",
+          "speakingAs": "Carlos",
+          "text": "Precisamente por eso conviene aclararlo. En toda historia bien estructurada, las ausencias también comunican."
+        },
+        {
+          "character": "???",
+          "speakingAs": "Sebas",
+          "text": "Comunican que se han olvidado de nosotros."
+        },
+        {
+          "character": "???",
+          "speakingAs": "Andrés",
+          "text": "Bueno, olvidado suena fuerte. Igual estaban ocupados salvando a una IA biológica, peleando contra memes corruptos y explicando lo del guano."
+        },
+        {
+          "character": "???",
+          "speakingAs": "Sebas",
+          "text": "Lo del guano sí que ha tenido más desarrollo que nosotros."
+        },
+        {
+          "character": "Carlos",
+          "text": "Vale. Presentaciones, entonces. Carlos. Y antes de que alguien pregunte: sí, probablemente sé por qué ha pasado esto.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/click.mp3",
+              "volume": 0.75
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/escenario_con_foco.png"
+            },
+            {
+              "type": "showCharacter",
+              "character": "andrés",
+              "position": "center",
+              "pose": "neutral"
+            },
+            {
+              "type": "showCharacter",
+              "character": "sebas",
+              "position": "right",
+              "pose": "neutral"
+            },
+            {
+              "type": "showCharacter",
+              "character": "carlos",
+              "position": "left",
+              "pose": "neutral"
+            }
+          ]
+        },
+        {
+          "character": "Andrés",
+          "text": "Andrés. Y no es por darle vueltas, pero salir después de los créditos tiene una carga simbólica bastante clara: somos expectativa, deuda emocional y posible contenido futuro.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "andres",
+              "position": "center",
+              "pose": "neutral"
+            }
+          ]
+        },
+        {
+          "character": "Sebas",
+          "text": "Sebas. Yo con que en el siguiente me den una frase antes del final, me vale.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "sebas",
+              "position": "right",
+              "pose": "neutral"
+            }
+          ]
+        },
+        {
+          "character": "Carlos",
+          "text": "A ver, lo lógico sería que nuestra entrada estuviera reservada para una segunda parte. Presentarnos antes habría alterado el equilibrio del reparto."
+        },
+        {
+          "character": "Andrés",
+          "text": "Exacto. Aunque también podríamos interpretar que el juego necesitaba terminar con una puerta abierta. No una puerta literal, sino una invitación a preguntarse quién falta todavía."
+        },
+        {
+          "character": "Sebas",
+          "text": "O que no había sitio."
+        },
+        {
+          "character": "Carlos",
+          "text": "También."
+        },
+        {
+          "character": "Andrés",
+          "text": "En cualquier caso, si hay un siguiente juego, espero que esta vez podamos entrar en escena antes de que la canción haya terminado."
+        },
+        {
+          "character": "Sebas",
+          "text": "Y si puede ser sin esperar sentados en negro, mejor."
+        },
+        {
+          "character": "Carlos",
+          "text": "Queda asentado: Carlos, Andrés y Sebas esperan aparecer en el siguiente juego."
+        },
+        {
+          "character": "2B",
+          "text": "Las tres siluetas se miran. Por primera vez en toda la aventura, parecen satisfechas con estar a punto de empezar.",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "left",
+              "exit": "fade"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center",
+              "exit": "fade"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right",
+              "exit": "fade"
             }
           ]
         }

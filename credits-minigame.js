@@ -112,7 +112,7 @@
       }
       .credits-skip {
         position: absolute;
-        top: 18px;
+        bottom: 18px;
         right: 18px;
         z-index: 4;
         border: 1px solid rgba(255,255,255,0.35);

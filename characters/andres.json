@@ -1,0 +1,9 @@
+{
+  "name": "Andrés",
+  "color": "#65d1ff",
+  "poses": {
+    "neutral": "assets/characters/andres/andres.png",
+    "silueta": "assets/characters/andres/andres_silueta.png"
+  },
+  "defaultPose": "neutral"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "Carlos",
+  "color": "#f0c84b",
+  "poses": {
+    "neutral": "assets/characters/carlos/carlos.png",
+    "silueta": "assets/characters/carlos/carlos_silueta.png"
+  },
+  "defaultPose": "neutral"
+}

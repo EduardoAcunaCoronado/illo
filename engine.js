@@ -138,6 +138,10 @@ class VisualNovelEngine {
             case 'setBackground':
                 this.setBackground(action.value, action);
                 break;
+            case 'clearBackground':
+            case 'removeBackground':
+                this.clearBackground();
+                break;
             case 'showCharacter':
                 await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter);
                 break;
@@ -2545,6 +2549,18 @@ class VisualNovelEngine {
             bgB.style.transition = 'none';
             bgB.style.opacity = '0';
         }, dur + 60);
+    }
+
+    clearBackground() {
+        this.bgPan({ reset: true });
+        const bg = document.getElementById('background');
+        const bgB = document.getElementById('background-b');
+        if (bg) bg.style.backgroundImage = '';
+        if (bgB) {
+            bgB.style.transition = 'none';
+            bgB.style.opacity = '0';
+            bgB.style.backgroundImage = '';
+        }
     }
 
     // Fundido de escena: { to:"black"|color, duration } o { from:"black", duration }.
