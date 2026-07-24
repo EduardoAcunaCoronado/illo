@@ -1003,9 +1003,13 @@
           "text": "Aparece una marcas tenues, casi imperceptible, brillando en su piel."
         },
         {
-          "actions": [{ "type": "stopAllSounds" }],
           "character": "2B",
           "text": "Final incierto: Airi ya no está sola y el mundo de ensueño sigue en pie. Pero la corrupción todavía no ha soltado del todo su mano."
+        },
+        {
+          "actions": [{ "type": "stopAllSounds" }],
+          "character": "2B",
+          "text": "¿Fin?"
         }
       ]
     }
