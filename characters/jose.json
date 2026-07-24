@@ -16,7 +16,7 @@
     "thinking": "assets/characters/jose/jose_thinking.png",
     "worried": "assets/characters/jose/jose_worried.png",
     "silueta": "assets/characters/jose/jose_silueta.png",
-    "serious": "assets/characters/jose/jose_determined.png"
+    "serious": "assets/characters/jose/jose_serious.png"
   },
   "defaultPose": "neutral"
 }

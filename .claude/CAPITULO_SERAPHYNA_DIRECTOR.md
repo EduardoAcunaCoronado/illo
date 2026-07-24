@@ -742,7 +742,15 @@ piano ballad reprise, tender female hum, 60 BPM, intimate, tearjerker`) — 100 
     su UI nueva («¡Habéis aguantado!») y batalla estándar 4 aliados sin chip.
     BACKUP_ENGINE_STYLES refrescado con las versiones fusionadas (¡regla nueva:
     refrescarlo tras CADA merge para que el próximo pull tenga base al día!).
-16. Versiones: engine 20260724-4, game 20260724-4, styles 20260724-4,
+16. **Poses pendientes generadas e integradas (24-jul tarde)** — el director
+    generó las 5 poses que faltaban (IMAGEN_PENDIENTE): loca_crazy (¡lanzando
+    un gato con otro al hombro!), samu_curious, zip_angry, tony_thinking,
+    jose_serious (gallo guerrero con brazos cruzados). Keying de fondo pintado
+    en 3 de ellas, alto normalizado 1400, colocadas en sus carpetas y los ALIAS
+    de los JSON sustituidos por el arte real. Verificadas las 5 en engine y
+    loca_crazy en su escena real de El Jamón (cap. 2). El server python huérfano
+    murió y ahora corre gestionado vía launch.json "illo".
+17. Versiones: engine 20260724-4, game 20260724-4, styles 20260724-4,
     battle-minigame 20260724-24, battle-styles 20260724-19 (suyo), credits -1.
    DOCUMENTACION.md corregida y ampliada (batalla type minigame + game battle,
    knobs eduvuelo, panel Configuración). QA servido con python http.server 8000

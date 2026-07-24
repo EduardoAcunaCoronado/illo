@@ -3,7 +3,7 @@
   "color": "#FF6B9D",
   "poses": {
     "neutral": "assets/characters/others/zip.png",
-    "angry": "assets/characters/others/zip.png"
+    "angry": "assets/characters/others/zip_angry.png"
   },
   "defaultPose": "neutral"
 }

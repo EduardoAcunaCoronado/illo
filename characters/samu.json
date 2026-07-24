@@ -16,7 +16,7 @@
     "thinking": "assets/characters/samu/samu_thinking.png",
     "worried": "assets/characters/samu/samu_worried.png",
     "valla": "assets/characters/samu/samu_valla.png",
-    "curious": "assets/characters/samu/samu_surprised.png"
+    "curious": "assets/characters/samu/samu_curious.png"
   },
   "defaultPose": "neutral"
 }

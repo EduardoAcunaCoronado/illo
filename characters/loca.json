@@ -3,7 +3,7 @@
   "color": "purple",
   "poses": {
     "neutral": "assets/characters/others/loca.png",
-    "crazy": "assets/characters/others/loca.png"
+    "crazy": "assets/characters/others/loca_crazy.png"
   },
   "defaultPose": "neutral"
 }
