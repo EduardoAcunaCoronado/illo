@@ -1230,7 +1230,7 @@ class VisualNovelEngine {
         });
     }
 
-    // Minijuego: memoria de palomas (estilo Simon) en Paloma City.
+    // Minijuego: memoria de palomas (estilo Simon) en Ciudad Paloma.
     // Orquesta las rondas y permite reintentar si pierdes.
     async playPalomaMinigame(options = {}) {
         this.isWaitingForInput = false;

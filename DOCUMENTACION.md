@@ -51,6 +51,7 @@ Abre `index.html` en tu navegador y haz clic en "Comenzar" para ver los capítul
 ## ✨ Características
 
 ### Motor Base
+
 - ✅ **Diálogos Animados** - Texto que se escribe carácter por carácter
 - ✅ **Sistema de Elecciones** - Ramificaciones de historia
 - ✅ **Personajes Dinámicos** - Aparecen y desaparecen con poses
@@ -60,6 +61,7 @@ Abre `index.html` en tu navegador y haz clic en "Comenzar" para ver los capítul
 - ✅ **Variables de Juego** - Seguimiento de estado
 
 ### Características Avanzadas (Persona 5 Edition)
+
 - ✅ **Estética Persona 5** - Menús y diálogos estilo P5 Royal
 - ✅ **Saltar Texto** - Click durante typing completa línea
 - ✅ **Intro Cinematográfica** - Animación al inicio de capítulo
@@ -68,6 +70,7 @@ Abre `index.html` en tu navegador y haz clic en "Comenzar" para ver los capítul
 - ✅ **Enfoque Dinámico** - Brillo amarillo animado en personaje que habla
 
 ### General
+
 - ✅ **Totalmente en JSON** - Sin necesidad de código
 - ✅ **Completamente Personalizable** - Estilos y lógica
 - ✅ **Ejemplos Incluidos** - Capítulos de demostración
@@ -77,6 +80,7 @@ Abre `index.html` en tu navegador y haz clic en "Comenzar" para ver los capítul
 ## 📦 Instalación
 
 ### Requisitos
+
 - Navegador moderno (Chrome, Firefox, Safari, Edge)
 - Un servidor local (Python, Node.js, etc.)
 
@@ -194,13 +198,13 @@ En `game.js`, modifica `startNewGame()`:
 
 ```javascript
 async function startNewGame() {
-    mainMenu.classList.add('hidden');
-    isGameRunning = true;
+  mainMenu.classList.add("hidden");
+  isGameRunning = true;
 
-    await engine.loadChapter('chapter1');
-    await engine.loadCharacter('luna');
+  await engine.loadChapter("chapter1");
+  await engine.loadCharacter("luna");
 
-    await playGame();
+  await playGame();
 }
 ```
 
@@ -237,16 +241,16 @@ async function startNewGame() {
 
 ### Elementos de una Línea
 
-| Campo | Tipo | Obligatorio | Descripción |
-|-------|------|-------------|-------------|
-| `_line` | número | No* | Número de línea (para referencia) |
-| `character` | string | Sí | Nombre del personaje (se muestra en el cuadro) |
-| `text` | string | Sí | Texto del diálogo |
-| `actions` | array | No | Acciones a ejecutar |
-| `choices` | array | No | Opciones para el usuario |
-| `speakingAs` | string | No | Sprite a resaltar al hablar (ver abajo) |
+| Campo        | Tipo   | Obligatorio | Descripción                                    |
+| ------------ | ------ | ----------- | ---------------------------------------------- |
+| `_line`      | número | No\*        | Número de línea (para referencia)              |
+| `character`  | string | Sí          | Nombre del personaje (se muestra en el cuadro) |
+| `text`       | string | Sí          | Texto del diálogo                              |
+| `actions`    | array  | No          | Acciones a ejecutar                            |
+| `choices`    | array  | No          | Opciones para el usuario                       |
+| `speakingAs` | string | No          | Sprite a resaltar al hablar (ver abajo)        |
 
-*No es obligatorio, pero se recomienda para debugging.
+\*No es obligatorio, pero se recomienda para debugging.
 
 ### `speakingAs`: resaltar un sprite distinto del que habla
 
@@ -272,6 +276,7 @@ el que se resalta mientras "habla".
 ## ⚙️ Acciones
 
 ### setBackground
+
 Cambia el fondo de la escena.
 
 ```json
@@ -282,6 +287,7 @@ Cambia el fondo de la escena.
 ```
 
 ### showCharacter
+
 Muestra un personaje en pantalla.
 
 ```json
@@ -294,11 +300,13 @@ Muestra un personaje en pantalla.
 ```
 
 Parámetros:
+
 - `character`: Nombre del personaje (sin .json)
 - `position`: "left" o "right"
 - `pose`: "neutral", "happy", "sad", "angry", "surprised" (opcional)
 
 ### hideCharacter / removeCharacter / quitarPersonaje
+
 Quita a un personaje de la escena (vacía su hueco). Los tres nombres de acción
 son equivalentes. **Recomendado usarlo cuando un personaje deja de intervenir**
 para que no se quede en pantalla en las escenas siguientes.
@@ -308,16 +316,19 @@ Formas de uso:
 ```json
 { "type": "removeCharacter", "character": "luna" }
 ```
+
 Quita a "luna" de la posición en la que se mostró (rastreada automáticamente).
 
 ```json
 { "type": "removeCharacter", "position": "right" }
 ```
+
 Vacía directamente el hueco derecho (sin importar quién esté).
 
 ```json
 { "type": "removeCharacter", "character": "luna", "position": "right" }
 ```
+
 Quita el hueco derecho (y olvida a "luna" si estaba ahí).
 
 > Nota: la posición de cada personaje se rastrea al llamar a `showCharacter`, así
@@ -325,6 +336,7 @@ Quita el hueco derecho (y olvida a "luna" si estaba ahí).
 > que permanece en escena durante todo el capítulo.
 
 ### setPose
+
 Cambia la pose de un personaje visible.
 
 ```json
@@ -337,6 +349,7 @@ Cambia la pose de un personaje visible.
 ```
 
 ### hideDialog / hideText / ocultarTexto
+
 Oculta el cuadro de diálogo/texto que esté visible. Útil para dejar una imagen,
 fondo o escena en pantalla durante unos segundos sin texto encima.
 
@@ -352,7 +365,10 @@ Ejemplo con espera:
 {
   "actions": [
     { "type": "hideDialog" },
-    { "type": "setBackground", "value": "assets/backgrounds/despertar_samu.png" },
+    {
+      "type": "setBackground",
+      "value": "assets/backgrounds/despertar_samu.png"
+    },
     { "type": "wait", "value": 2500 }
   ]
 }
@@ -365,16 +381,21 @@ Si quieres mantener la pantalla limpia hasta que el jugador haga click, usa
 {
   "actions": [
     { "type": "hideDialog" },
-    { "type": "setBackground", "value": "assets/backgrounds/despertar_samu.png" },
+    {
+      "type": "setBackground",
+      "value": "assets/backgrounds/despertar_samu.png"
+    },
     { "type": "waitForClick" }
   ]
 }
 ```
 
 ### playSound
+
 Reproduce un archivo de audio con opciones avanzadas.
 
 **Formato Simple:**
+
 ```json
 {
   "type": "playSound",
@@ -383,6 +404,7 @@ Reproduce un archivo de audio con opciones avanzadas.
 ```
 
 **Formato Avanzado:**
+
 ```json
 {
   "type": "playSound",
@@ -393,6 +415,7 @@ Reproduce un archivo de audio con opciones avanzadas.
 ```
 
 **Parámetros:**
+
 - `path` o `value`: Ruta del archivo de audio
 - `volume`: Volumen (0.0 a 1.0, por defecto 1.0)
 - `loop`: Si se repite en bucle (por defecto false)
@@ -401,6 +424,7 @@ Reproduce un archivo de audio con opciones avanzadas.
 **Ejemplos:**
 
 Música de fondo (baja, en bucle):
+
 ```json
 {
   "type": "playSound",
@@ -411,6 +435,7 @@ Música de fondo (baja, en bucle):
 ```
 
 Efecto de sonido (volumen máximo):
+
 ```json
 {
   "type": "playSound",
@@ -420,6 +445,7 @@ Efecto de sonido (volumen máximo):
 ```
 
 Sonido silencioso:
+
 ```json
 {
   "type": "playSound",
@@ -429,6 +455,7 @@ Sonido silencioso:
 ```
 
 ### wait
+
 Pausa la ejecución.
 
 ```json
@@ -441,6 +468,7 @@ Pausa la ejecución.
 El valor está en milisegundos (1000 = 1 segundo).
 
 ### setVariable
+
 Establece variables en el estado del juego.
 
 ```json
@@ -452,6 +480,7 @@ Establece variables en el estado del juego.
 ```
 
 ### goToScene
+
 Salta a otra escena por su **título** (o índice) desde dentro de una línea,
 sin necesidad de una elección. Útil para reunir varias rutas ramificadas en
 una escena común. Debe ser la última acción/línea útil de la escena de origen.
@@ -464,6 +493,7 @@ una escena común. Debe ser la última acción/línea útil de la escena de orig
 ```
 
 ### setDelay / addDelay
+
 Gestionan el **retraso acumulado** (`storyDelay`) del capítulo, un contador que
 mide cuánto tiempo ha perdido el jugador según las rutas que elige. `setDelay`
 fija el valor; `addDelay` lo incrementa. Se reinicia a 0 al cargar cada capítulo.
@@ -552,12 +582,12 @@ El retraso permite dos efectos:
 
 ### Minijuegos disponibles
 
-| `game` | Descripción | Parámetros principales |
-|--------|-------------|------------------------|
-| `ketchup` | Come 🍅 y esquiva 🌶️ (mover ← →) | `goal`, `maxHits`, `duration` |
-| `ecchi` | Clica 🍑 a tiempo, evita 💋 | `goal`, `maxMisses`, `lifetime` |
-| `paloma` | Memoriza y repite la secuencia | `rounds`, `flashMs`, `gapMs` |
-| `gatos` | **Estilo Pac-Man con laberinto**: huye de los gatos por las calles | `survive`, `cats`, `playerSpeed`, `catSpeed` |
+| `game`    | Descripción                                                        | Parámetros principales                       |
+| --------- | ------------------------------------------------------------------ | -------------------------------------------- |
+| `ketchup` | Come 🍅 y esquiva 🌶️ (mover ← →)                                   | `goal`, `maxHits`, `duration`                |
+| `ecchi`   | Clica 🍑 a tiempo, evita 💋                                        | `goal`, `maxMisses`, `lifetime`              |
+| `paloma`  | Memoriza y repite la secuencia                                     | `rounds`, `flashMs`, `gapMs`                 |
+| `gatos`   | **Estilo Pac-Man con laberinto**: huye de los gatos por las calles | `survive`, `cats`, `playerSpeed`, `catSpeed` |
 
 #### Minijuego `gatos` (la loca de los gatos)
 
@@ -577,12 +607,12 @@ pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jamón).
 }
 ```
 
-| Parámetro | Descripción | Por defecto |
-|-----------|-------------|-------------|
-| `survive` | Segundos que hay que aguantar | 60 |
-| `cats` | Nº de gatos perseguidores (1-4 usan esquinas distintas) | 3 |
-| `playerSpeed` | Velocidad de Samu (**celdas**/s) | 5.0 |
-| `catSpeed` | Velocidad de los gatos (**celdas**/s) | 3.0 |
+| Parámetro     | Descripción                                             | Por defecto |
+| ------------- | ------------------------------------------------------- | ----------- |
+| `survive`     | Segundos que hay que aguantar                           | 60          |
+| `cats`        | Nº de gatos perseguidores (1-4 usan esquinas distintas) | 3           |
+| `playerSpeed` | Velocidad de Samu (**celdas**/s)                        | 5.0         |
+| `catSpeed`    | Velocidad de los gatos (**celdas**/s)                   | 3.0         |
 
 El laberinto es fijo (una cuadrícula de manzanas separadas por avenidas), está
 definido en `VisualNovelEngine.GATOS_MAZE` y es completamente transitable (sin
@@ -590,7 +620,7 @@ callejones sin salida). Samu empieza en el centro y los gatos en las esquinas.
 
 **Diseño (importante):** los gatos persiguen con búsqueda de camino (**BFS**) por las
 calles, pero —como los fantasmas de Pac-Man— **no todos van directos a la vez**:
-alternan modo *scatter* (3 s cada 8 s se retiran a su esquina) y modo *chase*, y en
+alternan modo _scatter_ (3 s cada 8 s se retiran a su esquina) y modo _chase_, y en
 chase cada gato tiene un objetivo distinto (uno persigue directo, otro embosca 4
 celdas por delante de Samu, otro solo caza si está lejos). Esto crea ventanas de
 escape; si los 3 apuntaran siempre a Samu lo acorralarían y el juego sería imposible.
@@ -602,15 +632,15 @@ catSpeed`) y gana **manteniéndose en movimiento** por las calles.
 Side-scroller volador (Edu recoge partituras 🎼 esquivando el techo del escenario).
 Además de `goal`/`goalByDelay`, acepta estos knobs (todos con `...ByDelay` opcional):
 
-| Parámetro | Descripción | Por defecto |
-|-----------|-------------|-------------|
-| `hangChance` | Prob. de cable colgando **desde el techo** hasta una altura aleatoria (deja hueco por debajo) | 0.22 |
-| `hangMin` / `hangMax` | Longitud del cable (fracción del alto, 0-1) | 0.25 / 0.60 |
-| `fallerChance` | Prob. de foco que **cae desde arriba** en movimiento | 0.24 |
-| `fallerVy` | Velocidad de caída del foco | 0.26 |
-| `collectChance` | Prob. de que el spawn sea partitura (bajarlo = más difícil) | 0.42 |
-| `spawnMs` | Ritmo de aparición en ms (bajarlo = más denso) | 640 |
-| `graceMs` | Invulnerabilidad inicial con parpadeo | 1200 |
+| Parámetro             | Descripción                                                                                   | Por defecto |
+| --------------------- | --------------------------------------------------------------------------------------------- | ----------- |
+| `hangChance`          | Prob. de cable colgando **desde el techo** hasta una altura aleatoria (deja hueco por debajo) | 0.22        |
+| `hangMin` / `hangMax` | Longitud del cable (fracción del alto, 0-1)                                                   | 0.25 / 0.60 |
+| `fallerChance`        | Prob. de foco que **cae desde arriba** en movimiento                                          | 0.24        |
+| `fallerVy`            | Velocidad de caída del foco                                                                   | 0.26        |
+| `collectChance`       | Prob. de que el spawn sea partitura (bajarlo = más difícil)                                   | 0.42        |
+| `spawnMs`             | Ritmo de aparición en ms (bajarlo = más denso)                                                | 640         |
+| `graceMs`             | Invulnerabilidad inicial con parpadeo                                                         | 1200        |
 
 #### Batallas: modo supervivencia (extensión aditiva)
 
@@ -627,7 +657,7 @@ funcionan EXACTAMENTE igual que antes:
   "party": ["samu", "edu"],
   "surviveTurns": 5,
   "surviveTurnsByDelay": { "0": 5, "1": 6, "2": 7 },
-  "interludes": [ { "turn": 1, "speaker": "Goyo", "text": "¡Aguantad!" } ],
+  "interludes": [{ "turn": 1, "speaker": "Goyo", "text": "¡Aguantad!" }],
   "victoryTitle": "¡Habéis aguantado!",
   "victoryText": "...",
   "defeatText": "...",
@@ -635,15 +665,15 @@ funcionan EXACTAMENTE igual que antes:
 }
 ```
 
-| Opción | Efecto |
-|--------|--------|
-| `surviveTurns` | En vez de matar al enemigo, hay que **aguantar N turnos enemigos**; HUD "⏳ AGUANTAD N embestidas" → "🎤 ¡YA CANTA!" |
-| `party` | Filtra qué aliados participan (ids de `ALLIES`) |
-| `interludes` | Burbujas de diálogo urgente que saltan al empezar el turno indicado |
-| `victoryTitle` / `victoryText` / `defeatText` | Textos custom del panel final |
-| `retryOnDefeat` | El engine repite la batalla al perder (con texto `retryText`) en vez del Game Over normal |
-| `skillsOverride` | Mapa `{allyId: [habilidades]}` que SUSTITUYE el kit de ese aliado solo en esta batalla (mismo esquema de habilidad que en ALLIES). Para coherencia narrativa: en el cap. 3 las clases aún no han despertado y luchan con el entorno (valla de obra, acople, confeti) y con el vuelo/memes de Edu |
-| `roleOverride` | Mapa `{allyId: "rol"}` que cambia el rol mostrado solo en esta batalla (p. ej. "Técnico improvisado") |
+| Opción                                        | Efecto                                                                                                                                                                                                                                                                                           |
+| --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `surviveTurns`                                | En vez de matar al enemigo, hay que **aguantar N turnos enemigos**; HUD "⏳ AGUANTAD N embestidas" → "🎤 ¡YA CANTA!"                                                                                                                                                                             |
+| `party`                                       | Filtra qué aliados participan (ids de `ALLIES`)                                                                                                                                                                                                                                                  |
+| `interludes`                                  | Burbujas de diálogo urgente que saltan al empezar el turno indicado                                                                                                                                                                                                                              |
+| `victoryTitle` / `victoryText` / `defeatText` | Textos custom del panel final                                                                                                                                                                                                                                                                    |
+| `retryOnDefeat`                               | El engine repite la batalla al perder (con texto `retryText`) en vez del Game Over normal                                                                                                                                                                                                        |
+| `skillsOverride`                              | Mapa `{allyId: [habilidades]}` que SUSTITUYE el kit de ese aliado solo en esta batalla (mismo esquema de habilidad que en ALLIES). Para coherencia narrativa: en el cap. 3 las clases aún no han despertado y luchan con el entorno (valla de obra, acople, confeti) y con el vuelo/memes de Edu |
+| `roleOverride`                                | Mapa `{allyId: "rol"}` que cambia el rol mostrado solo en esta batalla (p. ej. "Técnico improvisado")                                                                                                                                                                                            |
 
 Enemigo de ejemplo: `marea_fans` (hp 9999 — imbatible a propósito, solo se puede
 aguantar). Se usa en el cap. 3, «Escena 11b: La puerta».
@@ -684,10 +714,10 @@ volúmenes que piden los capítulos (`volume`, `setVolume`) se conservan como
 
 ### Elementos de una Opción
 
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| `text` | string | Texto del botón |
-| `nextLine` | número | Línea dentro de la misma escena |
+| Campo       | Tipo   | Descripción                           |
+| ----------- | ------ | ------------------------------------- |
+| `text`      | string | Texto del botón                       |
+| `nextLine`  | número | Línea dentro de la misma escena       |
 | `nextScene` | número | Escena diferente (reinicia línea a 0) |
 
 ### Ejemplo Completo
@@ -742,14 +772,14 @@ operador y ofrece continuar.
 
 ### Campos de opción relacionados
 
-| Campo | Descripción |
-|-------|-------------|
-| `nextScene` con `"Llamada a X"` | Marca la opción como llamada; se redirige si no hay cupo |
-| `offCoverageScene` | Escena alternativa si no hay cupo (por defecto `"Escena: Fuera de cobertura"`) |
-| `chapter2ByFirstCalled` | Ruta dinámica a `chapter2-<primer llamado>` (usado en Cap. 1) |
-| `chapter2ByLastCalled` | Ruta dinámica a `chapter2-<último llamado>` (usado al final de cada Cap. 2) |
-| `chapter3ByFirst` | Ruta dinámica a `chapter3-<primer rescatado>` |
-| `requireAllRescued` | Oculta la opción hasta rescatar a los 3 amigos |
+| Campo                           | Descripción                                                                    |
+| ------------------------------- | ------------------------------------------------------------------------------ |
+| `nextScene` con `"Llamada a X"` | Marca la opción como llamada; se redirige si no hay cupo                       |
+| `offCoverageScene`              | Escena alternativa si no hay cupo (por defecto `"Escena: Fuera de cobertura"`) |
+| `chapter2ByFirstCalled`         | Ruta dinámica a `chapter2-<primer llamado>` (usado en Cap. 1)                  |
+| `chapter2ByLastCalled`          | Ruta dinámica a `chapter2-<último llamado>` (usado al final de cada Cap. 2)    |
+| `chapter3ByFirst`               | Ruta dinámica a `chapter3-<primer rescatado>`                                  |
+| `requireAllRescued`             | Oculta la opción hasta rescatar a los 3 amigos                                 |
 
 ### Flujo típico
 
@@ -772,6 +802,7 @@ Las poses permiten que cada personaje muestre diferentes expresiones emocionales
 ### Poses Disponibles
 
 Cada personaje puede tener:
+
 - **neutral** (por defecto)
 - **happy** (feliz)
 - **sad** (triste)
@@ -798,6 +829,7 @@ Cada personaje puede tener:
 ### Usar Poses en Capítulos
 
 **Mostrar con pose:**
+
 ```json
 {
   "type": "showCharacter",
@@ -808,6 +840,7 @@ Cada personaje puede tener:
 ```
 
 **Cambiar pose:**
+
 ```json
 {
   "type": "setPose",
@@ -861,6 +894,7 @@ assets/
 ### Formatos Soportados
 
 Usa archivos de audio comunes:
+
 - **MP3** - Mejor compatibilidad
 - **OGG** - Buena compresión
 - **WAV** - Calidad sin pérdidas
@@ -869,6 +903,7 @@ Usa archivos de audio comunes:
 ### Acciones de Sonido
 
 #### 1. Reproducir Sonido Simple
+
 ```json
 {
   "type": "playSound",
@@ -877,6 +912,7 @@ Usa archivos de audio comunes:
 ```
 
 #### 2. Música de Fondo (En Bucle)
+
 ```json
 {
   "type": "playSound",
@@ -887,6 +923,7 @@ Usa archivos de audio comunes:
 ```
 
 #### 3. Efecto de Sonido (Volumen Alto)
+
 ```json
 {
   "type": "playSound",
@@ -896,6 +933,7 @@ Usa archivos de audio comunes:
 ```
 
 #### 4. Sonido Silencioso (Whisper)
+
 ```json
 {
   "type": "playSound",
@@ -940,18 +978,19 @@ Usa archivos de audio comunes:
 
 ### Parámetros de Sonido
 
-| Parámetro | Descripción | Rango | Por Defecto |
-|-----------|-------------|-------|------------|
-| `path` o `value` | Ruta del archivo de audio | string | requerido |
-| `volume` | Volumen del sonido | 0.0 - 1.0 | 1.0 |
-| `loop` | Repetir en bucle | boolean | false |
-| `autoPlay` | Iniciar automáticamente | boolean | true |
-| `id` | ID único para controlar después | string | null |
-| `fadeIn` | Fade in en milisegundos | number | 0 |
+| Parámetro        | Descripción                     | Rango     | Por Defecto |
+| ---------------- | ------------------------------- | --------- | ----------- |
+| `path` o `value` | Ruta del archivo de audio       | string    | requerido   |
+| `volume`         | Volumen del sonido              | 0.0 - 1.0 | 1.0         |
+| `loop`           | Repetir en bucle                | boolean   | false       |
+| `autoPlay`       | Iniciar automáticamente         | boolean   | true        |
+| `id`             | ID único para controlar después | string    | null        |
+| `fadeIn`         | Fade in en milisegundos         | number    | 0           |
 
 ### Control Avanzado de Sonidos
 
 #### Detener Sonido (con fade out opcional)
+
 ```json
 {
   "type": "stopSound",
@@ -961,6 +1000,7 @@ Usa archivos de audio comunes:
 ```
 
 #### Parar Todos los Sonidos
+
 ```json
 {
   "type": "stopAllSounds"
@@ -968,6 +1008,7 @@ Usa archivos de audio comunes:
 ```
 
 #### Pausar Sonido
+
 ```json
 {
   "type": "pauseSound",
@@ -976,6 +1017,7 @@ Usa archivos de audio comunes:
 ```
 
 #### Reanudar Sonido
+
 ```json
 {
   "type": "resumeSound",
@@ -984,6 +1026,7 @@ Usa archivos de audio comunes:
 ```
 
 #### Cambiar Volumen
+
 ```json
 {
   "type": "setVolume",
@@ -1063,11 +1106,13 @@ Usa archivos de audio comunes:
 El juego incluye un completo rediseño visual inspirado en Persona 5 Royal.
 
 #### Colores Principales
+
 - **Amarillo**: #ffcc00 (primario)
 - **Rojo**: #ff1744 (secundario)
 - **Negro**: #000000 (fondo)
 
 #### Menú Principal
+
 ```
          ┌────────────────────────────┐
          │      VISUAL NOVEL          │
@@ -1079,6 +1124,7 @@ El juego incluye un completo rediseño visual inspirado en Persona 5 Royal.
 ```
 
 #### Cuadro de Diálogo (Persona 5 Royal Style)
+
 ```
          ┌────────────────────────────┐
          │ NOMBRE ────────────────    │
@@ -1089,6 +1135,7 @@ El juego incluye un completo rediseño visual inspirado en Persona 5 Royal.
 ```
 
 **Características:**
+
 - Panel moderno con borde amarillo visible
 - Fondo semi-transparente (0.95 alpha)
 - Bordes inclinados (25px)
@@ -1096,6 +1143,7 @@ El juego incluye un completo rediseño visual inspirado en Persona 5 Royal.
 - Header limpio con línea separadora
 
 #### Menú de Elecciones
+
 ```
          [➙ OPCIÓN 1              ]
          [➙ OPCIÓN 2              ]
@@ -1103,6 +1151,7 @@ El juego incluye un completo rediseño visual inspirado en Persona 5 Royal.
 ```
 
 **Características:**
+
 - Triángulo rojo (➙) aparece en hover
 - Cambio a fondo amarillo en hover
 - Movimiento suave hacia la derecha
@@ -1126,18 +1175,20 @@ DESPUÉS:
 ```
 
 **Implementación Técnica:**
+
 ```javascript
 // En engine.js - displayDialog()
 const skipHandler = () => {
-    skipTyping = true;
-    if (timeoutId) clearTimeout(timeoutId);
-    dialogText.textContent = text;  // Mostrar todo al instante
-    document.removeEventListener('click', skipHandler);
-    resolve();
+  skipTyping = true;
+  if (timeoutId) clearTimeout(timeoutId);
+  dialogText.textContent = text; // Mostrar todo al instante
+  document.removeEventListener("click", skipHandler);
+  resolve();
 };
 ```
 
 **Uso:**
+
 - Automático, sin configuración
 - Click normal = siguiente línea
 - Click durante typing = completar + siguiente línea
@@ -1157,6 +1208,7 @@ Timeline (2.5 segundos):
 ```
 
 **Visual:**
+
 ```
          ════════════════════════════
          CAPÍTULO 1: EL ENCUENTRO
@@ -1165,6 +1217,7 @@ Timeline (2.5 segundos):
 
 **Requisito JSON:**
 Cada capítulo debe tener un campo `title`:
+
 ```json
 {
   "title": "Capítulo 1: El Encuentro",
@@ -1178,6 +1231,7 @@ terminarlo, el juego vuelve **directamente al menú principal** sin ofrecer la
 pantalla "¿Continuar? → Siguiente Capítulo". Los tres Capítulos 3 (rutas de Edu,
 Tony y José) lo usan para cerrar la partida correctamente en lugar de saltar de
 vuelta a un capítulo numérico anterior.
+
 ```json
 {
   "title": "Capítulo 3: El Precio de la Lealtad",
@@ -1187,11 +1241,12 @@ vuelta a un capítulo numérico anterior.
 ```
 
 **Personalización:**
+
 ```javascript
 // En engine.js - playChapterIntro()
 setTimeout(() => {
-    chapterOverlay.classList.add('fade-out');
-}, 2000);  // Cambiar duración aquí
+  chapterOverlay.classList.add("fade-out");
+}, 2000); // Cambiar duración aquí
 ```
 
 ### 4. Efectos Visuales Avanzados
@@ -1215,20 +1270,22 @@ p5Effects.focusLines();
 p5Effects.shakeScreen(intensity, duration);
 
 // Sonidos (si existen archivos)
-p5Effects.playSound('select');
-p5Effects.playSound('confirm');
+p5Effects.playSound("select");
+p5Effects.playSound("confirm");
 ```
 
 **Acceso desde game.js:**
+
 ```javascript
 // Después de una elección importante
 p5Effects.shockwave(400, 300);
-p5Effects.createParticles(400, 300, 12, '#ff1744');
+p5Effects.createParticles(400, 300, 12, "#ff1744");
 ```
 
 ### 5. Tamaños de Personaje Optimizados
 
 **Cambio de Dimensiones:**
+
 - Antes: 300x600px (pequeños)
 - Después: **100vh (altura completa de pantalla)**
 
@@ -1257,6 +1314,7 @@ Solo hay dos posiciones válidas:
 ```
 
 **Uso en Capítulos:**
+
 ```json
 // Dos personajes (lado a lado, altura completa)
 {
@@ -1289,11 +1347,12 @@ Solo hay dos posiciones válidas:
          FIN DEL CAPÍTULO
          Capítulo 1: El Encuentro
          ════════════════════════════
-                    
+
             [  CONTINUAR  ]
 ```
 
 **Timeline (Con Pausa):**
+
 1. Llega al último diálogo del capítulo
 2. **El diálogo se PAUSA** (espera tu click)
 3. Haces click → aparece pantalla de fin con animaciones
@@ -1303,6 +1362,7 @@ Solo hay dos posiciones válidas:
 7. Se resetea todo el estado
 
 **Estados que se Resetean:**
+
 - ✅ Personajes (desaparecen)
 - ✅ Fondos (se limpian)
 - ✅ Variables de juego
@@ -1312,6 +1372,7 @@ Solo hay dos posiciones válidas:
 
 **Requisito JSON:**
 El capítulo debe tener un campo `title`:
+
 ```json
 {
   "title": "Capítulo 1: El Encuentro",
@@ -1320,11 +1381,12 @@ El capítulo debe tener un campo `title`:
 ```
 
 **Personalización:**
+
 ```css
 /* En styles.css */
 .chapter-end-title {
-    font-size: 48px;  /* Tamaño del título */
-    color: #ffcc00;   /* Color */
+  font-size: 48px; /* Tamaño del título */
+  color: #ffcc00; /* Color */
 }
 ```
 
@@ -1340,6 +1402,7 @@ Personaje A (hablando):         Personaje B (escuchando):
 ```
 
 **Visual:**
+
 ```
 El personaje que habla recibe un efecto de glow que pulsa suavemente:
 - Drop-shadow amarillo (#ffcc00)
@@ -1348,6 +1411,7 @@ El personaje que habla recibe un efecto de glow que pulsa suavemente:
 ```
 
 **Funcionamiento Automático:**
+
 1. Se muestra un diálogo
 2. El engine busca qué personaje está hablando
 3. Aplica automáticamente la clase `.speaking` a ese personaje
@@ -1357,6 +1421,7 @@ El personaje que habla recibe un efecto de glow que pulsa suavemente:
 **Cómo Funciona Internamente:**
 
 En engine.js, el método `displayDialog()` detecta automáticamente:
+
 - El nombre del personaje en `line.character`
 - Su posición (left o right)
 - Aplica `focusCharacter()` para añadir la clase `.speaking`
@@ -1365,21 +1430,24 @@ En engine.js, el método `displayDialog()` detecta automáticamente:
 **Personalización:**
 
 Para cambiar el color del glow, en `styles.css`:
+
 ```css
 @keyframes speaking-glow {
-    0%, 100% {
-        filter: drop-shadow(0 0 20px rgba(255, 204, 0, 0.8));  /* Cambiar #ffcc00 */
-    }
-    50% {
-        filter: drop-shadow(0 0 30px rgba(255, 204, 0, 1));
-    }
+  0%,
+  100% {
+    filter: drop-shadow(0 0 20px rgba(255, 204, 0, 0.8)); /* Cambiar #ffcc00 */
+  }
+  50% {
+    filter: drop-shadow(0 0 30px rgba(255, 204, 0, 1));
+  }
 }
 ```
 
 Para cambiar la velocidad (más rápido/lento):
+
 ```css
 .character.speaking {
-    animation: speaking-glow 0.6s ease-in-out infinite;  /* Cambiar 0.6s */
+  animation: speaking-glow 0.6s ease-in-out infinite; /* Cambiar 0.6s */
 }
 ```
 
@@ -1389,13 +1457,14 @@ Se cargan todos los personajes disponibles al inicio:
 
 ```javascript
 // En game.js - startNewGame()
-const characters = ['luna', 'alex', '2b', 'pod', 'emil'];
+const characters = ["luna", "alex", "2b", "pod", "emil"];
 for (const character of characters) {
-    await engine.loadCharacter(character);
+  await engine.loadCharacter(character);
 }
 ```
 
 **Para agregar nuevo personaje:**
+
 1. Crea `characters/nuevo.json`
 2. Agrega imagen: `assets/characters/nuevo.png`
 3. Agrega a array en game.js
@@ -1428,12 +1497,14 @@ Reemplazar por: #tu-color-aqui
 ```
 
 **Para cambiar el rojo:**
+
 ```bash
 Buscar:  #ff1744
 Reemplazar por: #tu-color-aqui
 ```
 
 **Elementos afectados:**
+
 - Bordes de menú y diálogos
 - Nombre del personaje
 - Indicador de continuar (▼)
@@ -1446,7 +1517,7 @@ Reemplazar por: #tu-color-aqui
 En `engine.js`, modifica:
 
 ```javascript
-this.typingSpeed = 50;  // Milisegundos por carácter
+this.typingSpeed = 50; // Milisegundos por carácter
 // Más rápido: 20
 // Normal: 50 (por defecto)
 // Más lento: 100
@@ -1466,24 +1537,26 @@ En `styles.css`, los personajes ahora ocupan toda la altura:
 ```
 
 **Tamaños actuales:**
+
 - Altura: 100vh (altura completa de ventana)
 - Ancho: automático (mantiene proporción)
 - Posición: left (0) o right (0)
 
 **Posiciones disponibles:**
 
-| Posición | CSS | Uso |
-|----------|-----|-----|
-| `left` | Esquina inferior izquierda | Personaje izquierdo |
-| `right` | Esquina inferior derecha | Personaje derecho |
-| `center` | Centro inferior | Personaje solo |
+| Posición | CSS                        | Uso                 |
+| -------- | -------------------------- | ------------------- |
+| `left`   | Esquina inferior izquierda | Personaje izquierdo |
+| `right`  | Esquina inferior derecha   | Personaje derecho   |
+| `center` | Centro inferior            | Personaje solo      |
 
 **Ejemplo en JSON:**
+
 ```json
 {
   "type": "showCharacter",
   "character": "luna",
-  "position": "center"  // Nueva opción
+  "position": "center" // Nueva opción
 }
 ```
 
@@ -1505,11 +1578,13 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 ### Error: "Error cargando capítulo"
 
 **Causas:**
+
 1. El archivo no existe en `chapters/`
 2. JSON inválido
 3. Nombre incorrecto en `game.js`
 
 **Solución:**
+
 1. Verifica que el archivo existe y tiene el nombre correcto
 2. Valida el JSON en [jsonlint.com](https://jsonlint.com)
 3. Asegúrate de usar minúsculas en `game.js`
@@ -1517,11 +1592,13 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 ### Los personajes no aparecen
 
 **Causas:**
+
 1. El archivo del personaje no existe
 2. La imagen no existe
 3. El nombre no coincide exactamente
 
 **Solución:**
+
 ```
 1. Verifica: characters/luna.json existe
 2. Verifica: assets/characters/luna.png existe
@@ -1531,11 +1608,13 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 ### Los fondos no cambian
 
 **Causas:**
+
 1. Ruta incorrecta
 2. Imagen no existe
 3. JSON mal formado
 
 **Solución:**
+
 ```json
 ❌ "value": "backgrounds/cafe.png"
 ✅ "value": "assets/backgrounds/cafe.png"
@@ -1544,25 +1623,29 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 ### Las elecciones no funcionan
 
 **Causas:**
+
 1. `nextLine` o `nextScene` incorrecto
 2. Línea/escena no existe
 3. JSON inválido (falta coma)
 
 **Solución:**
+
 ```javascript
 // En DevTools:
-engine.currentScene  // Escena actual
-engine.currentLine   // Línea actual
+engine.currentScene; // Escena actual
+engine.currentLine; // Línea actual
 ```
 
 ### El juego se congela
 
 **Causas:**
+
 1. Loop infinito en elecciones
 2. Acción `wait` muy larga
 3. Error en el código
 
 **Solución:**
+
 1. Abre DevTools (F12)
 2. Revisa la consola para errores
 3. Verifica que no hay `nextLine` circular
@@ -1572,6 +1655,7 @@ engine.currentLine   // Línea actual
 **Causa:** No estás usando servidor local
 
 **Solución:**
+
 ```bash
 python -m http.server 8000
 # Abre: http://localhost:8000
@@ -1582,13 +1666,15 @@ python -m http.server 8000
 **Causa:** Estilos CSS no actualizados
 
 **Solución:**
+
 1. Limpia caché: Ctrl + Shift + Delete
 2. Recarga con hard-refresh: Ctrl + Shift + R
 3. Verifica que `styles.css` tiene:
+
 ```css
 .character {
-    height: 700px;
-    width: 400px;
+  height: 700px;
+  width: 400px;
 }
 ```
 
@@ -1597,6 +1683,7 @@ python -m http.server 8000
 **Causa:** El capítulo no tiene un campo `title`
 
 **Solución:**
+
 ```json
 {
   "title": "Capítulo 1: Mi Título",  // ← Requerido
@@ -1609,6 +1696,7 @@ python -m http.server 8000
 **Causa:** Caché del navegador
 
 **Solución:**
+
 1. Hard-refresh: Ctrl + Shift + R
 2. Abre DevTools (F12)
 3. Ve a Network
@@ -1620,10 +1708,13 @@ python -m http.server 8000
 **Causa:** CSS no cargado o conflicto
 
 **Solución:**
+
 1. Verifica que `.dialog-box.p5-style` tenga:
+
 ```css
 border: 3px solid #ffcc00;
 ```
+
 2. No hay CSS sobrescrito después
 3. Hard-refresh: Ctrl + Shift + R
 
@@ -1642,8 +1733,9 @@ border: 3px solid #ffcc00;
 ```
 
 Accede en DevTools:
+
 ```javascript
-engine.gameState.luna_relationship  // 10
+engine.gameState.luna_relationship; // 10
 ```
 
 ### Guardado Automático
@@ -1674,7 +1766,7 @@ Para saltar a otra escena, usa `nextScene`:
 ```json
 {
   "text": "Ir al siguiente lugar",
-  "nextScene": 1  // Va a escena 2 (0-indexed)
+  "nextScene": 1 // Va a escena 2 (0-indexed)
 }
 ```
 
@@ -1716,24 +1808,24 @@ Los números se reinician por escena y facilitan debugging.
 
 ```javascript
 // Cargar recursos
-engine.loadChapter(name)      // Carga un capítulo
-engine.loadCharacter(name)    // Carga un personaje
+engine.loadChapter(name); // Carga un capítulo
+engine.loadCharacter(name); // Carga un personaje
 
 // Información actual
-engine.currentScene           // Escena actual (número)
-engine.currentLine            // Línea actual (número)
-engine.gameState              // Variables del juego
+engine.currentScene; // Escena actual (número)
+engine.currentLine; // Línea actual (número)
+engine.gameState; // Variables del juego
 
 // Control manual
-engine.setBackground(path)    // Cambiar fondo
-engine.showCharacter(name, pos, pose)  // Mostrar personaje
-engine.hideCharacter(name)    // Ocultar personaje
-engine.setPose(name, pos, pose)  // Cambiar pose
-engine.playSound(path)        // Reproducir audio
+engine.setBackground(path); // Cambiar fondo
+engine.showCharacter(name, pos, pose); // Mostrar personaje
+engine.hideCharacter(name); // Ocultar personaje
+engine.setPose(name, pos, pose); // Cambiar pose
+engine.playSound(path); // Reproducir audio
 
 // Estado
-engine.isWaitingForInput      // Esperando click
-engine.history                // Historial de opciones
+engine.isWaitingForInput; // Esperando click
+engine.history; // Historial de opciones
 ```
 
 ---
@@ -1813,13 +1905,13 @@ engine.history                // Historial de opciones
 
 ```javascript
 async function startNewGame() {
-    mainMenu.classList.add('hidden');
-    isGameRunning = true;
+  mainMenu.classList.add("hidden");
+  isGameRunning = true;
 
-    await engine.loadChapter('chapter1');
-    await engine.loadCharacter('luna');
+  await engine.loadChapter("chapter1");
+  await engine.loadCharacter("luna");
 
-    await playGame();
+  await playGame();
 }
 ```
 
@@ -1832,17 +1924,20 @@ async function startNewGame() {
 Cuando terminas un capítulo y vuelves al menú, el motor limpia completamente el estado:
 
 **Visual:**
+
 - ❌ Todos los personajes desaparecen
 - ❌ Fondo se limpia
 - ❌ Diálogos y elecciones se ocultan
 
 **Lógico:**
+
 - ❌ Variables del juego se borran (`gameState`)
 - ❌ Historial de elecciones se borra
 - ❌ Posición de línea/escena se resetea
 - ❌ Tracking de capítulos anterior se olvida
 
 **Comportamiento:**
+
 ```javascript
 // Cuando termina un capítulo:
 1. Muestra pantalla "Fin del Capítulo"
@@ -1862,18 +1957,18 @@ reset() {
     this.gameState = {};          // Vaciar variables
     this.history = [];            // Vaciar historial
     this.lastChapterName = null;  // Olvidar capítulo anterior
-    
+
     // Limpiar UI
     this.hideDialog();            // Ocultar cuadro de diálogo
-    
+
     // Limpiar personajes
     document.getElementById('character-left').classList.remove('active');
     document.getElementById('character-right').classList.remove('active');
     document.getElementById('character-center').classList.remove('active');
-    
+
     // Limpiar fondo
     document.getElementById('background').style.backgroundImage = '';
-    
+
     // Limpiar elecciones
     document.getElementById('choices-container').innerHTML = '';
 }
@@ -1893,21 +1988,21 @@ DESPUÉS (Mejorado):
 
 ```javascript
 async function playGame() {
-    while (isGameRunning) {
-        const hasMoreContent = await engine.nextLine();
-        
-        if (!hasMoreContent) {
-            // ← AQUÍ: El último diálogo está mostrado y espera click
-            if (engine.isWaitingForInput) {
-                await waitForClick();  // Espera confirmación del usuario
-            }
-            endGame();  // Luego aparece pantalla de fin
-            break;
-        }
-        
-        if (!engine.isWaitingForInput) continue;
-        await waitForClick();
+  while (isGameRunning) {
+    const hasMoreContent = await engine.nextLine();
+
+    if (!hasMoreContent) {
+      // ← AQUÍ: El último diálogo está mostrado y espera click
+      if (engine.isWaitingForInput) {
+        await waitForClick(); // Espera confirmación del usuario
+      }
+      endGame(); // Luego aparece pantalla de fin
+      break;
     }
+
+    if (!engine.isWaitingForInput) continue;
+    await waitForClick();
+  }
 }
 ```
 
@@ -1915,24 +2010,25 @@ async function playGame() {
 
 ```javascript
 async function endGame() {
-    // 1. Ocultar diálogo anterior
-    engine.hideDialog();
-    
-    // 2. Mostrar pantalla de fin cinematográfica
-    const chapterTitle = engine.currentChapter?.title;
-    await engine.showChapterEnd(chapterTitle);
-    
-    // 3. Resetear todo
-    engine.reset();
-    
-    // 4. Mostrar menú
-    mainMenu.classList.remove('hidden');
+  // 1. Ocultar diálogo anterior
+  engine.hideDialog();
+
+  // 2. Mostrar pantalla de fin cinematográfica
+  const chapterTitle = engine.currentChapter?.title;
+  await engine.showChapterEnd(chapterTitle);
+
+  // 3. Resetear todo
+  engine.reset();
+
+  // 4. Mostrar menú
+  mainMenu.classList.remove("hidden");
 }
 ```
 
 ### Ejemplo Práctico
 
 **Capítulo 1 (No resetea variables):**
+
 ```
 Línea 1: Hablas con Luna → relationship = 5
 Línea 2: Eliges opción → relationship = 10
@@ -1941,6 +2037,7 @@ Click "Continuar" → engine.reset()
 ```
 
 **Capítulo 2 (Comienza limpio):**
+
 ```
 Línea 1: Luna no recuerda nada (relationship = 0)
 Empieza de cero
@@ -1960,10 +2057,10 @@ Si QUIERES que las variables persistan entre capítulos, guarda en `localStorage
 
 ```javascript
 // Al final del capítulo, en endGame():
-localStorage.setItem('persistentState', JSON.stringify(engine.gameState));
+localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 
 // Al empezar nuevo capítulo:
-const saved = localStorage.getItem('persistentState');
+const saved = localStorage.getItem("persistentState");
 if (saved) engine.gameState = JSON.parse(saved);
 ```
 
@@ -1984,11 +2081,13 @@ Chapter0 → Chapter1 → Chapter2 → (fin de juego)
 ### Crear Nuevos Capítulos
 
 1. **Crea el archivo JSON:**
+
 ```
 chapters/chapter3.json
 ```
 
 2. **Estructura básica:**
+
 ```json
 {
   "title": "Capítulo 3: El Viaje",
@@ -2017,7 +2116,7 @@ chapters/
 ├── chapter1.json       ← Capítulo 1: Decisiones
 ├── chapter2-edu.json   ← Capítulo 2: Kingdom Ketchup (ruta de Edu)
 ├── chapter2-tony.json  ← Capítulo 2: Ecchi Land (ruta de Tony)
-├── chapter2-jose.json  ← Capítulo 2: Paloma City (ruta de José)
+├── chapter2-jose.json  ← Capítulo 2: Ciudad Paloma (ruta de José)
 └── chapter3.json       ← Capítulo 3: El Precio de la Lealtad (desenlace)
 └── chapter99.json   ← Puedes tener muchos
 ```
@@ -2040,11 +2139,12 @@ Cuando terminas un capítulo, aparece:
 
 ```
          ¿CONTINUAR?
-    
+
     [Siguiente Capítulo] [Menú Principal]
 ```
 
 El jugador elige si desea:
+
 - **Siguiente Capítulo:** Carga automáticamente el próximo
 - **Menú Principal:** Vuelve al menú (puede recargar desde "Cargar")
 
@@ -2054,27 +2154,30 @@ El jugador elige si desea:
 
 ```javascript
 // En game.js, antes de playChapter():
-const persistedVariables = localStorage.getItem('persistentState');
+const persistedVariables = localStorage.getItem("persistentState");
 if (persistedVariables) {
-    engine.gameState = JSON.parse(persistedVariables);
+  engine.gameState = JSON.parse(persistedVariables);
 }
 
 // Después de endGame():
-localStorage.setItem('persistentState', JSON.stringify(engine.gameState));
+localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 ```
 
 ### Estructura de Capítulos Actual
 
 **chapter0.json - Prólogo:**
+
 - Introducción a Furrielva
 - Presentación de 2B como narrador
 
 **chapter1.json - Capítulo 1: Decisiones:**
+
 - Los amigos necesitan ayuda en Furrielva
 - Samu decide a quién rescatar primero (elección dinámica)
 - Rutas ramificadas según la decisión
 
 **chapter2-edu.json - Capítulo 2: Kingdom Ketchup:**
+
 - Samu busca a Edu en el supermercado
 - Elige ruta entre El Jamón, Día o Mercadona
 - Batalla contra la loca de los gatos (minigame gatos)
@@ -2083,37 +2186,44 @@ localStorage.setItem('persistentState', JSON.stringify(engine.gameState));
 - Llamadas telefónicas opcionales
 
 **chapter2-tony.json - Capítulo 2: Ecchi Land:**
+
 - Ruta paralela de Samu rescatando a Tony
 - Aventuras en Ecchi Land
 
-**chapter2-jose.json - Capítulo 2: Paloma City:**
+**chapter2-jose.json - Capítulo 2: Ciudad Paloma:**
+
 - Ruta paralela de Samu rescatando a José
-- Aventuras en Paloma City
+- Aventuras en Ciudad Paloma
 
 **chapter3.json - Capítulo 3: El Precio de la Lealtad:**
+
 - Desenlace final basado en quién fue rescatado primero
 - Resolución de la trama principal con variantes según ruta
 
 ### Ejemplo Práctico: Estructura de Capítulo
 
 **chapter0.json - Prólogo (1-2 minutos):**
+
 ```json
 {
   "title": "Prólogo: El Principio",
-  "scenes": [{
-    "title": "Introducción",
-    "lines": [
-      {
-        "_line": 0,
-        "character": "Narrador",
-        "text": "Hace mucho tiempo..."
-      }
-    ]
-  }]
+  "scenes": [
+    {
+      "title": "Introducción",
+      "lines": [
+        {
+          "_line": 0,
+          "character": "Narrador",
+          "text": "Hace mucho tiempo..."
+        }
+      ]
+    }
+  ]
 }
 ```
 
 **chapter1.json - Acto 1 (5-10 minutos):**
+
 ```json
 {
   "title": "Capítulo 1: El Encuentro",
@@ -2125,6 +2235,7 @@ localStorage.setItem('persistentState', JSON.stringify(engine.gameState));
 ```
 
 **chapter2.json - Acto 2 (5-10 minutos):**
+
 ```json
 {
   "title": "Capítulo 2: El Viaje",
@@ -2158,11 +2269,13 @@ El sistema carga capítulos en orden numérico:
 ## 📋 Checklist de Proyecto
 
 ### Antes de comenzar
+
 - [ ] Servidor local corriendo (`python -m http.server 8000`)
 - [ ] `index.html` abierto en navegador
 - [ ] DevTools disponible (F12)
 
 ### Creando contenido
+
 - [ ] Personajes en `characters/` con JSON válido
 - [ ] Capítulos en `chapters/` con JSON válido
 - [ ] Imágenes en `assets/` en PNG
@@ -2171,6 +2284,7 @@ El sistema carga capítulos en orden numérico:
 - [ ] `game.js` carga los recursos correctos
 
 ### Testing
+
 - [ ] El capítulo carga sin errores
 - [ ] Los fondos aparecen
 - [ ] Los personajes aparecen
@@ -2184,14 +2298,17 @@ El sistema carga capítulos en orden numérico:
 ## 🎓 Recursos Útiles
 
 ### Validadores
+
 - **JSON:** [jsonlint.com](https://jsonlint.com)
 - **Colores:** [htmlcolorcodes.com](https://www.htmlcolorcodes.com)
 
 ### Herramientas
+
 - **Redimensionar imágenes:** [picresize.com](https://picresize.com)
 - **Generador de colores:** [coolors.co](https://coolors.co)
 
 ### Servidores Locales
+
 - **Python:** `python -m http.server 8000`
 - **Node.js:** `npx http-server -p 8000`
 - **PHP:** `php -S localhost:8000`
@@ -2215,21 +2332,21 @@ El sistema carga capítulos en orden numérico:
 
 ### Errores Comunes en Console (F12)
 
-| Error | Causa | Solución |
-|-------|-------|----------|
-| `Failed to fetch` | Archivo no existe | Verifica rutas |
-| `JSON.parse error` | JSON inválido | Usa jsonlint.com |
+| Error                  | Causa              | Solución         |
+| ---------------------- | ------------------ | ---------------- |
+| `Failed to fetch`      | Archivo no existe  | Verifica rutas   |
+| `JSON.parse error`     | JSON inválido      | Usa jsonlint.com |
 | `Cannot read property` | Recurso no cargado | Verifica game.js |
-| `Uncaught TypeError` | Error en código | Revisa engine.js |
+| `Uncaught TypeError`   | Error en código    | Revisa engine.js |
 
 ### Monitorear Estado
 
 ```javascript
 // En Console (F12):
-console.log(engine.currentScene)    // Escena actual
-console.log(engine.currentLine)     // Línea actual
-console.log(engine.gameState)       // Todas las variables
-console.log(engine.history)         // Opciones seleccionadas
+console.log(engine.currentScene); // Escena actual
+console.log(engine.currentLine); // Línea actual
+console.log(engine.gameState); // Todas las variables
+console.log(engine.history); // Opciones seleccionadas
 ```
 
 ---
@@ -2252,16 +2369,17 @@ Este proyecto está disponible para uso educativo y comercial.
 
 ---
 
-*Última actualización: 2026-06-24*
+_Última actualización: 2026-06-24_
 
 ---
 
 ## 📚 Documentación Consolidada
 
-Toda la información de características está integrada en este documento. 
+Toda la información de características está integrada en este documento.
 No existen archivos MD separados por característica.
 
 **Secciones principales:**
+
 - ✅ Características Avanzadas - Persona 5
 - ✅ Personalización de estilos P5
 - ✅ Troubleshooting actualizado

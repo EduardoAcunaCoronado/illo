@@ -143,7 +143,7 @@
       role: "Maga Blanca / Cantora",
       portrait: "assets/characters/tony/tony_hud_battle_1.png",
       hp: 95,
-      pm: 150,
+      pm: 130,
       speed: 10,
       evasion: 0.1,
       defense: 4,
@@ -323,9 +323,9 @@
       background: "assets/backgrounds/plaza_circular_agujero.png",
       hp: 420,
       pm: 80,
-      speed: 13,
+      speed: 14,
       evasion: 0.16,
-      defense: 6,
+      defense: 7,
       stealItem: {
         id: "cafe_capuccino",
         name: "Café capuccino",
@@ -385,9 +385,9 @@
       background: "assets/backgrounds/airi_sala_interior_santuario.png",
       hp: 520,
       pm: 90,
-      speed: 12,
+      speed: 15,
       evasion: 0.12,
-      defense: 8,
+      defense: 9,
       stealItem: {
         id: "sushi_de_tiburon",
         name: "Sushi de tiburón",
@@ -448,9 +448,9 @@
       background: "assets/backgrounds/fuente_ciudad_paloma.png",
       hp: 620,
       pm: 110,
-      speed: 11,
+      speed: 12,
       evasion: 0.08,
-      defense: 9,
+      defense: 10,
       stealItem: {
         id: "sirope_de_arce",
         name: "Sirope de arce",
@@ -507,7 +507,7 @@
       role: "Horror Brainrot",
       image: "assets/characters/amalgama/amalgama_base.png",
       background: "assets/backgrounds/fuente_ciudad_paloma_corrupta.png",
-      hp: 760,
+      hp: 840,
       pm: 140,
       speed: 8,
       evasion: 0.06,
@@ -567,7 +567,7 @@
       role: "Nucleo final",
       image: "assets/characters/amalgama/amalgama_final.png",
       background: "assets/backgrounds/fuente_ciudad_paloma_corrupta_total.png",
-      hp: 1200,
+      hp: 1120,
       pm: 260,
       speed: 11,
       evasion: 0.08,
@@ -1099,6 +1099,13 @@
 
     selectSkill(actor, skill) {
       this.selectedSkill = skill;
+      if (skill.id === "cura") {
+        this.awaitingPlayer = false;
+        this.awaitingTarget = true;
+        this.message(`Elige a quién aplicar ${skill.name}.`);
+        this.enableHealTargeting(actor, skill);
+        return;
+      }
       if (skill.target === "ally") {
         this.awaitingPlayer = false;
         this.awaitingTarget = true;
@@ -1107,6 +1114,70 @@
         return;
       }
       this.performPlayerSkill(actor, skill, this.enemy);
+    }
+
+    enableHealTargeting(actor, skill) {
+      const party = this.overlay.querySelector(".battle-party");
+      const enemyEl = this.overlay.querySelector(".battle-enemy");
+      const cancelButton = this.overlay.querySelector(".battle-target-cancel");
+      const skillButtons = this.overlay.querySelectorAll(
+        ".battle-skill-button",
+      );
+      const token = Symbol("heal-target-selection");
+      this.targetSelectionToken = token;
+      party.classList.add("is-targeting");
+      enemyEl?.classList.add("is-targetable");
+      skillButtons.forEach((button) => {
+        button.disabled = true;
+      });
+      cancelButton.classList.remove("hidden");
+      cancelButton.onclick = () => this.cancelTargetSelection(actor, token);
+
+      const clearTargeting = () => {
+        this.awaitingTarget = false;
+        this.targetSelectionToken = null;
+        party.classList.remove("is-targeting");
+        enemyEl?.classList.remove("is-targetable");
+        cancelButton.classList.add("hidden");
+        cancelButton.onclick = null;
+      };
+
+      party.querySelectorAll(".battle-ally-card").forEach((card) => {
+        card.addEventListener(
+          "click",
+          () => {
+            const target = this.allies.find(
+              (ally) => ally.id === card.dataset.ally,
+            );
+            if (
+              !target ||
+              target.currentHp <= 0 ||
+              !this.awaitingTarget ||
+              this.targetSelectionToken !== token
+            )
+              return;
+            clearTargeting();
+            this.performPlayerSkill(actor, skill, target);
+          },
+          { once: true },
+        );
+      });
+
+      enemyEl?.addEventListener(
+        "click",
+        (event) => {
+          event.stopPropagation();
+          if (
+            this.enemy.currentHp <= 0 ||
+            !this.awaitingTarget ||
+            this.targetSelectionToken !== token
+          )
+            return;
+          clearTargeting();
+          this.performPlayerSkill(actor, skill, this.enemy);
+        },
+        { once: true },
+      );
     }
 
     enableAllyTargeting(actor, skill) {
@@ -1197,6 +1268,7 @@
       const party = this.overlay.querySelector(".battle-party");
       const cancelButton = this.overlay.querySelector(".battle-target-cancel");
       party.classList.remove("is-targeting");
+      this.overlay.querySelector(".battle-enemy")?.classList.remove("is-targetable");
       cancelButton.classList.add("hidden");
       cancelButton.onclick = null;
 
@@ -1422,15 +1494,23 @@
         const results = targets.map((singleTarget) =>
           this.applySingleTargetSkill(actor, skill, singleTarget),
         );
+        let enemyDamage = results.reduce(
+          (sum, result) => sum + (result.enemyDamage || 0),
+          0,
+        );
+        let extraText = "";
+        if (skill.id === "canto_sanador" && this.enemy.currentHp > 0) {
+          const damage = Math.min(10, this.enemy.currentHp);
+          this.enemy.currentHp -= damage;
+          enemyDamage += damage;
+          extraText = ` ${this.enemy.name} recibe ${damage} de daño.`;
+        }
         return {
-          text: `${actor.name} usa ${skill.name}. ${results.map((result) => result.text).join(" ")}`,
-          hitEnemy: results.some((result) => result.hitEnemy),
+          text: `${actor.name} usa ${skill.name}. ${results.map((result) => result.text).join(" ")}${extraText}`,
+          hitEnemy: results.some((result) => result.hitEnemy) || enemyDamage > 0,
           hitAllies: results.flatMap((result) => result.hitAllies),
           allyDamages: results.flatMap((result) => result.allyDamages || []),
-          enemyDamage: results.reduce(
-            (sum, result) => sum + (result.enemyDamage || 0),
-            0,
-          ),
+          enemyDamage,
         };
       }
 
@@ -1454,12 +1534,24 @@
         };
 
       if (skill.type === "heal") {
+        if (target.team === "enemy") {
+          const damage = Math.min(skill.power, target.currentHp);
+          target.currentHp = Math.max(0, target.currentHp - damage);
+          return {
+            text: `${target.name} recibe ${damage} de daño.`,
+            hitEnemy: damage > 0,
+            hitAllies: [],
+            allyDamages: [],
+            enemyDamage: damage,
+          };
+        }
         const amount = Math.min(skill.power, target.maxHp - target.currentHp);
         target.currentHp += amount;
         return {
           text: `${target.name} recupera ${amount} HP.`,
           hitEnemy: false,
           hitAllies: [],
+          allyDamages: [],
           enemyDamage: 0,
         };
       }
@@ -1471,6 +1563,7 @@
           text: `${target.name} recupera ${amount} HP.`,
           hitEnemy: false,
           hitAllies: [],
+          allyDamages: [],
           enemyDamage: 0,
         };
       }

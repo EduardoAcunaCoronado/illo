@@ -1,5 +1,5 @@
 {
-  "title": "Capítulo 4: Paloma City",
+  "title": "Capítulo 4: Ciudad Paloma",
   "scenes": [
     {
       "title": "Escena 1: Camino a Ciudad Paloma",
@@ -28,7 +28,7 @@
         },
         {
           "character": "Samu",
-          "text": "El último mensaje de José decía que en Paloma City estaba pasando algo muy raro, que creía saber por qué y que siguiéramos el camino de baldosas amarillas. Luego se cortó la llamada.",
+          "text": "José decía que en Ciudad Paloma estaba pasando algo muy raro, que creía saber el porqué y que siguiéramos el camino de baldosas amarillas. Luego se cortó la llamada.",
           "actions": [
             {
               "type": "showCharacter",
@@ -65,7 +65,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... ¿y si este es el mundo de ensueño de José? Porque lo de seguir baldosas amarillas hacia una ciudad misteriosa suena bastante a partida rara.",
+          "text": "¿Y si este es el mundo de ensueño de José? Porque lo de seguir baldosas amarillas hacia una ciudad misteriosa suena bastante a partida rara.",
           "actions": [
             {
               "type": "showCharacter",
@@ -481,7 +481,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "¿No te lo esperabas? Si siempre me han encantado los personajes femeninos. El virus solo ha tenido muy buen gusto. Y por cierto llamame Seraphyna.",
+          "text": "¿No te lo esperabas? Si siempre me han encantado los personajes femeninos. Lo que sea que nos transformara solo ha tenido muy buen gusto. Y por cierto llamame Seraphyna.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1152,7 +1152,7 @@
         },
         {
           "character": "2B",
-          "text": "La runa de la estrella se ilumina. Un círculo sagrado se abre a sus pies, dibujando símbolos dorados sobre la piedra. Una luz blanca y cálida la envuelve mientras alza la mano, y de pronto el aire se llena de plumas brillantes, notas musicales y pequeños escudos de energía que giran a su alrededor como una melodía protectora. La plaza responde a su voz antes incluso de que cante: Maga Blanca / Cantora.",
+          "text": "La runa de la estrella se ilumina. Un círculo sagrado se abre a sus pies, dibujando símbolos dorados sobre la piedra. Seraphyna alza la mano, y de pronto el aire se llena de plumas brillantes, notas musicales y pequeños escudos de energía que giran a su alrededor como una melodía protectora. La plaza responde a su voz antes incluso de que cante: Maga Blanca / Cantora.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -1513,7 +1513,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... antes esto daba bastante más miedo. Ahora con Prisa puedo entrar, salir y dejarles cara de no haber entendido nada.",
+          "text": "Antes esto daba bastante más miedo. Ahora con Prisa puedo entrar, salir y dejarles cara de no haber entendido nada.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1609,7 +1609,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... ¿Estamos hablando de los famosos y odiados brainrot?",
+          "text": "¿Estamos hablando de los famosos y odiados brainrot?",
           "actions": [
             {
               "type": "showCharacter",
