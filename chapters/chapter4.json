@@ -1750,14 +1750,14 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Escena 7: La puerta hacia la batalla final"
+              "value": "Escena 7: La puerta hacia el santuario"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 7: La puerta hacia la batalla final",
+      "title": "Escena 7: La puerta hacia el santuario",
       "lines": [
         {
           "actions": [
