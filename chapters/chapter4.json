@@ -1465,7 +1465,26 @@
         },
         {
           "character": "2B",
-          "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez desde que llegaron a aquel mundo, sus avatares responden como si siempre hubieran sabido luchar juntos."
+          "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez desde que llegaron a aquel mundo, sus avatares responden como si siempre hubieran sabido luchar juntos.",
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/plaza_cicular_meme_ataque_heroes.png"
+            }
+          ]
         },
         {
           "character": "Samu",

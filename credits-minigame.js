@@ -12,6 +12,7 @@
     "assets/backgrounds/entrada_epica_jose.png",
     "assets/backgrounds/plaza_circular.png",
     "assets/backgrounds/cielo_glitch_brainrot.png",
+    "assets/backgrounds/plaza_cicular_meme_ataque_heroes.png",
     "assets/backgrounds/mazmorra_puerta_santuario_abierta.png",
     "assets/backgrounds/airi_sala_interior_santuario.png",
     "assets/backgrounds/fuente_ciudad_paloma.png",
