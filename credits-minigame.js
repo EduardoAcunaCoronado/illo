@@ -112,21 +112,27 @@
       }
       .credits-skip {
         position: absolute;
-        bottom: 18px;
-        right: 18px;
+        bottom: 22px;
+        right: 26px;
         z-index: 4;
-        border: 1px solid rgba(255,255,255,0.35);
-        border-radius: 8px;
-        background: rgba(0,0,0,0.52);
-        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.45);
+        color: rgba(255, 255, 255, 0.85);
         cursor: pointer;
         font-size: 14px;
-        font-weight: 700;
-        padding: 10px 14px;
-        box-shadow: 0 0 18px rgba(79,208,255,0.25);
+        font-weight: 400;
+        letter-spacing: 0.05em;
+        padding: 6px 14px;
+        user-select: none;
+        animation: credits-skip-pulse 2.4s ease-in-out infinite;
       }
       .credits-skip:hover {
-        background: rgba(79,208,255,0.24);
+        opacity: 0.95;
+      }
+      @keyframes credits-skip-pulse {
+        0%, 100% { opacity: 0.35; }
+        50% { opacity: 0.9; }
       }
     `;
     document.head.appendChild(style);
@@ -167,7 +173,7 @@
         <img class="credits-bg credits-bg-a" alt="">
         <img class="credits-bg credits-bg-b" alt="">
         <div class="credits-shade"></div>
-        <button class="credits-skip" type="button">Saltar creditos</button>
+        <button class="credits-skip" type="button">Clic para saltar ▶▶</button>
         <section class="credits-thanks">
           <h2>${this.escape(this.message)}</h2>
         </section>

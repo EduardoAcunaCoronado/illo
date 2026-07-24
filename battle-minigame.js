@@ -199,7 +199,7 @@
     },
     {
       id: "jose",
-      name: "Jose",
+      name: "José",
       color: "green",
       role: "Guerrero",
       portrait: "assets/characters/jose/jose_hud_battle_1.png",
@@ -242,7 +242,7 @@
           power: 0,
           duration: 1,
           target: "enemy",
-          description: "Obliga al enemigo a atacar a Jose en su próximo turno.",
+          description: "Obliga al enemigo a atacar a José en su próximo turno.",
         },
         {
           id: "embestida_de_piyon",
@@ -575,7 +575,8 @@
       stealItem: {
         id: "bendicion_de_airi",
         name: "Bendición de Airi",
-        description: "Revive hasta 3 aliados caídos con el 50% de su vida.",
+        description:
+          "Revive hasta 3 aliados caídos con el 50% de HP y PM. Los aliados en pie recuperan un 50% de su HP y PM actuales.",
         type: "revive_three",
         target: "auto",
       },
@@ -1700,15 +1701,37 @@
         const fallen = this.allies
           .filter((ally) => ally.currentHp <= 0)
           .slice(0, 3);
-        if (fallen.length === 0) {
-          return { text: "Pero no hay aliados caídos.", consumed: false };
-        }
+        const standing = this.allies.filter((ally) => ally.currentHp > 0);
+        if (fallen.length === 0 && standing.length === 0)
+          return { text: "Pero no hay aliados a los que ayudar.", consumed: false };
+
         fallen.forEach((ally) => {
           ally.currentHp = Math.max(1, Math.ceil(ally.maxHp * 0.5));
+          ally.currentPm = Math.ceil(ally.maxPm * 0.5);
           this.resetRevivedFighterTurn(ally);
         });
+
+        let recoveredHp = 0;
+        let recoveredPm = 0;
+        standing.forEach((ally) => {
+          recoveredHp += this.restoreHp(ally, Math.ceil(ally.currentHp * 0.5));
+          recoveredPm += this.restorePm(ally, Math.ceil(ally.currentPm * 0.5));
+        });
+
+        const effects = [];
+        if (fallen.length > 0) {
+          effects.push(
+            `${fallen.map((ally) => ally.name).join(", ")} vuelven al combate con HP y PM restaurados`,
+          );
+        }
+        if (recoveredHp > 0 || recoveredPm > 0) {
+          effects.push(
+            `el grupo recupera ${recoveredHp} HP y ${recoveredPm} PM en total`,
+          );
+        }
+
         return {
-          text: `${fallen.map((ally) => ally.name).join(", ")} vuelven al combate.`,
+          text: `${effects.join(". ")}.`,
           consumed: true,
         };
       }

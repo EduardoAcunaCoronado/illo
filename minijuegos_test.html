@@ -161,6 +161,13 @@
             Velocidad actual (guindilla): <span id="chili-speed-val">-</span>
         </div>
 
+        <h2>🔷 Equilibrio de poderes</h2>
+        <div class="tp-row">
+            <button class="tp-btn" style="--c:#7cffb2" onclick="launchRuneChanneling('facil')">Fácil</button>
+            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchRuneChanneling('medio')">Medio</button>
+            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchRuneChanneling('dificil')">Difícil</button>
+        </div>
+
         <h2>⚔️ Battle</h2>
         <div class="tp-row tp-battle-row">
             <div class="tp-battle-card" style="--c:#d8a05c">
@@ -207,10 +214,11 @@
 
     </div>
 
-    <script src="engine.js"></script>
+    <script src="engine.js?v=20260724-1"></script>
     <script src="juice.js?v=20260722-1"></script>
-    <script src="battle-minigame.js?v=20260724-23"></script>
-    <script src="credits-minigame.js?v=20260724-1"></script>
+    <script src="battle-minigame.js?v=20260724-25"></script>
+    <script src="credits-minigame.js?v=20260724-2"></script>
+    <script src="rune-channeling-minigame.js?v=20260724-6"></script>
     <script>
         const engine = new VisualNovelEngine();
         const panel = document.getElementById('test-panel');
@@ -313,6 +321,11 @@
             medio:   { goal: 25, maxHits: 3, spawnRate: 1.4, speedMult: 1.2, chiliChance: 0.6 },
             dificil: { goal: 60, maxHits: 2, spawnRate: 2.0, speedMult: 1.6, chiliChance: 0.8 }
         };
+        const RUNE_CHANNELING = {
+            facil:   { levels: 7, holdRequired: 1.15 },
+            medio:   { levels: 7, holdRequired: 1.35 },
+            dificil: { levels: 7, holdRequired: 1.55 }
+        };
         async function launchChase(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
@@ -341,6 +354,16 @@
             await engine.playKetchupMinigame({ ...opts, showExtraInfo: true });
             stopMusic();
             resultEl.textContent = '✅ ¡Banquete de ketchup terminado!';
+            panel.classList.remove('hidden');
+        }
+
+        async function launchRuneChanneling(preset) {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            startMusic('abriendo_el_sello.mp3');
+            const won = await window.RuneChannelingMinigame.play(RUNE_CHANNELING[preset]);
+            stopMusic();
+            resultEl.textContent = won ? '✅ ¡Poderes equilibrados!' : '❌ Los poderes se descompensaron.';
             panel.classList.remove('hidden');
         }
 
