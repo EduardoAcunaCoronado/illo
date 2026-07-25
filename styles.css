@@ -2822,6 +2822,131 @@ html, body {
 }
 
 /* ============================================================
+   MENÚ DE ESCENAS (petición de José): en vez de ir dándole para atrás, un
+   botón abre la lista de escenas del capítulo y salta directo a la elegida.
+   Convive con el de retroceder; va justo a su izquierda.
+   ============================================================ */
+.scenes-btn {
+    position: absolute;
+    top: 14px;
+    right: 148px; /* a la izquierda del de retroceder */
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+    border: 2px solid rgba(79, 176, 255, 0.55);
+    border-radius: 999px;
+    background: rgba(12, 6, 26, 0.62);
+    color: #dcefff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    opacity: 0.42;
+    backdrop-filter: blur(3px);
+    transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.scenes-btn:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 0 16px rgba(79, 176, 255, 0.55);
+}
+.scenes-btn:active { transform: translateY(1px); }
+.scenes-btn.hidden { display: none; }
+.scenes-icon { font-size: 15px; line-height: 1; }
+
+.scenes-menu {
+    position: absolute;
+    inset: 0;
+    z-index: 120; /* por encima de la caja de diálogo (100) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(4, 2, 10, 0.72);
+    backdrop-filter: blur(4px);
+}
+.scenes-menu.hidden { display: none; }
+
+.scenes-panel {
+    width: min(560px, 84%);
+    max-height: 78%;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid rgba(79, 176, 255, 0.5);
+    border-radius: 14px;
+    background: linear-gradient(180deg, rgba(18, 10, 36, 0.98), rgba(10, 5, 22, 0.98));
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+}
+.scenes-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 16px;
+    border-bottom: 1px solid rgba(79, 176, 255, 0.25);
+}
+.scenes-chapter {
+    color: #ffcc00;
+    font-weight: bold;
+    font-size: 15px;
+    letter-spacing: 0.4px;
+}
+.scenes-close {
+    border: none;
+    background: transparent;
+    color: #b9a9d8;
+    font-size: 17px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+.scenes-close:hover { color: #fff; background: rgba(255, 255, 255, 0.09); }
+
+.scenes-list {
+    list-style: none;
+    margin: 0;
+    padding: 8px;
+    overflow-y: auto;
+}
+.scenes-item {
+    display: flex;
+    align-items: baseline;
+    gap: 11px;
+    padding: 9px 12px;
+    border-radius: 9px;
+    color: #cfc2ea;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+.scenes-item:hover { background: rgba(79, 176, 255, 0.16); color: #fff; }
+.scenes-num {
+    min-width: 24px;
+    color: #7f6fa6;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: right;
+}
+.scenes-title { flex: 1; }
+.scenes-item.visitada .scenes-num { color: #4fb0ff; }
+.scenes-item.actual {
+    background: rgba(255, 204, 0, 0.13);
+    color: #ffe27a;
+    cursor: default;
+}
+.scenes-item.actual .scenes-num { color: #ffcc00; }
+.scenes-item.actual:hover { background: rgba(255, 204, 0, 0.13); color: #ffe27a; }
+
+@media (max-width: 700px) {
+    .scenes-label { display: none; }
+    .scenes-btn { padding: 8px 10px; right: 92px; }
+}
+
+/* ============================================================
    POSES DE PRIMERÍSIMO PLANO ("bua"): la cara ocupa casi todo el dibujo, así
    que centrada flota rara. Se pega a la esquina inferior derecha de su franja
    y se agranda un poco, como un plano de reacción de manga. Sin bocadillo en

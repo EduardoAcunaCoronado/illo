@@ -370,6 +370,18 @@
         {
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/coche_interior.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/trayecto_coche.mp3",
+              "volume": 0.4,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
@@ -550,6 +562,11 @@
         {
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/coche_interior.png",
+              "cut": true
+            },
+            {
               "type": "fade",
               "to": "black",
               "duration": 800
@@ -684,6 +701,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/ecchiland_ambiente.mp3",
+              "volume": 0.35,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/multitud_entrada.png"
@@ -859,6 +883,18 @@
         {
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/multitud_entrada.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "volume": 0.4,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "showCharacter",
               "character": "gorila",
               "position": "center",
@@ -897,6 +933,18 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/multitud_entrada.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "volume": 0.4,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/effects/sfx_pintalabios_click.mp3",
@@ -1000,6 +1048,18 @@
         {
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/multitud_entrada.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "volume": 0.4,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "showCharacter",
               "character": "gorila",
               "position": "center",
@@ -1031,6 +1091,18 @@
         {
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/multitud_entrada.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "volume": 0.4,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "showCharacter",
               "character": "gorila",
               "position": "center",
@@ -1057,6 +1129,18 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/multitud_entrada.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "volume": 0.4,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "addDelay",
               "value": 1
@@ -1088,6 +1172,18 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/multitud_entrada.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "volume": 0.4,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "addDelay",
               "value": 1
@@ -1226,6 +1322,11 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/multitud_entrada.png",
+              "cut": true
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/effects/sfx_multitud_lejana.mp3",
@@ -1481,6 +1582,11 @@
         {
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/camerino_seraphyna.png",
+              "cut": true
+            },
+            {
               "type": "hideCharacter",
               "position": "left"
             },
@@ -1599,6 +1705,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "volume": 0.5,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/backstage_mesa.png"
@@ -1741,7 +1854,21 @@
       "lines": [
         {
           "character": "2B",
-          "text": "Samu se planta ante el equipo de sonido. Afinarlo es seguir el ritmo sin fallar una nota. Cuanto más habéis tardado en el camino, más difícil será."
+          "text": "Samu se planta ante el equipo de sonido. Afinarlo es seguir el ritmo sin fallar una nota. Cuanto más habéis tardado en el camino, más difícil será.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/foco_cae_santi.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "volume": 0.5,
+              "loop": true,
+              "id": "bg_music"
+            }
+          ]
         },
         {
           "character": "Seraphyna",
@@ -1896,6 +2023,18 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/foco_cae_santi.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "volume": 0.5,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "showCharacter",
               "character": "edu",
@@ -2074,6 +2213,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "volume": 0.5,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/pasillo_backstage.png"
@@ -2518,6 +2664,11 @@
         {
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/pasillo_backstage.png",
+              "cut": true
+            },
+            {
               "type": "hideCharacter",
               "position": "left"
             },
@@ -2653,6 +2804,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/rotura_hechizo.mp3",
+              "volume": 0.5,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "hideCharacter",
               "position": "center",

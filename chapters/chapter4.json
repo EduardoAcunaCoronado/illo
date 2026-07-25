@@ -235,9 +235,308 @@
           "text": "El camino desemboca en una ciudad medieval de piedra clara, tejados naranjas, canales y campanarios. Algunas palomas descansan en las cornisas. No demasiadas. Las justas para justificar el nombre."
         },
         {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/ciudad_paloma_churros.png",
+              "fadeMs": 500
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/palomas_andando_y_pisadas.mp3",
+              "volume": 0.5,
+              "loop": false
+            },
+            {
+              "type": "showCG",
+              "path": "assets/characters/others/paloma_churrera.png",
+              "duration": 350,
+              "size": "auto 20%",
+              "position": "18% 54%"
+            }
+          ],
+          "character": "2B",
+          "text": "Antes de que a ninguno le dé tiempo a opinar sobre la ciudad, algo baja en picado desde un tejado y se planta en el pretil de piedra que tienen al lado, justo a la altura de sus caras. Es una paloma. Lleva un gorro de cocinero blanco, almidonado y todo."
+        },
+        {
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            }
+          ],
+          "character": "Paloma",
+          "text": "¡CHURRO! ¡Churro a un euro! ¡Churro, churro, churro a un euro!",
+          "textSpeed": "fast"
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "center",
+              "pose": "thinking"
+            }
+          ],
+          "character": "Edu",
+          "text": "...¿Le contestamos?"
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "neutral"
+            }
+          ],
+          "character": "Seraphyna",
+          "text": "Hombre, es lo primero de esta ciudad que nos dirige la palabra. Tampoco vamos a empezar siendo maleducados."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "center",
+              "pose": "thinking"
+            }
+          ],
+          "character": "Samu",
+          "text": "Perdona... ¿un euro el churro?"
+        },
+        {
+          "character": "Paloma",
+          "text": "¡Un euro el churro! ¡Churro a un euro! ¡CHURRO!",
+          "textSpeed": "fast",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "center",
+              "pose": "facepalm"
+            }
+          ],
+          "character": "Edu",
+          "text": "Vale. Creo que ese es todo el vocabulario."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "center",
+              "pose": "alarmed"
+            }
+          ],
+          "character": "Samu",
+          "text": "Espera. Espera, espera, espera. ...¿No se nos olvida algo?"
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "surprised"
+            }
+          ],
+          "character": "Seraphyna",
+          "text": "...El del puesto de churros. Santi nos dijo que le saludáramos de su parte al del puesto de churros."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "center",
+              "pose": "shocked"
+            }
+          ],
+          "character": "Edu",
+          "text": "Y que le recordáramos que le debe dinero."
+        },
+        {
+          "actions": [
+            {
+              "type": "hideCG",
+              "duration": 250
+            },
+            {
+              "type": "fade",
+              "to": "black",
+              "duration": 300
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/skyline_amanecer.png",
+              "cut": true
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "fade",
+              "from": "black",
+              "duration": 300
+            },
+            {
+              "type": "showCharacter",
+              "character": "santi",
+              "position": "center",
+              "pose": "estornudo_1"
+            }
+          ],
+          "character": "2B",
+          "text": "A doscientos kilómetros de allí, en la puerta de una arena que huele a glowstick y a resaca, una rata con mono de faena y los cascos al cuello levanta la cabeza de golpe.",
+          "textSpeed": "slow"
+        },
+        {
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "santi",
+              "position": "center",
+              "pose": "estornudo_2"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/sfx_estornudo.mp3",
+              "volume": 0.75,
+              "loop": false
+            },
+            {
+              "type": "wait",
+              "ms": 430
+            },
+            {
+              "type": "setPose",
+              "character": "santi",
+              "position": "center",
+              "pose": "estornudo_3"
+            },
+            {
+              "type": "shake",
+              "intensity": 9,
+              "duration": 420
+            }
+          ],
+          "character": "Santi",
+          "text": "¡AAAA-CHÍS!",
+          "textSpeed": "fast"
+        },
+        {
+          "character": "2B",
+          "text": "Sí. Otra vez. El recurso funciona exactamente igual de bien a doscientos kilómetros de distancia.",
+          "actions": [
+            {
+              "type": "wait",
+              "ms": 380
+            },
+            {
+              "type": "setPose",
+              "character": "santi",
+              "position": "center",
+              "pose": "estornudo_4"
+            }
+          ]
+        },
+        {
+          "character": "Santi",
+          "text": "...Alguien está hablando de mí. —Se limpia el hocico con la manga—. Ojalá sea el de los churros. Ojalá sea de mi dinero."
+        },
+        {
+          "actions": [
+            {
+              "type": "fade",
+              "to": "black",
+              "duration": 300
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/ciudad_paloma_churros.png",
+              "cut": true
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "fade",
+              "from": "black",
+              "duration": 300
+            },
+            {
+              "type": "showCG",
+              "path": "assets/characters/others/paloma_churrera.png",
+              "duration": 350,
+              "size": "auto 20%",
+              "position": "18% 54%"
+            }
+          ],
+          "character": "2B",
+          "text": "De vuelta a Ciudad Paloma, la paloma sigue exactamente donde estaba. Sigue esperando su euro."
+        },
+        {
+          "character": "Paloma",
+          "text": "¿Churro?",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "happy"
+            }
+          ],
+          "character": "Seraphyna",
+          "text": "Luego volvemos. Palabra de diva."
+        },
+        {
           "character": "Samu",
           "text": "Pues... es bonita. Yo esperaba una plaza cubierta de excrementos y señores tirando pan.",
           "actions": [
+            {
+              "type": "hideCG",
+              "duration": 350
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/ciudad_paloma.png",
+              "fadeMs": 500
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
             {
               "type": "showCharacter",
               "character": "samu",
@@ -319,6 +618,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/ciudad-paloma-1.mp3",
+              "volume": 0.6,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/effects/palomas_andando_y_pisadas.mp3",
@@ -812,6 +1118,11 @@
           "text": "Me alegro de que hayáis venido, pero no os he llamado solo para enseñaros mi ficha de personaje. En Ciudad Paloma también han aparecido memes, los he mantenido a raya. Pero hay algo más...",
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/ciudad_paloma.png",
+              "cut": true
+            },
+            {
               "type": "showCharacter",
               "character": "jose",
               "position": "right",
@@ -1003,6 +1314,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/ciudad-paloma-2.mp3",
+              "volume": 0.6,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/plaza_circular.png"

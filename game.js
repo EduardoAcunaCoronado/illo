@@ -36,8 +36,21 @@ rewindBtn?.addEventListener("click", (e) => {
   e.stopPropagation();
   if (!isGameRunning || !engine.canRewind()) return;
   rewindRequested = true;
-  if (clickHandler) clickHandler();
+  desbloquearBucle(() => rewindRequested);
 });
+
+// Desbloquea el bucle, que casi siempre está parado en waitForClick(). Si en
+// ese instante estaba escribiendo el diálogo todavía no hay manejador, así que
+// se reintenta un momento en lugar de dejar la petición colgada.
+function desbloquearBucle(sigueHaciendoFalta) {
+  let intentos = 0;
+  const tirar = () => {
+    if (!sigueHaciendoFalta()) return;
+    if (clickHandler) { clickHandler(); return; }
+    if (++intentos < 100) setTimeout(tirar, 50);
+  };
+  tirar();
+}
 
 function updateRewindButton() {
   if (!rewindBtn) return;
@@ -50,14 +63,95 @@ function updateRewindButton() {
 
 function startRewindWatcher() {
   stopRewindWatcher();
-  rewindWatcher = setInterval(updateRewindButton, 200);
+  rewindWatcher = setInterval(() => {
+    updateRewindButton();
+    updateScenesButton();
+  }, 200);
 }
 
 function stopRewindWatcher() {
   if (rewindWatcher) clearInterval(rewindWatcher);
   rewindWatcher = null;
   rewindBtn?.classList.add("hidden");
+  scenesBtn?.classList.add("hidden");
+  cerrarMenuEscenas();
 }
+
+// ===== Menú de escenas =====
+// Igual que el de retroceder: el bucle está parado dentro de waitForClick(),
+// así que se apunta la escena pedida y se resuelve el clic pendiente a mano.
+let sceneJumpRequested = null;
+const scenesBtn = document.getElementById("scenes-btn");
+const scenesMenu = document.getElementById("scenes-menu");
+const scenesList = document.getElementById("scenes-list");
+const scenesChapter = document.getElementById("scenes-chapter");
+
+function updateScenesButton() {
+  if (!scenesBtn) return;
+  const hayMinijuego = !!document.querySelector(".minigame-overlay, .cutscene-overlay");
+  const hayElecciones = !!document.querySelector("#choices-container.active");
+  const visible =
+    isGameRunning && engine.sceneList().length > 1 && !hayMinijuego && !hayElecciones;
+  scenesBtn.classList.toggle("hidden", !visible);
+  if (!visible) cerrarMenuEscenas();
+}
+
+function cerrarMenuEscenas() {
+  scenesMenu?.classList.add("hidden");
+}
+
+function abrirMenuEscenas() {
+  if (!scenesMenu || !scenesList) return;
+  const escenas = engine.sceneList();
+  if (!escenas.length) return;
+  scenesChapter.textContent = engine.chapterTitle();
+  scenesList.innerHTML = "";
+  escenas.forEach((e) => {
+    const li = document.createElement("li");
+    li.className =
+      "scenes-item" +
+      (e.actual ? " actual" : "") +
+      (e.visitada && !e.actual ? " visitada" : "");
+    li.innerHTML =
+      '<span class="scenes-num">' +
+      (e.index + 1) +
+      '</span><span class="scenes-title"></span>';
+    li.querySelector(".scenes-title").textContent = e.title;
+    li.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      cerrarMenuEscenas();
+      if (e.actual) return;
+      sceneJumpRequested = e.index;
+      desbloquearBucle(() => sceneJumpRequested !== null);
+    });
+    scenesList.appendChild(li);
+  });
+  scenesMenu.classList.remove("hidden");
+  const activo = scenesList.querySelector(".actual");
+  if (activo) activo.scrollIntoView({ block: "center" });
+}
+
+scenesBtn?.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (!isGameRunning) return;
+  if (scenesMenu?.classList.contains("hidden")) abrirMenuEscenas();
+  else cerrarMenuEscenas();
+});
+
+document.getElementById("scenes-close")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  cerrarMenuEscenas();
+});
+
+// Clic en el fondo oscuro: cerrar sin que el clic avance el diálogo
+scenesMenu?.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (e.target === scenesMenu) cerrarMenuEscenas();
+});
 
 // ===== Configuración: volúmenes de música y efectos (persistentes) =====
 function showSettingsPanel() {
@@ -333,6 +427,15 @@ async function playGame() {
       continue;
     }
 
+    // Salto directo desde el menú de escenas
+    if (sceneJumpRequested !== null) {
+      const destino = sceneJumpRequested;
+      sceneJumpRequested = null;
+      engine.jumpToScene(destino);
+      updateRewindButton();
+      continue;
+    }
+
     const hasMoreContent = await engine.nextLine();
 
     if (!hasMoreContent) {
@@ -355,18 +458,25 @@ async function playGame() {
 function waitForClick() {
   return new Promise((resolve) => {
     waitingForInput = true;
-    clickHandler = () => {
+    const handler = () => {
       waitingForInput = false;
-      document.removeEventListener("click", clickHandler);
+      document.removeEventListener("click", handler);
+      // IMPRESCINDIBLE ponerlo a null: los botones de retroceder y de escenas
+      // desbloquean el bucle llamando a clickHandler(), y si se queda apuntando
+      // a un manejador ya resuelto lo llaman, no pasa nada, y la petición se
+      // queda colgada hasta el siguiente clic de verdad.
+      if (clickHandler === handler) clickHandler = null;
       resolve();
     };
-    document.addEventListener("click", clickHandler);
+    clickHandler = handler;
+    document.addEventListener("click", handler);
   });
 }
 
 async function endGame() {
   isGameRunning = false;
   rewindRequested = false;
+  sceneJumpRequested = null;
   stopRewindWatcher();
   engine.hideDialog();
 

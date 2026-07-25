@@ -10,7 +10,11 @@
     "herido": "assets/characters/santi/santi_herido.png",
     "riendo": "assets/characters/santi/santi_riendo.png",
     "despedida": "assets/characters/santi/santi_despedida.png",
-    "silueta": "assets/characters/santi/santi_silueta.png"
+    "silueta": "assets/characters/santi/santi_silueta.png",
+    "estornudo_1": "assets/characters/santi/santi_est_0.png",
+    "estornudo_2": "assets/characters/santi/santi_est_1.png",
+    "estornudo_3": "assets/characters/santi/santi_est_2.png",
+    "estornudo_4": "assets/characters/santi/santi_est_3.png"
   },
   "defaultPose": "neutral"
 }

@@ -394,6 +394,13 @@
         {
           "actions": [
             {
+              "type": "playSound",
+              "path": "assets/sounds/music/the-last-choice.mp3",
+              "volume": 0.55,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "setBackground",
               "value": "assets/backgrounds/fuente_ciudad_paloma.png"
             }
@@ -858,6 +865,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/the-last-choice.mp3",
+              "volume": 0.55,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/fuente_ciudad_paloma.png"

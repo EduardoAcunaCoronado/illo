@@ -155,6 +155,18 @@
         {
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/pisito.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/casasamu.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
@@ -272,6 +284,18 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/pisito.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/casasamu.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "rescue",
               "character": "edu"

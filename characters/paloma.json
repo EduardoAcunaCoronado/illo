@@ -1,0 +1,9 @@
+{
+  "name": "Paloma",
+  "color": "#8fa6c4",
+  "poses": {
+    "neutral": "assets/characters/others/paloma.png",
+    "churrera": "assets/characters/others/paloma_churrera.png"
+  },
+  "defaultPose": "churrera"
+}

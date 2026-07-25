@@ -2894,6 +2894,10 @@ class VisualNovelEngine {
         cg.style.backgroundImage = `url('${this.cacheBustAsset(path)}')`;
         cg.style.backgroundSize = opts.size || 'cover';
         cg.style.backgroundPosition = opts.position || 'center';
+        // La viñeta interior de .cg-layer es para las ilustraciones a pantalla
+        // completa. En modo objeto la capa es casi toda transparente, así que
+        // ese borde oscuro se comería la escena que hay detrás.
+        cg.style.boxShadow = opts.size ? 'none' : '';
         cg.style.transition = `opacity ${duration}ms ease`;
         cg.style.opacity = '1';
         cg.classList.add('cg-visible');
@@ -3229,7 +3233,25 @@ class VisualNovelEngine {
             fadeIn = 0
         } = options;
 
+        // Toda escena declara su propia música para que se pueda saltar directo a
+        // ella (petición de José). Eso significa repetir la MISMA pista escena
+        // tras escena, así que declararla no puede reiniciarla: si ya suena ese
+        // id con esa misma ruta, se deja correr y solo se ajusta el volumen.
+        if (id) {
+            const sonando = this.audioInstances[id];
+            if (sonando && sonando._srcPath === soundPath && !sonando.ended && !sonando.paused) {
+                sonando._baseVol = volume;
+                sonando.loop = loop;
+                if (!sonando._fadeInterval) {
+                    const f = this.volFactor(sonando._volKind || 'music');
+                    sonando.volume = Math.max(0, Math.min(1, volume * f));
+                }
+                return sonando;
+            }
+        }
+
         const audio = new Audio(soundPath);
+        audio._srcPath = soundPath;
         // Música = bucles y pistas del menú; el resto cuenta como efecto.
         const volKind = (loop || (id && String(id).startsWith('menu'))) ? 'music' : 'sfx';
         audio._baseVol = volume;
@@ -3870,6 +3892,65 @@ class VisualNovelEngine {
         this._lastSeenScene = null;
         this.sceneHistory.pop();
 
+        this.updateDebugPanel();
+        return true;
+    }
+
+    // Escenas del capítulo actual, para pintar el menú de selección.
+    sceneList() {
+        if (!this.currentChapter) return [];
+        const hist = this.sceneHistory || [];
+        return (this.currentChapter.scenes || []).map((s, i) => ({
+            index: i,
+            title: s.title || `Escena ${i + 1}`,
+            actual: i === this.currentScene,
+            visitada: hist.some(h => h.scene === i)
+        }));
+    }
+
+    chapterTitle() {
+        return (this.currentChapter && this.currentChapter.title) || this.lastChapterName || '';
+    }
+
+    // Salta directo al principio de cualquier escena del capítulo (menú de
+    // escenas pedido por José). Si ya habíamos pasado por ella se recupera la
+    // foto de progreso de aquel momento, igual que al retroceder; si es una a
+    // la que todavía no habíamos llegado se conserva el progreso actual y solo
+    // cambiamos de sitio. El repintado lo hacen las propias acciones de la
+    // escena: por eso TODAS declaran su fondo y su música en la primera línea.
+    jumpToScene(destino) {
+        if (!this.currentChapter) return false;
+        const escenas = this.currentChapter.scenes || [];
+        const i = (typeof destino === 'string')
+            ? escenas.findIndex(s => s.title === destino)
+            : destino;
+        if (!(i >= 0 && i < escenas.length)) {
+            console.warn('jumpToScene: escena no encontrada:', destino);
+            return false;
+        }
+
+        const hist = this.sceneHistory || [];
+        for (let k = hist.length - 1; k >= 0; k--) {
+            if (hist[k].scene !== i) continue;
+            const d = hist[k];
+            this.gameState = JSON.parse(JSON.stringify(d.gameState || {}));
+            this.rescued = [...d.rescued];
+            this.completedCalls = [...d.completedCalls];
+            this.inventory = [...d.inventory];
+            this.storyDelay = d.storyDelay;
+            this.nextChapter = d.nextChapter;
+            // Se recorta el historial hasta ahí: la escena se vuelve a registrar
+            // sola al entrar, y así retroceder sigue teniendo sentido después.
+            this.sceneHistory = hist.slice(0, k);
+            break;
+        }
+
+        this.clearStage();
+        this.currentScene = i;
+        this.currentLine = 0;
+        this.sceneEndedByChoice = false;
+        this.pendingSceneJump = false;
+        this._lastSeenScene = null;
         this.updateDebugPanel();
         return true;
     }

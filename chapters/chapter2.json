@@ -92,6 +92,18 @@
           "text": "¡Claro! Un supermercado. Hay tres cerca... pero no todos me quedan igual de camino. Tengo curiosidad por ver ese Kingdom Ketchup.",
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/iglesia.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/huelva.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
@@ -120,6 +132,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/huelva.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/jamon.png"
@@ -318,6 +337,13 @@
         {
           "actions": [
             {
+              "type": "playSound",
+              "path": "assets/sounds/music/huelva.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "setBackground",
               "value": "assets/backgrounds/dia.png"
             },
@@ -370,6 +396,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/huelva.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/mercadona.png"
@@ -457,6 +490,21 @@
           "text": "Al otro lado del supermercado, el aire cambia. Samu está por fin dentro de Kingdom Ketchup, entre góndolas infinitas que gotean salsa roja."
         },
         {
+          "character": "2B",
+          "text": "Kingdom Ketchup no figura en ningún registro municipal. No hay licencia de obra, no hay inauguración, no hay una sola foto de qué había aquí antes. Un día, detrás de los supermercados de Furrielva, simplemente hubo una puerta roja.",
+          "textSpeed": "slow"
+        },
+        {
+          "character": "2B",
+          "text": "Dentro no se vende nada. No hay cajas, ni precios, ni nadie a quien preguntar. Los pasillos se estiran hasta donde alcanza la vista y todos ofrecen lo mismo: exactamente aquello que uno vino buscando, en la cantidad exacta en que se lo había imaginado.",
+          "textSpeed": "slow"
+        },
+        {
+          "character": "2B",
+          "text": "Hay quien entra, mira y sale contando maravillas. Y hay quien entra y, poco a poco, deja de buscar la salida. En Furrielva todavía nadie ha sabido explicar qué diferencia a unos de otros.",
+          "textSpeed": "slow"
+        },
+        {
           "character": "Samu",
           "text": "Lo conseguí... estoy dentro. Ahora solo tengo que encontrar a Edu. Pero este sitio es enorme.",
           "actions": [
@@ -501,7 +549,21 @@
       "lines": [
         {
           "character": "2B",
-          "text": "El pasillo del Ketchup es corto y recto. Samu lo cruza casi sin frenar y, al fondo, distingue una silueta conocida."
+          "text": "El pasillo del Ketchup es corto y recto. Samu lo cruza casi sin frenar y, al fondo, distingue una silueta conocida.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/kingdom_ketchup_pasillos.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            }
+          ]
         },
         {
           "character": "Samu",
@@ -532,6 +594,18 @@
           "character": "2B",
           "text": "El pasillo del Catsup serpentea, se bifurca y termina dando toda la vuelta. Samu tarda un buen rato en volver a orientarse.",
           "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/kingdom_ketchup_pasillos.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "addDelay",
               "value": 1
@@ -565,6 +639,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/kingdom_ketchup_estanterias.png"
@@ -640,7 +721,21 @@
       "lines": [
         {
           "character": "Nate",
-          "text": "¡Ah, buena pregunta! Para darte la recomendación perfecta, me vendría genial saber qué uso principal le vas a dar (¿programación, desarrollo, gaming en 1440p o algo más casual?) y, sobre todo, cuál es tu presupuesto aproximado."
+          "text": "¡Ah, buena pregunta! Para darte la recomendación perfecta, me vendría genial saber qué uso principal le vas a dar (¿programación, desarrollo, gaming en 1440p o algo más casual?) y, sobre todo, cuál es tu presupuesto aproximado.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/kingdom_ketchup_estanterias.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            }
+          ]
         },
         {
           "character": "Nate",
@@ -711,6 +806,18 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/kingdom_ketchup_estanterias.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "playVideo",
               "path": "assets/videos/intro_sala_del_trono_kk.mp4"
@@ -848,6 +955,54 @@
           ]
         },
         {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "happy"
+            }
+          ],
+          "character": "Edu",
+          "text": "El cumple... claro, tu cumple. ¿Y qué prisa hay, tío? Aquí dentro el tiempo no aprieta igual. Te monto una montaña de ketchup con velas y lo celebramos aquí mismo."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "character": "Samu",
+          "text": "Edu, el cumple es HOY. Tony y José están esperando. Llevamos un mes con esto hablado."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "thinking"
+            }
+          ],
+          "character": "Edu",
+          "text": "¿Un mes? ...Ya. Un mes. —Se queda callado un segundo de más—. Da igual. Que esperen un poco, que no se van a morir."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "alarmed"
+            }
+          ],
+          "character": "Samu",
+          "text": "¿Que esperen? Edu, si la fecha la pusiste TÚ. Montaste el grupo, elegiste el sitio y llevas desde marzo con la broma del pastel. ¿De verdad no te apetece verlos?"
+        },
+        {
           "character": "Edu",
           "text": "¿Tony? ¿José? ¡Qué importan ellos! Aquí estamos bien. Deberías quedarte conmigo, Samu. Olvídate del mundo exterior, aquí lo tenemos todo.",
           "actions": [
@@ -872,6 +1027,18 @@
           ]
         },
         {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "picado"
+            }
+          ],
+          "character": "Edu",
+          "text": "No me estás escuchando, Samu. Ahí fuera no hay nada. Hay una ciudad llena de gente que ni se reconoce en el espejo. Aquí sé exactamente lo que soy y lo que quiero, y lo tengo a mano."
+        },
+        {
           "character": "Edu",
           "text": "¡No! ¡Yo no me voy a ningún lado! ¡Tú no entiendes nada, Samu! ¡Esto es la perfección y yo me doy el lujazo!",
           "actions": [
@@ -884,12 +1051,25 @@
           ]
         },
         {
+          "actions": [
+            {
+              "type": "showCG",
+              "path": "assets/backgrounds/cg/zip_sombra_1.png",
+              "duration": 700
+            },
+            {
+              "type": "shake",
+              "intensity": 6,
+              "duration": 500
+            }
+          ],
           "character": "2B",
-          "text": "De la nada, Edu empieza a oscurecer su piel y transformarse en algo terrible..."
+          "text": "La sombra de Edu deja de imitarlo. Se queda quieta cuando él se mueve, se estira por el suelo rojo y, muy despacio, empieza a levantarse.",
+          "textSpeed": "slow"
         },
         {
           "character": "Edu",
-          "text": "¡ARRRGHHHHHHH!",
+          "text": "¿Qué...? ¡Eh! ¡Eh, quítate! ¡QUÍTATE DE ENCIMA! ¡ARRRGHHHHHHH!",
           "actions": [
             {
               "type": "showCharacter",
@@ -900,13 +1080,25 @@
           ]
         },
         {
+          "actions": [
+            {
+              "type": "showCG",
+              "path": "assets/backgrounds/cg/zip_sombra_2.png",
+              "duration": 700
+            }
+          ],
           "character": "2B",
-          "text": "Edu se transforma. Su cuerpo se vuelve oscuro, sus ojos brillan con un amarillo amenazante. Surge Zip, la versión corrupta de Edu."
+          "text": "La sombra se lo traga desde los pies. Cuando vuelve a haber alguien de pie en la sala del trono, ya no es Edu: es lo que este sitio llevaba semanas dibujando dentro de él.",
+          "textSpeed": "slow"
         },
         {
           "character": "Zip",
           "text": "JAJAJA... al fin. La Fuerza Memética me libera. Soy Zip.",
           "actions": [
+            {
+              "type": "hideCG",
+              "duration": 400
+            },
             {
               "type": "stopSound",
               "id": "bg_music",
@@ -1164,6 +1356,18 @@
           ]
         },
         {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ],
+          "character": "Samu",
+          "text": "¿Seraphyna? Pero si Seraphyna es Tony. Es el nombre que se puso para los directos —el avatar, el pelo plateado y todo—. Me tuvo una semana dándome la brasa con el diseño."
+        },
+        {
           "character": "Samu",
           "text": "Espera, espera... Zip me comentó que Kingdom Ketchup fue creado para corromperte... Y Seraphyna... Ecchi Land... Eso suena muy Tony, seguro que es un lugar creado para corromperle a él. Debemos ir a ver si está bien.",
           "actions": [
@@ -1228,9 +1432,27 @@
           ]
         },
         {
-          "character": "Edu",
-          "text": "Vamos a rescatar a Tony. Seguramente esté en peligro.",
           "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ],
+          "character": "Samu",
+          "text": "Edu... ¿tú crees que estará bien? Porque cuanto más lo pienso... ¿y si le está pasando como a ti?"
+        },
+        {
+          "character": "Edu",
+          "text": "...No lo sé. Yo estaba convencidísimo de estar en el mejor sitio del mundo, y ya has visto cómo acabé. Vamos a verlo. Aunque sea para preguntárselo a la cara.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "thinking"
+            },
             {
               "type": "showCharacter",
               "character": "edu",

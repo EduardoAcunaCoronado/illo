@@ -552,6 +552,13 @@
         {
           "actions": [
             {
+              "type": "playSound",
+              "path": "assets/sounds/music/airi_despierta.mp3",
+              "volume": 0.68,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "hideCharacter",
               "position": "left"
             },
@@ -1796,6 +1803,13 @@
           "text": "Recuerdo... más cosas. Yo fui creada para cumplir deseos. Al principio eran cosas pequeñas. Curar una tristeza. Encontrar una respuesta. Hacer que alguien no se sintiera solo.",
           "actions": [
             {
+              "type": "playSound",
+              "path": "assets/sounds/music/after_tung_battle.mp3",
+              "volume": 0.5,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "showCharacter",
               "character": "airi",
               "position": "center",
@@ -2008,6 +2022,13 @@
           "character": "2B",
           "text": "Airi cierra los ojos. Una luz la envuelve como un reflejo sobre el agua y, durante un segundo, su silueta se recompone en píxeles suaves.",
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/music/after_tung_battle.mp3",
+              "volume": 0.5,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/fuente_ciudad_paloma.png"

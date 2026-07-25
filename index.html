@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css?v=20260725-9">
+    <link rel="stylesheet" href="styles.css?v=20260725-10">
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
 </head>
 <body>
@@ -48,6 +48,21 @@
         <button id="rewind-btn" class="rewind-btn hidden" title="Volver a la escena anterior">
             <span class="rewind-icon">&#9198;</span><span class="rewind-label">Retroceder</span>
         </button>
+
+        <!-- Menú de escenas (pedido por José): salta directo al principio de
+             cualquier escena del capítulo. Convive con el de retroceder. -->
+        <button id="scenes-btn" class="scenes-btn hidden" title="Ir a una escena">
+            <span class="scenes-icon">&#9776;</span><span class="scenes-label">Escenas</span>
+        </button>
+        <div id="scenes-menu" class="scenes-menu hidden">
+            <div class="scenes-panel">
+                <div class="scenes-head">
+                    <span id="scenes-chapter" class="scenes-chapter"></span>
+                    <button id="scenes-close" class="scenes-close" title="Cerrar">&#10005;</button>
+                </div>
+                <ul id="scenes-list" class="scenes-list"></ul>
+            </div>
+        </div>
 
         <!-- Menú de elecciones con estilo Persona 5 -->
         <div id="choices-container" class="choices-container p5-choices"></div>
@@ -102,12 +117,12 @@
     </div>
 
     <script src="p5-effects.js?v=20260716-2"></script>
-    <script src="battle-minigame.js?v=20260725-3"></script>
+    <script src="battle-minigame.js?v=20260725-5"></script>
     <script src="credits-minigame.js?v=20260724-2"></script>
     <script src="rune-channeling-minigame.js?v=20260724-6"></script>
     <script src="juice.js?v=20260722-1"></script>
-    <script src="engine.js?v=20260725-13"></script>
-    <script src="game.js?v=20260725-2"></script>
+    <script src="engine.js?v=20260725-15"></script>
+    <script src="game.js?v=20260725-5"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->
