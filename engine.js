@@ -258,7 +258,7 @@ class VisualNovelEngine {
                 this.bgPan(action);
                 break;
             case 'showCG':
-                await this.showCG(action.path || action.value, action.duration);
+                await this.showCG(action.path || action.value, action.duration, action);
                 break;
             case 'hideCG':
                 this.hideCG(action.duration);
@@ -2547,11 +2547,11 @@ class VisualNovelEngine {
                     // pasar. La caja de colisión de Edu mide 0,095 de la altura,
                     // así que por debajo de ~0,12 sería imposible.
                     const CORREDOR = cfg.corridorMin != null ? cfg.corridorMin : 0.18;
-                    // Radio de vigilancia. A 0.30 recortaba cables que ni siquiera
-                    // llegaban a solaparse (el ancho de un cable es ~0.09 y entre
-                    // aparición y aparición hay 0.14): la mediana se quedaba en 0.44
-                    // y solo el 21% pasaba de 0.60. A 0.20 sube al 29% sin que dos
-                    // cables opuestos lleguen nunca a cerrar el paso.
+                    // Radio de vigilancia. A 0.30 recortaba cables que ni siquiera
+                    // llegaban a solaparse (el ancho de un cable es ~0.09 y entre
+                    // aparición y aparición hay 0.14): la mediana se quedaba en 0.44
+                    // y solo el 21% pasaba de 0.60. A 0.20 sube al 29% sin que dos
+                    // cables opuestos lleguen nunca a cerrar el paso.
                     const CERCA = 0.20;
                     let ocupadoEnfrente = 0;
                     objs.forEach(o => {
@@ -2882,10 +2882,18 @@ class VisualNovelEngine {
     }
 
     // Lámina CG a pantalla (por encima de personajes, por debajo del diálogo).
-    showCG(path, duration = 600) {
+    // Muestra una ilustración a pantalla completa. Con `size` se puede mostrar
+    // un OBJETO en vez de una escena: las CGs normales son apaisadas y llenan la
+    // pantalla (cover), pero una imagen vertical como el diapasón se ampliaba
+    // hasta 1280x1382 y salía enorme y recortada. Con `size: "auto 55%"` se
+    // dibuja centrada y a su tamaño. Se asigna SIEMPRE para que no se cuele el
+    // tamaño de una CG en la siguiente.
+    showCG(path, duration = 600, opts = {}) {
         const { cg } = this.ensureSceneLayers();
         if (!cg || !path) return Promise.resolve();
         cg.style.backgroundImage = `url('${this.cacheBustAsset(path)}')`;
+        cg.style.backgroundSize = opts.size || 'cover';
+        cg.style.backgroundPosition = opts.position || 'center';
         cg.style.transition = `opacity ${duration}ms ease`;
         cg.style.opacity = '1';
         cg.classList.add('cg-visible');

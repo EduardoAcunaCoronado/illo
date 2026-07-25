@@ -100,6 +100,7 @@ html, body {
     inset: 0;
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat; /* con `size` de objeto (p. ej. el diapasón) si no se repetiría en mosaico */
     opacity: 0;
     pointer-events: none;
     z-index: 45; /* encima de personajes (z 1-3), debajo de la caja de diálogo */
@@ -2830,7 +2831,11 @@ html, body {
    esquina inferior DERECHA del escenario, como un plano de reacción de manga.
    Los !important son necesarios porque layoutCharacters() escribe left/width/
    margin-left en el estilo en línea para repartir a los personajes. */
-.character.pose-bua {
+/* Solo el «bua» de SAMU va anclado a la esquina (escena de Goyo caído). La pose
+   `bua` también la tienen Edu (cap. 3 y 5) y Airi (cap. 6, en el CENTRO): sin
+   acotar por personaje, la regla los arrastraba a la esquina derecha a ellos
+   también. */
+.character.pose-bua[data-character="samu"] {
     left: auto !important;
     right: 0 !important;
     margin-left: 0 !important;

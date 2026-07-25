@@ -3034,7 +3034,9 @@
             {
               "type": "showCG",
               "path": "assets/backgrounds/cg/diapason.png",
-              "duration": 500
+              "duration": 500,
+              "size": "auto 55%",
+              "position": "center"
             }
           ],
           "character": "Seraphyna",
