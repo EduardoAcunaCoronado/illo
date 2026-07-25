@@ -451,8 +451,9 @@ class VisualNovelEngine {
             if (!e || !e.minijuegoCancelado) throw e;
             // Se salió del minijuego desde el menú de escenas: limpiar los
             // restos que pudieran quedar y seguir como si nada.
-            document.querySelectorAll('.minigame-overlay, .cutscene-overlay')
-                .forEach(o => o.remove());
+            document.querySelectorAll(
+                '.minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame'
+            ).forEach(o => o.remove());
         }
     }
 
@@ -4017,14 +4018,20 @@ class VisualNovelEngine {
     // la que todavía no habíamos llegado se conserva el progreso actual y solo
     // cambiamos de sitio. El repintado lo hacen las propias acciones de la
     // escena: por eso TODAS declaran su fondo y su música en la primera línea.
-    jumpToScene(destino) {
+    // OJO CON EL NOMBRE: `jumpToScene` YA EXISTE arriba en esta misma clase
+    // (es el que atiende la acción `goToScene` de los capítulos). Llamando
+    // igual a los dos, el segundo pisaba al primero y TODAS las transiciones
+    // entre escenas del juego acababan aquí: limpiaban el escenario, no
+    // marcaban `pendingSceneJump` y se saltaban la línea 0 de la escena
+    // destino, que es justo la que pone el fondo. De ahí las pantallas negras.
+    saltarAEscena(destino) {
         if (!this.currentChapter) return false;
         const escenas = this.currentChapter.scenes || [];
         const i = (typeof destino === 'string')
             ? escenas.findIndex(s => s.title === destino)
             : destino;
         if (!(i >= 0 && i < escenas.length)) {
-            console.warn('jumpToScene: escena no encontrada:', destino);
+            console.warn('saltarAEscena: escena no encontrada:', destino);
             return false;
         }
 

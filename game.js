@@ -88,9 +88,14 @@ function desbloquearBucle(sigueHaciendoFalta) {
 // Un minijuego EN MARCHA sí tapa los botones. La pantalla de "¿reintentar?" no:
 // si no, quien llega ahí desde el menú de escenas se queda encerrado, porque la
 // única salida sería ganar el minijuego.
+// OJO: no todos los minijuegos usan `.minigame-overlay`. El combate monta
+// `.battle-minigame` y los créditos `.credits-minigame`, así que si solo se
+// mira la primera clase los botones se quedan visibles durante un COMBATE y
+// pulsarlos pide un salto que el bucle no puede atender.
 function minijuegoEnMarcha() {
-  return [...document.querySelectorAll(".minigame-overlay, .cutscene-overlay")]
-    .some((o) => !o.classList.contains("minigame-retry"));
+  return [...document.querySelectorAll(
+    ".minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame"
+  )].some((o) => !o.classList.contains("minigame-retry"));
 }
 
 function updateRewindButton() {
@@ -477,7 +482,7 @@ async function playGame() {
     if (sceneJumpRequested !== null) {
       const destino = sceneJumpRequested;
       sceneJumpRequested = null;
-      engine.jumpToScene(destino);
+      engine.saltarAEscena(destino);
       updateRewindButton();
       continue;
     }
