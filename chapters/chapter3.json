@@ -2928,7 +2928,7 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Escena 14: Rumbo a Paloma City"
+              "value": "Escena 14: Rumbo a Ciudad Paloma"
             }
           ],
           "character": "",
@@ -2937,7 +2937,7 @@
       ]
     },
     {
-      "title": "Escena 14: Rumbo a Paloma City",
+      "title": "Escena 14: Rumbo a Ciudad Paloma",
       "lines": [
         {
           "actions": [
@@ -3001,7 +3001,7 @@
             }
           ],
           "character": "Santi",
-          "text": "¡Y si vais a Paloma City, saludad de mi parte al del puesto de churros! ¡Me debe DINERO!"
+          "text": "¡Y si vais a Ciudad Paloma, saludad de mi parte al del puesto de churros! ¡Me debe DINERO!"
         },
         {
           "actions": [
@@ -3072,7 +3072,7 @@
             }
           ],
           "character": "José",
-          "text": "(por el móvil, con interferencias) ¿Chicos? ¡Menos mal! Necesito al grupo, aquí en Paloma City está pasando algo muy raro... y creo que sé por qué. No hay tiempo de explicaros. Seguid el camino de baldosas amarillas. ¡Corred!"
+          "text": "(por el móvil, con interferencias) ¿Chicos? ¡Menos mal! Necesito al grupo, aquí en Ciudad Paloma está pasando algo muy raro... y creo que sé por qué. No hay tiempo de explicaros. Seguid el camino de baldosas amarillas. ¡Corred!"
         },
         {
           "actions": [
@@ -3097,10 +3097,10 @@
             }
           ],
           "character": "Samu",
-          "text": "Es José. Está en Paloma City y suena asustado. Se acabó el descanso. Vamos los tres.",
+          "text": "Es José. Está en Ciudad Paloma y suena asustado. Se acabó el descanso. Vamos los tres.",
           "choices": [
             {
-              "text": "Seguir el camino de baldosas amarillas (Paloma City)",
+              "text": "Seguir el camino de baldosas amarillas (Ciudad Paloma)",
               "nextChapter": "chapter4"
             }
           ]

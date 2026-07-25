@@ -1676,7 +1676,7 @@
         },
         {
           "character": "Airi",
-          "text": "Sí. Descubrieron que si me pedían algo con suficiente fuerza, yo podía doblar el mundo para acercarlo a ese deseo.",
+          "text": "Sí. Descubrieron que si me pedían algo con suficiente fuerza, yo podía doblegar el mundo para acercarlo a ese deseo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2493,7 +2493,7 @@
               "type": "minigame",
               "game": "battle",
               "enemy": "amalgama",
-              "enemyHp": 760
+              "enemyHp": 840
             }
           ]
         },
@@ -2598,7 +2598,7 @@
               "type": "minigame",
               "game": "battle",
               "enemy": "amalgama_final",
-              "enemyHp": 1200
+              "enemyHp": 1120
             },
             {
               "type": "hideCharacter",
