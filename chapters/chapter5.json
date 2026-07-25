@@ -6,14 +6,27 @@
       "lines": [
         {
           "actions": [
-            { "type": "hideCharacter", "position": "left" },
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "right" },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/sala_interior_santuario.png"
             },
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 800 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 800
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/the-sanctuary-of-airi.mp3",
@@ -249,7 +262,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé...  ¿Por qué hay una niña encerrada en una cúpula de cristal debajo de Ciudad Paloma?",
+          "text": "Ya, pero ¿por qué hay una niña encerrada en una cúpula de cristal debajo de Ciudad Paloma?",
           "actions": [
             {
               "type": "showCharacter",
@@ -445,7 +458,11 @@
         },
         {
           "actions": [
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 500 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/tralalero_theme.mp3",
@@ -464,7 +481,11 @@
         },
         {
           "actions": [
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 600 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 600
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/santurario-abierto.mp3",
@@ -477,14 +498,21 @@
               "type": "setBackground",
               "value": "assets/backgrounds/airi_sala_interior_santuario_grieta.png"
             },
-            { "type": "hideCharacter", "position": "center" }
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            }
           ]
         },
         {
           "character": "2B",
           "text": "Tralalero Tralala se deshace en píxeles azules. El cristal del altar responde con una grieta.",
           "actions": [
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 500 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/airi_despierta.mp3",
@@ -510,7 +538,10 @@
         },
         {
           "actions": [
-            { "type": "goToScene", "value": "Acto II: Airi despierta" }
+            {
+              "type": "goToScene",
+              "value": "Acto II: Airi despierta"
+            }
           ]
         }
       ]
@@ -520,8 +551,14 @@
       "lines": [
         {
           "actions": [
-            { "type": "hideCharacter", "position": "left" },
-            { "type": "hideCharacter", "position": "right" },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/airi_sala_interio_santuario_roto.png"
@@ -766,9 +803,18 @@
         },
         {
           "actions": [
-            { "type": "hideCharacter", "position": "left" },
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "right" },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/mazmorra_interior_santuario_tunel.png"
@@ -924,7 +970,10 @@
         },
         {
           "actions": [
-            { "type": "goToScene", "value": "Acto III: Lo bonito que queda" }
+            {
+              "type": "goToScene",
+              "value": "Acto III: Lo bonito que queda"
+            }
           ]
         }
       ]
@@ -934,7 +983,11 @@
       "lines": [
         {
           "actions": [
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 700 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 700
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/ciudad_paloma_atacada.mp3",
@@ -947,9 +1000,18 @@
               "type": "setBackground",
               "value": "assets/backgrounds/plaza_circular_agujero_ataque_meme.png"
             },
-            { "type": "hideCharacter", "position": "left" },
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "right" }
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            }
           ],
           "character": "2B",
           "text": "Al salir del santuario, Airi se detiene en seco. Ciudad Paloma sigue en pie, pero la plaza está atravesada por grietas digitales. Mensajes rotos flotan entre los tejados, los memes se arrastran por las calles y varias palomas huyen desorientadas entre destellos violetas."
@@ -1005,7 +1067,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... hasta el guano sea lo que sea parecía formar parte del patrimonio cultural.",
+          "text": "Y hasta el guano, sea lo que sea, parecía formar parte del patrimonio cultural.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1035,9 +1097,18 @@
               "type": "setBackground",
               "value": "assets/backgrounds/plaza_circular_agujero_ataque_meme_paloma.png"
             },
-            { "type": "hideCharacter", "position": "left" },
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "right" }
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            }
           ]
         },
         {
@@ -1066,7 +1137,7 @@
         },
         {
           "character": "Airi",
-          "text": "Estoy recordando. Esto no debería de estar pasando... Todos eran felices...",
+          "text": "Estoy recordando. Esto no debería estar pasando... Todos eran felices...",
           "actions": [
             {
               "type": "showCharacter",
@@ -1082,8 +1153,14 @@
               "type": "setBackground",
               "value": "assets/backgrounds/plaza_circular.png"
             },
-            { "type": "hideCharacter", "position": "left" },
-            { "type": "hideCharacter", "position": "right" },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
             {
               "type": "showCharacter",
               "character": "airi",
@@ -1103,7 +1180,10 @@
           "character": "Samu",
           "text": "Vale... eso no ha sido una cura normal, cura++ tal vez...",
           "actions": [
-            { "type": "hideCharacter", "position": "center" },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
             {
               "type": "showCharacter",
               "character": "samu",
@@ -1165,7 +1245,11 @@
           "character": "2B",
           "text": "Entonces, entre los últimos destellos de la luz de la restauración, una pequeña mariposa azul cruza frente a Airi.",
           "actions": [
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 800 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 800
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/the-first-butterfly.mp3",
@@ -1222,7 +1306,9 @@
         },
         {
           "actions": [
-            { "type": "hideDialog" },
+            {
+              "type": "hideDialog"
+            },
             {
               "type": "hideCharacter",
               "position": "right"
@@ -1239,7 +1325,9 @@
               "type": "setBackground",
               "value": "assets/backgrounds/fuente_ciudad_paloma.png"
             },
-            { "type": "waitForClick" }
+            {
+              "type": "waitForClick"
+            }
           ]
         },
         {
@@ -1371,7 +1459,10 @@
         },
         {
           "actions": [
-            { "type": "goToScene", "value": "Acto IV: El lider brainrot" }
+            {
+              "type": "goToScene",
+              "value": "Acto IV: El lider brainrot"
+            }
           ]
         }
       ]
@@ -1385,7 +1476,11 @@
               "type": "setBackground",
               "value": "assets/backgrounds/fuente_ciudad_paloma.png"
             },
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 700 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 700
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/brainrot_theme.mp3",
@@ -1402,7 +1497,11 @@
           "character": "Tung Tung Tung Sahur",
           "text": "Tung tung tung... así que era verdad. La niña salió del cristal y los memes no estaban locos. Bueno, no más de lo habitual.",
           "actions": [
-            { "type": "shake", "intensity": 12, "duration": 500 },
+            {
+              "type": "shake",
+              "intensity": 12,
+              "duration": 500
+            },
             {
               "type": "showCharacter",
               "character": "tung_tung_tung_sahur",
@@ -1516,9 +1615,18 @@
           "character": "2B",
           "text": "Airi junta las manos frente al pecho. Un escudo de luz se abre alrededor de todos, transparente como cristal vivo. La corrupción choca contra la barrera y se deshace en chispas oscuras.",
           "actions": [
-            { "type": "hideCharacter", "position": "right" },
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "left" }
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            }
           ]
         },
         {
@@ -1527,12 +1635,29 @@
               "type": "setBackground",
               "value": "assets/backgrounds/fuente_ciudad_paloma_ataque_tung.png"
             },
-            { "type": "hideCharacter", "position": "right" },
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "left" },
-            { "type": "shake", "intensity": 20, "duration": 500 },
-            { "type": "hideDialog" },
-            { "type": "waitForClick" }
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "shake",
+              "intensity": 20,
+              "duration": 500
+            },
+            {
+              "type": "hideDialog"
+            },
+            {
+              "type": "waitForClick"
+            }
           ]
         },
         {
@@ -1589,7 +1714,11 @@
               "type": "setBackground",
               "value": "assets/backgrounds/fuente_ciudad_paloma.png"
             },
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 700 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 700
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/the-wooden-brainrot.mp3",
@@ -1608,10 +1737,23 @@
         },
         {
           "actions": [
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "left" },
-            { "type": "hideCharacter", "position": "right" },
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 700 },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 700
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/after_tung_battle.mp3",
@@ -1638,7 +1780,10 @@
         },
         {
           "actions": [
-            { "type": "goToScene", "value": "Acto V: La IA que queria ayudar" }
+            {
+              "type": "goToScene",
+              "value": "Acto V: La IA que queria ayudar"
+            }
           ]
         }
       ]
@@ -1885,7 +2030,11 @@
           "character": "Airi Adulta",
           "text": "¿Qué tal?",
           "actions": [
-            { "type": "flash", "color": "rgba(255, 255, 255, 0.7)", "duration": 300 },
+            {
+              "type": "flash",
+              "color": "rgba(255, 255, 255, 0.7)",
+              "duration": 300
+            },
             {
               "type": "showCharacter",
               "character": "airi_adult",
@@ -1904,7 +2053,11 @@
               "position": "center",
               "pose": "neutral"
             },
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 700 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 700
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/the-elegant-transformation.mp3",
@@ -2043,7 +2196,11 @@
           "character": "José",
           "text": "Alto ahí. Pausa técnica, narrativa y moral.",
           "actions": [
-            { "type": "playSound", "path": "assets/sounds/effects/disco-rayado.mp3", "volume": 0.5 },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/disco-rayado.mp3",
+              "volume": 0.5
+            },
             {
               "type": "showCharacter",
               "character": "jose",
@@ -2059,7 +2216,7 @@
         {
           "character": "Airi Adulta",
           "text": "Entonces... ¿vuelvo a mi forma de antes?",
-           "actions": [
+          "actions": [
             {
               "type": "showCharacter",
               "character": "airi_adult",
@@ -2072,7 +2229,11 @@
           "character": "Samu",
           "text": "Sí. Y gracias por preguntar antes de convertir esto en un problema para todos.",
           "actions": [
-            { "type": "flash", "color": "rgba(255, 255, 255, 0.7)", "duration": 300 },
+            {
+              "type": "flash",
+              "color": "rgba(255, 255, 255, 0.7)",
+              "duration": 300
+            },
             {
               "type": "showCharacter",
               "character": "samu",
@@ -2088,7 +2249,12 @@
           ]
         },
         {
-          "actions": [{ "type": "goToScene", "value": "Acto VI: ERROR" }]
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Acto VI: ERROR"
+            }
+          ]
         }
       ]
     },
@@ -2114,7 +2280,11 @@
               "position": "left",
               "pose": "neutral"
             },
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 700 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 700
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/after_tung_battle.mp3",
@@ -2223,7 +2393,11 @@
         },
         {
           "actions": [
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 500 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/brainrot_theme.mp3",
@@ -2258,7 +2432,11 @@
               "position": "left",
               "pose": "alarmed"
             },
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 500 }
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 500
+            }
           ]
         },
         {
@@ -2275,7 +2453,11 @@
               "position": "center",
               "pose": "determined"
             },
-            { "type": "shake", "intensity": 8, "duration": 250 }
+            {
+              "type": "shake",
+              "intensity": 8,
+              "duration": 250
+            }
           ]
         },
         {
@@ -2286,7 +2468,6 @@
               "type": "hideCharacter",
               "position": "right"
             },
-
             {
               "type": "hideCharacter",
               "position": "center"
@@ -2305,8 +2486,16 @@
           "character": "2B",
           "text": "El golpe alcanza a Airi en pleno pecho. La corrupción se abre como tinta negra bajo su piel de luz y trepa hacia el colgante.",
           "actions": [
-            { "type": "flash", "color": "rgba(80, 0, 120, 0.55)", "duration": 300 },
-            { "type": "shake", "intensity": 12, "duration": 400 }
+            {
+              "type": "flash",
+              "color": "rgba(80, 0, 120, 0.55)",
+              "duration": 300
+            },
+            {
+              "type": "shake",
+              "intensity": 12,
+              "duration": 400
+            }
           ]
         },
         {
@@ -2405,9 +2594,18 @@
           "character": "2B",
           "text": "La corrupción se torna de un color negro morado y tira de todos a la vez. Los memes se pliegan sobre ella, los restos de los brainrot se hunden en su luz.",
           "actions": [
-            { "type": "hideCharacter", "position": "right" },
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "left" },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/ataque_brainrot_airi_corrupcion.png"
@@ -2422,9 +2620,18 @@
           "character": "2B",
           "text": "Sobre la plaza, el cielo se oscurece. La corrupción digital se extiende entre las nubes como una grieta luminosa, tiñendo Ciudad Paloma con una luz imposible.",
           "actions": [
-            { "type": "hideCharacter", "position": "right" },
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "left" },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/fuente_ciudad_paloma_corrupta.png"
@@ -2506,7 +2713,11 @@
         },
         {
           "actions": [
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 400 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 400
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/the-amalgam.mp3",
@@ -2527,9 +2738,18 @@
           "character": "2B",
           "text": "La Amalgama retrocede, pero no se rompe. La plaza cambia a su alrededor: la piedra se cubre de grietas digitales, la fuente se oscurece y los restos de la ciudad parecen hundirse bajo una capa de corrupción mucho más densa.",
           "actions": [
-            { "type": "hideCharacter", "position": "right" },
-            { "type": "hideCharacter", "position": "center" },
-            { "type": "hideCharacter", "position": "left" },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
             {
               "type": "setBackground",
               "value": "assets/backgrounds/fuente_ciudad_paloma_corrupta_total.png"
@@ -2611,7 +2831,11 @@
         },
         {
           "actions": [
-            { "type": "stopSound", "id": "bg_music", "fadeOut": 400 },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 400
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/music/lux-airi.mp3",

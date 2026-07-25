@@ -23,6 +23,8 @@ class VisualNovelEngine {
         this.inventory = []; // Objetos conseguidos (p. ej. 'diapason'); persiste entre capítulos
         this.storyDelay = 0; // Retraso acumulado por las decisiones de ruta dentro de un capítulo
         this.debugMode = false; // Modo debug para testing
+        // Sello de caché fijo para toda la sesión (ver cacheBustAsset)
+        this.assetStamp = Date.now();
     }
 
     // Añade un objeto al inventario (sin duplicar). Persiste entre capítulos.
@@ -51,6 +53,9 @@ class VisualNovelEngine {
             this.currentChapter = chapter;
             this.currentScene = 0;
             this.currentLine = 0;
+            // El historial de retroceso es por capítulo: no se vuelve al anterior
+            this.sceneHistory = [];
+            this._lastSeenScene = null;
             this.nextChapter = null; // Limpiar la ruta al cargar un capítulo nuevo
             this.storyDelay = 0; // Reiniciar el retraso acumulado en cada capítulo
 
@@ -474,6 +479,17 @@ class VisualNovelEngine {
                 const key = thresholds[thresholds.length - 1];
                 options = Object.assign({}, options, { [base]: map[key] });
             }
+        }
+
+        // El diapasón que Seraphyna le da a Samu al final del cap. 3 entra como
+        // objeto consumible en los combates posteriores (decidido en la demo del
+        // 25-jul-2026). Solo aparece si el jugador lo lleva de verdad encima.
+        const diapason = window.BattleMinigame.items?.diapason;
+        if (diapason && this.hasItem('diapason') && options.useInventory !== false) {
+            const previos = Array.isArray(options.startItems) ? options.startItems : [];
+            options = Object.assign({}, options, {
+                startItems: [...previos, diapason]
+            });
         }
 
         // retryOnDefeat: true -> al perder se reintenta (como el resto de
@@ -1852,17 +1868,8 @@ class VisualNovelEngine {
             let running = true;
             let ticker = null;
             let activeSpinner = null; // spinner en curso (captura los toques)
-            const startTime = performance.now();
-
-            // CLAVE para el reintento: reiniciar la canción al principio en CADA
-            // ronda. Si no, tras perder la música sigue avanzando y
-            // audio.currentTime queda muy por delante del horario de notas nuevo,
-            // así que todas nacen ya "pasadas" y se pierde al instante con 0%.
-            if (audioEl) {
-                try { audioEl.currentTime = 0; } catch (e) {}
-                const _p = audioEl.play();
-                if (_p && _p.catch) _p.catch(() => {});
-            }
+            let startTime = performance.now();
+            let cuentaTimer = null;   // temporizador de la cuenta atrás previa
 
             // Reloj maestro en ms: si hay audio sonando, manda audio.currentTime
             // (los toques van al ritmo de la canción); si no, reloj interno.
@@ -1993,6 +2000,7 @@ class VisualNovelEngine {
                 if (!running) return;
                 running = false;
                 if (ticker) clearInterval(ticker);
+                if (cuentaTimer) { clearTimeout(cuentaTimer); cuentaTimer = null; }
                 overlay.removeEventListener('click', swallow, true);
                 document.removeEventListener('keydown', onKey);
                 notes.forEach(n => n.el.remove());
@@ -2221,7 +2229,60 @@ class VisualNovelEngine {
             };
 
             updateHud();
-            ticker = setInterval(tick, 16);
+
+            // ---- Cuenta atrás antes de empezar --------------------------------
+            // Pedido tras la demo: el minijuego arrancaba de golpe y te pillaba con
+            // las manos en el regazo. Aquí se avisa, se enseñan las teclas y solo
+            // entonces empieza a correr el reloj.
+            //
+            // OJO: la canción tampoco puede sonar durante la cuenta. El reloj
+            // maestro es audio.currentTime, así que si la música arranca antes,
+            // el horario de notas avanza sin nosotros y nacerían ya pasadas.
+            const arrancar = () => {
+                startTime = performance.now();
+                // Reiniciar la canción en CADA ronda: si no, tras perder seguiría
+                // avanzando y las notas nuevas nacerían fuera de tiempo.
+                if (audioEl) {
+                    try { audioEl.currentTime = 0; } catch (e) {}
+                    const _p = audioEl.play();
+                    if (_p && _p.catch) _p.catch(() => {});
+                }
+                ticker = setInterval(tick, 16);
+            };
+
+            const cartel = document.createElement('div');
+            cartel.className = 'rhythm-countdown neon-font';
+            cartel.innerHTML =
+                '<div class="rhythm-countdown-num"></div>' +
+                '<div class="rhythm-countdown-hint">Prepara los dedos: <b>' +
+                keys.join(' · ') + '</b></div>';
+            overlay.appendChild(cartel);
+            keyEls.forEach(k => k.classList.add('rhythm-key-ready'));
+
+            const pasos = ['5', '4', '3', '2', '1', '¡YA!'];
+            let paso = 0;
+            const numEl = cartel.querySelector('.rhythm-countdown-num');
+            const tictac = () => {
+                if (!running) return;
+                if (paso < pasos.length) {
+                    numEl.textContent = pasos[paso];
+                    numEl.classList.remove('rhythm-countdown-pop');
+                    void numEl.offsetWidth;
+                    numEl.classList.add('rhythm-countdown-pop');
+                    // pitido: agudo y corto en los números, más brillante en el ¡YA!
+                    const ultimo = paso === pasos.length - 1;
+                    beep(ultimo ? 880 : 440, ultimo ? 0.18 : 0.09, 0, 'triangle', 0.5);
+                    paso++;
+                    // 5 números a 900 ms = 4,5 s, más el "¡YA!": unos 5 segundos
+                    cuentaTimer = setTimeout(tictac, ultimo ? 500 : 900);
+                } else {
+                    cartel.remove();
+                    keyEls.forEach(k => k.classList.remove('rhythm-key-ready'));
+                    cuentaTimer = null;
+                    arrancar();
+                }
+            };
+            tictac();
         });
     }
 
@@ -2284,6 +2345,9 @@ class VisualNovelEngine {
                 // todo lo peligroso cuelga o cae (lo pidió el director).
                 obstacles: [],
                 hangChance: options.hangChance != null ? options.hangChance : 0.22,
+                // Cables que SUBEN desde el suelo: mismo peligro del revés, obliga
+                // a mirar arriba y abajo en lugar de vivir pegado al techo.
+                riserChance: options.riserChance != null ? options.riserChance : 0.16,
                 hangMin: options.hangMin != null ? options.hangMin : 0.25,
                 hangMax: options.hangMax != null ? options.hangMax : 0.60,
                 hangSprite: options.hangSprite || 'aire_cable',
@@ -2307,11 +2371,24 @@ class VisualNovelEngine {
     }
 
     // Motor común de los side-scrollers. Devuelve Promise<boolean> (ganado).
-    runSideScroller(cfg) {
+    async runSideScroller(cfg) {
         this.isWaitingForInput = false;
         const SP = 'assets/minigames/cap3/sprites/';
         const CAP = 'assets/minigames/cap3/';
         const url = (n, base = SP) => `url('${this.cacheBustAsset(base + n + '.png')}')`;
+
+        // Precargar TODO lo que el minijuego puede llegar a pintar. Sin esto, el
+        // primer uso de cada sprite (y el primer cambio de fotograma) llega antes
+        // que la imagen y se ve un hueco en blanco.
+        await this.preloadImages([
+            ...(cfg.playerFrames || []).map(n => SP + n + '.png'),
+            ...(cfg.obstacles || []).map(n => SP + n + '.png'),
+            ...(cfg.enemies || []).flat().map(n => SP + n + '.png'),
+            ...(cfg.collectible || []).map(n => SP + n + '.png'),
+            ...(cfg.fallerFrames || ['aire_foco', 'aire_foco_on']).map(n => SP + n + '.png'),
+            ...['aire_cable_cap', 'aire_cable_body', 'aire_cable_tip'].map(n => SP + n + '.png'),
+            ...[cfg.bgFar, cfg.bgNear, cfg.backdrop].filter(Boolean).map(n => CAP + n + '.png')
+        ]);
         const speed = cfg.speed || 6;
         const maxHits = cfg.maxHits || 3;
         const goal = cfg.goal || 60;
@@ -2392,11 +2469,18 @@ class VisualNovelEngine {
                 }
             };
 
+            // El ratón se sigue en TODA la ventana, no solo dentro del escenario.
+            // Antes el escuchador colgaba de `stage`: en cuanto sacabas el cursor
+            // por arriba o por abajo dejaban de llegar eventos y el coche se
+            // quedaba clavado a media maniobra. Ahora, si te sales, el objetivo
+            // simplemente se queda pegado al tope de ese lado y el coche sigue
+            // respondiendo en cuanto vuelves a mover.
             const onMove = (e) => {
                 const r = stage.getBoundingClientRect();
+                if (!r.height) return;
                 targetY = Math.max(yMin, Math.min(yMax, (e.clientY - r.top) / r.height));
             };
-            stage.addEventListener('pointermove', onMove);
+            window.addEventListener('pointermove', onMove);
             const keys = {};
             const onKey = (e) => {
                 const k = (e.key || '').toLowerCase();
@@ -2409,13 +2493,15 @@ class VisualNovelEngine {
             document.addEventListener('keyup', onKey);
 
             let objs = [];
+            let ultimoCable = null;   // para no cerrar el pasillo con dos cables
+            let ultimoModo = null;    // para no encadenar partituras seguidas
             const spawnObj = () => {
                 if (!running) return;
                 const el = document.createElement('div');
                 el.className = 'ss-obj';
                 let name, kind, hFrac, wRatio;
                 let y = yMin + Math.random() * (yMax - yMin);
-                let vy = 0, isHang = false;
+                let vy = 0, isHang = false, largoCable = 0;
                 const roll = Math.random();
 
                 // Peligros especiales del modo VUELO (jul 2026):
@@ -2423,6 +2509,7 @@ class VisualNovelEngine {
                 //    aleatoria (deja hueco por debajo para esquivar).
                 //  - "faller": foco que CAE desde arriba mientras avanza (movimiento real).
                 const hangC = isFly ? (cfg.hangChance || 0) : 0;
+                const riseC = isFly ? (cfg.riserChance || 0) : 0;
                 const fallC = isFly ? (cfg.fallerChance || 0) : 0;
                 const collC = cfg.collectible ? (cfg.collectChance != null ? cfg.collectChance : 0.55) : 0;
                 const enemyC = (cfg.enemies && cfg.enemies.length) ? 0.20 : 0;
@@ -2431,26 +2518,75 @@ class VisualNovelEngine {
                 // colgantes y cayentes: nada flota porque sí.
                 let mode;
                 if (isFly && roll < hangC) mode = 'hang';
-                else if (isFly && roll < hangC + fallC) mode = 'faller';
-                else if (cfg.collectible && roll < hangC + fallC + collC) mode = 'collect';
-                else if (enemyC && roll < hangC + fallC + collC + enemyC) mode = 'enemy';
+                else if (isFly && roll < hangC + riseC) mode = 'riser';
+                else if (isFly && roll < hangC + riseC + fallC) mode = 'faller';
+                else if (cfg.collectible && roll < hangC + riseC + fallC + collC) mode = 'collect';
+                else if (enemyC && roll < hangC + riseC + fallC + collC + enemyC) mode = 'enemy';
                 else if (cfg.obstacles && cfg.obstacles.length) mode = 'static';
-                else mode = (Math.random() < 0.5) ? 'hang' : 'faller';
-                if (mode === 'hang') {
+                else mode = ['hang', 'riser', 'faller'][Math.floor(Math.random() * 3)];
+
+                // Nunca dos partituras seguidas: aunque el porcentaje esté bien,
+                // el azar las encadenaba de tres en tres y el tramo se quedaba sin
+                // peligros. Si toca repetir, ese turno pasa a ser un obstáculo.
+                if (mode === 'collect' && ultimoModo === 'collect') {
+                    mode = isFly ? ['hang', 'riser', 'faller'][Math.floor(Math.random() * 3)]
+                                 : (cfg.obstacles && cfg.obstacles.length ? 'static' : 'enemy');
+                }
+                ultimoModo = mode;
+                if (mode === 'hang' || mode === 'riser') {
                     kind = 'obstacle'; isHang = true;
-                    const largo = (cfg.hangMin != null ? cfg.hangMin : 0.25)
-                        + Math.random() * ((cfg.hangMax != null ? cfg.hangMax : 0.60) - (cfg.hangMin != null ? cfg.hangMin : 0.25));
+                    const hMin = cfg.hangMin != null ? cfg.hangMin : 0.25;
+                    const hMax = cfg.hangMax != null ? cfg.hangMax : 0.60;
+                    let largo = hMin + Math.random() * (hMax - hMin);
+
+                    // Un cable del techo y otro del suelo que coincidan pueden
+                    // cerrar el pasillo entero y matarte sin escapatoria. Se mira
+                    // TODO lo que sigue cerca de la zona de aparición (no solo el
+                    // último: con esta densidad hay tres cables en la misma franja)
+                    // y se recorta el nuevo para dejar siempre hueco por el que
+                    // pasar. La caja de colisión de Edu mide 0,095 de la altura,
+                    // así que por debajo de ~0,12 sería imposible.
+                    const CORREDOR = cfg.corridorMin != null ? cfg.corridorMin : 0.18;
+                    // Radio de vigilancia. A 0.30 recortaba cables que ni siquiera
+                    // llegaban a solaparse (el ancho de un cable es ~0.09 y entre
+                    // aparición y aparición hay 0.14): la mediana se quedaba en 0.44
+                    // y solo el 21% pasaba de 0.60. A 0.20 sube al 29% sin que dos
+                    // cables opuestos lleguen nunca a cerrar el paso.
+                    const CERCA = 0.20;
+                    let ocupadoEnfrente = 0;
+                    objs.forEach(o => {
+                        if (!o.isHang || o.hangMode === mode) return;
+                        if (Math.abs(o.x - 1.05) > CERCA) return;
+                        ocupadoEnfrente = Math.max(ocupadoEnfrente, o.hangLargo || 0);
+                    });
+                    if (ocupadoEnfrente > 0) {
+                        largo = Math.min(largo, Math.max(0.12, 1 - CORREDOR - ocupadoEnfrente));
+                    }
+
+                    largoCable = largo;
                     const h = fieldH() * largo;
                     const w = Math.max(62, h * 0.22);
                     el.style.height = h + 'px';
                     el.style.width = w + 'px';
-                    el.style.top = '0%';
                     // Halo eléctrico sutil: el cable debe LEERSE sobre fondo oscuro
                     el.style.filter = 'drop-shadow(0 0 7px rgba(130,200,255,0.45))';
+
+                    // OJO: .ss-obj se centra con translate(-50%,-50%), así que `top`
+                    // marca el CENTRO del elemento, no su borde de arriba. Antes se
+                    // ponía top:0 pensando en "pegado al techo" y la mitad del cable
+                    // se quedaba fuera de pantalla: colgaba la mitad de lo que decía
+                    // su longitud, y el desfase crecía cuanto más largo era. Por eso
+                    // las alturas aleatorias no cuadraban con la colisión.
+                    y = (mode === 'hang') ? (largo / 2) : (1 - largo / 2);
+                    el.style.top = (y * 100) + '%';
+
                     // Cable en 3 piezas: soporte fijo + tramo recto estirable + punta
                     // pelada fija. Así el largo aleatorio no deforma el dibujo.
-                    el.style.display = 'flex';
-                    el.style.flexDirection = 'column';
+                    const tramo = document.createElement('div');
+                    tramo.style.cssText = 'width:100%;height:100%;display:flex;flex-direction:column;';
+                    // El que sube del suelo es el mismo cable del revés: el soporte
+                    // abajo y la punta pelada mirando al cielo.
+                    if (mode === 'riser') tramo.style.transform = 'scaleY(-1)';
                     const capH = w * (160 / 200), tipH = w * (221 / 200);
                     [['aire_cable_cap', capH + 'px', '0 0 auto'],
                      ['aire_cable_body', 'auto', '1 1 auto'],
@@ -2458,9 +2594,9 @@ class VisualNovelEngine {
                         const seg = document.createElement('div');
                         seg.style.cssText = `width:100%;height:${ph};flex:${flex};` +
                             `background-image:${url(piece)};background-size:100% 100%;background-repeat:no-repeat;`;
-                        el.appendChild(seg);
+                        tramo.appendChild(seg);
                     });
-                    y = largo / 2; // centro aprox. para colisión/z
+                    el.appendChild(tramo);
                 } else if (mode === 'faller') {
                     kind = 'obstacle';
                     el._frames = cfg.fallerFrames || ['aire_foco', 'aire_foco_on'];
@@ -2491,7 +2627,11 @@ class VisualNovelEngine {
                 el.style.left = '108%';
                 el.style.zIndex = zByY(y);
                 stage.appendChild(el);
-                objs.push({ el, x: 1.08, y, kind, vy, isHang, taken: false, frameT: 0, frameIdx: 0 });
+                // hangMode/hangLargo los usa el guardián del pasillo al generar el
+                // siguiente cable: necesita saber de qué lado viene cada uno y
+                // cuánto ocupa para no cerrar el paso.
+                objs.push({ el, x: 1.08, y, kind, vy, isHang, taken: false, frameT: 0, frameIdx: 0,
+                            hangMode: isHang ? mode : null, hangLargo: isHang ? largoCable : 0 });
             };
 
             let hits = 0, collected = 0, dist = 0, running = true;
@@ -2526,8 +2666,8 @@ class VisualNovelEngine {
                 if (!running) return;
                 running = false;
                 if (spawnTimer) clearInterval(spawnTimer);
-                if (raf) clearInterval(raf);
-                stage.removeEventListener('pointermove', onMove);
+                if (raf) cancelAnimationFrame(raf);
+                window.removeEventListener('pointermove', onMove);
                 document.removeEventListener('keydown', onKey);
                 document.removeEventListener('keyup', onKey);
                 overlay.removeEventListener('click', swallow, true);
@@ -2629,7 +2769,11 @@ class VisualNovelEngine {
 
                 updateHud();
             };
-            raf = setInterval(tick, 16);
+            // Bucle con requestAnimationFrame: va sincronizado con el refresco de
+            // la pantalla. Con setInterval(16) el navegador dibujaba a destiempo y
+            // el desplazamiento daba tirones.
+            const loop = () => { if (!running) return; tick(); if (running) raf = requestAnimationFrame(loop); };
+            raf = requestAnimationFrame(loop);
         });
     }
 
@@ -2756,12 +2900,30 @@ class VisualNovelEngine {
         cg.classList.remove('cg-visible');
     }
 
+    // Rompe la caché UNA VEZ POR CARGA DE PÁGINA, no en cada llamada. Antes esto
+    // devolvía `?v=${Date.now()}`, así que cada cambio de fotograma de un sprite
+    // generaba una URL nueva y el navegador se volvía a descargar el PNG entero:
+    // el hueco se quedaba en blanco mientras tanto y el minijuego parpadeaba sin
+    // parar (medido: 17 URLs distintas del coche en 2,5 s y 500 MB de descargas).
+    // Con un sello fijo por sesión seguimos viendo los assets recién editados al
+    // recargar, pero dentro de la partida la caché del navegador hace su trabajo.
     cacheBustAsset(path) {
         if (!path || path.startsWith('data:') || /^https?:\/\//.test(path)) {
             return path;
         }
         const separator = path.includes('?') ? '&' : '?';
-        return `${path}${separator}v=${Date.now()}`;
+        return `${path}${separator}v=${this.assetStamp}`;
+    }
+
+    // Precarga una lista de imágenes y no resuelve hasta tenerlas decodificadas.
+    // Se usa antes de arrancar un minijuego para que el primer cambio de
+    // fotograma no pegue un salto en blanco.
+    preloadImages(paths) {
+        return Promise.all((paths || []).map(p => new Promise(resolve => {
+            const img = new Image();
+            img.onload = img.onerror = () => resolve();
+            img.src = this.cacheBustAsset(p);
+        })));
     }
 
     getCharacterKey(characterName) {
@@ -2803,6 +2965,7 @@ class VisualNovelEngine {
                 : character.image || character.poses?.neutral;
 
             charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
+            this.applyPoseClass(charElement, pose);
             charElement.classList.add('active');
             charElement.setAttribute('data-character', characterKey);
 
@@ -2883,10 +3046,25 @@ class VisualNovelEngine {
                 : character.image || character.poses?.neutral;
 
             charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
+            this.applyPoseClass(charElement, pose);
 
             // Manejar video integrado si la pose tiene un video asociado (compañeros)
             const videoPath = character.poses && character.poses[`${pose}_video`];
             this.updateCharacterVideo(charElement, videoPath);
+        }
+    }
+
+    // Marca la pose activa en el elemento (clase "pose-<nombre>") para que el CSS
+    // pueda tratar poses concretas de forma distinta. Se usa, por ejemplo, con los
+    // primerísimos planos de llanto ("bua"), que en vez de centrarse se pegan a la
+    // esquina inferior para que la cara encaje con el borde del escenario.
+    applyPoseClass(charElement, pose) {
+        [...charElement.classList]
+            .filter(c => c.startsWith('pose-'))
+            .forEach(c => charElement.classList.remove(c));
+        if (pose) {
+            const limpia = String(pose).toLowerCase().replace(/[^a-z0-9_-]/g, '');
+            if (limpia) charElement.classList.add(`pose-${limpia}`);
         }
     }
 
@@ -3451,6 +3629,9 @@ class VisualNovelEngine {
         const scene = this.getCurrentScene();
         if (!scene || !scene.lines) return false;
 
+        // Guardar el progreso al pisar una escena nueva (para poder retroceder)
+        this.recordSceneEntry();
+
         let line = this.getCurrentLine();
         if (!line) return false;
 
@@ -3590,11 +3771,108 @@ class VisualNovelEngine {
         this.isWaitingForInput = false;
     }
 
+    // ============================================================
+    // RETROCEDER a la escena anterior (pedido en la demo del 25-jul-2026)
+    // ------------------------------------------------------------
+    // La escena es la unidad narrativa, así que se retrocede al PRINCIPIO de la
+    // escena anterior y se la deja volver a ejecutarse entera: sus acciones
+    // vuelven a poner el fondo, los personajes, la música y los efectos. Por eso
+    // hay que limpiar antes el escenario (si no, se quedan encima los restos de
+    // la escena de la que venimos) y devolver el progreso al estado que tenía al
+    // entrar en aquella escena (si no, cosas como "rescatado" o el inventario se
+    // contarían dos veces al repetirla).
+    // ============================================================
+
+    // Foto del progreso al entrar en una escena. Se llama desde nextLine().
+    recordSceneEntry() {
+        if (!this.currentChapter) return;
+        if (this._lastSeenScene === this.currentScene) return;
+        this._lastSeenScene = this.currentScene;
+        this.sceneHistory = this.sceneHistory || [];
+        this.sceneHistory.push({
+            chapter: this.lastChapterName,
+            scene: this.currentScene,
+            gameState: JSON.parse(JSON.stringify(this.gameState || {})),
+            rescued: [...this.rescued],
+            completedCalls: [...this.completedCalls],
+            inventory: [...this.inventory],
+            storyDelay: this.storyDelay,
+            nextChapter: this.nextChapter
+        });
+        // No hace falta guardar el capítulo entero: con 40 escenas vamos sobrados
+        if (this.sceneHistory.length > 60) this.sceneHistory.shift();
+    }
+
+    // ¿Hay algo a lo que volver? (el botón se oculta si no)
+    canRewind() {
+        return !!(this.currentChapter && this.sceneHistory && this.sceneHistory.length > 1);
+    }
+
+    // Deja el escenario en blanco sin tocar el progreso de la partida.
+    clearStage() {
+        this.stopAllSounds();
+        this.hideDialog();
+
+        ['character-left', 'character-right', 'character-center'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('active', 'speaking');
+                el.style.backgroundImage = '';
+            }
+        });
+        const cont = document.getElementById('characters-container');
+        if (cont) cont.classList.remove('has-speaker');
+        this.characterPositions = {};
+        this.speakingCharacter = null;
+        this.speakingPosition = null;
+
+        if (window.Juice) window.Juice.reset();
+        this.hideCG?.();
+
+        const bg = document.getElementById('background');
+        if (bg) bg.style.backgroundImage = '';
+
+        const choices = document.getElementById('choices-container');
+        if (choices) { choices.classList.remove('active'); choices.innerHTML = ''; }
+    }
+
+    // Vuelve al principio de la escena anterior dejándolo todo como estaba.
+    rewindToPreviousScene() {
+        if (!this.canRewind()) return false;
+
+        this.sceneHistory.pop();                       // la escena en la que estamos
+        const destino = this.sceneHistory[this.sceneHistory.length - 1];
+        if (!destino) return false;
+
+        this.gameState = JSON.parse(JSON.stringify(destino.gameState || {}));
+        this.rescued = [...destino.rescued];
+        this.completedCalls = [...destino.completedCalls];
+        this.inventory = [...destino.inventory];
+        this.storyDelay = destino.storyDelay;
+        this.nextChapter = destino.nextChapter;
+
+        this.clearStage();
+
+        this.currentScene = destino.scene;
+        this.currentLine = 0;
+        this.sceneEndedByChoice = false;
+        this.pendingSceneJump = false;
+        // Volver a marcarla como "no vista" para que recordSceneEntry la
+        // registre otra vez al reproducirla.
+        this._lastSeenScene = null;
+        this.sceneHistory.pop();
+
+        this.updateDebugPanel();
+        return true;
+    }
+
     reset() {
         this.currentScene = 0;
         this.currentLine = 0;
         this.gameState = {};
         this.history = [];
+        this.sceneHistory = [];
+        this._lastSeenScene = null;
         this.lastChapterName = null;
         this.speakingCharacter = null;
         this.speakingPosition = null;

@@ -21,6 +21,44 @@ startBtn.addEventListener("click", () => startNewGame());
 loadBtn.addEventListener("click", () => loadGame());
 document.getElementById("settings-btn")?.addEventListener("click", () => showSettingsPanel());
 
+// ===== Retroceder a la escena anterior (demo 25-jul-2026) =====
+// El bucle de juego está casi siempre parado dentro de waitForClick(), así que
+// el botón no puede limitarse a cambiar el estado: además tiene que desbloquear
+// esa espera. Se marca la petición y se resuelve el clic pendiente a mano; el
+// bucle la atiende al dar la vuelta.
+let rewindRequested = false;
+let rewindWatcher = null;
+const rewindBtn = document.getElementById("rewind-btn");
+
+rewindBtn?.addEventListener("click", (e) => {
+  // Que el clic no llegue a document: si no, contaría como "avanzar diálogo"
+  e.preventDefault();
+  e.stopPropagation();
+  if (!isGameRunning || !engine.canRewind()) return;
+  rewindRequested = true;
+  if (clickHandler) clickHandler();
+});
+
+function updateRewindButton() {
+  if (!rewindBtn) return;
+  const hayMinijuego = !!document.querySelector(".minigame-overlay, .cutscene-overlay");
+  const hayElecciones = !!document.querySelector("#choices-container.active");
+  const visible =
+    isGameRunning && engine.canRewind() && !hayMinijuego && !hayElecciones;
+  rewindBtn.classList.toggle("hidden", !visible);
+}
+
+function startRewindWatcher() {
+  stopRewindWatcher();
+  rewindWatcher = setInterval(updateRewindButton, 200);
+}
+
+function stopRewindWatcher() {
+  if (rewindWatcher) clearInterval(rewindWatcher);
+  rewindWatcher = null;
+  rewindBtn?.classList.add("hidden");
+}
+
 // ===== Configuración: volúmenes de música y efectos (persistentes) =====
 function showSettingsPanel() {
   if (document.getElementById("settings-panel")) return; // ya abierto
@@ -284,7 +322,17 @@ async function playChapter(chapterIdentifier) {
 }
 
 async function playGame() {
+  startRewindWatcher();
   while (isGameRunning) {
+    // Petición de retroceso: rebobinar y volver a reproducir la escena anterior
+    // desde su primera línea (sus acciones repintan fondo, personajes y música).
+    if (rewindRequested) {
+      rewindRequested = false;
+      engine.rewindToPreviousScene();
+      updateRewindButton();
+      continue;
+    }
+
     const hasMoreContent = await engine.nextLine();
 
     if (!hasMoreContent) {
@@ -318,6 +366,8 @@ function waitForClick() {
 
 async function endGame() {
   isGameRunning = false;
+  rewindRequested = false;
+  stopRewindWatcher();
   engine.hideDialog();
 
   // Capturar la ruta ramificada elegida y si el capítulo es final (los

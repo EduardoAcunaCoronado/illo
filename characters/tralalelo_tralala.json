@@ -4,5 +4,9 @@
   "poses": {
     "neutral": "assets/characters/tralalelo_tralala.png"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "aliases": [
+    "Tralalelo Tralala",
+    "Tralaleo Tralala"
+  ]
 }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css?v=20260724-4">
+    <link rel="stylesheet" href="styles.css?v=20260725-7">
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
 </head>
 <body>
@@ -42,6 +42,12 @@
             </div>
             <div class="dialog-continue p5-continue">▼</div>
         </div>
+
+        <!-- Retroceder a la escena anterior (pedido en la demo del 25-jul-2026).
+             Se muestra solo cuando hay escena a la que volver; game.js lo gestiona. -->
+        <button id="rewind-btn" class="rewind-btn hidden" title="Volver a la escena anterior">
+            <span class="rewind-icon">&#9198;</span><span class="rewind-label">Retroceder</span>
+        </button>
 
         <!-- Menú de elecciones con estilo Persona 5 -->
         <div id="choices-container" class="choices-container p5-choices"></div>
@@ -96,12 +102,12 @@
     </div>
 
     <script src="p5-effects.js?v=20260716-2"></script>
-    <script src="battle-minigame.js?v=20260725-1"></script>
+    <script src="battle-minigame.js?v=20260725-3"></script>
     <script src="credits-minigame.js?v=20260724-2"></script>
     <script src="rune-channeling-minigame.js?v=20260724-6"></script>
     <script src="juice.js?v=20260722-1"></script>
-    <script src="engine.js?v=20260724-1"></script>
-    <script src="game.js?v=20260723-2"></script>
+    <script src="engine.js?v=20260725-12"></script>
+    <script src="game.js?v=20260725-2"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->

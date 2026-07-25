@@ -1057,7 +1057,7 @@
         },
         {
           "character": "2B",
-          "text": "Samu y Edu salen juntos de Kingdom Ketchup, dejando atrás el reino rojo de la salsa de tomate. Su verdadera aventura apenas comienza."
+          "text": "El reino rojo queda atrás. Edu camina despacio, todavía mareado, mirándose las manos como si no terminara de fiarse de ellas."
         },
         {
           "actions": [
@@ -1109,7 +1109,7 @@
             }
           ],
           "character": "2B",
-          "text": "Samu y Edu salen finalmente de Kingdom Ketchup. Sus pasos resuenan en las calles de Furrielva hasta que llegan a la iglesia. El aire es fresco, tranquilizador."
+          "text": "Las calles de Furrielva los reciben con aire fresco. Caminan hasta la iglesia sin decir gran cosa: hay silencios que hacen más compañía que una conversación."
         },
         {
           "character": "Samu",
@@ -1141,7 +1141,7 @@
         },
         {
           "character": "2B",
-          "text": "La pantalla muestra el anuncio: 'CONCIERTO EXCLUSIVO - Seraphyna en Ecchi Land. Calle Hentai, nº 69. Una noche que no olvidarás.'",
+          "text": "La pantalla muestra el anuncio: «CONCIERTO EXCLUSIVO — Seraphyna en ECCHI LAND. Calle Hentai, nº 69. A las afueras de Furrielva: coge la autovía y sal por el 69. Una noche que no olvidarás.»",
           "actions": [
             {
               "type": "showCharacter",
@@ -1153,7 +1153,7 @@
         },
         {
           "character": "Edu",
-          "text": "¿Seraphyna? ¿Dando un concierto en Ecchi Land? Esto es... sospechoso.",
+          "text": "¿Seraphyna? ¿Dando un concierto? ...Espera, ¿«a las afueras de Furrielva»? Tío, si eso ya no es ni la ciudad. Eso es otro sitio entero.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1177,7 +1177,7 @@
         },
         {
           "character": "Samu",
-          "text": "Pero primero, necesitamos saber dónde está exactamente Ecchi Land. Voy a abrir el Google Maps... que por alguna razón ahora se llama Furry Maps...",
+          "text": "Y encima está fuera. Voy a mirar cuánto hay hasta allí en el Google Maps... que por alguna razón ahora se llama Furry Maps...",
           "actions": [
             {
               "type": "showCharacter",
@@ -1217,7 +1217,7 @@
         },
         {
           "character": "Samu",
-          "text": "Perfecto. Calle Hentai, nº 69. Está lejos. Como de aquí a Isla Cristina. Pero podemos hacerlo. Vamos.",
+          "text": "Confirmado: fuera de Furrielva, saliendo por la autovía. Como de aquí a Isla Cristina. Se hace, pero no llegamos andando de milagro.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1241,7 +1241,7 @@
         },
         {
           "character": "2B",
-          "text": "Samu y Edu se ponen en marcha.",
+          "text": "Y con más preguntas que respuestas, los dos echan a andar hacia la autovía.",
           "actions": [
             {
               "type": "hideCharacter",

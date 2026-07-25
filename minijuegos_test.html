@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prueba de minijuegos — Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" id="css-principal">
+    <script>document.getElementById("css-principal").href = "styles.css?v=" + Date.now();</script>
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
     <style>
         body { background: #05010f; }
@@ -137,11 +138,20 @@
             <input type="checkbox" id="tp-auto"> 🤖 Modo auto (se juega solo, para comprobar el ritmo)
         </label>
 
+        <label class="tp-music">Retraso de la historia (los minijuegos escalan con él):
+            <select id="tp-retraso">
+                <option value="0">0 — sin entretenerse</option>
+                <option value="1">1 — algo de retraso</option>
+                <option value="2">2 — muy tardón</option>
+            </select>
+        </label>
+
         <h2>🏎️ Persecución (chase)</h2>
         <div class="tp-row">
             <button class="tp-btn" style="--c:#7cffb2" onclick="launchChase('facil')">Fácil</button>
             <button class="tp-btn" style="--c:#4fd0ff" onclick="launchChase('medio')">Medio</button>
             <button class="tp-btn" style="--c:#ff4fa3" onclick="launchChase('dificil')">Difícil</button>
+            <button class="tp-btn" style="--c:#ffd166" onclick="launchHistoria('chase')">📖 Como en la historia</button>
         </div>
 
         <h2>🐉 Edu volando (eduvuelo)</h2>
@@ -149,6 +159,7 @@
             <button class="tp-btn" style="--c:#7cffb2" onclick="launchEduVuelo('facil')">Fácil</button>
             <button class="tp-btn" style="--c:#4fd0ff" onclick="launchEduVuelo('medio')">Medio</button>
             <button class="tp-btn" style="--c:#ff4fa3" onclick="launchEduVuelo('dificil')">Difícil</button>
+            <button class="tp-btn" style="--c:#ffd166" onclick="launchHistoria('eduvuelo')">📖 Como en la historia</button>
         </div>
 
         <h2>🍅 Ketchup & Guindillas</h2>
@@ -214,11 +225,19 @@
 
     </div>
 
-    <script src="engine.js?v=20260724-1"></script>
-    <script src="juice.js?v=20260722-1"></script>
-    <script src="battle-minigame.js?v=20260725-1"></script>
-    <script src="credits-minigame.js?v=20260724-2"></script>
-    <script src="rune-channeling-minigame.js?v=20260724-6"></script>
+    <!-- Esta es una página de PRUEBAS: aquí siempre queremos el código recién
+         guardado, nunca el de la caché. Antes llevaba versiones fijas a mano y se
+         quedaban atrás respecto a index.html, así que se probaban cambios que en
+         realidad no se estaban cargando. Con el sello de tiempo no puede repetirse. -->
+    <script>
+      (function () {
+        var v = Date.now();
+        ['juice.js', 'battle-minigame.js', 'credits-minigame.js',
+         'rune-channeling-minigame.js', 'engine.js'].forEach(function (f) {
+          document.write('<scr' + 'ipt src="' + f + '?v=' + v + '"><\/scr' + 'ipt>');
+        });
+      })();
+    </script>
     <script>
         const engine = new VisualNovelEngine();
         const panel = document.getElementById('test-panel');
@@ -326,6 +345,35 @@
             medio:   { levels: 7, holdRequired: 1.35 },
             dificil: { levels: 7, holdRequired: 1.55 }
         };
+        // Los presets Fácil/Medio/Difícil de esta página son inventados para
+        // probar: solo tocan speed/goal/maxHits y todo lo demás cae en los
+        // valores por defecto del motor. NO son lo que se juega en la historia.
+        // Este botón lee chapter3.json y lanza el minijuego con su configuración
+        // real, resolviendo las variantes *ByDelay según el retraso elegido.
+        async function launchHistoria(juego) {
+            const retraso = Number(document.getElementById("tp-retraso").value) || 0;
+            const cap = await (await fetch("chapters/chapter3.json?v=" + Date.now(),
+                                           { cache: "no-store" })).json();
+            let cfg = null;
+            cap.scenes.forEach(sc => sc.lines.forEach(li => (li.actions || []).forEach(a => {
+                if (a.game === juego) cfg = a;
+            })));
+            if (!cfg) { resultEl.textContent = "No encontré ese minijuego en el capítulo 3."; return; }
+            cfg = Object.assign({}, cfg);
+            Object.keys(cfg).filter(k => k.endsWith("ByDelay")).forEach(k => {
+                const base = k.slice(0, -"ByDelay".length);
+                const umbrales = Object.keys(cfg[k]).map(Number).filter(n => n <= retraso).sort((a, b) => a - b);
+                if (umbrales.length) cfg[base] = cfg[k][umbrales[umbrales.length - 1]];
+            });
+            resultEl.textContent = "";
+            panel.classList.add("hidden");
+            startMusic(juego === "chase" ? "persecucion_carretera.mp3" : "vuelo_edu.mp3");
+            if (juego === "chase") await engine.playChaseMinigame(cfg);
+            else await engine.playEduVueloMinigame(cfg);
+            stopMusic();
+            resultEl.textContent = "✅ Superado (config real del capítulo 3, retraso " + retraso + ")";
+            panel.classList.remove("hidden");
+        }
         async function launchChase(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');

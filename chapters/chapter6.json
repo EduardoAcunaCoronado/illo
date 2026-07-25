@@ -36,7 +36,7 @@
           ]
         },
         {
-          "character": "Seraphyne",
+          "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Despacio, no intentes levantarte todavía.",
           "actions": [
@@ -342,7 +342,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... es muy difícil para mí. Una opción da miedo porque puede salir mal. La otra da miedo porque puede no acabar nunca.",
+          "text": "Ya, pero es muy difícil para mí. Una opción da miedo porque puede salir mal. La otra da miedo porque puede no acabar nunca.",
           "actions": [
             {
               "type": "showCharacter",
@@ -387,7 +387,7 @@
           ]
         }
       ]
-    },  
+    },
     {
       "title": "Final bueno: Un deseo propio",
       "lines": [
@@ -630,7 +630,7 @@
         },
         {
           "character": "2B",
-          "text": "Final bueno: Airi sale junto al grupo de ciudad Paloma. La corrupción no ha terminado, pero por primera vez ya no avanza contra una niña sola.",
+          "text": "Final bueno: Airi sale junto al grupo de Ciudad Paloma. La corrupción no ha terminado, pero por primera vez ya no avanza contra una niña sola.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -639,7 +639,11 @@
           ]
         },
         {
-          "actions": [{ "type": "stopAllSounds" }],
+          "actions": [
+            {
+              "type": "stopAllSounds"
+            }
+          ],
           "character": "2B",
           "text": "Fin."
         },
@@ -988,7 +992,11 @@
               "id": "bg_music",
               "fadeOut": 500
             },
-            { "type": "flash", "color": "rgba(80, 0, 120, 0.35)", "duration": 220 },
+            {
+              "type": "flash",
+              "color": "rgba(80, 0, 120, 0.35)",
+              "duration": 220
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/effects/static.mp3",
@@ -1000,14 +1008,18 @@
             }
           ],
           "character": "2B",
-          "text": "Aparece una marcas tenues, casi imperceptible, brillando en su piel."
+          "text": "Aparecen unas marcas tenues, casi imperceptibles, brillando en su piel."
         },
         {
           "character": "2B",
           "text": "Final incierto: Airi ya no está sola y el mundo de ensueño sigue en pie. Pero la corrupción todavía no ha soltado del todo su mano."
         },
         {
-          "actions": [{ "type": "stopAllSounds" }],
+          "actions": [
+            {
+              "type": "stopAllSounds"
+            }
+          ],
           "character": "2B",
           "text": "¿Fin?"
         }

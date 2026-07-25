@@ -2645,7 +2645,20 @@ html, body {
     pointer-events: none;
     will-change: left;
 }
-.ss-obj.ss-enemy { z-index: 5; }
+/* Las motos de los memes solo tienen DOS dibujos (rueda y llama encendida o
+   apagada), así que su bucle se leía como un parpadeo duro: era el "le falta un
+   frame a cada cacharrito" de la demo. Este bote vertical continuo hace de
+   fotograma intermedio —la moto nunca está quieta— y encima le pega, que van a
+   toda leche por el asfalto. El periodo (0.26 s) es distinto al del cambio de
+   dibujo (0.14 s) a propósito: así no se sincronizan y no vuelve el parpadeo. */
+.ss-obj.ss-enemy {
+    z-index: 5;
+    animation: ss-bike-bob 0.26s ease-in-out infinite alternate;
+}
+@keyframes ss-bike-bob {
+    from { transform: translate(-50%, -50%) rotate(-0.6deg); }
+    to   { transform: translate(-50%, calc(-50% - 3px)) rotate(0.6deg); }
+}
 .ss-obj.ss-collect {
     filter: drop-shadow(0 0 10px rgba(255, 209, 102, 0.8));
     animation: ss-collect-bob 0.9s ease-in-out infinite alternate;
@@ -2764,4 +2777,111 @@ html, body {
 @keyframes bub-in { from { opacity: 0; translate: -50% 14px; } to { opacity: 1; translate: -50% 0; } }
 @media (prefers-reduced-motion: reduce) {
     .battle-survive-chip.survive-pulse, .battle-urgent-bubble { animation: none; }
+}
+
+/* ============================================================
+   BOTÓN DE RETROCEDER (demo 25-jul-2026)
+   Arriba a la derecha, discreto hasta que pasas el ratón. Vuelve al principio
+   de la escena anterior. Se oculta solo cuando no hay adónde volver, durante
+   los minijuegos y mientras hay elecciones en pantalla.
+   ============================================================ */
+.rewind-btn {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+    border: 2px solid rgba(176, 79, 255, 0.55);
+    border-radius: 999px;
+    background: rgba(12, 6, 26, 0.62);
+    color: #e9dcff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    opacity: 0.42;
+    backdrop-filter: blur(3px);
+    transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.rewind-btn:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 0 16px rgba(176, 79, 255, 0.55);
+}
+.rewind-btn:active { transform: translateY(1px); }
+.rewind-btn.hidden { display: none; }
+.rewind-icon { font-size: 15px; line-height: 1; }
+@media (max-width: 700px) {
+    .rewind-label { display: none; }
+    .rewind-btn { padding: 8px 10px; }
+}
+
+/* ============================================================
+   POSES DE PRIMERÍSIMO PLANO ("bua"): la cara ocupa casi todo el dibujo, así
+   que centrada flota rara. Se pega a la esquina inferior derecha de su franja
+   y se agranda un poco, como un plano de reacción de manga. Sin bocadillo en
+   la imagen: el texto lo pone la caja de diálogo del juego.
+   ============================================================ */
+/* El "bua" no se reparte con los demás: sale de su franja y se planta en la
+   esquina inferior DERECHA del escenario, como un plano de reacción de manga.
+   Los !important son necesarios porque layoutCharacters() escribe left/width/
+   margin-left en el estilo en línea para repartir a los personajes. */
+.character.pose-bua {
+    left: auto !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    width: 46% !important;
+    height: 100%;
+    background-position: bottom right;
+    z-index: 3;
+}
+
+/* ============================================================
+   CUENTA ATRÁS DEL MINIJUEGO DE RITMO
+   Antes arrancaba de golpe y te pillaba con las manos en el regazo. Ahora se
+   avisa y se recuerdan las teclas para colocar los dedos.
+   ============================================================ */
+.rhythm-countdown {
+    position: absolute;
+    inset: 0;
+    z-index: 120;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    pointer-events: none;
+    background: radial-gradient(60% 50% at 50% 45%, rgba(8, 2, 20, 0.55), transparent 75%);
+}
+.rhythm-countdown-num {
+    font-size: 116px;
+    line-height: 1;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 22px rgba(176, 79, 255, 0.95), 0 0 46px rgba(255, 79, 163, 0.7);
+}
+.rhythm-countdown-hint {
+    font-size: 19px;
+    letter-spacing: 1.5px;
+    color: #e9dcff;
+    text-shadow: 0 0 12px rgba(0, 0, 0, 0.8);
+}
+.rhythm-countdown-hint b { color: #4fd0ff; letter-spacing: 3px; }
+.rhythm-countdown-pop { animation: rhythm-count-pop 0.42s cubic-bezier(.2,1.4,.4,1); }
+@keyframes rhythm-count-pop {
+    from { transform: scale(1.9); opacity: 0; }
+    60%  { transform: scale(0.94); opacity: 1; }
+    to   { transform: scale(1); opacity: 1; }
+}
+/* Las teclas laten mientras dura la cuenta, para que se vean */
+.rhythm-key.rhythm-key-ready {
+    animation: rhythm-key-ready 0.7s ease-in-out infinite alternate;
+}
+@keyframes rhythm-key-ready {
+    from { box-shadow: 0 0 0 rgba(255,255,255,0); filter: brightness(1); }
+    to   { box-shadow: 0 0 18px var(--lane-color, #b04fff); filter: brightness(1.35); }
 }

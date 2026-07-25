@@ -40,7 +40,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... Lo de las baldosas amarillas suena bastante específico. También un poco a que la ciudad tiene muy claro por dónde quiere que vayamos.",
+          "text": "Ya, pero lo de las baldosas amarillas suena bastante específico. También un poco a que la ciudad tiene muy claro por dónde quiere que vayamos.",
           "actions": [
             {
               "type": "showCharacter",
@@ -481,7 +481,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "¿No te lo esperabas? Si siempre me han encantado los personajes femeninos. Lo que sea que nos transformara solo ha tenido muy buen gusto. Y por cierto llamame Seraphyna.",
+          "text": "¿No te lo esperabas? Si siempre me han encantado los personajes femeninos. Lo que sea que nos transformara solo ha tenido muy buen gusto. Y por cierto, llámame Seraphyna.",
           "actions": [
             {
               "type": "showCharacter",
@@ -509,7 +509,7 @@
         },
         {
           "character": "Edu",
-          "text": "Bueno... ¿y de mi no dices nada?",
+          "text": "Bueno... ¿y de mí no dices nada?",
           "actions": [
             {
               "type": "showCharacter",
@@ -658,7 +658,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé si llamar a esto «secretito». Eres un lagarto gigante disfrazado de ave con una espada de dos metros.",
+          "text": "A ver, yo no llamaría a esto «secretito». Eres un lagarto gigante disfrazado de ave con una espada de dos metros.",
           "actions": [
             {
               "type": "showCharacter",
@@ -809,7 +809,7 @@
       "lines": [
         {
           "character": "José",
-          "text": "Me alegro de que hayáis venido, pero no os he llamado solo para enseñaros mi ficha de personaje. En ciudad paloma también han aparecido memes, los he mantenido a raya. Pero hay algo más...",
+          "text": "Me alegro de que hayáis venido, pero no os he llamado solo para enseñaros mi ficha de personaje. En Ciudad Paloma también han aparecido memes, los he mantenido a raya. Pero hay algo más...",
           "actions": [
             {
               "type": "showCharacter",
@@ -1047,7 +1047,9 @@
         },
         {
           "actions": [
-            { "type": "hideDialog" },
+            {
+              "type": "hideDialog"
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/effects/fire_spell.mp3",
@@ -1057,7 +1059,9 @@
               "type": "setBackground",
               "value": "assets/backgrounds/despertar_samu.png"
             },
-            { "type": "waitForClick" }
+            {
+              "type": "waitForClick"
+            }
           ]
         },
         {
@@ -1100,7 +1104,9 @@
         },
         {
           "actions": [
-            { "type": "hideDialog" },
+            {
+              "type": "hideDialog"
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/effects/fast_whoosh_and_zaps.mp3",
@@ -1110,12 +1116,14 @@
               "type": "setBackground",
               "value": "assets/backgrounds/despertar_edu.png"
             },
-            { "type": "waitForClick" }
+            {
+              "type": "waitForClick"
+            }
           ]
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... Creo que acabo de moverme antes de decidir que quería moverme.",
+          "text": "Vale, pero creo que acabo de moverme antes de decidir que quería moverme.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1166,7 +1174,9 @@
         },
         {
           "actions": [
-            { "type": "hideDialog" },
+            {
+              "type": "hideDialog"
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/effects/harp_holly_spell.mp3",
@@ -1176,7 +1186,9 @@
               "type": "setBackground",
               "value": "assets/backgrounds/despertar_tony.png"
             },
-            { "type": "waitForClick" }
+            {
+              "type": "waitForClick"
+            }
           ]
         },
         {
@@ -1269,7 +1281,9 @@
         },
         {
           "actions": [
-            { "type": "hideDialog" },
+            {
+              "type": "hideDialog"
+            },
             {
               "type": "playSound",
               "path": "assets/sounds/effects/sword_thud_rock.mp3",
@@ -1279,7 +1293,9 @@
               "type": "setBackground",
               "value": "assets/backgrounds/despertar_jose.png"
             },
-            { "type": "waitForClick" }
+            {
+              "type": "waitForClick"
+            }
           ]
         },
         {
@@ -1428,7 +1444,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... Son bastantes.",
+          "text": "Hombre, son bastantes.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1467,7 +1483,9 @@
           "character": "2B",
           "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez desde que llegaron a aquel mundo, sus avatares responden como si siempre hubieran sabido luchar juntos.",
           "actions": [
-            { "type": "hideDialog" },
+            {
+              "type": "hideDialog"
+            },
             {
               "type": "hideCharacter",
               "position": "right"
@@ -1657,7 +1675,7 @@
           ]
         },
         {
-          "character": "Tralalelo Tralala",
+          "character": "Tralalero Tralala",
           "speakingAs": "tralalelo_tralala",
           "text": "Entonces corred, héroes. O intentadlo.",
           "actions": [
@@ -1671,7 +1689,7 @@
         },
         {
           "character": "2B",
-          "text": "Tung Tung Tung Sahur levanta el bate y las grietas digitales se abren hacia el subsuelo. Tralalelo Tralala salta tras él con una carcajada llena de dientes. Ballerina Capuchina se queda en la plaza, girando lentamente.",
+          "text": "Tung Tung Tung Sahur levanta el bate y las grietas digitales se abren hacia el subsuelo. Tralalero Tralala salta tras él con una carcajada llena de dientes. Ballerina Capuchina se queda en la plaza, girando lentamente.",
           "actions": [
             {
               "type": "setBackground",
@@ -1884,7 +1902,14 @@
           "text": "Frente al grupo se alza una puerta de piedra que da acceso al santuario y a sus pies hay cuatro mecanismos."
         },
         {
-          "actions": [{ "type": "hideDialog" }, { "type": "waitForClick" }]
+          "actions": [
+            {
+              "type": "hideDialog"
+            },
+            {
+              "type": "waitForClick"
+            }
+          ]
         },
         {
           "character": "José",
@@ -1912,7 +1937,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... Buena pregunta. Porque yo no los he visto haciendo ningún puzle de equipo.",
+          "text": "Buena pregunta, sí. Porque yo no los he visto haciendo ningún puzle de equipo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2083,7 +2108,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf, no sé... Mantener cuatro cosas equilibradas a la vez suena a uno de esos minijuegos que empiezan fácil y luego te hacen sudar las manos.",
+          "text": "Perdona, pero mantener cuatro cosas equilibradas a la vez suena a uno de esos minijuegos que empiezan fácil y luego te hacen sudar las manos.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2272,7 +2297,7 @@
         },
         {
           "character": "José",
-          "text": "Si Tung Tung Tung Sahur y Tralalelo Tralala han bajado por aquí, lo más probable es que volvamos a encontrarnos con los brainrot dentro del santuario.",
+          "text": "Si Tung Tung Tung Sahur y Tralalero Tralala han bajado por aquí, lo más probable es que volvamos a encontrarnos con los brainrot dentro del santuario.",
           "actions": [
             {
               "type": "showCharacter",

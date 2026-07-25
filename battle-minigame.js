@@ -11,6 +11,20 @@
     taunt: { icon: "🎯" },
   };
 
+  // Objeto que Seraphyna le cuelga a Samu al final del capítulo 3. Se decidió en
+  // la demo del 25-jul-2026 que entrara como consumible del combate final: el
+  // engine lo añade a los objetos de partida cuando el jugador lo lleva encima.
+  // Reutiliza el tipo "revive_three" (la misma mecánica que la Bendición de
+  // Airi) pero con su propio nombre y su propio texto.
+  const DIAPASON = {
+    id: "diapason_de_plata",
+    name: "Diapasón de plata",
+    description:
+      "El diapasón de Seraphyna. Golpéalo y escucha: la nota limpia devuelve al grupo la mitad de su HP y PM, y levanta a quien haya caído.",
+    type: "revive_three",
+    target: "auto",
+  };
+
   const ALLIES = [
     {
       id: "samu",
@@ -267,9 +281,9 @@
       background: "assets/backgrounds/fans_desmadrandose.png",
       hp: 9999,
       pm: 999,
-      speed: 12,
-      evasion: 0.05,
-      defense: 4,
+      speed: 14,
+      evasion: 0.08,
+      defense: 6,
       finalAttackPattern: {
         normalTurnsBeforeCharge: 2,
         warningText: "¡La marea entera se encabrita y coge carrerilla!",
@@ -280,7 +294,7 @@
           name: "Zarpazo glitcheado",
           pmCost: 0,
           type: "damage",
-          power: 20,
+          power: 27,
           target: "ally",
           accuracy: 0.88,
         },
@@ -289,8 +303,8 @@
           name: "Alarido corrupto",
           pmCost: 0,
           type: "mp_damage",
-          power: 7,
-          mpDamage: 10,
+          power: 11,
+          mpDamage: 15,
           target: "ally",
           accuracy: 0.9,
         },
@@ -299,7 +313,7 @@
           name: "Oleada de cuerpos",
           pmCost: 0,
           type: "multi_damage",
-          power: 12,
+          power: 18,
           target: "all_allies",
           accuracy: 0.85,
         },
@@ -308,7 +322,7 @@
           name: "Tsunami de fans",
           pmCost: 0,
           type: "multi_damage",
-          power: 22,
+          power: 32,
           target: "all_allies",
           accuracy: 0.8,
           isFinalAttack: true,
@@ -431,7 +445,7 @@
         },
         {
           id: "tralaleo_terminal",
-          name: "Tralaleo terminal",
+          name: "Tralalero terminal",
           pmCost: 18,
           type: "multi_damage",
           power: 46,
@@ -576,7 +590,7 @@
         id: "bendicion_de_airi",
         name: "Bendición de Airi",
         description:
-          "Revive hasta 3 aliados caídos con el 50% de HP y PM. Los aliados en pie recuperan un 50% de su HP y PM actuales.",
+          "Revive hasta 3 aliados caídos con el 50% de HP y PM. Los aliados en pie recuperan la mitad de su HP y PM máximos.",
         type: "revive_three",
         target: "auto",
       },
@@ -693,7 +707,11 @@
       this.awaitingTarget = false;
       this.targetSelectionToken = null;
       this.awaitingItemTarget = false;
-      this.battleInventory = [];
+      // Objetos con los que se ENTRA al combate (además de los que se roben).
+      // El engine mete aquí el diapasón de Seraphyna si el jugador lo lleva.
+      this.battleInventory = Array.isArray(options.startItems)
+        ? options.startItems.map((item) => ({ ...item }))
+        : [];
       this.enemyItemStolen = false;
       this.messageToken = 0;
       this.resolve = null;
@@ -1804,11 +1822,16 @@
           this.resetRevivedFighterTurn(ally);
         });
 
+        // Sobre el MÁXIMO, no sobre lo que le queda al aliado. Antes era el 50%
+        // del valor ACTUAL, así que a quien estaba sin PM le devolvía cero (el
+        // caso de Piyón en la demo) y a quien estaba casi muerto, casi nada:
+        // parecía que el objeto solo curaba vida. Los caídos ya revivían con el
+        // 50% del máximo, así que ahora ambos casos son coherentes.
         let recoveredHp = 0;
         let recoveredPm = 0;
         standing.forEach((ally) => {
-          recoveredHp += this.restoreHp(ally, Math.ceil(ally.currentHp * 0.5));
-          recoveredPm += this.restorePm(ally, Math.ceil(ally.currentPm * 0.5));
+          recoveredHp += this.restoreHp(ally, Math.ceil(ally.maxHp * 0.5));
+          recoveredPm += this.restorePm(ally, Math.ceil(ally.maxPm * 0.5));
         });
 
         const effects = [];
@@ -2055,10 +2078,12 @@
     updateSurviveHud() {
       if (!this.surviveChip) return;
       const left = Math.max(0, this.surviveTurns - this.turnsSurvived);
+      // Sin cuenta atrás a propósito (demo 25-jul-2026): el jugador NO debe
+      // saber cuánto falta. Es un combate que no se puede ganar a base de daño;
+      // que descubra por sí solo que al boss no le está haciendo nada y que lo
+      // único que cabe es aguantar hasta que Seraphyna arranque a cantar.
       this.surviveChip.innerHTML =
-        left > 0
-          ? `⏳ AGUANTAD <strong>${left}</strong> ${left === 1 ? "embestida" : "embestidas"}`
-          : "🎤 ¡YA CANTA!";
+        left > 0 ? "🛡️ AGUANTAD LA PUERTA" : "🎤 ¡YA CANTA!";
       this.surviveChip.classList.remove("survive-pulse");
       void this.surviveChip.offsetWidth;
       this.surviveChip.classList.add("survive-pulse");
@@ -2194,5 +2219,6 @@
     },
     allies: ALLIES,
     enemies: ENEMIES,
+    items: { diapason: DIAPASON },
   };
 })();

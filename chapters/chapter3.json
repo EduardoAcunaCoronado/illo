@@ -31,7 +31,7 @@
             }
           ],
           "character": "2B",
-          "text": "Samu y Edu acaban de salir de Kingdom Ketchup. En el móvil de Edu sigue abierto el mismo correo: «CONCIERTO EXCLUSIVO — Seraphyna en Ecchi Land. Una noche que no olvidarás». Ninguno de los dos ha oído hablar de ninguna Seraphyna."
+          "text": "Carretera de salida de Furrielva. En el móvil de Edu sigue abierto el mismo correo: «CONCIERTO EXCLUSIVO — Seraphyna en Ecchi Land. Una noche que no olvidarás»."
         },
         {
           "actions": [
@@ -49,7 +49,7 @@
             }
           ],
           "character": "Edu",
-          "text": "«Seraphyna». Suena a diva de esas. Pero mira la hora del correo... y mira dónde. Tío, esto huele a Tony a kilómetros. Y si es Tony, está metido en un buen lío."
+          "text": "Y van tres veces que me llega. Tío, un correo normal no insiste. Este quiere que vayamos."
         },
         {
           "actions": [
@@ -61,7 +61,7 @@
             }
           ],
           "character": "Samu",
-          "text": "Pues a Ecchi Land que nos vamos. Lo que no sé es cómo: está al otro lao de Huelva y no tenemos coche."
+          "text": "Pues a Ecchi Land que nos vamos. Lo que no sé es cómo: está fuera de Furrielva, saliendo por la autovía, y no tenemos coche."
         },
         {
           "actions": [
@@ -79,7 +79,7 @@
             }
           ],
           "character": "2B",
-          "text": "El móvil de Edu vuelve a vibrar. El mismo correo, por tercera vez, ahora con corazones. A los correos normales no les salen corazones solos."
+          "text": "El móvil de Edu vuelve a vibrar. El mismo correo, por CUARTA vez, ahora con corazones. A los correos normales no les salen corazones solos."
         },
         {
           "actions": [
@@ -427,23 +427,29 @@
             {
               "type": "minigame",
               "game": "chase",
-              "distance": 60,
+              "distance": 160,
               "distanceByDelay": {
-                "0": 60,
-                "1": 75,
-                "2": 90
+                "0": 160,
+                "1": 175,
+                "2": 190
               },
-              "speed": 6,
+              "speed": 8,
               "speedByDelay": {
-                "0": 6,
-                "1": 7,
-                "2": 8.5
+                "0": 8,
+                "1": 9,
+                "2": 10
               },
               "maxHits": 3,
               "maxHitsByDelay": {
                 "0": 3,
                 "1": 3,
                 "2": 2
+              },
+              "spawnMs": 520,
+              "spawnMsByDelay": {
+                "0": 520,
+                "1": 470,
+                "2": 420
               }
             },
             {
@@ -619,7 +625,7 @@
             }
           ],
           "character": "2B",
-          "text": "Ecchi Land. Una ciudad de neón encajada dentro de Huelva, latiendo al ritmo de un único corazón musical. Y en el centro, un edificio inmenso —la arena del concierto— del que brota luz, purpurina y la cara de una loba de plata en cada pantalla."
+          "text": "Ecchi Land. Una ciudad de neón plantada a las afueras de Furrielva, latiendo al ritmo de un único corazón musical. Y en el centro, un edificio inmenso —la arena del concierto— del que brota luz, purpurina y la cara de una loba de plata en cada pantalla."
         },
         {
           "character": "2B",
@@ -683,9 +689,12 @@
               "value": "assets/backgrounds/multitud_entrada.png"
             },
             {
-              "type": "setVolume",
+              "type": "playSound",
+              "path": "assets/sounds/effects/sfx_muro_fans.mp3",
+              "volume": 0.1,
+              "loop": true,
               "id": "crowd",
-              "volume": 0.4
+              "fadeIn": 700
             }
           ],
           "character": "2B",
@@ -768,6 +777,22 @@
         {
           "actions": [
             {
+              "type": "stopSound",
+              "id": "bad",
+              "fadeOut": 400
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/multitud_entrada.png"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/sfx_multitud_lejana.mp3",
+              "volume": 0.15,
+              "loop": true,
+              "id": "crowd"
+            },
+            {
               "type": "playSound",
               "path": "assets/sounds/music/gorila_camelo.mp3",
               "volume": 0.4,
@@ -821,7 +846,7 @@
               "nextScene": "Escena 6b: La trola"
             },
             {
-              "text": "«Aparta, mastodonte, que tenemos prisa.» (ponerse chulo)",
+              "text": "«Mira, jefe, o nos dejas pasar o le digo a la Seraphyna que su portero no la deja ver a sus amigos.» (farolear a lo grande)",
               "nextScene": "Escena Bad Ending"
             }
           ]
@@ -880,7 +905,7 @@
             }
           ],
           "character": "Edu",
-          "text": "Mira. Diciembre. Los tres en el sofá de Samu: yo palmando al Mario Kart, Tony robándome las patatas y este de árbitro. ¿Esto se inventa?"
+          "text": "Mira. Diciembre. Los tres en el sofá de Tony: yo palmando al Mario Kart, él robándome las patatas y este de árbitro. ¿Esto se inventa?"
         },
         {
           "actions": [
@@ -894,19 +919,68 @@
           "text": "En la pantalla: tres humanos apretujados en un sofá, gritándole a un kart. Huele a naranjada y a viernes eterno hasta desde aquí."
         },
         {
+          "character": "Gorila",
+          "text": "(se queda la foto más rato del que debería) ...El del mando roto es clavadito a la jefa."
+        },
+        {
+          "character": "Samu",
+          "text": "¿Clavadito a...? A ver, jefe, sin faltar: ese del mando roto es un TÍO. Un tío de metro setenta con una camiseta de hace seis años.",
           "actions": [
             {
-              "type": "hideCG"
+              "type": "hideCG",
+              "duration": 450
             },
             {
-              "type": "showCharacter",
-              "character": "gorila",
-              "position": "center",
-              "pose": "contento"
+              "type": "setPose",
+              "character": "samu",
+              "position": "left",
+              "pose": "curious"
             }
-          ],
+          ]
+        },
+        {
           "character": "Gorila",
-          "text": "...El del mando roto es clavadito a la jefa. Pasad antes de que me arrepienta. Y ni una foto ahí dentro, ¿eh?"
+          "text": "Ya. Ya lo veo."
+        },
+        {
+          "character": "Gorila",
+          "text": "No te he dicho que se le parezca la cara."
+        },
+        {
+          "character": "Gorila",
+          "text": "Llevo veinte años viéndola entrar por esa puerta. Nunca la había visto en una foto donde no estuviera POSANDO."
+        },
+        {
+          "character": "Gorila",
+          "text": "...Es la misma sonrisa, ¿eh? La de verdad. La que pone cuando cree que no la mira nadie."
+        },
+        {
+          "character": "Samu",
+          "text": "(bajito, a Edu) ...Edu. Dime que estoy atando cabos que no van juntos.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "position": "left",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "(bajito) Yo llevo atándolos desde el correo. Y no me gusta el nudo que sale.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "edu",
+              "position": "right",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Gorila",
+          "text": "(devolviendo la foto, otra vez de piedra) Pasad. Antes de que me arrepienta. Y ni una foto ahí dentro, ¿eh?"
         },
         {
           "actions": [
@@ -1044,7 +1118,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fans_desmadrandose.png"
+              "value": "assets/backgrounds/multitud_entrada.png"
             },
             {
               "type": "showCharacter",
@@ -1082,7 +1156,7 @@
             }
           ],
           "character": "Gorila",
-          "text": "¿«Mastodonte»? ¿En serio? Se acabó. Fuera. FUERA. ¡A la calle los dos!"
+          "text": "¿Que le vas a decir a la jefa... QUÉ? Mira, chaval: por esa puerta pasan cada noche cien listos como tú. Se acabó. Fuera. FUERA. ¡A la calle los dos!"
         },
         {
           "actions": [
@@ -1152,6 +1226,13 @@
       "lines": [
         {
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/sounds/effects/sfx_multitud_lejana.mp3",
+              "volume": 0.13,
+              "loop": true,
+              "id": "crowd"
+            },
             {
               "type": "fade",
               "to": "black",
@@ -1296,7 +1377,7 @@
           ],
           "character": "Seraphyna",
           "speakingAs": "tony",
-          "text": "«Tony» era otra vida, cielo. Aquí soy Seraphyna. El virus me sacó esto —posa— y por fin soy ALGUIEN. Miles de personas coreando mi nombre cada noche. ¿A eso venís, a estropeármelo?"
+          "text": "«Tony» era otra vida, cielo. Aquí soy Seraphyna. Lo que sea que nos transformara me sacó ESTO —posa— y por fin soy ALGUIEN. Miles de personas coreando mi nombre cada noche. ¿A eso venís, a estropeármelo?"
         },
         {
           "actions": [
@@ -1324,6 +1405,14 @@
           "text": "Tony, escúchanos. Todo esto está mal. La gente que entra aquí se corrompe, se transforma. Kingdom Ketchup casi me traga a mí. Esto es lo mismo pero con purpurina."
         },
         {
+          "character": "Seraphyna",
+          "text": "¿Kingdom QUÉ? ¿Ketchup? Cielo, si me estás diciendo que casi te mueres en un sitio que suena a menú infantil, lo que necesitas es un psicólogo, no una cantante."
+        },
+        {
+          "character": "Seraphyna",
+          "text": "Aquí no hay salsa de tomate. Aquí hay purpurina, focos y catorce mil personas que se saben mi nombre. No es lo mismo."
+        },
+        {
           "actions": [
             {
               "type": "showCharacter",
@@ -1337,6 +1426,18 @@
           "text": "Negacionismo, lo llamáis vosotros. Yo lo llamo no pensar renunciar a ser adorada. No pienso volver a ser un don nadie. Fin del dueto. Fuera de mi camerino antes de que..."
         },
         {
+          "character": "Seraphyna",
+          "text": "(bajito, casi para ella) Además, aunque quisiera... no podría irme."
+        },
+        {
+          "character": "Samu",
+          "text": "¿Cómo que no podrías? Tony, ¿qué has dicho?"
+        },
+        {
+          "character": "Seraphyna",
+          "text": "(recuperando la pose de golpe) He dicho que FUERA. De mi camerino. Tengo un concierto en veinte minutos."
+        },
+        {
           "actions": [
             {
               "type": "stopAllSounds"
@@ -1348,7 +1449,7 @@
             {
               "type": "playSound",
               "path": "assets/sounds/effects/sfx_grunidos_multitud.mp3",
-              "volume": 0.3,
+              "volume": 0.12,
               "loop": true,
               "id": "terror"
             },
@@ -1873,18 +1974,30 @@
                 "1": 3,
                 "2": 2
               },
-              "collectChance": 0.4,
-              "hangChance": 0.24,
-              "hangMin": 0.25,
-              "hangMax": 0.6,
-              "fallerChance": 0.26,
+              "collectChance": 0.15,
+              "hangChance": 0.32,
+              "hangMin": 0.35,
+              "hangMax": 0.7,
+              "fallerChance": 0.31,
               "fallerVy": 0.26,
-              "spawnMs": 640,
+              "spawnMs": 300,
               "spawnMsByDelay": {
-                "0": 640,
-                "1": 580,
-                "2": 520
-              }
+                "0": 300,
+                "1": 270,
+                "2": 240
+              },
+              "riserChance": 0.22,
+              "riserChanceByDelay": {
+                "0": 0.22,
+                "1": 0.24,
+                "2": 0.26
+              },
+              "collectChanceByDelay": {
+                "0": 0.15,
+                "1": 0.14,
+                "2": 0.13
+              },
+              "corridorMin": 0.18
             },
             {
               "type": "stopSound",
@@ -2108,8 +2221,14 @@
         {
           "actions": [
             {
-              "type": "pauseSound",
-              "id": "bg_music"
+              "type": "setVolume",
+              "id": "terror",
+              "volume": 0.05
+            },
+            {
+              "type": "setVolume",
+              "id": "bg_music",
+              "volume": 0.72
             },
             {
               "type": "minigame",
@@ -2141,15 +2260,15 @@
                   {
                     "id": "acople",
                     "name": "Acople del micro",
-                    "pmCost": 8,
+                    "pmCost": 14,
                     "type": "damage_speed_down",
                     "element": "lightning",
-                    "power": 20,
+                    "power": 18,
                     "speedModifier": -2,
                     "duration": 2,
                     "target": "enemy",
                     "accuracy": 0.9,
-                    "description": "Un chillido de feedback por la mesa de sonido. Daña y FRENA a la marea 2 turnos."
+                    "description": "Un chillido de feedback por la mesa de sonido. Daña y FRENA a la marea 2 turnos, pero la mesa no aguanta ese truco todo el rato."
                   },
                   {
                     "id": "confeti",
@@ -2190,15 +2309,15 @@
                   {
                     "id": "rafaga_alas",
                     "name": "Ráfaga de alas",
-                    "pmCost": 8,
+                    "pmCost": 16,
                     "type": "damage_speed_down",
                     "element": "ice",
-                    "power": 16,
+                    "power": 14,
                     "speedModifier": -2,
                     "duration": 2,
                     "target": "enemy",
                     "accuracy": 0.92,
-                    "description": "Aletazo huracanado que empuja a la primera fila. Daña y frena 2 turnos."
+                    "description": "Aletazo huracanado que empuja a la primera fila. Daña y frena 2 turnos, pero le cuesta MEDIO depósito: Edu aún no vuela gratis."
                   },
                   {
                     "id": "meme_grito",
@@ -2224,11 +2343,11 @@
                   }
                 ]
               },
-              "surviveTurns": 5,
+              "surviveTurns": 7,
               "surviveTurnsByDelay": {
-                "0": 5,
-                "1": 6,
-                "2": 7
+                "0": 7,
+                "1": 8,
+                "2": 9
               },
               "victoryTitle": "¡Habéis aguantado!",
               "victoryText": "A vuestra espalda, un foco baja del cielo. Ya está aquí.",
@@ -2255,19 +2374,35 @@
                 },
                 {
                   "turn": 5,
-                  "speaker": "Seraphyna",
-                  "text": "¡UNO MÁS! ¡YA CASI!"
+                  "speaker": "Gorila",
+                  "text": "¡Chavales, la línea AGUANTA! ¡Ni un paso atrás!"
                 },
                 {
                   "turn": 6,
+                  "speaker": "Seraphyna",
+                  "text": "¡Ya casi tengo la nota! ¡No me falléis ahora!"
+                },
+                {
+                  "turn": 7,
+                  "speaker": "Santi",
+                  "text": "¡El equipo está al rojo, pero canta! ¡CANTA!"
+                },
+                {
+                  "turn": 8,
                   "speaker": "Gorila",
-                  "text": "¡¿ES QUE NO OS CANSÁIS NUNCA?!"
+                  "text": "(escupiendo) Veinte años... y me vais a tener que sacar a rastras."
+                },
+                {
+                  "turn": 9,
+                  "speaker": "Seraphyna",
+                  "text": "¡AHORA! ¡Apartaos todos!"
                 }
               ]
             },
             {
-              "type": "resumeSound",
-              "id": "bg_music"
+              "type": "setVolume",
+              "id": "bg_music",
+              "volume": 0.5
             }
           ],
           "character": "",
@@ -2532,6 +2667,11 @@
               "type": "grade",
               "value": "saturate(0.9) contrast(1.05) brightness(0.9)",
               "duration": 1200
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/cg/goyo_caido.png",
+              "fadeMs": 900
             }
           ],
           "character": "2B",
@@ -2542,23 +2682,9 @@
           "actions": [
             {
               "type": "showCharacter",
-              "character": "gorila",
-              "position": "center",
-              "pose": "caido",
-              "enter": "fade"
-            },
-            {
-              "type": "showCharacter",
               "character": "samu",
-              "position": "left",
-              "pose": "worried",
-              "enter": "fade"
-            },
-            {
-              "type": "showCharacter",
-              "character": "edu",
               "position": "right",
-              "pose": "sad",
+              "pose": "bua",
               "enter": "fade"
             }
           ],
@@ -2567,14 +2693,6 @@
           "textSpeed": "slow"
         },
         {
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "bua"
-            }
-          ],
           "character": "Samu",
           "text": "Ha sonado... como nunca, tío. Como NUNCA."
         },
@@ -2602,6 +2720,11 @@
         {
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/backgrounds/fans_calmandose.png",
+              "fadeMs": 600
+            },
+            {
               "type": "hideCharacter",
               "position": "center",
               "exit": "fade"
@@ -2625,12 +2748,6 @@
         },
         {
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "bua"
-            },
             {
               "type": "hideCharacter",
               "position": "right"
@@ -2766,6 +2883,26 @@
           "textSpeed": "slow"
         },
         {
+          "character": "Seraphyna",
+          "text": "...Y hay algo que no os he contado. Ya estaban rotos cuando llegué. Todos. Los memes se les habían metido dentro mucho antes de que yo cantara una sola nota."
+        },
+        {
+          "character": "Seraphyna",
+          "text": "La primera noche que canté... les cambió la cara. Volvieron. Durante una hora fueron personas otra vez."
+        },
+        {
+          "character": "Seraphyna",
+          "text": "Y a la mañana siguiente estaban igual de rotos. Así que canté al día siguiente. Y al otro. Y llevo así desde entonces."
+        },
+        {
+          "character": "Seraphyna",
+          "text": "Por eso no me voy, Samu. No es solo el ego. Es que si yo paro... ellos se apagan."
+        },
+        {
+          "character": "Samu",
+          "text": "...¿Y a ti, Tony? ¿Quién te saca a ti del pozo cada noche?"
+        },
+        {
           "actions": [
             {
               "type": "showCharacter",
@@ -2841,6 +2978,14 @@
           "character": "2B",
           "text": "Samu se arrodilla y la abraza. Un segundo después, Edu se lanza también, envolviéndolos a los dos. Los tres, unidos en el suelo del camerino, entre lágrimas.",
           "textSpeed": "slow"
+        },
+        {
+          "character": "Edu",
+          "text": "Y no los vas a dejar tirados. Vamos a arreglar esto desde la raíz: quien haya metido a los memes aquí dentro."
+        },
+        {
+          "character": "Edu",
+          "text": "Si lo paramos, no vas a tener que sostener tú sola a una ciudad entera cada noche. Nadie debería."
         },
         {
           "actions": [
@@ -2989,6 +3134,22 @@
           ],
           "character": "2B",
           "text": "Los tres abandonan Ecchi Land bajo un amanecer recién estrenado. La ciudad de neón bosteza, y por primera vez en mucho tiempo, nadie corea ningún nombre."
+        },
+        {
+          "character": "Seraphyna",
+          "text": "(mirando atrás una última vez) Se va a ir todo a la mierda, ¿sabes? En cuanto se les pase la resaca de la última canción, esto se vuelve a pudrir."
+        },
+        {
+          "character": "Samu",
+          "text": "Ya. Como Furrielva. Como Kingdom Ketchup. Como todo."
+        },
+        {
+          "character": "Seraphyna",
+          "text": "...Pues que se pudra bonito. Esta noche los he tenido despiertos a todos. Eso ya no me lo quita nadie."
+        },
+        {
+          "character": "Seraphyna",
+          "text": "Andando. Que hay un pollo con gafas que nos necesita."
         },
         {
           "actions": [
