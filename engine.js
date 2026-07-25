@@ -399,7 +399,11 @@ class VisualNovelEngine {
             }
         }
 
-        // Despachar según el tipo de minijuego solicitado
+        // Despachar según el tipo de minijuego solicitado. Va envuelto porque
+        // la pantalla de reintento se puede abortar desde fuera (ir a otra
+        // escena): entonces rechaza con `minijuegoCancelado` y aquí se deshace
+        // la cadena entera del minijuego sin ruido.
+        try {
         switch (action.game) {
             case 'ketchup':
                 await this.playKetchupMinigame(action);
@@ -442,6 +446,13 @@ class VisualNovelEngine {
                 break;
             default:
                 console.warn(`Minijuego desconocido: ${action.game}`);
+        }
+        } catch (e) {
+            if (!e || !e.minijuegoCancelado) throw e;
+            // Se salió del minijuego desde el menú de escenas: limpiar los
+            // restos que pudieran quedar y seguir como si nada.
+            document.querySelectorAll('.minigame-overlay, .cutscene-overlay')
+                .forEach(o => o.remove());
         }
     }
 
@@ -743,8 +754,13 @@ class VisualNovelEngine {
     }
 
     // Pantalla de derrota: ofrece reintentar el minijuego.
+    // Pantalla de "has perdido, ¿reintentas?". Se puede ABORTAR desde fuera
+    // (menú de escenas / retroceder): si no, quien llegue aquí desde el selector
+    // se queda encerrado, porque la única salida es ganar el minijuego. Al
+    // abortar se rechaza con un error etiquetado que playMinigame recoge y
+    // deshace toda la cadena del minijuego de una vez.
     showMinigameRetry(message = '¡Demasiado picante!') {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay minigame-retry';
             overlay.innerHTML = `
@@ -765,14 +781,36 @@ class VisualNovelEngine {
             };
             overlay.addEventListener('click', swallowClick, true);
 
+            const cerrar = () => {
+                this._abortarRetry = null;
+                overlay.removeEventListener('click', swallowClick, true);
+                overlay.remove();
+            };
+
+            this._abortarRetry = () => {
+                cerrar();
+                const e = new Error('minijuego-cancelado');
+                e.minijuegoCancelado = true;
+                reject(e);
+            };
+
             const retryBtn = overlay.querySelector('#mg-retry-btn');
             retryBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                overlay.removeEventListener('click', swallowClick, true);
-                overlay.remove();
+                cerrar();
                 resolve(true);
             });
         });
+    }
+
+    // ¿Hay una pantalla de reintento esperando? La usan los botones de escenas
+    // y de retroceder para saber si tienen que sacarnos de ahí.
+    hayRetryAbierto() {
+        return typeof this._abortarRetry === 'function';
+    }
+
+    abortarRetry() {
+        if (this._abortarRetry) this._abortarRetry();
     }
 
     // Minijuego: la loca de los gatos (El Jamón). Estilo Pac-Man: Samu se mueve
@@ -2816,6 +2854,13 @@ class VisualNovelEngine {
         // Resetear cualquier Ken Burns anterior al cambiar de fondo
         this.bgPan({ reset: true });
         if (opts.cut || !document.getElementById('game-container')) {
+            // Un corte seco tiene que cancelar cualquier fundido a medias: si
+            // no, el temporizador del anterior dispara después y pisa este
+            // fondo con el de la escena de la que venimos.
+            clearTimeout(this._bgSwapTimer);
+            this._bgSwapTimer = null;
+            const bPrev = document.getElementById('background-b');
+            if (bPrev) { bPrev.style.transition = 'none'; bPrev.style.opacity = '0'; }
             bg.style.backgroundImage = url;
             return;
         }
@@ -3614,6 +3659,16 @@ class VisualNovelEngine {
         });
 
         return new Promise(resolve => {
+            // Se guarda el resolvedor para poder ABORTAR la elección desde fuera
+            // (menú de escenas / retroceder). Sin esto, una pantalla de elección
+            // deja el bucle esperando para siempre y no hay manera de salir de
+            // ella salvo eligiendo.
+            this._abortarEleccion = () => {
+                this._abortarEleccion = null;
+                choicesContainer.classList.remove('active');
+                choicesContainer.innerHTML = '';
+                resolve(null);
+            };
             availableChoices.forEach((choice, index) => {
                 const button = document.createElement('button');
                 button.className = 'choice-btn';
@@ -3622,6 +3677,7 @@ class VisualNovelEngine {
                 `;
                 button.style.animationDelay = `${index * 0.1}s`;
                 button.onclick = () => {
+                    this._abortarEleccion = null;
                     choicesContainer.classList.remove('active');
                     // Vaciar YA: si no, los botones quedan invisibles (opacity 0)
                     // pero vivos con z-index 101 robando el cursor.
@@ -3631,6 +3687,16 @@ class VisualNovelEngine {
                 choicesContainer.appendChild(button);
             });
         });
+    }
+
+    // ¿Hay una elección esperando respuesta? La usa el menú de escenas para
+    // saber si tiene que abortarla antes de saltar.
+    hayEleccionAbierta() {
+        return typeof this._abortarEleccion === 'function';
+    }
+
+    abortarEleccion() {
+        if (this._abortarEleccion) this._abortarEleccion();
     }
 
     // ¿Cumple la línea su condición "showIf"? Soporta:
@@ -3704,6 +3770,10 @@ class VisualNovelEngine {
         // Si hay elecciones, mostrarlas
         if (line.choices) {
             const selectedChoice = await this.displayChoices(line.choices);
+            // null = la elección se abortó desde fuera (se pidió ir a otra
+            // escena). No se elige nada ni se avanza: se devuelve el control al
+            // bucle, que atenderá el salto que hay pendiente.
+            if (!selectedChoice) return true;
             this.history.push({
                 scene: this.currentScene,
                 line: this.currentLine,
@@ -3861,6 +3931,35 @@ class VisualNovelEngine {
 
         const bg = document.getElementById('background');
         if (bg) bg.style.backgroundImage = '';
+
+        // El fondo se cambia con CROSSFADE usando una segunda capa: se pinta en
+        // `background-b`, se sube su opacidad y 460 ms después un temporizador
+        // copia la imagen a la capa A y vuelve a esconder la B. Si se limpia el
+        // escenario en mitad de ese fundido (saltar de escena, retroceder), la
+        // capa B se quedaba ENCIMA con la imagen vieja y, peor aún, el
+        // temporizador pendiente disparaba después y reescribía en la capa A el
+        // fondo de la escena anterior: a partir de ahí ninguna escena parecía
+        // cargar su fondo. Hay que cortar las dos cosas.
+        clearTimeout(this._bgSwapTimer);
+        this._bgSwapTimer = null;
+        const bgB = document.getElementById('background-b');
+        if (bgB) {
+            bgB.style.transition = 'none';
+            bgB.style.opacity = '0';
+            bgB.style.backgroundImage = '';
+        }
+
+        // Y el telón negro de los fundidos. Va en z-index 60: tapa fondo y
+        // personajes pero deja ver el diálogo. Si se sale de una escena entre un
+        // "fade to black" y su "fade from black", se queda BAJADO para siempre:
+        // la escena siguiente carga bien —fondo, personajes, música— pero no se
+        // ve nada, solo la caja de diálogo sobre negro. Era esto lo que hacía
+        // que a partir de cierto salto todo pareciera no cargar.
+        const fader = document.getElementById('scene-fader');
+        if (fader) {
+            fader.style.transition = 'none';
+            fader.style.opacity = '0';
+        }
 
         const choices = document.getElementById('choices-container');
         if (choices) { choices.classList.remove('active'); choices.innerHTML = ''; }

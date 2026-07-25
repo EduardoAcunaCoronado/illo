@@ -39,25 +39,65 @@ rewindBtn?.addEventListener("click", (e) => {
   desbloquearBucle(() => rewindRequested);
 });
 
-// Desbloquea el bucle, que casi siempre está parado en waitForClick(). Si en
-// ese instante estaba escribiendo el diálogo todavía no hay manejador, así que
-// se reintenta un momento en lugar de dejar la petición colgada.
+// Desbloquea el bucle para que atienda una petición (retroceder o ir a una
+// escena). Casi siempre está parado en waitForClick() y basta con resolverlo.
+//
+// Pero justo al entrar en una escena puede pasarse varios segundos SIN estar
+// parado: primero encadena las acciones de la primera línea (fundidos, esperas,
+// cambios de fondo) y luego escribe el diálogo letra a letra, que con
+// textSpeed "slow" son otros cuantos segundos. Medido: 4,5 s en la Escena 5 del
+// capítulo 3. En ese rato no existe clickHandler, y con un margen corto la
+// petición se perdía: se quedaba encolada hasta el siguiente clic del jugador y
+// daba la sensación de que el menú "no funcionaba" en algunas escenas.
+// Por eso además se lanza un clic de verdad, que es lo que adelanta el tecleo
+// (el skipHandler de displayDialog). Si no hay nada escribiéndose no hace nada,
+// y el salto se atiende en cuanto el bucle llega a waitForClick.
+let tokenPeticion = 0;
 function desbloquearBucle(sigueHaciendoFalta) {
+  // Cada petición apaga la cadena de reintentos de la anterior. Si no, dos
+  // peticiones seguidas (dos clics rápidos en el menú) dejan dos cadenas vivas
+  // y la vieja sigue desbloqueando el bucle: se cuelan avances de línea.
+  const mio = ++tokenPeticion;
   let intentos = 0;
   const tirar = () => {
+    if (mio !== tokenPeticion) return;
     if (!sigueHaciendoFalta()) return;
+    // Se comprueba en CADA intento, no solo al pulsar: la elección puede
+    // aparecer un instante después (la línea todavía estaba escribiéndose), y
+    // entonces el bucle se queda esperando respuesta y no lo despierta ningún
+    // clic. Una vez abortada, las siguientes llamadas no hacen nada.
+    if (engine.hayEleccionAbierta && engine.hayEleccionAbierta()) {
+      engine.abortarEleccion();
+    }
+    // Lo mismo con la pantalla de reintento de un minijuego perdido.
+    if (engine.hayRetryAbierto && engine.hayRetryAbierto()) {
+      engine.abortarRetry();
+    }
     if (clickHandler) { clickHandler(); return; }
-    if (++intentos < 100) setTimeout(tirar, 50);
+    document.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    if (++intentos < 120) { setTimeout(tirar, 150); return; } // hasta 18 s
+    // Se agotó: normalmente porque hay un minijuego en marcha y el bucle está
+    // dentro de él. Se DESCARTA la petición; si se dejara puesta, saltaría sola
+    // al terminar el minijuego, en mitad de otra cosa, borrando el escenario.
+    sceneJumpRequested = null;
+    rewindRequested = false;
   };
   tirar();
 }
 
+// Un minijuego EN MARCHA sí tapa los botones. La pantalla de "¿reintentar?" no:
+// si no, quien llega ahí desde el menú de escenas se queda encerrado, porque la
+// única salida sería ganar el minijuego.
+function minijuegoEnMarcha() {
+  return [...document.querySelectorAll(".minigame-overlay, .cutscene-overlay")]
+    .some((o) => !o.classList.contains("minigame-retry"));
+}
+
 function updateRewindButton() {
   if (!rewindBtn) return;
-  const hayMinijuego = !!document.querySelector(".minigame-overlay, .cutscene-overlay");
   const hayElecciones = !!document.querySelector("#choices-container.active");
   const visible =
-    isGameRunning && engine.canRewind() && !hayMinijuego && !hayElecciones;
+    isGameRunning && engine.canRewind() && !minijuegoEnMarcha() && !hayElecciones;
   rewindBtn.classList.toggle("hidden", !visible);
 }
 
@@ -86,12 +126,13 @@ const scenesMenu = document.getElementById("scenes-menu");
 const scenesList = document.getElementById("scenes-list");
 const scenesChapter = document.getElementById("scenes-chapter");
 
+// El menú de escenas SÍ se ofrece durante una elección: es navegación, y si no
+// el jugador se queda encerrado en la pantalla de elección sin poder ir a otra
+// escena (el bucle está esperando respuesta). Al saltar se aborta la elección.
+// Durante un minijuego sí se oculta: ahí el bucle está dentro del minijuego.
 function updateScenesButton() {
   if (!scenesBtn) return;
-  const hayMinijuego = !!document.querySelector(".minigame-overlay, .cutscene-overlay");
-  const hayElecciones = !!document.querySelector("#choices-container.active");
-  const visible =
-    isGameRunning && engine.sceneList().length > 1 && !hayMinijuego && !hayElecciones;
+  const visible = isGameRunning && engine.sceneList().length > 1 && !minijuegoEnMarcha();
   scenesBtn.classList.toggle("hidden", !visible);
   if (!visible) cerrarMenuEscenas();
 }
@@ -123,6 +164,11 @@ function abrirMenuEscenas() {
       cerrarMenuEscenas();
       if (e.actual) return;
       sceneJumpRequested = e.index;
+      // Si hay una elección esperando respuesta, el bucle está parado ahí y no
+      // en waitForClick: se aborta para que pueda atender el salto.
+      if (engine.hayEleccionAbierta && engine.hayEleccionAbierta()) {
+        engine.abortarEleccion();
+      }
       desbloquearBucle(() => sceneJumpRequested !== null);
     });
     scenesList.appendChild(li);
