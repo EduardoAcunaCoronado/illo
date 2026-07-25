@@ -68,7 +68,7 @@
         },
         {
           "character": "Samu",
-          "text": "Pero bueno, Edu me espera en Kingdom Ketchup. Voy a buscarlo.",
+          "text": "Pero bueno, tengo curiosidad por ver ese Kingdom Ketchup. Voy a buscar a Edu.",
           "actions": [
             {
               "type": "showCharacter",
@@ -89,7 +89,7 @@
       "lines": [
         {
           "character": "Samu",
-          "text": "¡Claro! Un supermercado. Hay tres cerca... pero no todos me quedan igual de camino. Cada minuto que pierda es un minuto que Edu pasa ahí dentro.",
+          "text": "¡Claro! Un supermercado. Hay tres cerca... pero no todos me quedan igual de camino. Tengo curiosidad por ver ese Kingdom Ketchup.",
           "actions": [
             {
               "type": "showCharacter",
@@ -134,11 +134,11 @@
             }
           ],
           "character": "2B",
-          "text": "El Jamón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos, convencido de haber elegido el atajo perfecto."
+          "text": "El Jamón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos, con la mirada puesta en encontrar la entrada al Kingdom Ketchup."
         },
         {
           "character": "Samu",
-          "text": "Perfecto, ni un minuto perdido. Huele a embutido y a... ¿pienso de gato?",
+          "text": "Qué ganas de ver ese Kingdom Ketchup... Huele a embutido y a... ¿pienso de gato?",
           "actions": [
             {
               "type": "showCharacter",
@@ -174,7 +174,7 @@
         },
         {
           "character": "Samu",
-          "text": "¿Pero qué...? ¡Me está lanzando GATOS! ¡Esto era una trampa, no un atajo!",
+          "text": "¿Pero qué...? ¡Me está lanzando GATOS! ¡Esto era una trampa, no el camino a Kingdom Ketchup!",
           "actions": [
             {
               "type": "showCharacter",
@@ -331,11 +331,11 @@
             }
           ],
           "character": "2B",
-          "text": "El Día queda a un par de calles, por una travesía tranquila que los memes aún no han tomado. Samu avanza sin apenas obstáculos."
+          "text": "El Día queda a un par de calles, por una travesía tranquila. Samu avanza sin apenas obstáculos."
         },
         {
           "character": "Samu",
-          "text": "Este sitio está despejado... buena señal. Ni gatos ni trampas por aquí. Directo al grano.",
+          "text": "A pesar de llamarse Día, no he tardado un día en llegar. Directo al grano.",
           "actions": [
             {
               "type": "showCharacter",
@@ -347,7 +347,7 @@
         },
         {
           "character": "2B",
-          "text": "Entre las estanterías de ofertas, el pasaje rojizo hacia Kingdom Ketchup aparece casi de inmediato. Samu cruza sin perder un segundo.",
+          "text": "Entre las estanterías de ofertas, el pasaje rojizo hacia Kingdom Ketchup aparece casi de inmediato. Samu cruza atraído por el misterioso lugar.",
           "actions": [
             {
               "type": "setDelay",
@@ -384,11 +384,11 @@
             }
           ],
           "character": "2B",
-          "text": "El Mercadona está unas calles más lejos. Samu corre a buen ritmo y solo tiene que rodear a un grupo de furros que bloquean el camino."
+          "text": "El Mercadona está unas calles más lejos. Samu avanza con paso firme y solo tiene que rodear a un grupo de furros que bloquean el camino."
         },
         {
           "character": "Samu",
-          "text": "Perdona, amigos, ¡ya voy, ya voy! Un pequeño rodeo y llego. No está tan mal este camino.",
+          "text": "Perdona, amigos, ¡solo quiero pasar! Un pequeño rodeo y llego. Qué curiosidad tengo por ver qué hay allí.",
           "actions": [
             {
               "type": "showCharacter",
@@ -400,7 +400,7 @@
         },
         {
           "character": "2B",
-          "text": "Tras el rodeo, la puerta automática se abre y el brillo de Kingdom Ketchup lo espera al fondo, tras la sección de frescos. Ha perdido algo de tiempo, pero no demasiado.",
+          "text": "Tras el rodeo, la puerta automática se abre y el brillo de Kingdom Ketchup lo espera al fondo, tras la sección de frescos. La expectación por ver el lugar aumenta con cada paso.",
           "actions": [
             {
               "type": "setDelay",
@@ -474,7 +474,7 @@
         },
         {
           "character": "Samu",
-          "text": "¿Ketchup o Catsup...? ¿No es lo mismo? Uno de los dos tiene que llevar antes hasta Edu. Si me equivoco, perderé aún más tiempo.",
+          "text": "¿Ketchup o Catsup...? ¿No es lo mismo? Seguro que uno de los dos esconde algún secreto de este sitio. ¡Tengo que elegir uno!",
           "actions": [
             {
               "type": "showCharacter",
@@ -505,7 +505,7 @@
         },
         {
           "character": "Samu",
-          "text": "¡Buena elección! Este era el camino rápido. ¡Ahí está!",
+          "text": "¡Curioso! Este pasillo parece más directo. ¡Sigo adelante!",
           "actions": [
             {
               "type": "showCharacter",
@@ -540,7 +540,7 @@
         },
         {
           "character": "Samu",
-          "text": "¡Era una trampa! Catsup, Ketchup... ¡es lo mismo escrito distinto para despistar! He perdido un montón de tiempo.",
+          "text": "¡Vaya laberinto! Catsup, Ketchup... ¡es lo mismo escrito distinto para despistar! Me he dado un buen paseo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -613,7 +613,7 @@
         },
         {
           "character": "Samu",
-          "text": "Uf... tengo que decidir rápido. Edu me está esperando.",
+          "text": "Uf... tengo que decidirme. Qué ganas de ver qué hay más adelante.",
           "actions": [
             {
               "type": "showCharacter",
@@ -737,7 +737,7 @@
         },
         {
           "character": "2B",
-          "text": "Samu ve una silueta en la distancia. Un dragón de bolsillo."
+          "text": "Samu ve una silueta en la distancia. Un dragón azul."
         },
         {
           "character": "Samu",
@@ -789,13 +789,37 @@
         },
         {
           "character": "Samu",
-          "text": "Lo mismo te digo, tío. ¿Qué tal Kingdom Ketchup? ¿Es tan alucinante como parecía en la llamada?",
+          "text": "Oye, Edu... una cosa que me ha dejado loco. He visto a Nate Gentile por ahí fuera y me ha parecido ver que... ¿estás vendiendo guindillas aquí?",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "curious"
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "¿¡Cómo que por qué vendo guindillas!? ¡Son un producto premium, Samu! ¡Tienen el picante perfecto para cualquier salsa! ¡No me vengas con esas preguntas ahora!",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "angry"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Vale, vale! No te pongas así, solo era curiosidad. De todas formas, eso no suena muy Edu... Pero Kingdom Ketchup... ¿Es tan alucinante como parecía en la llamada?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
             }
           ]
         },
@@ -1141,7 +1165,7 @@
         },
         {
           "character": "Samu",
-          "text": "Espera, espera... Zip me comentó que Kingdom Ketchup fue creado para corromperte... Y Seraphyna... Ecchi Land... Eso suena muy Tony, seguro que es un lugar creado para corromperle a él. Debemos ir a salvarle.",
+          "text": "Espera, espera... Zip me comentó que Kingdom Ketchup fue creado para corromperte... Y Seraphyna... Ecchi Land... Eso suena muy Tony, seguro que es un lugar creado para corromperle a él. Debemos ir a ver si está bien.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1193,7 +1217,7 @@
         },
         {
           "character": "Samu",
-          "text": "Perfecto. Calle Hentai, nº 69. Está en la otra punta de la ciudad, pero podemos hacerlo. Vamos.",
+          "text": "Perfecto. Calle Hentai, nº 69. Está lejos. Como de aquí a Isla Cristina. Pero podemos hacerlo. Vamos.",
           "actions": [
             {
               "type": "showCharacter",

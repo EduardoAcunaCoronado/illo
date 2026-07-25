@@ -228,7 +228,7 @@
         },
         {
           "character": "Edu",
-          "text": "Venga, no te rayes, tío. Vente y lo hablamos.",
+          "text": "Venga, no te rayes, tío. Vente y lo hablamos. Para entrar a Kingdom Ketchup solo tienes que buscar un portal en cualquier supermercado.",
           "actions": [
             {
               "type": "showCharacter",
@@ -241,13 +241,13 @@
         },
         {
           "character": "Samu",
-          "text": "Vale, voy allí ahora mismo.",
+          "text": "¿Un portal en un supermercado? Qué raro suena eso... Pero bueno, iré allí ahora mismo.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "determined"
+              "pose": "surprised"
             }
           ]
         },
