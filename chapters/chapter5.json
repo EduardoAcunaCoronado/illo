@@ -1863,16 +1863,34 @@
           "character": "2B",
           "text": "Airi cierra los ojos. Una luz la envuelve como un reflejo sobre el agua y, durante un segundo, su silueta se recompone en píxeles suaves.",
           "actions": [
-            { "type": "flash", "color": "rgba(255, 255, 255, 0.7)", "duration": 300 },
+            {
+              "type": "setBackground",
+              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "...",
+          "actions": [
             {
               "type": "showCharacter",
               "character": "airi",
               "position": "center",
               "pose": "pray"
-            },
+            }
+          ]
+        },
+        {
+          "character": "Airi Adulta",
+          "text": "¿Qué tal?",
+          "actions": [
+            { "type": "flash", "color": "rgba(255, 255, 255, 0.7)", "duration": 300 },
             {
-              "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "type": "showCharacter",
+              "character": "airi_adult",
+              "position": "center",
+              "pose": "neutral"
             }
           ]
         },
@@ -1900,7 +1918,15 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "..."
+          "text": "...",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ]
         },
         {
           "character": "Seraphyna",
@@ -1917,7 +1943,7 @@
         },
         {
           "character": "Edu",
-          "text": "Yo he visto a Seraphyna enamorarse en tiempo real. Ha sido como cuando cargas una partida y todos los ventiladores se ponen al cien.",
+          "text": "Acabo de ver a Seraphyna enamorarse en tiempo real. Ha sido como cuando cargas una partida y todos los ventiladores se ponen al cien.",
           "actions": [
             {
               "type": "showCharacter",
