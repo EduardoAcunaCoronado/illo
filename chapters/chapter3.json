@@ -3309,20 +3309,7 @@
         },
         {
           "character": "Seraphyna",
-          "text": "Andando. Que hay un pollo con gafas que nos necesita."
-        },
-        {
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "santi",
-              "position": "right",
-              "pose": "saludando",
-              "enter": "right"
-            }
-          ],
-          "character": "Santi",
-          "text": "¡Y si vais a Ciudad Paloma, saludad de mi parte al del puesto de churros! ¡Me debe DINERO!"
+          "text": "Andando, anda. Que como me dé el sol de lleno con la cara que llevo, me deshago aquí mismo."
         },
         {
           "actions": [
@@ -3425,6 +3412,31 @@
               "nextChapter": "chapter4"
             }
           ]
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "santi",
+              "position": "right",
+              "pose": "saludando",
+              "enter": "right"
+            }
+          ],
+          "character": "Santi",
+          "text": "¿Ciudad Paloma? ¡Eh! ¡Saludad de mi parte al del puesto de churros! ¡Me debe DINERO!"
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "determined"
+            }
+          ],
+          "character": "Seraphyna",
+          "text": "Pues andando otra vez. Y que conste que voy por José, no por las baldosas."
         }
       ]
     }
