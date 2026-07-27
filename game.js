@@ -403,21 +403,33 @@ function wireSettings(panel) {
   });
 }
 
+// Configuración se abre igual que Capítulos: pantalla completa con el fondo
+// difuminado detrás y el menú principal retirado, no como una cajita encima.
+// De ahí que comparta las clases `chapter-selector*`; lo propio de este panel
+// (ancho, sin lista que desplazar) va en `.settings-selector-panel`.
 function showSettingsPanel() {
   if (document.getElementById("settings-panel")) return; // ya abierto
-  const panel = document.createElement("div");
-  panel.className = "nm-modal";
-  panel.id = "settings-panel";
-  panel.innerHTML = `
-        <h2 class="nm-modal-title">Configuración</h2>
-        ${settingsMarkup()}
-        <div class="nm-modal-buttons">
-            <button id="settings-close">Volver</button>
+
+  mainMenu.classList.add("hidden");
+
+  const selector = document.createElement("div");
+  selector.id = "settings-panel";
+  selector.className = "chapter-selector settings-selector";
+  selector.innerHTML = `
+        <div class="chapter-selector-panel settings-selector-panel">
+            <h2 class="chapter-selector-title">Configuración</h2>
+            ${settingsMarkup()}
+            <button class="chapter-selector-back" id="settings-close">Volver</button>
         </div>
     `;
-  document.getElementById("game-container").appendChild(panel);
-  wireSettings(panel);
-  panel.querySelector("#settings-close").addEventListener("click", () => panel.remove());
+
+  document.getElementById("game-container").appendChild(selector);
+  wireSettings(selector);
+
+  selector.querySelector("#settings-close").addEventListener("click", () => {
+    selector.remove();
+    mainMenu.classList.remove("hidden");
+  });
 }
 
 // ===== Menú de pausa (Esc o el botón de arriba a la izquierda) =====

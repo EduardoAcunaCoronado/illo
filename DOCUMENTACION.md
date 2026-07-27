@@ -2457,7 +2457,10 @@ la pestaña del usuario.
 
 Al arrancar desde Electron, el tema del menú se reproduce automáticamente. En
 navegador, la reproducción comienza tras la primera interacción por las
-restricciones de autoplay del propio navegador.
+restricciones de autoplay del propio navegador. Por eso el botón **♪** de abajo
+a la derecha del menú (`#menu-theme-btn`, que rearranca el tema) solo sale en
+web: en la app no hay nada que desbloquear. Es la regla simétrica a la de
+**Salir**, que solo sale en Electron.
 
 El juego se puede ejecutar como aplicación de escritorio de Windows sin cambiar
 nada del motor: sigue siendo el mismo `index.html` con `engine.js` y `game.js`.
@@ -2496,8 +2499,13 @@ solo puede escribir esos cuatro ajustes, no usar el archivo como almacén libre.
 
 ### Configuración por pestañas
 
-El panel de **Configuración** (menú principal) y el menú de **pausa** (Esc)
-comparten el mismo `settingsMarkup()` / `wireSettings()` de `game.js`, repartido
+Desde el menú principal, **Configuración** se abre igual que **Capítulos**: a
+pantalla completa, con el fondo difuminado y el menú retirado, no como una
+cajita encima. Por eso reutiliza las clases `chapter-selector*`; lo propio suyo
+(ancho, sin lista que desplazar) va en `.settings-selector-panel`. En el menú de
+**pausa** (Esc) los mismos ajustes siguen dentro del `nm-modal` de siempre.
+
+Los dos comparten `settingsMarkup()` / `wireSettings()` de `game.js`, repartido
 en tres pestañas:
 
 | Pestaña | Contiene | Dónde sale |

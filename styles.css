@@ -2121,6 +2121,11 @@ input, textarea {
    del menú, para que no aparezca tarde respecto al resto de opciones. */
 html:not(.electron-app) #quit-btn { display: none; }
 
+/* Y al revés con el botón ♪: en Electron el tema del menú arranca solo (no hay
+   política de autoplay que valga), así que no hay nada que rearrancar a mano.
+   En web sí hace falta, porque la música espera a la primera interacción. */
+html.electron-app #menu-theme-btn { display: none; }
+
 .nm-item::after {
     content: '';
     position: absolute;
@@ -2259,6 +2264,13 @@ html:not(.electron-app) #quit-btn { display: none; }
 .chapter-selector-back {
     align-self: center;
 }
+
+/* Configuración reutiliza el escenario del selector de capítulos, pero no tiene
+   lista que desplazar: le basta con un ancho cómodo para los deslizadores. */
+.settings-selector-panel {
+    width: min(520px, 88%);
+}
+.settings-selector-panel .nm-settings { min-width: 0; margin-bottom: 28px; }
 
 /* La lista es la única parte que se desplaza. min-height: 0 es lo que le
    permite encoger por debajo de su contenido dentro del flex (si no, el panel
