@@ -204,13 +204,18 @@ scenesMenu?.addEventListener("click", (e) => {
   if (e.target === scenesMenu) cerrarMenuEscenas();
 });
 
-// ===== Configuración: volúmenes de música y efectos (persistentes) =====
+// ===== Configuración: volúmenes, extras (persistentes) =====
+// La clave la define battle-minigame.js, que es quien lee el ajuste al montar
+// el combate; aquí solo se pinta la casilla.
+const KOSAI_SETTING_KEY = window.BattleMinigame?.KOSAI_SETTING_KEY || "illo_kosai";
+
 function showSettingsPanel() {
   if (document.getElementById("settings-panel")) return; // ya abierto
   const volOf = (k, def) => {
     const v = parseFloat(localStorage.getItem(k));
     return isNaN(v) ? def : Math.round(v * 100);
   };
+  const kosaiOn = localStorage.getItem(KOSAI_SETTING_KEY) === "1";
   const panel = document.createElement("div");
   panel.className = "nm-modal";
   panel.id = "settings-panel";
@@ -225,6 +230,12 @@ function showSettingsPanel() {
                 <input type="range" id="vol-sfx" min="0" max="100" value="${volOf("illo_vol_sfx", 100)}">
                 <span class="nm-setting-val" id="vol-sfx-val"></span>
             </label>
+            <div class="nm-setting-toggle">
+                <label class="nm-setting-row">⚔️ Ataque Kosai
+                    <input type="checkbox" id="opt-kosai" ${kosaiOn ? "checked" : ""}>
+                </label>
+                <p class="nm-setting-hint">Añade a todo el equipo un golpe que deja al objetivo a 0 PV en los combates por turnos. Se aplica al empezar el siguiente combate.</p>
+            </div>
         </div>
         <div class="nm-modal-buttons">
             <button id="settings-close">Volver</button>
@@ -245,6 +256,13 @@ function showSettingsPanel() {
   };
   wire("vol-music", "illo_vol_music");
   wire("vol-sfx", "illo_vol_sfx");
+
+  // El combate lee esta clave al construirse, así que el cambio entra en el
+  // siguiente combate, no en uno que ya esté en marcha.
+  const kosai = panel.querySelector("#opt-kosai");
+  kosai.addEventListener("change", () => {
+    localStorage.setItem(KOSAI_SETTING_KEY, kosai.checked ? "1" : "0");
+  });
 
   panel.querySelector("#settings-close").addEventListener("click", () => panel.remove());
 }

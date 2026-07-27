@@ -2504,6 +2504,30 @@ html, body {
 .nm-setting-row input[type="range"] { flex: 1; accent-color: #ffd166; cursor: pointer; }
 .nm-setting-val { color: #ffd166; min-width: 44px; text-align: right; }
 
+/* Ajustes de sí/no (p. ej. Ataque Kosai): casilla a la derecha y una línea
+   pequeña debajo explicando qué hace. */
+.nm-setting-toggle { display: flex; flex-direction: column; }
+.nm-setting-toggle .nm-setting-row { cursor: pointer; }
+.nm-setting-row input[type="checkbox"] {
+    margin: 0 0 0 auto;
+    width: 18px;
+    height: 18px;
+    accent-color: #ffd166;
+    cursor: pointer;
+}
+.nm-setting-hint {
+    margin: 7px 0 0;
+    max-width: 340px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.52);
+    white-space: normal;
+    text-align: left; /* el modal centra por defecto */
+}
+
 .nm-modal-buttons { display: flex; gap: 16px; justify-content: center; }
 .nm-modal-buttons button {
     font-family: 'Outfit', sans-serif;

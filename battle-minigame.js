@@ -25,6 +25,29 @@
     target: "auto",
   };
 
+  // Extra opcional que se enciende desde Configuración (menú principal). No
+  // entra en el equilibrio normal del combate: es un atajo para saltarse una
+  // pelea, así que se reparte a todo el equipo y no cuesta PM.
+  const KOSAI_SETTING_KEY = "illo_kosai";
+  const KOSAI = {
+    id: "ataque_kosai",
+    name: "Ataque Kosai",
+    pmCost: 0,
+    type: "execute",
+    element: "physical",
+    power: 0,
+    target: "enemy",
+    unavoidable: true,
+    description: "Deja al objetivo a 0 PV de un solo golpe. No falla.",
+  };
+  const kosaiEnabled = () => {
+    try {
+      return localStorage.getItem(KOSAI_SETTING_KEY) === "1";
+    } catch (error) {
+      return false; // localStorage capado: el extra simplemente no aparece
+    }
+  };
+
   const ALLIES = [
     {
       id: "samu",
@@ -691,6 +714,14 @@
       this.allies = (roster.length ? roster : ALLIES).map((ally) =>
         this.createFighter(conKit(ally), "ally"),
       );
+      // Se lee al construir el combate: encenderlo o apagarlo a mitad de una
+      // pelea no cambia la que ya está en curso. Array nuevo, que el de ALLIES
+      // es compartido entre combates.
+      if (kosaiEnabled()) {
+        this.allies.forEach((ally) => {
+          ally.skills = [...ally.skills, KOSAI];
+        });
+      }
       this.enemy = this.createFighter(
         {
           ...this.enemyTemplate,
@@ -1685,6 +1716,20 @@
         };
       }
 
+      // Antes de la tirada de acierto: el Ataque Kosai no falla ni se esquiva.
+      if (skill.type === "execute") {
+        const damage = target.currentHp;
+        target.currentHp = 0;
+        const hitEnemy = target.team === "enemy";
+        return {
+          text: `${target.name} cae de un solo golpe.`,
+          hitEnemy,
+          hitAllies: hitEnemy ? [] : [target.id],
+          allyDamages: hitEnemy ? [] : [{ id: target.id, damage }],
+          enemyDamage: hitEnemy ? damage : 0,
+        };
+      }
+
       if (!this.rollHit(actor, skill, target)) {
         return {
           text: `${target.name} esquiva el ataque.`,
@@ -2220,5 +2265,7 @@
     allies: ALLIES,
     enemies: ENEMIES,
     items: { diapason: DIAPASON },
+    // Lo usa game.js para pintar la casilla en Configuración.
+    KOSAI_SETTING_KEY,
   };
 })();

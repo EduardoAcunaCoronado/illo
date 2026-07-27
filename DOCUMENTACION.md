@@ -689,6 +689,30 @@ funcionan EXACTAMENTE igual que antes:
 Enemigo de ejemplo: `marea_fans` (hp 9999 — imbatible a propósito, solo se puede
 aguantar). Se usa en el cap. 3, «Escena 11b: La puerta».
 
+#### Batallas: Ataque Kosai (extra opcional, jul 2026)
+
+Casilla en **Configuración** que reparte a **todo el equipo** una habilidad
+extra en los combates por turnos: deja al objetivo a **0 PV de un solo golpe**,
+cuesta 0 PM y no falla ni se puede esquivar. Es un atajo para saltarse una
+pelea, no forma parte del equilibrio del combate.
+
+- Se guarda en localStorage como `illo_kosai` (`"1"` encendido, `"0"` apagado);
+  por defecto está apagado.
+- `battle-minigame.js` lee la clave **al construir el combate**, así que
+  encenderlo o apagarlo a mitad de una pelea no afecta a la que ya está en
+  curso: entra en la siguiente.
+- La habilidad usa el tipo `execute`, que se resuelve **antes** de la tirada de
+  acierto (por eso no se esquiva). Vale para cualquier objetivo, así que se
+  puede reutilizar en habilidades de enemigos si algún día hace falta.
+- No toca la constante `ALLIES`: se le da a cada luchador un array de
+  habilidades nuevo, para que un combate no contamine al siguiente.
+
+```js
+// battle-minigame.js
+const KOSAI = { id: "ataque_kosai", type: "execute", pmCost: 0, target: "enemy", unavoidable: true, ... };
+window.BattleMinigame.KOSAI_SETTING_KEY; // "illo_kosai" — lo usa game.js para pintar la casilla
+```
+
 #### Configuración: volúmenes (jul 2026)
 
 El botón **Configuración** del menú abre un panel (estilo nm-modal) con dos
@@ -698,6 +722,10 @@ resto → efectos) y multiplica su volumen por el factor correspondiente;
 `engine.applyVolumeSettings()` reaplica en vivo a lo que esté sonando. Los
 volúmenes que piden los capítulos (`volume`, `setVolume`) se conservan como
 "base" y escalan por el ajuste del jugador.
+
+Debajo de los deslizadores va la casilla del **Ataque Kosai** (ver arriba). Para
+añadir más ajustes de sí/no se reutiliza el bloque `.nm-setting-toggle` +
+`.nm-setting-hint` de `styles.css`.
 
 ---
 
