@@ -3652,7 +3652,9 @@ class VisualNovelEngine {
                     // puntuación para dar ritmo al texto.
                     let delay = this.typingSpeed * speedMult;
                     if (window.Juice) {
-                        window.Juice.blip(ch, speakerName);
+                        if (localStorage.getItem('illo_text_blip') !== '0') {
+                            window.Juice.blip(ch, speakerName);
+                        }
                         delay += window.Juice.punctuationPause(ch);
                     }
                     timeoutId = setTimeout(typeChar, delay);

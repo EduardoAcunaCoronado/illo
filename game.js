@@ -241,6 +241,7 @@ scenesMenu?.addEventListener("click", (e) => {
 // La clave la define battle-minigame.js, que es quien lee el ajuste al montar
 // el combate; aquí solo se pinta la casilla.
 const KOSAI_SETTING_KEY = window.BattleMinigame?.KOSAI_SETTING_KEY || "illo_kosai";
+const BLIP_SETTING_KEY = "illo_text_blip";
 
 // En la app de escritorio el localStorage se pierde en cada arranque (el
 // servidor interno cambia de puerto, y con él de origen), así que el ajuste se
@@ -273,6 +274,7 @@ function settingsMarkup() {
     return isNaN(v) ? def : Math.round(v * 100);
   };
   const kosaiOn = localStorage.getItem(KOSAI_SETTING_KEY) === "1";
+  const blipsOn = localStorage.getItem(BLIP_SETTING_KEY) !== "0";
   const modo = windowModeActual();
 
   const grupos = [];
@@ -307,7 +309,13 @@ function settingsMarkup() {
             <label class="nm-setting-row">Efectos
                 <input type="range" class="opt-vol-sfx" min="0" max="100" value="${volOf("illo_vol_sfx", 100)}">
                 <span class="nm-setting-val"></span>
-            </label>`,
+            </label>
+            <div class="nm-setting-toggle">
+                <label class="nm-setting-row">Blips de texto
+                    <input type="checkbox" class="opt-blips" ${blipsOn ? "checked" : ""}>
+                </label>
+                <p class="nm-setting-hint">Reproduce un sonido breve mientras aparece cada letra del diálogo.</p>
+            </div>`,
   });
   grupos.push({
     id: "trucos",
@@ -379,6 +387,11 @@ function wireSettings(panel) {
   kosai.addEventListener("change", () => {
     saveSetting(KOSAI_SETTING_KEY, kosai.checked ? "1" : "0");
     window.BattleMinigame?.setKosaiEnabled?.(kosai.checked);
+  });
+
+  const blips = panel.querySelector(".opt-blips");
+  blips.addEventListener("change", () => {
+    saveSetting(BLIP_SETTING_KEY, blips.checked ? "1" : "0");
   });
 
   // Modo de ventana: lo aplica el proceso principal al recibir el ajuste. Y al

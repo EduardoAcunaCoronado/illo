@@ -765,6 +765,11 @@ Debajo de los deslizadores va la casilla del **Ataque Kosai** (ver arriba). Para
 añadir más ajustes de sí/no se reutiliza el bloque `.nm-setting-toggle` +
 `.nm-setting-hint` de `styles.css`.
 
+La pestaña **Sonido** también permite activar o desactivar los **Blips de
+texto**. Están activos por defecto y se guardan como `illo_text_blip` (`"1"` o
+`"0"`); al apagarlos se conserva la velocidad y las pausas de puntuación, solo
+se silencia el sonido que acompaña a cada letra.
+
 ---
 
 ## 🎯 Sistema de Elecciones
