@@ -137,7 +137,11 @@
     startLevel(level) {
       this.level = level;
       this.stableTime = 0;
-      this.zoneHalfWidth = Math.max(5, 12 - level * 1.25);
+      const progress = this.levels > 1 ? (level - 1) / (this.levels - 1) : 0;
+      const startZoneHalfWidth = 8.5;
+      const endZoneHalfWidth = 3.5;
+      this.zoneHalfWidth =
+        startZoneHalfWidth - (startZoneHalfWidth - endZoneHalfWidth) * progress;
       const speed = 11 + level * 2.2;
       this.runes = RUNES.map((rune, index) => ({
         ...rune,
@@ -163,7 +167,7 @@
     update(dt) {
       let allStable = true;
       const push = 58 + this.level * 4.5;
-      const gravity = 36 + this.level * 3.2;
+      const gravity = 72 + this.level * 5.4;
 
       this.runes.forEach((rune) => {
         const pressing = this.keys.has(rune.key);
