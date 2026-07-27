@@ -2464,19 +2464,18 @@ nada del motor: sigue siendo el mismo `index.html` con `engine.js` y `game.js`.
 
 ### Ajustes persistentes
 
-En el navegador, las opciones de **Configuración** (volumen de música, volumen
-de efectos y Ataque Kosai) viven en el `localStorage` del origen y se conservan
-solas. En la app de escritorio no: el servidor interno escucha en un puerto
-libre **distinto en cada arranque**, así que el origen cambia
-(`http://127.0.0.1:61096` hoy, otro mañana) y el `localStorage` empieza vacío.
-Sin más, los ajustes se perdían al cerrar la aplicación.
+En el navegador, las opciones de **Configuración** viven en el `localStorage`
+del origen y se conservan solas. En la app de escritorio no: el servidor interno
+escucha en un puerto libre **distinto en cada arranque**, así que el origen
+cambia (`http://127.0.0.1:61096` hoy, otro mañana) y el `localStorage` empieza
+vacío. Sin más, los ajustes se perdían al cerrar la aplicación.
 
 La solución guarda los mismos valores fuera del origen, en la carpeta de datos
 de la app:
 
 ```
 %APPDATA%\Transfurmados\settings.json
-{"illo_vol_music":"0.55","illo_vol_sfx":"0.42","illo_kosai":"1"}
+{"illo_vol_music":"0.55","illo_vol_sfx":"0.42","illo_kosai":"1","illo_window_mode":"window"}
 ```
 
 El recorrido completo:
@@ -2493,7 +2492,43 @@ antes que los scripts de la página, así que `engine.js` (`volFactor`),
 encuentran el `localStorage` ya puesto y no necesitan esperar a ninguna promesa.
 
 La lista de claves de `SETTINGS_KEYS` es cerrada a propósito: el renderizador
-solo puede escribir esos tres ajustes, no usar el archivo como almacén libre.
+solo puede escribir esos cuatro ajustes, no usar el archivo como almacén libre.
+
+### Configuración por pestañas
+
+El panel de **Configuración** (menú principal) y el menú de **pausa** (Esc)
+comparten el mismo `settingsMarkup()` / `wireSettings()` de `game.js`, repartido
+en tres pestañas:
+
+| Pestaña | Contiene | Dónde sale |
+|---------|----------|------------|
+| 🖥️ Vídeo | Modo de ventana: Pantalla completa / Ventana | **Solo en la app de escritorio** |
+| 🔊 Sonido | Volumen de música y de efectos | Siempre |
+| ⚔️ Trucos | Ataque Kosai | Siempre |
+
+La pestaña de Vídeo se cae entera en el navegador (ahí manda F11 del propio
+navegador), así que la pestaña activa por defecto no es siempre la misma: la
+decide `settingsMarkup()` según los grupos que existan, no el HTML.
+
+### Modo de ventana
+
+`illo_window_mode` es el único ajuste que, además de guardarse, hace algo en el
+proceso principal:
+
+- Al **arrancar**, `createWindow()` abre con `fullscreen: windowMode() === 'fullscreen'`
+  (por defecto, pantalla completa). El `width`/`height` calculados son el tamaño
+  al que queda la ventana al salir de pantalla completa.
+- Al **cambiarlo** desde el panel, `settings:set` lo guarda y aplica
+  `mainWindow.setFullScreen(...)`.
+- La ventana es la **fuente de la verdad**: sus eventos `enter-full-screen` y
+  `leave-full-screen` anotan el modo y avisan al juego por `settings:changed`,
+  de modo que un cambio con **F11** o con el botón del marco también se guarda y
+  repinta los botones si el panel está abierto.
+
+Se eligen con un par de botones excluyentes (`.nm-segmented`), no con un
+`<select>`: la lista que despliega un `select` la dibuja el sistema, sale clara
+sobre el panel oscuro y no hay CSS que la alcance (`color-scheme: dark` no basta
+en Windows). Cualquier ajuste futuro de varias opciones debería usar lo mismo.
 
 > **Nota:** la partida guardada (`gameState`) sigue en `localStorage` y **no**
 > sobrevive al reinicio en la app de escritorio, por el mismo motivo del puerto.

@@ -248,36 +248,114 @@ function saveSetting(key, value) {
   window.desktopApp?.setSetting?.(key, value);
 }
 
+// Modo de ventana: solo tiene sentido en la app de escritorio, donde el proceso
+// principal es quien la pone a pantalla completa. En el navegador ya manda F11.
+const WINDOW_MODE_KEY = "illo_window_mode";
+const hayOpcionesDeVideo = !!window.desktopApp;
+
+function windowModeActual() {
+  return localStorage.getItem(WINDOW_MODE_KEY) === "window" ? "window" : "fullscreen";
+}
+
 // Los mismos ajustes salen en dos sitios: en Configuración (menú principal) y
 // en el menú de pausa (Esc durante la partida). Se generan y se conectan aquí
 // una sola vez para que no se dupliquen ni se desincronicen.
+//
+// Van repartidos en pestañas (Vídeo, Sonido, Trucos). La de Vídeo se cae entera
+// en el navegador, así que la primera pestaña no es siempre la misma: la activa
+// se decide aquí, no en el HTML.
 function settingsMarkup() {
   const volOf = (k, def) => {
     const v = parseFloat(localStorage.getItem(k));
     return isNaN(v) ? def : Math.round(v * 100);
   };
   const kosaiOn = localStorage.getItem(KOSAI_SETTING_KEY) === "1";
-  return `
-        <div class="nm-settings">
-            <label class="nm-setting-row">🎵 Música
+  const modo = windowModeActual();
+
+  const grupos = [];
+  if (hayOpcionesDeVideo) {
+    grupos.push({
+      id: "video",
+      titulo: "🖥️ Vídeo",
+      // Dos botones en vez de un <select>: la lista que despliega un select la
+      // dibuja el sistema, sale clara sobre el panel oscuro y no hay CSS que la
+      // alcance. Así además va a juego con las pestañas.
+      contenido: `
+            <div class="nm-setting-block">
+                <span class="nm-setting-label" id="nm-window-mode-label">Modo de ventana</span>
+                <div class="nm-segmented opt-window-mode" role="radiogroup" aria-labelledby="nm-window-mode-label">
+                    <button type="button" class="nm-seg${modo === "fullscreen" ? " is-active" : ""}"
+                            role="radio" aria-checked="${modo === "fullscreen"}" data-mode="fullscreen">Pantalla completa</button>
+                    <button type="button" class="nm-seg${modo === "window" ? " is-active" : ""}"
+                            role="radio" aria-checked="${modo === "window"}" data-mode="window">Ventana</button>
+                </div>
+                <p class="nm-setting-hint">También se cambia en cualquier momento con F11.</p>
+            </div>`,
+    });
+  }
+  grupos.push({
+    id: "sonido",
+    titulo: "🔊 Sonido",
+    contenido: `
+            <label class="nm-setting-row">Música
                 <input type="range" class="opt-vol-music" min="0" max="100" value="${volOf("illo_vol_music", 100)}">
                 <span class="nm-setting-val"></span>
             </label>
-            <label class="nm-setting-row">🔊 Efectos
+            <label class="nm-setting-row">Efectos
                 <input type="range" class="opt-vol-sfx" min="0" max="100" value="${volOf("illo_vol_sfx", 100)}">
                 <span class="nm-setting-val"></span>
-            </label>
+            </label>`,
+  });
+  grupos.push({
+    id: "trucos",
+    titulo: "⚔️ Trucos",
+    contenido: `
             <div class="nm-setting-toggle">
-                <label class="nm-setting-row">⚔️ Ataque Kosai
+                <label class="nm-setting-row">Ataque Kosai
                     <input type="checkbox" class="opt-kosai" ${kosaiOn ? "checked" : ""}>
                 </label>
                 <p class="nm-setting-hint">Añade a todo el equipo un golpe que deja al objetivo a 0 PV en los combates por turnos.</p>
-            </div>
+            </div>`,
+  });
+
+  const pestanas = grupos
+    .map(
+      (g, i) => `
+            <button type="button" class="nm-tab${i === 0 ? " is-active" : ""}" role="tab"
+                    aria-selected="${i === 0}" aria-controls="nm-pane-${g.id}" data-tab="${g.id}">${g.titulo}</button>`,
+    )
+    .join("");
+
+  const paneles = grupos
+    .map(
+      (g, i) => `
+            <div class="nm-tab-pane${i === 0 ? " is-active" : ""}" role="tabpanel"
+                 id="nm-pane-${g.id}" data-pane="${g.id}">${g.contenido}
+            </div>`,
+    )
+    .join("");
+
+  return `
+        <div class="nm-settings">
+            <div class="nm-tabs" role="tablist">${pestanas}</div>
+            <div class="nm-tab-panes">${paneles}</div>
         </div>
   `;
 }
 
 function wireSettings(panel) {
+  const tabs = [...panel.querySelectorAll(".nm-tab")];
+  const panes = [...panel.querySelectorAll(".nm-tab-pane")];
+  const activar = (id) => {
+    tabs.forEach((t) => {
+      const activa = t.dataset.tab === id;
+      t.classList.toggle("is-active", activa);
+      t.setAttribute("aria-selected", String(activa));
+    });
+    panes.forEach((p) => p.classList.toggle("is-active", p.dataset.pane === id));
+  };
+  tabs.forEach((tab) => tab.addEventListener("click", () => activar(tab.dataset.tab)));
+
   const wire = (selector, storeKey) => {
     const slider = panel.querySelector(selector);
     const label = slider.parentElement.querySelector(".nm-setting-val");
@@ -297,6 +375,31 @@ function wireSettings(panel) {
   const kosai = panel.querySelector(".opt-kosai");
   kosai.addEventListener("change", () => {
     saveSetting(KOSAI_SETTING_KEY, kosai.checked ? "1" : "0");
+  });
+
+  // Modo de ventana: lo aplica el proceso principal al recibir el ajuste. Y al
+  // revés, si se cambia con F11 con el panel abierto, los botones se enteran.
+  const grupoModo = panel.querySelector(".opt-window-mode");
+  if (!grupoModo) return;
+  const botonesModo = [...grupoModo.querySelectorAll(".nm-seg")];
+  const pintarModo = (valor) => {
+    botonesModo.forEach((b) => {
+      const activo = b.dataset.mode === valor;
+      b.classList.toggle("is-active", activo);
+      b.setAttribute("aria-checked", String(activo));
+    });
+  };
+  botonesModo.forEach((boton) => {
+    boton.addEventListener("click", () => {
+      pintarModo(boton.dataset.mode);
+      saveSetting(WINDOW_MODE_KEY, boton.dataset.mode);
+    });
+  });
+  const dejarDeEscuchar = window.desktopApp?.onSettingChanged?.((key, value) => {
+    // El panel se cierra con remove(), así que no hay un sitio donde darse de
+    // baja: se hace aquí, la primera vez que llega un aviso sin panel delante.
+    if (!grupoModo.isConnected) return dejarDeEscuchar?.();
+    if (key === WINDOW_MODE_KEY) pintarModo(value);
   });
 }
 

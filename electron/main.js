@@ -32,7 +32,17 @@ fs.mkdirSync(app.getPath('userData'), { recursive: true });
 // La lista de claves es cerrada a propósito: el renderizador solo puede escribir
 // estos ajustes, no usar el archivo como almacén libre.
 const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
-const SETTINGS_KEYS = new Set(['illo_vol_music', 'illo_vol_sfx', 'illo_kosai']);
+const SETTINGS_KEYS = new Set([
+    'illo_vol_music',
+    'illo_vol_sfx',
+    'illo_kosai',
+    'illo_window_mode',
+]);
+
+// Modo de ventana: la app abre a pantalla completa salvo que se haya elegido
+// "Ventana". Es el único ajuste que además de guardarse hace algo aquí.
+const WINDOW_MODES = new Set(['fullscreen', 'window']);
+const WINDOW_MODE_KEY = 'illo_window_mode';
 
 function loadSettings() {
     try {
@@ -62,11 +72,27 @@ ipcMain.on('settings:get-sync', (event) => {
     event.returnValue = loadSettings();
 });
 
-ipcMain.on('settings:set', (event, key, value) => {
+function storeSetting(key, value) {
     if (!SETTINGS_KEYS.has(key) || typeof value !== 'string') return;
+    if (key === WINDOW_MODE_KEY && !WINDOW_MODES.has(value)) return;
     const settings = loadSettings();
+    if (settings[key] === value) return;
     settings[key] = value;
     saveSettings(settings);
+}
+
+function windowMode() {
+    const mode = loadSettings()[WINDOW_MODE_KEY];
+    return WINDOW_MODES.has(mode) ? mode : 'fullscreen';
+}
+
+ipcMain.on('settings:set', (event, key, value) => {
+    storeSetting(key, value);
+    // El modo de ventana no solo se guarda: se aplica al momento. El cambio de
+    // verdad lo confirman los eventos enter/leave-full-screen de la ventana.
+    if (key === WINDOW_MODE_KEY && mainWindow && WINDOW_MODES.has(value)) {
+        mainWindow.setFullScreen(value === 'fullscreen');
+    }
 });
 
 // Una sola instancia: si se abre otra, se enfoca la ventana que ya existe.
@@ -98,6 +124,8 @@ function createWindow() {
         // nombre lo usa Electron como carpeta en %APPDATA% y los dos puntos
         // son ilegales en rutas de Windows (la app no arrancaría).
         title: 'Project AI.ri: Transfurmados',
+        // Ancho y alto de arriba son el tamaño al salir de pantalla completa.
+        fullscreen: windowMode() === 'fullscreen',
         autoHideMenuBar: true,
         show: false,
         webPreferences: {
@@ -114,6 +142,16 @@ function createWindow() {
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
+
+    // La ventana es la fuente de la verdad: se anota el modo y se avisa al
+    // juego venga el cambio de donde venga (el desplegable de Configuración,
+    // F11 o el botón del marco), para que el desplegable no quede desfasado.
+    const anotarModo = (mode) => {
+        storeSetting(WINDOW_MODE_KEY, mode);
+        mainWindow.webContents.send('settings:changed', WINDOW_MODE_KEY, mode);
+    };
+    mainWindow.on('enter-full-screen', () => anotarModo('fullscreen'));
+    mainWindow.on('leave-full-screen', () => anotarModo('window'));
 
     // Los enlaces externos se abren en el navegador, no dentro del juego.
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
