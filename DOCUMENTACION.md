@@ -1512,6 +1512,18 @@ for (const character of characters) {
 
 ## 🎨 Personalización
 
+### Texto no seleccionable (jul 2026)
+
+`html, body` llevan `user-select: none` en `styles.css`. El juego se avanza a
+base de clics y sin eso un doble clic —o clicar y arrastrar sin querer— dejaba
+el diálogo resaltado en azul. Como la propiedad se hereda, cubre todo:
+diálogos, menús, minijuegos y overlays.
+
+Justo debajo hay una excepción para `input, textarea`, que vuelven a
+`user-select: text` para no romper los campos de escritura (panel de debug).
+**Si añades algún elemento donde el jugador deba poder seleccionar o copiar
+texto, hay que devolverle `user-select: text` igual que a los inputs.**
+
 ### Cambiar Colores Persona 5
 
 Los colores principales del sistema Persona 5 son:

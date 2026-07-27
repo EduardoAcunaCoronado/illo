@@ -10,6 +10,17 @@ html, body {
     font-family: 'Arial', 'Helvetica', sans-serif;
     background: #000;
     overflow: hidden;
+    /* Nada del juego se selecciona: se avanza el diálogo a base de clics y sin
+       esto un doble clic (o clicar y arrastrar sin querer) deja el texto
+       resaltado en azul. Los campos de escritura se excluyen más abajo. */
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Los campos de texto sí deben dejar seleccionar (panel de debug, etc.) */
+input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
 }
 
 /* Marco que llena la ventana y centra el escenario (bandas negras si el ratio
