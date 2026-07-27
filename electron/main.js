@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, screen } = require('electron');
+const { app, BrowserWindow, shell, screen, ipcMain } = require('electron');
 const fs = require('fs');
 const { startServer } = require('./static-server');
 
@@ -52,6 +52,7 @@ function createWindow() {
             // El juego es HTML/JS puro: no necesita Node en el render.
             nodeIntegration: false,
             contextIsolation: true,
+            preload: require('path').join(__dirname, 'preload.js'),
             backgroundThrottling: false,
         },
     });
@@ -86,6 +87,10 @@ function createWindow() {
 
     mainWindow.loadURL(`${server.origin}/index.html`);
 }
+
+// Canal deliberadamente limitado para que el botÃ³n Salir del juego cierre la
+// aplicaciÃ³n sin dar al renderizador acceso a APIs de Node/Electron.
+ipcMain.on('app:quit', () => app.quit());
 
 app.whenReady().then(async () => {
     server = await startServer(ROOT);

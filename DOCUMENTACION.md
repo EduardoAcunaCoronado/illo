@@ -2441,6 +2441,11 @@ Este proyecto está disponible para uso educativo y comercial.
 
 ## 🖥️ App de Escritorio (Electron)
 
+El menú principal incluye la opción **Salir** al ejecutarse dentro de Electron.
+Esta usa un canal IPC restringido para cerrar la aplicación; no se muestra al
+abrir el juego en un navegador, donde una página no puede cerrar con fiabilidad
+la pestaña del usuario.
+
 El juego se puede ejecutar como aplicación de escritorio de Windows sin cambiar
 nada del motor: sigue siendo el mismo `index.html` con `engine.js` y `game.js`.
 

@@ -21,6 +21,14 @@ startBtn.addEventListener("click", () => startNewGame());
 loadBtn.addEventListener("click", () => loadGame());
 document.getElementById("settings-btn")?.addEventListener("click", () => showSettingsPanel());
 
+// "Salir" solo existe en la app de escritorio. El navegador no permite cerrar
+// de forma fiable una pestaña que no ha abierto mediante script.
+const quitBtn = document.getElementById("quit-btn");
+if (window.desktopApp?.quit) {
+  quitBtn?.removeAttribute("hidden");
+  quitBtn?.addEventListener("click", () => window.desktopApp.quit());
+}
+
 // Elegir cualquier OTRA opción del menú cierra la Configuración. El panel es una
 // caja centrada, no tapa el menú, así que sin esto se quedaba flotando encima
 // del selector de capítulos o de la partida recién empezada.
