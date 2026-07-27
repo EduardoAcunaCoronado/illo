@@ -239,6 +239,15 @@ scenesMenu?.addEventListener("click", (e) => {
 // el combate; aquí solo se pinta la casilla.
 const KOSAI_SETTING_KEY = window.BattleMinigame?.KOSAI_SETTING_KEY || "illo_kosai";
 
+// En la app de escritorio el localStorage se pierde en cada arranque (el
+// servidor interno cambia de puerto, y con él de origen), así que el ajuste se
+// copia además a la carpeta de datos de la app, que es quien lo devuelve al
+// abrir. En el navegador `desktopApp` no existe y basta con el localStorage.
+function saveSetting(key, value) {
+  localStorage.setItem(key, value);
+  window.desktopApp?.setSetting?.(key, value);
+}
+
 // Los mismos ajustes salen en dos sitios: en Configuración (menú principal) y
 // en el menú de pausa (Esc durante la partida). Se generan y se conectan aquí
 // una sola vez para que no se dupliquen ni se desincronicen.
@@ -275,7 +284,7 @@ function wireSettings(panel) {
     const paint = () => { label.textContent = slider.value + "%"; };
     paint();
     slider.addEventListener("input", () => {
-      localStorage.setItem(storeKey, String(slider.value / 100));
+      saveSetting(storeKey, String(slider.value / 100));
       paint();
       engine.applyVolumeSettings();
     });
@@ -287,7 +296,7 @@ function wireSettings(panel) {
   // siguiente combate, no en uno que ya esté en marcha.
   const kosai = panel.querySelector(".opt-kosai");
   kosai.addEventListener("change", () => {
-    localStorage.setItem(KOSAI_SETTING_KEY, kosai.checked ? "1" : "0");
+    saveSetting(KOSAI_SETTING_KEY, kosai.checked ? "1" : "0");
   });
 }
 

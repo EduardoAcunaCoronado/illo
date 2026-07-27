@@ -1,5 +1,6 @@
 const { app, BrowserWindow, shell, screen, ipcMain } = require('electron');
 const fs = require('fs');
+const path = require('path');
 const { startServer } = require('./static-server');
 
 // La raíz del juego (index.html y compañía). En desarrollo es la carpeta del
@@ -20,6 +21,53 @@ let mainWindow = null;
 // que Electron no crea hasta el "ready". En la primerísima ejecución todavía no
 // existe, así que el candado fallaría y la app se cerraría sin decir nada.
 fs.mkdirSync(app.getPath('userData'), { recursive: true });
+
+// ===== Ajustes persistentes =====
+// El servidor interno escucha en un puerto libre, distinto en cada arranque, así
+// que el origen del juego cambia y su localStorage empieza vacío: las opciones
+// de Configuración se perdían al cerrar la app. Aquí se guardan aparte, en la
+// carpeta de datos de la aplicación, y el preload las devuelve al localStorage
+// antes de que corra una sola línea del juego.
+//
+// La lista de claves es cerrada a propósito: el renderizador solo puede escribir
+// estos ajustes, no usar el archivo como almacén libre.
+const SETTINGS_FILE = path.join(app.getPath('userData'), 'settings.json');
+const SETTINGS_KEYS = new Set(['illo_vol_music', 'illo_vol_sfx', 'illo_kosai']);
+
+function loadSettings() {
+    try {
+        const saved = JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
+        return Object.fromEntries(
+            Object.entries(saved).filter(
+                ([key, value]) => SETTINGS_KEYS.has(key) && typeof value === 'string',
+            ),
+        );
+    } catch (error) {
+        // Todavía no hay archivo (primer arranque) o está corrupto: valores por defecto.
+        return {};
+    }
+}
+
+function saveSettings(settings) {
+    try {
+        fs.writeFileSync(SETTINGS_FILE, JSON.stringify(settings), 'utf8');
+    } catch (error) {
+        console.error('No se han podido guardar los ajustes:', error);
+    }
+}
+
+// Síncrono a propósito: el preload lo pide antes de cargar la página, y así el
+// juego se encuentra el localStorage ya puesto en vez de tener que esperar.
+ipcMain.on('settings:get-sync', (event) => {
+    event.returnValue = loadSettings();
+});
+
+ipcMain.on('settings:set', (event, key, value) => {
+    if (!SETTINGS_KEYS.has(key) || typeof value !== 'string') return;
+    const settings = loadSettings();
+    settings[key] = value;
+    saveSettings(settings);
+});
 
 // Una sola instancia: si se abre otra, se enfoca la ventana que ya existe.
 if (!app.requestSingleInstanceLock()) {
@@ -56,7 +104,7 @@ function createWindow() {
             // El juego es HTML/JS puro: no necesita Node en el render.
             nodeIntegration: false,
             contextIsolation: true,
-            preload: require('path').join(__dirname, 'preload.js'),
+            preload: path.join(__dirname, 'preload.js'),
             backgroundThrottling: false,
         },
     });

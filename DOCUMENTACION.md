@@ -2462,6 +2462,44 @@ restricciones de autoplay del propio navegador.
 El juego se puede ejecutar como aplicación de escritorio de Windows sin cambiar
 nada del motor: sigue siendo el mismo `index.html` con `engine.js` y `game.js`.
 
+### Ajustes persistentes
+
+En el navegador, las opciones de **Configuración** (volumen de música, volumen
+de efectos y Ataque Kosai) viven en el `localStorage` del origen y se conservan
+solas. En la app de escritorio no: el servidor interno escucha en un puerto
+libre **distinto en cada arranque**, así que el origen cambia
+(`http://127.0.0.1:61096` hoy, otro mañana) y el `localStorage` empieza vacío.
+Sin más, los ajustes se perdían al cerrar la aplicación.
+
+La solución guarda los mismos valores fuera del origen, en la carpeta de datos
+de la app:
+
+```
+%APPDATA%\Transfurmados\settings.json
+{"illo_vol_music":"0.55","illo_vol_sfx":"0.42","illo_kosai":"1"}
+```
+
+El recorrido completo:
+
+| Paso | Dónde | Qué hace |
+|------|-------|----------|
+| Guardar | `game.js` → `saveSetting()` | Escribe en `localStorage` **y** manda el valor por IPC (`settings:set`). En navegador `window.desktopApp` no existe y solo hace lo primero. |
+| Almacenar | `electron/main.js` | Valida la clave contra una lista cerrada y reescribe `settings.json`. |
+| Restaurar | `electron/preload.js` | Pide los ajustes con `sendSync('settings:get-sync')` y los devuelve al `localStorage`. |
+
+La restauración va en el **preload** y es síncrona a propósito: el preload corre
+antes que los scripts de la página, así que `engine.js` (`volFactor`),
+`battle-minigame.js` (`kosaiEnabled`) y el propio panel de Configuración se
+encuentran el `localStorage` ya puesto y no necesitan esperar a ninguna promesa.
+
+La lista de claves de `SETTINGS_KEYS` es cerrada a propósito: el renderizador
+solo puede escribir esos tres ajustes, no usar el archivo como almacén libre.
+
+> **Nota:** la partida guardada (`gameState`) sigue en `localStorage` y **no**
+> sobrevive al reinicio en la app de escritorio, por el mismo motivo del puerto.
+> Hoy no se nota porque el menú no ofrece "Cargar partida", pero si se añade
+> habrá que llevarla también a `settings.json` o a un archivo propio.
+
 ### Ejecutar
 
 ```bash
