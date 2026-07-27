@@ -20,23 +20,12 @@ Un motor de visual novel moderno basado en HTML5, CSS y JavaScript que permite c
 12. [Troubleshooting](#troubleshooting)
 13. [Funciones Avanzadas](#funciones-avanzadas)
 14. [Sistema de Reseteo](#sistema-de-reseteo)
-15. [App de Escritorio (Electron)](#app-de-escritorio-electron)
-16. [Publicar en itch.io](#publicar-en-itchio)
 
 ---
 
 ## 🚀 Inicio Rápido
 
 ### Paso 1: Abre el Proyecto
-
-Como app de escritorio (recomendado):
-
-```bash
-npm install
-npm start
-```
-
-O en el navegador, con un servidor local:
 
 ```bash
 # Windows
@@ -2365,148 +2354,6 @@ console.log(engine.history); // Opciones seleccionadas
 ## 📝 Licencia
 
 Este proyecto está disponible para uso educativo y comercial.
-
----
-
-## 🖥️ App de Escritorio (Electron)
-
-El juego se puede ejecutar como aplicación de escritorio de Windows sin cambiar
-nada del motor: sigue siendo el mismo `index.html` con `engine.js` y `game.js`.
-
-### Ejecutar
-
-```bash
-npm install
-npm start
-```
-
-### Empaquetar
-
-Dos comandos, dos resultados distintos. Todo va a parar a `dist/`, que está en
-el `.gitignore`.
-
-**`npm run dist:dir`** (`electron-builder --win --dir`) — solo empaqueta, sin
-instalador:
-
-```
-dist/
-├── win-unpacked/          ← la app lista para ejecutar (1.556 MB)
-│   ├── Transfurmados.exe        ← se lanza desde aquí (216 MB)
-│   ├── *.dll, *.pak, *.bin      ← runtime de Chromium/Electron
-│   ├── LICENSES.chromium.html   ← atribución de licencias (obligatoria)
-│   ├── locales/                 ← 55 idiomas (46,6 MB)
-│   └── resources/
-│       └── app/                 ← el juego (1.208 MB)
-│           ├── index.html, engine.js, game.js, styles.css
-│           ├── electron/        ← main.js + static-server.js
-│           ├── chapters/, characters/
-│           └── assets/          ← 1.207 MB
-├── .icon-ico/             ← el .ico generado desde build/icon.png (caché)
-└── builder-debug.yml      ← log del build, no se distribuye
-```
-
-Se prueba abriendo `dist/win-unpacked/Transfurmados.exe`.
-
-**`npm run dist`** (`electron-builder --win`) — añade el instalador NSIS:
-
-```
-dist/Transfurmados Setup 1.0.0.exe
-```
-
-> ⚠️ El `.exe` de `win-unpacked/` **no funciona por su cuenta**: necesita todos
-> los archivos que tiene al lado. Para distribuirlo se comprime la carpeta
-> entera, o se reparte el instalador.
-
-> ⚠️ Con ~1,2 GB en `assets/` el empaquetado tarda varios minutos.
-
-### Publicar en itch.io
-
-Se sube la carpeta `dist/win-unpacked/` completa, con `Transfurmados.exe` en la
-raíz del zip (sin una carpeta extra por encima, así el itch app lo detecta
-solo). Mejor el zip que el instalador NSIS: el itch app descarga, descomprime y
-lanza el juego él mismo, y con un instalador se lía.
-
-**Pasos:**
-
-1. Crear el build: `npm run dist:dir`
-2. Instalar [butler](https://itch.io/docs/butler/), la CLI de itch.io, y
-   autenticarse una vez: `butler login`
-3. Subir la carpeta (butler la comprime él solo):
-
-```bash
-butler push dist/win-unpacked tu-usuario/transfurmados:windows
-```
-
-4. En la página del juego en itch.io, marcar la subida como ejecutable de
-   escritorio ("This file will be downloaded on the user's computer").
-
-El sufijo `:windows` del canal ya marca la plataforma. Y butler sube solo los
-bytes que cambian en cada actualización, que con 1,2 GB de assets que casi nunca
-cambian ahorra muchísimo.
-
-> ⚠️ El subidor web de itch.io corta en 1 GB por archivo, así que el build de
-> 1,6 GB **no se puede subir por el navegador**: butler es obligatorio.
-
-**Qué NO quitar del build para adelgazarlo:** los `.dll`, `.pak`, `.bin`,
-`locales/` y `resources/` son todos necesarios, y `LICENSES.chromium.html`
-(20 MB) es la atribución de licencias de Chromium, hay que distribuirla.
-
-**Qué sí se puede recortar:** los idiomas de Electron (46,6 MB). La forma limpia
-es en el campo `build` del `package.json`, no borrando `locales/` a mano:
-
-```json
-"electronLanguages": ["es", "en-US"]
-```
-
-El recorte de verdad está en `assets/`: `cutscenes/` (421 MB) y `sounds/`
-(303 MB) son más de la mitad del juego.
-
-### Cómo funciona
-
-```
-electron/
-├── main.js            ← Proceso principal: ventana + arranque
-└── static-server.js   ← Servidor estático interno (127.0.0.1, puerto libre)
-```
-
-El juego usa `fetch()` para cargar `chapters/*.json` y `characters/*.json`, y
-vídeo/audio que necesitan peticiones `Range` para poder buscar dentro del
-archivo. Nada de eso funciona con `file://`, así que `main.js` levanta un
-servidor local en `127.0.0.1` con un puerto libre y carga la ventana desde ahí.
-Es exactamente el mismo escenario que `python -m http.server`, por lo que el
-comportamiento del juego es idéntico al del navegador.
-
-Detalles de la ventana:
-
-- Tamaño de área de dibujo 1280x720 (se reduce si la pantalla es más pequeña)
-- Sin barra de menú, fondo negro, título "Project AI.ri: Transfurmados"
-- **F11** pantalla completa · **F12** DevTools · **Ctrl+R** recargar
-- Una sola instancia: al abrir otra, se enfoca la que ya está
-
-El icono de la app se genera desde `build/icon.png`.
-
-### ⚠️ Si la app se cierra sola al arrancar
-
-Electron sale con código 0 y sin mensaje (solo el aviso de `crashpad ... not
-connected`, que es inofensivo) cuando no puede usar su carpeta de datos,
-`%APPDATA%\<productName>`. Dos causas ya vistas y resueltas:
-
-1. **`productName` con caracteres ilegales en rutas de Windows** (`\ / : * ? " < > |`).
-   Por eso `productName` es `Transfurmados` y el título largo
-   "Project AI.ri: Transfurmados" se pone en la ventana desde `main.js`.
-2. **Primera ejecución con la carpeta de datos aún sin crear:** el candado de
-   instancia única es un archivo dentro de esa carpeta y Electron no la crea
-   hasta el `ready`, así que `requestSingleInstanceLock()` devolvía `false` y
-   la app se cerraba. `main.js` crea la carpeta antes de pedir el candado.
-
-Para depurar casos así: `electron .` no imprime nada útil, hay que meter
-`console.log` en `main.js` — si ni siquiera se ve el primero, el fallo es
-anterior a cargar el script (típicamente la carpeta de datos).
-
-### Seguir usando el navegador
-
-La versión web sigue funcionando igual: `start.bat` o
-`python -m http.server 8000` y abrir `http://localhost:8000`.
 
 ---
 
