@@ -20,6 +20,7 @@ Un motor de visual novel moderno basado en HTML5, CSS y JavaScript que permite c
 12. [Troubleshooting](#troubleshooting)
 13. [Funciones Avanzadas](#funciones-avanzadas)
 14. [Sistema de Reseteo](#sistema-de-reseteo)
+15. [Workflow de Pull Requests](#workflow-de-pull-requests)
 
 ---
 
@@ -2347,6 +2348,75 @@ console.log(engine.currentScene); // Escena actual
 console.log(engine.currentLine); // Línea actual
 console.log(engine.gameState); // Todas las variables
 console.log(engine.history); // Opciones seleccionadas
+```
+
+---
+
+## 🚀 Workflow de Pull Requests
+
+El repositorio incluye una guía para preparar Pull Requests en:
+
+`.github/PR_WORKFLOW.md`
+
+También existe una plantilla automática para GitHub en:
+
+`.github/PULL_REQUEST_TEMPLATE.md`
+
+Cuando se pida preparar o crear una PR usando el workflow, se debe generar una descripción separada por bloques:
+
+### 🎯 Objetivos
+
+- Qué problema resuelve la PR.
+- Qué comportamiento se quiere conseguir.
+- Qué parte del juego, capítulo, minijuego o interfaz se ha tocado.
+
+### 🛠️ Cambios
+
+- Rama actual.
+- Commit o commits relevantes.
+- Archivos modificados.
+- Resumen funcional de las modificaciones.
+
+Comandos útiles:
+
+```bash
+git branch --show-current
+git log --oneline origin/master..HEAD
+git status --short
+git diff --stat origin/master...HEAD
+git diff --name-only origin/master...HEAD
+```
+
+### 🧪 Cómo Probar
+
+- Validaciones técnicas necesarias.
+- Pruebas manuales en `index.html` o `minijuegos_test.html`.
+- Comportamiento esperado tras los cambios.
+
+Ejemplos habituales:
+
+```bash
+node --check archivo.js
+node -e "JSON.parse(require('fs').readFileSync('chapters/chapterX.json','utf8')); console.log('chapterX OK')"
+```
+
+### 🚀 Publicar PR
+
+Para publicar la PR, primero se debe hacer push de la rama actual y después crear la Pull Request con GitHub CLI:
+
+```bash
+git push -u origin HEAD
+gh pr create --base master --head "$(git branch --show-current)" --title "TITULO_DE_LA_PR" --body-file /tmp/pr-body.md
+```
+
+El comando `gh pr create` devuelve la URL de la Pull Request. Tras crearla, se debe devolver ese enlace para poder visualizarla.
+
+Formato de respuesta esperado:
+
+```md
+PR creada:
+
+https://github.com/OWNER/REPO/pull/NUMERO
 ```
 
 ---
