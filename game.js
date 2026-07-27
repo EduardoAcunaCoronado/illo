@@ -21,6 +21,17 @@ startBtn.addEventListener("click", () => startNewGame());
 loadBtn.addEventListener("click", () => loadGame());
 document.getElementById("settings-btn")?.addEventListener("click", () => showSettingsPanel());
 
+// Elegir cualquier OTRA opción del menú cierra la Configuración. El panel es una
+// caja centrada, no tapa el menú, así que sin esto se quedaba flotando encima
+// del selector de capítulos o de la partida recién empezada.
+// Va en el <nav> en vez de en cada botón para que valga también para las
+// opciones que se añadan más adelante.
+document.querySelector(".nm-nav")?.addEventListener("click", (e) => {
+  const opcion = e.target.closest(".nm-item");
+  if (!opcion || opcion.id === "settings-btn") return;
+  document.getElementById("settings-panel")?.remove();
+});
+
 // ===== Retroceder a la escena anterior (demo 25-jul-2026) =====
 // El bucle de juego está casi siempre parado dentro de waitForClick(), así que
 // el botón no puede limitarse a cambiar el estado: además tiene que desbloquear
