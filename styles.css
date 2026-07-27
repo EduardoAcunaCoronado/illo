@@ -2236,6 +2236,82 @@ input, textarea {
     padding: 36px 44px;
     animation: nm-rise 0.5s ease-out both;
     font-family: 'Outfit', sans-serif;
+    /* Con 7 capítulos el contenido se pasaba 17 px del panel. Se gana sitio
+       subiendo el alto máximo y apretando el hueco entre botones (ver
+       .chapter-selector-list), así que ahora cabe justo. */
+    max-height: 92%;
+    /* El que desplaza es la LISTA, no el panel: así el título y el botón de
+       volver se quedan fijos y no se van con el scroll. El overflow-y: auto
+       que traía el estilo antiguo se anula aquí. */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* En columna flex los hijos se estiran, y el botón de volver es inline-block:
+   sin esto pasaría a ocupar todo el ancho en vez de quedarse centrado. */
+.chapter-selector-back {
+    align-self: center;
+}
+
+/* La lista es la única parte que se desplaza. min-height: 0 es lo que le
+   permite encoger por debajo de su contenido dentro del flex (si no, el panel
+   crecería y el scroll no llegaría a activarse nunca). */
+.chapter-selector-list {
+    overflow-y: auto;
+    /* Nunca hay nada que ver a los lados (los botones se ajustan al ancho), y
+       sin esto la animación de entrada del panel llega a sacar una barra
+       horizontal de más mientras escala. */
+    overflow-x: hidden;
+    min-height: 0;
+    /* Aire entre los botones y la barra: al pasar el ratón, el capítulo se
+       desplaza 6 px a la derecha y sin este hueco se le echaba encima. Va en
+       los dos lados para que la lista siga centrada en el panel. */
+    padding: 0 14px;
+}
+
+/* La lista también es flex en columna, así que sus botones se aplastarían para
+   caber (33 px en vez de 48) en lugar de desbordar y activar el scroll. */
+.chapter-select-btn {
+    flex-shrink: 0;
+}
+
+/* ---- Barra de scroll propia del selector de capítulos ----
+   Con los capítulos actuales NO se ve: `overflow-y: auto` solo la saca cuando
+   el contenido no cabe. Está para cuando se añadan más.
+   OJO: en Chromium, poner `scrollbar-width`/`scrollbar-color` en la lista
+   ANULA estas reglas ::-webkit-. Por eso las propiedades estándar van aparte,
+   en el @supports de abajo, solo para quien no entiende ::-webkit-scrollbar. */
+.chapter-selector-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.chapter-selector-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+}
+
+.chapter-selector-list::-webkit-scrollbar-thumb {
+    /* El borde transparente + background-clip adelgaza el pulgar dentro del
+       carril sin tener que estrecharlo (y deja aire a los lados). */
+    background: linear-gradient(180deg, rgba(255, 209, 102, 0.85), rgba(255, 145, 120, 0.75));
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    box-shadow: 0 0 12px rgba(255, 209, 102, 0.3);
+}
+
+.chapter-selector-list::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ffd166, rgba(255, 160, 130, 0.9));
+    background-clip: padding-box;
+}
+
+/* Firefox no entiende ::-webkit-scrollbar: se le da la versión estándar. */
+@supports not selector(::-webkit-scrollbar) {
+    .chapter-selector-list {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 209, 102, 0.8) rgba(255, 255, 255, 0.06);
+    }
 }
 
 .chapter-selector-title {
@@ -2267,6 +2343,12 @@ input, textarea {
     padding: 14px 22px;
     transition: all 0.2s ease;
 }
+
+/* Hueco entre capítulos: 15px hacían que la lista no cupiera por poco. */
+.chapter-selector-list {
+    gap: 12px;
+}
+
 .chapter-select-btn:hover {
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.6);

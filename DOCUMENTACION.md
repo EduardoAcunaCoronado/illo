@@ -1524,6 +1524,37 @@ Justo debajo hay una excepción para `input, textarea`, que vuelven a
 **Si añades algún elemento donde el jugador deba poder seleccionar o copiar
 texto, hay que devolverle `user-select: text` igual que a los inputs.**
 
+### Selector de capítulos: barra de scroll propia (jul 2026)
+
+**Quien desplaza es la lista, no el panel.** Así el título "Seleccionar
+Capítulo" y el botón "Volver" se quedan fijos y solo se mueven los capítulos.
+El montaje:
+
+| Elemento                   | Papel                                                             |
+| -------------------------- | ----------------------------------------------------------------- |
+| `.chapter-selector-panel`  | `display: flex; flex-direction: column; overflow: hidden;` + `max-height: 92%` |
+| `.chapter-selector-list`   | `overflow-y: auto; overflow-x: hidden; min-height: 0;` — la parte que se desplaza. `padding: 0 14px` separa los botones de la barra: al pasar el ratón el capítulo se desplaza 6 px a la derecha y se le echaba encima (queda en 8 px con hover) |
+| `.chapter-selector-back`   | `align-self: center` (en columna flex se estiraría a todo el ancho) |
+
+La barra es propia: pulgar dorado con degradado y carril tenue. Solo aparece
+cuando los capítulos no caben; con 7 no se veía, y **cada capítulo nuevo ocupa
+unos 60 px**.
+
+⚠️ Tres trampas si se tocan estas reglas:
+
+1. `min-height: 0` en la lista es lo que le permite encoger dentro del flex. Sin
+   eso el panel crece y el scroll no se activa nunca.
+2. `flex-shrink: 0` en `.chapter-select-btn`: la lista también es flex en
+   columna, así que sin esto los botones se **aplastan** (33 px en vez de 48)
+   para caber, en vez de desbordar y activar el scroll.
+3. En Chromium, poner `scrollbar-width` o `scrollbar-color` en la lista
+   **anula** todas las reglas `::-webkit-scrollbar-*`. Por eso las propiedades
+   estándar están aisladas en un `@supports not selector(::-webkit-scrollbar)`,
+   que solo aplica en Firefox.
+
+Para reutilizar la barra en otro panel se copian los cuatro selectores
+`::-webkit-scrollbar`, `-track`, `-thumb` y `-thumb:hover`.
+
 ### Cambiar Colores Persona 5
 
 Los colores principales del sistema Persona 5 son:
