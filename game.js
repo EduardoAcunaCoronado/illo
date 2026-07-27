@@ -234,7 +234,7 @@ function showSettingsPanel() {
                 <label class="nm-setting-row">⚔️ Ataque Kosai
                     <input type="checkbox" id="opt-kosai" ${kosaiOn ? "checked" : ""}>
                 </label>
-                <p class="nm-setting-hint">Añade a todo el equipo un golpe que deja al objetivo a 0 PV en los combates por turnos. Se aplica al empezar el siguiente combate.</p>
+                <p class="nm-setting-hint">Añade a todo el equipo un golpe que deja al objetivo a 0 PV en los combates por turnos.</p>
             </div>
         </div>
         <div class="nm-modal-buttons">
