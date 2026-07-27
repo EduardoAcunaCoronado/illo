@@ -25,7 +25,6 @@ document.getElementById("settings-btn")?.addEventListener("click", () => showSet
 // de forma fiable una pestaña que no ha abierto mediante script.
 const quitBtn = document.getElementById("quit-btn");
 if (window.desktopApp?.quit) {
-  quitBtn?.removeAttribute("hidden");
   quitBtn?.addEventListener("click", () => window.desktopApp.quit());
 }
 
@@ -394,6 +393,7 @@ const MENU_AMBIENCE_VOL = 0.12; // sonido de base (bajito, SIEMPRE a velocidad n
 const MENU_MUSIC_VOL = 0.5;     // tema principal
 const MENU_CHILL_VOL = 0.32;    // el chill va por debajo del tema, como música de sala
 let menuAudioUnlocked = false;
+const isDesktopApp = !!window.desktopApp;
 
 function menuVideoEl() {
   return document.getElementById("menu-video");
@@ -459,6 +459,13 @@ document.getElementById("menu-theme-btn").addEventListener("click", (e) => {
   e.stopPropagation();
   playMenuTheme();
 });
+
+// Electron permite autoplay mediante la política configurada en main.js. En
+// navegador se conserva el desbloqueo tras el primer gesto, exigido por este.
+if (isDesktopApp) {
+  menuAudioUnlocked = true;
+  playMenuTheme();
+}
 
 // Fundir y ocultar el vídeo + sonidos del menú (al empezar a jugar)
 function stopMenuMedia() {

@@ -9,6 +9,10 @@ const ROOT = app.getAppPath();
 const DESIGN_W = 1280;
 const DESIGN_H = 720;
 
+// La app es un reproductor de la novela: el tema del menú debe poder empezar
+// al abrir la ventana, sin esperar un clic como ocurre en un navegador normal.
+app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
+
 let server = null;
 let mainWindow = null;
 

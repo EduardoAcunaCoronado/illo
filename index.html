@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css?v=20260727-7">
+    <link rel="stylesheet" href="styles.css?v=20260727-8">
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
+    <script>
+        if (navigator.userAgent.includes('Electron')) {
+            document.documentElement.classList.add('electron-app');
+        }
+    </script>
 </head>
 <body>
     <div id="viewport">
@@ -87,7 +92,7 @@
                 <button id="start-btn" class="nm-item">Comenzar</button>
                 <button id="load-btn" class="nm-item">Capítulos</button>
                 <button id="settings-btn" class="nm-item">Configuración</button>
-                <button id="quit-btn" class="nm-item" hidden>Salir</button>
+                <button id="quit-btn" class="nm-item">Salir</button>
             </nav>
             <button id="menu-theme-btn" class="menu-theme-btn" title="Volver a escuchar el tema">♪</button>
 
@@ -129,7 +134,7 @@
     <script src="rune-channeling-minigame.js?v=20260724-6"></script>
     <script src="juice.js?v=20260722-1"></script>
     <script src="engine.js?v=20260725-21"></script>
-    <script src="game.js?v=20260727-3"></script>
+    <script src="game.js?v=20260727-4"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->

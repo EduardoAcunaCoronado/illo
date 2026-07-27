@@ -236,6 +236,7 @@ async function startNewGame() {
 ### Con Acciones Previas
 
 ```json
+[
 {
   "_line": 1,
   "character": "Luna",
@@ -248,6 +249,7 @@ async function startNewGame() {
     }
   ]
 }
+]
 ```
 
 ### Elementos de una Línea
@@ -984,6 +986,7 @@ Usa archivos de audio comunes:
 ### Ejemplo Completo en Capítulo
 
 ```json
+[
 {
   "_line": 1,
   "character": "Narrador",
@@ -1013,6 +1016,7 @@ Usa archivos de audio comunes:
     }
   ]
 }
+]
 ```
 
 ### Parámetros de Sonido
@@ -1077,6 +1081,7 @@ Usa archivos de audio comunes:
 ### Ejemplo Completo: Control de Música
 
 ```json
+[
 {
   "_line": 1,
   "character": "Narrador",
@@ -1126,6 +1131,7 @@ Usa archivos de audio comunes:
     }
   ]
 }
+]
 ```
 
 ### Consejos
@@ -1335,27 +1341,26 @@ Los personajes ahora ocupan toda la altura de la pantalla para máximo impacto v
 Solo hay dos posiciones válidas:
 
 ```json
-// Personaje a la izquierda
+[
 {
   "type": "showCharacter",
   "character": "2b",
   "position": "left",
   "pose": "neutral"
-}
-
-// Personaje a la derecha
+},
 {
   "type": "showCharacter",
   "character": "pod",
   "position": "right",
   "pose": "neutral"
 }
+]
 ```
 
 **Uso en Capítulos:**
 
 ```json
-// Dos personajes (lado a lado, altura completa)
+[
 {
   "type": "showCharacter",
   "character": "2b",
@@ -1365,14 +1370,13 @@ Solo hay dos posiciones válidas:
   "type": "showCharacter",
   "character": "pod",
   "position": "right"
-}
-
-// Un personaje
+},
 {
   "type": "showCharacter",
   "character": "emil",
-  "position": "left"  // o "right"
+  "position": "left"
 }
+]
 ```
 
 **Nota:** La posición "center" ya no está disponible. Use "left" o "right" para un personaje solo.
@@ -1560,6 +1564,7 @@ Para reutilizar la barra en otro panel se copian los cuatro selectores
 Los colores principales del sistema Persona 5 son:
 
 ```css
+:root {
 /* Color Amarillo Primario */
 --color-primary: #ffcc00;
 
@@ -1568,6 +1573,7 @@ Los colores principales del sistema Persona 5 son:
 
 /* Color Fondo */
 --color-dark: #000000;
+}
 ```
 
 **Para cambiar el color amarillo a otro:**
@@ -1613,8 +1619,8 @@ En `styles.css`, los personajes ahora ocupan toda la altura:
 
 ```css
 .character {
-    height: 100vh;  ← Altura completa de pantalla
-    width: auto;    ← Ancho automático según proporción
+    height: 100vh;  /* Altura completa de pantalla */
+    width: auto;    /* Ancho automático según proporción */
 }
 ```
 
@@ -1638,7 +1644,7 @@ En `styles.css`, los personajes ahora ocupan toda la altura:
 {
   "type": "showCharacter",
   "character": "luna",
-  "position": "center" // Nueva opción
+  "position": "center"
 }
 ```
 
@@ -1648,7 +1654,7 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 
 ```css
 .background {
-    background-size: cover;  ← Cubre toda la pantalla
+    background-size: cover;  /* Cubre toda la pantalla */
     background-position: center;
 }
 ```
@@ -1697,7 +1703,7 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 
 **Solución:**
 
-```json
+```
 ❌ "value": "backgrounds/cafe.png"
 ✅ "value": "assets/backgrounds/cafe.png"
 ```
@@ -1794,7 +1800,9 @@ python -m http.server 8000
 1. Verifica que `.dialog-box.p5-style` tenga:
 
 ```css
-border: 3px solid #ffcc00;
+.dialog-box.p5-style {
+    border: 3px solid #ffcc00;
+}
 ```
 
 2. No hay CSS sobrescrito después
@@ -1870,6 +1878,7 @@ No necesita ser mostrado con `showCharacter`.
 Cada línea puede tener un número `_line` para referencia:
 
 ```json
+[
 {
   "_line": 0,
   "character": "Luna",
@@ -1880,6 +1889,7 @@ Cada línea puede tener un número `_line` para referencia:
   "character": "Luna",
   "text": "Segunda línea"
 }
+]
 ```
 
 Los números se reinician por escena y facilitan debugging.
@@ -2020,18 +2030,16 @@ Cuando terminas un capítulo y vuelves al menú, el motor limpia completamente e
 
 **Comportamiento:**
 
-```javascript
-// Cuando termina un capítulo:
-1. Muestra pantalla "Fin del Capítulo"
-2. Espera a que hagas click en "Continuar"
-3. Llamadas a engine.reset()
-4. Vuelve al menú principal
-5. Estado completamente limpio para nuevo capítulo
-```
+1. Muestra pantalla "Fin del Capítulo".
+2. Espera a que hagas clic en "Continuar".
+3. Llama a `engine.reset()`.
+4. Vuelve al menú principal.
+5. Deja el estado limpio para un nuevo capítulo.
 
 ### Método reset() - Detalles Técnicos
 
 ```javascript
+class VisualNovelEngine {
 reset() {
     // Variables de progreso
     this.currentScene = 0;        // Escena 1
@@ -2053,6 +2061,7 @@ reset() {
 
     // Limpiar elecciones
     document.getElementById('choices-container').innerHTML = '';
+}
 }
 ```
 
@@ -2446,6 +2455,10 @@ Esta usa un canal IPC restringido para cerrar la aplicación; no se muestra al
 abrir el juego en un navegador, donde una página no puede cerrar con fiabilidad
 la pestaña del usuario.
 
+Al arrancar desde Electron, el tema del menú se reproduce automáticamente. En
+navegador, la reproducción comienza tras la primera interacción por las
+restricciones de autoplay del propio navegador.
+
 El juego se puede ejecutar como aplicación de escritorio de Windows sin cambiar
 nada del motor: sigue siendo el mismo `index.html` con `engine.js` y `game.js`.
 
@@ -2531,7 +2544,9 @@ cambian ahorra muchísimo.
 es en el campo `build` del `package.json`, no borrando `locales/` a mano:
 
 ```json
-"electronLanguages": ["es", "en-US"]
+{
+  "electronLanguages": ["es", "en-US"]
+}
 ```
 
 El recorte de verdad está en `assets/`: `cutscenes/` (421 MB) y `sounds/`
