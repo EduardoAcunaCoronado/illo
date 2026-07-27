@@ -593,6 +593,35 @@ El retraso permite dos efectos:
    }
    ```
 
+### Salir de un minijuego
+
+Los tres botones de arriba (**Opciones**, **Escenas** y **Retroceder**) se ven
+también **durante los minijuegos**, combate incluido. Antes se escondían, y
+quien llegaba a un minijuego desde el menú de escenas se quedaba encerrado: la
+única salida era ganarlo.
+
+Cómo funciona, porque no es evidente: el bucle del juego está *dentro* de
+`playMinigame()`, así que no basta con marcar la petición. `playMinigame` corre
+en un `Promise.race` contra una promesa de cancelación; `engine.abortarMinijuego()`
+la rechaza, y el `catch` **borra el overlay**, que es lo que de verdad mata al
+minijuego, porque sus controles cuelgan de ahí. Además se llama a
+`stopAllSounds()`: la música del minijuego no se va con el overlay, y quien nos
+saca (otra escena, retroceder, el menú) ya repinta su propio ambiente.
+
+Por eso cada bucle de minijuego comprueba `overlay.isConnected` y se para solo
+cuando su overlay desaparece. **Todo minijuego nuevo tiene que hacer lo mismo**,
+y si usa `setInterval` en vez de `requestAnimationFrame` debe apagarlo a mano
+(el de ritmo lo hace). Los oyentes que cuelgan de `document` con
+`preventDefault` (ritmo, side-scrollers) se dan de baja solos al detectar el
+overlay desconectado; si no, seguirían tragándose las teclas el resto de la
+partida.
+
+La **cutscene** es la excepción: ahí los botones sí se esconden, porque es un
+vídeo que ya se salta con un clic o con Esc (`cutsceneEnMarcha()` en `game.js`).
+
+En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
+(5000) y de los créditos (1500); el menú de escenas a 5300 y el de pausa a 5400.
+
 ### Minijuegos disponibles
 
 | `game`    | Descripción                                                        | Parámetros principales                       |
@@ -700,9 +729,15 @@ pelea, no forma parte del equilibrio del combate.
 
 - Se guarda en localStorage como `illo_kosai` (`"1"` encendido, `"0"` apagado);
   por defecto está apagado.
-- `battle-minigame.js` lee la clave **al construir el combate**, así que
-  encenderlo o apagarlo a mitad de una pelea no afecta a la que ya está en
-  curso: entra en la siguiente.
+- `battle-minigame.js` lee la clave al construir el combate, y además **entra o
+  sale en caliente**: tocar la casilla en el menú de pausa con una pelea en
+  marcha reparte o retira el golpe a todo el equipo y repinta la lista de
+  habilidades al momento. Lo mueve `game.js` llamando a
+  `window.BattleMinigame.setKosaiEnabled(bool)`, que llega al combate activo.
+- El repintado se salta en dos situaciones, y ahí el cambio se ve al volver a la
+  lista: **eligiendo objetivo u objeto** (manda el botón de cancelar y redibujar
+  por debajo dejaría el combate a medias) y con la **lista vacía** entre turnos
+  (`clearSkills`), donde repintar la sacaría antes de tiempo.
 - La habilidad usa el tipo `execute`, que se resuelve **antes** de la tirada de
   acierto (por eso no se esquiva). Vale para cualquier objetivo, así que se
   puede reutilizar en habilidades de enemigos si algún día hace falta.
@@ -712,7 +747,8 @@ pelea, no forma parte del equilibrio del combate.
 ```js
 // battle-minigame.js
 const KOSAI = { id: "ataque_kosai", type: "execute", pmCost: 0, target: "enemy", unavoidable: true, ... };
-window.BattleMinigame.KOSAI_SETTING_KEY; // "illo_kosai" — lo usa game.js para pintar la casilla
+window.BattleMinigame.KOSAI_SETTING_KEY;      // "illo_kosai" — lo usa game.js para pintar la casilla
+window.BattleMinigame.setKosaiEnabled(true);  // reparte/retira el golpe en el combate en curso
 ```
 
 #### Configuración: volúmenes (jul 2026)

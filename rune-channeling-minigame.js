@@ -152,7 +152,15 @@
     }
 
     tick(time) {
+      // Si nos han sacado desde los botones de arriba, el overlay ya no está en
+      // el documento: parar el bucle y soltar los oyentes de teclado, que
+      // cuelgan de document y no se van con él.
       if (!this.running) return;
+      if (!this.overlay.isConnected) {
+        this.running = false;
+        this.cleanupEvents();
+        return;
+      }
       const dt = Math.min((time - this.lastTime) / 1000, 0.04);
       this.lastTime = time;
       this.update(dt);

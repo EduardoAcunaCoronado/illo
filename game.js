@@ -91,12 +91,17 @@ function desbloquearBucle(sigueHaciendoFalta) {
     if (engine.hayRetryAbierto && engine.hayRetryAbierto()) {
       engine.abortarRetry();
     }
+    // Y con un minijuego en marcha: sus botones se ven ahora también desde
+    // arriba, así que salir de uno es una salida legítima. El bucle está DENTRO
+    // de playMinigame y solo lo suelta el aborto.
+    if (engine.hayMinijuegoAbierto && engine.hayMinijuegoAbierto()) {
+      engine.abortarMinijuego();
+    }
     if (clickHandler) { clickHandler(); return; }
     document.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     if (++intentos < 120) { setTimeout(tirar, 150); return; } // hasta 18 s
-    // Se agotó: normalmente porque hay un minijuego en marcha y el bucle está
-    // dentro de él. Se DESCARTA la petición; si se dejara puesta, saltaría sola
-    // al terminar el minijuego, en mitad de otra cosa, borrando el escenario.
+    // Se agotó. Se DESCARTA la petición; si se dejara puesta, saltaría sola más
+    // tarde, en mitad de otra cosa, borrando el escenario.
     sceneJumpRequested = null;
     rewindRequested = false;
     exitToMenuRequested = false;
@@ -104,24 +109,21 @@ function desbloquearBucle(sigueHaciendoFalta) {
   tirar();
 }
 
-// Un minijuego EN MARCHA sí tapa los botones. La pantalla de "¿reintentar?" no:
-// si no, quien llega ahí desde el menú de escenas se queda encerrado, porque la
-// única salida sería ganar el minijuego.
-// OJO: no todos los minijuegos usan `.minigame-overlay`. El combate monta
-// `.battle-minigame` y los créditos `.credits-minigame`, así que si solo se
-// mira la primera clase los botones se quedan visibles durante un COMBATE y
-// pulsarlos pide un salto que el bucle no puede atender.
-function minijuegoEnMarcha() {
-  return [...document.querySelectorAll(
-    ".minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame"
-  )].some((o) => !o.classList.contains("minigame-retry"));
+// Los botones de arriba se ven también durante los minijuegos: atascarse en uno
+// era la única forma de quedarse encerrado sin salida que no fuera ganarlo. Al
+// pulsarlos, el motor aborta el minijuego (engine.abortarMinijuego).
+//
+// La excepción es la CUTSCENE: es un vídeo que ya se salta con un clic o con
+// Esc, y unos controles encima solo estorbarían.
+function cutsceneEnMarcha() {
+  return !!document.querySelector(".cutscene-overlay");
 }
 
 function updateRewindButton() {
   if (!rewindBtn) return;
   const hayElecciones = !!document.querySelector("#choices-container.active");
   const visible =
-    isGameRunning && engine.canRewind() && !minijuegoEnMarcha() && !hayElecciones;
+    isGameRunning && engine.canRewind() && !cutsceneEnMarcha() && !hayElecciones;
   rewindBtn.classList.toggle("hidden", !visible);
 }
 
@@ -143,11 +145,11 @@ function stopRewindWatcher() {
   cerrarMenuEscenas();
 }
 
-// El botón de opciones sigue la misma regla que los otros dos: se esconde
-// mientras hay un minijuego o una cutscene en marcha (ahí Esc es del minijuego).
+// El botón de opciones sigue la misma regla que los otros dos: solo se esconde
+// durante una cutscene, donde Esc es del vídeo.
 function updateOptionsButton() {
   if (!optionsBtn) return;
-  const visible = isGameRunning && !minijuegoEnMarcha();
+  const visible = isGameRunning && !cutsceneEnMarcha();
   optionsBtn.classList.toggle("hidden", !visible);
   if (!visible) cerrarMenuPausa();
 }
@@ -164,10 +166,11 @@ const scenesChapter = document.getElementById("scenes-chapter");
 // El menú de escenas SÍ se ofrece durante una elección: es navegación, y si no
 // el jugador se queda encerrado en la pantalla de elección sin poder ir a otra
 // escena (el bucle está esperando respuesta). Al saltar se aborta la elección.
-// Durante un minijuego sí se oculta: ahí el bucle está dentro del minijuego.
+// Y lo mismo durante un minijuego, por el mismo motivo: el bucle está dentro
+// del minijuego y saltar de escena lo aborta.
 function updateScenesButton() {
   if (!scenesBtn) return;
-  const visible = isGameRunning && engine.sceneList().length > 1 && !minijuegoEnMarcha();
+  const visible = isGameRunning && engine.sceneList().length > 1 && !cutsceneEnMarcha();
   scenesBtn.classList.toggle("hidden", !visible);
   if (!visible) cerrarMenuEscenas();
 }
@@ -370,11 +373,12 @@ function wireSettings(panel) {
   wire(".opt-vol-music", "illo_vol_music");
   wire(".opt-vol-sfx", "illo_vol_sfx");
 
-  // El combate lee esta clave al construirse, así que el cambio entra en el
-  // siguiente combate, no en uno que ya esté en marcha.
+  // Se puede tocar en mitad de un combate (menú de pausa): el golpe aparece o
+  // desaparece de la lista de habilidades al momento, sin esperar al siguiente.
   const kosai = panel.querySelector(".opt-kosai");
   kosai.addEventListener("change", () => {
     saveSetting(KOSAI_SETTING_KEY, kosai.checked ? "1" : "0");
+    window.BattleMinigame?.setKosaiEnabled?.(kosai.checked);
   });
 
   // Modo de ventana: lo aplica el proceso principal al recibir el ajuste. Y al
@@ -446,7 +450,7 @@ function cerrarMenuPausa() {
 }
 
 function abrirMenuPausa() {
-  if (menuPausaAbierto() || !isGameRunning || minijuegoEnMarcha()) return;
+  if (menuPausaAbierto() || !isGameRunning || cutsceneEnMarcha()) return;
 
   const overlay = document.createElement("div");
   overlay.id = "pause-menu";
@@ -489,8 +493,8 @@ function salirAlMenuPrincipal() {
 
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
-  // Durante una cutscene o un minijuego, Esc es suyo (salta el vídeo, etc.)
-  if (!isGameRunning || minijuegoEnMarcha()) return;
+  // Durante una cutscene, Esc es suyo: salta el vídeo.
+  if (!isGameRunning || cutsceneEnMarcha()) return;
   e.preventDefault();
   if (menuPausaAbierto()) cerrarMenuPausa();
   else abrirMenuPausa();

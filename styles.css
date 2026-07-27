@@ -2702,7 +2702,8 @@ html.electron-app #menu-theme-btn { display: none; }
 .pause-menu {
     position: absolute;
     inset: 0;
-    z-index: 720;
+    /* Sobre tos lo demás: botones de arriba (5200) y minijuegos (combate 5000) */
+    z-index: 5400;
     background: rgba(4, 4, 16, 0.55);
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
@@ -3034,7 +3035,9 @@ html.electron-app #menu-theme-btn { display: none; }
     position: absolute;
     top: 14px;
     right: 16px;
-    z-index: 60;
+    /* Por encima de los minijuegos (overlay 600, créditos 1500, combate 5000):
+       los botones de arriba se ven también durante ellos. */
+    z-index: 5200;
     display: flex;
     align-items: center;
     gap: 7px;
@@ -3074,7 +3077,7 @@ html.electron-app #menu-theme-btn { display: none; }
     position: absolute;
     top: 14px;
     right: 148px; /* a la izquierda del de retroceder */
-    z-index: 60;
+    z-index: 5200; /* ver .rewind-btn */
     display: flex;
     align-items: center;
     gap: 7px;
@@ -3108,7 +3111,7 @@ html.electron-app #menu-theme-btn { display: none; }
     position: absolute;
     top: 14px;
     left: 16px;
-    z-index: 60;
+    z-index: 5200; /* ver .rewind-btn */
     display: flex;
     align-items: center;
     gap: 7px;
@@ -3138,7 +3141,7 @@ html.electron-app #menu-theme-btn { display: none; }
 .scenes-menu {
     position: absolute;
     inset: 0;
-    z-index: 120; /* por encima de la caja de diálogo (100) */
+    z-index: 5300; /* sobre los botones de arriba (5200) y el combate (5000) */
     display: flex;
     align-items: center;
     justify-content: center;
