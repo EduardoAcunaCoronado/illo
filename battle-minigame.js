@@ -27,7 +27,7 @@
 
   // Extra opcional que se enciende desde Configuración (menú principal). No
   // entra en el equilibrio normal del combate: es un atajo para saltarse una
-  // pelea, así que se reparte a todo el equipo y no cuesta PM.
+  // pelea, así que se reparte a to el equipo y no cuesta PM.
   const KOSAI_SETTING_KEY = "illo_kosai";
   const KOSAI = {
     id: "ataque_kosai",

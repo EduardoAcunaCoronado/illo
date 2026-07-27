@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css?v=20260727-6">
+    <link rel="stylesheet" href="styles.css?v=20260727-7">
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
 </head>
 <body>
@@ -42,6 +42,12 @@
             </div>
             <div class="dialog-continue p5-continue">▼</div>
         </div>
+
+        <!-- Opciones durante la partida: abre el mismo menú que la tecla Esc.
+             Va arriba a la IZQUIERDA; los de retroceder y escenas van a la derecha. -->
+        <button id="options-btn" class="options-btn hidden" title="Opciones (Esc)">
+            <span class="options-icon">&#9881;</span><span class="options-label">Opciones</span>
+        </button>
 
         <!-- Retroceder a la escena anterior (pedido en la demo del 25-jul-2026).
              Se muestra solo cuando hay escena a la que volver; game.js lo gestiona. -->
@@ -122,7 +128,7 @@
     <script src="rune-channeling-minigame.js?v=20260724-6"></script>
     <script src="juice.js?v=20260722-1"></script>
     <script src="engine.js?v=20260725-21"></script>
-    <script src="game.js?v=20260727-2"></script>
+    <script src="game.js?v=20260727-3"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->

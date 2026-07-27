@@ -2597,6 +2597,35 @@ input, textarea {
 .nm-setting-row input[type="range"] { flex: 1; accent-color: #ffd166; cursor: pointer; }
 .nm-setting-val { color: #ffd166; min-width: 44px; text-align: right; }
 
+/* ===== Menú de pausa (Esc / botón de opciones) =====
+   Lleva scrim a pantalla completa, no solo la caja: durante la partida
+   cualquier clic suelto avanza el diálogo, así que el fondo tiene que
+   tragárselos (game.js además corta la propagación). */
+.pause-menu {
+    position: absolute;
+    inset: 0;
+    z-index: 720;
+    background: rgba(4, 4, 16, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+.pause-buttons {
+    flex-wrap: wrap;
+}
+
+/* La salida de la partida, en rojo, para que no se confunda con "Continuar" */
+.pause-exit {
+    color: rgba(255, 135, 145, 0.9) !important;
+    background: rgba(255, 91, 103, 0.1) !important;
+    border-color: rgba(255, 91, 103, 0.55) !important;
+}
+.pause-exit:hover {
+    background: rgba(255, 91, 103, 0.85) !important;
+    color: #1a1030 !important;
+    box-shadow: 0 0 22px rgba(255, 91, 103, 0.5) !important;
+}
+
 /* Ajustes de sí/no (p. ej. Ataque Kosai): casilla a la derecha y una línea
    pequeña debajo explicando qué hace. */
 .nm-setting-toggle { display: flex; flex-direction: column; }
@@ -2973,6 +3002,40 @@ input, textarea {
 .scenes-btn:active { transform: translateY(1px); }
 .scenes-btn.hidden { display: none; }
 .scenes-icon { font-size: 15px; line-height: 1; }
+
+/* ===== Opciones durante la partida (mismo menú que Esc) =====
+   Mismo lenguaje que los botones de retroceder y escenas, pero en la esquina
+   contraria: aquellos van a la derecha y este a la izquierda. */
+.options-btn {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+    border: 2px solid rgba(255, 209, 102, 0.55);
+    border-radius: 999px;
+    background: rgba(12, 6, 26, 0.62);
+    color: #ffeec2;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    opacity: 0.42;
+    backdrop-filter: blur(3px);
+    transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.options-btn:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 0 16px rgba(255, 209, 102, 0.55);
+}
+.options-btn:active { transform: translateY(1px); }
+.options-btn.hidden { display: none; }
+.options-icon { font-size: 15px; line-height: 1; }
 
 .scenes-menu {
     position: absolute;

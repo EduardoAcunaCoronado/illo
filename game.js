@@ -92,6 +92,7 @@ function desbloquearBucle(sigueHaciendoFalta) {
     // al terminar el minijuego, en mitad de otra cosa, borrando el escenario.
     sceneJumpRequested = null;
     rewindRequested = false;
+    exitToMenuRequested = false;
   };
   tirar();
 }
@@ -122,6 +123,7 @@ function startRewindWatcher() {
   rewindWatcher = setInterval(() => {
     updateRewindButton();
     updateScenesButton();
+    updateOptionsButton();
   }, 200);
 }
 
@@ -130,7 +132,17 @@ function stopRewindWatcher() {
   rewindWatcher = null;
   rewindBtn?.classList.add("hidden");
   scenesBtn?.classList.add("hidden");
+  optionsBtn?.classList.add("hidden");
   cerrarMenuEscenas();
+}
+
+// El botón de opciones sigue la misma regla que los otros dos: se esconde
+// mientras hay un minijuego o una cutscene en marcha (ahí Esc es del minijuego).
+function updateOptionsButton() {
+  if (!optionsBtn) return;
+  const visible = isGameRunning && !minijuegoEnMarcha();
+  optionsBtn.classList.toggle("hidden", !visible);
+  if (!visible) cerrarMenuPausa();
 }
 
 // ===== Menú de escenas =====
@@ -220,43 +232,39 @@ scenesMenu?.addEventListener("click", (e) => {
 // el combate; aquí solo se pinta la casilla.
 const KOSAI_SETTING_KEY = window.BattleMinigame?.KOSAI_SETTING_KEY || "illo_kosai";
 
-function showSettingsPanel() {
-  if (document.getElementById("settings-panel")) return; // ya abierto
+// Los mismos ajustes salen en dos sitios: en Configuración (menú principal) y
+// en el menú de pausa (Esc durante la partida). Se generan y se conectan aquí
+// una sola vez para que no se dupliquen ni se desincronicen.
+function settingsMarkup() {
   const volOf = (k, def) => {
     const v = parseFloat(localStorage.getItem(k));
     return isNaN(v) ? def : Math.round(v * 100);
   };
   const kosaiOn = localStorage.getItem(KOSAI_SETTING_KEY) === "1";
-  const panel = document.createElement("div");
-  panel.className = "nm-modal";
-  panel.id = "settings-panel";
-  panel.innerHTML = `
-        <h2 class="nm-modal-title">Configuración</h2>
+  return `
         <div class="nm-settings">
             <label class="nm-setting-row">🎵 Música
-                <input type="range" id="vol-music" min="0" max="100" value="${volOf("illo_vol_music", 100)}">
-                <span class="nm-setting-val" id="vol-music-val"></span>
+                <input type="range" class="opt-vol-music" min="0" max="100" value="${volOf("illo_vol_music", 100)}">
+                <span class="nm-setting-val"></span>
             </label>
             <label class="nm-setting-row">🔊 Efectos
-                <input type="range" id="vol-sfx" min="0" max="100" value="${volOf("illo_vol_sfx", 100)}">
-                <span class="nm-setting-val" id="vol-sfx-val"></span>
+                <input type="range" class="opt-vol-sfx" min="0" max="100" value="${volOf("illo_vol_sfx", 100)}">
+                <span class="nm-setting-val"></span>
             </label>
             <div class="nm-setting-toggle">
                 <label class="nm-setting-row">⚔️ Ataque Kosai
-                    <input type="checkbox" id="opt-kosai" ${kosaiOn ? "checked" : ""}>
+                    <input type="checkbox" class="opt-kosai" ${kosaiOn ? "checked" : ""}>
                 </label>
                 <p class="nm-setting-hint">Añade a todo el equipo un golpe que deja al objetivo a 0 PV en los combates por turnos.</p>
             </div>
         </div>
-        <div class="nm-modal-buttons">
-            <button id="settings-close">Volver</button>
-        </div>
-    `;
-  document.getElementById("game-container").appendChild(panel);
+  `;
+}
 
-  const wire = (sliderId, storeKey) => {
-    const slider = panel.querySelector("#" + sliderId);
-    const label = panel.querySelector("#" + sliderId + "-val");
+function wireSettings(panel) {
+  const wire = (selector, storeKey) => {
+    const slider = panel.querySelector(selector);
+    const label = slider.parentElement.querySelector(".nm-setting-val");
     const paint = () => { label.textContent = slider.value + "%"; };
     paint();
     slider.addEventListener("input", () => {
@@ -265,18 +273,105 @@ function showSettingsPanel() {
       engine.applyVolumeSettings();
     });
   };
-  wire("vol-music", "illo_vol_music");
-  wire("vol-sfx", "illo_vol_sfx");
+  wire(".opt-vol-music", "illo_vol_music");
+  wire(".opt-vol-sfx", "illo_vol_sfx");
 
   // El combate lee esta clave al construirse, así que el cambio entra en el
   // siguiente combate, no en uno que ya esté en marcha.
-  const kosai = panel.querySelector("#opt-kosai");
+  const kosai = panel.querySelector(".opt-kosai");
   kosai.addEventListener("change", () => {
     localStorage.setItem(KOSAI_SETTING_KEY, kosai.checked ? "1" : "0");
   });
+}
 
+function showSettingsPanel() {
+  if (document.getElementById("settings-panel")) return; // ya abierto
+  const panel = document.createElement("div");
+  panel.className = "nm-modal";
+  panel.id = "settings-panel";
+  panel.innerHTML = `
+        <h2 class="nm-modal-title">Configuración</h2>
+        ${settingsMarkup()}
+        <div class="nm-modal-buttons">
+            <button id="settings-close">Volver</button>
+        </div>
+    `;
+  document.getElementById("game-container").appendChild(panel);
+  wireSettings(panel);
   panel.querySelector("#settings-close").addEventListener("click", () => panel.remove());
 }
+
+// ===== Menú de pausa (Esc o el botón de arriba a la izquierda) =====
+// Lleva los mismos ajustes que Configuración más la salida al menú principal.
+let exitToMenuRequested = false;
+const optionsBtn = document.getElementById("options-btn");
+
+function menuPausaAbierto() {
+  return !!document.getElementById("pause-menu");
+}
+
+function cerrarMenuPausa() {
+  document.getElementById("pause-menu")?.remove();
+}
+
+function abrirMenuPausa() {
+  if (menuPausaAbierto() || !isGameRunning || minijuegoEnMarcha()) return;
+
+  const overlay = document.createElement("div");
+  overlay.id = "pause-menu";
+  overlay.className = "pause-menu";
+  overlay.innerHTML = `
+        <div class="nm-modal pause-panel">
+            <h2 class="nm-modal-title">Opciones</h2>
+            ${settingsMarkup()}
+            <div class="nm-modal-buttons pause-buttons">
+                <button id="pause-resume">Continuar</button>
+                <button id="pause-exit" class="pause-exit">Menú principal</button>
+            </div>
+        </div>
+    `;
+  document.getElementById("game-container").appendChild(overlay);
+  wireSettings(overlay);
+
+  // El juego avanza el diálogo con cualquier clic en document: sin esto, tocar
+  // un deslizador o el propio panel pasaría de línea por detrás.
+  overlay.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (e.target === overlay) cerrarMenuPausa(); // clic fuera del panel = cerrar
+  });
+
+  overlay.querySelector("#pause-resume").addEventListener("click", cerrarMenuPausa);
+  overlay.querySelector("#pause-exit").addEventListener("click", () => {
+    cerrarMenuPausa();
+    salirAlMenuPrincipal();
+  });
+}
+
+// El bucle de juego casi siempre está parado dentro de waitForClick(), así que
+// no basta con bajar la bandera: hay que despertarlo igual que hacen los
+// botones de retroceder y de escenas. playGame() atiende la petición y sale.
+function salirAlMenuPrincipal() {
+  if (!isGameRunning) return;
+  exitToMenuRequested = true;
+  desbloquearBucle(() => exitToMenuRequested);
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  // Durante una cutscene o un minijuego, Esc es suyo (salta el vídeo, etc.)
+  if (!isGameRunning || minijuegoEnMarcha()) return;
+  e.preventDefault();
+  if (menuPausaAbierto()) cerrarMenuPausa();
+  else abrirMenuPausa();
+});
+
+optionsBtn?.addEventListener("click", (e) => {
+  // Que el clic no llegue a document: contaría como "avanzar diálogo"
+  e.preventDefault();
+  e.stopPropagation();
+  if (menuPausaAbierto()) cerrarMenuPausa();
+  else abrirMenuPausa();
+});
 
 // ===== Menú principal: vídeo de fondo + tema "Más de lo que ven tus ojos" =====
 // El vídeo arranca en bucle y silenciado (autoplay). Al primer clic/tecla se
@@ -498,6 +593,13 @@ async function playChapter(chapterIdentifier) {
 async function playGame() {
   startRewindWatcher();
   while (isGameRunning) {
+    // Salida al menú principal desde el menú de pausa
+    if (exitToMenuRequested) {
+      exitToMenuRequested = false;
+      volverAlMenuPrincipal();
+      break;
+    }
+
     // Petición de retroceso: rebobinar y volver a reproducir la escena anterior
     // desde su primera línea (sus acciones repintan fondo, personajes y música).
     if (rewindRequested) {
@@ -551,6 +653,22 @@ function waitForClick() {
     clickHandler = handler;
     document.addEventListener("click", handler);
   });
+}
+
+// Abandona la partida en curso y deja el menú principal como al arrancar.
+// No pasa por endGame(): ahí hay pantalla de fin de capítulo y encadenado con
+// el siguiente, y esto es una salida seca a mitad de capítulo.
+function volverAlMenuPrincipal() {
+  isGameRunning = false;
+  rewindRequested = false;
+  sceneJumpRequested = null;
+  exitToMenuRequested = false;
+  stopRewindWatcher();
+  cerrarMenuPausa();
+  engine.hideDialog();
+  engine.reset(); // también para la música y limpia fondo y personajes
+  mainMenu.classList.remove("hidden");
+  showMenuMedia();
 }
 
 async function endGame() {
