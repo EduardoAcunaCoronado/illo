@@ -4,17 +4,11 @@ Bienvenido. Este es un motor completo de visual novel con documentación única 
 
 ## 🚀 En 30 Segundos
 
-Como app de escritorio (Electron):
-
 1. **Abre un terminal** en esta carpeta
-2. **Ejecuta:** `npm install` y luego `npm start`
-3. **Haz clic:** "Comenzar"
-
-En el navegador:
-
-1. **Ejecuta:** `python -m http.server 8000`
-2. **Abre:** http://localhost:8000
-3. **Haz clic:** "Comenzar"
+2. **Ejecuta:** `python -m http.server 8000`
+3. **Abre:** http://localhost:8000
+4. **Haz clic:** "Comenzar"
+5. **Disfruta:** Los 3 capítulos de ejemplo
 
 ## 📚 Documentación
 
@@ -37,7 +31,6 @@ proyecto/
 ├── engine.js               ← Motor (NO TOQUES)
 ├── game.js                 ← Carga los capítulos
 ├── styles.css              ← Estilos
-├── electron/               ← App de escritorio (main.js + servidor interno)
 ├── characters/             ← Define personajes aquí
 ├── chapters/               ← Crea historias aquí
 └── assets/                 ← Imágenes y sonidos
