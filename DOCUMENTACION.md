@@ -21,12 +21,23 @@ Un motor de visual novel moderno basado en HTML5, CSS y JavaScript que permite c
 13. [Funciones Avanzadas](#funciones-avanzadas)
 14. [Sistema de Reseteo](#sistema-de-reseteo)
 15. [Workflow de Pull Requests](#workflow-de-pull-requests)
+16. [App de Escritorio (Electron)](#app-de-escritorio-electron)
+17. [Publicar en itch.io](#publicar-en-itchio)
 
 ---
 
 ## 🚀 Inicio Rápido
 
 ### Paso 1: Abre el Proyecto
+
+Como app de escritorio (recomendado):
+
+```bash
+npm install
+npm start
+```
+
+O en el navegador, con un servidor local:
 
 ```bash
 # Windows
