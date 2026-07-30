@@ -1300,7 +1300,7 @@ Solo hay dos posiciones válidas:
 // Personaje a la izquierda
 {
   "type": "showCharacter",
-  "character": "2b",
+  "character": "3c",
   "position": "left",
   "pose": "neutral"
 }
@@ -1308,7 +1308,7 @@ Solo hay dos posiciones válidas:
 // Personaje a la derecha
 {
   "type": "showCharacter",
-  "character": "pod",
+  "character": "epod",
   "position": "right",
   "pose": "neutral"
 }
@@ -1320,19 +1320,19 @@ Solo hay dos posiciones válidas:
 // Dos personajes (lado a lado, altura completa)
 {
   "type": "showCharacter",
-  "character": "2b",
+  "character": "3c",
   "position": "left"
 },
 {
   "type": "showCharacter",
-  "character": "pod",
+  "character": "epod",
   "position": "right"
 }
 
 // Un personaje
 {
   "type": "showCharacter",
-  "character": "emil",
+  "character": "nexo",
   "position": "left"  // o "right"
 }
 ```
@@ -1458,7 +1458,7 @@ Se cargan todos los personajes disponibles al inicio:
 
 ```javascript
 // En game.js - startNewGame()
-const characters = ["luna", "alex", "2b", "pod", "emil"];
+const characters = ["luna", "alex", "3c", "epod", "nexo"];
 for (const character of characters) {
   await engine.loadCharacter(character);
 }
@@ -2169,7 +2169,7 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 **chapter0.json - Prólogo:**
 
 - Introducción a Furrielva
-- Presentación de 2B como narrador
+- Presentación de 3C como narrador
 
 **chapter1.json - Capítulo 1: Decisiones:**
 

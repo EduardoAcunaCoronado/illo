@@ -2,7 +2,7 @@
   "title": "Prólogo: Re:ferenciaS",
   "scenes": [
     {
-      "title": "Escena 1: El NieR",
+      "title": "Escena 1: La Operativa",
       "lines": [
         {
           "actions": [
@@ -12,67 +12,67 @@
             },
             {
               "type": "showCharacter",
-              "character": "2b",
+              "character": "3c",
               "position": "left",
               "pose": "neutral"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/devolapopola.mp3",
+              "path": "assets/sounds/music/prologue_futurista.wav",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
               "fadeIn": 1000
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "¡Hola, buenas tardes!"
         },
         {
           "actions": [
             {
               "type": "showCharacter",
-              "character": "pod",
+              "character": "epod",
               "position": "right",
               "pose": "happy"
             }
           ],
-          "character": "Pod",
+          "character": "ePod",
           "text": "¡HOLA!"
         },
         {
           "actions": [
             {
               "type": "showCharacter",
-              "character": "2b",
+              "character": "3c",
               "position": "left",
               "pose": "happy"
             },
             {
               "type": "removeCharacter",
-              "character": "pod"
+              "character": "epod"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Prrrr"
         },
         {
           "actions": [
             {
               "type": "showCharacter",
-              "character": "2b",
+              "character": "3c",
               "position": "left",
               "pose": "neutral"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "En el capítulo de hoy vamos a contar cómo se puede torcer un cumpleaños cuando menos te lo esperas..."
         },
         {
           "actions": [
             {
               "type": "showCharacter",
-              "character": "emil",
+              "character": "nexo",
               "position": "right",
               "pose": "neutral"
             },
@@ -82,27 +82,27 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/emil.mp3",
+              "path": "assets/sounds/music/nexo_infantil.wav",
               "volume": 1.0,
               "loop": true,
-              "id": "emil",
+              "id": "nexo",
               "fadeIn": 1000
             }
           ],
-          "character": "Emil",
-          "text": "Luvhaaaaaaaaaaaa dumeeeeeeeeee"
+          "character": "Nexo",
+          "text": "¡Bip-bip! ¡Hora de explorar con mamá 3C y papá ePod!"
         },
         {
           "actions": [
             {
               "type": "showCharacter",
-              "character": "2b",
+              "character": "3c",
               "position": "left",
               "pose": "neutral"
             },
             {
               "type": "stopSound",
-              "id": "emil",
+              "id": "nexo",
               "fadeOut": 1000
             },
             {
@@ -111,7 +111,7 @@
             },
             {
               "type": "removeCharacter",
-              "character": "emil"
+              "character": "nexo"
             },
             {
               "type": "playSound",
@@ -119,19 +119,19 @@
               "volume": 1.0
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "¡Shh, calla, niño! Que esta no es tu historia."
         },
         {
           "actions": [
             {
               "type": "showCharacter",
-              "character": "2b",
+              "character": "3c",
               "position": "left",
               "pose": "neutral"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Esta es la historia de Samu, un chico que se despertó un día y no volvió a ser el mismo..."
         },
         {

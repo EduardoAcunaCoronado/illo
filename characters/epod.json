@@ -1,0 +1,12 @@
+{
+  "name": "ePod",
+  "color": "#188d91",
+  "poses": {
+    "neutral": "assets/characters/others/epod.png",
+    "happy": "assets/characters/others/epod.png",
+    "sad": "assets/characters/others/epod.png",
+    "angry": "assets/characters/others/epod.png",
+    "surprised": "assets/characters/others/epod.png"
+  },
+  "defaultPose": "neutral"
+}

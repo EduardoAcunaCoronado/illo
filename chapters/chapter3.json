@@ -30,7 +30,7 @@
               "duration": 1200
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Carretera de salida de Furrielva. En el móvil de Edu sigue abierto el mismo correo: «CONCIERTO EXCLUSIVO — Seraphyna en Ecchi Land. Una noche que no olvidarás»."
         },
         {
@@ -78,7 +78,7 @@
               "pose": "worried"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El móvil de Edu vuelve a vibrar. El mismo correo, por CUARTA vez, ahora con corazones. A los correos normales no les salen corazones solos."
         },
         {
@@ -95,7 +95,7 @@
               "duration": 420
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Un chirrido de neumáticos dobla la esquina."
         },
         {
@@ -132,7 +132,7 @@
               "enter": "right"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Un frenazo. Un cacharro con ruedas —viejo, tuneado con neones cutres y un altavoz atado al techo— para junto a la acera. Al volante, una rata anciana y accidentada con mono de tramoyista."
         },
         {
@@ -234,7 +234,7 @@
               "duration": 900
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El coche traquetea por la carretera nocturna. Al fondo, un resplandor de neón crece en el horizonte: Ecchi Land."
         },
         {
@@ -260,7 +260,7 @@
               "pose": "thinking"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Santi enciende la radio. Una voz femenina, dulce como el almíbar, canta un estribillo pegadizo. Samu se descubre tarareándolo sin saber de qué le suena."
         },
         {
@@ -323,7 +323,7 @@
               "loop": false
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Un zumbido grave crece a lo lejos. Como un enjambre. Un enjambre con mal genio."
         },
         {
@@ -349,7 +349,7 @@
           "text": "...Uy. Uy uy uy. Agarraos a algo. Eso de ahí atrás en los retrovisores no es tráfico normal."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Por el espejo, un enjambre de memes de internet hechos carne y corrupción se acerca a toda velocidad montados en motos con escapes de neón. Vienen a por el coche."
         },
         {
@@ -411,7 +411,7 @@
           "textSpeed": "fast"
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Cuanto más habéis tardado hasta aquí, más rápidos y más motos vienen. ¡A esquivar!"
         },
         {
@@ -641,11 +641,11 @@
               "duration": 1000
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Ecchi Land. Una ciudad de neón plantada a las afueras de Furrielva, latiendo al ritmo de un único corazón musical. Y en el centro, un edificio inmenso —la arena del concierto— del que brota luz, purpurina y la cara de una loba de plata en cada pantalla."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Damas, caballeros y demás fauna: bienvenidos a ECCHI LAND. Población: enamorada. Tema del día: ella. Temas restantes: también ella."
         },
         {
@@ -721,7 +721,7 @@
               "fadeIn": 700
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "La entrada es un muro de fans apretados, glowsticks en alto, corazones de neón flotando. Samu y Edu se abren paso a codazos."
         },
         {
@@ -743,7 +743,7 @@
               "duration": 700
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Y entonces la luz desaparece. No porque la hayan apagado: porque hay ALGUIEN delante de toda ella."
         },
         {
@@ -963,7 +963,7 @@
               "duration": 600
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "En la pantalla: tres humanos apretujados en un sofá, gritándole a un kart. Huele a naranjada y a viernes eterno hasta desde aquí."
         },
         {
@@ -1271,7 +1271,7 @@
               "loop": false
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El gorila los agarra del pescuezo y los planta en la acera. La puerta se cierra. Dentro, el concierto empieza sin ellos... y sin nadie que le abra los ojos a Seraphyna."
         },
         {
@@ -1294,7 +1294,7 @@
               "duration": 1200
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Esa noche, la voz de Seraphyna se apagó para siempre bajo el hechizo, y la multitud se la tragó. Nunca supo que dos amigos vinieron a buscarla. FINAL MALO: «La diva que se quedó sola».",
           "textSpeed": "slow"
         },
@@ -1306,7 +1306,7 @@
               "duration": 600
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "...Quizás con otro tono con el segurata las cosas habrían ido distinto.",
           "choices": [
             {
@@ -1367,7 +1367,7 @@
               "fadeOut": 300
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El pasillo del backstage huele a laca, a flores nuevas y a secreto."
         },
         {
@@ -1401,7 +1401,7 @@
               "duration": 900
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El camerino. Espejo de bombillas, ramos holográficos, un sofá que vale más que un piso. Y de espaldas, retocándose, una silueta de plata."
         },
         {
@@ -1439,7 +1439,7 @@
               "fadeIn": 0
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Y entonces se gira. La diva de plata. Melena gris, ojos de ámbar, esa media sonrisa de quien sabe exactamente el efecto que causa."
         },
         {
@@ -1560,7 +1560,7 @@
               "duration": 420
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Un ruido corta la frase. Gruñidos. Golpes secos. Chillidos que no son de euforia. Vienen de la zona del público, delante del escenario.",
           "textSpeed": "slow"
         },
@@ -1604,7 +1604,7 @@
               "duration": 400
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Se asoman entre las cortinas. Ojalá no lo hubieran hecho.",
           "textSpeed": "slow"
         },
@@ -1645,7 +1645,7 @@
               "duration": 900
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El mar de fans hierve. Unos se retuercen mientras el glitch les come la cara; otros ya solo enseñan los dientes. Y los corazones de neón siguen flotando encima de todo, como si nadie les hubiera dicho nada."
         },
         {
@@ -1757,7 +1757,7 @@
               "duration": 300
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Algo cruje encima del escenario. Polvo de purpurina cae en espiral, casi bonito."
         },
         {
@@ -1798,7 +1798,7 @@
               "ms": 900
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El foco revienta contra la mesa de mezclas. Chispas. Humo. Cables como látigos. Y debajo de todo eso, rodando por el suelo... Santi."
         },
         {
@@ -1853,7 +1853,7 @@
       "title": "Escena 10: Afinar el equipo",
       "lines": [
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Samu se planta ante el equipo de sonido. Afinarlo es seguir el ritmo sin fallar una nota. Cuanto más habéis tardado en el camino, más difícil será.",
           "actions": [
             {
@@ -2043,7 +2043,7 @@
               "enter": "bottom"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Edu despliega las alas y se lanza al vacío del escenario. Las hojas de partitura flotan por todas partes; entre ellas, focos que caen y cables eléctricos colgando."
         },
         {
@@ -2066,7 +2066,7 @@
               "volume": 0.25
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Dos pisos más arriba, un dragón azul respira hondo delante del vacío. Abajo, la turba corea algo que ya no es su nombre.",
           "textSpeed": "slow"
         },
@@ -2258,7 +2258,7 @@
               "volume": 0.35
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "BOOM. BOOM. La puerta de servicio del backstage se comba con cada golpe. Al otro lado ya no corean: EMBISTEN."
         },
         {
@@ -2315,7 +2315,7 @@
               "pose": "surprised"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El gorila de la puerta. La chaqueta hecha jirones, el pinganillo colgando, y una valla de obra en cada mano como si fueran raquetas."
         },
         {
@@ -2360,7 +2360,7 @@
               "exit": "fade"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "La puerta salta de los goznes.",
           "textSpeed": "fast"
         },
@@ -2568,7 +2568,7 @@
               "volume": 0.4
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "La última oleada no busca el escenario. Los busca a ELLOS. Y el gorila lo ve venir antes que nadie.",
           "textSpeed": "slow"
         },
@@ -2623,7 +2623,7 @@
               "duration": 900
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Un empujón. Dos cuerpos volando hacia las tablas. Y donde estaban Samu y Edu, la marea entera cae sobre un solo portero que no retrocede.",
           "textSpeed": "slow"
         },
@@ -2642,7 +2642,7 @@
               "ms": 800
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Lo último que se oye de él es una risa. Y después... la primera nota.",
           "textSpeed": "slow"
         },
@@ -2709,7 +2709,7 @@
               "duration": 550
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Samu afina la última perilla. Edu deja las partituras en el atril. Las luces se apagan de golpe. Un único foco desciende sobre el centro del escenario. Y entonces... empieza.",
           "textSpeed": "slow"
         },
@@ -2769,7 +2769,7 @@
               "duration": 1500
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Y entonces la voz hace lo que las vallas, los porteros y el miedo no pudieron: los DEVUELVE. Uno a uno, el glitch se apaga como quien despierta de una pesadilla.",
           "textSpeed": "slow"
         },
@@ -2783,7 +2783,7 @@
               "enter": "fade"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Delante del escenario ya no hay monstruos. Hay gente llorando de alegría sin saber por qué. Y encima del escenario, una loba de plata que canta como si le fuera la vida en ello... porque le va.",
           "textSpeed": "slow"
         },
@@ -2832,7 +2832,7 @@
               "fadeMs": 900
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Entre los fans que despiertan sin recordar nada, hay un traje negro que no se levanta.",
           "textSpeed": "slow"
         },
@@ -2871,7 +2871,7 @@
               "on": false
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Las gafas rotas se le resbalan de la cara. El gorila de la puerta sonríe a un techo lleno de focos... y ya no vuelve a moverse.",
           "textSpeed": "slow"
         },
@@ -3005,7 +3005,7 @@
               "duration": 1500
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El público, sereno por la voz de Seraphyna, se dispersa poco a poco. Por primera vez en mucho tiempo, Ecchi Land respira en calma. En el camerino, la diva mira a sus dos amigos."
         },
         {
@@ -3073,7 +3073,7 @@
               "ms": 400
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Se le doblan las rodillas. La diva de plata cae al suelo, la melena tapándole la cara, temblando entre lágrimas. Ya no queda escenario. Solo Tony.",
           "textSpeed": "slow"
         },
@@ -3133,7 +3133,7 @@
               "duration": 900
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Samu se arrodilla y la abraza. Un segundo después, Edu se lanza también, envolviéndolos a los dos. Los tres, unidos en el suelo del camerino, entre lágrimas.",
           "textSpeed": "slow"
         },
@@ -3292,7 +3292,7 @@
               "duration": 1200
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Los tres abandonan Ecchi Land bajo un amanecer recién estrenado. La ciudad de neón bosteza, y por primera vez en mucho tiempo, nadie corea ningún nombre."
         },
         {
@@ -3320,7 +3320,7 @@
               "pose": "despedida"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Santi se despide con la pata sana desde la puerta, y jura que el año que viene pide vacaciones."
         },
         {
@@ -3345,7 +3345,7 @@
               "ms": 300
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "En la puerta de la arena, alguien ha dejado unas gafas de sol rotas sobre una montaña de glowsticks. Debajo, una nota: «GRACIAS, GOYO». Nadie las toca. Nadie las tocará.",
           "textSpeed": "slow"
         },

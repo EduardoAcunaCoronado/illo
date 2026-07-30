@@ -3539,7 +3539,7 @@ class VisualNovelEngine {
         }
 
         // Con hablante EN PANTALLA: él iluminado y el resto en gris. Durante la
-        // narración (2B) o voces sin sprite ("???", off-screen): TODOS en gris
+        // narración (3C) o voces sin sprite ("???", off-screen): TODOS en gris
         // (petición de Betanzos — antes nadie se apagaba al narrar y parecía
         // que "se iluminaban todos").
         if (charactersContainer) {

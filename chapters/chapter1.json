@@ -19,7 +19,7 @@
               "fadeIn": 1000
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Una tarde cualquiera se despierta un lobo..."
         },
         {
@@ -173,7 +173,7 @@
               "pose": "edu"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Samu marca el número de Edu..."
         },
         {
@@ -264,7 +264,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "actions": [
             {
               "type": "removeCharacter",
@@ -305,7 +305,7 @@
               "value": "chapter2"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Y así, sin esperárselo, el cumpleaños de Samu toma un giro inesperado. La aventura de Samu apenas comienza..."
         }
       ]

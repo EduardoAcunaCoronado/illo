@@ -199,7 +199,7 @@ html, body {
 }
 
 /* Los que NO hablan: en gris y apagados, por detrás. Solo se aplica cuando hay
-   un hablante EN PANTALLA (clase .has-speaker); durante la narración de 2B, o
+   un hablante EN PANTALLA (clase .has-speaker); durante la narración de 3C, o
    si quien habla no tiene sprite, nadie se apaga. */
 .characters-container.has-speaker .character:not(.speaking).active {
     filter: grayscale(0.85) brightness(0.55) contrast(0.96);
