@@ -1022,6 +1022,218 @@ html, body {
     pointer-events: none;
 }
 
+.ketchup-player img {
+    height: 94px;
+}
+
+.ketchup-player {
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    transition: none;
+    z-index: 5;
+}
+
+.ketchup-player::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.92);
+    border-radius: 50%;
+    background: rgba(255, 204, 0, 0.72);
+    box-shadow:
+        0 0 0 2px rgba(0, 0, 0, 0.42),
+        0 0 10px rgba(255, 204, 0, 0.75);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.ketchup-player.is-hit {
+    animation: ketchup-player-hit 0.18s ease-in-out 2;
+    filter: drop-shadow(0 0 12px rgba(255, 45, 45, 0.95));
+}
+
+.mg-shot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: var(--shot-size, 34px);
+    height: var(--shot-size, 34px);
+    z-index: 2;
+    pointer-events: none;
+    filter: drop-shadow(0 0 7px rgba(255, 74, 64, 0.75));
+}
+
+.mg-shot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ketchup-boss-minigame {
+    background:
+        linear-gradient(180deg, rgba(15, 10, 24, 0.92), rgba(58, 17, 18, 0.88)),
+        radial-gradient(circle at 50% 35%, rgba(255, 196, 51, 0.18), transparent 42%);
+    color: #fff;
+    font-family: var(--battle-font, 'Outfit', Arial, Helvetica, sans-serif);
+    font-weight: 600;
+}
+
+.ketchup-boss-hud {
+    width: min(760px, calc(100% - 56px));
+    padding: 18px 0 10px;
+    z-index: 3;
+}
+
+.ketchup-boss-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffcc00;
+    font-family: var(--battle-display-font, 'Righteous', 'Outfit', Arial, sans-serif);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.85),
+        0 0 12px rgba(255, 204, 0, 0.55);
+}
+
+.ketchup-boss-bar {
+    position: relative;
+    height: 24px;
+    margin-top: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 229, 133, 0.9);
+    border-radius: 999px;
+    background: rgba(13, 8, 18, 0.88);
+    box-shadow:
+        inset 0 0 8px rgba(0, 0, 0, 0.75),
+        0 0 18px rgba(255, 204, 0, 0.18);
+}
+
+.ketchup-boss-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #d71920 0%, #ff4b2f 48%, #ffcc00 100%);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.32);
+    transition: width 0.16s ease;
+}
+
+.ketchup-boss-field {
+    flex: 1;
+    width: min(920px, calc(100% - 48px));
+    margin: 0 auto;
+    border: 2px solid rgba(255, 204, 0, 0.28);
+    border-radius: 8px;
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 50% 14%, rgba(255, 204, 0, 0.2), transparent 26%),
+        linear-gradient(180deg, #1c1429 0%, #2b1823 58%, #451a1a 100%);
+    background-size: 48px 48px, 48px 48px, auto, auto;
+    box-shadow:
+        inset 0 0 26px rgba(0, 0, 0, 0.55),
+        0 0 20px rgba(0, 0, 0, 0.35);
+}
+
+.ketchup-boss-enemy {
+    position: absolute;
+    width: 104px;
+    height: 160px;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    pointer-events: none;
+    filter:
+        drop-shadow(0 10px 12px rgba(0, 0, 0, 0.5))
+        drop-shadow(0 0 12px rgba(255, 204, 0, 0.22));
+}
+
+.ketchup-boss-enemy img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+}
+
+.ketchup-boss-enemy.is-hit {
+    animation: ketchup-boss-hit 0.09s ease-out;
+}
+
+.ketchup-enemy-shot {
+    position: absolute;
+    width: var(--shot-size, 34px);
+    height: var(--shot-size, 34px);
+    transform: translate(-50%, -50%);
+    z-index: 7;
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.65));
+}
+
+.ketchup-enemy-shot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ketchup-player-hud {
+    width: min(920px, calc(100% - 48px));
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 10px 0 16px;
+    color: #fff;
+    font-family: var(--battle-font, 'Outfit', Arial, Helvetica, sans-serif);
+    z-index: 3;
+}
+
+.ketchup-player-lives {
+    min-width: 112px;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+.ketchup-player-help {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.86);
+    text-align: right;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.72);
+}
+
+.ketchup-boss-minigame .minigame-result {
+    z-index: 20;
+}
+
+@keyframes ketchup-boss-hit {
+    0%, 100% { transform: translate(-50%, -50%); }
+    50% {
+        transform: translate(-50%, -50%) scale(1.05);
+        filter:
+            brightness(1.6)
+            drop-shadow(0 0 16px rgba(255, 45, 45, 0.8));
+    }
+}
+
+@keyframes ketchup-player-hit {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
 .mg-item {
     position: absolute;
     transform: translateX(-50%);
