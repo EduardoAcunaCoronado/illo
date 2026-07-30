@@ -264,7 +264,8 @@
 
         function startMusic(file) {
             if (!musicOn()) return;
-            engine.playSound('assets/sounds/music/' + file, { loop: true, id: 'mg_test', volume: 0.5, fadeIn: 300 });
+            const path = file.startsWith('assets/') ? file : 'assets/sounds/music/' + file;
+            engine.playSound(path, { loop: true, id: 'mg_test', volume: 0.5, fadeIn: 300 });
         }
         function stopMusic() { try { engine.stopSound('mg_test', 400); } catch (e) {} }
 
@@ -430,7 +431,7 @@
         async function launchKetchup(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('ketchup.mp3');
+            startMusic("assets/sounds/effects/zip's-shadow-waltz.mp3");
             const opts = KETCHUP[preset];
             // Mostrar la velocidad de la guindilla en el panel (1.5x la velocidad base del preset)
             document.getElementById('chili-speed-val').textContent = (opts.speedMult * 1.5).toFixed(2) + 'x';

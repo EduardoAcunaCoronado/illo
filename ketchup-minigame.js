@@ -1,6 +1,20 @@
 (function () {
-  const cacheBust = (path) => `${path}?v=${Date.now()}`;
+  const ASSET_VERSION = '20260801-ketchup-6';
+  const cacheBust = (path) => `${path}?v=${ASSET_VERSION}`;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const preloadImages = (sources) => Promise.all(
+    [...new Set(sources)].map(
+      (src) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.decoding = 'async';
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          img.src = src;
+          if (img.decode) img.decode().then(resolve).catch(resolve);
+        }),
+    ),
+  );
 
   class KetchupMinigame {
     constructor(options = {}) {
@@ -11,12 +25,34 @@
       return new KetchupMinigame(options).play();
     }
 
-    play() {
+    async play() {
       const enemyMaxHp = this.options.enemyHp || this.options.zipHp || 360;
       const playerMaxLives = this.options.maxHits || this.options.lives || 3;
       const ketchupIcon = cacheBust('assets/minigames/ketchup.png');
       const chiliIcon = cacheBust('assets/minigames/chili.png');
-      const zipIcon = cacheBust('assets/characters/zip/ketchup/zip.png');
+      const zipIcon = cacheBust('assets/characters/zip/ketchup/zip_1.png');
+      const zipAngryIcon = cacheBust('assets/characters/zip/zip_angry.png');
+      const zipPhaseFrame = (index) => cacheBust(`assets/characters/zip/ketchup/zip_${index}.png`);
+      const zipPhaseFrames = [
+        zipPhaseFrame(1),
+        zipPhaseFrame(2),
+        zipPhaseFrame(3),
+        zipPhaseFrame(4),
+        zipPhaseFrame(5),
+        zipPhaseFrame(4),
+        zipPhaseFrame(5),
+        zipPhaseFrame(4),
+        zipPhaseFrame(5),
+        zipPhaseFrame(1),
+      ];
+      const zipFloatingFrame = (index) => cacheBust(`assets/characters/zip/ketchup/zip_flotando_${index}.png`);
+      const zipFloatingFrames = [
+        zipFloatingFrame(1),
+        zipFloatingFrame(2),
+        zipFloatingFrame(3),
+        zipFloatingFrame(2),
+        zipFloatingFrame(1),
+      ];
       const playerFrame = (index) => cacheBust(`assets/characters/samu/ketchup/${index}.png`);
       const playerFrames = {
         idle: [playerFrame(1), playerFrame(3)],
@@ -29,6 +65,17 @@
         default: [playerFrame(1), playerFrame(3)],
       };
       const musicTrack = this.options.music;
+      const assetsToPreload = [
+        ketchupIcon,
+        chiliIcon,
+        zipIcon,
+        zipAngryIcon,
+        ...zipPhaseFrames,
+        ...zipFloatingFrames,
+        ...Object.values(playerFrames).flat(),
+      ];
+
+      await preloadImages(assetsToPreload);
 
       return new Promise((resolve) => {
         let musicAudio = null;
@@ -47,7 +94,14 @@
             <div class="ketchup-boss-bar"><span class="ketchup-boss-fill"></span></div>
           </div>
           <div class="minigame-field ketchup-boss-field" id="mg-field">
-            <div class="ketchup-boss-enemy" id="ketchup-boss-enemy"><img src="${zipIcon}" alt="Zip" draggable="false"></div>
+            <div class="ketchup-special-warning" id="ketchup-special-warning">
+              <img src="${zipAngryIcon}" alt="" draggable="false">
+              <span>WARNING</span>
+            </div>
+            <div class="ketchup-boss-enemy" id="ketchup-boss-enemy">
+              <img class="ketchup-boss-frame ketchup-boss-frame-primary" src="${zipFloatingFrames[0]}" alt="Zip" draggable="false">
+              <img class="ketchup-boss-frame ketchup-boss-frame-next" src="${zipFloatingFrames[0]}" alt="" draggable="false">
+            </div>
             <div class="mg-player ketchup-player" id="mg-player"><img src="${playerFrames.idle[0]}" alt="Samu" draggable="false"></div>
           </div>
           <div class="ketchup-player-hud">
@@ -61,8 +115,11 @@
         const player = overlay.querySelector('#mg-player');
         const playerImg = player.querySelector('img');
         const boss = overlay.querySelector('#ketchup-boss-enemy');
+        const bossImg = boss.querySelector('.ketchup-boss-frame-primary');
+        const bossNextImg = boss.querySelector('.ketchup-boss-frame-next');
         const bossFill = overlay.querySelector('.ketchup-boss-fill');
         const livesEl = overlay.querySelector('.ketchup-player-lives');
+        const specialWarning = overlay.querySelector('#ketchup-special-warning');
 
         let enemyHp = enemyMaxHp;
         let playerLives = playerMaxLives;
@@ -89,6 +146,18 @@
         let shootCooldown = 0;
         let playerInvuln = 0;
         let playerPattern = 'idle';
+        let bossFrameIndex = 0;
+        let bossFrameTimer = 0;
+        let bossFrameKey = zipFloatingFrames[0];
+        let bossCrossfadeTimer = null;
+        let bossIsFloating = true;
+        let specialAttackTimer = 2.2;
+        let specialWarningTimer = 0;
+        let specialWarningActive = false;
+        let phaseAnimationTimer = 1.6;
+        let phaseAnimationFrameTimer = 0;
+        let phaseAnimationIndex = 0;
+        let phaseAnimationActive = false;
 
         const state = {
           moveLeft: false,
@@ -110,6 +179,18 @@
         const updateHud = () => {
           bossFill.style.width = `${clamp(enemyHp / enemyMaxHp, 0, 1) * 100}%`;
           livesEl.textContent = '❤️'.repeat(Math.max(0, playerLives));
+        };
+
+        const setBossFrame = (frame) => {
+          if (bossFrameKey === frame) return;
+          bossFrameKey = frame;
+          window.clearTimeout(bossCrossfadeTimer);
+          bossNextImg.src = frame;
+          boss.classList.add('is-crossfading');
+          bossCrossfadeTimer = window.setTimeout(() => {
+            bossImg.src = frame;
+            boss.classList.remove('is-crossfading');
+          }, 180);
         };
 
         updatePlayerPos();
@@ -192,8 +273,79 @@
           enemyBullets.push({ el, x, y, vx, vy, size });
         };
 
+        const fireSpecialAttack = () => {
+          const centerX = enemyX;
+          const centerY = enemyY + 0.08;
+          for (let i = 0; i < 24; i++) {
+            const angle = (Math.PI * 2 * i) / 24;
+            fireEnemyBullet(centerX, centerY, Math.cos(angle) * 0.34, Math.sin(angle) * 0.34, 28);
+          }
+          [
+            { vx: 0, vy: 0.48 },
+            { vx: -0.26, vy: 0.42 },
+            { vx: 0.26, vy: 0.42 },
+          ].forEach((ray) => {
+            for (let i = 0; i < 10; i++) {
+              fireEnemyBullet(
+                centerX + ray.vx * i * 0.085,
+                centerY + ray.vy * i * 0.085,
+                ray.vx,
+                ray.vy,
+                i % 2 === 0 ? 34 : 26,
+              );
+            }
+          });
+        };
+
+        const resetPhaseAnimation = () => {
+          phaseAnimationActive = false;
+          phaseAnimationIndex = 0;
+          phaseAnimationFrameTimer = 0;
+          phaseAnimationTimer = 3.4;
+          setBossFrame(zipIcon);
+        };
+
+        const updatePhaseAnimation = (dt) => {
+          if (specialWarningActive) return;
+          if (!phaseAnimationActive) {
+            phaseAnimationTimer -= dt;
+            if (phaseAnimationTimer > 0) return;
+            phaseAnimationActive = true;
+            phaseAnimationIndex = 0;
+            phaseAnimationFrameTimer = 0;
+          }
+
+          phaseAnimationFrameTimer -= dt;
+          if (phaseAnimationFrameTimer > 0) return;
+
+          setBossFrame(zipPhaseFrames[phaseAnimationIndex]);
+          phaseAnimationIndex++;
+          phaseAnimationFrameTimer = 0.16;
+
+          if (phaseAnimationIndex >= zipPhaseFrames.length) {
+            phaseAnimationActive = false;
+            phaseAnimationIndex = 0;
+            phaseAnimationTimer = 3.4;
+          }
+        };
+
+        const startSpecialWarning = () => {
+          resetPhaseAnimation();
+          specialWarningActive = true;
+          specialWarningTimer = 1;
+          specialWarning.classList.add('is-visible');
+        };
+
+        const finishSpecialWarning = () => {
+          specialWarningActive = false;
+          specialWarning.classList.remove('is-visible');
+          fireSpecialAttack();
+          specialAttackTimer = 4.8;
+          patternTimer = 1.05;
+        };
+
         const firePattern = () => {
-          const pattern = patternIndex % 4;
+          const pattern = patternIndex % 6;
           patternIndex++;
           if (pattern === 0) {
             for (let i = -2; i <= 2; i++) {
@@ -212,6 +364,40 @@
             return;
           }
           if (pattern === 2) {
+            const centerX = enemyX;
+            const centerY = enemyY + 0.08;
+            const bullets = 16;
+            const offset = (patternIndex % 2) * (Math.PI / bullets);
+            for (let i = 0; i < bullets; i++) {
+              const angle = offset + (Math.PI * 2 * i) / bullets;
+              fireEnemyBullet(centerX, centerY, Math.cos(angle) * 0.28, Math.sin(angle) * 0.28, 26);
+            }
+            patternTimer = 1.05;
+            return;
+          }
+          if (pattern === 3) {
+            const centerX = enemyX;
+            const centerY = enemyY + 0.08;
+            const rays = [
+              { vx: 0, vy: 0.39 },
+              { vx: -0.21, vy: 0.34 },
+              { vx: 0.21, vy: 0.34 },
+            ];
+            rays.forEach((ray) => {
+              for (let i = 0; i < 6; i++) {
+                fireEnemyBullet(
+                  centerX + ray.vx * i * 0.13,
+                  centerY + ray.vy * i * 0.13,
+                  ray.vx,
+                  ray.vy,
+                  i % 2 === 0 ? 30 : 24,
+                );
+              }
+            });
+            patternTimer = 1.12;
+            return;
+          }
+          if (pattern === 4) {
             const startX = patternIndex % 2 === 0 ? 0.16 : 0.84;
             const dir = startX < 0.5 ? 1 : -1;
             for (let i = 0; i < 7; i++) {
@@ -238,6 +424,8 @@
             musicAudio.pause();
             musicAudio.currentTime = 0;
           }
+          window.clearTimeout(bossCrossfadeTimer);
+          specialWarning.classList.remove('is-visible');
 
           shots.forEach((shot) => shot.el.remove());
           enemyBullets.forEach((bullet) => bullet.el.remove());
@@ -283,17 +471,42 @@
             playerY = clamp(playerY + (moveY / moveLength) * moveSpeed * dt, playerMinY, playerMaxY);
           }
 
-          enemyMoveTimer -= dt;
-          if (enemyMoveTimer <= 0) {
-            enemyMoveTimer = 0.9 + Math.random() * 1.1;
-            enemyDir = Math.random() < 0.5 ? -1 : 1;
-          }
-          enemyX += enemyDir * (0.13 + Math.sin(time / 430) * 0.035) * dt;
-          if (enemyX < 0.16 || enemyX > 0.84) {
-            enemyX = clamp(enemyX, 0.16, 0.84);
-            enemyDir *= -1;
+          const shouldFloat = enemyHp / enemyMaxHp > 0.4;
+          if (shouldFloat) {
+            enemyMoveTimer -= dt;
+            if (enemyMoveTimer <= 0) {
+              enemyMoveTimer = 0.9 + Math.random() * 1.1;
+              enemyDir = Math.random() < 0.5 ? -1 : 1;
+            }
+            enemyX += enemyDir * (0.13 + Math.sin(time / 430) * 0.035) * dt;
+            if (enemyX < 0.16 || enemyX > 0.84) {
+              enemyX = clamp(enemyX, 0.16, 0.84);
+              enemyDir *= -1;
+            }
+            bossIsFloating = true;
+            bossFrameTimer -= dt;
+            if (bossFrameTimer <= 0) {
+              setBossFrame(zipFloatingFrames[bossFrameIndex]);
+              bossFrameIndex = (bossFrameIndex + 1) % zipFloatingFrames.length;
+              bossFrameTimer = 0.24;
+            }
+          } else if (bossIsFloating) {
+            bossIsFloating = false;
+            setBossFrame(zipIcon);
+            phaseAnimationTimer = 1.6;
           }
           updateEnemyPos();
+
+          if (!shouldFloat) {
+            if (specialWarningActive) {
+              specialWarningTimer -= dt;
+              if (specialWarningTimer <= 0) finishSpecialWarning();
+            } else {
+              specialAttackTimer -= dt;
+              if (specialAttackTimer <= 0) startSpecialWarning();
+            }
+            updatePhaseAnimation(dt);
+          }
 
           const isMoving = state.moveLeft || state.moveRight || state.moveUp || state.moveDown;
           if (state.shooting) playerPattern = isMoving ? 'shoot' : 'shootIdle';
@@ -318,8 +531,10 @@
             shootCooldown = 0.28;
           }
 
-          patternTimer -= dt;
-          if (patternTimer <= 0) firePattern();
+          if (!specialWarningActive) {
+            patternTimer -= dt;
+            if (patternTimer <= 0) firePattern();
+          }
 
           for (let i = shots.length - 1; i >= 0; i--) {
             const shot = shots[i];
