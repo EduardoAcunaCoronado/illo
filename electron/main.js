@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell, screen, ipcMain } = require('electron');
+const { app, BrowserWindow, Menu, shell, screen, ipcMain } = require('electron');
 const fs = require('fs');
 const path = require('path');
 const { startServer } = require('./static-server');
@@ -9,6 +9,8 @@ const ROOT = app.getAppPath();
 
 const DESIGN_W = 1280;
 const DESIGN_H = 720;
+
+const ES_MAC = process.platform === 'darwin';
 
 // La app es un reproductor de la novela: el tema del menú debe poder empezar
 // al abrir la ventana, sin esperar un clic como ocurre en un navegador normal.
@@ -107,6 +109,31 @@ if (!app.requestSingleInstanceLock()) {
     });
 }
 
+// La barra de menú de macOS es global: `autoHideMenuBar` no la afecta y, sin un
+// menú propio, la app sale con el de ejemplo de Electron ("Learn More" y
+// compañía). Se deja el mínimo, que además es de donde macOS saca los atajos
+// del sistema: sin menú no funcionarían ni Cmd+Q ni Cmd+H.
+function configurarMenu() {
+    if (!ES_MAC) {
+        Menu.setApplicationMenu(null);
+        return;
+    }
+    Menu.setApplicationMenu(
+        Menu.buildFromTemplate([
+            { role: 'appMenu' },
+            {
+                label: 'Ventana',
+                submenu: [
+                    // Trae el atajo estándar de macOS, Ctrl+Cmd+F, y dispara los
+                    // mismos eventos de ventana que el resto de vías.
+                    { role: 'togglefullscreen' },
+                    { role: 'minimize' },
+                ],
+            },
+        ]),
+    );
+}
+
 function createWindow() {
     // Si la pantalla es pequeña, se abre una ventana proporcional que quepa.
     const work = screen.getPrimaryDisplay().workAreaSize;
@@ -160,20 +187,28 @@ function createWindow() {
         return { action: 'deny' };
     });
 
-    // F11 pantalla completa, F12 devtools, Ctrl+R recargar.
+    // F11 pantalla completa, F12 devtools, Ctrl+R recargar. En macOS los atajos
+    // son otros: F11 y F12 los tiene cogidos el sistema, así que allí valen
+    // Cmd+R y Cmd+Alt+I, y la pantalla completa la pone el menú (Ctrl+Cmd+F).
     mainWindow.webContents.on('before-input-event', (event, input) => {
         if (input.type !== 'keyDown') return;
         const key = (input.key || '').toLowerCase();
-        if (key === 'f11') {
+        const mod = ES_MAC ? input.meta : input.control;
+
+        if (!ES_MAC && key === 'f11') {
             mainWindow.setFullScreen(!mainWindow.isFullScreen());
-            event.preventDefault();
-        } else if (key === 'f12') {
+        } else if (!ES_MAC && key === 'f12') {
             mainWindow.webContents.toggleDevTools();
-            event.preventDefault();
-        } else if (key === 'r' && input.control) {
+        } else if (ES_MAC && mod && input.alt && input.code === 'KeyI') {
+            // Con Alt pulsado macOS convierte la "i" en una tecla muerta, así
+            // que hay que mirar la tecla física y no el carácter que produce.
+            mainWindow.webContents.toggleDevTools();
+        } else if (mod && key === 'r') {
             mainWindow.webContents.reloadIgnoringCache();
-            event.preventDefault();
+        } else {
+            return;
         }
+        event.preventDefault();
     });
 
     mainWindow.loadURL(`${server.origin}/index.html`);
@@ -184,6 +219,7 @@ function createWindow() {
 ipcMain.on('app:quit', () => app.quit());
 
 app.whenReady().then(async () => {
+    configurarMenu();
     server = await startServer(ROOT);
     createWindow();
 

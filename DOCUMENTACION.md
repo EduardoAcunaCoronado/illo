@@ -2700,6 +2700,55 @@ dist/Transfurmados Setup 1.0.0.exe
 
 > ⚠️ Con ~1,2 GB en `assets/` el empaquetado tarda varios minutos.
 
+### Empaquetar para macOS
+
+**No se puede desde Windows.** El `.dmg` se genera con `hdiutil`, la firma con
+`codesign`, y el `.app` lleva dentro symlinks y bits de ejecutable que NTFS no
+conserva. Hace falta un Mac de verdad.
+
+**En un Mac:**
+
+```bash
+npm ci
+npm run dist:mac        # dmg + zip     (npm run dist:mac:dir para solo el .app)
+```
+
+**Sin Mac:** el workflow `.github/workflows/build-mac.yml` lo compila en un
+runner `macos-latest`. Se lanza a mano desde la pestaña **Actions → Build macOS
+→ Run workflow** y deja el `.dmg` y el `.zip` como artefactos (7 días). Tarda
+~20 min: el checkout se trae los 1,2 GB de assets versionados.
+
+**Solo arm64.** Cubre todos los Mac desde finales de 2020. Se podría añadir
+`x64` en el campo `mac.target` del `package.json`, pero como el build va sin
+asar **cada arquitectura es una copia entera del juego**: `dist/` pasaría de
+~3 GB a ~6 GB y el empaquetado al doble de tiempo. Un binario `universal` es
+todavía peor, porque duplica también el runtime de Electron dentro del mismo
+`.app`.
+
+**El icono** se genera desde el mismo `build/icon.png`. Para macOS debería ser
+**1024x1024**; con los 512x512 actuales electron-builder avisa y el icono sale
+algo borroso en el Dock.
+
+#### ⚠️ Firma y notarización
+
+El build sale **sin firmar** (firma *ad-hoc*). Al descargarlo, macOS le pone el
+atributo de cuarentena y Gatekeeper lo bloquea con *"Transfurmados está dañado y
+no se puede abrir"* — y no es un aviso que se pueda saltar con un clic, como el
+SmartScreen de Windows. El jugador tiene que hacer una de estas dos:
+
+- Clic derecho sobre la app → **Abrir** (y confirmar en el diálogo)
+- `xattr -dr com.apple.quarantine /Applications/Transfurmados.app`
+
+Hay que dejarlo escrito en la página del juego. Para quitarlo del todo hace
+falta el **Apple Developer Program** (99 $/año): un certificado *Developer ID
+Application*, `"notarize": true` y `"hardenedRuntime": true` en el bloque `mac`,
+y estas variables en el entorno del build:
+
+```
+CSC_LINK, CSC_KEY_PASSWORD              ← el .p12 del certificado
+APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID
+```
+
 ### Publicar en itch.io
 
 Se sube la carpeta `dist/win-unpacked/` completa, con `Transfurmados.exe` en la
@@ -2727,6 +2776,14 @@ cambian ahorra muchísimo.
 
 > ⚠️ El subidor web de itch.io corta en 1 GB por archivo, así que el build de
 > 1,6 GB **no se puede subir por el navegador**: butler es obligatorio.
+
+Para macOS es igual pero con el canal `:osx`, y se sube el **`.zip`**, no el
+`.dmg`: el itch app sabe descomprimirlo y lanzar el `.app`, mientras que con un
+`.dmg` se lía igual que con el instalador NSIS.
+
+```bash
+butler push dist/Transfurmados-1.0.0-arm64-mac.zip tu-usuario/transfurmados:osx
+```
 
 **Qué NO quitar del build para adelgazarlo:** los `.dll`, `.pak`, `.bin`,
 `locales/` y `resources/` son todos necesarios, y `LICENSES.chromium.html`
@@ -2765,6 +2822,13 @@ Detalles de la ventana:
 - Sin barra de menú, fondo negro, título "Project AI.ri: Transfurmados"
 - **F11** pantalla completa · **F12** DevTools · **Ctrl+R** recargar
 - Una sola instancia: al abrir otra, se enfoca la que ya está
+
+En macOS los atajos son otros, porque F11 y F12 los tiene cogidos el sistema:
+**Ctrl+Cmd+F** pantalla completa · **Cmd+Alt+I** DevTools · **Cmd+R** recargar.
+Y la barra de menú allí es global, así que `autoHideMenuBar` no la afecta: sin
+un menú propio saldría el de ejemplo de Electron, y sin menú ninguno dejarían de
+funcionar Cmd+Q y Cmd+H. Por eso `configurarMenu()` pone el mínimo (`appMenu` +
+Ventana) en macOS y quita el menú del todo en el resto.
 
 El icono de la app se genera desde `build/icon.png`.
 

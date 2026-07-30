@@ -9,6 +9,8 @@
         "start": "electron .",
         "dist": "electron-builder --win",
         "dist:dir": "electron-builder --win --dir",
+        "dist:mac": "electron-builder --mac --arm64",
+        "dist:mac:dir": "electron-builder --mac --arm64 --dir",
         "format:js": "prettier --write \"**/*.js\"",
         "check:js": "prettier --check \"**/*.js\""
     },
@@ -49,6 +51,28 @@
             "oneClick": false,
             "allowToChangeInstallationDirectory": true,
             "shortcutName": "Transfurmados"
+        },
+        "mac": {
+            "target": [
+                {
+                    "target": "dmg",
+                    "arch": [
+                        "arm64"
+                    ]
+                },
+                {
+                    "target": "zip",
+                    "arch": [
+                        "arm64"
+                    ]
+                }
+            ],
+            "category": "public.app-category.games",
+            "icon": "build/icon.png",
+            "darkModeSupport": true
+        },
+        "dmg": {
+            "title": "Transfurmados"
         }
     }
 }
