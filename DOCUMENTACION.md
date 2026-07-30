@@ -199,7 +199,7 @@ principales actuales son:
 | Tipo | Controles |
 | --- | --- |
 | Exploración de Furry Maps | Ratón o toque para elegir ubicaciones; `Tab` y `Enter` permiten navegación por teclado. |
-| Persecución de gatos | Flechas o `WASD` para recorrer la cuadrícula sin que alcancen a Samu. |
+| Persecución de gatos | Flechas o `WASD` para recorrer el mapa cenital sin que alcancen a Samu. |
 | Recolección de guindillas | Izquierda/derecha, `A`/`D` o ratón. Recoge guindillas y evita botellas. |
 | Bullet hell de Kingdom Ketchup | Flechas o `WASD` para moverse con respuesta directa; `Espacio` o clic para disparar guindillas. |
 | Conducción | Ratón, `WASD` o flechas para moverse; `P` o el botón visible pausan el juego y `Esc` abre la pausa global. |
@@ -577,7 +577,7 @@ Claves registradas por `playMinigame`:
 | `furrielvaExplore` | `engine.js` | Activo en capítulo 2. |
 | `chiliHarvest` / `guindillas` | `engine.js` | Activo; carga poder picante. |
 | `ketchupBoss` / `ketchup` | `ketchup-minigame.js` | Activo; dificultad según guindillas/objeto. |
-| `gatos` | `engine.js` | Activo. |
+| `gatos` | `gatos-minigame.js` | Activo. |
 | `chase` | `engine.js` | Activo en capítulo 3. |
 | `rhythm` | `engine.js` | Activo en capítulo 3. |
 | `eduvuelo` | `engine.js` | Activo en capítulo 3. |
@@ -1961,9 +1961,9 @@ llegan en coordenadas de la ventana.
 
 #### Minijuego `gatos` (Micaela Michis)
 
-Un **Pac-Man por rejilla** en un **laberinto de calles urbanas**. Samu (🐺) recorre
-las calles (← ↑ → ↓ / WASD), girando en las intersecciones, y debe **sobrevivir** un
-tiempo mientras los gatos (🐱) le persiguen por el laberinto. Si un gato lo alcanza,
+Un **Pac-Man por rejilla** sobre un **mapa cenital urbano**. Samu (🐺) recorre las
+calles (← ↑ → ↓ / WASD), girando en las intersecciones, y debe **sobrevivir** un
+tiempo mientras los gatos (🐱) le persiguen por el escenario. Si un gato lo alcanza,
 pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jarrón).
 
 ```json
@@ -1972,6 +1972,7 @@ pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jarrón).
   "game": "gatos",
   "survive": 60,
   "cats": 3,
+  "collisionMapId": "gatos_supermercado_exterior",
   "playerSpeed": 5.0,
   "catSpeed": 3.0
 }
@@ -1981,12 +1982,66 @@ pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jarrón).
 | ------------- | ------------------------------------------------------- | ----------- |
 | `survive`     | Segundos que hay que aguantar                           | 60          |
 | `cats`        | Nº de gatos perseguidores (1-4 usan esquinas distintas) | 3           |
+| `collisionMapId` | Id del mapa guardado en el editor de colisiones      | `gatos_supermercado_exterior` |
 | `playerSpeed` | Velocidad de Samu (**celdas**/s)                        | 5.0         |
 | `catSpeed`    | Velocidad de los gatos (**celdas**/s)                   | 3.0         |
+| `background`  | Fondo del mapa cenital                                  | `assets/images/minigames/chapter2/gatos/mapa_minijuego_gatos.png` |
+| `playerCollisionRadius` | Radio de colisión de Samu en modo mapa libre  | 0.014       |
+| `catCollisionRadius` | Radio de colisión de los gatos en modo mapa libre | 0.014       |
+| `catchDistance` | Distancia a la que un gato alcanza a Samu              | 0.04        |
 
-El laberinto es fijo (una cuadrícula de manzanas separadas por avenidas), está
-definido en `VisualNovelEngine.GATOS_MAZE` y es completamente transitable (sin
-callejones sin salida). Samu empieza en el centro y los gatos en las esquinas.
+El fondo visible por defecto es
+`assets/images/minigames/chapter2/gatos/mapa_minijuego_gatos.png`. Si existe un
+mapa guardado en `localStorage.illo_collision_maps` con el `collisionMapId`
+indicado, el minijuego usa ese mapa en modo libre: todo es transitable salvo las
+zonas `wall`, que bloquean edificios, coches u obstáculos. Las zonas `walkable`
+quedan como guía visual de diseño, pero no limitan el movimiento por sí solas.
+Las zonas `spawn` pueden marcar puntos de inicio; si su nombre contiene `Samu`,
+`jugador` o `player` se usan para Samu, y si contiene `gato`, `cat` o `michi` se
+usan para los perseguidores. En Samu, el punto de `spawn` representa el centro
+visual del sprite. En modo debug se dibuja un marcador con las coordenadas reales
+de arranque para comparar lo guardado con lo usado por el minijuego. Los `spawn`
+son referencias: no bloquean, no crean área de colisión y su tamaño visual no
+modifica dónde empieza el personaje.
+
+La colisión interna del asset de Samu se ajusta aparte en
+`hitbox-editor.html?game=gatos`, objeto `samu`, usando los frames de
+`assets/images/characters/samu/run/`. Los cambios se guardan en
+`localStorage.illo_hitbox_config.gatos.samu` con `shape`, `offsetX`, `offsetY`,
+`w`, `h` y `rotation`. El movimiento contra zonas `wall` y la distancia de
+captura usan ese offset, por lo que permite colocar el punto/caja de colisión
+correctamente dentro del sprite sin mover el `spawn`. El editor calcula el tamaño
+del sprite de Samu contra el escenario real del juego (`1280 × 720`), no contra
+la resolución natural del PNG del mapa, para que el offset vertical coincida con
+lo que se ve en partida. Las configuraciones antiguas sin `coordinateSpace` se
+migran al cargar desde el cálculo anterior basado en `1672 × 941`. Desde
+`minijuegos_test.html`, el botón **Editar hitbox** abre esa herramienta y
+**Mostrar hitbox de Samu** solo visualiza en vivo la configuración guardada.
+El juego dibuja el mapa dentro de un viewport con la misma proporción del PNG
+base (`1672 / 941`), para que las coordenadas 0-1 del editor coincidan con las
+colisiones y las posiciones de entidades en partida.
+En partida, ese viewport intenta ocupar todo el escenario y el HUD de tiempo,
+objetivo y gatos se muestra flotando encima para no restar zona jugable.
+Si un punto de aparición cae en una zona bloqueada o demasiado cerca de otra
+entidad, el minijuego busca un punto abierto alternativo antes de empezar.
+
+Si no hay colisiones guardadas todavía, el juego cae a la rejilla de respaldo
+definida en `GatosMinigame.MAZE` dentro de `gatos-minigame.js`. En ese modo Samu
+empieza en el centro y los gatos en las esquinas.
+
+`collision-editor.html` es la herramienta de trabajo para pintar las colisiones
+del mapa. Permite indicar una imagen desde su campo **Imagen** o con
+`collision-editor.html?map=ID&image=RUTA`, pintar zonas rectangulares de tipo
+`wall`, `walkable`, `hide`, `noise`, `spawn` y `exit`, y guardar/exportar el
+resultado en `localStorage.illo_collision_maps`. Desde `minijuegos_test.html`,
+el bloque de gatos abre el mapa
+`gatos_supermercado_exterior` con el botón **Editar colisiones** y carga
+directamente `mapa_minijuego_gatos.png`. En esa misma página de tests, la opción
+**Mostrar colisiones del mapa** activa `debugCollisions` y pinta las zonas
+guardadas encima del mapa durante la partida, y **Mostrar hitbox de Samu**
+visualiza la caja/punto de colisión guardado. Ambas opciones aparecen activadas
+por defecto en tests. El campo **Cantidad de gatos** permite sobrescribir el
+parámetro `cats` del preset seleccionado sin modificar los JSON de capítulo.
 
 **Diseño (importante):** los gatos persiguen con búsqueda de camino (**BFS**) por las
 calles, pero —como los fantasmas de Pac-Man— **no todos van directos a la vez**:
@@ -4866,7 +4921,7 @@ capítulo 2 utiliza estas variaciones:
 - Escena 1: `furrielva_despierta.mp3`.
 - Escenas 1B, 1C y 1D: `el_rastro_del_tapon.mp3`.
 - Escenas 1.5, 2, 3 y 4: `tres_rutas_por_furrielva.mp3`; el minijuego de gatos
-  sigue intercalando `te-comprometes.mp3` y después recupera esta pista.
+  intercala `michis-de-micaela.mp3` y después recupera esta pista.
 - Escenas 4.5 y 4.6: `el_tapon_dorado.mp3`.
 - Escenas 5 a 9: `kingdomketchup.mp3`, con los cambios ya existentes a
   `zip.mp3` y `ketchup.mp3`.

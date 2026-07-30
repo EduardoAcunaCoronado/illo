@@ -3639,12 +3639,118 @@ body.cutscene-active #game-container .ss-pause-btn {
 }
 
 /* ===== Minijuego estilo Pac-Man con laberinto de calles (El Jamón) ===== */
+.gatos-minigame {
+    justify-content: center;
+    background:
+        radial-gradient(circle at 50% 20%, rgba(83, 210, 255, 0.14), transparent 34%),
+        linear-gradient(180deg, #061018 0%, #030407 100%);
+}
+
+.gatos-minigame .minigame-hud {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    width: min(760px, calc(100% - 32px));
+    min-height: 48px;
+    transform: translateX(-50%);
+    display: grid;
+    grid-template-columns: minmax(118px, auto) 1fr minmax(90px, auto);
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    background: linear-gradient(180deg, rgba(5, 10, 18, 0.9), rgba(5, 7, 12, 0.68));
+    box-shadow: 0 12px 26px rgba(0, 0, 0, 0.38), inset 0 0 0 1px rgba(83, 210, 255, 0.12);
+    color: #f8fbff;
+    font-size: 17px;
+    letter-spacing: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+    z-index: 8;
+}
+
+.gatos-minigame .mg-hud-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    min-height: 34px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffd166;
+    font-size: 18px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.gatos-minigame .mg-hud-objective {
+    min-width: 0;
+    overflow: hidden;
+    color: #f8fbff;
+    font-size: 15px;
+    font-weight: 800;
+    line-height: 1.1;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.gatos-minigame .mg-hud-icon {
+    width: 26px;
+    height: 26px;
+    object-fit: contain;
+}
+
 .gatos-minigame .minigame-field {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    flex: none;
     cursor: none;
-    background: #000;
+    background-color: #05070d;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.55);
+    contain: layout paint style;
+}
+
+.mg-map-viewport {
+    position: relative;
+    width: min(100%, calc(100vh * 1672 / 941));
+    max-height: 100%;
+    aspect-ratio: 1672 / 941;
+    overflow: hidden;
+    background-color: #05070d;
+    background-image: var(--gatos-map);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    box-shadow: 0 0 26px rgba(0, 0, 0, 0.45);
+}
+
+.gatos-minigame .minigame-instructions {
+    position: absolute;
+    right: 16px;
+    bottom: 14px;
+    z-index: 8;
+    padding: 7px 11px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 6px;
+    background: rgba(3, 5, 10, 0.72);
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.gatos-minigame .minigame-result {
+    z-index: 20;
 }
 
 /* El laberinto: rejilla que mantiene proporción cuadrada y se centra */
@@ -3655,19 +3761,171 @@ body.cutscene-active #game-container .ss-pause-btn {
     width: 100%;
     height: 100%;
     display: grid;
+    background: transparent;
+    opacity: 0;
+    contain: layout paint style;
     /* las columnas/filas se fijan por JS con gridTemplate* */
 }
 
 /* Manzana de la ciudad (pared) */
 .mg-wall {
-    background: linear-gradient(160deg, #1b2a4a, #0d1526);
-    border: 1px solid #24365c;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.6);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
 }
 
 /* Calle transitable (asfalto) */
 .mg-street {
-    background: #05070d;
+    background: transparent;
+}
+
+.mg-collision-debug-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.mg-collision-debug-zone {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    border: 2px solid var(--debug-zone-color, rgba(255, 255, 255, 0.8));
+    background: var(--debug-zone-fill, rgba(255, 255, 255, 0.16));
+    box-shadow: 0 0 12px var(--debug-zone-glow, rgba(255, 255, 255, 0.25));
+}
+
+.mg-collision-debug-zone span {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 3px);
+    transform: translateX(-50%);
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.78);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    line-height: 1;
+    white-space: nowrap;
+    text-shadow: 0 1px 2px #000;
+}
+
+.mg-collision-debug-wall {
+    --debug-zone-color: rgba(255, 48, 84, 0.96);
+    --debug-zone-fill: rgba(255, 48, 84, 0.24);
+    --debug-zone-glow: rgba(255, 48, 84, 0.36);
+}
+
+.mg-collision-debug-walkable {
+    --debug-zone-color: rgba(110, 231, 168, 0.96);
+    --debug-zone-fill: rgba(110, 231, 168, 0.16);
+    --debug-zone-glow: rgba(110, 231, 168, 0.25);
+}
+
+.mg-collision-debug-hide {
+    --debug-zone-color: rgba(83, 210, 255, 0.96);
+    --debug-zone-fill: rgba(83, 210, 255, 0.18);
+    --debug-zone-glow: rgba(83, 210, 255, 0.3);
+}
+
+.mg-collision-debug-noise {
+    --debug-zone-color: rgba(255, 209, 102, 0.96);
+    --debug-zone-fill: rgba(255, 209, 102, 0.2);
+    --debug-zone-glow: rgba(255, 209, 102, 0.28);
+}
+
+.mg-collision-debug-spawn {
+    --debug-zone-color: rgba(190, 124, 255, 0.96);
+    --debug-zone-fill: rgba(190, 124, 255, 0.22);
+    --debug-zone-glow: rgba(190, 124, 255, 0.32);
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(190, 124, 255, 0.86);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.48), 0 0 16px rgba(190, 124, 255, 0.7);
+}
+
+.mg-collision-debug-spawn::before,
+.mg-collision-debug-spawn::after {
+    content: "";
+    position: absolute;
+    background: #fff;
+    opacity: 0.9;
+}
+
+.mg-collision-debug-spawn::before {
+    left: 50%;
+    top: -8px;
+    bottom: -8px;
+    width: 2px;
+    transform: translateX(-50%);
+}
+
+.mg-collision-debug-spawn::after {
+    left: -8px;
+    right: -8px;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+}
+
+.mg-collision-debug-exit {
+    --debug-zone-color: rgba(255, 139, 209, 0.96);
+    --debug-zone-fill: rgba(255, 139, 209, 0.2);
+    --debug-zone-glow: rgba(255, 139, 209, 0.3);
+}
+
+.mg-runtime-debug-point {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: rgba(255, 48, 84, 0.88);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.5), 0 0 18px rgba(255, 48, 84, 0.8);
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+}
+
+.mg-runtime-debug-point::before,
+.mg-runtime-debug-point::after {
+    content: "";
+    position: absolute;
+    background: #fff;
+}
+
+.mg-runtime-debug-point::before {
+    left: 50%;
+    top: -10px;
+    bottom: -10px;
+    width: 2px;
+    transform: translateX(-50%);
+}
+
+.mg-runtime-debug-point::after {
+    left: -10px;
+    right: -10px;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+}
+
+.mg-runtime-debug-point span {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 8px);
+    transform: translateX(-50%);
+    padding: 3px 6px;
+    border-radius: 4px;
+    background: rgba(0, 0, 0, 0.82);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
 }
 
 /* Samu y los gatos se posicionan por top/left dentro del campo (%) */
@@ -3676,14 +3934,50 @@ body.cutscene-active #game-container .ss-pause-btn {
     transform: translate(-50%, -50%);
     transition: none;
     font-size: 34px;
-    filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.8));
-    z-index: 3;
+    filter: drop-shadow(0 0 4px rgba(255, 204, 0, 0.55));
+    z-index: 4;
+}
+
+.gatos-minigame .mg-player::after,
+.mg-cat::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 34px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.38);
+    filter: blur(2px);
+    transform: translateX(-50%);
+    z-index: -1;
+}
+
+.gatos-debug-collisions .mg-player::before,
+.gatos-debug-collisions .mg-cat::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 14px;
+    height: 14px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    background: rgba(255, 48, 84, 0.82);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.48), 0 0 12px rgba(255, 48, 84, 0.7);
+    transform: translate(-50%, -50%);
+    z-index: 6;
+}
+
+.gatos-debug-collisions .mg-cat::before {
+    background: rgba(83, 210, 255, 0.82);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.48), 0 0 12px rgba(83, 210, 255, 0.7);
 }
 
 .gatos-minigame .mg-player img {
     height: 60px;
     width: auto;
-    filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.8));
+    filter: drop-shadow(0 0 4px rgba(255, 204, 0, 0.55));
 }
 
 .mg-cat {
@@ -3695,7 +3989,7 @@ body.cutscene-active #game-container .ss-pause-btn {
     pointer-events: none;
     filter: drop-shadow(0 0 5px rgba(212, 0, 0, 0.8));
     animation: mg-cat-bob 0.5s ease-in-out infinite alternate;
-    z-index: 3;
+    z-index: 4;
 }
 
 .mg-cat img {

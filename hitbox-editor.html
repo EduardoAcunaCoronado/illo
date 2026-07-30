@@ -402,6 +402,10 @@
         spriteW: width / 920,
         spriteH: height / 600,
       });
+      const stageSprite = (width, height) => ({
+        spriteW: width / 1280,
+        spriteH: height / 720,
+      });
       const games = {
         ketchupBoss: {
           label: 'Bullet Hell de Zip',
@@ -475,6 +479,32 @@
               x: 0.68,
               y: 0.42,
               hitbox: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.039, h: 0.039 },
+            },
+          },
+        },
+        gatos: {
+          label: 'Gatos de Micaela Michis',
+          objects: {
+            samu: {
+              label: 'Samu',
+              kind: 'player',
+              type: 'circle',
+              sprite: 'assets/images/characters/samu/run/samu_run_1.webp',
+              frames: [
+                { label: 'Abajo · frame 1', sprite: 'assets/images/characters/samu/run/samu_run_1.webp' },
+                { label: 'Abajo · frame 2', sprite: 'assets/images/characters/samu/run/samu_run_2.webp' },
+                { label: 'Abajo · frame 3', sprite: 'assets/images/characters/samu/run/samu_run_3.webp' },
+                { label: 'Derecha/izquierda · frame 4', sprite: 'assets/images/characters/samu/run/samu_run_4.webp' },
+                { label: 'Derecha/izquierda · frame 5', sprite: 'assets/images/characters/samu/run/samu_run_5.webp' },
+                { label: 'Derecha/izquierda · frame 6', sprite: 'assets/images/characters/samu/run/samu_run_6.webp' },
+                { label: 'Arriba · frame 7', sprite: 'assets/images/characters/samu/run/samu_run_7.webp' },
+                { label: 'Arriba · frame 8', sprite: 'assets/images/characters/samu/run/samu_run_8.webp' },
+                { label: 'Arriba · frame 9', sprite: 'assets/images/characters/samu/run/samu_run_9.webp' },
+              ],
+              ...stageSprite(60 * 155 / 228, 60),
+              x: 0.5,
+              y: 0.5,
+              hitbox: { shape: 'circle', offsetX: 0, offsetY: 0, w: 0.028, h: 0.028, rotation: 0, coordinateSpace: 'stage1280x720' },
             },
           },
         },

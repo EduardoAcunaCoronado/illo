@@ -518,7 +518,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/audio/music/chapter2/te-comprometes.mp3",
+              "path": "assets/audio/music/chapter2/michis-de-micaela.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -529,6 +529,7 @@
               "game": "gatos",
               "survive": 62,
               "cats": 3,
+              "collisionMapId": "gatos_supermercado_exterior",
               "playerSpeed": 5,
               "catSpeed": 3
             },

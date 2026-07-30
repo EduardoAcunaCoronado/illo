@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de colisiones</title>
+    <style>
+        :root {
+            --bg: #070310;
+            --panel: rgba(10, 8, 20, .94);
+            --line: rgba(255, 255, 255, .16);
+            --text: #f8fbff;
+            --muted: #aab3cf;
+            --accent: #53d2ff;
+        }
+
+        * { box-sizing: border-box; }
+        [hidden] { display: none !important; }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 360px;
+            background: radial-gradient(circle at 25% 20%, rgba(83, 210, 255, .18), transparent 34%), var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            overflow: hidden;
+        }
+
+        main {
+            min-width: 0;
+            min-height: 0;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            overflow: auto;
+        }
+
+        #map-field {
+            position: relative;
+            width: min(960px, calc(100vw - 430px));
+            aspect-ratio: 1672 / 941;
+            overflow: hidden;
+            border: 2px solid rgba(83, 210, 255, .32);
+            border-radius: 8px;
+            background:
+                linear-gradient(rgba(255, 255, 255, .055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, .055) 1px, transparent 1px),
+                #151727;
+            background-size: 32px 32px;
+            box-shadow: inset 0 0 28px rgba(0, 0, 0, .55), 0 0 30px rgba(0, 0, 0, .45);
+        }
+
+        #map-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .zone {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--zone-color, #fff);
+            background: color-mix(in srgb, var(--zone-color, #fff) 22%, transparent);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, .62), 0 0 12px color-mix(in srgb, var(--zone-color, #fff) 60%, transparent);
+            cursor: move;
+            z-index: 5;
+        }
+
+        .zone.is-selected {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+            z-index: 8;
+        }
+
+        .zone span {
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 4px);
+            transform: translateX(-50%);
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, .78);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .resize {
+            position: absolute;
+            right: -6px;
+            bottom: -6px;
+            width: 12px;
+            height: 12px;
+            border: 1px solid #fff;
+            background: var(--zone-color, #fff);
+            cursor: nwse-resize;
+        }
+
+        .zone.zone-spawn {
+            width: 18px !important;
+            height: 18px !important;
+            border-radius: 50%;
+            background: var(--zone-color, #fff);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, .55), 0 0 18px var(--zone-color, #fff);
+        }
+
+        .zone.zone-spawn::before,
+        .zone.zone-spawn::after {
+            content: "";
+            position: absolute;
+            background: #fff;
+            opacity: .9;
+            pointer-events: none;
+        }
+
+        .zone.zone-spawn::before {
+            left: 50%;
+            top: -8px;
+            bottom: -8px;
+            width: 2px;
+            transform: translateX(-50%);
+        }
+
+        .zone.zone-spawn::after {
+            left: -8px;
+            right: -8px;
+            top: 50%;
+            height: 2px;
+            transform: translateY(-50%);
+        }
+
+        .zone.zone-spawn .resize {
+            display: none;
+        }
+
+        aside {
+            height: 100vh;
+            min-height: 0;
+            padding: 14px;
+            border-left: 1px solid var(--line);
+            background: var(--panel);
+            overflow-y: auto;
+        }
+
+        h1 { margin: 0; color: var(--accent); font-size: 22px; }
+        h2 { margin: 16px 0 8px; color: #e7efff; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+        p { margin: 6px 0 12px; color: var(--muted); font-size: 12px; line-height: 1.4; }
+
+        label {
+            display: grid;
+            gap: 6px;
+            margin-top: 10px;
+            color: #dbe7ff;
+            font-size: 12px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, .22);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, .38);
+            color: #fff;
+            padding: 8px;
+            font-size: 13px;
+        }
+
+        textarea {
+            min-height: 190px;
+            resize: vertical;
+            font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+            font-size: 11px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        button {
+            border: 1px solid rgba(255, 255, 255, .26);
+            border-radius: 7px;
+            background: rgba(83, 210, 255, .14);
+            color: #fff;
+            padding: 9px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        button:hover { filter: brightness(1.18); }
+        button.danger { background: rgba(255, 48, 84, .16); }
+        button.primary { background: rgba(83, 210, 255, .28); border-color: rgba(83, 210, 255, .5); }
+        button.full { grid-column: 1 / -1; }
+
+        .status {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 4px 7px;
+            border-radius: 999px;
+            color: #6ee7a8;
+            background: rgba(110, 231, 168, .1);
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 900px) {
+            body { display: block; height: auto; overflow: auto; }
+            aside { height: auto; border-left: 0; border-top: 1px solid var(--line); }
+            #map-field { width: calc(100vw - 32px); }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div id="map-field">
+            <img id="map-image" alt="">
+        </div>
+    </main>
+
+    <aside>
+        <h1>Colisiones <span id="save-status" class="status">Guardado</span></h1>
+        <p>Carga un mapa y dibuja zonas. Las coordenadas se guardan en fracciones 0-1 para poder reutilizarlas con cualquier resolución.</p>
+
+        <h2>Mapa</h2>
+        <label>Id
+            <input id="map-id" value="gatos_supermercado_exterior">
+        </label>
+        <label>Imagen
+            <input id="image-path" value="assets/images/minigames/chapter2/gatos/mapa_minijuego_gatos.png" placeholder="assets/images/minigames/chapter2/gatos/mapa_minijuego_gatos.png">
+        </label>
+        <div class="buttons">
+            <button id="load-image-btn" class="primary" type="button">Cargar imagen</button>
+            <button id="open-test-btn" type="button">Volver a tests</button>
+        </div>
+
+        <h2>Zona</h2>
+        <label>Seleccionada
+            <select id="zone-select"></select>
+        </label>
+        <label>Tipo
+            <select id="zone-type">
+                <option value="wall">wall · bloquea</option>
+                <option value="walkable">walkable · guía visual</option>
+                <option value="hide">hide · escondite</option>
+                <option value="noise">noise · ruido</option>
+                <option value="spawn">spawn · inicio</option>
+                <option value="exit">exit · salida</option>
+            </select>
+        </label>
+        <label>Nombre
+            <input id="zone-label">
+        </label>
+        <div class="grid">
+            <label>X<input id="zone-x" type="number" min="0" max="1" step="0.001"></label>
+            <label>Y<input id="zone-y" type="number" min="0" max="1" step="0.001"></label>
+            <label>Ancho<input id="zone-w" type="number" min="0.001" max="1" step="0.001"></label>
+            <label>Alto<input id="zone-h" type="number" min="0.001" max="1" step="0.001"></label>
+        </div>
+        <div class="buttons">
+            <button id="add-zone-btn" class="primary" type="button">Añadir zona</button>
+            <button id="duplicate-zone-btn" type="button">Duplicar</button>
+            <button id="delete-zone-btn" class="danger" type="button">Eliminar</button>
+            <button id="center-zone-btn" type="button">Centrar</button>
+        </div>
+
+        <h2>Guardado</h2>
+        <div class="buttons">
+            <button id="save-btn" class="primary" type="button">Guardar</button>
+            <button id="copy-btn" type="button">Copiar JSON</button>
+            <button id="import-btn" type="button">Importar JSON</button>
+            <button id="reset-btn" class="danger" type="button">Reset mapa</button>
+        </div>
+        <label>JSON
+            <textarea id="output"></textarea>
+        </label>
+    </aside>
+
+    <script>
+      const STORAGE_KEY = 'illo_collision_maps';
+      const GATOS_MAP_IMAGE = 'assets/images/minigames/chapter2/gatos/mapa_minijuego_gatos.png';
+      const colors = {
+        wall: '#ff3054',
+        walkable: '#6ee7a8',
+        hide: '#53d2ff',
+        noise: '#ffd166',
+        spawn: '#be7cff',
+        exit: '#ff8bd1',
+      };
+      const defaults = {
+        gatos_supermercado_exterior: {
+          id: 'gatos_supermercado_exterior',
+          image: GATOS_MAP_IMAGE,
+          zones: [],
+        },
+      };
+
+      const field = document.getElementById('map-field');
+      const image = document.getElementById('map-image');
+      const mapIdInput = document.getElementById('map-id');
+      const imagePathInput = document.getElementById('image-path');
+      const zoneSelect = document.getElementById('zone-select');
+      const zoneType = document.getElementById('zone-type');
+      const zoneLabel = document.getElementById('zone-label');
+      const inputs = {
+        x: document.getElementById('zone-x'),
+        y: document.getElementById('zone-y'),
+        w: document.getElementById('zone-w'),
+        h: document.getElementById('zone-h'),
+      };
+      const output = document.getElementById('output');
+      const saveStatus = document.getElementById('save-status');
+
+      let maps = loadMaps();
+      const params = new URLSearchParams(location.search);
+      let currentMapId = params.get('map') || mapIdInput.value;
+      let currentZoneId = null;
+      let drag = null;
+
+      function loadMaps() {
+        try {
+          return { ...defaults, ...JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') };
+        } catch (error) {
+          return { ...defaults };
+        }
+      }
+
+      function currentMap() {
+        maps[currentMapId] = maps[currentMapId] || { id: currentMapId, image: imagePathInput.value, zones: [] };
+        if (currentMapId === 'gatos_supermercado_exterior' && !maps[currentMapId].image) {
+          maps[currentMapId].image = GATOS_MAP_IMAGE;
+        }
+        return maps[currentMapId];
+      }
+
+      function markDirty() {
+        saveStatus.textContent = 'Sin guardar';
+        saveStatus.style.color = '#ffd166';
+      }
+
+      function markSaved() {
+        saveStatus.textContent = 'Guardado';
+        saveStatus.style.color = '#6ee7a8';
+      }
+
+      function clamp(value, min, max) {
+        return Math.max(min, Math.min(max, value));
+      }
+
+      function uid(prefix = 'zone') {
+        return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 6)}`;
+      }
+
+      function ensureSelection() {
+        const map = currentMap();
+        if (!map.zones.length) {
+          map.zones.push({ id: uid('spawn'), type: 'spawn', label: 'Inicio Samu', x: 0.12, y: 0.82, w: 0.06, h: 0.08 });
+          currentZoneId = map.zones[0].id;
+        }
+        if (!map.zones.some((zone) => zone.id === currentZoneId)) currentZoneId = map.zones[0]?.id || null;
+      }
+
+      function selectedZone() {
+        return currentMap().zones.find((zone) => zone.id === currentZoneId) || null;
+      }
+
+      function syncMapFields() {
+        const map = currentMap();
+        mapIdInput.value = map.id;
+        imagePathInput.value = map.image;
+        image.hidden = !map.image;
+        image.src = map.image ? `${map.image}?v=${Date.now()}` : '';
+      }
+
+      function renderZoneSelect() {
+        const map = currentMap();
+        zoneSelect.innerHTML = map.zones
+          .map((zone, index) => `<option value="${zone.id}">${index + 1}. ${zone.label || zone.type}</option>`)
+          .join('');
+        zoneSelect.value = currentZoneId || '';
+      }
+
+      function renderZones() {
+        field.querySelectorAll('.zone').forEach((el) => el.remove());
+        currentMap().zones.forEach((zone) => {
+          const el = document.createElement('div');
+          el.className = `zone zone-${zone.type || 'zone'} ${zone.id === currentZoneId ? 'is-selected' : ''}`;
+          el.dataset.zoneId = zone.id;
+          el.style.setProperty('--zone-color', colors[zone.type] || '#fff');
+          el.style.left = `${zone.x * 100}%`;
+          el.style.top = `${zone.y * 100}%`;
+          el.style.width = `${zone.w * 100}%`;
+          el.style.height = `${zone.h * 100}%`;
+          el.innerHTML = `<span>${zone.label || zone.type}</span><b class="resize"></b>`;
+          field.appendChild(el);
+        });
+      }
+
+      function syncInputs() {
+        const zone = selectedZone();
+        if (!zone) return;
+        zoneType.value = zone.type;
+        zoneLabel.value = zone.label || '';
+        Object.entries(inputs).forEach(([key, input]) => {
+          input.value = Number(zone[key] || 0).toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+        });
+      }
+
+      function renderOutput() {
+        output.value = JSON.stringify(currentMap(), null, 2);
+      }
+
+      function render() {
+        ensureSelection();
+        const imageParam = params.get('image');
+        if (imageParam && currentMap().image !== imageParam) currentMap().image = imageParam;
+        syncMapFields();
+        renderZoneSelect();
+        renderZones();
+        syncInputs();
+        renderOutput();
+      }
+
+      function patchSelected(patch) {
+        const zone = selectedZone();
+        if (!zone) return;
+        Object.assign(zone, patch);
+        markDirty();
+        renderZoneSelect();
+        renderZones();
+        syncInputs();
+        renderOutput();
+      }
+
+      function addZone(type = zoneType.value || 'wall') {
+        const map = currentMap();
+        const zone = { id: uid(type), type, label: type, x: 0.5, y: 0.5, w: 0.16, h: 0.12 };
+        map.zones.push(zone);
+        currentZoneId = zone.id;
+        markDirty();
+        render();
+      }
+
+      document.getElementById('load-image-btn').addEventListener('click', () => {
+        const id = mapIdInput.value.trim() || 'mapa_colisiones';
+        currentMapId = id;
+        maps[id] = maps[id] || { id, image: imagePathInput.value.trim(), zones: [] };
+        maps[id].id = id;
+        maps[id].image = imagePathInput.value.trim();
+        markDirty();
+        render();
+      });
+
+      document.getElementById('add-zone-btn').addEventListener('click', () => addZone());
+      document.getElementById('duplicate-zone-btn').addEventListener('click', () => {
+        const zone = selectedZone();
+        if (!zone) return;
+        const copy = { ...zone, id: uid(zone.type), label: `${zone.label || zone.type} copia`, x: clamp(zone.x + 0.025, 0, 1), y: clamp(zone.y + 0.025, 0, 1) };
+        currentMap().zones.push(copy);
+        currentZoneId = copy.id;
+        markDirty();
+        render();
+      });
+      document.getElementById('delete-zone-btn').addEventListener('click', () => {
+        const map = currentMap();
+        map.zones = map.zones.filter((zone) => zone.id !== currentZoneId);
+        currentZoneId = map.zones[0]?.id || null;
+        markDirty();
+        render();
+      });
+      document.getElementById('center-zone-btn').addEventListener('click', () => patchSelected({ x: 0.5, y: 0.5 }));
+
+      zoneSelect.addEventListener('change', () => {
+        currentZoneId = zoneSelect.value;
+        render();
+      });
+      zoneType.addEventListener('change', () => {
+        const patch = { type: zoneType.value };
+        if (zoneType.value === 'spawn') Object.assign(patch, { w: 0.018, h: 0.018 });
+        patchSelected(patch);
+      });
+      zoneLabel.addEventListener('change', () => patchSelected({ label: zoneLabel.value.trim() }));
+      Object.entries(inputs).forEach(([key, input]) => {
+        input.addEventListener('change', () => {
+          const value = Math.max(key === 'w' || key === 'h' ? 0.001 : 0, Number(input.value) || 0);
+          patchSelected({ [key]: clamp(value, 0, 1) });
+        });
+      });
+
+      field.addEventListener('pointerdown', (event) => {
+        const zoneEl = event.target.closest('.zone');
+        if (!zoneEl) return;
+        event.preventDefault();
+        currentZoneId = zoneEl.dataset.zoneId;
+        const zone = selectedZone();
+        const rect = field.getBoundingClientRect();
+        drag = {
+          mode: event.target.classList.contains('resize') ? 'resize' : 'move',
+          startX: event.clientX,
+          startY: event.clientY,
+          fieldW: rect.width || 1,
+          fieldH: rect.height || 1,
+          ...zone,
+        };
+        render();
+      });
+
+      window.addEventListener('pointermove', (event) => {
+        if (!drag) return;
+        const dx = (event.clientX - drag.startX) / drag.fieldW;
+        const dy = (event.clientY - drag.startY) / drag.fieldH;
+        if (drag.mode === 'resize') {
+          patchSelected({ w: clamp(drag.w + dx * 2, 0.001, 1), h: clamp(drag.h + dy * 2, 0.001, 1) });
+        } else {
+          patchSelected({ x: clamp(drag.x + dx, 0, 1), y: clamp(drag.y + dy, 0, 1) });
+        }
+      });
+      window.addEventListener('pointerup', () => { drag = null; });
+
+      document.getElementById('save-btn').addEventListener('click', () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(maps, null, 2));
+        markSaved();
+        renderOutput();
+      });
+      document.getElementById('copy-btn').addEventListener('click', () => {
+        navigator.clipboard?.writeText(output.value).catch(() => {});
+      });
+      document.getElementById('import-btn').addEventListener('click', () => {
+        try {
+          const imported = JSON.parse(output.value);
+          const id = imported.id || mapIdInput.value.trim() || currentMapId;
+          maps[id] = { ...imported, id, zones: imported.zones || [] };
+          currentMapId = id;
+          currentZoneId = maps[id].zones[0]?.id || null;
+          markDirty();
+          render();
+        } catch (error) {
+          alert('JSON no válido.');
+        }
+      });
+      document.getElementById('reset-btn').addEventListener('click', () => {
+        delete maps[currentMapId];
+        currentMapId = mapIdInput.value.trim() || 'gatos_supermercado_exterior';
+        currentZoneId = null;
+        markDirty();
+        render();
+      });
+      document.getElementById('open-test-btn').addEventListener('click', () => {
+        location.href = 'minijuegos_test.html';
+      });
+
+      image.addEventListener('load', () => {
+        const maxW = Math.max(260, window.innerWidth - 430);
+        const maxH = Math.max(260, window.innerHeight - 60);
+        const naturalW = image.naturalWidth || 1280;
+        const naturalH = image.naturalHeight || 720;
+        const scale = Math.min(1, maxW / naturalW, maxH / naturalH);
+        field.style.width = `${Math.round(naturalW * scale)}px`;
+        field.style.height = `${Math.round(naturalH * scale)}px`;
+      });
+
+      render();
+    </script>
+</body>
+</html>

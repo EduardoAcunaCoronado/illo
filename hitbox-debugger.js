@@ -214,6 +214,7 @@
         w: Number(current.w) || 0,
         h: Number(current.h) || 0,
         rotation: Number(current.rotation) || 0,
+        ...(current.coordinateSpace ? { coordinateSpace: current.coordinateSpace } : {}),
       };
       navigator.clipboard?.writeText(JSON.stringify(payload, null, 2)).catch(() => {});
     });

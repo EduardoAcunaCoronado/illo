@@ -97,6 +97,7 @@
         .tp-btn:hover { filter: brightness(1.15); transform: translateY(-2px); }
         .tp-btn:active { transform: translateY(1px); }
         .tp-music { display: flex; align-items: center; gap: 8px; font-size: 13px; opacity: .85; margin-top: 6px; }
+        .tp-inline-input { width: 72px; border: 1px solid rgba(255,255,255,.22); border-radius: 8px; background: rgba(0,0,0,.32); color: #fff; padding: 6px 8px; }
         .tp-hint { font-size: 12px; opacity: .55; max-width: 460px; line-height: 1.5; }
         .tp-battle-row { align-items: stretch; }
         .tp-battle-card {
@@ -302,6 +303,26 @@
         <label class="tp-music">
             <input type="checkbox" id="zip-debug-hitboxes"> Mostrar hitbox real de Zip
         </label>
+        
+        <h2>🐈 Los gatos de Micaela Michis</h2>
+        <div class="tp-row">
+            <button class="tp-btn" style="--c:#7cffb2" onclick="launchGatos('facil')">Fácil</button>
+            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchGatos('medio')">Medio</button>
+            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchGatos('dificil')">Difícil</button>
+            <button class="tp-btn" style="--c:#ffd166" onclick="launchGatos('historia')">📖 Como en la historia</button>
+            <button class="tp-btn" style="--c:#53d2ff" onclick="openCollisionEditor('gatos_supermercado_exterior')">Editar colisiones</button>
+            <button class="tp-btn" style="--c:#be7cff" onclick="openHitboxEditor('gatos')">Editar hitbox</button>
+        </div>
+        <label class="tp-music">
+            <input type="checkbox" id="gatos-debug-collisions" checked> Mostrar colisiones del mapa
+        </label>
+        <label class="tp-music">
+            <input type="checkbox" id="gatos-debug-hitbox" checked> Mostrar hitbox de Samu
+        </label>
+        <label class="tp-music">
+            Cantidad de gatos
+            <input class="tp-inline-input" id="gatos-cat-count" type="number" min="1" max="12" step="1" placeholder="Auto">
+        </label>
 
         <h2>🔷 Equilibrio de poderes</h2>
         <div class="tp-row">
@@ -369,7 +390,7 @@
       (function () {
         var v = Date.now();
         ['juice.js', 'ketchup-hitboxes.js', 'hitbox-debugger.js', 'battle-minigame.js', 'credits-minigame.js', 'chili-harvest-minigame.js',
-         'ketchup-minigame.js', 'rune-channeling-minigame.js', 'engine.js'].forEach(function (f) {
+         'ketchup-minigame.js', 'rune-channeling-minigame.js','gatos-minigame.js', 'engine.js'].forEach(function (f) {
           document.write('<scr' + 'ipt src="' + f + '?v=' + v + '"><\/scr' + 'ipt>');
         });
       })();
@@ -395,16 +416,26 @@
         function musicOn() { return document.getElementById('tp-music-on').checked; }
         function battleDebugStatsOn() { return document.getElementById('tp-battle-debug-stats').checked; }
         function openHitboxEditor(gameId) {
-            window.open('hitbox-editor.html?game=' + encodeURIComponent(gameId), '_blank');
+          window.open('hitbox-editor.html?game=' + encodeURIComponent(gameId), '_blank');
+        }
+
+        function openCollisionEditor(mapId) {
+          const params = new URLSearchParams({ map: mapId });
+          if (mapId === 'gatos_supermercado_exterior') {
+            params.set('image', 'assets/images/minigames/chapter2/gatos/mapa_minijuego_gatos.png');
+          }
+          window.open('collision-editor.html?' + params.toString(), '_blank');
         }
         function syncHitboxDebugger() {
             if (!window.HitboxDebugger) return;
             const globalDebug = document.getElementById('tp-hitbox-debugger')?.checked;
             const zipDebug = document.getElementById('zip-debug-hitboxes')?.checked;
-            window.HitboxDebugger.setEnabled(!!(globalDebug || zipDebug));
-            window.HitboxDebugger.setEditMode(!!document.getElementById('tp-hitbox-edit')?.checked);
+            const gatosDebug = document.getElementById('gatos-debug-hitbox')?.checked;
+            const globalEdit = document.getElementById('tp-hitbox-edit')?.checked;
+            window.HitboxDebugger.setEnabled(!!(globalDebug || zipDebug || gatosDebug));
+            window.HitboxDebugger.setEditMode(!!globalEdit);
         }
-        ['tp-hitbox-debugger', 'tp-hitbox-edit', 'zip-debug-hitboxes'].forEach(function (id) {
+        ['tp-hitbox-debugger', 'tp-hitbox-edit', 'zip-debug-hitboxes', 'gatos-debug-hitbox'].forEach(function (id) {
             document.getElementById(id)?.addEventListener('change', syncHitboxDebugger);
         });
 
@@ -519,6 +550,12 @@
             facil:   { enemyHp: 600, maxHits: 4, spicePower: 22, maxSpicePower: 28 },
             medio:   { enemyHp: 700, maxHits: 3, spicePower: 14, maxSpicePower: 28 },
             dificil: { enemyHp: 850, maxHits: 2, spicePower: 6, maxSpicePower: 28 }
+        };
+        const GATOS = {
+            facil:    { survive: 25, cats: 2, playerSpeed: 5.2, catSpeed: 2.7, collisionMapId: 'gatos_supermercado_exterior' },
+            medio:    { survive: 40, cats: 3, playerSpeed: 5.0, catSpeed: 3.0, collisionMapId: 'gatos_supermercado_exterior' },
+            dificil:  { survive: 55, cats: 4, playerSpeed: 5.0, catSpeed: 3.4, collisionMapId: 'gatos_supermercado_exterior' },
+            historia: { survive: 62, cats: 3, playerSpeed: 5.0, catSpeed: 3.0, collisionMapId: 'gatos_supermercado_exterior' }
         };
         const RUNE_CHANNELING = {
             facil:   { levels: 7, holdRequired: 1.15 },
@@ -660,6 +697,22 @@
             });
             stopMusic();
             resultEl.textContent = '✅ ¡Zip derrotado con ' + engine.gameState.chiliPower + ' puntos de picante!';
+            panel.classList.remove('hidden');
+        }
+
+        async function launchGatos(preset) {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            startMusic('chapter2/michis-de-micaela.mp3');
+            const selectedCatCount = Number(document.getElementById('gatos-cat-count')?.value);
+            syncHitboxDebugger();
+            const won = await engine.playGatosMinigame({
+                ...GATOS[preset],
+                ...(selectedCatCount > 0 ? { cats: selectedCatCount } : {}),
+                debugCollisions: document.getElementById('gatos-debug-collisions')?.checked
+            });
+            stopMusic();
+            resultEl.textContent = won ? '✅ ¡Samu escapó de los gatos!' : '❌ Un gato alcanzó a Samu.';
             panel.classList.remove('hidden');
         }
 
