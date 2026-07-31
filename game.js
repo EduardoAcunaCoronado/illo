@@ -5,6 +5,20 @@ let clickHandler = null;
 let currentChapterNumber = 0;
 let currentChapterName = null;
 
+// Mantener Control acelera el texto y avanza las líneas, como el modo skip de
+// una novela visual. Las elecciones y los minijuegos siguen requiriendo input.
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Control" || e.repeat || !isGameRunning) return;
+  engine.setFastForward(true);
+  if (clickHandler) clickHandler();
+});
+
+document.addEventListener("keyup", (e) => {
+  if (e.key === "Control") engine.setFastForward(e.ctrlKey);
+});
+
+window.addEventListener("blur", () => engine.setFastForward(false));
+
 // Capítulos disponibles para el selector de "Cargar" (se cargan dinámicamente)
 let AVAILABLE_CHAPTERS = [];
 let availableChaptersPromise = null;
@@ -538,6 +552,7 @@ async function loadAllCharacters() {
 
 async function startNewGame() {
   if (isGameRunning) return; // doble clic = una sola partida
+  engine.setFastForward(false);
   stopMenuMedia();
   setMainMenuVisible(false);
   isGameRunning = true;
@@ -586,6 +601,7 @@ async function playChapter(chapterIdentifier, transitionCurtain = null) {
 
   if (!chapter) {
     isGameRunning = false;
+    engine.setFastForward(false);
     setMainMenuVisible(true);
     showMenuMedia();
     releaseChapterTransition(transitionCurtain);
@@ -641,8 +657,10 @@ async function playGame() {
 function waitForClick() {
   return new Promise((resolve) => {
     waitingForInput = true;
+    let fastForwardTimer = null;
     const handler = () => {
       waitingForInput = false;
+      if (fastForwardTimer) clearTimeout(fastForwardTimer);
       document.removeEventListener("click", handler);
       // IMPRESCINDIBLE ponerlo a null: los botones de retroceder y de escenas
       // desbloquean el bucle llamando a clickHandler(), y si se queda apuntando
@@ -653,11 +671,18 @@ function waitForClick() {
     };
     clickHandler = handler;
     document.addEventListener("click", handler);
+
+    if (engine.fastForward) {
+      fastForwardTimer = setTimeout(() => {
+        if (engine.fastForward) handler();
+      }, 45);
+    }
   });
 }
 
 async function endGame() {
   isGameRunning = false;
+  engine.setFastForward(false);
   rewindRequested = false;
   sceneJumpRequested = null;
   stopRewindWatcher();
@@ -836,6 +861,7 @@ function showChapterSelector() {
 
 async function startChapterFromSelector(chapterId) {
   if (isGameRunning) return; // doble clic = una sola partida
+  engine.setFastForward(false);
   stopMenuMedia();
   setMainMenuVisible(false);
 

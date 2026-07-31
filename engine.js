@@ -8,6 +8,8 @@ class VisualNovelEngine {
         this.gameState = {};
         this.history = [];
         this.isWaitingForInput = false;
+        this.fastForward = false;
+        this._finishTyping = null;
         this.typingSpeed = 50;
         this.lastChapterName = null;
         this.speakingCharacter = null;
@@ -35,6 +37,13 @@ class VisualNovelEngine {
     // Indica si el jugador tiene un objeto en el inventario.
     hasItem(name) {
         return this.inventory.includes(name);
+    }
+
+    setFastForward(active) {
+        this.fastForward = !!active;
+        if (this.fastForward && this._finishTyping) {
+            this._finishTyping();
+        }
     }
 
     async loadChapter(chapterName) {
@@ -4053,14 +4062,29 @@ class VisualNovelEngine {
         return new Promise(resolve => {
             let charIndex = 0;
             const text = line.text;
-            let skipTyping = false;
             let timeoutId = null;
+            let finished = false;
+
+            const cleanup = () => {
+                if (timeoutId) clearTimeout(timeoutId);
+                document.removeEventListener('click', skipHandler);
+                if (this._finishTyping === finishTyping) {
+                    this._finishTyping = null;
+                }
+            };
+
+            const finishTyping = () => {
+                if (finished) return;
+                finished = true;
+                cleanup();
+                dialogText.textContent = text;
+                this.isWaitingForInput = true;
+                resolve();
+            };
 
             const typeChar = () => {
-                if (skipTyping) {
-                    dialogText.textContent = text;
-                    this.isWaitingForInput = true;
-                    resolve();
+                if (this.fastForward) {
+                    finishTyping();
                     return;
                 }
 
@@ -4077,22 +4101,22 @@ class VisualNovelEngine {
                     }
                     timeoutId = setTimeout(typeChar, delay);
                 } else {
-                    this.isWaitingForInput = true;
-                    resolve();
+                    finishTyping();
                 }
             };
 
             const skipHandler = () => {
-                skipTyping = true;
-                if (timeoutId) clearTimeout(timeoutId);
-                dialogText.textContent = text;
-                this.isWaitingForInput = true;
-                document.removeEventListener('click', skipHandler);
-                resolve();
+                finishTyping();
             };
 
             document.addEventListener('click', skipHandler);
-            typeChar();
+            this._finishTyping = finishTyping;
+
+            if (this.fastForward) {
+                finishTyping();
+            } else {
+                typeChar();
+            }
         });
     }
 
