@@ -370,7 +370,9 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   0.38/0.35/0.32 s. Usa el fondo
   aire_fondo_v2.png, un nuevo Edu consistente de seis poses (cinco de aleteo
   y una de impulso), normalizadas en 512×512 transparente y limpias de restos
-  entre celdas. El peligro usa aire_cable_v3.png: un cable vertical completo
+  entre celdas. Los seis frames y la hoja fuente tienen eliminada la cuña blanca
+  de fondo que quedaba encerrada entre el bigote y la garganta, sin alterar el
+  bigote ni el contorno de la mandíbula. El peligro usa aire_cable_v3.png: un cable vertical completo
   y sin costuras con anclaje, trenza, refuerzos, terminal roto y electricidad
   animada; se escala conservando la proporción y se invierte para el suelo.
 - Battle supervivencia: Samu+Edu resisten a la marea hasta que Seraphyna canta.

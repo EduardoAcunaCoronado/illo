@@ -885,7 +885,10 @@ y `cables_aire_sheet_v2.png` como fuente del diseño del cable. Dentro de
 `partitura_v2.png`. Los cinco primeros frames de Edu forman un ciclo estable
 de aleteo y el sexto es una pose específica de impulso. Todos están
 normalizados sobre lienzos transparentes de `512×512`, con margen y sin restos
-de celdas vecinas. El cable de juego es un único dibujo continuo de anclaje,
+de celdas vecinas. También se limpió en los seis frames la cuña blanca atrapada
+entre el bigote y la garganta, conservando el bigote y el contorno de la
+mandíbula; la hoja fuente se reconstruyó con la misma corrección. El cable de
+juego es un único dibujo continuo de anclaje,
 cuerpo trenzado y terminal electrificado: su ancho se calcula a partir de su
 altura y se invierte desde el suelo sin uniones ni cambios de escala internos.
 
