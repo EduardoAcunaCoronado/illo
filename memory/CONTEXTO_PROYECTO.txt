@@ -333,8 +333,46 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   comprueba la distancia mínima de las trayectorias relativas durante el frame
   (colisión barrida), evitando tunneling a alta velocidad. El debug dibuja elipses
   discontinuas. Eduvuelo conserva cajas 2D porque no tiene profundidad de carretera.
+  Desde 2026-07-31 usa un motor de vuelo dedicado con cuenta atrás, pausa real,
+  control de altura por ratón o W/S e impulso con Espacio/clic. El impulso
+  consume energía, vuelve invulnerable a Edu y rompe peligros; contra los
+  altavoces activa un contrapulso. Hay cadena, puntuación, rangos S/A/B/C,
+  bonificación de casi-roce y frases de partituras garantizadas para evitar
+  partidas bloqueadas por el azar. Los patrones incluyen cables desde techo y
+  suelo, focos con aviso, altavoces pulsantes y ráfagas que empujan sin causar
+  daño. La dificultad aumenta durante la propia partida. Las colisiones usan
+  elipses para Edu/focos/altavoces, rectángulo estrecho para cables y muestreo
+  sincronizado de ambas trayectorias entre frames; así no se mezcla la posición
+  final de Edu con una posición anterior del peligro al moverse rápido. La
+  tolerancia 0.80 exige penetración visible y elimina golpes por roce o por
+  esquinas del antiguo barrido AABB. Cada impacto identifica el peligro y el
+  debug conserva una marca temporal del contacto exacto. Los objetos nacen
+  fuera del borde para entrar suavemente, pero sólo pueden interactuar tras
+  tener un 18 % de su hitbox dentro; por debajo del 10 % visible se bloquea la
+  colisión. El escenario recorta todo lo exterior con overflow hidden.
+  Los cables ya no dependen de un background CSS: usan un img interno y su
+  colisión permanece apagada hasta que el PNG confirma la carga; si falla o
+  tarda más de 1600 ms, el peligro se elimina. El cable inferior se invierte
+  alrededor de su centro, no del borde inferior, para que el dibujo crezca
+  desde el suelo dentro del escenario y coincida con su hitbox. Esta corrección
+  elimina el daño invisible que causaban los cables inferiores renderizados por
+  debajo del viewport. Tras un golpe, el obstáculo queda resaltado brevemente y
+  su aviso tiene prioridad para que el origen del daño sea visible.
 - Rhythm/Neon Runner: notas, sliders y spinner; resultado por precisión.
-- Eduvuelo: side-scroller vertical, recoger partituras, evitar focos/cables.
+- Eduvuelo V2: vuelo arcade; recoger frases de partituras, encadenar casi-roces,
+  administrar el impulso y superar cables, focos, altavoces y ráfagas. Tras
+  comprobar que el dash abarataba demasiado la evasión, se endurecieron todos
+  los modos. Presets fácil/medio/difícil: velocidad 5.4/7/9, objetivo 14/20/26,
+  impactos 4/3/2 y spawn 720/590/450 ms; regeneración/coste de dash 11/42,
+  8/52 y 6/60, con duraciones 0.40/0.36/0.32 s. Historia por storyDelay:
+  objetivo 20/24/28, velocidad 6.8/7.8/8.8, impactos 3/2/2 y spawn
+  600/520/450 ms; regeneración 8/7/6, coste 50/55/60 y duración
+  0.38/0.35/0.32 s. Usa el fondo
+  aire_fondo_v2.png, un nuevo Edu consistente de seis poses (cinco de aleteo
+  y una de impulso), normalizadas en 512×512 transparente y limpias de restos
+  entre celdas. El peligro usa aire_cable_v3.png: un cable vertical completo
+  y sin costuras con anclaje, trenza, refuerzos, terminal roto y electricidad
+  animada; se escala conservando la proporción y se invierte para el suelo.
 - Battle supervivencia: Samu+Edu resisten a la marea hasta que Seraphyna canta.
 - Battle normal: Ballerina, Tralalero, Tung, Amalgama y Amalgama final.
 - Rune Channeling: mantener/soltar A·S·D·F para equilibrar cuatro medidores durante

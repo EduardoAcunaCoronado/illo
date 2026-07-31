@@ -2095,48 +2095,108 @@
             {
               "type": "minigame",
               "game": "eduvuelo",
-              "goal": 12,
+              "goal": 20,
               "goalByDelay": {
-                "0": 12,
-                "1": 14,
-                "2": 16
+                "0": 20,
+                "1": 24,
+                "2": 28
               },
-              "speed": 5,
+              "speed": 6.8,
               "speedByDelay": {
-                "0": 5,
-                "1": 6,
-                "2": 7
+                "0": 6.8,
+                "1": 7.8,
+                "2": 8.8
               },
               "maxHits": 3,
               "maxHitsByDelay": {
                 "0": 3,
-                "1": 3,
+                "1": 2,
                 "2": 2
               },
-              "collectChance": 0.15,
-              "hangChance": 0.32,
-              "hangMin": 0.35,
-              "hangMax": 0.7,
-              "fallerChance": 0.31,
-              "fallerVy": 0.26,
-              "spawnMs": 300,
-              "spawnMsByDelay": {
-                "0": 300,
-                "1": 270,
-                "2": 240
-              },
-              "riserChance": 0.22,
-              "riserChanceByDelay": {
-                "0": 0.22,
-                "1": 0.24,
-                "2": 0.26
-              },
+              "collectChance": 0.32,
               "collectChanceByDelay": {
-                "0": 0.15,
-                "1": 0.14,
-                "2": 0.13
+                "0": 0.32,
+                "1": 0.27,
+                "2": 0.23
               },
-              "corridorMin": 0.18
+              "collectEvery": 3,
+              "collectEveryByDelay": {
+                "0": 3,
+                "1": 3,
+                "2": 4
+              },
+              "phraseMin": 1,
+              "phraseMax": 2,
+              "hangChance": 0.27,
+              "hangChanceByDelay": {
+                "0": 0.27,
+                "1": 0.31,
+                "2": 0.35
+              },
+              "hangMin": 0.31,
+              "hangMax": 0.61,
+              "hangMaxByDelay": {
+                "0": 0.61,
+                "1": 0.65,
+                "2": 0.69
+              },
+              "fallerChance": 0.27,
+              "fallerChanceByDelay": {
+                "0": 0.27,
+                "1": 0.31,
+                "2": 0.35
+              },
+              "fallerVy": 0.32,
+              "speakerChance": 0.18,
+              "speakerChanceByDelay": {
+                "0": 0.18,
+                "1": 0.23,
+                "2": 0.28
+              },
+              "gustChance": 0.11,
+              "spawnMs": 600,
+              "spawnMsByDelay": {
+                "0": 600,
+                "1": 520,
+                "2": 450
+              },
+              "riserChance": 0.2,
+              "riserChanceByDelay": {
+                "0": 0.2,
+                "1": 0.24,
+                "2": 0.28
+              },
+              "energyRegen": 8,
+              "energyRegenByDelay": {
+                "0": 8,
+                "1": 7,
+                "2": 6
+              },
+              "dashCost": 50,
+              "dashCostByDelay": {
+                "0": 50,
+                "1": 55,
+                "2": 60
+              },
+              "dashDuration": 0.38,
+              "dashDurationByDelay": {
+                "0": 0.38,
+                "1": 0.35,
+                "2": 0.32
+              },
+              "difficultyRamp": 0.3,
+              "difficultyRampByDelay": {
+                "0": 0.3,
+                "1": 0.38,
+                "2": 0.46
+              },
+              "corridorMin": 0.2,
+              "hitGraceMs": 850,
+              "hitGraceMsByDelay": {
+                "0": 850,
+                "1": 780,
+                "2": 700
+              }
             },
             {
               "type": "stopSound",
