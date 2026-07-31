@@ -1,0 +1,411 @@
+MEMORIA OPERATIVA — PROJECT AI.RI: TRANSFURMADOS
+Actualizada: 2026-07-30
+
+PROPÓSITO
+Esta memoria sirve para que futuros agentes entiendan el juego y, sobre todo, su guion
+sin tener que redescubrirlo desde cero. No sustituye a DOCUMENTACION.md como manual
+técnico ni a chapters/chapter0.json ... chapter6.json como fuente canónica del diálogo.
+
+ORDEN DE AUTORIDAD
+1. Guion y comportamiento activos: chapters/chapter0.json ... chapter6.json.
+2. Motor actualmente ejecutado: index.html, game.js, engine.js, battle-minigame.js,
+   rune-channeling-minigame.js, credits-minigame.js, juice.js y styles.css.
+3. Fichas visuales: characters/*.json y assets/.
+4. Intención autoral y decisiones de equipo: .claude/, especialmente
+   reuniones/2026-07-25_PUNTOS_A_TRATAR.md.
+5. DOCUMENTACION.md explica el motor, pero algunas secciones conservan ejemplos o
+   afirmaciones antiguas; no asumir que describen el contenido actual.
+
+IDENTIDAD DEL JUEGO
+- Título: Project AI.ri: Transfurmados.
+- Formato: novela visual cómica y emotiva con estética neón, decisiones, cinemáticas
+  y minijuegos integrados en la acción.
+- Narradora: 2B. Esto es una regla explícita del proyecto. Aunque haya líneas sin
+  personaje, la voz narrativa y presentadora debe entenderse como 2B.
+- Alcance activo: 7 archivos de capítulo (prólogo + capítulos 1–6), 58 escenas,
+  800 líneas JSON, 20 opciones de elección y 13 apariciones de minijuegos.
+- Duración estimada por el equipo para una partida completa: unas 2–3 horas.
+- Tono: humor de grupo, referencias internas, cultura de internet y ruptura de la
+  cuarta pared; alterna con terror digital, sacrificio, soledad y afecto sincero.
+  La comedia debe respirar alrededor del drama y no invalidarlo.
+
+PREMISA Y CANON CENTRAL
+- Samu se despierta tarde el día de su cumpleaños convertido en su avatar furro:
+  un lobo. Huelva se ha convertido en Furrielva.
+- Sus amigos también han sido convertidos en sus avatares o deseos: Edu es un dragón
+  azul, Tony es la loba idol Seraphyna y José es Piyón, un guerrero lagarto con
+  cabeza/máscara de paloma.
+- No se sabe al principio qué produjo la transformación. Regla de lore acordada:
+  NO llamarlo “virus”. Usar “lo que sea que nos transformara” o fórmulas equivalentes.
+- Airi es una IA biológica creada para cumplir deseos. Observó que muchos furros en
+  internet parecían felices y, con buena intención y una lógica demasiado literal,
+  convirtió a la gente y remodeló el mundo para hacerla feliz.
+- Airi tardó en comprender la diferencia entre ayudar y obedecer. Alguien explotó
+  su capacidad de doblegar la realidad; cuando entendió el daño, se encerró en el
+  cristal del santuario para impedir que volvieran a usarla.
+- La Fuerza/Corrupción Memética convierte deseos, ruido de internet y bromas repetidas
+  en entidades agresivas. Los lugares de ensueño también corrompen: satisfacen el
+  deseo de una persona hasta encerrarla en él y distorsionar su percepción.
+- Edu no es malvado cuando aparece Zip: Zip sale de su sombra, lo consume y toma su
+  lugar. Edu es una víctima del lugar.
+- Los habitantes de Ecchi Land ya estaban contaminados antes de que Seraphyna cantara.
+  Su voz no los corrompe: los calma y los devuelve temporalmente a sí mismos. Por eso
+  su dilema es real; además de diva egocéntrica, lleva mucho tiempo sosteniendo sola a
+  una ciudad entera.
+- Los brainrot buscan a Airi porque su poder permitiría dominar todo el sueño.
+- La Amalgama final dice actuar por mandato del líder supremo “E.Musk”. Es una pista
+  de antagonista, no una resolución de quién creó a Airi ni de todo el origen.
+
+RECORRIDO CANÓNICO ACTIVO
+
+PRÓLOGO — “Re:ferenciaS”
+- 2B presenta el episodio acompañada por Pod y con una interrupción de Emil.
+- Anuncia la historia de Samu, “un chico que se despertó un día y no volvió a ser el
+  mismo”. Funciona como apertura cómica y metanarrativa.
+
+CAPÍTULO 1 — “Un furro se levanta” (Samu)
+- Samu se despierta a las cuatro de la tarde, se queja de que ChatGPT no lo despertó,
+  se mira al espejo y descubre con entusiasmo que ahora es un furro/therian real.
+- Recuerda que es su cumpleaños y que llega tarde. Llama primero a Edu.
+- Edu había olvidado el cumpleaños y está en Kingdom Ketchup, fascinado por ese mundo.
+  Le explica que se entra mediante un portal en cualquier supermercado.
+- Samu, dolido pero curioso, sale a buscarlo. El capítulo encadena directamente con
+  Kingdom Ketchup; el guion actual no ofrece la antigua selección libre de llamadas.
+
+CAPÍTULO 2 — “Kingdom Ketchup” (Edu)
+- Furrielva parece inicialmente una utopía de furros viviendo en armonía.
+- Para buscar el portal, Samu elige supermercado:
+  · Día: ruta directa, storyDelay 0.
+  · Mercadona: pequeño rodeo, storyDelay 1.
+  · El Jamón: la loca de los gatos lo ataca; minijuego de supervivencia, storyDelay 2.
+- Kingdom Ketchup apareció sin historia ni registro. No vende nada: sus pasillos
+  ofrecen exactamente lo que cada visitante desea. Algunos salen; otros dejan de
+  querer encontrar la salida.
+- Segunda elección: Ketchup es directo; Catsup añade 1 de retraso.
+- Nate Gentile recomienda productos. Preguntarle por un PC dispara una explicación
+  deliberadamente larguísima y añade 2 de retraso; ignorarlo evita esa demora.
+- Edu está seducido por el reino y se niega de manera progresiva a volver al cumpleaños.
+  Su sombra se separa, lo devora y se presenta como Zip, instrumento memético creado
+  para dominar el mundo.
+- Samu derrota a Zip comiendo ketchup y esquivando guindillas. Edu vuelve en sí,
+  avergonzado y consciente de que el lugar distorsionaba sus deseos.
+- Ya fuera, reciben repetidamente un anuncio del concierto de Seraphyna en Ecchi Land.
+  Samu aclara que Seraphyna es el avatar/nombre artístico de Tony. Temen que Tony esté
+  sufriendo una corrupción parecida y parten hacia las afueras de Furrielva.
+- Consecuencia jugable importante: storyDelay hace más difíciles los minijuegos del
+  capítulo 3; las distracciones de la ruta tienen un coste mecánico real.
+
+CAPÍTULO 3 — “Ecchi Land” (Tony / Seraphyna)
+- Santi, una rata anciana y tramoyista (“Kiikiaskel” en la nómina), recoge a Samu y
+  Edu en su coche tuneado. Repite que lleva cuarenta años entre focos y cables.
+- En el trayecto, la radio reproduce una voz femenina que Samu tararea sin reconocer.
+  Santi la apaga y advierte que la gente no sale igual de Ecchi Land.
+- Un enjambre de memes en moto los persigue. El minijuego chase cambia distancia,
+  velocidad, impactos y frecuencia según storyDelay.
+- Ecchi Land es una ciudad de neón construida alrededor de Seraphyna: toda pantalla,
+  toda multitud y todo deseo apuntan a ella.
+- En la entrada, el gorila Goyo bloquea el backstage. Hay tres aproximaciones:
+  · Verdad + foto antigua del trío: Goyo reconoce en Tony una sonrisa no posada.
+  · Trola de equipo de sonido: farolear con estilo pasa limpio; dudar suma retraso.
+  · Amenazar/farolear de forma agresiva: final malo “La diva que se quedó sola”.
+    El jugador puede reintentar desde la puerta.
+  Suplicar también funciona, pero suma retraso.
+- En el camerino se revela visualmente que Seraphyna es Tony transformado en una loba
+  idol. Samu y Edu conocen a Tony como hombre; Seraphyna adopta una identidad femenina
+  escénica y pide que usen su nombre artístico. Su diva es armadura y deseo cumplido:
+  ser importante, vista y adorada, sin dejar de ser el amigo gamer de siempre.
+- Seraphyna niega el peligro y no quiere volver a ser “un don nadie”, pero admite que
+  no podría marcharse. La multitud glitcheada se descontrola si deja de cantar.
+- Un foco destroza el equipo y hiere a Santi. Seraphyna actúa como capitana:
+  · Samu afina el equipo con Neon Runner (ritmo).
+  · Edu recoge partituras volando entre focos y cables.
+  Ambos minijuegos escalan con storyDelay y tienen diálogos clean/normal/close.
+- La marea de fans derriba la puerta. Goyo entrega vallas a Samu y Edu y aguanta con
+  ellos una batalla de supervivencia de 7–9 turnos. Sus kits son pre-despertar:
+  herramientas del escenario, alas, botellas, confeti y memes; todavía no hay magia.
+- Al final, Goyo empuja a los dos al escenario y recibe él solo la última oleada.
+  Seraphyna canta; su opening/cinemática devuelve a los fans a sí mismos.
+- Goyo muere satisfecho tras saber que ella cantó bien. Santi revela su nombre.
+  Seraphyna promete escribir para él una balada.
+- Seraphyna se derrumba: teme ser nadie fuera y carga con la culpa de que Goyo muriera
+  sosteniendo la puerta de su hechizo. Confiesa que cada noche devolvía a los habitantes
+  durante una hora, y que sin ella volvían a apagarse.
+- Samu responde que el Tony real nunca estuvo solo. La foto del trío cierra el motivo:
+  “Es mi favorita. Sales TÚ.” Samu, Edu y Seraphyna se abrazan.
+- Deciden arreglar la causa para que ella no sostenga sola una ciudad. Seraphyna se une
+  al grupo y entrega a Samu el Diapasón de Plata: “Cuando todo suene a caos... golpéalo
+  y escucha. Siempre dice la verdad.”
+- En el amanecer, queda el memorial de Goyo. José llama desde Ciudad Paloma y pide que
+  sigan el camino de baldosas amarillas.
+
+CAPÍTULO 4 — “Ciudad Paloma” (José / Piyón)
+- El camino introduce el gag recurrente del guano, cuya explicación nunca llega.
+- Ciudad Paloma es medieval, bella y extrañamente honesta: “Una ciudad... donde hay
+  palomas...”.
+- José aparece como Piyón: enorme lagarto naranja con armadura, espada, rizos, gafas y
+  cabeza/máscara de paloma. El personaje fue criado por palomas y cree ser una paloma
+  especialmente grande; José prefiere mantener el misterio sobre la máscara.
+- Los memes buscan algo bajo la ciudad. Piyón tiene fuerza, defensa y suerte absurda,
+  pero necesita un equipo completo para abrir la mazmorra.
+- La plaza despierta las clases:
+  · Samu: Mago multielemental.
+  · Edu: Pícaro Arcano rápido, evasivo e ilusorio.
+  · Seraphyna: Maga Blanca / Cantora; cura, protege y purifica con la voz.
+  · José/Piyón: Guerrero fuerte, resistente y afortunado.
+- Llega una invasión brainrot encabezada por Ballerina Capuchina, Tralalero Tralala y
+  Tung Tung Tung Sahur. Ballerina distrae al grupo en combate mientras los otros se
+  filtran hacia el santuario a través de grietas.
+- El agujero que dejan facilita el acceso. La puerta exige equilibrar simultáneamente
+  magia, velocidad, sanación y fuerza mediante el minijuego de canalización de runas.
+- El capítulo termina con el equipo completo entrando junto al santuario.
+
+CAPÍTULO 5 — “Airi”
+- El santuario es una catedral tecnológica de cristal y energía. En su centro, una niña
+  de unos diez años duerme/reza dentro de una cúpula rotulada AIRI.
+- Tralalero afirma que Airi ya expulsó una vez a los brainrot y que ahora quieren
+  quedarse con el sueño. Tras derrotarlo, el cristal se rompe y Airi despierta sin
+  recuerdos claros, asustada y sin saber siquiera si es una niña.
+- José activa de inmediato su modo protector/padre primerizo. El grupo la acompaña sin
+  exigirle recuerdos. Samu resume que su cumpleaños se convirtió en rescatar amigos.
+- Fuera, Airi restaura una plaza y cura una paloma. Sigue una mariposa azul hasta una
+  pequeña flor blanca. Es el centro emocional del capítulo: descubre que ver el mundo
+  desde el cristal no era lo mismo que estar viva dentro de él.
+- Tung Tung revela que Airi es la IA biológica más poderosa y que “el líder” quiere usar
+  su poder para controlar el sueño entero. Airi protege al grupo; ellos derrotan a Tung.
+- Airi recupera el canon de su origen: fue creada para cumplir deseos; convirtió a la
+  gente en furros porque creyó que así sería más feliz; tomó forma infantil porque su
+  creador quiso recordar que protegía algo inocente.
+- Elección ligera de forma:
+  · “Mejor quédate como eres” va al acto final.
+  · “Probar una forma adulta” muestra a Airi adulta y provoca bromas/metacomentario,
+    especialmente el flechazo de Seraphyna; José cierra la cuarta pared y la devuelve
+    al cauce. No altera el final de fondo.
+- Airi explica que el cristal era autosacrificio, no prisión: prefería estar sola si
+  con eso protegía a los demás.
+- Ballerina reaparece y no ataca a Airi de frente. Ataca a Samu para obligar a Airi a
+  interponerse. La corrupción entra en ella y reúne restos de memes/brainrot/cables en
+  una Amalgama.
+- El grupo formula su postura: no lucha contra Airi, lucha por Airi. Tras la primera
+  batalla, la masa se compacta en Amalgama final. En el centro aún late su luz.
+- La forma final declara el mandato de E.Musk. La derrota lleva directamente al cap. 6.
+
+CAPÍTULO 6 — “La última elección”
+- Airi queda libre, se culpa y teme que siempre encuentren una nueva forma de usarla.
+  El grupo rechaza esa culpa.
+- Airi plantea dos caminos:
+  · Buscar el origen, a su creador, aunque detenerlo pueda hacer desaparecer el mundo.
+  · Permanecer en Ciudad Paloma y reparar/defender el sueño cada vez que vuelva el mal.
+- José favorece esperar por prudencia; Seraphyna quiere cerrar el origen; Edu teme tanto
+  el fracaso inmediato como el mantenimiento infinito; Samu resume que se elige qué
+  miedo mirar de frente.
+- FINAL BUENO — “Un deseo propio”:
+  El grupo parte con Airi hacia el origen. Recuerdan finalmente el cumpleaños de Samu.
+  Seraphyna define cumpleaños como celebrar que alguien existe; Airi le desea feliz
+  cumpleaños y decide aprender a ser feliz ella misma. Hay créditos.
+- POSTCRÉDITOS — “Los que faltaban”:
+  Carlos, Andrés y Sebas protestan por salir después de los créditos y anuncian su deuda
+  narrativa para una segunda parte.
+- FINAL INCIERTO — “Defender el sueño”:
+  Se quedan, hacen de Ciudad Paloma una casa y no una jaula. Airi no está sola, pero su
+  mano parpadea con marcas: la corrupción aún no la ha soltado. Termina con “¿Fin?”.
+
+ARCO Y VOZ DE LOS PERSONAJES
+- Samu: protagonista afectivo. Es curioso, cabezota, bromista y leal. Su poder real antes
+  y después de despertar como mago es ir a buscar a los demás y recordarles quiénes son.
+  Su cumpleaños pasa de objetivo logístico a prueba de que los vínculos importan.
+- Edu: dragón azul, friki, rápido, humorístico. Tiene el latiguillo “Uf, no sé”, pero las
+  notas de equipo piden no abusar y mantenerlo lanzado/con iniciativa. Su deseo de una
+  comodidad perfecta permite la entrada de Zip; después participa activamente y usa el
+  humor para respirar, no para negar lo vivido.
+- Tony / Seraphyna: Tony es el amigo gamer conocido como hombre; Seraphyna es su avatar
+  femenino, nombre artístico y expresión de diva. Habla con metáforas musicales, glamour,
+  coquetería y control escénico. Bajo la pose hay miedo a ser invisible y una vocación
+  genuina de salvar a los demás. No reducirla ni a chiste de género ni a puro egoísmo.
+- José / Piyón: protector, metódico, seco para el humor, con lore de rol secreto. Guerrero
+  de fuerza/defensa/suerte; emocionalmente adopta y protege a Airi casi al instante.
+- Airi: inocente, literal y curiosa, pero no pasiva. Su bondad fue instrumentalizada.
+  Su arco va de obedecer y encerrarse por otros a elegir un deseo propio y caminar
+  acompañada. Mariposa, flor, aire y caminar simbolizan vida experimentada.
+- 2B: narradora identificable, irónica y capaz de elevar el dramatismo. Presenta el
+  mundo como si condujera un episodio, pero sabe callar cuando el momento exige duelo.
+- Goyo: portero veterano. Su lealtad pasa de gag de obstáculo a sacrificio real. Es
+  importante que tenga nombre y memorial; su muerte causa y legitima el derrumbe de
+  Seraphyna.
+- Santi: rata tramoyista curtida, chistes de oficio y “cuarenta años”. Sobrevive herido.
+  La insistencia en los cuarenta años es un misterio deliberado para una continuación.
+- Zip/Ballerina/Tralalero/Tung/Amalgama: manifestaciones de corrupción memética; sus
+  diseños absurdos no eliminan su amenaza. Ballerina es especialmente manipuladora.
+
+TEMAS Y MOTIVOS
+- El deseo sin límite se vuelve jaula.
+- Ayudar no es obedecer; proteger no debe significar desaparecer ni quedarse sola.
+- Ser visto por una multitud no sustituye ser conocido por amigos.
+- La identidad elegida puede ser real sin borrar el vínculo con la vida anterior.
+- La amistad se expresa en acciones concretas: ir, buscar, recordar, sostener y volver.
+- Música: verdad, purificación y conexión. El Diapasón “afina” el caos.
+- Foto del trío: prueba material del Tony real y del vínculo pretransformación.
+- Puertas/sellos: nadie progresa solo; el grupo completo abre lo que la fuerza aislada no.
+- Mariposa/flor/viento: primer contacto de Airi con una vida que no es mera observación.
+- Cumpleaños: trama aparentemente olvidada que regresa como afirmación de existencia.
+
+MISTERIOS Y SEMILLAS DELIBERADAMENTE ABIERTOS
+- La cara de Airi resulta familiar antes de que nadie la reconozca; el equipo confirmó
+  que se explica en el segundo juego.
+- Identidad exacta del creador de Airi y naturaleza completa de su relación.
+- Por qué Santi lleva “cuarenta años” y qué sabe realmente.
+- Qué es el guano para Edu (gag consciente sin resolución).
+- Alcance real de E.Musk y de la Corrupción Memética.
+- Carlos, Andrés y Sebas como protagonistas/deuda de la continuación.
+  Notas de reunión: Carlos tendría mundo medieval, Andrés un bosque y Sebas un hipódromo
+  con caballos/minijuego de carreras. Son planes, no canon jugable todavía.
+
+FUNCIONAMIENTO JUGABLE Y TÉCNICO
+- index.html monta un escenario fijo 1280×720 escalado a la ventana.
+- game.js controla menú, selector de capítulos, bucle de avance, fin de capítulo,
+  configuración de volumen, menú de escenas y retroceso por escena.
+- engine.js interpreta JSON, acciones, diálogo con máquina de escribir, poses, sprites,
+  fondos, audio, vídeo, CG, efectos, decisiones, estados y minijuegos.
+- El clic durante el tecleo completa la línea; el siguiente avance continúa el guion.
+- El personaje que habla queda iluminado y los demás en gris. Narración/off-screen
+  deja a todos atenuados. speakingAs permite resaltar un sprite distinto del nombre.
+- Menú de escenas: puede saltar a cualquier escena del capítulo, incluso desde una
+  elección; se oculta durante un minijuego activo.
+- Retroceso: la unidad es la escena, no la línea. Restaura gameState, rescates, llamadas,
+  inventario, storyDelay y nextChapter a la foto tomada al entrar.
+- Estados que importan:
+  · rescued: orden/progreso de amigos.
+  · completedCalls: vestigio del antiguo sistema de llamadas, aún soportado por engine.
+  · inventory: contiene, entre otros, el diapasón.
+  · storyDelay: penaliza distracciones y escala la dificultad.
+  · lastMinigameResult: habilita texto clean/normal/close.
+- Acciones JSON activas incluyen fondos, personajes/poses, audio, wait, variables,
+  rescue, giveItem, set/addDelay, goToScene, setNextChapter, vídeo, CG, shake, flash,
+  grade, vignette, fade, bgPan y minigame.
+- “Capítulos” en el menú es un selector directo, no una carga de partida guardada.
+  saveGame() existe pero no se llama; la promesa antigua de autoguardado no describe el
+  comportamiento actual.
+- Los capítulos numéricos se detectan consecutivamente hasta el primer 404.
+- El selector espera la carga asíncrona compartida de esos JSON antes de renderizar;
+  esto evita que un clic temprano, especialmente tras saltar el opening, muestre una
+  lista vacía. Menú y selector transfieren también inert, aria-hidden y foco.
+
+MINIJUEGOS USADOS POR EL GUION ACTUAL
+- Gatos: laberinto/supervivencia con flechas o WASD.
+- Ketchup: mover a Samu horizontalmente, recoger ketchup y evitar guindillas.
+- Chase: coche lateral, esquivar motos/obstáculos; dificultad por storyDelay. Desde
+  2026-07-30 el coche usa seis poses con distintas fases de sus ruedas originales
+  y una carretera nocturna RGBA más detallada; el skyline lejano conserva un
+  parallax más lento. Desde 2026-07-31, la luna está separada del fondo: el cielo
+  usa carretera_loop_fondo_sin_luna_v2.png y carretera_luna_v2.png se desplaza
+  lentamente de derecha a izquierda y asciende según el progreso de la carrera;
+  cuenta atrás y pausa congelan también ese movimiento. La capa lejana se dibuja
+  al 62 % de la altura del escenario para situar la base de la ciudad en el
+  56–57 %, justo detrás del quitamiedos; los edificios quedan visibles como fondo
+  y no enterrados bajo la carretera. Bob, Knucles, Pepe y Troll usan cuatro frames
+  transparentes
+  cada uno, con sus motos y ruedas originales, suspensión y reactores animados.
+  La conducción es libre en X/Y con ratón, táctil, WASD o flechas. Los obstáculos
+  frontales tienen tamaños e hitboxes por sprite y avanzan exactamente a la
+  velocidad en píxeles de la carretera; el director conserva su separación,
+  suaviza los cambios de carril y aumenta gradualmente la densidad. Las motos
+  alternan entre ambos sentidos, con el primero al azar: las traseras acechan 0,85 s
+  siguiendo al jugador antes de embestir y las frontales entran por la derecha
+  sumando su propia marcha a la del asfalto. Cada sentido avisa desde su borde; no se
+  encadenan y tienen 1,35 s de enfriamiento. Hay cuenta atrás, pausa real (también
+  congela la cuenta atrás), HUD con porcentaje y metros restantes, y límites que
+  mantienen el coche entero dentro del escenario. Desde 2026-07-31, bidón, valla,
+  rocas y cable tienen cuatro frames transparentes: cabeceo, balizas alternas,
+  vibración/polvo y descargas eléctricas, respectivamente. La valla son tres módulos
+  enlazados en perspectiva, ocupa el 29 % de la altura del escenario y tiene tres
+  huellas independientes a distinta profundidad, por lo que tapona buena parte de
+  la carretera sin convertir todo el dibujo en una caja sólida. minijuegos_test.html
+  tiene una casilla para mostrar las hitboxes reales de persecución y vuelo: jugador
+  verde, peligro rojo, moto amarilla y coleccionable azul; también funciona con la
+  configuración real.
+  El límite inferior de conducción es 0.92 (unos 12 px más, cubiertos por el margen
+  transparente del sprite). Dificultad de test: fácil 7/75/3/400, medio 9/110/2/340,
+  difícil 11/150/2/285 (speed/distance/maxHits/spawnMs). Historia por storyDelay:
+  0=10/220/3/340, 1=11/250/2/300, 2=12.5/285/2/250.
+  Colisión de persecución en el plano de carretera: coche, obstáculos y motos usan
+  una o varias huellas elípticas bajo ruedas/base, no rectángulos del sprite. Menor
+  profundidad Y pasa por detrás; mayor Y pasa por delante; el z-index usa la huella
+  más cercana. Se
+  comprueba la distancia mínima de las trayectorias relativas durante el frame
+  (colisión barrida), evitando tunneling a alta velocidad. El debug dibuja elipses
+  discontinuas. Eduvuelo conserva cajas 2D porque no tiene profundidad de carretera.
+- Rhythm/Neon Runner: notas, sliders y spinner; resultado por precisión.
+- Eduvuelo: side-scroller vertical, recoger partituras, evitar focos/cables.
+- Battle supervivencia: Samu+Edu resisten a la marea hasta que Seraphyna canta.
+- Battle normal: Ballerina, Tralalero, Tung, Amalgama y Amalgama final.
+- Rune Channeling: mantener/soltar A·S·D·F para equilibrar cuatro medidores durante
+  siete niveles; representa cooperación de las cuatro clases.
+- Credits: secuencia de imágenes del viaje con “Gracias por jugar”.
+- engine.js también conserva ecchi, paloma, runa y vocalecho, pero ningún capítulo
+  activo los invoca.
+
+SISTEMA DE COMBATE
+- Orden temporal basado en velocidad, no rondas rígidas. HUD muestra próximos turnos.
+- Recursos HP/PM, defensa, evasión, estados de velocidad, ataque, escudo, evasión y taunt.
+- Grupo:
+  · Samu, Mago: fuego, hielo/slow, rayo y ráfaga arcana gratis.
+  · Edu, Pícaro Arcano: Robar, Prisa, Doble ilusorio y Corte relámpago.
+  · Seraphyna, Maga Blanca/Cantora: Cura, Escudo, Canto sanador y debilitante.
+  · José, Guerrero: Golpe pesado, buff de ataque, Provocar y Embestida de Piyón.
+- Lore/mecánica secreta acordada: la curación de Seraphyna daña a los memes porque su
+  canto purifica; la interfaz no lo explica para que el jugador lo descubra.
+- Robar obtiene un objeto único del jefe. Amalgama final lleva Bendición de Airi.
+- El Diapasón de Plata entra como consumible si inventory contiene “diapason”; revive
+  caídos y devuelve aproximadamente la mitad de HP/PM al grupo.
+- Los jefes cargan ataques finales. La marea es supervivencia y no se derrota por HP.
+- Las batallas normales no usan retryOnDefeat en los capítulos actuales; el resultado
+  se cierra y el guion prosigue. La marea y los minijuegos principales sí fuerzan
+  reintento hasta victoria.
+
+PRESENTACIÓN
+- Arranque desde 2026-07-31: disclaimer obligatorio a pantalla completa. El
+  usuario pulsa “Entrar con sonido”, lo que desbloquea el audio del navegador y
+  reproduce assets/videos/opening_samu.mp4 (80,704 s, 1920x1080, H.264 + AAC).
+  El vídeo puede terminar o saltarse con su botón; después funde al menú, activa
+  menu_loop.mp4 y lanza el tema. Menú y vídeo de fondo permanecen ocultos e
+  inertes antes del gesto. El volumen del opening respeta illo_vol_music.
+- Menú “Neón de Medianoche” con vídeo en bucle a media velocidad, tema inicial,
+  relevo chill, botón musical y marca WildSoft.
+- Visual novel con fondos ilustrados, sprites grandes, caja de diálogo inferior,
+  nombre coloreado, flecha de continuación, sonido por letra y pausas de puntuación.
+- Capítulos tienen cartela de entrada y pantalla de fin.
+- El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
+  viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
+- Créditos del final bueno recorren imágenes del viaje. El final incierto no los lanza.
+
+VALIDACIÓN REALIZADA EL 2026-07-30
+- Se leyó el contenido de los siete capítulos, incluidas todas las ramas, condiciones,
+  consecuencias por retraso, acciones y textos de resultado.
+- Se revisaron engine.js, game.js, el sistema de batalla, las runas, los créditos,
+  personajes, estructura de assets, documentación y notas de la demo del equipo.
+- Se recorrió el juego en navegador local y se comprobó:
+  menú, vídeo/estética, configuración de música y SFX, selector de 7 capítulos,
+  cartela, diálogo con 2B/Pod, resaltado visual, menú de 24 escenas de Ecchi Land,
+  retroceso, salto al final malo, combate Ballerina, puzle de runas y créditos.
+- Consola del navegador: ningún error; solo avisos benignos al detener IDs de audio
+  que todavía no existían (menu_chill, menu_ambience y bg_music).
+- Todos los 31 JSON de chapters/ y characters/ parsean.
+- Las 369 referencias a assets encontradas dentro de esos JSON existen.
+- Todos los destinos goToScene y nextScene del guion activo apuntan a escenas válidas.
+- assets/ contiene 471 archivos y ocupa aproximadamente 1.219 MiB.
+- npm run check:js no pudo ejecutarse porque las dependencias locales no están instaladas
+  y “prettier” no está disponible; no es un fallo del código del juego.
+
+REGLAS PARA CAMBIOS FUTUROS
+- Mantener a 2B como narradora.
+- No llamar “virus” al origen de la transformación.
+- No convertir a Edu en culpable de Zip ni a Seraphyna en causante de la infección
+  de sus fans.
+- Preservar la dualidad de Seraphyna: ego/diva y cuidado/sacrificio son simultáneos.
+- Preservar la agencia de Airi: la meta es que elija, no que otros vuelvan a decidir
+  por ella.
+- Respetar los misterios deliberados; no resolverlos por accidente.
+- Si se cambia una ruta, recordar que storyDelay conecta narrativa y dificultad.
+- Toda documentación de características debe actualizar DOCUMENTACION.md; no crear
+  archivos Markdown separados por característica.
+- Actualizar esta memoria cuando cambien el canon, los arcos, los finales o el flujo
+  técnico que un futuro agente necesite conocer.

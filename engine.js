@@ -2395,19 +2395,69 @@ class VisualNovelEngine {
                 goal: options.distance || 60,
                 speed: options.speed || 6,
                 maxHits: options.maxHits || 3,
-                playerFrames: ['coche_0', 'coche_1', 'coche_2'],
+                playerFrames: ['coche_v2_0', 'coche_v2_1', 'coche_v2_2',
+                               'coche_v2_3', 'coche_v2_4', 'coche_v2_5'],
                 playerHeight: 0.19, playerRatio: 1.55,
-                yMin: 0.70, yMax: 0.94,
-                bgFar: 'carretera_loop_fondo', bgNear: 'carretera_loop',
-                obstacles: ['obs_bidon', 'obs_valla', 'obs_rocas', 'obs_cable'],
-                enemies: [['meme_bob_0', 'meme_bob_1'], ['meme_knucles_0', 'meme_knucles_1'],
-                          ['meme_pepe_0', 'meme_pepe_1'], ['meme_troll_0', 'meme_troll_1']],
+                // Huella sobre el asfalto (centro y radios relativos al sprite).
+                // La imagen puede solaparse con otra por perspectiva sin chocar.
+                playerFootprint: { x: 0.50, y: 0.83, rx: 0.39, ry: 0.07 },
+                xMin: 0.03, xMax: 0.80,
+                yMin: 0.65, yMax: 0.92,
+                bgFar: 'carretera_loop_fondo_sin_luna_v2',
+                bgNear: 'carretera_loop_v2',
+                moon: 'carretera_luna_v2',
+                moonStartX: 0.82, moonEndX: 0.20,
+                moonStartY: 0.22, moonEndY: 0.12,
+                obstacles: [
+                    {
+                        name: 'obs_bidon_v2_0',
+                        frames: ['obs_bidon_v2_0', 'obs_bidon_v2_1',
+                                 'obs_bidon_v2_2', 'obs_bidon_v2_3'],
+                        frameMs: 0.11, h: 0.105, ratio: 0.691,
+                        footprint: { x: 0.50, y: 0.89, rx: 0.30, ry: 0.08 }
+                    },
+                    {
+                        name: 'obs_valla_v2_0',
+                        frames: ['obs_valla_v2_0', 'obs_valla_v2_1',
+                                 'obs_valla_v2_2', 'obs_valla_v2_3'],
+                        frameMs: 0.16, h: 0.29, ratio: 0.976,
+                        yMin: 0.68, yMax: 0.79,
+                        // Tres apoyos a distinta profundidad: la valla serpentea
+                        // hacia el fondo y corta buena parte del ancho de la vía.
+                        footprints: [
+                            { x: 0.47, y: 0.82, rx: 0.39, ry: 0.035 },
+                            { x: 0.51, y: 0.49, rx: 0.22, ry: 0.030 },
+                            { x: 0.51, y: 0.25, rx: 0.15, ry: 0.025 }
+                        ]
+                    },
+                    {
+                        name: 'obs_rocas_v2_0',
+                        frames: ['obs_rocas_v2_0', 'obs_rocas_v2_1',
+                                 'obs_rocas_v2_2', 'obs_rocas_v2_3'],
+                        frameMs: 0.12, h: 0.095, ratio: 2.00,
+                        footprint: { x: 0.50, y: 0.73, rx: 0.44, ry: 0.09 }
+                    },
+                    {
+                        name: 'obs_cable_v2_0',
+                        frames: ['obs_cable_v2_0', 'obs_cable_v2_1',
+                                 'obs_cable_v2_2', 'obs_cable_v2_3'],
+                        frameMs: 0.085, h: 0.085, ratio: 1.946,
+                        footprint: { x: 0.50, y: 0.62, rx: 0.44, ry: 0.20 }
+                    }
+                ],
+                enemies: [
+                    ['meme_bob_v2_0', 'meme_bob_v2_1', 'meme_bob_v2_2', 'meme_bob_v2_3'],
+                    ['meme_knucles_v2_0', 'meme_knucles_v2_1', 'meme_knucles_v2_2', 'meme_knucles_v2_3'],
+                    ['meme_pepe_v2_0', 'meme_pepe_v2_1', 'meme_pepe_v2_2', 'meme_pepe_v2_3'],
+                    ['meme_troll_v2_0', 'meme_troll_v2_1', 'meme_troll_v2_2', 'meme_troll_v2_3']
+                ],
                 collectible: null,
                 // Knobs de dificultad/QA con passthrough (igual que en eduvuelo:
                 // si no se reenvían, los valores del JSON se ignoran en silencio)
                 spawnMs: options.spawnMs,
                 graceMs: options.graceMs, hitGraceMs: options.hitGraceMs,
-                title: '🏎️ Mueve el coche con el RATÓN (o ↑/↓) y esquiva obstáculos y a los memes.',
+                debugHitboxes: !!options.debugHitboxes,
+                title: '🏎️ Conduce con el RATÓN o WASD/FLECHAS. Muévete por toda la carretera y esquiva las embestidas.',
                 winMsg: '¡Los habéis perdío en la rotonda! 🏁',
                 loseMsg: '¡Os han embestido! 🏍️'
             });
@@ -2453,6 +2503,7 @@ class VisualNovelEngine {
                 collectChance: options.collectChance != null ? options.collectChance : 0.42,
                 spawnMs: options.spawnMs != null ? options.spawnMs : 640,
                 graceMs: options.graceMs, hitGraceMs: options.hitGraceMs,
+                debugHitboxes: !!options.debugHitboxes,
                 enemies: [],
                 collectible: ['partitura', 'partitura_glow'],
                 title: '🐉 Vuela con el RATÓN (o ↑/↓): RECOGE las partituras y esquiva focos y cables.',
@@ -2472,18 +2523,25 @@ class VisualNovelEngine {
         const SP = 'assets/minigames/cap3/sprites/';
         const CAP = 'assets/minigames/cap3/';
         const url = (n, base = SP) => `url('${this.cacheBustAsset(base + n + '.png')}')`;
+        const spriteNames = (entry) => {
+            if (typeof entry === 'string') return [entry];
+            if (entry && entry.frames && entry.frames.length) return entry.frames;
+            return entry && entry.name ? [entry.name] : [];
+        };
+        const spriteName = (entry) => spriteNames(entry)[0];
 
         // Precargar TODO lo que el minijuego puede llegar a pintar. Sin esto, el
         // primer uso de cada sprite (y el primer cambio de fotograma) llega antes
         // que la imagen y se ve un hueco en blanco.
         await this.preloadImages([
             ...(cfg.playerFrames || []).map(n => SP + n + '.png'),
-            ...(cfg.obstacles || []).map(n => SP + n + '.png'),
+            ...(cfg.obstacles || []).flatMap(spriteNames).map(n => SP + n + '.png'),
             ...(cfg.enemies || []).flat().map(n => SP + n + '.png'),
             ...(cfg.collectible || []).map(n => SP + n + '.png'),
             ...(cfg.fallerFrames || ['aire_foco', 'aire_foco_on']).map(n => SP + n + '.png'),
             ...['aire_cable_cap', 'aire_cable_body', 'aire_cable_tip'].map(n => SP + n + '.png'),
-            ...[cfg.bgFar, cfg.bgNear, cfg.backdrop].filter(Boolean).map(n => CAP + n + '.png')
+            ...[cfg.bgFar, cfg.bgNear, cfg.backdrop, cfg.moon]
+                .filter(Boolean).map(n => CAP + n + '.png')
         ]);
         const speed = cfg.speed || 6;
         const maxHits = cfg.maxHits || 3;
@@ -2498,16 +2556,28 @@ class VisualNovelEngine {
                     <span class="mg-score"></span>
                     <span class="ss-lives"></span>
                     <span class="mg-status"></span>
+                    <button class="ss-pause-btn" type="button" aria-label="Pausar">Ⅱ</button>
                 </div>
                 <div class="ss-stage" id="ss-stage">
-                    ${cfg.bgNear ? '<div class="ss-bg ss-bg-far"></div><div class="ss-bg ss-bg-near"></div>' : ''}
+                    ${cfg.bgFar ? '<div class="ss-bg ss-bg-far"></div>' : ''}
+                    ${cfg.moon ? '<div class="ss-moon" aria-hidden="true"></div>' : ''}
+                    ${cfg.bgNear ? '<div class="ss-bg ss-bg-near"></div>' : ''}
                     <div class="ss-player" id="ss-player"></div>
                     <div class="ss-progress-wrap"><div class="ss-progress-fill" id="ss-progress"></div></div>
+                    <div class="ss-countdown" aria-live="polite"></div>
+                    <div class="ss-pause-panel" hidden>
+                        <strong>PAUSA</strong>
+                        <span>${isFly ? 'Mueve a Edu con el ratón o ↑/↓.' : 'Conduce con el ratón o WASD/FLECHAS.'}</span>
+                        <button class="ss-resume-btn" type="button">CONTINUAR</button>
+                    </div>
                 </div>
-                <div class="minigame-instructions">${cfg.title}</div>
+                <div class="minigame-instructions">${cfg.title} <small>P / ESC: pausa</small></div>
             `;
             document.getElementById('game-container').appendChild(overlay);
-            const swallow = (e) => e.stopPropagation();
+            const swallow = (e) => {
+                if (e.target.closest('.ss-pause-btn, .ss-resume-btn')) return;
+                e.stopPropagation();
+            };
             overlay.addEventListener('click', swallow, true);
 
             const stage = overlay.querySelector('#ss-stage');
@@ -2518,8 +2588,18 @@ class VisualNovelEngine {
             const progressEl = overlay.querySelector('#ss-progress');
             const bgFarEl = overlay.querySelector('.ss-bg-far');
             const bgNearEl = overlay.querySelector('.ss-bg-near');
+            const moonEl = overlay.querySelector('.ss-moon');
+            const pauseBtn = overlay.querySelector('.ss-pause-btn');
+            const pausePanel = overlay.querySelector('.ss-pause-panel');
+            const resumeBtn = overlay.querySelector('.ss-resume-btn');
+            const countdownEl = overlay.querySelector('.ss-countdown');
             if (bgFarEl && cfg.bgFar) bgFarEl.style.backgroundImage = url(cfg.bgFar, CAP);
             if (bgNearEl && cfg.bgNear) bgNearEl.style.backgroundImage = url(cfg.bgNear, CAP);
+            if (moonEl && cfg.moon) {
+                moonEl.style.backgroundImage = url(cfg.moon, CAP);
+                moonEl.style.left = ((cfg.moonStartX != null ? cfg.moonStartX : 0.82) * 100) + '%';
+                moonEl.style.top = ((cfg.moonStartY != null ? cfg.moonStartY : 0.22) * 100) + '%';
+            }
             // Telón estático opcional (no hace scroll): ambienta sin costuras de loop
             if (cfg.backdrop) {
                 stage.style.backgroundImage = url(cfg.backdrop, CAP);
@@ -2530,8 +2610,10 @@ class VisualNovelEngine {
             const fieldW = () => stage.clientWidth || 1;
             const fieldH = () => stage.clientHeight || 1;
 
-            // Banda vertical de juego (0..1). En "chase" se limita a la carretera;
-            // en vuelo abarca casi todo el cielo. Se aplica al jugador Y a los spawns.
+            // Banda de juego (0..1). Chase usa toda la calzada en dos dimensiones;
+            // vuelo conserva el desplazamiento vertical con X fija.
+            const xMin = cfg.xMin != null ? cfg.xMin : 0.03;
+            const xMax = cfg.xMax != null ? cfg.xMax : 0.80;
             const yMin = cfg.yMin != null ? cfg.yMin : 0.09;
             const yMax = cfg.yMax != null ? cfg.yMax : 0.91;
 
@@ -2544,21 +2626,125 @@ class VisualNovelEngine {
             };
             playerEl.style.backgroundImage = url(cfg.playerFrames[0]);
             sizePlayer();
+            let playerX = isFly ? 0.12 : Math.max(xMin, Math.min(xMax, 0.12));
+            let targetX = playerX;
             let playerY = (yMin + yMax) / 2, targetY = playerY;
+            const playerFootprint = !isFly ? cfg.playerFootprint : null;
+            const playerHitboxes = cfg.playerHitboxes || [
+                { x: 0.25, y: 0.25, w: 0.50, h: 0.50 }
+            ];
+            const createDebugBoxes = (count, type, label, footprint = false) => {
+                if (!cfg.debugHitboxes) return [];
+                return Array.from({ length: count }, (_, index) => {
+                    const box = document.createElement('div');
+                    box.className = `ss-debug-hitbox ss-debug-${type}` +
+                        (footprint ? ' ss-debug-footprint' : '');
+                    box.innerHTML = `<span>${label}${count > 1 ? ` ${index + 1}` : ''}</span>`;
+                    stage.appendChild(box);
+                    return box;
+                });
+            };
+            const playerDebugBoxes = createDebugBoxes(
+                playerFootprint ? 1 : playerHitboxes.length,
+                'player-hitbox', playerFootprint ? 'HUELLA COCHE' : 'EDU',
+                !!playerFootprint);
+            const paintDebugRect = (el, left, top, right, bottom) => {
+                if (!el) return;
+                el.style.left = left + 'px';
+                el.style.top = top + 'px';
+                el.style.width = Math.max(0, right - left) + 'px';
+                el.style.height = Math.max(0, bottom - top) + 'px';
+            };
+            const rectsFromDefs = (defs, left, top, width, height) =>
+                defs.map(def => ({
+                    left: left + def.x * width,
+                    top: top + def.y * height,
+                    right: left + (def.x + def.w) * width,
+                    bottom: top + (def.y + def.h) * height
+                }));
+            const footprintFromDef = (def, left, top, width, height) => ({
+                cx: left + def.x * width,
+                cy: top + def.y * height,
+                rx: def.rx * width,
+                ry: def.ry * height
+            });
+            const paintDebugFootprint = (el, footprint) => {
+                if (!el || !footprint) return;
+                paintDebugRect(el,
+                    footprint.cx - footprint.rx, footprint.cy - footprint.ry,
+                    footprint.cx + footprint.rx, footprint.cy + footprint.ry);
+            };
+            const paintDebugRects = (elements, rects) => {
+                elements.forEach((el, index) => {
+                    const rect = rects[index];
+                    if (rect) paintDebugRect(el, rect.left, rect.top, rect.right, rect.bottom);
+                });
+            };
+            const removeDebugBoxes = (elements) => {
+                (elements || []).forEach(el => el.remove());
+            };
+            const rectsOverlap = (a, b) =>
+                a.left < b.right && a.right > b.left &&
+                a.top < b.bottom && a.bottom > b.top;
+            const anyRectsOverlap = (first, second) =>
+                first.some(a => second.some(b => rectsOverlap(a, b)));
+            // Distancia mínima entre las trayectorias relativas de dos elipses.
+            // Además de trabajar en el plano del asfalto, el barrido evita que
+            // un objeto rápido atraviese el coche entre dos fotogramas.
+            const sweptFootprintsOverlap = (aPrev, aNow, bPrev, bNow) => {
+                const sumRx = Math.max(1, aNow.rx + bNow.rx);
+                const sumRy = Math.max(1, aNow.ry + bNow.ry);
+                const startX = (aPrev.cx - bPrev.cx) / sumRx;
+                const startY = (aPrev.cy - bPrev.cy) / sumRy;
+                const endX = (aNow.cx - bNow.cx) / sumRx;
+                const endY = (aNow.cy - bNow.cy) / sumRy;
+                const dx = endX - startX, dy = endY - startY;
+                const lengthSq = dx * dx + dy * dy;
+                const t = lengthSq > 0
+                    ? Math.max(0, Math.min(1, -(startX * dx + startY * dy) / lengthSq))
+                    : 0;
+                const nearestX = startX + dx * t;
+                const nearestY = startY + dy * t;
+                return nearestX * nearestX + nearestY * nearestY <= 1;
+            };
+            const getPlayerRects = () => {
+                const fw = fieldW(), fh = fieldH();
+                const pw = playerEl.offsetWidth, ph = playerEl.offsetHeight;
+                return rectsFromDefs(playerHitboxes,
+                    playerX * fw, playerY * fh - ph / 2, pw, ph);
+            };
+            const getPlayerFootprint = () => {
+                if (!playerFootprint) return null;
+                const fw = fieldW(), fh = fieldH();
+                const pw = playerEl.offsetWidth, ph = playerEl.offsetHeight;
+                return footprintFromDef(playerFootprint,
+                    playerX * fw, playerY * fh - ph / 2, pw, ph);
+            };
+            const updatePlayerDebug = () => {
+                if (!playerDebugBoxes.length) return;
+                if (playerFootprint) {
+                    paintDebugFootprint(playerDebugBoxes[0], getPlayerFootprint());
+                } else {
+                    paintDebugRects(playerDebugBoxes, getPlayerRects());
+                }
+            };
             // z-index por profundidad: quien va más abajo (mayor Y) se dibuja delante.
             // Así, si un objeto pasa por debajo del centro del coche va por encima, y
             // si pasa por encima, el coche queda delante (efecto pseudo-3D).
             const zByY = (y) => Math.round(y * 100) + 10;
-            const setPlayerY = () => {
+            const setPlayerPosition = () => {
+                playerEl.style.left = (playerX * 100) + '%';
                 playerEl.style.top = (playerY * 100) + '%';
-                playerEl.style.zIndex = zByY(playerY);
+                const footprint = getPlayerFootprint();
+                playerEl.style.zIndex = zByY(footprint ? footprint.cy / fieldH() : playerY);
+                updatePlayerDebug();
             };
-            setPlayerY();
+            setPlayerPosition();
 
             let frameIdx = 0, frameT = 0;
             const animatePlayer = (dt) => {
                 frameT += dt;
-                if (frameT >= (isFly ? 0.11 : 0.15)) {
+                if (frameT >= (isFly ? 0.11 : 0.085)) {
                     frameT = 0;
                     frameIdx = (frameIdx + 1) % cfg.playerFrames.length;
                     playerEl.style.backgroundImage = url(cfg.playerFrames[frameIdx]);
@@ -2571,12 +2757,34 @@ class VisualNovelEngine {
             // quedaba clavado a media maniobra. Ahora, si te sales, el objetivo
             // simplemente se queda pegado al tope de ese lado y el coche sigue
             // respondiendo en cuanto vuelves a mover.
+            let paused = false;
+            let last = performance.now();
+            const setPaused = (value) => {
+                paused = !!value;
+                pausePanel.hidden = !paused;
+                pauseBtn.textContent = paused ? '▶' : 'Ⅱ';
+                pauseBtn.setAttribute('aria-label', paused ? 'Continuar' : 'Pausar');
+                if (!paused) last = performance.now();
+            };
+            pauseBtn.addEventListener('click', (e) => {
+                e.preventDefault(); e.stopPropagation(); setPaused(!paused);
+            });
+            resumeBtn.addEventListener('click', (e) => {
+                e.preventDefault(); e.stopPropagation(); setPaused(false);
+            });
+
             const onMove = (e) => {
+                if (paused) return;
                 const r = stage.getBoundingClientRect();
                 if (!r.height) return;
                 targetY = Math.max(yMin, Math.min(yMax, (e.clientY - r.top) / r.height));
+                if (!isFly && r.width) {
+                    const wantedLeft = (e.clientX - r.left - playerEl.offsetWidth / 2) / r.width;
+                    targetX = Math.max(xMin, Math.min(xMax, wantedLeft));
+                }
             };
             window.addEventListener('pointermove', onMove);
+            stage.addEventListener('pointerdown', onMove);
             const keys = {};
             // Igual que en el minijuego de ritmo: si nos sacan desde los botones
             // de arriba no hay cierre normal, y este oyente se quedaría tragando
@@ -2589,7 +2797,12 @@ class VisualNovelEngine {
                     return;
                 }
                 const k = (e.key || '').toLowerCase();
-                if (['arrowup', 'w', 'arrowdown', 's'].includes(k)) {
+                if (['p', 'escape'].includes(k) && e.type === 'keydown' && !e.repeat) {
+                    e.preventDefault();
+                    setPaused(!paused);
+                    return;
+                }
+                if (['arrowup', 'w', 'arrowdown', 's', 'arrowleft', 'a', 'arrowright', 'd'].includes(k)) {
                     e.preventDefault();
                     keys[k] = (e.type === 'keydown');
                 }
@@ -2600,13 +2813,19 @@ class VisualNovelEngine {
             let objs = [];
             let ultimoCable = null;   // para no cerrar el pasillo con dos cables
             let ultimoModo = null;    // para no encadenar partituras seguidas
+            let ultimoRoadY = null;   // evita zigzags extremos imposibles de leer
+            let ultimoEnemigoMs = -Infinity;
+            let nextEnemySide = Math.random() < 0.5 ? 'rear' : 'front';
             const spawnObj = () => {
                 if (!running) return;
                 const el = document.createElement('div');
                 el.className = 'ss-obj';
-                let name, kind, hFrac, wRatio;
+                let name, kind, hFrac, wRatio, hitX = null, hitY = null, hitboxes = null;
+                let footprint = null, footprints = null, frameDuration = null;
                 let y = yMin + Math.random() * (yMax - yMin);
                 let vy = 0, isHang = false, largoCable = 0;
+                let spawnX = 1.08, direction = -1, phase = null, warning = null;
+                let enemySide = null;
                 const roll = Math.random();
 
                 // Peligros especiales del modo VUELO (jul 2026):
@@ -2629,6 +2848,14 @@ class VisualNovelEngine {
                 else if (enemyC && roll < hangC + riseC + fallC + collC + enemyC) mode = 'enemy';
                 else if (cfg.obstacles && cfg.obstacles.length) mode = 'static';
                 else mode = ['hang', 'riser', 'faller'][Math.floor(Math.random() * 3)];
+
+                // Las motos activas son más peligrosas que los obstáculos normales.
+                // Se espacian para que nunca formen una pinza aleatoria entre ambos
+                // sentidos de circulación.
+                if (!isFly && mode === 'enemy' &&
+                    (ultimoModo === 'enemy' || performance.now() - ultimoEnemigoMs < 1350)) {
+                    mode = cfg.obstacles && cfg.obstacles.length ? 'static' : 'enemy';
+                }
 
                 // Nunca dos partituras seguidas: aunque el porcentaje esté bien,
                 // el azar las encadenaba de tres en tres y el tramo se quedaba sin
@@ -2715,12 +2942,50 @@ class VisualNovelEngine {
                 } else if (mode === 'enemy') {
                     kind = 'enemy';
                     const en = cfg.enemies[Math.floor(Math.random() * cfg.enemies.length)];
-                    el.classList.add('ss-enemy'); el._frames = en; name = en[0];
+                    el._frames = en; name = en[0];
                     hFrac = 0.18; wRatio = 1.75;
+                    footprint = { x: 0.50, y: 0.82, rx: 0.44, ry: 0.07 };
+                    const fromRear = nextEnemySide === 'rear';
+                    nextEnemySide = fromRear ? 'front' : 'rear';
+                    if (fromRear) {
+                        enemySide = 'rear';
+                        el.classList.add('ss-enemy', 'ss-enemy-rear', 'ss-enemy-stalk');
+                        y = Math.max(yMin, Math.min(yMax,
+                            playerY + (Math.random() - 0.5) * 0.10));
+                        spawnX = -0.16; direction = 1; phase = 'stalk';
+                    } else {
+                        enemySide = 'front';
+                        el.classList.add('ss-enemy', 'ss-enemy-front', 'ss-enemy-approach');
+                        spawnX = 1.16; direction = -1; phase = 'front';
+                    }
+                    ultimoEnemigoMs = performance.now();
                 } else {
                     kind = 'obstacle';
-                    name = cfg.obstacles[Math.floor(Math.random() * cfg.obstacles.length)];
-                    hFrac = 0.14; wRatio = 1.1;
+                    const spec = cfg.obstacles[Math.floor(Math.random() * cfg.obstacles.length)];
+                    name = spriteName(spec);
+                    if (typeof spec !== 'string' && spec.frames && spec.frames.length) {
+                        el._frames = spec.frames;
+                        frameDuration = spec.frameMs || null;
+                    }
+                    hFrac = typeof spec === 'string' ? 0.14 : (spec.h || 0.14);
+                    wRatio = typeof spec === 'string' ? 1.1 : (spec.ratio || 1.1);
+                    hitX = typeof spec === 'string' ? 0.52 : (spec.hitX || 0.52);
+                    hitY = typeof spec === 'string' ? 0.52 : (spec.hitY || 0.52);
+                    hitboxes = typeof spec === 'string' ? null : (spec.hitboxes || null);
+                    footprint = typeof spec === 'string'
+                        ? { x: 0.50, y: 0.78, rx: 0.30, ry: 0.09 }
+                        : (spec.footprint || null);
+                    footprints = typeof spec === 'string' ? null : (spec.footprints || null);
+                    if (typeof spec !== 'string' && spec.yMin != null && spec.yMax != null) {
+                        y = spec.yMin + Math.random() * (spec.yMax - spec.yMin);
+                    }
+                    if (!isFly && ultimoRoadY != null && Math.abs(y - ultimoRoadY) > 0.15) {
+                        y = (y + ultimoRoadY) / 2;
+                    }
+                    if (typeof spec !== 'string' && spec.yMin != null && spec.yMax != null) {
+                        y = Math.max(spec.yMin, Math.min(spec.yMax, y));
+                    }
+                    ultimoRoadY = y;
                 }
                 if (name) el.style.backgroundImage = url(name);
                 if (hFrac) {
@@ -2729,21 +2994,71 @@ class VisualNovelEngine {
                     el.style.width = (h * wRatio) + 'px';
                 }
                 if (!isHang) el.style.top = (y * 100) + '%';
-                el.style.left = '108%';
-                el.style.zIndex = zByY(y);
+                el.style.left = (spawnX * 100) + '%';
                 stage.appendChild(el);
+                const footprintDefs = footprints || (footprint ? [footprint] : null);
+                if (footprintDefs && footprintDefs.length) {
+                    const initialFootprints = footprintDefs.map(def => footprintFromDef(def,
+                        spawnX * fieldW() - el.offsetWidth / 2,
+                        y * fieldH() - el.offsetHeight / 2,
+                        el.offsetWidth, el.offsetHeight));
+                    const nearestFootprint = initialFootprints.reduce(
+                        (nearest, current) => current.cy > nearest.cy ? current : nearest);
+                    el.style.zIndex = zByY(nearestFootprint.cy / fieldH());
+                } else {
+                    el.style.zIndex = zByY(y);
+                }
+                if (kind === 'enemy' && !isFly) {
+                    warning = document.createElement('div');
+                    warning.className = 'ss-threat-indicator' +
+                        (enemySide === 'front' ? ' ss-threat-front' : '');
+                    warning.textContent = enemySide === 'front' ? 'MOTO ⚠' : '⚠ MOTO';
+                    warning.style.top = (y * 100) + '%';
+                    stage.appendChild(warning);
+                }
+                const fallbackHitbox = {
+                    x: (1 - (hitX != null ? hitX :
+                        (kind === 'collect' ? 0.75 : (isHang ? 0.42 : 0.52)))) / 2,
+                    y: (1 - (hitY != null ? hitY :
+                        (kind === 'collect' ? 0.75 : (isHang ? 0.86 : 0.52)))) / 2,
+                    w: hitX != null ? hitX :
+                        (kind === 'collect' ? 0.75 : (isHang ? 0.42 : 0.52)),
+                    h: hitY != null ? hitY :
+                        (kind === 'collect' ? 0.75 : (isHang ? 0.86 : 0.52))
+                };
+                const collisionDefs = hitboxes || [fallbackHitbox];
+                const usesFootprint = !isFly && !!(footprintDefs && footprintDefs.length);
+                const debugLabel = kind === 'enemy'
+                    ? (enemySide === 'front' ? 'HUELLA MOTO FRENTE' : 'HUELLA MOTO DETRÁS')
+                    : (kind === 'collect' ? 'COLECCIONABLE' :
+                        (usesFootprint ? 'HUELLA OBSTÁCULO' : 'OBSTÁCULO'));
+                const debugBoxes = createDebugBoxes(
+                    usesFootprint ? footprintDefs.length : collisionDefs.length,
+                    kind, debugLabel, usesFootprint);
                 // hangMode/hangLargo los usa el guardián del pasillo al generar el
                 // siguiente cable: necesita saber de qué lado viene cada uno y
                 // cuánto ocupa para no cerrar el paso.
-                objs.push({ el, x: 1.08, y, kind, vy, isHang, taken: false, frameT: 0, frameIdx: 0,
-                            hangMode: isHang ? mode : null, hangLargo: isHang ? largoCable : 0 });
+                objs.push({
+                    el, x: spawnX, y, kind, vy, isHang, taken: false,
+                    frameT: 0, frameIdx: 0, direction, phase, age: 0, warning,
+                    hitX, hitY, hitboxes: collisionDefs,
+                    footprints: footprintDefs, prevFootprints: null, frameDuration,
+                    enemySide, debugBoxes,
+                    hangMode: isHang ? mode : null,
+                    hangLargo: isHang ? largoCable : 0
+                });
             };
 
             let hits = 0, collected = 0, dist = 0, running = true;
             const updateHud = () => {
                 if (isFly) { scoreEl.textContent = `🎼 ${collected} / ${goal}`; statusEl.textContent = 'Recoge'; }
-                else { scoreEl.textContent = '🏁 ESCAPA'; statusEl.textContent = ''; }
-                progressEl.style.width = ((isFly ? collected / goal : dist / goal) * 100) + '%';
+                else {
+                    const pct = Math.max(0, Math.min(100, Math.round(dist / goal * 100)));
+                    scoreEl.textContent = `🏁 ${pct}%`;
+                    statusEl.textContent = `${Math.max(0, Math.ceil(goal - dist))} m`;
+                }
+                const progress = Math.max(0, Math.min(1, isFly ? collected / goal : dist / goal));
+                progressEl.style.width = (progress * 100) + '%';
                 let s = '';
                 for (let i = 0; i < maxHits; i++) s += `<span class="ss-heart${i < hits ? ' ss-lost' : ''}">❤</span>`;
                 livesEl.innerHTML = s;
@@ -2766,17 +3081,25 @@ class VisualNovelEngine {
                 } catch (e) {}
             };
 
-            let spawnTimer = null, raf = null;
+            let spawnTimer = null, raf = null, countdownTimers = [];
             const finish = (won) => {
                 if (!running) return;
                 running = false;
-                if (spawnTimer) clearInterval(spawnTimer);
+                if (spawnTimer) clearTimeout(spawnTimer);
+                countdownTimers.forEach(clearTimeout);
                 if (raf) cancelAnimationFrame(raf);
                 window.removeEventListener('pointermove', onMove);
+                stage.removeEventListener('pointerdown', onMove);
                 document.removeEventListener('keydown', onKey);
                 document.removeEventListener('keyup', onKey);
                 overlay.removeEventListener('click', swallow, true);
-                objs.forEach(o => o.el.remove()); objs = [];
+                objs.forEach(o => {
+                    o.el.remove();
+                    if (o.warning) o.warning.remove();
+                    removeDebugBoxes(o.debugBoxes);
+                });
+                removeDebugBoxes(playerDebugBoxes);
+                objs = [];
                 const result = document.createElement('div');
                 result.className = 'minigame-result';
                 result.textContent = won ? cfg.winMsg : cfg.loseMsg;
@@ -2786,11 +3109,15 @@ class VisualNovelEngine {
                 setTimeout(() => { overlay.remove(); resolve(won); }, won ? 1500 : 950);
             };
 
-            // Invulnerabilidad: al empezar (spawn) y un respiro tras cada golpe.
-            let invulnUntil = performance.now() + (cfg.graceMs != null ? cfg.graceMs : 1200);
+            // Chase tiene una cuenta atrás real, así que ya no necesita empezar
+            // parpadeando. Vuelo conserva su gracia inicial histórica.
+            let invulnUntil = performance.now() +
+                (isFly ? (cfg.graceMs != null ? cfg.graceMs : 1200) : 0);
+            let blinkUntil = isFly ? invulnUntil : 0;
             const hitPlayer = () => {
                 hits++; updateHud();
                 invulnUntil = performance.now() + (cfg.hitGraceMs != null ? cfg.hitGraceMs : 800);
+                blinkUntil = invulnUntil;
                 playerEl.classList.remove('ss-hurt'); void playerEl.offsetWidth; playerEl.classList.add('ss-hurt');
                 stage.classList.remove('ss-hit'); void stage.offsetWidth; stage.classList.add('ss-hit');
                 beep(150, 0.18, 0, { type: 'sawtooth', vol: 0.08 });
@@ -2798,6 +3125,8 @@ class VisualNovelEngine {
             };
             const grab = (o) => {
                 collected++; o.taken = true; o.el.classList.add('ss-taken');
+                if (o.warning) o.warning.remove();
+                removeDebugBoxes(o.debugBoxes);
                 if (cfg.collectible && cfg.collectible[1]) o.el.style.backgroundImage = url(cfg.collectible[1]);
                 beep(880, 0.09, 0, { type: 'triangle', vol: 0.08 });
                 beep(1320, 0.09, 0.05, { type: 'triangle', vol: 0.06 });
@@ -2806,71 +3135,234 @@ class VisualNovelEngine {
                 if (collected >= goal) finish(true);
             };
 
-            let bgX = 0, last = performance.now();
-            const objSpeed = 0.12 + speed * 0.055;   // fracción de ancho por segundo
+            let bgX = 0, prevPlayerFootprint = null;
+            const roadPxPerSec = speed * 55;
+            const objSpeed = 0.12 + speed * 0.055;   // vuelo y objetos sin carretera
             const distRate = speed * 0.62;
-            spawnTimer = setInterval(spawnObj, cfg.spawnMs != null ? cfg.spawnMs : Math.max(480, 1150 - speed * 75));
+            const baseSpawnMs = cfg.spawnMs != null ? cfg.spawnMs : Math.max(480, 1150 - speed * 75);
+            let started = isFly;
+            const scheduleSpawn = () => {
+                if (!running) return;
+                const runProgress = isFly ? 0 : Math.max(0, Math.min(1, dist / goal));
+                // Al ligar los obstáculos al asfalto recorren menos pantalla que
+                // con la antigua velocidad artificial. Se conserva la separación
+                // física entre spawns para que no formen una pared continua.
+                const roadSpeed = roadPxPerSec / fieldW();
+                const spacingFactor = isFly ? 1 : Math.max(1, objSpeed / roadSpeed);
+                // El primer tercio da más aire; al final llega gradualmente al
+                // ritmo configurado por storyDelay, sin un muro de dificultad.
+                const delay = isFly ? baseSpawnMs :
+                    baseSpawnMs * spacingFactor * (1.18 - runProgress * 0.18);
+                spawnTimer = setTimeout(() => {
+                    if (!running) return;
+                    if (started && !paused) spawnObj();
+                    scheduleSpawn();
+                }, paused ? 120 : delay);
+            };
+
+            if (isFly) {
+                scheduleSpawn();
+            } else {
+                countdownEl.classList.add('active');
+                const countdownSteps = ['3', '2', '1', '¡YA!'];
+                const runCountdownStep = (index) => {
+                    if (!running) return;
+                    if (paused) {
+                        countdownTimers.push(setTimeout(() => runCountdownStep(index), 100));
+                        return;
+                    }
+                    if (index >= countdownSteps.length) {
+                        countdownEl.classList.remove('active');
+                        countdownEl.textContent = '';
+                        started = true;
+                        last = performance.now();
+                        scheduleSpawn();
+                        return;
+                    }
+                    countdownEl.textContent = countdownSteps[index];
+                    countdownEl.classList.remove('ss-count-pop');
+                    void countdownEl.offsetWidth;
+                    countdownEl.classList.add('ss-count-pop');
+                    beep(index === countdownSteps.length - 1 ? 980 : 520, 0.08, 0,
+                        { type: 'square', vol: 0.045 });
+                    countdownTimers.push(setTimeout(() => runCountdownStep(index + 1), 430));
+                };
+                runCountdownStep(0);
+            }
 
             const tick = () => {
                 if (!running) return;
                 const now = performance.now();
                 const dt = Math.min(0.05, (now - last) / 1000); last = now;
 
+                if (paused) {
+                    playerEl.style.setProperty('--ss-steer', '0deg');
+                    return;
+                }
+
                 if (keys['arrowup'] || keys['w']) targetY -= dt * 1.15;
                 if (keys['arrowdown'] || keys['s']) targetY += dt * 1.15;
+                if (!isFly && (keys['arrowleft'] || keys['a'])) targetX -= dt * 0.95;
+                if (!isFly && (keys['arrowright'] || keys['d'])) targetX += dt * 0.95;
+                targetX = Math.max(xMin, Math.min(xMax, targetX));
                 targetY = Math.max(yMin, Math.min(yMax, targetY));
+                playerX += (targetX - playerX) * Math.min(1, dt * 8);
                 playerY += (targetY - playerY) * Math.min(1, dt * 10);
-                setPlayerY();
+                setPlayerPosition();
+                if (!isFly) {
+                    const steer = Math.max(-2.6, Math.min(2.6, (targetY - playerY) * 24));
+                    playerEl.style.setProperty('--ss-steer', steer.toFixed(2) + 'deg');
+                }
                 animatePlayer(dt);
 
-                bgX -= speed * 55 * dt;
-                if (bgFarEl) bgFarEl.style.backgroundPositionX = (bgX * 0.4) + 'px';
+                if (!started) {
+                    updateHud();
+                    return;
+                }
+
+                bgX -= roadPxPerSec * dt;
+                if (bgFarEl) bgFarEl.style.backgroundPositionX = (bgX * 0.22) + 'px';
                 if (bgNearEl) bgNearEl.style.backgroundPositionX = bgX + 'px';
 
                 if (!isFly) {
                     dist += distRate * dt;
                     if (dist >= goal) { finish(true); return; }
                 }
+                if (moonEl && !isFly) {
+                    const moonProgress = Math.max(0, Math.min(1, dist / goal));
+                    const easedMoonProgress = moonProgress * moonProgress *
+                        (3 - 2 * moonProgress);
+                    const startX = cfg.moonStartX != null ? cfg.moonStartX : 0.82;
+                    const endX = cfg.moonEndX != null ? cfg.moonEndX : 0.20;
+                    const startY = cfg.moonStartY != null ? cfg.moonStartY : 0.22;
+                    const endY = cfg.moonEndY != null ? cfg.moonEndY : 0.12;
+                    moonEl.style.left =
+                        ((startX + (endX - startX) * easedMoonProgress) * 100) + '%';
+                    moonEl.style.top =
+                        ((startY + (endY - startY) * easedMoonProgress) * 100) + '%';
+                }
 
                 const fw = fieldW(), fh = fieldH();
-                const pw = playerEl.offsetWidth, ph = playerEl.offsetHeight;
-                const pcx = 0.12 * fw + pw / 2, pcy = playerY * fh;
-                const psh = 0.5;
-                const pL = pcx - pw * psh / 2, pR = pcx + pw * psh / 2, pT = pcy - ph * psh / 2, pB = pcy + ph * psh / 2;
+                const currentPlayerFootprint = getPlayerFootprint();
+                const playerRects = isFly ? getPlayerRects() : [];
+                if (currentPlayerFootprint) {
+                    paintDebugFootprint(playerDebugBoxes[0], currentPlayerFootprint);
+                } else {
+                    paintDebugRects(playerDebugBoxes, playerRects);
+                }
 
                 for (const o of objs) {
                     if (o.taken) continue;
-                    o.x -= objSpeed * dt;
+                    if (!isFly && o.kind === 'enemy') {
+                        o.age += dt;
+                        if (o.phase === 'stalk') {
+                            o.x += (0.10 + speed * 0.008) * dt;
+                            o.y += (playerY - o.y) * Math.min(1, dt * 2.8);
+                            o.y = Math.max(yMin, Math.min(yMax, o.y));
+                            o.el.style.top = (o.y * 100) + '%';
+                            if (o.warning) o.warning.style.top = (o.y * 100) + '%';
+                            if (o.age >= 0.85) {
+                                o.phase = 'charge';
+                                o.el.classList.remove('ss-enemy-stalk');
+                                o.el.classList.add('ss-enemy-charge');
+                                if (o.warning) { o.warning.remove(); o.warning = null; }
+                                beep(720, 0.09, 0, { type: 'sawtooth', vol: 0.045 });
+                            }
+                        } else if (o.phase === 'charge') {
+                            o.x += (0.34 + speed * 0.030) * dt;
+                        } else {
+                            // La moto frontal suma su propia marcha al movimiento
+                            // del asfalto: se acerca más deprisa que un obstáculo
+                            // quieto, pero avisa desde el borde derecho.
+                            o.x -= (roadPxPerSec / fw + 0.14 + speed * 0.012) * dt;
+                            if (o.warning && o.x <= 1.01) {
+                                o.warning.remove();
+                                o.warning = null;
+                                o.el.classList.remove('ss-enemy-approach');
+                            }
+                        }
+                    } else if (!isFly && o.kind === 'obstacle') {
+                        // Un objeto apoyado en la calzada comparte exactamente el
+                        // desplazamiento en píxeles de la textura de carretera.
+                        o.x -= (roadPxPerSec / fw) * dt;
+                    } else {
+                        o.x -= objSpeed * dt;
+                    }
                     o.el.style.left = (o.x * 100) + '%';
                     // Focos que CAEN (y cualquier objeto con velocidad vertical)
                     if (o.vy) {
                         o.y += o.vy * dt;
                         o.el.style.top = (o.y * 100) + '%';
                         o.el.style.zIndex = zByY(o.y);
-                        if (o.y > 1.15) { o.taken = true; o.el.remove(); continue; }
+                        if (o.y > 1.15) {
+                            o.taken = true;
+                            o.el.remove();
+                            if (o.warning) o.warning.remove();
+                            removeDebugBoxes(o.debugBoxes);
+                            continue;
+                        }
                     }
                     // Animación por frames para cualquier objeto que las tenga
                     if (o.el._frames && o.el._frames.length > 1) {
                         o.frameT += dt;
-                        if (o.frameT >= 0.14) { o.frameT = 0; o.frameIdx ^= 1; o.el.style.backgroundImage = url(o.el._frames[o.frameIdx]); }
+                        const frameDuration = o.frameDuration ||
+                            (o.kind === 'enemy' ? 0.095 : 0.14);
+                        if (o.frameT >= frameDuration) {
+                            o.frameT = 0;
+                            o.frameIdx = (o.frameIdx + 1) % o.el._frames.length;
+                            o.el.style.backgroundImage = url(o.el._frames[o.frameIdx]);
+                        }
                     }
                     const ow = o.el.offsetWidth, oh = o.el.offsetHeight;
                     const ocx = o.x * fw, ocy = o.y * fh;
-                    // Cables colgantes: caja estrecha (el trazo) pero casi todo el
-                    // largo (la punta pelada TIENE que hacer daño).
-                    const oshX = o.kind === 'collect' ? 0.75 : (o.isHang ? 0.42 : 0.52);
-                    const oshY = o.kind === 'collect' ? 0.75 : (o.isHang ? 0.86 : 0.52);
-                    const oL = ocx - ow * oshX / 2, oR = ocx + ow * oshX / 2, oT = ocy - oh * oshY / 2, oB = ocy + oh * oshY / 2;
-                    if (pL < oR && pR > oL && pT < oB && pB > oT) {
+                    let collided = false;
+                    if (!isFly && currentPlayerFootprint &&
+                        o.footprints && o.footprints.length) {
+                        const currentObjectFootprints = o.footprints.map(def =>
+                            footprintFromDef(def, ocx - ow / 2, ocy - oh / 2, ow, oh));
+                        const nearestFootprint = currentObjectFootprints.reduce(
+                            (nearest, current) => current.cy > nearest.cy ? current : nearest);
+                        o.el.style.zIndex = zByY(nearestFootprint.cy / fh);
+                        currentObjectFootprints.forEach((current, index) =>
+                            paintDebugFootprint(o.debugBoxes[index], current));
+                        collided = currentObjectFootprints.some((current, index) =>
+                            sweptFootprintsOverlap(
+                                prevPlayerFootprint || currentPlayerFootprint,
+                                currentPlayerFootprint,
+                                (o.prevFootprints && o.prevFootprints[index]) || current,
+                                current));
+                        o.prevFootprints = currentObjectFootprints;
+                    } else {
+                        const objectRects = rectsFromDefs(
+                            o.hitboxes, ocx - ow / 2, ocy - oh / 2, ow, oh);
+                        paintDebugRects(o.debugBoxes, objectRects);
+                        collided = anyRectsOverlap(playerRects, objectRects);
+                    }
+                    const dangerous = o.kind !== 'enemy' ||
+                        o.phase === 'charge' || o.phase === 'front' || isFly;
+                    if (dangerous && collided) {
                         if (o.kind === 'collect') { grab(o); if (!running) return; }
-                        else if (now >= invulnUntil) { o.taken = true; o.el.remove(); hitPlayer(); if (!running) return; }
+                        else if (now >= invulnUntil) {
+                            o.taken = true;
+                            o.el.remove();
+                            if (o.warning) o.warning.remove();
+                            removeDebugBoxes(o.debugBoxes);
+                            hitPlayer();
+                            if (!running) return;
+                        }
                         // Durante la invulnerabilidad los obstáculos pasan de largo
                     }
                 }
-                objs = objs.filter(o => !o.taken && o.x > -0.25);
+                prevPlayerFootprint = currentPlayerFootprint;
+                objs = objs.filter(o => {
+                    const inBounds = o.direction > 0 ? o.x < 1.28 : o.x > -0.25;
+                    if (!inBounds && o.warning) o.warning.remove();
+                    if (!inBounds) removeDebugBoxes(o.debugBoxes);
+                    return !o.taken && inBounds;
+                });
 
                 // Parpadeo del jugador mientras dura la invulnerabilidad
-                playerEl.style.opacity = (now < invulnUntil && Math.floor(now / 120) % 2 === 0) ? '0.35' : '1';
+                playerEl.style.opacity = (now < blinkUntil && Math.floor(now / 120) % 2 === 0) ? '0.35' : '1';
 
                 updateHud();
             };

@@ -631,6 +631,7 @@ En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
 | `ecchi`   | Clica 🍑 a tiempo, evita 💋                                        | `goal`, `maxMisses`, `lifetime`              |
 | `paloma`  | Memoriza y repite la secuencia                                     | `rounds`, `flashMs`, `gapMs`                 |
 | `gatos`   | **Estilo Pac-Man con laberinto**: huye de los gatos por las calles | `survive`, `cats`, `playerSpeed`, `catSpeed` |
+| `chase`   | Persecución lateral en el coche de Santi                            | `distance`, `speed`, `maxHits`, `spawnMs`    |
 
 #### Minijuego `gatos` (la loca de los gatos)
 
@@ -669,6 +670,127 @@ celdas por delante de Samu, otro solo caza si está lejos). Esto crea ventanas d
 escape; si los 3 apuntaran siempre a Samu lo acorralarían y el juego sería imposible.
 La otra clave del equilibrio: Samu es más rápido que los gatos (`playerSpeed >
 catSpeed`) y gana **manteniéndose en movimiento** por las calles.
+
+#### Minijuego `chase` — coche y carretera (jul. 2026)
+
+El coche de Santi usa seis fotogramas normalizados (`coche_v2_0.png` a
+`coche_v2_5.png`) en un bucle de 85 ms por fotograma. Las poses añaden movimiento
+de suspensión y pequeños cambios de los ocupantes. El giro se representa cambiando
+la orientación de las ruedas originales del coche entre fotogramas; no se dibujan
+ruedas adicionales mediante CSS.
+
+La capa cercana del escenario es `carretera_loop_v2.png` (2048×1152, RGBA):
+asfalto nocturno con textura, carriles, guardarraíl, vegetación, reflectores y
+farolas. Su mitad superior es transparente para revelar
+`carretera_loop_fondo_sin_luna_v2.png`. El skyline lejano avanza al 22 % de la
+velocidad de la carretera cercana para reforzar la profundidad del parallax.
+La capa se representa al 62 % de la altura del escenario: la base de la ciudad,
+que ocupa aproximadamente el 91 % de la imagen fuente, queda así en el 56–57 %
+del área jugable, alineada detrás del borde superior del quitamiedos. Los edificios
+asoman sobre la barrera en vez de quedar enterrados tras el asfalto y su menor
+escala refuerza que pertenecen al fondo.
+
+La luna ya no forma parte de esa textura repetida. `carretera_luna_v2.png` es una
+capa RGBA independiente, situada entre el cielo lejano y la carretera cercana.
+Durante cada persecución recorre suavemente el cielo desde el 82 % al 20 % del
+ancho y asciende del 22 % al 12 % de la altura. Su posición depende del progreso
+real de la carrera, no de una animación CSS: la cuenta atrás y la pausa también
+detienen su recorrido, y al completar el tramo transmite que ha pasado tiempo sin
+repetirse con el loop del skyline.
+
+Los cuatro memes motoristas usan cuatro fotogramas cada uno (`meme_*_v2_0.png`
+a `meme_*_v2_3.png`) a 95 ms por fotograma. Conservan las motos y ruedas
+integradas en el dibujo; las fases modifican suspensión, orientación de la rueda
+y longitud del reactor. Los PNG tienen transparencia real, sustituyendo los
+antiguos sprites con fondos rectangulares opacos.
+
+La conducción ya no está limitada al eje vertical: el coche recorre toda la
+calzada en X/Y con ratón, puntero táctil, WASD o flechas. El límite derecho está
+adelantado a propósito: acercarse al tráfico frontal reduce el tiempo de reacción,
+pero abre espacio para huir de las motos que llegan por detrás. Los límites
+verticales se calcularon para que el sprite visible no quede recortado. El límite
+inferior es `0.92`: aprovecha el margen transparente inferior del PNG y permite
+bajar unos 12 px más que el antiguo `0.90`.
+
+Los obstáculos frontales conservan el desplazamiento de derecha a izquierda,
+pero su velocidad en píxeles es exactamente la misma que la de
+`carretera_loop_v2`: parecen apoyados en el asfalto en lugar de deslizarse sobre
+él. Bidón, valla, rocas y cable usan cuatro PNG transparentes cada uno
+(`obs_*_v2_0.png` a `obs_*_v2_3.png`). El bidón cabecea con la tapa suelta, las
+rocas tiemblan y levantan motas de polvo, el cable alterna sus descargas y las
+balizas de la valla parpadean. Cada familia tiene su propio ritmo de animación
+(85–160 ms) y se precarga completa antes de iniciar la cuenta atrás.
+
+La nueva valla no es una tabla frontal aislada: son tres módulos enlazados que
+retroceden en perspectiva desde el primer plano. Mide el 29 % de la altura del
+escenario y su centro de aparición se limita a `0.68–0.79`, de modo que permanece
+visible y tapona una parte importante de la profundidad transitable sin cerrar
+siempre toda la carretera. Sus tres bases proyectan **tres huellas independientes**
+sobre el asfalto. El jugador puede buscar el hueco delantero, trasero o intermedio,
+pero tocar cualquiera de los apoyos cuenta como impacto.
+
+Como la velocidad sincronizada deja más objetos simultáneos en pantalla, el
+director conserva su separación física al calcular el intervalo, suaviza los
+cambios extremos de carril y aumenta progresivamente la densidad durante la
+partida.
+
+Las motos alternan entre ambos sentidos (el primero se elige al azar), evitando
+rachas en las que todas lleguen por el mismo lado. Las traseras aparecen fuera
+del borde izquierdo, acechan durante 0,85 s siguiendo el carril del jugador y
+muestran `⚠ MOTO`; después fijan su trayectoria y embisten hacia la derecha.
+Durante el acecho no hacen daño. Las frontales aparecen por la derecha mirando
+hacia el coche, muestran un aviso azul en ese borde y suman su propia velocidad
+a la del asfalto. Existe un enfriamiento mínimo de 1,35 s y no pueden encadenarse
+dos apariciones de moto, evitando pinzas aleatorias inevitables.
+
+La persecución no colisiona mediante solapamiento de sprites. Coche, obstáculos y
+motos proyectan una o varias **huellas elípticas sobre el plano de la carretera**,
+situadas bajo las ruedas o las bases del objeto. Dos dibujos pueden solaparse
+visualmente sin impacto si sus huellas están a distinta profundidad: con menor Y
+el coche pasa por detrás y con mayor Y pasa por delante. El `z-index` también se
+calcula desde la huella más cercana, por lo que el orden visual coincide con la
+maniobra.
+
+La prueba de impacto es continua: se calcula la distancia mínima entre el
+movimiento relativo de ambas huellas durante el fotograma, usando la suma de sus
+radios como elipse de exclusión. Esto evita atravesar un cable o una moto rápida
+entre dos frames y no se reduce a preguntar si dos rectángulos se solapan en la
+imagen. El vuelo conserva sus cajas 2D porque allí no existe profundidad de
+carretera.
+
+La dificultad de julio de 2026 aumenta simultáneamente velocidad, duración y
+densidad. Los presets aislados de `minijuegos_test.html` son:
+
+| Modo | Velocidad | Distancia | Golpes | `spawnMs` base |
+| ---- | --------- | --------- | ------ | -------------- |
+| Fácil | 7 | 75 | 3 | 400 |
+| Medio | 9 | 110 | 2 | 340 |
+| Difícil | 11 | 150 | 2 | 285 |
+
+La configuración narrativa de `chapter3.json` escala con `storyDelay`:
+
+| Retraso | Velocidad | Distancia | Golpes | `spawnMs` base |
+| ------- | --------- | --------- | ------ | -------------- |
+| 0 | 10 | 220 | 3 | 340 |
+| 1 | 11 | 250 | 2 | 300 |
+| 2 | 12.5 | 285 | 2 | 250 |
+
+El director todavía aplica el factor de separación física y la entrada
+progresiva, por lo que `spawnMs` es el intervalo base y no el intervalo final
+cronometrado entre dos objetos.
+
+Antes de empezar se muestra `3, 2, 1, ¡YA!`, sin el antiguo parpadeo inicial de
+invulnerabilidad. El HUD enseña porcentaje, metros restantes, vidas y pausa; la
+barra de progreso está arriba para no tapar la carretera. `P`, `Esc` o el botón
+del HUD congelan por completo partida y cuenta atrás. El escenario desactiva los
+gestos del navegador (`touch-action: none`) para que el control táctil responda
+como conducción.
+
+`minijuegos_test.html` incluye la casilla **Mostrar hitboxes en persecución y
+vuelo**. En la persecución dibuja las huellas elípticas: coche en verde,
+obstáculos en rojo y motos en amarillo. En el vuelo mantiene las cajas 2D y los
+coleccionables azules. La opción también se inyecta al usar **Como en la
+historia**, pero nunca se activa en una partida narrativa normal.
 
 #### Minijuego `eduvuelo` — peligros aéreos (cap. 3)
 
@@ -1197,6 +1319,37 @@ El juego incluye un completo rediseño visual inspirado en Persona 5 Royal.
 - **Amarillo**: #ffcc00 (primario)
 - **Rojo**: #ff1744 (secundario)
 - **Negro**: #000000 (fondo)
+
+#### Arranque de la aplicación
+
+El primer acceso sigue una secuencia cerrada:
+
+1. `index.html` muestra un disclaimer a pantalla completa y mantiene el menú
+   invisible e inerte.
+2. El usuario debe pulsar **Entrar con sonido**. Ese gesto desbloquea la
+   reproducción multimedia exigida por los navegadores.
+3. Se reproduce `assets/videos/opening_samu.mp4` a pantalla completa, con su
+   audio AAC y el volumen musical guardado en `illo_vol_music`.
+4. El opening puede terminar naturalmente o cerrarse mediante
+   **Saltar opening**.
+5. Tras un fundido de 560 ms aparece el menú principal, comienza su vídeo en
+   bucle y suena el tema habitual.
+
+El opening final dura 80,704 segundos, está codificado en H.264 a 1920×1080 y
+30 fps, y utiliza audio AAC estéreo a 48 kHz. El MP4 distribuible se copió desde
+la carpeta fuente entregada por Samu; sus archivos de proyecto no forman parte
+del runtime.
+
+Si el MP4 no puede cargarse, el arranque no queda bloqueado: el mensaje de
+estado informa del error y el botón **Saltar opening** permite llegar al menú.
+El clic fuera del botón del disclaimer no inicia nada.
+
+El selector **Capítulos** espera a que termine el descubrimiento asíncrono de
+los JSON antes de dibujar la lista. La carga inicial y un clic temprano
+comparten una única promesa, evitando listas vacías y cargas duplicadas. Mientras
+espera, el botón muestra un estado de carga; al abrir el selector, el foco pasa
+al primer capítulo y el menú queda oculto e inerte. Si no se encuentra ningún
+capítulo, se muestra un mensaje recuperable y **Volver** permite reintentarlo.
 
 #### Menú Principal
 

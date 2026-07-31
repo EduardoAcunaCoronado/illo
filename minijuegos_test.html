@@ -145,6 +145,9 @@
                 <option value="2">2 — muy tardón</option>
             </select>
         </label>
+        <label class="tp-music">
+            <input type="checkbox" id="tp-side-hitboxes"> Mostrar hitboxes en persecución y vuelo
+        </label>
 
         <h2>🏎️ Persecución (chase)</h2>
         <div class="tp-row">
@@ -326,9 +329,9 @@
         }
 
         const CHASE = {
-            facil:   { speed: 5,   distance: 45, maxHits: 4 },
-            medio:   { speed: 6.5, distance: 60, maxHits: 3 },
-            dificil: { speed: 8.5, distance: 85, maxHits: 2 }
+            facil:   { speed: 7,  distance: 75,  maxHits: 3, spawnMs: 400 },
+            medio:   { speed: 9,  distance: 110, maxHits: 2, spawnMs: 340 },
+            dificil: { speed: 11, distance: 150, maxHits: 2, spawnMs: 285 }
         };
         const FLY = {
             facil:   { speed: 4.5, goal: 6,  maxHits: 4 },
@@ -360,6 +363,7 @@
             })));
             if (!cfg) { resultEl.textContent = "No encontré ese minijuego en el capítulo 3."; return; }
             cfg = Object.assign({}, cfg);
+            cfg.debugHitboxes = document.getElementById("tp-side-hitboxes").checked;
             Object.keys(cfg).filter(k => k.endsWith("ByDelay")).forEach(k => {
                 const base = k.slice(0, -"ByDelay".length);
                 const umbrales = Object.keys(cfg[k]).map(Number).filter(n => n <= retraso).sort((a, b) => a - b);
@@ -378,7 +382,10 @@
             resultEl.textContent = '';
             panel.classList.add('hidden');
             startMusic('persecucion_carretera.mp3');
-            await engine.playChaseMinigame(CHASE[preset]);
+            await engine.playChaseMinigame({
+                ...CHASE[preset],
+                debugHitboxes: document.getElementById('tp-side-hitboxes').checked
+            });
             stopMusic();
             resultEl.textContent = '✅ ¡Escapaste de los memes!';
             panel.classList.remove('hidden');
@@ -387,7 +394,10 @@
             resultEl.textContent = '';
             panel.classList.add('hidden');
             startMusic('vuelo_edu.mp3');
-            await engine.playEduVueloMinigame(FLY[preset]);
+            await engine.playEduVueloMinigame({
+                ...FLY[preset],
+                debugHitboxes: document.getElementById('tp-side-hitboxes').checked
+            });
             stopMusic();
             resultEl.textContent = '✅ ¡Partituras recogidas!';
             panel.classList.remove('hidden');

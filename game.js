@@ -7,6 +7,7 @@ let currentChapterName = null;
 
 // Capítulos disponibles para el selector de "Cargar" (se cargan dinámicamente)
 let AVAILABLE_CHAPTERS = [];
+let availableChaptersPromise = null;
 
 // Elementos del DOM
 const gameContainer = document.getElementById("game-container");
@@ -15,6 +16,17 @@ const startBtn = document.getElementById("start-btn");
 const loadBtn = document.getElementById("load-btn");
 const dialogBox = document.getElementById("dialog-box");
 const gameArea = document.querySelector("#game-container > :not(#main-menu)");
+
+function setMainMenuVisible(visible) {
+  mainMenu.classList.toggle("hidden", !visible);
+  mainMenu.toggleAttribute("inert", !visible);
+
+  if (visible) {
+    mainMenu.removeAttribute("aria-hidden");
+  } else {
+    mainMenu.setAttribute("aria-hidden", "true");
+  }
+}
 
 // Event listeners del menú
 startBtn.addEventListener("click", () => startNewGame());
@@ -521,11 +533,88 @@ optionsBtn?.addEventListener("click", (e) => {
   else abrirMenuPausa();
 });
 
+// ===== Arranque: disclaimer -> opening de Samu -> menú principal =====
+// El navegador exige un gesto del usuario para autorizar audio. El disclaimer
+// convierte ese requisito en parte explícita del arranque y permite que el
+// opening reproduzca su pista AAC desde el primer fotograma.
+const startupOverlay = document.getElementById("startup-overlay");
+const startupDisclaimer = document.getElementById("startup-disclaimer");
+const startupOpening = document.getElementById("startup-opening");
+const startupOpeningVideo = document.getElementById("startup-opening-video");
+const startupOpeningStatus = document.getElementById("startup-opening-status");
+const startupEnterBtn = document.getElementById("startup-enter");
+const startupSkipBtn = document.getElementById("startup-skip");
+let startupFinished = false;
+let startupStarted = false;
+
+function storedMusicVolume() {
+  const value = parseFloat(localStorage.getItem("illo_vol_music"));
+  return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 1;
+}
+
+function showMainMenuAfterOpening() {
+  if (startupFinished) return;
+  startupFinished = true;
+  try { startupOpeningVideo.pause(); } catch (error) {}
+  startupOverlay?.classList.add("is-leaving");
+
+  setTimeout(() => {
+    document.body.classList.remove("startup-pending");
+    startupOverlay?.remove();
+    setMainMenuVisible(true);
+    showMenuMedia(false);
+    playMenuTheme();
+  }, 560);
+}
+
+function startStartupOpening() {
+  if (startupStarted || startupFinished) return;
+  startupStarted = true;
+  menuAudioUnlocked = true;
+  startupDisclaimer.hidden = true;
+  startupOpening.hidden = false;
+  startupOpeningStatus.textContent = "Cargando opening…";
+  startupOpeningVideo.muted = false;
+  startupOpeningVideo.volume = storedMusicVolume();
+  startupOpeningVideo.currentTime = 0;
+
+  const playback = startupOpeningVideo.play();
+  if (playback && playback.catch) {
+    playback.catch(() => {
+      startupOpeningStatus.textContent =
+        "No se pudo reproducir el opening. Pulsa «Saltar opening» para continuar.";
+    });
+  }
+}
+
+function setupStartupSequence() {
+  if (!startupOverlay || !startupOpeningVideo || !startupEnterBtn) {
+    document.body.classList.remove("startup-pending");
+    setMainMenuVisible(true);
+    return;
+  }
+
+  const menuVideo = menuVideoEl();
+  if (menuVideo) {
+    try { menuVideo.pause(); } catch (error) {}
+  }
+
+  startupEnterBtn.addEventListener("click", startStartupOpening);
+  startupSkipBtn?.addEventListener("click", showMainMenuAfterOpening);
+  startupOpeningVideo.addEventListener("playing", () => {
+    startupOpening.classList.add("is-playing");
+  });
+  startupOpeningVideo.addEventListener("ended", showMainMenuAfterOpening);
+  startupOpeningVideo.addEventListener("error", () => {
+    startupOpeningStatus.textContent =
+      "No se ha podido cargar el opening. Pulsa «Saltar opening» para continuar.";
+  });
+  startupEnterBtn.focus();
+}
+
 // ===== Menú principal: vídeo de fondo + tema "Más de lo que ven tus ojos" =====
-// El vídeo arranca en bucle y silenciado (autoplay). Al primer clic/tecla se
-// activa su sonido base BAJITO y arranca el tema del menú (los navegadores no
-// permiten audio antes del primer gesto del usuario). Al empezar a jugar, todo
-// se funde y el vídeo se oculta; al volver al menú, vuelve.
+// Tras el opening, el vídeo del menú arranca en bucle y silenciado. Su música
+// usa el gesto ya realizado en el disclaimer, por lo que no vuelve a pedir clic.
 const MENU_MUSIC_SRC = "assets/sounds/music/tema_menu.mp3"; // alternativa: tema_menu_v2.mp3
 const MENU_AMBIENCE_SRC = "assets/sounds/music/ambiente_menu.mp3"; // audio base del vídeo, extraído
 const MENU_CHILL_SRC = "assets/sounds/music/menu_chill.mp3"; // instrumental chill que releva al tema
@@ -582,6 +671,13 @@ function playMenuTheme() {
 
 function unlockMenuAudio(e) {
   if (menuAudioUnlocked) return;
+  // Durante el disclaimer solo su botón debe iniciar el opening. El gesto se
+  // reserva para esa pista y no arranca música del menú por debajo del vídeo.
+  if (document.body.classList.contains("startup-pending")) {
+    if (e && e.target && e.target.closest &&
+        e.target.closest("#startup-enter")) menuAudioUnlocked = true;
+    return;
+  }
   if (mainMenu.classList.contains("hidden")) return; // ya no estamos en el menú
   menuAudioUnlocked = true;
   // Si el primer gesto es justo "Comenzar", no arrancamos nada para un instante
@@ -626,24 +722,42 @@ function stopMenuMedia() {
 
 // Volver a mostrar el menú con su vídeo y su ambiente (al regresar al menú).
 // El tema NO se relanza solo: para volver a oírlo está el botón ♪.
-function showMenuMedia() {
+function showMenuMedia(playChillOnReturn = true) {
   const vid = menuVideoEl();
   if (vid) {
     vid.classList.remove("hidden");
     applyMenuVideoRate();
     vid.play().catch(() => {});
   }
-  if (menuAudioUnlocked) {
+  if (menuAudioUnlocked && playChillOnReturn) {
     playMenuChill(); // al volver al menú, el chill acompaña (el tema no se relanza)
   }
 }
+
+setupStartupSequence();
 
 // Inicializar
 document.addEventListener("DOMContentLoaded", initGame);
 
 async function initGame() {
   console.log("Visual Novel Engine inicializado");
-  await loadAvailableChapters();
+  await ensureAvailableChapters();
+}
+
+function ensureAvailableChapters() {
+  if (AVAILABLE_CHAPTERS.length > 0) {
+    return Promise.resolve(AVAILABLE_CHAPTERS);
+  }
+
+  // Compartir la misma carga entre DOMContentLoaded y un clic temprano en
+  // "Capítulos". Sin esto, el selector podía renderizarse con la lista aún vacía.
+  if (!availableChaptersPromise) {
+    availableChaptersPromise = loadAvailableChapters().finally(() => {
+      availableChaptersPromise = null;
+    });
+  }
+
+  return availableChaptersPromise;
 }
 
 async function loadAvailableChapters() {
@@ -670,6 +784,7 @@ async function loadAvailableChapters() {
       break; // error de red -> dejar de sondear
     }
   }
+  return AVAILABLE_CHAPTERS;
 }
 
 async function loadAllCharacters() {
@@ -704,7 +819,7 @@ async function loadAllCharacters() {
 async function startNewGame() {
   if (isGameRunning) return; // doble clic = una sola partida
   stopMenuMedia();
-  mainMenu.classList.add("hidden");
+  setMainMenuVisible(false);
   isGameRunning = true;
   currentChapterNumber = 0;
 
@@ -848,7 +963,7 @@ async function endGame() {
 
   // Si el capítulo es el final del juego, volver directamente al menú
   if (isFinalChapter) {
-    mainMenu.classList.remove("hidden");
+    setMainMenuVisible(true);
     showMenuMedia();
     return;
   }
@@ -863,7 +978,7 @@ async function endGame() {
     await showContinueOptions(nextChapterId);
   } else {
     // No hay más capítulos, volver al menú
-    mainMenu.classList.remove("hidden");
+    setMainMenuVisible(true);
     showMenuMedia();
   }
 }
@@ -913,14 +1028,35 @@ async function showContinueOptions(nextChapterId) {
       isGameRunning = true;
       playChapter(nextChapterId);
     } else {
-      mainMenu.classList.remove("hidden");
+      setMainMenuVisible(true);
       showMenuMedia();
     }
   });
 }
 
-function loadGame() {
-  showChapterSelector();
+async function loadGame() {
+  if (
+    document.getElementById("chapter-selector") ||
+    loadBtn.dataset.loading === "true"
+  ) {
+    return;
+  }
+
+  loadBtn.dataset.loading = "true";
+  loadBtn.disabled = true;
+  loadBtn.setAttribute("aria-busy", "true");
+  const originalText = loadBtn.textContent;
+  loadBtn.textContent = "Cargando capítulos…";
+
+  try {
+    await ensureAvailableChapters();
+    showChapterSelector();
+  } finally {
+    loadBtn.textContent = originalText;
+    loadBtn.disabled = false;
+    loadBtn.removeAttribute("aria-busy");
+    delete loadBtn.dataset.loading;
+  }
 }
 
 function showChapterSelector() {
@@ -928,7 +1064,7 @@ function showChapterSelector() {
   if (document.getElementById("chapter-selector")) return;
 
   // Ocultar menú principal
-  mainMenu.classList.add("hidden");
+  setMainMenuVisible(false);
 
   const selector = document.createElement("div");
   selector.id = "chapter-selector";
@@ -941,12 +1077,17 @@ function showChapterSelector() {
         </button>
     `,
   ).join("");
+  const listHTML =
+    buttonsHTML ||
+    `<p class="chapter-selector-empty" role="status">
+      No se han podido cargar los capítulos. Vuelve al menú para reintentarlo.
+    </p>`;
 
   selector.innerHTML = `
         <div class="chapter-selector-panel">
             <h2 class="chapter-selector-title">Seleccionar Capítulo</h2>
             <div class="chapter-selector-list">
-                ${buttonsHTML}
+                ${listHTML}
             </div>
             <button class="chapter-selector-back" id="chapter-selector-back">Volver</button>
         </div>
@@ -966,14 +1107,20 @@ function showChapterSelector() {
     .getElementById("chapter-selector-back")
     .addEventListener("click", () => {
       selector.remove();
-      mainMenu.classList.remove("hidden");
+      setMainMenuVisible(true);
+      loadBtn.focus();
     });
+
+  (
+    selector.querySelector(".chapter-select-btn") ||
+    selector.querySelector("#chapter-selector-back")
+  )?.focus();
 }
 
 async function startChapterFromSelector(chapterId) {
   if (isGameRunning) return; // doble clic = una sola partida
   stopMenuMedia();
-  mainMenu.classList.add("hidden");
+  setMainMenuVisible(false);
 
   // Asegurar un estado limpio antes de empezar el capítulo elegido
   engine.reset();
