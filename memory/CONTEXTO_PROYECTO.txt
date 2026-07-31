@@ -497,6 +497,9 @@ REGLAS PARA CAMBIOS FUTUROS
   técnico que un futuro agente necesite conocer.
 
 CORRECCIÓN 2026-07-31
+- `index.html` debe contener un solo `#startup-overlay`, fuera de `#viewport`.
+  Un duplicado dentro de `#game-container` bloqueaba el arranque porque los
+  listeners actuaban únicamente sobre la primera copia de los IDs repetidos.
 - Al volver al menú principal desde una partida, hay que usar
   `setMainMenuVisible(true)`: quitar solamente la clase `hidden` deja el atributo
   `inert` activo e impide pulsar las opciones del menú.

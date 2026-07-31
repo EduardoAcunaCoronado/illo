@@ -3152,6 +3152,11 @@ servidor local en `127.0.0.1` con un puerto libre y carga la ventana desde ahí.
 Es exactamente el mismo escenario que `python -m http.server`, por lo que el
 comportamiento del juego es idéntico al del navegador.
 
+El aviso «Antes de empezar» usa un único `#startup-overlay`, situado fuera de
+`#viewport` y `#game-container`. No debe duplicarse dentro del escenario: los
+IDs repetidos hacen que el botón controle una copia mientras la otra permanece
+encima y bloquea el acceso al opening y al menú.
+
 Detalles de la ventana:
 
 - Tamaño de área de dibujo 1280x720 (se reduce si la pantalla es más pequeña)
