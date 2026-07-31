@@ -98,6 +98,9 @@ CAPÍTULO 2 — “Kingdom Ketchup” (Edu)
 CAPÍTULO 3 — “Ecchi Land” (Tony / Seraphyna)
 - Santi, una rata anciana y tramoyista (“Kiikiaskel” en la nómina), recoge a Samu y
   Edu en su coche tuneado. Repite que lleva cuarenta años entre focos y cables.
+- En los interiores del trayecto y el asalto, Santi ocupa el hueco inferior
+  izquierdo para que el volante cortado continúe fuera de plano; Samu queda en el
+  centro y Edu a la derecha durante toda la secuencia del coche.
 - En el trayecto, la radio reproduce una voz femenina que Samu tararea sin reconocer.
   Santi la apaga y advierte que la gente no sale igual de Ecchi Land.
 - Un enjambre de memes en moto los persigue. El minijuego chase cambia distancia,
@@ -416,7 +419,12 @@ PRESENTACIÓN
   reproduce assets/videos/opening_samu.mp4 (80,704 s, 1920x1080, H.264 + AAC).
   El vídeo puede terminar o saltarse con su botón; después funde al menú, activa
   menu_loop.mp4 y lanza el tema. Menú y vídeo de fondo permanecen ocultos e
-  inertes antes del gesto. El volumen del opening respeta illo_vol_music.
+  inertes antes del gesto. El volumen del opening respeta illo_vol_music. En la
+  build Electron, el vídeo declara una superficie fija 1280x720, fuerza layout
+  al salir de hidden y solo se hace visible dos requestAnimationFrame después
+  de playing; así no aparece el primer frame 640x360 en modo ventana. Si
+  illo_vol_music estaba exactamente a 0, «Entrar con sonido» lo restaura al
+  70 % y lo persiste; cualquier volumen audible previo se conserva.
 - El fondo del menú es un bucle H.264 4K de 10 s, 48 FPS y 480 frames en
   assets/videos/menu_loop.mp4. Conserva íntegros los 240 frames 4K originales e
   inserta entre ellos frames de movimiento con RIFE v4.6 (UHD + TTA temporal).

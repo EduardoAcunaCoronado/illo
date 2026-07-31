@@ -182,8 +182,7 @@ body.startup-pending #menu-video {
     letter-spacing: 0.06em;
 }
 
-.startup-opening,
-.startup-opening-video {
+.startup-opening {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -196,7 +195,23 @@ body.startup-pending #menu-video {
 }
 
 .startup-opening-video {
+    position: absolute;
+    inset: 0 auto auto 0;
+    /* El escenario siempre mide 1280x720 antes de aplicar --stage-scale. En
+       Electron, un <video> recién sacado de [hidden] podía resolver durante el
+       primer frame los porcentajes contra una superficie de compositor a media
+       escala. Las dimensiones de diseño explícitas evitan ese rectángulo 640x360. */
+    width: 1280px;
+    height: 720px;
     object-fit: contain;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.startup-opening.is-playing .startup-opening-video {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.12s linear;
 }
 
 .startup-opening-status {

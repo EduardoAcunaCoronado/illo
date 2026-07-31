@@ -552,6 +552,19 @@ function storedMusicVolume() {
   return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 1;
 }
 
+function audibleStartupVolume() {
+  const stored = storedMusicVolume();
+  if (stored > 0) return stored;
+
+  // El gesto dice explícitamente «Entrar con sonido». Si una sesión anterior
+  // dejó la música totalmente silenciada, recuperamos un nivel audible y seguro
+  // tanto para el opening como para el menú que viene después.
+  const restored = 0.7;
+  saveSetting("illo_vol_music", String(restored));
+  engine.applyVolumeSettings?.();
+  return restored;
+}
+
 function showMainMenuAfterOpening() {
   if (startupFinished) return;
   startupFinished = true;
@@ -572,11 +585,20 @@ function startStartupOpening() {
   startupStarted = true;
   menuAudioUnlocked = true;
   startupDisclaimer.hidden = true;
+  // El vídeo permanece oculto hasta que Electron ha creado y dimensionado su
+  // superficie de compositor. Sin esto, la versión empaquetada podía enseñar
+  // brevemente el primer frame a 640x360 dentro de la ventana 1280x720.
+  startupOpening.classList.remove("is-playing");
   startupOpening.hidden = false;
   startupOpeningStatus.textContent = "Cargando opening…";
   startupOpeningVideo.muted = false;
-  startupOpeningVideo.volume = storedMusicVolume();
+  startupOpeningVideo.volume = audibleStartupVolume();
   startupOpeningVideo.currentTime = 0;
+
+  // Fuerza el layout 1280x720 después de retirar [hidden], antes de solicitar
+  // reproducción. El width/height del HTML y el CSS fijo hacen que este tamaño
+  // no dependa todavía del primer cálculo porcentual del compositor de vídeo.
+  void startupOpeningVideo.getBoundingClientRect();
 
   const playback = startupOpeningVideo.play();
   if (playback && playback.catch) {
@@ -602,7 +624,16 @@ function setupStartupSequence() {
   startupEnterBtn.addEventListener("click", startStartupOpening);
   startupSkipBtn?.addEventListener("click", showMainMenuAfterOpening);
   startupOpeningVideo.addEventListener("playing", () => {
-    startupOpening.classList.add("is-playing");
+    // Dos frames dan tiempo a Chromium/Electron para presentar la superficie de
+    // vídeo con su tamaño definitivo. Hasta entonces se ve el fondo negro y el
+    // estado de carga, nunca una copia encogida del opening.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (!startupFinished && !startupOpeningVideo.paused) {
+          startupOpening.classList.add("is-playing");
+        }
+      });
+    });
   });
   startupOpeningVideo.addEventListener("ended", showMainMenuAfterOpening);
   startupOpeningVideo.addEventListener("error", () => {

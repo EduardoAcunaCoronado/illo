@@ -679,6 +679,11 @@ de suspensión y pequeños cambios de los ocupantes. El giro se representa cambi
 la orientación de las ruedas originales del coche entre fotogramas; no se dibujan
 ruedas adicionales mediante CSS.
 
+En las escenas **El trayecto** y **Asalto en la carretera** del capítulo 3, la
+composición interior coloca a Santi en el hueco izquierdo, a Samu en el central y
+a Edu en el derecho. El sprite de Santi queda anclado al borde inferior izquierdo,
+de modo que el corte de su volante continúa de forma natural fuera de plano.
+
 La capa cercana del escenario es `carretera_loop_v2.png` (2048×1152, RGBA):
 asfalto nocturno con textura, carriles, guardarraíl, vegetación, reflectores y
 farolas. Su mitad superior es transparente para revelar
@@ -1431,13 +1436,22 @@ El primer acceso sigue una secuencia cerrada:
 1. `index.html` muestra un disclaimer a pantalla completa y mantiene el menú
    invisible e inerte.
 2. El usuario debe pulsar **Entrar con sonido**. Ese gesto desbloquea la
-   reproducción multimedia exigida por los navegadores.
+   reproducción multimedia exigida por los navegadores. Si el volumen musical
+   persistido estaba exactamente al 0 %, el gesto lo restablece al 70 % y
+   guarda el nuevo valor; un volumen distinto de cero se respeta sin cambios.
 3. Se reproduce `assets/videos/opening_samu.mp4` a pantalla completa, con su
    audio AAC y el volumen musical guardado en `illo_vol_music`.
 4. El opening puede terminar naturalmente o cerrarse mediante
    **Saltar opening**.
 5. Tras un fundido de 560 ms aparece el menú principal, comienza su vídeo en
    bucle y suena el tema habitual.
+
+En Electron, la superficie del opening se fija desde el HTML y el CSS al tamaño
+de diseño `1280×720`. Al retirar `hidden` se fuerza primero su layout y el vídeo
+permanece invisible hasta dos fotogramas de animación después del evento
+`playing`. Esto evita que Chromium llegue a presentar fugazmente una superficie
+inicial de `640×360` en la esquina superior izquierda al arrancar una build en
+modo ventana; durante ese intervalo solo se mantiene el fondo negro de carga.
 
 El fondo del menú utiliza `assets/videos/menu_loop.mp4`, un bucle H.264
 de 10 segundos, 48 FPS y `3840×2160`. Sus 240 fotogramas 4K originales se
