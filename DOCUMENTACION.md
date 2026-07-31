@@ -877,20 +877,28 @@ energía a `8/7/6`, eleva el coste del dash a `50/55/60` y acorta su duración a
 siendo una herramienta decisiva, pero ya no permite atravesar casi todos los
 patrones sin administrar la energía.
 
-Los assets V2 están en `assets/minigames/cap3/`: `aire_fondo_v2.png` para el
-escenario, `edu_volando_sheet_v2.png` con el nuevo modelo y seis poses de Edu,
-y `cables_aire_sheet_v2.png` como fuente del diseño del cable. Dentro de
-`sprites/` están los seis `edu_fly_v2_*.png`, el cable continuo
-`aire_cable_v3.png`, `aire_foco_v2.png`, `aire_altavoz_v2.png` y
-`partitura_v2.png`. Los cinco primeros frames de Edu forman un ciclo estable
-de aleteo y el sexto es una pose específica de impulso. Todos están
-normalizados sobre lienzos transparentes de `512×512`, con margen y sin restos
-de celdas vecinas. También se limpió en los seis frames la cuña blanca atrapada
-entre el bigote y la garganta, conservando el bigote y el contorno de la
-mandíbula; la hoja fuente se reconstruyó con la misma corrección. El cable de
-juego es un único dibujo continuo de anclaje,
-cuerpo trenzado y terminal electrificado: su ancho se calcula a partir de su
-altura y se invierte desde el suelo sin uniones ni cambios de escala internos.
+Los assets del escenario siguen en `assets/minigames/cap3/`:
+`aire_fondo_v2.png` y `cables_aire_sheet_v2.png`. Edu usa la revisión V3,
+construida a partir del modelo canónico de `assets/characters/edu/`: la hoja
+`edu_volando_sheet_v3.png` contiene ocho poses de vuelo y
+`edu_volando_dash_sheet_v3.png` contiene dos poses específicas de impulso.
+Dentro de `sprites/` están los ocho `edu_fly_v3_0.png`…
+`edu_fly_v3_7.png` y los dos `edu_fly_v3_dash_*.png`, todos normalizados sobre
+lienzos transparentes de `512×512`, con el torso anclado en el mismo punto,
+margen seguro y un único componente visual para impedir motas o partes fuera
+del sprite. El ciclo de vuelo recorre ocho alturas de ala y el dash alterna sus
+dos poses a mayor cadencia.
+
+Los diez frames conservan exactamente los dos bigotes faciales del diseño
+canónico: ambos nacen del hocico y el visible termina junto a la
+mandíbula/garganta. Se eliminaron la cuña blanca previa y todos los falsos
+trazos que nacían detrás de la cabeza o formaban bucles hacia las alas. Las
+hojas fuente se reconstruyeron con la misma corrección. El resto de sprites
+activos son el cable continuo `aire_cable_v3.png`, `aire_foco_v2.png`,
+`aire_altavoz_v2.png` y `partitura_v2.png`. El cable de juego es un único
+dibujo continuo de anclaje, cuerpo trenzado y terminal electrificado: su ancho
+se calcula a partir de su altura y se invierte desde el suelo sin uniones ni
+cambios de escala internos.
 
 #### Batallas: modo supervivencia (extensión aditiva)
 

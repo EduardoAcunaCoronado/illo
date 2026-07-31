@@ -2518,14 +2518,20 @@ class VisualNovelEngine {
         const SP = 'assets/minigames/cap3/sprites/';
         const CAP = 'assets/minigames/cap3/';
         const FLIGHT_FRAMES = [
-            'edu_fly_v2_0',
-            'edu_fly_v2_1',
-            'edu_fly_v2_2',
-            'edu_fly_v2_3',
-            'edu_fly_v2_4'
+            'edu_fly_v3_0',
+            'edu_fly_v3_1',
+            'edu_fly_v3_2',
+            'edu_fly_v3_3',
+            'edu_fly_v3_4',
+            'edu_fly_v3_5',
+            'edu_fly_v3_6',
+            'edu_fly_v3_7'
         ];
-        const BOOST_FRAME = 'edu_fly_v2_5';
-        const PLAYER_FRAMES = [...FLIGHT_FRAMES, BOOST_FRAME];
+        const DASH_FRAMES = [
+            'edu_fly_v3_dash_0',
+            'edu_fly_v3_dash_1'
+        ];
+        const PLAYER_FRAMES = [...FLIGHT_FRAMES, ...DASH_FRAMES];
         const asset = (path) => `url('${this.cacheBustAsset(path)}')`;
 
         await this.preloadImages([
@@ -2624,7 +2630,9 @@ class VisualNovelEngine {
             let lastCableSide = Math.random() < 0.5 ? 'top' : 'bottom';
             let objects = [];
             let frameIndex = 0;
+            let dashFrameIndex = 0;
             let frameClock = 0;
+            let wasDashing = false;
             let playerX = homeX;
             let playerY = 0.50;
             let previousPlayerY = playerY;
@@ -3272,9 +3280,10 @@ class VisualNovelEngine {
                 dashUntil = now + (cfg.dashDuration || 0.46) * 1000;
                 dashCooldownUntil = dashUntil + 180;
                 invulnerableUntil = Math.max(invulnerableUntil, dashUntil);
-                frameIndex = 0;
+                dashFrameIndex = 0;
                 frameClock = 0;
-                playerEl.style.backgroundImage = asset(SP + BOOST_FRAME + '.png');
+                playerEl.style.backgroundImage =
+                    asset(SP + DASH_FRAMES[0] + '.png');
                 playerEl.classList.remove('dash-pop');
                 void playerEl.offsetWidth;
                 playerEl.classList.add('dash-pop');
@@ -3429,12 +3438,29 @@ class VisualNovelEngine {
                 playerY += (targetY - playerY) * Math.min(1, dt * 10.5);
                 updatePlayerPosition(now);
 
-                frameClock += dt;
-                if (frameClock >= 0.10 && now >= dashUntil) {
-                    frameClock = 0;
+                const dashing = now < dashUntil;
+                if (wasDashing && !dashing) {
                     frameIndex = (frameIndex + 1) % FLIGHT_FRAMES.length;
                     playerEl.style.backgroundImage =
                         asset(SP + FLIGHT_FRAMES[frameIndex] + '.png');
+                    frameClock = 0;
+                }
+                wasDashing = dashing;
+
+                frameClock += dt;
+                const frameDuration = dashing ? 0.07 : 0.08;
+                if (frameClock >= frameDuration) {
+                    frameClock = 0;
+                    if (dashing) {
+                        dashFrameIndex =
+                            (dashFrameIndex + 1) % DASH_FRAMES.length;
+                        playerEl.style.backgroundImage =
+                            asset(SP + DASH_FRAMES[dashFrameIndex] + '.png');
+                    } else {
+                        frameIndex = (frameIndex + 1) % FLIGHT_FRAMES.length;
+                        playerEl.style.backgroundImage =
+                            asset(SP + FLIGHT_FRAMES[frameIndex] + '.png');
+                    }
                 }
 
                 energy = Math.min(100, energy + (cfg.energyRegen || 10) * dt);
@@ -3458,7 +3484,6 @@ class VisualNovelEngine {
                     beep(1040, 0.14, { type: 'triangle', volume: 0.045, delay: 0.08 });
                 }
 
-                const dashing = now < dashUntil;
                 for (const object of objects) {
                     if (object.taken) continue;
                     object.previousX = object.x;

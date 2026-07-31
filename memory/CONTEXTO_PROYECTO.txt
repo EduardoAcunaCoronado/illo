@@ -359,7 +359,7 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   debajo del viewport. Tras un golpe, el obstáculo queda resaltado brevemente y
   su aviso tiene prioridad para que el origen del daño sea visible.
 - Rhythm/Neon Runner: notas, sliders y spinner; resultado por precisión.
-- Eduvuelo V2: vuelo arcade; recoger frases de partituras, encadenar casi-roces,
+- Eduvuelo V3: vuelo arcade; recoger frases de partituras, encadenar casi-roces,
   administrar el impulso y superar cables, focos, altavoces y ráfagas. Tras
   comprobar que el dash abarataba demasiado la evasión, se endurecieron todos
   los modos. Presets fácil/medio/difícil: velocidad 5.4/7/9, objetivo 14/20/26,
@@ -368,11 +368,13 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   objetivo 20/24/28, velocidad 6.8/7.8/8.8, impactos 3/2/2 y spawn
   600/520/450 ms; regeneración 8/7/6, coste 50/55/60 y duración
   0.38/0.35/0.32 s. Usa el fondo
-  aire_fondo_v2.png, un nuevo Edu consistente de seis poses (cinco de aleteo
-  y una de impulso), normalizadas en 512×512 transparente y limpias de restos
-  entre celdas. Los seis frames y la hoja fuente tienen eliminada la cuña blanca
-  de fondo que quedaba encerrada entre el bigote y la garganta, sin alterar el
-  bigote ni el contorno de la mandíbula. El peligro usa aire_cable_v3.png: un cable vertical completo
+  aire_fondo_v2.png y un Edu V3 basado en el modelo canónico: ocho poses de
+  aleteo y dos de impulso, normalizadas en 512×512 transparente, con torso
+  estable, margen seguro y un único componente visual para impedir motas fuera
+  del sprite. Los diez frames y sus hojas fuente eliminan la cuña blanca y los
+  falsos bucles de bigote detrás de la cabeza o hacia las alas. Solo quedan los
+  dos bigotes faciales canónicos, nacidos en el hocico y terminados antes de la
+  espalda. El peligro usa aire_cable_v3.png: un cable vertical completo
   y sin costuras con anclaje, trenza, refuerzos, terminal roto y electricidad
   animada; se escala conservando la proporción y se invierte para el suelo.
 - Battle supervivencia: Samu+Edu resisten a la marea hasta que Seraphyna canta.
