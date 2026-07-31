@@ -417,6 +417,18 @@ PRESENTACIÓN
 - Capítulos tienen cartela de entrada y pantalla de fin.
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
+- Los 24 planos del concierto tienen una restauración no destructiva 4K en
+  assets/cutscenes/nuevos_frames_4k/: PNG RGB de 3840×2160 con caras, manos,
+  anatomía del público, enemigos, vallas y escenario reconstruidos. Samu, Edu
+  y el gorila siguen su arte canónico; los primeros planos de Seraphyna fijan
+  su identidad. frame_11_embobados.png aplica además a Samu el patrón cromático
+  exacto de assets/characters/samu/Samu.png. Los originales de nuevos_frames/
+  y nuevos_frames_x2/ no se modificaron.
+- El opening del concierto se recompuso con esos planos en
+  assets/cutscenes/opening_tony_4k.mp4: H.264 3840×2160, 30 FPS, 117,6 s,
+  audio AAC original y montaje con zooms, fundidos, fogonazos y pausa negra
+  final. opening_tony.mp4 (720p) permanece intacto; la entrega 4K ocupa menos
+  de 100 MB para poder versionarse y usarse en el juego.
 - Créditos del final bueno recorren imágenes del viaje. El final incierto no los lanza.
 
 VALIDACIÓN REALIZADA EL 2026-07-30

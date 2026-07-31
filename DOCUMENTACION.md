@@ -3047,6 +3047,34 @@ es en el campo `build` del `package.json`, no borrando `locales/` a mano:
 El recorte de verdad está en `assets/`: `cutscenes/` (421 MB) y `sounds/`
 (303 MB) son más de la mitad del juego.
 
+#### Restauración 4K de la cinemática del concierto
+
+Los 24 planos de `assets/cutscenes/nuevos_frames/` tienen una restauración no
+destructiva en `assets/cutscenes/nuevos_frames_4k/`. Todos conservan el nombre
+original y se entregan como PNG RGB de `3840×2160`.
+
+La restauración no consiste únicamente en ampliar píxeles: cada plano se
+reconstruyó visualmente manteniendo encuadre, puesta en escena, iluminación y
+paleta. Se corrigieron caras, ojos, hocicos, dientes, manos, patas, garras,
+agarres, solapes, anatomía del público, geometría de vallas y elementos del
+escenario. Samu, Edu y el gorila usan como referencia sus artes canónicos; los
+primeros planos de Seraphyna fijan su identidad en toda la secuencia. Los
+planos de público mantienen menos detalle en la distancia para conservar
+profundidad, y el frame final corrige además el texto legible `SERAPHYNA` y
+`ALL ACCESS`. En `frame_11_embobados.png`, Samu usa el patrón cromático
+canónico de `assets/characters/samu/Samu.png`: base topo, zonas gris crema,
+parches marrón oscuro, nariz naranja y gorguera blanca ribeteada en rojo. Los
+originales y la antigua ampliación `nuevos_frames_x2/` permanecen intactos.
+
+El montaje reconstruido se entrega en
+`assets/cutscenes/opening_tony_4k.mp4`. Es un H.264 de `3840×2160` a 30 FPS y
+117,6 segundos que utiliza directamente los 24 planos restaurados, conserva el
+audio AAC del opening original y reproduce sus zooms, fundidos, fogonazos
+blancos y pausa negra final. La versión de 720p
+`assets/cutscenes/opening_tony.mp4` permanece intacta. El archivo 4K se codificó
+como versión de distribución compatible con el juego y queda por debajo de
+100 MB.
+
 ### Cómo funciona
 
 ```
