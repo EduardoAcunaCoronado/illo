@@ -638,7 +638,7 @@ En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
 Un **Pac-Man por rejilla** en un **laberinto de calles urbanas**. Samu (🐺) recorre
 las calles (← ↑ → ↓ / WASD), girando en las intersecciones, y debe **sobrevivir** un
 tiempo mientras los gatos (🐱) le persiguen por el laberinto. Si un gato lo alcanza,
-pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jamón).
+pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jarrón).
 
 ```json
 {
@@ -2600,7 +2600,11 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 **chapter2-edu.json - Capítulo 2: Kingdom Ketchup:**
 
 - Samu busca a Edu en el supermercado
-- Elige ruta entre El Jamón, Día o Mercadona
+- Elige ruta entre las parodias ficticias El Jarrón, Noche o Mercaguasa
+- Los tres fondos conservan sus nombres de archivo heredados (`jamon.png`,
+  `dia.png` y `mercadona.png`), pero muestran marcas completamente ficticias.
+  Comparten el acabado anime cinematográfico, la luz cálida de las 16:00 y la
+  dirección artística de `assets/cutscenes/opening_samu/`.
 - Batalla contra la loca de los gatos (minigame gatos)
 - Rescate de Edu y batalla contra Zip (minigame ketchup)
 - Descubrimiento del concierto de Seraphyna en Ecchi Land

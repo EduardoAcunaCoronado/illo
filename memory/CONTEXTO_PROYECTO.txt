@@ -75,9 +75,9 @@ CAPÍTULO 1 — “Un furro se levanta” (Samu)
 CAPÍTULO 2 — “Kingdom Ketchup” (Edu)
 - Furrielva parece inicialmente una utopía de furros viviendo en armonía.
 - Para buscar el portal, Samu elige supermercado:
-  · Día: ruta directa, storyDelay 0.
-  · Mercadona: pequeño rodeo, storyDelay 1.
-  · El Jamón: la loca de los gatos lo ataca; minijuego de supervivencia, storyDelay 2.
+  · Noche: ruta directa, storyDelay 0.
+  · Mercaguasa: pequeño rodeo, storyDelay 1.
+  · El Jarrón: la loca de los gatos lo ataca; minijuego de supervivencia, storyDelay 2.
 - Kingdom Ketchup apareció sin historia ni registro. No vende nada: sus pasillos
   ofrecen exactamente lo que cada visitante desea. Algunos salen; otros dejan de
   querer encontrar la salida.
@@ -438,6 +438,11 @@ PRESENTACIÓN
   relevo chill, botón musical y marca WildSoft.
 - Visual novel con fondos ilustrados, sprites grandes, caja de diálogo inferior,
   nombre coloreado, flecha de continuación, sonido por letra y pausas de puntuación.
+- Los supermercados de la ruta de Edu usan las marcas ficticias El Jarrón,
+  Noche y Mercaguasa. Sus fondos heredados `jamon.png`, `dia.png` y
+  `mercadona.png` están unificados a 1600×900 con el estilo anime cinematográfico
+  y la iluminación cálida de las 16:00 del opening de Samu; los tres conservan
+  el portal rojo y su encuadre de gameplay.
 - Capítulos tienen cartela de entrada y pantalla de fin.
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.

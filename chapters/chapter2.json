@@ -112,23 +112,23 @@
           ],
           "choices": [
             {
-              "text": "Entrar por El Jamón",
-              "nextScene": "Escena 2: El Jamón"
+              "text": "Entrar por El Jarrón",
+              "nextScene": "Escena 2: El Jarrón"
             },
             {
-              "text": "Entrar por el Día",
-              "nextScene": "Escena 3: Día"
+              "text": "Entrar por Noche",
+              "nextScene": "Escena 3: Noche"
             },
             {
-              "text": "Entrar por el Mercadona",
-              "nextScene": "Escena 4: Mercadona"
+              "text": "Entrar por Mercaguasa",
+              "nextScene": "Escena 4: Mercaguasa"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 2: El Jamón",
+      "title": "Escena 2: El Jarrón",
       "lines": [
         {
           "actions": [
@@ -153,7 +153,7 @@
             }
           ],
           "character": "3C",
-          "text": "El Jamón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos, con la mirada puesta en encontrar la entrada al Kingdom Ketchup."
+          "text": "El Jarrón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos, con la mirada puesta en encontrar la entrada al Kingdom Ketchup."
         },
         {
           "character": "Samu",
@@ -332,7 +332,7 @@
       ]
     },
     {
-      "title": "Escena 3: Día",
+      "title": "Escena 3: Noche",
       "lines": [
         {
           "actions": [
@@ -357,11 +357,11 @@
             }
           ],
           "character": "3C",
-          "text": "El Día queda a un par de calles, por una travesía tranquila. Samu avanza sin apenas obstáculos."
+          "text": "Noche queda a un par de calles, por una travesía tranquila. Samu avanza sin apenas obstáculos."
         },
         {
           "character": "Samu",
-          "text": "A pesar de llamarse Día, no he tardado un día en llegar. Directo al grano.",
+          "text": "A pesar de llamarse Noche, he llegado con el sol pegando. Directo al grano.",
           "actions": [
             {
               "type": "showCharacter",
@@ -392,7 +392,7 @@
       ]
     },
     {
-      "title": "Escena 4: Mercadona",
+      "title": "Escena 4: Mercaguasa",
       "lines": [
         {
           "actions": [
@@ -417,7 +417,7 @@
             }
           ],
           "character": "3C",
-          "text": "El Mercadona está unas calles más lejos. Samu avanza con paso firme y solo tiene que rodear a un grupo de furros que bloquean el camino."
+          "text": "Mercaguasa está unas calles más lejos. Samu avanza con paso firme y solo tiene que rodear a un grupo de furros que bloquean el camino."
         },
         {
           "character": "Samu",
