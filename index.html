@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css?v=20260731-8">
+    <link rel="stylesheet" href="styles.css?v=20260731-12">
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
     <script>
         if (navigator.userAgent.includes('Electron')) {
@@ -15,37 +15,6 @@
 <body class="startup-pending">
     <div id="viewport">
     <div id="game-container">
-        <!-- Arranque obligatorio: un gesto explícito desbloquea el audio del
-             navegador; después se reproduce el opening de Samu y aparece el menú. -->
-        <div id="startup-overlay" class="startup-overlay" role="dialog"
-             aria-modal="true" aria-labelledby="startup-title">
-            <section id="startup-disclaimer" class="startup-disclaimer">
-                <div class="startup-mark">PROJECT AI.RI</div>
-                <h1 id="startup-title">Antes de empezar</h1>
-                <p>Esta experiencia contiene música, voces, efectos de sonido
-                   y secuencias con luces intermitentes.</p>
-                <p class="startup-warning">Activa el sonido y ajusta el volumen
-                   de tu dispositivo antes de continuar.</p>
-                <button id="startup-enter" class="startup-enter" type="button">
-                    <span>Entrar con sonido</span>
-                    <small>El opening comenzará a continuación</small>
-                </button>
-                <div class="startup-required">Es necesario pulsar el botón para continuar</div>
-            </section>
-
-            <section id="startup-opening" class="startup-opening" hidden>
-                <video id="startup-opening-video" class="startup-opening-video"
-                       preload="metadata" playsinline
-                       src="assets/videos/opening_samu.mp4?v=20260731-1"></video>
-                <div id="startup-opening-status" class="startup-opening-status">
-                    Cargando opening…
-                </div>
-                <button id="startup-skip" class="startup-skip" type="button">
-                    Saltar opening <span>››</span>
-                </button>
-            </section>
-        </div>
-
         <!-- Fondo de la escena -->
         <div id="background" class="background"></div>
 
@@ -155,6 +124,39 @@
             </div>
         </div>
     </div>
+    </div>
+
+    <!-- Arranque obligatorio: un gesto explícito desbloquea el audio del
+         navegador; después se reproduce el opening de Samu y aparece el menú.
+         Vive FUERA de #viewport/#game-container para no quedar encerrado en el
+         escenario 16:9: así el opening se adapta al tamaño real de la ventana. -->
+    <div id="startup-overlay" class="startup-overlay" role="dialog"
+         aria-modal="true" aria-labelledby="startup-title">
+        <section id="startup-disclaimer" class="startup-disclaimer">
+            <div class="startup-mark">PROJECT AI.RI</div>
+            <h1 id="startup-title">Antes de empezar</h1>
+            <p>Esta experiencia contiene música, voces, efectos de sonido
+               y secuencias con luces intermitentes.</p>
+            <p class="startup-warning">Activa el sonido y ajusta el volumen
+               de tu dispositivo antes de continuar.</p>
+            <button id="startup-enter" class="startup-enter" type="button">
+                <span>Entrar con sonido</span>
+                <small>El opening comenzará a continuación</small>
+            </button>
+            <div class="startup-required">Es necesario pulsar el botón para continuar</div>
+        </section>
+
+        <section id="startup-opening" class="startup-opening" hidden>
+            <video id="startup-opening-video" class="startup-opening-video"
+                   preload="metadata" playsinline
+                   src="assets/videos/opening_samu.mp4?v=20260731-1"></video>
+            <div id="startup-opening-status" class="startup-opening-status">
+                Cargando opening…
+            </div>
+            <button id="startup-skip" class="startup-skip" type="button">
+                Saltar opening <span>››</span>
+            </button>
+        </section>
     </div>
 
     <script src="p5-effects.js?v=20260716-2"></script>

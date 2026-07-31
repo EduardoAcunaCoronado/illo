@@ -62,8 +62,10 @@ body.startup-pending #menu-video {
     visibility: hidden;
 }
 
+/* El arranque cuelga de <body>, no del escenario 1280x720: ocupa la ventana
+   entera para que el opening no quede metido dentro del recuadro 16:9. */
 .startup-overlay {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: 5000;
     display: flex;
@@ -84,7 +86,11 @@ body.startup-pending #menu-video {
 }
 
 .startup-disclaimer {
-    width: min(720px, 78%);
+    /* Se dibuja al tamaño de diseño y se escala con el mismo factor que el
+       escenario, para que el cartel se vea igual en cualquier ventana. */
+    width: 720px;
+    transform: scale(var(--stage-scale, 1));
+    transform-origin: center center;
     padding: 58px 64px 54px;
     text-align: center;
     border: 1px solid rgba(255, 209, 102, 0.48);
@@ -196,7 +202,30 @@ body.startup-pending #menu-video {
 }
 
 .startup-opening-video {
+    /* Ajustar el opening completo a la VENTANA sin ampliar ni recortar planos:
+       ocupa todo lo que puede y deja banda negra solo donde el ratio no coincide. */
+    width: 100%;
+    height: 100%;
     object-fit: contain;
+    /* En Electron/Windows el compositor puede llevarse el vídeo a un "overlay"
+       de hardware y ahí aplica DOS VECES el escalado de object-fit: el opening
+       se pintaba a 2/3 de su tamaño, pegado a la esquina superior izquierda.
+       Un transform propio lo mantiene en la capa normal y se pinta bien. */
+    transform: translateZ(0);
+}
+
+/* En Electron, adaptar el opening al tamaño completo de la ventana */
+.electron-app .startup-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+}
+
+.electron-app .startup-opening {
+    position: fixed;
+    width: 100%;
+    height: 100%;
 }
 
 .startup-opening-status {
@@ -204,6 +233,8 @@ body.startup-pending #menu-video {
     left: 50%;
     bottom: 32px;
     translate: -50% 0;
+    transform: scale(var(--stage-scale, 1));
+    transform-origin: center bottom;
     color: rgba(255, 255, 255, 0.68);
     font-family: 'Outfit', Arial, sans-serif;
     font-size: 13px;
@@ -220,6 +251,8 @@ body.startup-pending #menu-video {
     position: absolute;
     right: 28px;
     bottom: 24px;
+    transform: scale(var(--stage-scale, 1));
+    transform-origin: right bottom;
     padding: 10px 16px;
     color: rgba(255, 255, 255, 0.78);
     border: 1px solid rgba(255, 255, 255, 0.22);

@@ -3169,3 +3169,14 @@ No existen archivos MD separados por característica.
 - ✅ Personalización de estilos P5
 - ✅ Troubleshooting actualizado
 - ✅ Ejemplos de uso
+
+### Regreso al menú principal (2026-07-31)
+
+Al abandonar una partida desde el menú de pausa, `volverAlMenuPrincipal()` usa
+`setMainMenuVisible(true)` para retirar tanto `hidden` como `inert`. Así, los
+botones **Comenzar**, **Capítulos** y **Configuración** recuperan su interacción.
+
+### Opening a pantalla completa (2026-07-31)
+
+El vídeo de arranque se ajusta al escenario con `object-fit: contain`, conservando
+su proporción y mostrando todos los planos completos, sin ampliarlos ni recortarlos.
