@@ -77,13 +77,15 @@ CAPÍTULO 2 — “Kingdom Ketchup” (Edu)
 - Para buscar el portal, Samu elige supermercado:
   · Noche: ruta directa, storyDelay 0.
   · Mercaguasa: pequeño rodeo, storyDelay 1.
-  · El Jarrón: la loca de los gatos lo ataca; minijuego de supervivencia, storyDelay 2.
+  · El Jarrón: Micaela Michis lo ataca con sus gatos; minijuego de supervivencia, storyDelay 2.
 - Kingdom Ketchup apareció sin historia ni registro. No vende nada: sus pasillos
   ofrecen exactamente lo que cada visitante desea. Algunos salen; otros dejan de
   querer encontrar la salida.
 - Segunda elección: Ketchup es directo; Catsup añade 1 de retraso.
-- Nate Gentile recomienda productos. Preguntarle por un PC dispara una explicación
+- Neit recomienda productos. Preguntarle por un PC dispara una explicación
   deliberadamente larguísima y añade 2 de retraso; ignorarlo evita esa demora.
+- Neit y Micaela Michis tienen retratos cartoon transparentes alineados con los
+  protagonistas (`others/neit.png` y `others/micaela*.png`).
 - Edu está seducido por el reino y se niega de manera progresiva a volver al cumpleaños.
   Su sombra se separa, lo devora y se presenta como Zip, instrumento memético creado
   para dominar el mundo.

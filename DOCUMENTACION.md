@@ -633,7 +633,7 @@ En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
 | `gatos`   | **Estilo Pac-Man con laberinto**: huye de los gatos por las calles | `survive`, `cats`, `playerSpeed`, `catSpeed` |
 | `chase`   | Persecución lateral en el coche de Santi                            | `distance`, `speed`, `maxHits`, `spawnMs`    |
 
-#### Minijuego `gatos` (la loca de los gatos)
+#### Minijuego `gatos` (Micaela Michis)
 
 Un **Pac-Man por rejilla** en un **laberinto de calles urbanas**. Samu (🐺) recorre
 las calles (← ↑ → ↓ / WASD), girando en las intersecciones, y debe **sobrevivir** un
@@ -2605,7 +2605,11 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
   `dia.png` y `mercadona.png`), pero muestran marcas completamente ficticias.
   Comparten el acabado anime cinematográfico, la luz cálida de las 16:00 y la
   dirección artística de `assets/cutscenes/opening_samu/`.
-- Batalla contra la loca de los gatos (minigame gatos)
+- Batalla contra Micaela Michis (minigame gatos)
+- Los secundarios Micaela Michis y Neit usan retratos cartoon con contorno limpio,
+  color plano y sombreado cel, alineados con el estilo de los protagonistas. Sus
+  recursos están en `assets/characters/others/micaela*.png` y
+  `assets/characters/others/neit.png`.
 - Rescate de Edu y batalla contra Zip (minigame ketchup)
 - Descubrimiento del concierto de Seraphyna en Ecchi Land
 - Llamadas telefónicas opcionales
