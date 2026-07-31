@@ -181,7 +181,7 @@
         },
         {
           "character": "Micaela Michis",
-          "text": "¡Ahhh, la madre que los...! ¡Ahhhhh, incentivar la pequeña empresa! ¡Ahhhh, cómo duele! ¡Responsabilidad empresarial! ¡Ahhhhhh, gatos en los pantaloooones!",
+          "text": "¡Ciudadanos, comienza la revolución michi! ¡Por decreto, cada hogar tendrá siete cajas de cartón, la siesta será obligatoria y todo enemigo del puntero láser será perseguido por mis ministros!",
           "actions": [
             {
               "type": "setPose",
@@ -281,7 +281,7 @@
         },
         {
           "character": "3C",
-          "text": "Sin aliento y con los michis por fin dispersos, Micaela se sube a una caja de embutido y, de la nada, arranca un mitin.",
+          "text": "Sin aliento y con los michis por fin dispersos, Micaela se sube a una caja de embutido y, sin que nadie se lo haya pedido, arranca un mitin político.",
           "actions": [
             {
               "type": "showCharacter",
@@ -293,11 +293,27 @@
         },
         {
           "character": "Micaela Michis",
-          "text": "¡Vale, voten por mí, siiiii!"
+          "text": "¡Pueblo del Jarrón! ¡Mi programa es claro: sanidad veterinaria universal, atún subvencionado y un Ministerio del Ovillo con presupuesto ilimitado!",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "micaela",
+              "position": "right",
+              "pose": "crazy"
+            }
+          ]
+        },
+        {
+          "character": "Micaela Michis",
+          "text": "¡Ningún gato volverá a pagar alquiler! ¡Cada sofá será vivienda protegida y cada humano tributará dos latas de sardinas al mes!"
+        },
+        {
+          "character": "Micaela Michis",
+          "text": "¡Y eliminaremos los lunes del calendario! Los sustituiremos por el Día Nacional de Tirar Cosas de la Mesa. ¡Miau patria o muerte!"
         },
         {
           "character": "Samu",
-          "text": "Yo te votaría antes que a Pedro Sánchez.",
+          "text": "Lo del atún subvencionado suena mejor que la mitad de los programas electorales.",
           "actions": [
             {
               "type": "showCharacter",

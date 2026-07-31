@@ -2606,6 +2606,9 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
   Comparten el acabado anime cinematográfico, la luz cálida de las 16:00 y la
   dirección artística de `assets/cutscenes/opening_samu/`.
 - Batalla contra Micaela Michis (minigame gatos)
+- Micaela presenta la persecución y cierra la ruta con un mitin político absurdo
+  a favor de los gatos: cajas de cartón por decreto, atún subvencionado,
+  vivienda protegida en sofás y un Ministerio del Ovillo.
 - Los secundarios Micaela Michis y Neit usan retratos cartoon con contorno limpio,
   color plano y sombreado cel, alineados con el estilo de los protagonistas. Sus
   recursos están en `assets/characters/others/micaela*.png` y

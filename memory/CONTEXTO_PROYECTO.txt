@@ -77,7 +77,8 @@ CAPÍTULO 2 — “Kingdom Ketchup” (Edu)
 - Para buscar el portal, Samu elige supermercado:
   · Noche: ruta directa, storyDelay 0.
   · Mercaguasa: pequeño rodeo, storyDelay 1.
-  · El Jarrón: Micaela Michis lo ataca con sus gatos; minijuego de supervivencia, storyDelay 2.
+  · El Jarrón: Micaela Michis lo ataca con sus gatos y pronuncia un mitin político
+    absurdo a favor de los michis; minijuego de supervivencia, storyDelay 2.
 - Kingdom Ketchup apareció sin historia ni registro. No vende nada: sus pasillos
   ofrecen exactamente lo que cada visitante desea. Algunos salen; otros dejan de
   querer encontrar la salida.
