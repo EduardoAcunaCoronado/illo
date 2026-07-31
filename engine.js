@@ -173,6 +173,14 @@ class VisualNovelEngine {
             case 'setPose':
                 this.setPose(action.character, action.position, action.pose);
                 break;
+            case 'characterGlitch':
+            case 'glitchCharacter':
+                this.triggerCharacterGlitch(action.character, action.position, action.duration);
+                break;
+            case 'characterFullGlitch':
+            case 'fullCharacterGlitch':
+                this.triggerCharacterFullGlitch(action.character, action.position, action.duration);
+                break;
             case 'hideDialog':
             case 'hideText':
             case 'ocultarTexto':
@@ -436,6 +444,9 @@ class VisualNovelEngine {
         try {
         await Promise.race([cancelacion, (async () => {
         switch (action.game) {
+            case 'furrielvaExplore':
+                await this.playFurrielvaExploreMinigame(action);
+                break;
             case 'ketchup':
                 await this.playKetchupMinigame(action);
                 break;
@@ -503,6 +514,78 @@ class VisualNovelEngine {
 
     abortarMinijuego() {
         if (this._abortarMinijuego) this._abortarMinijuego();
+    }
+
+    // Investigación breve de Furrielva. El jugador reúne tres pistas antes de
+    // localizar físicamente la fábrica. Los nodos ya visitados quedan marcados
+    // y todos los recursos visuales se precargan una sola vez por sesión.
+    playFurrielvaExploreMinigame(options = {}) {
+        this.isWaitingForInput = false;
+        const background = options.background ||
+            'assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_exterior_v2_4k.png';
+        const clues = [
+            { id: 'plaza', label: 'Plaza', icon: '⛲', x: 20, y: 33,
+              text: 'Un repartidor recuerda camiones rojos tomando siempre la carretera industrial.' },
+            { id: 'comercio', label: 'Zona comercial', icon: '🛒', x: 45, y: 57,
+              text: 'Todos los supermercados anuncian una promoción: «Busca el tapón dorado».' },
+            { id: 'callejon', label: 'Callejón', icon: '👑', x: 69, y: 38,
+              text: 'Una corona con tomate, pintada en una tubería, apunta hacia las afueras.' }
+        ];
+
+        this.preloadImages([background]);
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay furrielva-explore';
+            overlay.innerHTML = `
+                <div class="furrielva-head">
+                    <div><strong>INVESTIGA FURRIELVA</strong><small>Encuentra 3 pistas sobre Kingdom Ketchup</small></div>
+                    <span class="furrielva-counter">0 / ${clues.length}</span>
+                </div>
+                <div class="furrielva-map" style="--furrielva-bg:url('${this.cacheBustAsset(background)}')">
+                    <div class="furrielva-route" aria-hidden="true"></div>
+                    ${clues.map(c => `<button class="furrielva-hotspot" data-clue="${c.id}" style="left:${c.x}%;top:${c.y}%"><span>${c.icon}</span>${c.label}</button>`).join('')}
+                    <button class="furrielva-hotspot furrielva-factory" data-factory style="left:84%;top:68%" disabled><span>🏭</span>Fábrica</button>
+                    <div class="furrielva-card">Sigue las señales de la ciudad. La fábrica se desbloqueará al relacionar las tres pistas.</div>
+                </div>
+                <div class="minigame-instructions">Haz clic en los puntos señalados. También puedes usar Tab y Enter.</div>`;
+            document.getElementById('game-container').appendChild(overlay);
+
+            const visited = new Set();
+            const card = overlay.querySelector('.furrielva-card');
+            const counter = overlay.querySelector('.furrielva-counter');
+            const factory = overlay.querySelector('[data-factory]');
+            const swallow = e => e.stopPropagation();
+            overlay.addEventListener('click', swallow);
+
+            overlay.querySelectorAll('[data-clue]').forEach(button => {
+                button.addEventListener('click', () => {
+                    const clue = clues.find(c => c.id === button.dataset.clue);
+                    if (!clue) return;
+                    visited.add(clue.id);
+                    button.classList.add('is-found');
+                    button.disabled = true;
+                    card.textContent = clue.text;
+                    counter.textContent = `${visited.size} / ${clues.length}`;
+                    if (visited.size === clues.length) {
+                        factory.disabled = false;
+                        factory.classList.add('is-ready');
+                        card.textContent = 'Las tres pistas encajan: Kingdom Ketchup está en el distrito industrial.';
+                    }
+                });
+            });
+
+            factory.addEventListener('click', () => {
+                if (visited.size !== clues.length) return;
+                factory.classList.add('is-found');
+                card.textContent = '¡Ruta localizada! Samu se dirige a las puertas de la fábrica.';
+                setTimeout(() => {
+                    overlay.removeEventListener('click', swallow);
+                    overlay.remove();
+                    this.lastMinigameResult = { explored: true, clues: visited.size };
+                    resolve(true);
+                }, 750);
+            });
+        });
     }
 
     // Créditos finales del compi (credits-minigame.js). Solo en el final bueno.
@@ -607,8 +690,20 @@ class VisualNovelEngine {
         const speedMult = options.speedMult || 1.0; // multiplicador de velocidad de caída
         const chiliChance = options.chiliChance !== undefined ? options.chiliChance : 0.6;
         const showExtraInfo = options.showExtraInfo || false; // mostrar info de debug/test
-        const ketchupIcon = this.cacheBustAsset('assets/minigames/ketchup.png');
-        const chiliIcon = this.cacheBustAsset('assets/minigames/chili.png');
+        const phase1Goal = Math.min(goal - 2, options.phase1Goal || Math.ceil(goal * 0.3));
+        const phase2Goal = Math.min(goal - 1, options.phase2Goal || Math.ceil(goal * 0.68));
+        const ketchupIcon = this.cacheBustAsset('assets/generated/chapter2_v2/minigame/kingdom_ketchup_bottle_gold.png');
+        const corruptIcon = this.cacheBustAsset('assets/generated/chapter2_v2/minigame/kingdom_ketchup_bottle_corrupted.png');
+        const capIcon = this.cacheBustAsset('assets/generated/chapter2_v2/minigame/golden_cap.png');
+        const chiliIcon = this.cacheBustAsset('assets/generated/chapter2_v2/minigame/chili_v2.png');
+        this.preloadImages([
+            'assets/generated/chapter2_v2/minigame/kingdom_ketchup_bottle_gold.png',
+            'assets/generated/chapter2_v2/minigame/kingdom_ketchup_bottle_corrupted.png',
+            'assets/generated/chapter2_v2/minigame/golden_cap.png',
+            'assets/generated/chapter2_v2/minigame/chili_v2.png',
+            'assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_production_floor_corrupted_v2_4k.png',
+            'assets/minigames/samu_player.png'
+        ]);
         const musicTrack = options.music;
 
         return new Promise(resolve => {
@@ -624,17 +719,19 @@ class VisualNovelEngine {
             }
             // --- Crear overlay del minijuego ---
             const overlay = document.createElement('div');
-            overlay.className = 'minigame-overlay';
+            overlay.className = 'minigame-overlay ketchup-minigame ketchup-phase-1';
             overlay.innerHTML = `
                 <div class="minigame-hud">
                     <span class="mg-score"><img class="mg-hud-icon" src="${ketchupIcon}" alt="ketchup"><span class="mg-score-text">0 / ${goal}</span></span>
+                    <span class="mg-phase">FASE 1 · REACTIVA LA LÍNEA</span>
                     <span class="mg-lives">❤️ ${maxHits}</span>
                     ${showExtraInfo ? `<span class="mg-extra-info" style="margin-left:20px; font-size:0.8em; color:#ffb4b4">🌶️ Vel: ${(speedMult * 1.5).toFixed(2)}x</span>` : ''}
                 </div>
-                <div class="minigame-field" id="mg-field">
+                <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${this.cacheBustAsset('assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_production_floor_corrupted_v2_4k.png')}')">
                     <div class="mg-player" id="mg-player"><img src="${this.cacheBustAsset('assets/minigames/samu_player.png')}" alt="Samu" draggable="false"></div>
+                    <div class="mg-phase-banner">Reactiva la línea de embotellado</div>
                 </div>
-                <div class="minigame-instructions">Mueve con ← → (o el ratón). ¡Come <img class="mg-inline-icon" src="${ketchupIcon}" alt="ketchup"> y esquiva <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla">!</div>
+                <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge producto limpio y tapones; esquiva corrupción y guindillas.</div>
             `;
             document.getElementById('game-container').appendChild(overlay);
 
@@ -642,6 +739,8 @@ class VisualNovelEngine {
             const player = overlay.querySelector('#mg-player');
             const scoreEl = overlay.querySelector('.mg-score-text');
             const livesEl = overlay.querySelector('.mg-lives');
+            const phaseEl = overlay.querySelector('.mg-phase');
+            const phaseBanner = overlay.querySelector('.mg-phase-banner');
 
             const fieldRect = () => field.getBoundingClientRect();
 
@@ -653,6 +752,24 @@ class VisualNovelEngine {
             let running = true;
             let spawnTimer = 0;
             let lastTime = null;
+            let phase = 1;
+
+            const setPhase = next => {
+                if (next === phase) return;
+                phase = next;
+                overlay.classList.remove('ketchup-phase-1', 'ketchup-phase-2', 'ketchup-phase-3');
+                overlay.classList.add(`ketchup-phase-${phase}`);
+                const labels = {
+                    1: ['FASE 1 · REACTIVA LA LÍNEA', 'Reactiva la línea de embotellado'],
+                    2: ['FASE 2 · DESCOMPRIME', 'Separa las botellas limpias de la corrupción'],
+                    3: ['FASE 3 · LIBERA A EDU', '¡Los Ketchlings lanzan tapones dorados!']
+                };
+                phaseEl.textContent = labels[phase][0];
+                phaseBanner.textContent = labels[phase][1];
+                phaseBanner.classList.remove('is-showing');
+                void phaseBanner.offsetWidth;
+                phaseBanner.classList.add('is-showing');
+            };
 
             const updatePlayerPos = () => {
                 player.style.left = `${playerX * 100}%`;
@@ -685,12 +802,18 @@ class VisualNovelEngine {
             overlay.addEventListener('click', swallowClick, true);
 
             const spawnItem = () => {
-                const isChili = Math.random() < chiliChance;
+                const roll = Math.random();
+                let type;
+                if (phase === 2 && roll < 0.18) type = 'corrupt';
+                else if (phase === 3 && roll < 0.28) type = 'cap';
+                else type = roll < chiliChance ? 'chili' : 'ketchup';
                 const el = document.createElement('div');
-                el.className = 'mg-item';
+                el.className = `mg-item mg-item-${type}`;
                 const img = document.createElement('img');
-                img.src = isChili ? chiliIcon : ketchupIcon;
-                img.alt = isChili ? 'guindilla' : 'ketchup';
+                const icons = { chili: chiliIcon, ketchup: ketchupIcon, corrupt: corruptIcon, cap: capIcon };
+                const labels = { chili: 'guindilla', ketchup: 'botella limpia', corrupt: 'botella corrupta', cap: 'tapón dorado' };
+                img.src = icons[type];
+                img.alt = labels[type];
                 img.draggable = false;
                 el.appendChild(img);
                 const x = Math.random() * 0.9 + 0.05;
@@ -703,7 +826,7 @@ class VisualNovelEngine {
                     x,
                     y: -0.1,
                     speed: speedBase,
-                    type: isChili ? 'chili' : 'ketchup'
+                    type
                 });
             };
 
@@ -767,14 +890,16 @@ class VisualNovelEngine {
                     it.el.style.top = `${it.y * 100}%`;
 
                     // Colisión con el jugador (zona inferior del campo)
-                    const hitboxWidth = it.type === 'chili' ? 0.04 : playerW;
+                    const hitboxWidth = (it.type === 'chili' || it.type === 'corrupt') ? 0.045 : playerW;
                     const caught = it.y >= 0.82 && it.y <= 0.98 &&
                         Math.abs(it.x - playerX) < hitboxWidth;
 
                     if (caught) {
-                        if (it.type === 'ketchup') {
+                        if (it.type === 'ketchup' || it.type === 'cap') {
                             score++;
                             scoreEl.textContent = `${score} / ${goal}`;
+                            if (score >= phase2Goal) setPhase(3);
+                            else if (score >= phase1Goal) setPhase(2);
                         } else {
                             lives--;
                             livesEl.textContent = `❤️ ${Math.max(0, lives)}`;
@@ -4780,6 +4905,47 @@ class VisualNovelEngine {
             const limpia = String(pose).toLowerCase().replace(/[^a-z0-9_-]/g, '');
             if (limpia) charElement.classList.add(`pose-${limpia}`);
         }
+    }
+
+    // Glitch visual puntual para llamadas o señales comprimidas. La clase se
+    // reinicia siempre para que una segunda interrupción vuelva a animarse y se
+    // retira al acabar, garantizando que el sprite recupere su forma normal.
+    triggerCharacterGlitch(characterName, position, duration = 1350) {
+        const characterKey = this.getCharacterKey(characterName);
+        const trackedPosition = position || this.characterPositions[characterKey];
+        if (!trackedPosition) return;
+        const charElement = document.getElementById(`character-${trackedPosition}`);
+        if (!charElement || !charElement.classList.contains('active')) return;
+
+        charElement.style.setProperty('--contact-glitch-duration', `${duration}ms`);
+        charElement.classList.remove('contact-glitch');
+        void charElement.offsetWidth;
+        charElement.classList.add('contact-glitch');
+        clearTimeout(charElement._contactGlitchTimer);
+        charElement._contactGlitchTimer = setTimeout(() => {
+            charElement.classList.remove('contact-glitch');
+            charElement.style.removeProperty('--contact-glitch-duration');
+        }, duration + 80);
+    }
+
+    // Segundo golpe de interferencia para el cierre de una llamada: afecta al
+    // sprite completo sin sustituir el glitch independiente del retrato.
+    triggerCharacterFullGlitch(characterName, position, duration = 1050) {
+        const characterKey = this.getCharacterKey(characterName);
+        const trackedPosition = position || this.characterPositions[characterKey];
+        if (!trackedPosition) return;
+        const charElement = document.getElementById(`character-${trackedPosition}`);
+        if (!charElement || !charElement.classList.contains('active')) return;
+
+        charElement.style.setProperty('--full-glitch-duration', `${duration}ms`);
+        charElement.classList.remove('full-signal-glitch');
+        void charElement.offsetWidth;
+        charElement.classList.add('full-signal-glitch');
+        clearTimeout(charElement._fullSignalGlitchTimer);
+        charElement._fullSignalGlitchTimer = setTimeout(() => {
+            charElement.classList.remove('full-signal-glitch');
+            charElement.style.removeProperty('--full-glitch-duration');
+        }, duration + 80);
     }
 
     updateCharacterVideo(charElement, videoPath) {

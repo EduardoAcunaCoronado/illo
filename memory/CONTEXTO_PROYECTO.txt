@@ -474,6 +474,40 @@ VALIDACIÓN REALIZADA EL 2026-07-30
   y “prettier” no está disponible; no es un fallo del código del juego.
 
 REGLAS PARA CAMBIOS FUTUROS
+- Kingdom Ketchup v2 tiene un paquete visual integrado en
+  assets/generated/chapter2_v2/. Incluye fondos/CG 4K, tres poses deformadas
+  de Edu.zip, cuatro oficios Ketchling y objetos de minijuego. manifest.json
+  documenta el uso. Los Ketchlings miden canónicamente unos 40 cm y emplean
+  paleta tomate rojo, crema, verde hoja, mostaza y carbón. El emblema comercial
+  es corona + tomate, sin marca real ni texto incrustado.
+- Flujo narrativo implementado tras la grabación de José Manuel de las 23:10:
+  capítulo 2 sigue ciudad -> fábrica ->
+  Ketchlings niegan acceso -> Edu no responde -> supermercado -> tapón dorado
+  -> portal de regreso -> interior. La fachada sería física y el portal un
+  atajo al interior imposible. El estudio completo está en
+  output/pdf/estudio_guion_kingdom_ketchup_jose_manuel.pdf.
+- Extensión jugable de capítulo 2: minijuego point-and-click `furrielvaExplore`
+  con tres pistas; Ketchlings con ficha propia y cuatro oficios; tapón dorado en
+  inventario; CG de revelación, portal y bienvenida; batalla de ketchup en tres
+  fases 8/18/27 con botella limpia, corrupción, tapones y guindillas. La ruta de
+  supermercado mantiene `storyDelay` y ahora escala vidas, spawn y velocidad.
+- Edu queda rescatado después de derrotar a Zip, no al entrar en el capítulo.
+  Zip no crea Kingdom Ketchup: corrompe y comprime el deseo previo de Edu de ser
+  necesario. Los Ketchlings confirman que pueden cuidar la fábrica sin retenerlo.
+- Antes de encontrar a Edu transformado, Samu solo ve su retrato humano en el
+  contacto del teléfono. No usar la CG de Samu y Edu furros en la llamada del
+  capítulo 1: adelanta información que Samu todavía no conoce. El indicio de
+  Edu.zip se comunica con `characterGlitch`, una compresión breve que vuelve al
+  retrato humano normal. La pose es `iphone5:edu_humano`; `iphone5` es solo el
+  ID heredado. La interfaz visual es ahora un móvil robusto moderno con botones
+  grandes y tipografía display. Edu usa azul, Tony rosa y José verde, siempre
+  con sus versiones humanas. El retrato de Edu es una capa transparente de
+  924x1702, igual que el teléfono, para permanecer centrado con `contain` en
+  ventanas apaisadas y verticales. `characterGlitch` se dispara al establecer
+  la llamada y de nuevo durante la vacilación `lo enten... lo entenderás`; no
+  rotular ni explicar la anomalía de forma explícita en el diálogo. En esa
+  última frase se conserva además `characterFullGlitch`: un segundo golpe que
+  afecta al teléfono entero con corte cromático, shake leve y destello azul.
 - Mantener a 2B como narradora.
 - No llamar “virus” al origen de la transformación.
 - No convertir a Edu en culpable de Zip ni a Seraphyna en causante de la infección

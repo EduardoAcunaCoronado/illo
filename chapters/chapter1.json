@@ -170,7 +170,13 @@
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "edu"
+              "pose": "edu_humano"
+            },
+            {
+              "type": "characterGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 1350
             }
           ],
           "character": "3C",
@@ -196,7 +202,7 @@
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "edu"
+              "pose": "edu_humano"
             }
           ],
           "speakingAs": "iphone5"
@@ -221,7 +227,7 @@
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "edu"
+              "pose": "edu_humano"
             }
           ],
           "speakingAs": "iphone5"
@@ -240,26 +246,61 @@
         },
         {
           "character": "Edu",
-          "text": "Venga, no te rayes, tío. Vente y lo hablamos. Para entrar a Kingdom Ketchup solo tienes que buscar un portal en cualquier supermercado.",
+          "text": "Venga, no te rayes, tío. Vente y lo hablamos. Kingdom Ketchup está en el distrito industrial de Furrielva: sigue las chimeneas rojas y el emblema de la corona.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "edu"
+              "pose": "edu_humano"
             }
           ],
           "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
-          "text": "¿Un portal en un supermercado? Qué raro suena eso... Pero bueno, iré allí ahora mismo.",
+          "text": "¿Una fábrica de ketchup en Furrielva? Vale. Iré a buscarte, pero después nos vamos al cumpleaños.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
               "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Aquí todos me necesitan, Samu. No puedo dejarles tirados. Cuando llegues lo enten... lo entenderás.",
+          "speakingAs": "iphone5",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "iphone5",
+              "position": "right",
+              "pose": "edu_humano"
+            },
+            {
+              "type": "characterGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 1350
+            },
+            {
+              "type": "characterFullGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 1050
+            },
+            {
+              "type": "shake",
+              "intensity": 4,
+              "duration": 520
+            },
+            {
+              "type": "flash",
+              "color": "rgba(45, 170, 255, 0.16)",
+              "duration": 180
             }
           ]
         },

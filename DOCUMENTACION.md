@@ -3187,6 +3187,112 @@ La versión web sigue funcionando igual: `start.bat` o
 
 _Última actualización: 2026-06-24_
 
+### Paquete visual Kingdom Ketchup v2
+
+El rediseño narrativo de los capítulos 1 y 2 dispone de un paquete de
+producción integrado en `assets/generated/chapter2_v2/`. El catálogo de rutas,
+usos y fuentes está en `manifest.json`.
+
+- Fondos 4K: exterior de la fábrica, planta de producción limpia y variante
+  corrompida por Zip.
+- CG 4K: foto de Samu con Edu.zip, revelación de los tapones, activación del
+  portal y bienvenida colectiva de los Ketchlings.
+- Sprites transparentes: Ketchling de seguridad, cocinero, mecánico y
+  embotellador; Edu.zip alegre, sorprendido y preocupado.
+- Objetos transparentes de minijuego: botella real, botella corrompida, tapón
+  dorado y guindilla rediseñada.
+
+La dirección visual conserva el contraste del juego: personajes con lineart
+limpio y sombreado cel junto a fondos cinematográficos semirrealistas. La
+arquitectura deriva del trono actual de Kingdom Ketchup; los Ketchlings fijan
+una escala canónica aproximada de 40 cm. El producto usa exclusivamente un
+emblema de corona y tomate, sin marcas reales ni texto generado.
+
+### Estudio consolidado de José Manuel
+
+La grabación `2026-07-31_23h10_29.mp4` está transcrita y revisada en
+`C:/Users/tony_/Downloads/Transcipciones/2026-07-31_23h10_29_transcripcion.txt`.
+Su aportación principal es reordenar el capítulo 2: Samu explora primero
+Furrielva, llega a la fábrica, conoce a los Ketchlings de seguridad, descubre
+que necesita un ticket o tapón dorado y vuelve después al supermercado. La
+llamada que Edu no responde funciona como indicio de su aislamiento.
+
+El análisis de las tres grabaciones, el guion actual, la jugabilidad, el canon
+y los assets se entrega en
+`output/pdf/estudio_guion_kingdom_ketchup_jose_manuel.pdf`. El PDF tiene 17
+páginas e incluye comparación de estructuras, diagramas narrativos, propuesta
+de point and click, rutas de supermercado, reescritura de Edu.zip y Zip,
+rediseño de batalla, inventario de producción, decisiones pendientes y la
+transcripción completa como apéndice.
+
+La solución implementada es híbrida: la fachada de la fábrica es localizable en
+la ciudad, mientras que el tapón abre desde el supermercado un atajo hacia el
+interior imposible de Kingdom Ketchup.
+
+### Extensión del capítulo 2: Edu y Kingdom Ketchup
+
+Implementada en la rama `feature/extension-capitulo-2-edu`:
+
+- El capítulo 1 muestra a Edu todavía humano en el contacto del teléfono. Una
+  compresión glitcheada breve de la llamada siembra `Edu.zip` y luego devuelve
+  el retrato a la normalidad, sin revelar a Samu la forma transformada antes de
+  encontrar a Edu. La llamada mantiene la invitación a localizar físicamente la
+  fábrica.
+- El capítulo 2 comienza con una investigación point-and-click de Furrielva.
+  Hay tres pistas accesibles por ratón o teclado; la fábrica solo se desbloquea
+  al relacionarlas todas.
+- Samu llega a la fachada, conoce al Ketchling de seguridad y descubre que Edu
+  no responde. El tapón dorado pasa a ser una entrada explícita, no una
+  casualidad del guion.
+- Se conservan las rutas de Día, Mercadona y El Jamón, incluido el minijuego de
+  gatos. Sus diferencias de `storyDelay` siguen escalando la dificultad.
+- El gag del tapón dorado tiene doble golpe: Samu celebra haber encontrado uno
+  único y después descubre que todo el expositor está lleno.
+- La botella abre un atajo visual de regreso al interior de la fábrica.
+- Los Ketchlings se presentan como trabajadores y ciudadanos con agencia:
+  seguridad, cocina, mecánica y embotellado. Su altura canónica es de unos
+  40 cm y pueden mantener Kingdom Ketchup sin retener a Edu.
+- Zip ya no afirma haber creado Kingdom Ketchup. El lugar nace del deseo de Edu
+  de ser necesario; Zip comprime ese deseo, elimina sus límites y lo convierte
+  en una jaula.
+- La batalla de ketchup se reduce de 67 a 27 recogidas y se divide en tres fases:
+  reactivar la línea (8), separar la corrupción (18) y liberar a Edu con ayuda
+  de los tapones Ketchling (27). Las rutas lentas reducen vidas y aumentan
+  frecuencia y velocidad.
+- El minijuego usa botella, botella corrupta, tapón y guindilla ficticios; no
+  quedan marcas comerciales reales. Los sprites, fondos y personajes se
+  precargan y conservan una URL estable durante la sesión para evitar nuevas
+  descargas y decodificaciones en cada aparición.
+
+La implementación toca `chapters/chapter1.json`, `chapters/chapter2.json`,
+`characters/edu.json`, `characters/ketchling.json`, `engine.js`, `styles.css` y
+el manifiesto de assets. La validación incluye parseo de JSON, comprobación de
+destinos de escena, sintaxis JavaScript, existencia de referencias y recorrido
+real en navegador del mapa, fábrica, tapón, bienvenida y combate.
+
+Las llamadas ya no muestran el antiguo iPhone 5: las poses conservan el ID
+interno `iphone5` por compatibilidad, pero usan un móvil robusto contemporáneo,
+botones grandes de Silencio/Teclado/Altavoz/Colgar y una tipografía display más
+legible. Cada contacto tiene identidad propia y siempre humana: Edu usa azul,
+Tony rosa y José verde. Las variantes finales están en
+`assets/characters/iphone5/phone_call_*_humano_v2.png`.
+
+La llamada de Edu compone `phone_call_edu_humano_v2_frame.png` con la capa
+`phone_call_edu_humano_v2_contact_canvas.png`. Ambos PNG comparten un lienzo
+924x1702 y el mismo ajuste `contain` anclado abajo, evitando que el retrato se
+descentre cuando la ventana pasa de apaisada a vertical. La acción
+`characterGlitch` aplica solo
+al retrato una interferencia temporal con compresión horizontal, bloques y
+separación cromática; el teléfono permanece inmóvil y la clase se elimina al
+terminar para recuperar exactamente el estado normal. La escena equivalente
+del capítulo 2 reutiliza el mismo contacto humano con una interferencia algo
+más larga. En el capítulo 1 el efecto se reproduce tanto al establecerse la
+llamada como durante la vacilación `lo enten... lo entenderás`, sin explicar
+la anomalía mediante una acotación demasiado evidente. En esa última frase se
+superpone un segundo remate mediante `characterFullGlitch`: durante 1,05 s el
+teléfono completo sufre cortes horizontales y separación cromática, acompañado
+por una sacudida leve y un destello azul. No sustituye el glitch del retrato.
+
 ---
 
 ## 📚 Documentación Consolidada

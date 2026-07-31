@@ -5,9 +5,12 @@
     "neutral": "assets/characters/iphone5/iphone5.png",
     "concierto": "assets/characters/iphone5/iphone5_concierto.png",
     "concierto_video": "assets/videos/mas_de_lo_que_ven_tus_ojos.mp4",
-    "edu": "assets/characters/iphone5/iphone5_edu.png",
-    "jose": "assets/characters/iphone5/iphone5_jose.png",
-    "tony": "assets/characters/iphone5/iphone5_tony.png"
+    "edu": "assets/characters/iphone5/phone_call_edu_humano_v2_frame.png",
+    "edu_humano": "assets/characters/iphone5/phone_call_edu_humano_v2_frame.png",
+    "jose": "assets/characters/iphone5/phone_call_jose_humano_v2.png",
+    "jose_humano": "assets/characters/iphone5/phone_call_jose_humano_v2.png",
+    "tony": "assets/characters/iphone5/phone_call_tony_humano_v2.png",
+    "tony_humano": "assets/characters/iphone5/phone_call_tony_humano_v2.png"
   },
   "defaultPose": "neutral"
 }

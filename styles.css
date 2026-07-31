@@ -420,6 +420,145 @@ body.startup-pending #menu-video {
     opacity: 1;
 }
 
+/* El retrato humano va separado del teléfono para que el glitch no deforme la
+   carcasa ni los botones. La capa transparente tiene el mismo lienzo 924x1702
+   que el móvil y replica su contain/bottom center, de modo que ambos coinciden
+   tanto cuando limita la altura como cuando limita la anchura. */
+.character[data-character="iphone5"].pose-edu_humano::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    background: url("assets/characters/iphone5/phone_call_edu_humano_v2_contact_canvas.png") bottom center / contain no-repeat;
+    transform-origin: center;
+    pointer-events: none;
+}
+
+/* Interferencia breve del retrato de Edu. Se comprime y rompe en pequeños
+   saltos cromáticos, pero termina exactamente en el estado normal. */
+.character[data-character="iphone5"].pose-edu_humano.contact-glitch::before {
+    animation: edu-contact-compression var(--contact-glitch-duration, 1350ms) steps(1, end) both;
+}
+
+@keyframes edu-contact-compression {
+    0%, 9% {
+        translate: 0 0;
+        scale: 1 1;
+        filter: none;
+        clip-path: inset(0);
+    }
+    10% {
+        translate: -3px 0;
+        scale: .96 1.01;
+        filter: contrast(1.25) saturate(1.5) drop-shadow(4px 0 0 rgba(0, 224, 255, .52));
+    }
+    15% {
+        translate: 5px -1px;
+        scale: .64 1.025;
+        filter: contrast(1.65) saturate(1.9) hue-rotate(18deg) drop-shadow(-6px 0 0 rgba(255, 35, 105, .68));
+        clip-path: inset(4% 0 3% 0);
+    }
+    20% {
+        translate: -5px 2px;
+        scale: 1.025 .97;
+        filter: contrast(1.45) saturate(1.65) drop-shadow(6px 0 0 rgba(0, 224, 255, .58));
+        clip-path: polygon(0 0,100% 0,100% 18%,4% 18%,4% 27%,100% 27%,100% 58%,0 58%,0 67%,96% 67%,96% 77%,0 77%);
+    }
+    25% {
+        translate: 3px -1px;
+        scale: .78 1.015;
+        filter: contrast(1.7) saturate(1.9) hue-rotate(-20deg) drop-shadow(-5px 0 0 rgba(255, 35, 105, .65));
+        clip-path: inset(0 0 5% 0);
+    }
+    31% {
+        translate: -3px 1px;
+        scale: .96 1;
+        filter: contrast(1.2) saturate(1.25);
+        clip-path: inset(0);
+    }
+    38%, 100% {
+        translate: 0 0;
+        scale: 1 1;
+        filter: none;
+        clip-path: inset(0);
+    }
+}
+
+/* Remate de la llamada: el retrato conserva su glitch propio y, solo al final,
+   una segunda interferencia rompe durante un instante el teléfono completo. */
+.character[data-character="iphone5"].pose-edu_humano.full-signal-glitch {
+    animation: edu-phone-signal-break var(--full-glitch-duration, 1050ms) steps(1, end) both;
+}
+
+@keyframes edu-phone-signal-break {
+    0%, 7% {
+        translate: 0 0;
+        scale: 1 1;
+        filter: none;
+        clip-path: inset(0);
+    }
+    8% {
+        translate: -7px 1px;
+        scale: 1.018 .992;
+        filter: contrast(1.45) saturate(1.7)
+            drop-shadow(8px 0 0 rgba(0, 224, 255, .62))
+            drop-shadow(-7px 0 0 rgba(255, 35, 105, .58));
+    }
+    13% {
+        translate: 9px -2px;
+        scale: .93 1.015;
+        filter: contrast(1.8) saturate(2.05) hue-rotate(16deg)
+            drop-shadow(-10px 0 0 rgba(255, 35, 105, .72));
+        clip-path: polygon(0 0,100% 0,100% 21%,3% 21%,3% 29%,100% 29%,100% 61%,0 61%,0 70%,97% 70%,97% 79%,0 79%);
+    }
+    19% {
+        translate: -11px 3px;
+        scale: 1.035 .975;
+        filter: brightness(1.2) contrast(1.65) saturate(1.85)
+            drop-shadow(11px 0 0 rgba(0, 224, 255, .68));
+        clip-path: inset(3% 0 4% 0);
+    }
+    25% {
+        translate: 6px -1px;
+        scale: .82 1.01;
+        filter: contrast(1.9) saturate(2.1) hue-rotate(-18deg)
+            drop-shadow(-8px 0 0 rgba(255, 35, 105, .7));
+        clip-path: polygon(0 0,100% 0,100% 34%,0 34%,0 43%,94% 43%,94% 52%,0 52%,0 100%,100% 100%);
+    }
+    31% {
+        translate: -4px 1px;
+        scale: .97 1;
+        filter: contrast(1.35) saturate(1.4)
+            drop-shadow(4px 0 0 rgba(0, 224, 255, .4));
+        clip-path: inset(0);
+    }
+    39%, 100% {
+        translate: 0 0;
+        scale: 1 1;
+        filter: none;
+        clip-path: inset(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .character[data-character="iphone5"].pose-edu_humano.contact-glitch::before {
+        animation: edu-contact-compression-reduced var(--contact-glitch-duration, 1350ms) ease-out both;
+    }
+    @keyframes edu-contact-compression-reduced {
+        0%, 25% { filter: contrast(1.35) saturate(1.35); opacity: .78; }
+        100% { filter: none; opacity: 1; }
+    }
+    .character[data-character="iphone5"].pose-edu_humano.full-signal-glitch {
+        animation: edu-phone-signal-break-reduced var(--full-glitch-duration, 1050ms) ease-out both;
+    }
+    @keyframes edu-phone-signal-break-reduced {
+        0%, 30% { filter: contrast(1.45) saturate(1.4); opacity: .82; }
+        100% { filter: none; opacity: 1; }
+    }
+}
+
 /* El personaje que HABLA: a todo color, un pelín más brillante, con un halo
    cálido siguiendo su silueta y por delante de los demás. */
 .character.speaking {
@@ -1159,6 +1298,89 @@ body.startup-pending #menu-video {
     overflow: hidden;
 }
 
+/* ===== Investigación point-and-click: Furrielva ===== */
+.furrielva-explore {
+    background: #110b18;
+    color: #fff7de;
+}
+
+.furrielva-head {
+    width: 100%;
+    min-height: 92px;
+    padding: 18px 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(90deg, #35121c, #8e1f24 55%, #35121c);
+    border-bottom: 4px solid #e6b84d;
+    text-shadow: 0 2px 0 #391017;
+    z-index: 3;
+}
+
+.furrielva-head strong { display: block; font-size: 27px; letter-spacing: .12em; }
+.furrielva-head small { display: block; margin-top: 4px; font-size: 15px; opacity: .85; }
+.furrielva-counter { font-size: 25px; font-weight: 900; color: #ffe17d; }
+
+.furrielva-map {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    background-image: linear-gradient(rgba(14, 8, 18, .28), rgba(14, 8, 18, .45)), var(--furrielva-bg);
+    background-size: cover;
+    background-position: center 58%;
+}
+
+.furrielva-route {
+    position: absolute;
+    inset: 14% 10% 20%;
+    border: 3px dashed rgba(255, 221, 112, .55);
+    border-radius: 46% 25% 42% 28%;
+    transform: rotate(4deg);
+    filter: drop-shadow(0 0 8px rgba(255, 198, 55, .65));
+}
+
+.furrielva-hotspot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    min-width: 142px;
+    padding: 10px 14px;
+    border: 2px solid #ffd668;
+    border-radius: 12px;
+    background: rgba(47, 12, 22, .92);
+    color: #fff7df;
+    font: 800 15px/1.1 inherit;
+    box-shadow: 0 0 0 3px rgba(47,12,22,.55), 0 0 24px rgba(255,194,70,.45);
+    cursor: pointer;
+    transition: transform .16s ease, filter .16s ease, opacity .16s ease;
+}
+
+.furrielva-hotspot span { display: block; font-size: 29px; margin-bottom: 4px; }
+.furrielva-hotspot:hover:not(:disabled), .furrielva-hotspot:focus-visible { transform: translate(-50%, -50%) scale(1.08); }
+.furrielva-hotspot.is-found { filter: grayscale(.55); opacity: .62; }
+.furrielva-factory { opacity: .45; }
+.furrielva-factory.is-ready { opacity: 1; animation: furrielva-ready .8s ease-in-out infinite alternate; }
+
+@keyframes furrielva-ready {
+    to { box-shadow: 0 0 0 5px rgba(255,225,120,.45), 0 0 38px rgba(255,194,70,.9); }
+}
+
+.furrielva-card {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    width: min(760px, 82%);
+    padding: 15px 22px;
+    border-left: 5px solid #f2bd49;
+    background: rgba(15, 8, 20, .9);
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+    box-shadow: 0 8px 28px rgba(0,0,0,.45);
+}
+
 /* ============================================
    CUTSCENE / VÍDEO (opening de Tony, etc.)
    ============================================ */
@@ -1229,6 +1451,53 @@ body.startup-pending #menu-video {
     cursor: none;
     background: radial-gradient(circle at 50% 120%, rgba(212, 0, 0, 0.25), transparent 60%);
 }
+
+.ketchup-minigame .minigame-field {
+    background-image: linear-gradient(rgba(23, 5, 12, .52), rgba(32, 4, 9, .78)), var(--ketchup-factory);
+    background-size: cover;
+    background-position: center;
+}
+
+.ketchup-minigame.ketchup-phase-2 .minigame-field {
+    filter: saturate(.72) hue-rotate(-8deg);
+}
+
+.ketchup-minigame.ketchup-phase-3 .minigame-field {
+    filter: saturate(1.12) brightness(1.08);
+}
+
+.mg-phase {
+    color: #fff4bd;
+    font-size: 19px;
+    letter-spacing: .08em;
+    text-align: center;
+}
+
+.mg-phase-banner {
+    position: absolute;
+    top: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 22px;
+    border: 2px solid #f4ca63;
+    background: rgba(58, 8, 17, .9);
+    color: white;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    opacity: .92;
+    z-index: 4;
+}
+
+.mg-phase-banner.is-showing { animation: mg-phase-pop 1.6s ease both; }
+@keyframes mg-phase-pop {
+    0% { opacity: 0; transform: translate(-50%, -16px) scale(.92); }
+    18%, 72% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+    100% { opacity: .35; }
+}
+
+.mg-item-corrupt img { filter: drop-shadow(0 0 10px #8b22d9) saturate(1.35); }
+.mg-item-cap img { height: 44px; filter: drop-shadow(0 0 12px #ffd759); }
 
 .minigame-field.mg-hit {
     animation: mg-shake 0.2s;

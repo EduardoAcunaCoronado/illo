@@ -1,0 +1,43 @@
+{
+  "version": "chapter2-v2-assets-1",
+  "generatedAt": "2026-07-31",
+  "integrationStatus": "integrated-chapter1-chapter2-engine",
+  "artDirection": {
+    "backgrounds": "Fondos cinematograficos semirrealistas, rojo lacado, laton y luz calida, coherentes con la sala del trono de Kingdom Ketchup.",
+    "characters": "Lineart limpio, sombreado cel y expresividad coherentes con los sprites canonicos de Samu y Edu.",
+    "ketchlingHeightCm": 40,
+    "branding": "Emblema grafico de corona y tomate; sin marcas reales ni texto generado."
+  },
+  "backgrounds": {
+    "factoryExterior": "backgrounds/kingdom_ketchup_exterior_v2_4k.png",
+    "productionFloor": "backgrounds/kingdom_ketchup_production_floor_v2_4k.png",
+    "productionFloorCorrupted": "backgrounds/kingdom_ketchup_production_floor_corrupted_v2_4k.png"
+  },
+  "cg": {
+    "eduZipPhoto": "cg/samu_edu_zip_photo_4k.png",
+    "goldenCapReveal": "cg/golden_cap_reveal_4k.png",
+    "portalActivation": "cg/golden_cap_portal_activation_4k.png",
+    "ketchlingWelcome": "cg/ketchlings_factory_welcome_4k.png"
+  },
+  "characters": {
+    "eduZipHappy": "characters/edu_zip_happy.png",
+    "eduZipSurprised": "characters/edu_zip_surprised.png",
+    "eduZipWorried": "characters/edu_zip_worried.png",
+    "ketchlingSecurity": "characters/ketchling_security.png",
+    "ketchlingCook": "characters/ketchling_cook.png",
+    "ketchlingMechanic": "characters/ketchling_mechanic.png",
+    "ketchlingBottler": "characters/ketchling_bottler.png"
+  },
+  "minigame": {
+    "goldBottle": "minigame/kingdom_ketchup_bottle_gold.png",
+    "corruptedBottle": "minigame/kingdom_ketchup_bottle_corrupted.png",
+    "goldenCap": "minigame/golden_cap.png",
+    "chili": "minigame/chili_v2.png"
+  },
+  "notes": [
+    "Los PNG de personajes y minijuego tienen transparencia.",
+    "Las variantes sin sufijo _4k conservan la salida base para iteraciones.",
+    "Los ficheros *_source.png conservan el fondo croma original como fuente editable.",
+    "Los assets no estan conectados todavia al guion ni al motor."
+  ]
+}

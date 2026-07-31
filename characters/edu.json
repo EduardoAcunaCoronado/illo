@@ -18,7 +18,10 @@
     "bua": "assets/characters/edu/edu_bua.png",
     "clapping": "assets/characters/edu/edu_clapping.png",
     "riku": "assets/characters/edu/edu_riku.png",
-    "picado": "assets/characters/edu/edu_picado.png"
+    "picado": "assets/characters/edu/edu_picado.png",
+    "zip_happy": "assets/generated/chapter2_v2/characters/edu_zip_happy.png",
+    "zip_surprised": "assets/generated/chapter2_v2/characters/edu_zip_surprised.png",
+    "zip_worried": "assets/generated/chapter2_v2/characters/edu_zip_worried.png"
   },
   "defaultPose": "happy"
 }
