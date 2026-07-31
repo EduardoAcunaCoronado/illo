@@ -1104,6 +1104,18 @@ body.startup-pending #menu-video {
     animation: chapter-fade-out 0.5s ease-out forwards;
 }
 
+.chapter-end-overlay.is-transition-curtain {
+    z-index: 450;
+    background: #000;
+    opacity: 1;
+    animation: none;
+}
+
+.chapter-end-overlay.is-transition-curtain.is-releasing {
+    pointer-events: none;
+    animation: chapter-fade-out 0.35s ease-out forwards;
+}
+
 /* Nota: antes había una media query (max-width:768px) que encogía las fuentes
    del menú/diálogo en ventanas pequeñas. Ya no hace falta: el escenario completo
    se escala como un bloque con --stage-scale, así que todo el texto encoge o

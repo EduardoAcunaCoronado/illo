@@ -555,7 +555,14 @@ async function startNewGame() {
   await playChapter(currentChapterNumber);
 }
 
-async function playChapter(chapterIdentifier) {
+function releaseChapterTransition(transitionCurtain) {
+  if (!transitionCurtain?.isConnected) return;
+
+  transitionCurtain.classList.add("is-releasing");
+  setTimeout(() => transitionCurtain.remove(), 380);
+}
+
+async function playChapter(chapterIdentifier, transitionCurtain = null) {
   // Permitir tanto número (chapter0, chapter1...) como nombre directo (chapter2-edu)
   const chapterName =
     typeof chapterIdentifier === "number"
@@ -575,7 +582,17 @@ async function playChapter(chapterIdentifier) {
   currentChapterName = chapterName;
 
   // Cargar el capítulo
-  await engine.loadChapter(chapterName);
+  const chapter = await engine.loadChapter(chapterName);
+
+  if (!chapter) {
+    isGameRunning = false;
+    setMainMenuVisible(true);
+    showMenuMedia();
+    releaseChapterTransition(transitionCurtain);
+    return;
+  }
+
+  releaseChapterTransition(transitionCurtain);
 
   // Jugar el capítulo
   await playGame();
@@ -653,7 +670,7 @@ async function endGame() {
 
   // Mostrar pantalla de fin de capítulo
   const chapterTitle = engine.currentChapter?.title || "Capítulo Sin Título";
-  await engine.showChapterEnd(chapterTitle);
+  const transitionCurtain = await engine.showChapterEnd(chapterTitle);
 
   // Resetear el estado
   engine.reset();
@@ -662,6 +679,7 @@ async function endGame() {
   if (isFinalChapter) {
     setMainMenuVisible(true);
     showMenuMedia();
+    releaseChapterTransition(transitionCurtain);
     return;
   }
 
@@ -672,11 +690,12 @@ async function endGame() {
 
   if (nextChapterExists) {
     // Mostrar opción de continuar al siguiente capítulo
-    await showContinueOptions(nextChapterId);
+    await showContinueOptions(nextChapterId, transitionCurtain);
   } else {
     // No hay más capítulos, volver al menú
     setMainMenuVisible(true);
     showMenuMedia();
+    releaseChapterTransition(transitionCurtain);
   }
 }
 
@@ -694,7 +713,7 @@ async function checkChapterExists(chapterName) {
   }
 }
 
-async function showContinueOptions(nextChapterId) {
+async function showContinueOptions(nextChapterId, transitionCurtain) {
   return new Promise((resolve) => {
     // Panel de opciones con el sistema "Neón de Medianoche" (clases en styles.css)
     const optionsContainer = document.createElement("div");
@@ -723,10 +742,11 @@ async function showContinueOptions(nextChapterId) {
   }).then((choice) => {
     if (choice === "continue") {
       isGameRunning = true;
-      playChapter(nextChapterId);
+      return playChapter(nextChapterId, transitionCurtain);
     } else {
       setMainMenuVisible(true);
       showMenuMedia();
+      releaseChapterTransition(transitionCurtain);
     }
   });
 }

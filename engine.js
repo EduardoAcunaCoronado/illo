@@ -4604,6 +4604,33 @@ class VisualNovelEngine {
         const bg = document.getElementById('background');
         if (bg) bg.style.backgroundImage = '';
 
+        if (this._bgSwapTimer) {
+            clearTimeout(this._bgSwapTimer);
+            this._bgSwapTimer = null;
+        }
+
+        const secondaryBg = document.getElementById('background-b');
+        if (secondaryBg) {
+            secondaryBg.style.transition = 'none';
+            secondaryBg.style.opacity = '0';
+            secondaryBg.style.backgroundImage = '';
+        }
+
+        const cgLayer = document.getElementById('cg-layer');
+        if (cgLayer) {
+            cgLayer.style.transition = 'none';
+            cgLayer.style.opacity = '0';
+            cgLayer.style.backgroundImage = '';
+            cgLayer.style.boxShadow = '';
+            cgLayer.classList.remove('cg-visible');
+        }
+
+        const sceneFader = document.getElementById('scene-fader');
+        if (sceneFader) {
+            sceneFader.style.transition = 'none';
+            sceneFader.style.opacity = '0';
+        }
+
         // Limpiar elecciones
         const choicesContainer = document.getElementById('choices-container');
         if (choicesContainer) {
@@ -4695,11 +4722,10 @@ class VisualNovelEngine {
         return new Promise(resolve => {
             const continueBtn = document.getElementById('continue-btn');
             continueBtn.addEventListener('click', () => {
-                endOverlay.classList.add('fade-out');
-                setTimeout(() => {
-                    endOverlay.remove();
-                    resolve();
-                }, 500);
+                continueBtn.disabled = true;
+                endOverlay.classList.add('is-transition-curtain');
+                endOverlay.replaceChildren();
+                resolve(endOverlay);
             });
         });
     }
