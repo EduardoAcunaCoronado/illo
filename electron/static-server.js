@@ -61,12 +61,30 @@ function sendError(res, status) {
     res.end(String(status));
 }
 
-function serveFile(req, res, filePath, size) {
+const IMMUTABLE_ASSET_EXTENSIONS = new Set([
+    '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico',
+    '.mp4', '.webm', '.mp3', '.ogg', '.wav', '.m4a',
+    '.woff', '.woff2', '.ttf', '.otf',
+]);
+
+function cachePolicyFor(filePath) {
+    // Los assets llevan una versión estable por sesión. Se pueden conservar
+    // agresivamente: al editar y recargar, el juego genera otra URL. HTML, JS,
+    // CSS y JSON se revalidan para mantener cómodo el desarrollo local.
+    return IMMUTABLE_ASSET_EXTENSIONS.has(path.extname(filePath).toLowerCase())
+        ? 'public, max-age=31536000, immutable'
+        : 'no-cache';
+}
+
+function serveFile(req, res, filePath, stat) {
+    const size = stat.size;
+    const etag = `W/"${size.toString(16)}-${Math.floor(stat.mtimeMs).toString(16)}"`;
     const headers = {
         'Content-Type': mimeFor(filePath),
         'Accept-Ranges': 'bytes',
-        // El juego pide los JSON con cache: 'no-store' y ?v=; nada que cachear.
-        'Cache-Control': 'no-store',
+        'Cache-Control': cachePolicyFor(filePath),
+        'ETag': etag,
+        'Last-Modified': stat.mtime.toUTCString(),
     };
 
     const range = req.headers.range;
@@ -95,6 +113,11 @@ function serveFile(req, res, filePath, size) {
         return fs.createReadStream(filePath, { start, end }).pipe(res);
     }
 
+    if (req.headers['if-none-match'] === etag) {
+        res.writeHead(304, headers);
+        return res.end();
+    }
+
     headers['Content-Length'] = size;
     res.writeHead(200, headers);
     if (req.method === 'HEAD') return res.end();
@@ -121,9 +144,9 @@ function startServer(rootDir) {
                 if (stat.isDirectory()) {
                     const index = path.join(filePath, 'index.html');
                     const indexStat = await fsp.stat(index);
-                    return serveFile(req, res, index, indexStat.size);
+                    return serveFile(req, res, index, indexStat);
                 }
-                serveFile(req, res, filePath, stat.size);
+                serveFile(req, res, filePath, stat);
             } catch (error) {
                 // ENOENT es la vía normal: game.js sondea chapters/chapterN.json
                 // hasta recibir un 404 para saber cuántos capítulos hay.

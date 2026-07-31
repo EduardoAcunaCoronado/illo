@@ -842,6 +842,17 @@ arriba, exactamente en la misma zona que su hitbox. Esto corrige el antiguo
 caso en que la transformación visual desplazaba el dibujo bajo el borde
 inferior mientras la colisión seguía dentro de la zona jugable.
 
+Los assets de persecución y `eduvuelo` se precargan y decodifican una sola vez
+por sesión. `VisualNovelEngine` memoriza las URLs, las promesas de carga y los
+objetos `Image`, por lo que repetir una partida o volver a utilizar un frame no
+inicia otra petición. La persecución tampoco precarga ya los tres PNG grandes del
+cable del antiguo modo de vuelo. En la aplicación de Electron,
+`electron/static-server.js` entrega imágenes, audio, vídeo y fuentes con caché
+inmutable; HTML, JavaScript, CSS y JSON siguen revalidándose mediante `ETag`.
+El sello estable de `cacheBustAsset()` cambia al recargar la aplicación, de modo
+que una edición de assets obtiene una URL nueva sin provocar descargas continuas
+dentro de la partida.
+
 Parámetros principales (todos admiten su variante `...ByDelay` desde historia):
 
 | Parámetro | Descripción | Por defecto |
@@ -1429,15 +1440,21 @@ El primer acceso sigue una secuencia cerrada:
    bucle y suena el tema habitual.
 
 El fondo del menú utiliza `assets/videos/menu_loop.mp4`, un bucle H.264
-de 10 segundos, 24 FPS y `3840×2160`. Cada uno de sus 240 fotogramas procede
-del fotograma completo correspondiente de `assets/videos/menu_loop_old.mp4` y se
-mejora con el modelo para animación `realesr-animevideov3` de Real-ESRGAN. No se
-recomponen capas ni se sustituye el escenario: se conservan exactamente la
-geometría, el oleaje del mar, el titileo de los neones, las siluetas móviles,
-la brisa dorada y todas las notas en sus posiciones originales. El render es
-reproducible con `scripts/render_menu_loop_4k.py` y la herramienta oficial
-`realesrgan-ncnn-vulkan`. El antiguo `menu_loop_old.mp4` permanece intacto como
-fuente de movimiento y referencia.
+de 10 segundos, 48 FPS y `3840×2160`. Sus 240 fotogramas 4K originales se
+mantienen íntegros y entre cada pareja se inserta un fotograma de movimiento
+generado con RIFE, dando 480 frames finales. La interpolación incluye la pareja
+formada por el último frame y el primero, por lo que el cierre del bucle también
+es fluido y no se duplica ningún fotograma. No se recomponen capas ni se
+sustituye el escenario: se conservan la geometría, el oleaje del mar, el
+titileo de los neones, las siluetas móviles, la brisa dorada y todas las notas
+en sus posiciones originales.
+
+La reconstrucción 4K desde `assets/videos/menu_loop_old.mp4` es reproducible con
+`scripts/render_menu_loop_4k.py` y `realesrgan-ncnn-vulkan`. La interpolación
+cíclica posterior se ejecuta con `scripts/interpolate_menu_loop_48fps.py` y la
+herramienta oficial `rife-ncnn-vulkan`, usando `rife-v4.6`, modo UHD y TTA
+temporal. El antiguo `menu_loop_old.mp4` permanece intacto como fuente de
+movimiento y referencia.
 
 El opening final dura 80,704 segundos, está codificado en H.264 a 1920×1080 y
 30 fps, y utiliza audio AAC estéreo a 48 kHz. El MP4 distribuible se copió desde
