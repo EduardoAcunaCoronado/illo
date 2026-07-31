@@ -1014,7 +1014,10 @@ function volverAlMenuPrincipal() {
   cerrarMenuPausa();
   engine.hideDialog();
   engine.reset(); // también para la música y limpia fondo y personajes
-  mainMenu.classList.remove("hidden");
+  // No basta con quitar `hidden`: al iniciar una partida el menú también recibe
+  // `inert`, que desactiva todos sus botones. Esta función restaura ambas cosas
+  // (visibilidad e interactividad) y sincroniza aria-hidden.
+  setMainMenuVisible(true);
   showMenuMedia();
 }
 

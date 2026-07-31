@@ -495,3 +495,21 @@ REGLAS PARA CAMBIOS FUTUROS
   archivos Markdown separados por característica.
 - Actualizar esta memoria cuando cambien el canon, los arcos, los finales o el flujo
   técnico que un futuro agente necesite conocer.
+
+CORRECCIÓN 2026-07-31
+- Al volver al menú principal desde una partida, hay que usar
+  `setMainMenuVisible(true)`: quitar solamente la clase `hidden` deja el atributo
+  `inert` activo e impide pulsar las opciones del menú.
+- El fondo `assets/backgrounds/bathroom.png` mantiene su orientación jugable y el
+  reflejo del diseño vigente de Samu, con el estilo anime y la iluminación cálida
+  del fotograma 7 del opening. Su espejo izquierdo está corregido para que marco,
+  perspectiva y reflejo sean coherentes; el espejo derecho queda completamente
+  cerrado por arriba dentro del encuadre.
+- Los cinco sprites de `assets/characters/iphone5/` representan ahora un móvil
+  ficticio cartoon morado con acentos neón e interfaces propias para concierto,
+  Edu, José y Tony. No muestran botón Home, iOS, marcas ni rasgos de Apple; el
+  identificador interno heredado sigue siendo `iphone5`, pero su nombre visible
+  es “Móvil”. Las llamadas muestran retratos de las versiones humanas de Edu,
+  José y Tony, tomados de `assets/characters/humans/`. Los nombres de los tres
+  usan el lettering cartoon de Tony; “LLAMADA EN CURSO”, los tres controles y
+  “Colgar” comparten el estilo azul/rojo de Edu.

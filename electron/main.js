@@ -16,6 +16,13 @@ const ES_MAC = process.platform === 'darwin';
 // al abrir la ventana, sin esperar un clic como ocurre en un navegador normal.
 app.commandLine.appendSwitch('autoplay-policy', 'no-user-gesture-required');
 
+// Windows compone el vídeo en una capa aparte (DirectComposition) y ahí aplica
+// DOS VECES el escalado de object-fit: el opening y las cutscenes se pintaban a
+// dos tercios de su tamaño, pegados a la esquina superior izquierda, con el
+// resto de la ventana en negro. Sin esa capa, el vídeo se dibuja con el resto
+// de la página y ocupa lo que le toca.
+app.commandLine.appendSwitch('disable-direct-composition-video-overlays');
+
 let server = null;
 let mainWindow = null;
 
