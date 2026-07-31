@@ -1613,7 +1613,7 @@ body.startup-pending #menu-video {
     display: flex;
     flex-direction: column;
     gap: 15px;
-    margin-bottom: 28px;
+    margin-bottom: 8px;
 }
 
 .chapter-selector-empty {
@@ -2487,13 +2487,13 @@ html.electron-app #menu-theme-btn { display: none; }
     border-radius: 24px;
     box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.14);
     clip-path: none;
-    padding: 36px 44px;
+    padding: 36px;
     animation: nm-rise 0.5s ease-out both;
     font-family: 'Outfit', sans-serif;
     /* Con 7 capítulos el contenido se pasaba 17 px del panel. Se gana sitio
        subiendo el alto máximo y apretando el hueco entre botones (ver
        .chapter-selector-list), así que ahora cabe justo. */
-    max-height: 92%;
+    max-height: calc(100% - 2rem);
     /* El que desplaza es la LISTA, no el panel: así el título y el botón de
        volver se quedan fijos y no se van con el scroll. El overflow-y: auto
        que traía el estilo antiguo se anula aquí. */
@@ -2528,7 +2528,7 @@ html.electron-app #menu-theme-btn { display: none; }
     /* Aire entre los botones y la barra: al pasar el ratón, el capítulo se
        desplaza 6 px a la derecha y sin este hueco se le echaba encima. Va en
        los dos lados para que la lista siga centrada en el panel. */
-    padding: 0 14px;
+    padding: 20px 24px;
 }
 
 /* La lista también es flex en columna, así que sus botones se aplastarían para
@@ -2586,7 +2586,7 @@ html.electron-app #menu-theme-btn { display: none; }
     text-shadow: 0 0 26px rgba(255, 209, 102, 0.4);
     border-bottom: 1px solid rgba(255, 209, 102, 0.4);
     padding-bottom: 16px;
-    margin-bottom: 24px;
+    margin-bottom: 4px;
 }
 .chapter-selector-title::before { display: none; }
 
