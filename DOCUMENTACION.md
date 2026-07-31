@@ -1234,6 +1234,37 @@ El juego incluye un completo rediseño visual inspirado en Persona 5 Royal.
 - **Rojo**: #ff1744 (secundario)
 - **Negro**: #000000 (fondo)
 
+#### Arranque de la aplicación
+
+El primer acceso sigue una secuencia cerrada:
+
+1. `index.html` muestra un disclaimer a pantalla completa y mantiene el menú
+   invisible e inerte.
+2. El usuario debe pulsar **Entrar con sonido**. Ese gesto desbloquea la
+   reproducción multimedia exigida por los navegadores.
+3. Se reproduce `assets/videos/opening_samu.mp4` a pantalla completa, con su
+   audio AAC y el volumen musical guardado en `illo_vol_music`.
+4. El opening puede terminar naturalmente o cerrarse mediante
+   **Saltar opening**.
+5. Tras un fundido de 560 ms aparece el menú principal, comienza su vídeo en
+   bucle y suena el tema habitual.
+
+El opening final dura 80,704 segundos, está codificado en H.264 a 1920×1080 y
+30 fps, y utiliza audio AAC estéreo a 48 kHz. El MP4 distribuible se copió desde
+la carpeta fuente entregada por Samu; sus archivos de proyecto no forman parte
+del runtime.
+
+Si el MP4 no puede cargarse, el arranque no queda bloqueado: el mensaje de
+estado informa del error y el botón **Saltar opening** permite llegar al menú.
+El clic fuera del botón del disclaimer no inicia nada.
+
+El selector **Capítulos** espera a que termine el descubrimiento asíncrono de
+los JSON antes de dibujar la lista. La carga inicial y un clic temprano
+comparten una única promesa, evitando listas vacías y cargas duplicadas. Mientras
+espera, el botón muestra un estado de carga; al abrir el selector, el foco pasa
+al primer capítulo y el menú queda oculto e inerte. Si no se encuentra ningún
+capítulo, se muestra un mensaje recuperable y **Volver** permite reintentarlo.
+
 #### Menú Principal
 
 ```

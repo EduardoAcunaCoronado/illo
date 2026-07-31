@@ -285,6 +285,9 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
   saveGame() existe pero no se llama; la promesa antigua de autoguardado no describe el
   comportamiento actual.
 - Los capítulos numéricos se detectan consecutivamente hasta el primer 404.
+- El selector espera la carga asíncrona compartida de esos JSON antes de renderizar;
+  esto evita que un clic temprano, especialmente tras saltar el opening, muestre una
+  lista vacía. Menú y selector transfieren también inert, aria-hidden y foco.
 
 MINIJUEGOS USADOS POR EL GUION ACTUAL
 - Gatos: laberinto/supervivencia con flechas o WASD.
@@ -359,6 +362,12 @@ SISTEMA DE COMBATE
   reintento hasta victoria.
 
 PRESENTACIÓN
+- Arranque desde 2026-07-31: disclaimer obligatorio a pantalla completa. El
+  usuario pulsa “Entrar con sonido”, lo que desbloquea el audio del navegador y
+  reproduce assets/videos/opening_samu.mp4 (80,704 s, 1920x1080, H.264 + AAC).
+  El vídeo puede terminar o saltarse con su botón; después funde al menú, activa
+  menu_loop.mp4 y lanza el tema. Menú y vídeo de fondo permanecen ocultos e
+  inertes antes del gesto. El volumen del opening respeta illo_vol_music.
 - Menú “Neón de Medianoche” con vídeo en bucle a media velocidad, tema inicial,
   relevo chill, botón musical y marca WildSoft.
 - Visual novel con fondos ilustrados, sprites grandes, caja de diálogo inferior,
