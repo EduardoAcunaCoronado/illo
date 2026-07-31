@@ -168,12 +168,12 @@ def main() -> int:
     parser.add_argument(
         "--reference",
         type=Path,
-        default=Path("assets/videos/menu_loop.mp4"),
+        default=Path("assets/videos/menu_loop_old.mp4"),
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("assets/videos/menu_loop_4k.mp4"),
+        default=Path("assets/videos/menu_loop.mp4"),
     )
     parser.add_argument("--upscaler", type=Path)
     parser.add_argument("--encoder", choices=("nvenc", "x264"), default="nvenc")

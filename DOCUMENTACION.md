@@ -1428,15 +1428,15 @@ El primer acceso sigue una secuencia cerrada:
 5. Tras un fundido de 560 ms aparece el menú principal, comienza su vídeo en
    bucle y suena el tema habitual.
 
-El fondo del menú utiliza `assets/videos/menu_loop_4k.mp4`, un bucle H.264
+El fondo del menú utiliza `assets/videos/menu_loop.mp4`, un bucle H.264
 de 10 segundos, 24 FPS y `3840×2160`. Cada uno de sus 240 fotogramas procede
-del fotograma completo correspondiente de `assets/videos/menu_loop.mp4` y se
+del fotograma completo correspondiente de `assets/videos/menu_loop_old.mp4` y se
 mejora con el modelo para animación `realesr-animevideov3` de Real-ESRGAN. No se
 recomponen capas ni se sustituye el escenario: se conservan exactamente la
 geometría, el oleaje del mar, el titileo de los neones, las siluetas móviles,
 la brisa dorada y todas las notas en sus posiciones originales. El render es
 reproducible con `scripts/render_menu_loop_4k.py` y la herramienta oficial
-`realesrgan-ncnn-vulkan`. El antiguo `menu_loop.mp4` permanece intacto como
+`realesrgan-ncnn-vulkan`. El antiguo `menu_loop_old.mp4` permanece intacto como
 fuente de movimiento y referencia.
 
 El opening final dura 80,704 segundos, está codificado en H.264 a 1920×1080 y
