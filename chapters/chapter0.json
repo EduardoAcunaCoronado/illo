@@ -18,7 +18,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/prologue_futurista.wav",
+              "path": "assets/sounds/music/starport-open.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -82,7 +82,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/nexo_infantil.wav",
+              "path": "assets/sounds/music/nexo.mp3",
               "volume": 1.0,
               "loop": true,
               "id": "nexo",
