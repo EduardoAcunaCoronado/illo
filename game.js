@@ -657,6 +657,11 @@ function playMenuChill() {
 // El tema del menú suena UNA sola vez (como una intro); al terminar entra la
 // música chill de fondo. El botón ♪ permite volver a escucharlo cuando se quiera.
 function playMenuTheme() {
+  // El tema pertenece al menú y no debe solaparse con la secuencia inicial.
+  // showMainMenuAfterOpening marca el arranque como terminado antes de llamarlo.
+  if (!startupFinished && document.body.classList.contains("startup-pending")) return;
+  if (mainMenu.classList.contains("hidden")) return;
+
   try { engine.stopSound("menu_chill", 800); } catch (err) {} // el tema manda
   const audio = engine.playSound(MENU_MUSIC_SRC, { id: "menu_music", loop: false, volume: MENU_MUSIC_VOL, fadeIn: 600 });
   const btn = document.getElementById("menu-theme-btn");
@@ -701,7 +706,6 @@ document.getElementById("menu-theme-btn").addEventListener("click", (e) => {
 // navegador se conserva el desbloqueo tras el primer gesto, exigido por este.
 if (isDesktopApp) {
   menuAudioUnlocked = true;
-  playMenuTheme();
 }
 
 // Fundir y ocultar el vídeo + sonidos del menú (al empezar a jugar)
