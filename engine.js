@@ -8,6 +8,8 @@ class VisualNovelEngine {
         this.gameState = {};
         this.history = [];
         this.isWaitingForInput = false;
+        this.fastForward = false;
+        this._finishTyping = null;
         this.typingSpeed = 50;
         this.lastChapterName = null;
         this.speakingCharacter = null;
@@ -41,6 +43,13 @@ class VisualNovelEngine {
     // Indica si el jugador tiene un objeto en el inventario.
     hasItem(name) {
         return this.inventory.includes(name);
+    }
+
+    setFastForward(active) {
+        this.fastForward = !!active;
+        if (this.fastForward && this._finishTyping) {
+            this._finishTyping();
+        }
     }
 
     async loadChapter(chapterName) {
@@ -5186,7 +5195,7 @@ class VisualNovelEngine {
         }
 
         // Con hablante EN PANTALLA: él iluminado y el resto en gris. Durante la
-        // narración (2B) o voces sin sprite ("???", off-screen): TODOS en gris
+        // narración (3C) o voces sin sprite ("???", off-screen): TODOS en gris
         // (petición de Betanzos — antes nadie se apagaba al narrar y parecía
         // que "se iluminaban todos").
         if (charactersContainer) {
@@ -5208,14 +5217,29 @@ class VisualNovelEngine {
         return new Promise(resolve => {
             let charIndex = 0;
             const text = line.text;
-            let skipTyping = false;
             let timeoutId = null;
+            let finished = false;
+
+            const cleanup = () => {
+                if (timeoutId) clearTimeout(timeoutId);
+                document.removeEventListener('click', skipHandler);
+                if (this._finishTyping === finishTyping) {
+                    this._finishTyping = null;
+                }
+            };
+
+            const finishTyping = () => {
+                if (finished) return;
+                finished = true;
+                cleanup();
+                dialogText.textContent = text;
+                this.isWaitingForInput = true;
+                resolve();
+            };
 
             const typeChar = () => {
-                if (skipTyping) {
-                    dialogText.textContent = text;
-                    this.isWaitingForInput = true;
-                    resolve();
+                if (this.fastForward) {
+                    finishTyping();
                     return;
                 }
 
@@ -5234,22 +5258,22 @@ class VisualNovelEngine {
                     }
                     timeoutId = setTimeout(typeChar, delay);
                 } else {
-                    this.isWaitingForInput = true;
-                    resolve();
+                    finishTyping();
                 }
             };
 
             const skipHandler = () => {
-                skipTyping = true;
-                if (timeoutId) clearTimeout(timeoutId);
-                dialogText.textContent = text;
-                this.isWaitingForInput = true;
-                document.removeEventListener('click', skipHandler);
-                resolve();
+                finishTyping();
             };
 
             document.addEventListener('click', skipHandler);
-            typeChar();
+            this._finishTyping = finishTyping;
+
+            if (this.fastForward) {
+                finishTyping();
+            } else {
+                typeChar();
+            }
         });
     }
 
@@ -5761,6 +5785,33 @@ class VisualNovelEngine {
         const bg = document.getElementById('background');
         if (bg) bg.style.backgroundImage = '';
 
+        if (this._bgSwapTimer) {
+            clearTimeout(this._bgSwapTimer);
+            this._bgSwapTimer = null;
+        }
+
+        const secondaryBg = document.getElementById('background-b');
+        if (secondaryBg) {
+            secondaryBg.style.transition = 'none';
+            secondaryBg.style.opacity = '0';
+            secondaryBg.style.backgroundImage = '';
+        }
+
+        const cgLayer = document.getElementById('cg-layer');
+        if (cgLayer) {
+            cgLayer.style.transition = 'none';
+            cgLayer.style.opacity = '0';
+            cgLayer.style.backgroundImage = '';
+            cgLayer.style.boxShadow = '';
+            cgLayer.classList.remove('cg-visible');
+        }
+
+        const sceneFader = document.getElementById('scene-fader');
+        if (sceneFader) {
+            sceneFader.style.transition = 'none';
+            sceneFader.style.opacity = '0';
+        }
+
         // Limpiar elecciones
         const choicesContainer = document.getElementById('choices-container');
         if (choicesContainer) {
@@ -5852,11 +5903,10 @@ class VisualNovelEngine {
         return new Promise(resolve => {
             const continueBtn = document.getElementById('continue-btn');
             continueBtn.addEventListener('click', () => {
-                endOverlay.classList.add('fade-out');
-                setTimeout(() => {
-                    endOverlay.remove();
-                    resolve();
-                }, 500);
+                continueBtn.disabled = true;
+                endOverlay.classList.add('is-transition-curtain');
+                endOverlay.replaceChildren();
+                resolve(endOverlay);
             });
         });
     }

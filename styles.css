@@ -428,7 +428,7 @@ body.startup-pending #menu-video {
 }
 
 /* Los que NO hablan: en gris y apagados, por detrás. Solo se aplica cuando hay
-   un hablante EN PANTALLA (clase .has-speaker); durante la narración de 2B, o
+   un hablante EN PANTALLA (clase .has-speaker); durante la narración de 3C, o
    si quien habla no tiene sprite, nadie se apaga. */
 .characters-container.has-speaker .character:not(.speaking).active {
     filter: grayscale(0.85) brightness(0.55) contrast(0.96);
@@ -1128,6 +1128,18 @@ body.startup-pending #menu-video {
 
 .chapter-end-overlay.fade-out {
     animation: chapter-fade-out 0.5s ease-out forwards;
+}
+
+.chapter-end-overlay.is-transition-curtain {
+    z-index: 450;
+    background: #000;
+    opacity: 1;
+    animation: none;
+}
+
+.chapter-end-overlay.is-transition-curtain.is-releasing {
+    pointer-events: none;
+    animation: chapter-fade-out 0.35s ease-out forwards;
 }
 
 /* Nota: antes había una media query (max-width:768px) que encogía las fuentes

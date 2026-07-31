@@ -5,6 +5,20 @@ let clickHandler = null;
 let currentChapterNumber = 0;
 let currentChapterName = null;
 
+// Mantener Control acelera el texto y avanza las líneas, como el modo skip de
+// una novela visual. Las elecciones y los minijuegos siguen requiriendo input.
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Control" || e.repeat || !isGameRunning) return;
+  engine.setFastForward(true);
+  if (clickHandler) clickHandler();
+});
+
+document.addEventListener("keyup", (e) => {
+  if (e.key === "Control") engine.setFastForward(e.ctrlKey);
+});
+
+window.addEventListener("blur", () => engine.setFastForward(false));
+
 // Capítulos disponibles para el selector de "Cargar" (se cargan dinámicamente)
 let AVAILABLE_CHAPTERS = [];
 let availableChaptersPromise = null;
@@ -829,14 +843,14 @@ async function loadAllCharacters() {
   const characters = [
     "edu",
     "zip",
-    "pod",
-    "emil",
+    "epod",
+    "nexo",
     "samu",
     "iphone5",
     "loca",
     "nate",
     "jose",
-    "2b",
+    "3c",
     "tony",
     "airi",
     "airi_adult",
@@ -853,6 +867,7 @@ async function loadAllCharacters() {
 
 async function startNewGame() {
   if (isGameRunning) return; // doble clic = una sola partida
+  engine.setFastForward(false);
   stopMenuMedia();
   setMainMenuVisible(false);
   isGameRunning = true;
@@ -870,7 +885,14 @@ async function startNewGame() {
   await playChapter(currentChapterNumber);
 }
 
-async function playChapter(chapterIdentifier) {
+function releaseChapterTransition(transitionCurtain) {
+  if (!transitionCurtain?.isConnected) return;
+
+  transitionCurtain.classList.add("is-releasing");
+  setTimeout(() => transitionCurtain.remove(), 380);
+}
+
+async function playChapter(chapterIdentifier, transitionCurtain = null) {
   // Permitir tanto número (chapter0, chapter1...) como nombre directo (chapter2-edu)
   const chapterName =
     typeof chapterIdentifier === "number"
@@ -890,7 +912,18 @@ async function playChapter(chapterIdentifier) {
   currentChapterName = chapterName;
 
   // Cargar el capítulo
-  await engine.loadChapter(chapterName);
+  const chapter = await engine.loadChapter(chapterName);
+
+  if (!chapter) {
+    isGameRunning = false;
+    engine.setFastForward(false);
+    setMainMenuVisible(true);
+    showMenuMedia();
+    releaseChapterTransition(transitionCurtain);
+    return;
+  }
+
+  releaseChapterTransition(transitionCurtain);
 
   // Jugar el capítulo
   await playGame();
@@ -946,8 +979,10 @@ async function playGame() {
 function waitForClick() {
   return new Promise((resolve) => {
     waitingForInput = true;
+    let fastForwardTimer = null;
     const handler = () => {
       waitingForInput = false;
+      if (fastForwardTimer) clearTimeout(fastForwardTimer);
       document.removeEventListener("click", handler);
       // IMPRESCINDIBLE ponerlo a null: los botones de retroceder y de escenas
       // desbloquean el bucle llamando a clickHandler(), y si se queda apuntando
@@ -958,6 +993,12 @@ function waitForClick() {
     };
     clickHandler = handler;
     document.addEventListener("click", handler);
+
+    if (engine.fastForward) {
+      fastForwardTimer = setTimeout(() => {
+        if (engine.fastForward) handler();
+      }, 45);
+    }
   });
 }
 
@@ -979,6 +1020,7 @@ function volverAlMenuPrincipal() {
 
 async function endGame() {
   isGameRunning = false;
+  engine.setFastForward(false);
   rewindRequested = false;
   sceneJumpRequested = null;
   stopRewindWatcher();
@@ -991,7 +1033,7 @@ async function endGame() {
 
   // Mostrar pantalla de fin de capítulo
   const chapterTitle = engine.currentChapter?.title || "Capítulo Sin Título";
-  await engine.showChapterEnd(chapterTitle);
+  const transitionCurtain = await engine.showChapterEnd(chapterTitle);
 
   // Resetear el estado
   engine.reset();
@@ -1000,6 +1042,7 @@ async function endGame() {
   if (isFinalChapter) {
     setMainMenuVisible(true);
     showMenuMedia();
+    releaseChapterTransition(transitionCurtain);
     return;
   }
 
@@ -1010,11 +1053,12 @@ async function endGame() {
 
   if (nextChapterExists) {
     // Mostrar opción de continuar al siguiente capítulo
-    await showContinueOptions(nextChapterId);
+    await showContinueOptions(nextChapterId, transitionCurtain);
   } else {
     // No hay más capítulos, volver al menú
     setMainMenuVisible(true);
     showMenuMedia();
+    releaseChapterTransition(transitionCurtain);
   }
 }
 
@@ -1032,7 +1076,7 @@ async function checkChapterExists(chapterName) {
   }
 }
 
-async function showContinueOptions(nextChapterId) {
+async function showContinueOptions(nextChapterId, transitionCurtain) {
   return new Promise((resolve) => {
     // Panel de opciones con el sistema "Neón de Medianoche" (clases en styles.css)
     const optionsContainer = document.createElement("div");
@@ -1061,10 +1105,11 @@ async function showContinueOptions(nextChapterId) {
   }).then((choice) => {
     if (choice === "continue") {
       isGameRunning = true;
-      playChapter(nextChapterId);
+      return playChapter(nextChapterId, transitionCurtain);
     } else {
       setMainMenuVisible(true);
       showMenuMedia();
+      releaseChapterTransition(transitionCurtain);
     }
   });
 }
@@ -1154,6 +1199,7 @@ function showChapterSelector() {
 
 async function startChapterFromSelector(chapterId) {
   if (isGameRunning) return; // doble clic = una sola partida
+  engine.setFastForward(false);
   stopMenuMedia();
   setMainMenuVisible(false);
 

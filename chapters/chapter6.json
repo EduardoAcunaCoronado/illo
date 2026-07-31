@@ -20,7 +20,7 @@
               "value": "assets/backgrounds/fuente_ciudad_paloma.png"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "La Amalgama se deshace. Entre la lluvia de fragmentos, Airi vuelve a aparecer de rodillas, temblando, pero libre."
         },
         {
@@ -421,7 +421,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "El grupo abandona Ciudad Paloma por la avenida principal. Ya desde fuera, se detienen un momento y miran la ciudad a lo lejos.",
           "actions": [
             {
@@ -602,7 +602,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Airi mira el cielo. Lo mira como alguien que acaba de elegir su propio deseo.",
           "actions": [
             {
@@ -636,7 +636,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Final bueno: Airi sale junto al grupo de Ciudad Paloma. La corrupción no ha terminado, pero por primera vez ya no avanza contra una niña sola.",
           "actions": [
             {
@@ -651,7 +651,7 @@
               "type": "stopAllSounds"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Fin."
         },
         {
@@ -672,7 +672,7 @@
       "title": "Escena especial: Los que faltaban",
       "lines": [
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Después de los créditos, la pantalla queda en negro. Tres siluetas aparecen en silencio, como si llevaran todo el juego esperando su turno.",
           "actions": [
             {
@@ -838,7 +838,7 @@
           "text": "Queda asentado: Carlos, Andrés y Sebas esperan aparecer en el siguiente juego."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Las tres siluetas se miran. Por primera vez en toda la aventura, parecen satisfechas con estar a punto de empezar.",
           "actions": [
             {
@@ -948,7 +948,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "El grupo abandona la plaza caminando junto. Las grietas de la fuente se cierran despacio, las palomas vuelven a los tejados y Ciudad Paloma respira como si acabara de sobrevivir a una pesadilla.",
           "actions": [
             {
@@ -970,7 +970,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Por un momento, parece suficiente."
         },
         {
@@ -996,7 +996,7 @@
               "position": "center"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Mientras siguen avanzando, la mano de Airi parpadea una sola vez..."
         },
         {
@@ -1021,11 +1021,11 @@
               "value": "assets/backgrounds/paseo_ciudad_paloma_mano_corrupta.png"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Aparecen unas marcas tenues, casi imperceptibles, brillando en su piel."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Final incierto: Airi ya no está sola y el mundo de ensueño sigue en pie. Pero la corrupción todavía no ha soltado del todo su mano."
         },
         {
@@ -1034,7 +1034,7 @@
               "type": "stopAllSounds"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "¿Fin?"
         }
       ]

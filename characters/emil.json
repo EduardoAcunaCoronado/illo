@@ -1,8 +1,0 @@
-{
-  "name": "Emil",
-  "color": "gray",
-  "poses": {
-    "neutral": "assets/characters/others/emil.png"
-  },
-  "defaultPose": "neutral"
-}
