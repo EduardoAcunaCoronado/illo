@@ -794,18 +794,100 @@ historia**, pero nunca se activa en una partida narrativa normal.
 
 #### Minijuego `eduvuelo` — peligros aéreos (cap. 3)
 
-Side-scroller volador (Edu recoge partituras 🎼 esquivando el techo del escenario).
-Además de `goal`/`goalByDelay`, acepta estos knobs (todos con `...ByDelay` opcional):
+Vuelo arcade dedicado: Edu recupera frases de partituras en la estructura del
+concierto mientras atraviesa cables, focos, altavoces y ráfagas. Ya no usa el
+motor genérico del side-scroller. Antes de empezar muestra `3, 2, 1, ¡VUELA!`;
+ratón o `W/S` controlan la altura y `Espacio` o clic consumen energía para
+activar un impulso breve. Durante el impulso Edu es invulnerable, rompe
+peligros y puede efectuar un **contrapulso** contra los altavoces.
 
-| Parámetro             | Descripción                                                                                   | Por defecto |
-| --------------------- | --------------------------------------------------------------------------------------------- | ----------- |
-| `hangChance`          | Prob. de cable colgando **desde el techo** hasta una altura aleatoria (deja hueco por debajo) | 0.22        |
-| `hangMin` / `hangMax` | Longitud del cable (fracción del alto, 0-1)                                                   | 0.25 / 0.60 |
-| `fallerChance`        | Prob. de foco que **cae desde arriba** en movimiento                                          | 0.24        |
-| `fallerVy`            | Velocidad de caída del foco                                                                   | 0.26        |
-| `collectChance`       | Prob. de que el spawn sea partitura (bajarlo = más difícil)                                   | 0.42        |
-| `spawnMs`             | Ritmo de aparición en ms (bajarlo = más denso)                                                | 640         |
-| `graceMs`             | Invulnerabilidad inicial con parpadeo                                                         | 1200        |
+El HUD muestra partituras, cadena, energía y resistencia. Recoger sin recibir
+daño aumenta la cadena y la puntuación; pasar muy cerca de un peligro concede
+`¡CASI!`, puntos y energía. El resultado guarda puntuación, cadena máxima,
+casi-roces y rango `S/A/B/C`. Las partituras aparecen en pequeñas frases y hay
+una garantía `collectEvery`, por lo que una mala tirada aleatoria no puede
+alargar indefinidamente la partida ni crear una sucesión imposible. En el
+último tramo suben progresivamente la velocidad y la densidad, pero sólo se
+genera un patrón de peligro por turno.
+
+`P`, `Esc` o el botón del HUD pausan también la cuenta atrás y congelan
+jugador, objetos y avisos. La casilla de `minijuegos_test.html` dibuja la caja
+verde del jugador, las rojas de los peligros y las azules de las partituras.
+Desde 2026-07-31, Edu, focos y altavoces colisionan mediante elipses; los
+cables conservan un rectángulo estrecho por su forma vertical. El barrido entre
+frames interpola simultáneamente la trayectoria de Edu y la del peligro en
+varios puntos, en vez de unir posiciones con un rectángulo grande o enfrentar
+instantes diferentes. Esto evita esquinas fantasma en movimientos diagonales y
+golpes al cambiar rápidamente de altura en dificultad difícil.
+Los objetos se preparan fuera del borde derecho (y el foco por encima) para
+entrar suavemente, pero no pueden activar ninguna interacción hasta que al
+menos el `18 %` de su forma de colisión haya entrado en el escenario. Además,
+la comprobación se suspende si vuelve a quedar menos de un `10 %` visible.
+`.fly-stage` usa `overflow: hidden`, por lo que la parte exterior tampoco se
+renderiza sobre el HUD o fuera del área de vuelo.
+Los peligros usan un factor de tolerancia `0.80`, por lo que un mero contacto
+de bordes no causa daño; las partituras mantienen `1.06` para que recogerlas
+siga siendo cómodo. Con hitboxes activadas, cada impacto muestra el tipo de
+peligro y deja durante unos segundos la marca exacta de la colisión. El aviso
+normal también identifica `FOCO`, `ALTAVOZ` o `CABLE`.
+El obstáculo que provoca un golpe permanece resaltado brevemente en el punto
+de contacto y el aviso de impacto tiene prioridad sobre mensajes secundarios,
+para que el origen del daño no desaparezca en el mismo frame.
+
+Los cables se renderizan mediante un `<img>` interno y no habilitan su hitbox
+hasta que el PNG haya terminado de cargar. Si la carga falla o supera `1600 ms`,
+el objeto se descarta sin poder causar daño. El cable inferior se voltea sobre
+su propio centro: su sprite queda dentro del escenario, desde el suelo hacia
+arriba, exactamente en la misma zona que su hitbox. Esto corrige el antiguo
+caso en que la transformación visual desplazaba el dibujo bajo el borde
+inferior mientras la colisión seguía dentro de la zona jugable.
+
+Parámetros principales (todos admiten su variante `...ByDelay` desde historia):
+
+| Parámetro | Descripción | Por defecto |
+| --- | --- | --- |
+| `goal` | Partituras necesarias para terminar | 16 |
+| `speed` / `spawnMs` | Velocidad horizontal base e intervalo inicial de aparición | 6.4 / 620 |
+| `hangChance` / `riserChance` | Peso de cable desde techo / suelo | 0.26 / 0.20 |
+| `hangMin` / `hangMax` | Longitud del cable como fracción del escenario | 0.28 / 0.62 |
+| `fallerChance` / `fallerVy` | Peso y velocidad vertical de los focos con aviso | 0.28 / 0.30 |
+| `speakerChance` | Peso del altavoz pulsante destruible con contrapulso | 0.19 |
+| `gustChance` | Peso de ráfagas no dañinas que desplazan a Edu | 0.11 |
+| `collectChance` / `collectEvery` | Probabilidad de frase y máximo de patrones entre frases | 0.29 / 3 |
+| `phraseMin` / `phraseMax` | Partituras que forman cada frase | 1 / 2 |
+| `energyRegen` / `dashCost` | Regeneración por segundo y coste del impulso | 8 / 52 |
+| `dashDuration` | Duración del impulso en segundos | 0.36 |
+| `difficultyRamp` | Aumento de velocidad a lo largo de la partida | 0.32 |
+| `corridorMin` | Hueco vertical mínimo garantizado entre cables | 0.20 |
+| `graceMs` / `hitGraceMs` | Gracia inicial y tras un impacto | 900 / 900 |
+
+Presets de test:
+
+| Modo | Velocidad | Objetivo | Impactos | Aparición | Regeneración / coste | Escalada |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Fácil | 5.4 | 14 | 4 | 720 ms | 11 / 42 | 0.20 |
+| Medio | 7 | 20 | 3 | 590 ms | 8 / 52 | 0.32 |
+| Difícil | 9 | 26 | 2 | 450 ms | 6 / 60 | 0.46 |
+
+En el capítulo 3, `storyDelay` escala el objetivo a `20/24/28`, la velocidad a
+`6.8/7.8/8.8`, la aparición a `600/520/450 ms` y los impactos a `3/2/2`.
+También aumenta los pesos de cable, foco y altavoz, reduce la regeneración de
+energía a `8/7/6`, eleva el coste del dash a `50/55/60` y acorta su duración a
+`0.38/0.35/0.32 s`. La escalada final pasa a `0.30/0.38/0.46`. El dash sigue
+siendo una herramienta decisiva, pero ya no permite atravesar casi todos los
+patrones sin administrar la energía.
+
+Los assets V2 están en `assets/minigames/cap3/`: `aire_fondo_v2.png` para el
+escenario, `edu_volando_sheet_v2.png` con el nuevo modelo y seis poses de Edu,
+y `cables_aire_sheet_v2.png` como fuente del diseño del cable. Dentro de
+`sprites/` están los seis `edu_fly_v2_*.png`, el cable continuo
+`aire_cable_v3.png`, `aire_foco_v2.png`, `aire_altavoz_v2.png` y
+`partitura_v2.png`. Los cinco primeros frames de Edu forman un ciclo estable
+de aleteo y el sexto es una pose específica de impulso. Todos están
+normalizados sobre lienzos transparentes de `512×512`, con margen y sin restos
+de celdas vecinas. El cable de juego es un único dibujo continuo de anclaje,
+cuerpo trenzado y terminal electrificado: su ancho se calcula a partir de su
+altura y se invierte desde el suelo sin uniones ni cambios de escala internos.
 
 #### Batallas: modo supervivencia (extensión aditiva)
 

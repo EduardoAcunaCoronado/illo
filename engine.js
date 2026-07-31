@@ -2469,52 +2469,1072 @@ class VisualNovelEngine {
     }
 
     // ============================================================
-    // Minijuego "eduvuelo" (Edu volando): recoge partituras esquivando focos que
-    // caen y cables eléctricos. Reutiliza el motor side-scroller (modo vuelo).
+    // Minijuego "eduvuelo" (Edu volando): recupera las partituras entre el
+    // entramado del concierto. Desde agosto de 2026 usa un motor propio para
+    // poder tener impulso, energía, combos y patrones sin tocar la persecución.
     // ============================================================
     async playEduVueloMinigame(options = {}) {
         this.isWaitingForInput = false;
         let won = false;
         while (!won) {
-            won = await this.runSideScroller({
-                mode: 'fly',
-                goal: options.goal || 8,
-                speed: options.speed || 5,
+            won = await this.runEduFlight({
+                goal: options.goal || 16,
+                speed: options.speed || 6.4,
                 maxHits: options.maxHits || 3,
-                backdrop: 'aire_fondo',
-                playerFrames: ['edu_fly_0', 'edu_fly_1', 'edu_fly_2', 'edu_fly_3'],
-                playerHeight: 0.19, playerRatio: 0.72,
-                yMin: 0.12, yMax: 0.86,
-                bgFar: null, bgNear: null,
-                // Peligros DINÁMICOS (jul 2026): cables colgando del techo con
-                // longitud aleatoria y focos que caen. SIN estáticos flotantes:
-                // todo lo peligroso cuelga o cae (lo pidió el director).
-                obstacles: [],
-                hangChance: options.hangChance != null ? options.hangChance : 0.22,
-                // Cables que SUBEN desde el suelo: mismo peligro del revés, obliga
-                // a mirar arriba y abajo en lugar de vivir pegado al techo.
-                riserChance: options.riserChance != null ? options.riserChance : 0.16,
-                hangMin: options.hangMin != null ? options.hangMin : 0.25,
-                hangMax: options.hangMax != null ? options.hangMax : 0.60,
-                hangSprite: options.hangSprite || 'aire_cable',
-                fallerChance: options.fallerChance != null ? options.fallerChance : 0.24,
-                fallerVy: options.fallerVy != null ? options.fallerVy : 0.26,
-                fallerFrames: options.fallerFrames || ['aire_foco', 'aire_foco_on'],
-                collectChance: options.collectChance != null ? options.collectChance : 0.42,
-                spawnMs: options.spawnMs != null ? options.spawnMs : 640,
-                graceMs: options.graceMs, hitGraceMs: options.hitGraceMs,
-                debugHitboxes: !!options.debugHitboxes,
-                enemies: [],
-                collectible: ['partitura', 'partitura_glow'],
-                title: '🐉 Vuela con el RATÓN (o ↑/↓): RECOGE las partituras y esquiva focos y cables.',
-                winMsg: '¡Partituras completas! 🎼',
-                loseMsg: '¡Te electrocutaste! ⚡'
+                spawnMs: options.spawnMs != null ? options.spawnMs : 620,
+                hangChance: options.hangChance != null ? options.hangChance : 0.26,
+                riserChance: options.riserChance != null ? options.riserChance : 0.20,
+                hangMin: options.hangMin != null ? options.hangMin : 0.28,
+                hangMax: options.hangMax != null ? options.hangMax : 0.62,
+                fallerChance: options.fallerChance != null ? options.fallerChance : 0.28,
+                fallerVy: options.fallerVy != null ? options.fallerVy : 0.30,
+                speakerChance: options.speakerChance != null ? options.speakerChance : 0.19,
+                gustChance: options.gustChance != null ? options.gustChance : 0.11,
+                collectChance: options.collectChance != null ? options.collectChance : 0.29,
+                collectEvery: options.collectEvery != null ? options.collectEvery : 3,
+                phraseMin: options.phraseMin != null ? options.phraseMin : 1,
+                phraseMax: options.phraseMax != null ? options.phraseMax : 2,
+                energyRegen: options.energyRegen != null ? options.energyRegen : 8,
+                dashCost: options.dashCost != null ? options.dashCost : 52,
+                dashDuration: options.dashDuration != null ? options.dashDuration : 0.36,
+                difficultyRamp: options.difficultyRamp != null ? options.difficultyRamp : 0.32,
+                corridorMin: options.corridorMin != null ? options.corridorMin : 0.20,
+                graceMs: options.graceMs != null ? options.graceMs : 900,
+                hitGraceMs: options.hitGraceMs != null ? options.hitGraceMs : 900,
+                debugHitboxes: !!options.debugHitboxes
             });
             if (!won) {
                 await this.showMinigameRetry('¡Se te han escapado las partituras! ⚡');
             }
         }
         return won;
+    }
+
+    // Motor dedicado al vuelo. La progresión alterna frases de partituras con
+    // patrones de peligro, de modo que una mala tirada aleatoria nunca alarga la
+    // partida ni genera una pared sin salida.
+    async runEduFlight(cfg = {}) {
+        this.isWaitingForInput = false;
+        const SP = 'assets/minigames/cap3/sprites/';
+        const CAP = 'assets/minigames/cap3/';
+        const FLIGHT_FRAMES = [
+            'edu_fly_v2_0',
+            'edu_fly_v2_1',
+            'edu_fly_v2_2',
+            'edu_fly_v2_3',
+            'edu_fly_v2_4'
+        ];
+        const BOOST_FRAME = 'edu_fly_v2_5';
+        const PLAYER_FRAMES = [...FLIGHT_FRAMES, BOOST_FRAME];
+        const asset = (path) => `url('${this.cacheBustAsset(path)}')`;
+
+        await this.preloadImages([
+            ...PLAYER_FRAMES.map(name => SP + name + '.png'),
+            CAP + 'aire_fondo_v2.png',
+            SP + 'aire_foco_v2.png',
+            SP + 'aire_altavoz_v2.png',
+            SP + 'partitura_v2.png',
+            SP + 'aire_cable_v3.png'
+        ]);
+
+        const goal = Math.max(1, cfg.goal || 16);
+        const maxHits = Math.max(1, cfg.maxHits || 3);
+        const baseSpeed = Math.max(2, cfg.speed || 6);
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay edu-flight-minigame';
+            overlay.innerHTML = `
+                <div class="fly-hud">
+                    <div class="fly-hud-block fly-score">
+                        <small>PARTITURAS</small><strong>0 / ${goal}</strong>
+                    </div>
+                    <div class="fly-hud-block fly-combo">
+                        <small>CADENA</small><strong>x1</strong>
+                    </div>
+                    <div class="fly-energy" aria-label="Energía de impulso">
+                        <span>IMPULSO</span>
+                        <div class="fly-energy-track"><i></i></div>
+                        <kbd>ESPACIO</kbd>
+                    </div>
+                    <div class="fly-lives" aria-label="Resistencia"></div>
+                    <button class="ss-pause-btn" type="button" aria-label="Pausar">Ⅱ</button>
+                </div>
+                <div class="fly-stage">
+                    <div class="fly-backdrop" aria-hidden="true"></div>
+                    <div class="fly-haze" aria-hidden="true"></div>
+                    <div class="fly-speed-lines" aria-hidden="true"></div>
+                    <div class="fly-player" aria-label="Edu"></div>
+                    <div class="fly-player-hitbox is-ellipse" aria-hidden="true"><span>EDU</span></div>
+                    <div class="ss-progress-wrap"><div class="ss-progress-fill"></div></div>
+                    <div class="fly-callout" aria-live="polite"></div>
+                    <div class="ss-countdown active" aria-live="polite">3</div>
+                    <div class="ss-pause-panel" hidden>
+                        <strong>PAUSA</strong>
+                        <span>Ratón o W/S para volar · ESPACIO/clic para impulsar.</span>
+                        <button class="ss-resume-btn" type="button">CONTINUAR</button>
+                    </div>
+                </div>
+                <div class="minigame-instructions">
+                    <b>RECUPERA LAS PARTITURAS</b>
+                    <span>Ratón / W S: altura</span>
+                    <span>ESPACIO o clic: impulso</span>
+                    <small>P / ESC: pausa</small>
+                </div>
+            `;
+            document.getElementById('game-container').appendChild(overlay);
+
+            const stage = overlay.querySelector('.fly-stage');
+            const backdrop = overlay.querySelector('.fly-backdrop');
+            const playerEl = overlay.querySelector('.fly-player');
+            const playerDebugEl = overlay.querySelector('.fly-player-hitbox');
+            const scoreEl = overlay.querySelector('.fly-score strong');
+            const comboEl = overlay.querySelector('.fly-combo strong');
+            const energyEl = overlay.querySelector('.fly-energy-track i');
+            const energyWrap = overlay.querySelector('.fly-energy');
+            const livesEl = overlay.querySelector('.fly-lives');
+            const progressEl = overlay.querySelector('.ss-progress-fill');
+            const calloutEl = overlay.querySelector('.fly-callout');
+            const countdownEl = overlay.querySelector('.ss-countdown');
+            const pauseBtn = overlay.querySelector('.ss-pause-btn');
+            const pausePanel = overlay.querySelector('.ss-pause-panel');
+            const resumeBtn = overlay.querySelector('.ss-resume-btn');
+
+            backdrop.style.backgroundImage = asset(CAP + 'aire_fondo_v2.png');
+            playerEl.style.backgroundImage = asset(SP + PLAYER_FRAMES[0] + '.png');
+            playerDebugEl.hidden = !cfg.debugHitboxes;
+
+            const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+            const fieldW = () => stage.clientWidth || 1;
+            const fieldH = () => stage.clientHeight || 1;
+            const yMin = 0.10;
+            const yMax = 0.88;
+            const homeX = 0.115;
+            const dashX = 0.245;
+
+            let running = true;
+            let paused = false;
+            let started = false;
+            let last = performance.now();
+            let countdownTime = 0;
+            let countdownIndex = -1;
+            let spawnClock = 0;
+            let spawnNumber = 0;
+            let hazardsSincePhrase = 0;
+            let lastCableSide = Math.random() < 0.5 ? 'top' : 'bottom';
+            let objects = [];
+            let frameIndex = 0;
+            let frameClock = 0;
+            let playerX = homeX;
+            let playerY = 0.50;
+            let previousPlayerY = playerY;
+            let collisionPreviousPlayerX = playerX;
+            let collisionPreviousPlayerY = playerY;
+            let targetY = playerY;
+            let energy = 100;
+            let hits = 0;
+            let collected = 0;
+            let combo = 0;
+            let maxCombo = 0;
+            let nearMisses = 0;
+            let flightScore = 0;
+            let dashUntil = 0;
+            let dashCooldownUntil = 0;
+            let invulnerableUntil = performance.now() + (cfg.graceMs || 0);
+            let blinkUntil = invulnerableUntil;
+            let calloutUntil = 0;
+            let calloutPriority = 0;
+            let finaleAnnounced = false;
+            let raf = null;
+            let resultTimer = null;
+            let audioContext = null;
+
+            const beep = (frequency, duration, options = {}) => {
+                try {
+                    if (!audioContext) {
+                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+                    if (audioContext.state === 'suspended') audioContext.resume();
+                    const oscillator = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    const when = audioContext.currentTime + (options.delay || 0);
+                    oscillator.type = options.type || 'sine';
+                    oscillator.frequency.value = frequency;
+                    gain.gain.setValueAtTime(0.0001, when);
+                    gain.gain.exponentialRampToValueAtTime(options.volume || 0.06, when + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
+                    oscillator.connect(gain).connect(audioContext.destination);
+                    oscillator.start(when);
+                    oscillator.stop(when + duration + 0.02);
+                } catch (error) {}
+            };
+
+            const showCallout = (
+                text,
+                tone = 'good',
+                duration = 720,
+                priority = 0
+            ) => {
+                const now = performance.now();
+                if (now < calloutUntil && priority < calloutPriority) return;
+                calloutEl.textContent = text;
+                calloutEl.dataset.tone = tone;
+                calloutEl.classList.remove('is-visible');
+                void calloutEl.offsetWidth;
+                calloutEl.classList.add('is-visible');
+                calloutUntil = now + duration;
+                calloutPriority = priority;
+            };
+
+            const playerRect = (y = playerY, x = playerX) => {
+                const width = fieldH() * 0.245 * 0.78;
+                const height = fieldH() * 0.245;
+                return {
+                    left: x * fieldW() + width * 0.30,
+                    right: x * fieldW() + width * 1.10,
+                    top: y * fieldH() - height * 0.12,
+                    bottom: y * fieldH() + height * 0.38
+                };
+            };
+
+            const rectsOverlap = (a, b) =>
+                a.left < b.right && a.right > b.left &&
+                a.top < b.bottom && a.bottom > b.top;
+
+            const playerShapeAt = (y = playerY, x = playerX) => {
+                const rect = playerRect(y, x);
+                return {
+                    kind: 'ellipse',
+                    cx: (rect.left + rect.right) / 2,
+                    cy: (rect.top + rect.bottom) / 2,
+                    rx: (rect.right - rect.left) / 2,
+                    ry: (rect.bottom - rect.top) / 2
+                };
+            };
+
+            const objectRect = (object, previous = false) => {
+                const x = (previous ? object.previousX : object.x) * fieldW();
+                const y = (previous ? object.previousY : object.y) * fieldH();
+                const width = object.el.offsetWidth;
+                const height = object.el.offsetHeight;
+                const sx = object.hitScaleX != null ? object.hitScaleX : 0.58;
+                const sy = object.hitScaleY != null ? object.hitScaleY : 0.58;
+                return {
+                    left: x - width * sx / 2,
+                    right: x + width * sx / 2,
+                    top: y - height * sy / 2,
+                    bottom: y + height * sy / 2
+                };
+            };
+
+            const objectShapeAt = (object, x, y) => {
+                const width = object.el.offsetWidth *
+                    (object.hitScaleX != null ? object.hitScaleX : 0.58);
+                const height = object.el.offsetHeight *
+                    (object.hitScaleY != null ? object.hitScaleY : 0.58);
+                const cx = x * fieldW();
+                const cy = y * fieldH();
+                if (object.type === 'cable') {
+                    return {
+                        kind: 'rect',
+                        left: cx - width / 2,
+                        right: cx + width / 2,
+                        top: cy - height / 2,
+                        bottom: cy + height / 2
+                    };
+                }
+                return {
+                    kind: 'ellipse',
+                    cx,
+                    cy,
+                    rx: width / 2,
+                    ry: height / 2
+                };
+            };
+
+            const ellipseRectOverlap = (ellipse, rect, forgiveness = 1) => {
+                const closestX = clamp(ellipse.cx, rect.left, rect.right);
+                const closestY = clamp(ellipse.cy, rect.top, rect.bottom);
+                const dx = (ellipse.cx - closestX) /
+                    Math.max(1, ellipse.rx * forgiveness);
+                const dy = (ellipse.cy - closestY) /
+                    Math.max(1, ellipse.ry * forgiveness);
+                return dx * dx + dy * dy < 1;
+            };
+
+            const shapesOverlap = (a, b, forgiveness = 1) => {
+                if (a.kind === 'rect' && b.kind === 'rect') return rectsOverlap(a, b);
+                if (a.kind === 'ellipse' && b.kind === 'rect') {
+                    return ellipseRectOverlap(a, b, forgiveness);
+                }
+                if (a.kind === 'rect' && b.kind === 'ellipse') {
+                    return ellipseRectOverlap(b, a, forgiveness);
+                }
+                const dx = (a.cx - b.cx) /
+                    Math.max(1, (a.rx + b.rx) * forgiveness);
+                const dy = (a.cy - b.cy) /
+                    Math.max(1, (a.ry + b.ry) * forgiveness);
+                return dx * dx + dy * dy < 1;
+            };
+
+            // Muestrea la trayectoria real entre frames. La caja barrida anterior
+            // rellenaba también las esquinas de movimientos diagonales y podía
+            // registrar impactos donde el foco o el altavoz nunca habían estado.
+            const sweptObjectCollision = (object) => {
+                const objectTravelX = (object.x - object.previousX) * fieldW();
+                const objectTravelY = (object.y - object.previousY) * fieldH();
+                const playerTravelX =
+                    (playerX - collisionPreviousPlayerX) * fieldW();
+                const playerTravelY =
+                    (playerY - collisionPreviousPlayerY) * fieldH();
+                const relativeTravel = Math.hypot(
+                    objectTravelX - playerTravelX,
+                    objectTravelY - playerTravelY
+                );
+                const currentPlayer = playerShapeAt();
+                const stepSize = Math.max(
+                    8,
+                    Math.min(currentPlayer.rx, currentPlayer.ry) * 0.45
+                );
+                const steps = clamp(Math.ceil(relativeTravel / stepSize), 1, 8);
+                const forgiveness = object.type === 'score' ? 1.06 :
+                    object.type === 'gust' ? 0.96 : 0.80;
+                for (let step = 0; step <= steps; step++) {
+                    const t = step / steps;
+                    const objectX =
+                        object.previousX + (object.x - object.previousX) * t;
+                    const objectY =
+                        object.previousY + (object.y - object.previousY) * t;
+                    const sampledPlayerX = collisionPreviousPlayerX +
+                        (playerX - collisionPreviousPlayerX) * t;
+                    const sampledPlayerY = collisionPreviousPlayerY +
+                        (playerY - collisionPreviousPlayerY) * t;
+                    const sampledPlayer =
+                        playerShapeAt(sampledPlayerY, sampledPlayerX);
+                    const sampledObject =
+                        objectShapeAt(object, objectX, objectY);
+                    if (shapesOverlap(
+                        sampledPlayer,
+                        sampledObject,
+                        forgiveness
+                    )) {
+                        return {
+                            t,
+                            player: sampledPlayer,
+                            object: sampledObject
+                        };
+                    }
+                }
+                return null;
+            };
+
+            const updatePlayerPosition = (now) => {
+                const dashing = now < dashUntil;
+                const wantedX = dashing ? dashX : homeX;
+                playerX += (wantedX - playerX) * 0.24;
+                const verticalDelta = playerY - previousPlayerY;
+                const bank = clamp(verticalDelta * 620, -13, 13);
+                playerEl.style.left = (playerX * 100) + '%';
+                playerEl.style.top = (playerY * 100) + '%';
+                playerEl.style.setProperty('--fly-bank', bank.toFixed(2) + 'deg');
+                playerEl.classList.toggle('is-dashing', dashing);
+                playerDebugEl.style.left = (playerRect().left / fieldW() * 100) + '%';
+                playerDebugEl.style.top = (playerRect().top / fieldH() * 100) + '%';
+                playerDebugEl.style.width =
+                    ((playerRect().right - playerRect().left) / fieldW() * 100) + '%';
+                playerDebugEl.style.height =
+                    ((playerRect().bottom - playerRect().top) / fieldH() * 100) + '%';
+                previousPlayerY = playerY;
+            };
+
+            const updateHud = () => {
+                const multiplier = Math.min(5, 1 + Math.floor(combo / 4));
+                scoreEl.textContent = `${collected} / ${goal}`;
+                comboEl.textContent = `x${multiplier}`;
+                comboEl.parentElement.classList.toggle('is-hot', multiplier >= 3);
+                energyEl.style.width = clamp(energy, 0, 100) + '%';
+                energyWrap.classList.toggle('is-ready', energy >= (cfg.dashCost || 42));
+                progressEl.style.width = clamp(collected / goal * 100, 0, 100) + '%';
+                livesEl.innerHTML = Array.from({ length: maxHits }, (_, index) =>
+                    `<span class="ss-heart${index < hits ? ' ss-lost' : ''}">❤</span>`
+                ).join('');
+            };
+
+            const addParticleBurst = (x, y, color = '#4fd0ff', amount = 8) => {
+                for (let index = 0; index < amount; index++) {
+                    const particle = document.createElement('i');
+                    particle.className = 'fly-particle';
+                    particle.style.left = (x * 100) + '%';
+                    particle.style.top = (y * 100) + '%';
+                    particle.style.color = color;
+                    particle.style.setProperty('--px', `${(Math.random() - 0.5) * 110}px`);
+                    particle.style.setProperty('--py', `${(Math.random() - 0.5) * 90}px`);
+                    stage.appendChild(particle);
+                    setTimeout(() => particle.remove(), 620);
+                }
+            };
+
+            const removeObject = (object) => {
+                object.taken = true;
+                if (object.warning) object.warning.remove();
+                object.el.remove();
+            };
+
+            const shapeBounds = (shape) => shape.kind === 'rect' ? shape : ({
+                left: shape.cx - shape.rx,
+                right: shape.cx + shape.rx,
+                top: shape.cy - shape.ry,
+                bottom: shape.cy + shape.ry
+            });
+
+            const visibleShapeFraction = (shape) => {
+                const bounds = shapeBounds(shape);
+                const width = Math.max(1, bounds.right - bounds.left);
+                const height = Math.max(1, bounds.bottom - bounds.top);
+                const visibleWidth = Math.max(0,
+                    Math.min(bounds.right, fieldW()) - Math.max(bounds.left, 0));
+                const visibleHeight = Math.max(0,
+                    Math.min(bounds.bottom, fieldH()) - Math.max(bounds.top, 0));
+                return visibleWidth * visibleHeight / (width * height);
+            };
+
+            const showImpactDebug = (object, collision) => {
+                if (!cfg.debugHitboxes) return;
+                const rect = shapeBounds(
+                    collision?.object || objectShapeAt(object, object.x, object.y)
+                );
+                const marker = document.createElement('div');
+                marker.className = 'fly-impact-debug';
+                marker.classList.toggle('is-ellipse', object.type !== 'cable');
+                marker.textContent = object.type.toUpperCase();
+                marker.style.left = (rect.left / fieldW() * 100) + '%';
+                marker.style.top = (rect.top / fieldH() * 100) + '%';
+                marker.style.width = ((rect.right - rect.left) / fieldW() * 100) + '%';
+                marker.style.height = ((rect.bottom - rect.top) / fieldH() * 100) + '%';
+                stage.appendChild(marker);
+                setTimeout(() => marker.remove(), 8000);
+            };
+
+            const keepImpactObjectVisible = (object, collision) => {
+                object.taken = true;
+                if (object.warning) {
+                    object.warning.remove();
+                    object.warning = null;
+                }
+                const bounds = shapeBounds(
+                    collision?.object || objectShapeAt(object, object.x, object.y)
+                );
+                object.el.style.left =
+                    (((bounds.left + bounds.right) / 2) / fieldW() * 100) + '%';
+                object.el.style.top =
+                    (((bounds.top + bounds.bottom) / 2) / fieldH() * 100) + '%';
+                object.el.classList.add('is-impacting');
+                setTimeout(() => object.el.classList.add('is-impact-fading'), 160);
+                setTimeout(() => object.el.remove(), 650);
+            };
+
+            const makeDebugBox = (object, label) => {
+                if (!cfg.debugHitboxes) return;
+                const debug = document.createElement('div');
+                debug.className = 'fly-object-hitbox';
+                debug.classList.toggle('is-ellipse', object.type !== 'cable');
+                debug.innerHTML = `<span>${label}</span>`;
+                const sx = object.hitScaleX != null ? object.hitScaleX : 0.58;
+                const sy = object.hitScaleY != null ? object.hitScaleY : 0.58;
+                debug.style.left = ((1 - sx) * 50) + '%';
+                debug.style.top = ((1 - sy) * 50) + '%';
+                debug.style.width = (sx * 100) + '%';
+                debug.style.height = (sy * 100) + '%';
+                object.el.appendChild(debug);
+            };
+
+            const makeObject = (spec) => {
+                const el = document.createElement('div');
+                el.className = `fly-object fly-${spec.type}`;
+                if (spec.image) el.style.backgroundImage = asset(spec.image);
+                el.style.width = (spec.width * 100) + '%';
+                el.style.height = (spec.height * 100) + '%';
+                stage.appendChild(el);
+                const object = {
+                    el,
+                    type: spec.type,
+                    x: spec.x,
+                    y: spec.y,
+                    previousX: spec.x,
+                    previousY: spec.y,
+                    vx: spec.vx || 1,
+                    vy: spec.vy || 0,
+                    baseY: spec.y,
+                    age: 0,
+                    taken: false,
+                    passed: false,
+                    enteredViewport: false,
+                    hitScaleX: spec.hitScaleX,
+                    hitScaleY: spec.hitScaleY,
+                    warning: spec.warning || null,
+                    push: spec.push || 0
+                };
+                el.style.left = (object.x * 100) + '%';
+                el.style.top = (object.y * 100) + '%';
+                makeDebugBox(object,
+                    spec.type === 'score' ? 'PARTITURA' :
+                    spec.type === 'gust' ? 'RÁFAGA' : 'PELIGRO');
+                objects.push(object);
+                return object;
+            };
+
+            const createCable = (side, progress) => {
+                const min = cfg.hangMin != null ? cfg.hangMin : 0.25;
+                const max = cfg.hangMax != null ? cfg.hangMax : 0.58;
+                const requested = min + Math.random() * Math.max(0, max - min);
+                const corridor = cfg.corridorMin != null ? cfg.corridorMin : 0.20;
+                const length = Math.min(requested, 1 - corridor - 0.12);
+                const el = document.createElement('div');
+                el.className = `fly-object fly-cable fly-cable-${side}`;
+                const cableAspect = 222 / 1477;
+                const width = clamp(
+                    length * fieldH() / fieldW() * cableAspect * 1.45,
+                    0.032,
+                    0.060
+                );
+                el.style.width = (width * 100) + '%';
+                el.style.height = (length * 100) + '%';
+                const cableSprite = document.createElement('img');
+                cableSprite.className = 'fly-cable-sprite';
+                cableSprite.alt = '';
+                cableSprite.draggable = false;
+                cableSprite.setAttribute('aria-hidden', 'true');
+                el.appendChild(cableSprite);
+                stage.appendChild(el);
+                const y = side === 'top' ? length / 2 : 1 - length / 2;
+                const object = {
+                    el,
+                    type: 'cable',
+                    x: 1.08,
+                    y,
+                    previousX: 1.08,
+                    previousY: y,
+                    vx: 0.98 + progress * 0.08,
+                    vy: 0,
+                    baseY: y,
+                    age: 0,
+                    taken: false,
+                    passed: false,
+                    enteredViewport: false,
+                    visualReady: false,
+                    hitScaleX: 0.62,
+                    hitScaleY: 0.92,
+                    warning: null,
+                    push: 0
+                };
+                el.style.left = '108%';
+                el.style.top = (y * 100) + '%';
+                makeDebugBox(object, 'CABLE');
+                objects.push(object);
+                cableSprite.onload = () => {
+                    if (object.taken) return;
+                    object.visualReady = true;
+                    el.classList.add('is-visual-ready');
+                };
+                cableSprite.onerror = () => {
+                    if (!object.taken) removeObject(object);
+                };
+                cableSprite.src = this.cacheBustAsset(SP + 'aire_cable_v3.png');
+                setTimeout(() => {
+                    if (!object.taken && !object.visualReady) removeObject(object);
+                }, 1600);
+            };
+
+            const createSpotlight = (progress) => {
+                const targetY = 0.20 + Math.random() * 0.52;
+                const warning = document.createElement('div');
+                warning.className = 'fly-warning fly-warning-focus';
+                warning.style.top = (targetY * 100) + '%';
+                warning.textContent = 'FOCO';
+                stage.appendChild(warning);
+                makeObject({
+                    type: 'spotlight',
+                    image: SP + 'aire_foco_v2.png',
+                    width: 0.085,
+                    height: 0.20,
+                    x: 1.10,
+                    y: -0.08,
+                    vx: 0.88 + progress * 0.12,
+                    vy: (cfg.fallerVy != null ? cfg.fallerVy : 0.28) + 0.08 + progress * 0.10,
+                    hitScaleX: 0.52,
+                    hitScaleY: 0.64,
+                    warning
+                });
+            };
+
+            const createSpeaker = (progress) => {
+                const y = 0.18 + Math.random() * 0.64;
+                const warning = document.createElement('div');
+                warning.className = 'fly-warning fly-warning-speaker';
+                warning.style.top = (y * 100) + '%';
+                warning.textContent = 'PULSO';
+                stage.appendChild(warning);
+                const speaker = makeObject({
+                    type: 'speaker',
+                    image: SP + 'aire_altavoz_v2.png',
+                    width: 0.125,
+                    height: 0.19,
+                    x: 1.12,
+                    y,
+                    vx: 1.08 + progress * 0.14,
+                    hitScaleX: 0.63,
+                    hitScaleY: 0.64,
+                    warning
+                });
+                const ring = document.createElement('i');
+                ring.className = 'fly-sonic-ring';
+                speaker.el.appendChild(ring);
+            };
+
+            const createGust = () => {
+                const y = 0.24 + Math.random() * 0.52;
+                const push = y < 0.50 ? 0.18 : -0.18;
+                const gust = makeObject({
+                    type: 'gust',
+                    width: 0.16,
+                    height: 0.28,
+                    x: 1.12,
+                    y,
+                    vx: 0.76,
+                    hitScaleX: 0.78,
+                    hitScaleY: 0.82,
+                    push
+                });
+                gust.el.dataset.direction = push > 0 ? 'down' : 'up';
+                gust.el.innerHTML += '<i></i><i></i><i></i>';
+            };
+
+            const createPhrase = (progress) => {
+                const min = Math.max(1, cfg.phraseMin || 1);
+                const max = Math.max(min, cfg.phraseMax || 2);
+                const remaining = goal - collected;
+                const count = Math.min(remaining,
+                    min + Math.floor(Math.random() * (max - min + 1)));
+                const center = 0.20 + Math.random() * 0.60;
+                const arc = Math.random() < 0.5 ? -1 : 1;
+                for (let index = 0; index < count; index++) {
+                    const offset = count === 1 ? 0 :
+                        (index - (count - 1) / 2) * 0.12 * arc;
+                    makeObject({
+                        type: 'score',
+                        image: SP + 'partitura_v2.png',
+                        width: 0.082,
+                        height: 0.125,
+                        x: 1.08 + index * 0.12,
+                        y: clamp(center + offset, yMin + 0.03, yMax - 0.03),
+                        vx: 0.94 + progress * 0.08,
+                        hitScaleX: 0.76,
+                        hitScaleY: 0.72
+                    });
+                }
+                hazardsSincePhrase = 0;
+            };
+
+            const spawnPattern = () => {
+                const progress = clamp(collected / goal, 0, 1);
+                spawnNumber++;
+                const collectEvery = Math.max(1, cfg.collectEvery || 3);
+                const needsPhrase = hazardsSincePhrase >= collectEvery ||
+                    Math.random() < (cfg.collectChance != null ? cfg.collectChance : 0.34);
+                if (needsPhrase) {
+                    createPhrase(progress);
+                    return;
+                }
+
+                hazardsSincePhrase++;
+                // Se rebaja el peso del lado recién usado para que los cables
+                // alternen con naturalidad sin convertirlo en un patrón fijo.
+                const hang = Math.max(0, cfg.hangChance || 0) *
+                    (lastCableSide === 'top' ? 0.55 : 1.15);
+                const rise = Math.max(0, cfg.riserChance || 0) *
+                    (lastCableSide === 'bottom' ? 0.55 : 1.15);
+                const focus = Math.max(0, cfg.fallerChance || 0);
+                const speaker = Math.max(0, cfg.speakerChance || 0);
+                const gust = Math.max(0, cfg.gustChance || 0);
+                const total = Math.max(0.001, hang + rise + focus + speaker + gust);
+                const roll = Math.random() * total;
+                if (roll < hang) {
+                    lastCableSide = 'top';
+                    createCable('top', progress);
+                } else if (roll < hang + rise) {
+                    lastCableSide = 'bottom';
+                    createCable('bottom', progress);
+                } else if (roll < hang + rise + focus) {
+                    createSpotlight(progress);
+                } else if (roll < hang + rise + focus + speaker) {
+                    createSpeaker(progress);
+                } else {
+                    createGust();
+                }
+
+                // En la recta final se intercalan frases más a menudo, pero el
+                // peligro nunca se duplica en el mismo instante.
+                if (progress > 0.72 && spawnNumber % 3 === 0) {
+                    hazardsSincePhrase = Math.max(hazardsSincePhrase, collectEvery);
+                }
+            };
+
+            const collectScore = (object) => {
+                collected++;
+                combo++;
+                maxCombo = Math.max(maxCombo, combo);
+                const multiplier = Math.min(5, 1 + Math.floor(combo / 4));
+                flightScore += 100 * multiplier;
+                energy = Math.min(100, energy + 13);
+                addParticleBurst(object.x, object.y, '#ffd166', 10);
+                removeObject(object);
+                beep(880 + multiplier * 70, 0.08, { type: 'triangle', volume: 0.065 });
+                beep(1320 + multiplier * 90, 0.08,
+                    { type: 'triangle', volume: 0.045, delay: 0.045 });
+                showCallout(multiplier >= 3 ? `¡CADENA x${multiplier}!` : 'PARTITURA', 'good');
+                updateHud();
+                if (collected >= goal) finish(true);
+            };
+
+            const destroyWithDash = (object) => {
+                flightScore += object.type === 'speaker' ? 220 : 120;
+                energy = Math.min(100, energy + 5);
+                addParticleBurst(object.x, object.y,
+                    object.type === 'speaker' ? '#ff4fa3' : '#4fd0ff', 12);
+                showCallout(object.type === 'speaker' ? '¡CONTRAPULSO!' : '¡ATRAVESADO!', 'dash');
+                beep(220, 0.11, { type: 'square', volume: 0.055 });
+                beep(740, 0.10, { type: 'sawtooth', volume: 0.045, delay: 0.03 });
+                removeObject(object);
+            };
+
+            const hitPlayer = (object, collision) => {
+                hits++;
+                combo = 0;
+                energy = Math.max(0, energy - 24);
+                invulnerableUntil = performance.now() + (cfg.hitGraceMs || 900);
+                blinkUntil = invulnerableUntil;
+                playerEl.classList.remove('is-hurt');
+                void playerEl.offsetWidth;
+                playerEl.classList.add('is-hurt');
+                stage.classList.remove('is-hit');
+                void stage.offsetWidth;
+                stage.classList.add('is-hit');
+                showImpactDebug(object, collision);
+                addParticleBurst(playerX + 0.05, playerY, '#ff466b', 12);
+                const debugNames = {
+                    cable: 'CABLE',
+                    spotlight: 'FOCO',
+                    speaker: 'ALTAVOZ'
+                };
+                showCallout(
+                    `¡IMPACTO: ${debugNames[object.type] || object.type.toUpperCase()}!`,
+                    'bad',
+                    1100,
+                    3
+                );
+                beep(145, 0.19, { type: 'sawtooth', volume: 0.085 });
+                keepImpactObjectVisible(object, collision);
+                updateHud();
+                if (hits >= maxHits) finish(false);
+            };
+
+            const nearMiss = (object) => {
+                if (object.passed || object.type === 'score' || object.type === 'gust') return;
+                const rect = objectRect(object);
+                const player = playerRect();
+                const verticalGap = Math.max(0,
+                    Math.max(rect.top - player.bottom, player.top - rect.bottom));
+                if (verticalGap <= fieldH() * 0.055) {
+                    object.passed = true;
+                    nearMisses++;
+                    combo++;
+                    maxCombo = Math.max(maxCombo, combo);
+                    flightScore += 80;
+                    energy = Math.min(100, energy + 9);
+                    showCallout('¡CASI! +IMPULSO', 'near');
+                    beep(620, 0.06, { type: 'triangle', volume: 0.035 });
+                    updateHud();
+                }
+            };
+
+            const tryDash = () => {
+                const now = performance.now();
+                const cost = cfg.dashCost || 42;
+                if (!started || paused || now < dashCooldownUntil || now < dashUntil) return;
+                if (energy < cost) {
+                    showCallout('SIN ENERGÍA', 'bad', 480);
+                    energyWrap.classList.remove('is-denied');
+                    void energyWrap.offsetWidth;
+                    energyWrap.classList.add('is-denied');
+                    return;
+                }
+                energy -= cost;
+                dashUntil = now + (cfg.dashDuration || 0.46) * 1000;
+                dashCooldownUntil = dashUntil + 180;
+                invulnerableUntil = Math.max(invulnerableUntil, dashUntil);
+                frameIndex = 0;
+                frameClock = 0;
+                playerEl.style.backgroundImage = asset(SP + BOOST_FRAME + '.png');
+                playerEl.classList.remove('dash-pop');
+                void playerEl.offsetWidth;
+                playerEl.classList.add('dash-pop');
+                addParticleBurst(playerX + 0.02, playerY, '#4fd0ff', 10);
+                showCallout('¡IMPULSO!', 'dash', 420);
+                beep(360, 0.12, { type: 'sawtooth', volume: 0.055 });
+                beep(760, 0.10, { type: 'triangle', volume: 0.045, delay: 0.04 });
+                updateHud();
+            };
+
+            const setPaused = (value) => {
+                paused = !!value;
+                pausePanel.hidden = !paused;
+                pauseBtn.textContent = paused ? '▶' : 'Ⅱ';
+                pauseBtn.setAttribute('aria-label', paused ? 'Continuar' : 'Pausar');
+                if (!paused) last = performance.now();
+            };
+
+            const onPointerMove = (event) => {
+                if (paused) return;
+                const rect = stage.getBoundingClientRect();
+                if (!rect.height) return;
+                targetY = clamp((event.clientY - rect.top) / rect.height, yMin, yMax);
+            };
+            const onPointerDown = (event) => {
+                if (event.target.closest('.ss-pause-btn, .ss-resume-btn')) return;
+                event.preventDefault();
+                onPointerMove(event);
+                tryDash();
+            };
+            const keys = {};
+            const onKey = (event) => {
+                const key = (event.key || '').toLowerCase();
+                if ((key === 'p' || key === 'escape') &&
+                    event.type === 'keydown' && !event.repeat) {
+                    event.preventDefault();
+                    setPaused(!paused);
+                    return;
+                }
+                if (key === ' ' && event.type === 'keydown' && !event.repeat) {
+                    event.preventDefault();
+                    tryDash();
+                    return;
+                }
+                if (['arrowup', 'w', 'arrowdown', 's'].includes(key)) {
+                    event.preventDefault();
+                    keys[key] = event.type === 'keydown';
+                }
+            };
+            const swallow = (event) => {
+                if (!event.target.closest('.ss-pause-btn, .ss-resume-btn')) {
+                    event.stopPropagation();
+                }
+            };
+
+            window.addEventListener('pointermove', onPointerMove);
+            stage.addEventListener('pointerdown', onPointerDown);
+            document.addEventListener('keydown', onKey);
+            document.addEventListener('keyup', onKey);
+            overlay.addEventListener('click', swallow, true);
+            pauseBtn.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                setPaused(!paused);
+            });
+            resumeBtn.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                setPaused(false);
+            });
+
+            const cleanup = () => {
+                window.removeEventListener('pointermove', onPointerMove);
+                stage.removeEventListener('pointerdown', onPointerDown);
+                document.removeEventListener('keydown', onKey);
+                document.removeEventListener('keyup', onKey);
+                overlay.removeEventListener('click', swallow, true);
+                if (raf) cancelAnimationFrame(raf);
+                if (resultTimer) clearTimeout(resultTimer);
+            };
+
+            const finish = (won) => {
+                if (!running) return;
+                running = false;
+                cleanup();
+                const rank = won
+                    ? (hits === 0 && maxCombo >= 8 ? 'S' :
+                        hits <= 1 ? 'A' : hits < maxHits - 1 ? 'B' : 'C')
+                    : '—';
+                this.lastMinigameResult = {
+                    hits,
+                    maxHits,
+                    collected,
+                    goal,
+                    comboMax: maxCombo,
+                    nearMisses,
+                    score: flightScore,
+                    rank
+                };
+                const result = document.createElement('div');
+                result.className = 'minigame-result fly-result';
+                result.innerHTML = won
+                    ? `<span>¡PARTITURAS COMPLETAS!</span><strong>RANGO ${rank}</strong>` +
+                      `<small>${flightScore.toLocaleString('es-ES')} pts · cadena ${maxCombo}</small>`
+                    : `<span>¡EDU HA CAÍDO!</span><strong>INTÉNTALO DE NUEVO</strong>`;
+                overlay.appendChild(result);
+                resultTimer = setTimeout(() => {
+                    overlay.remove();
+                    resolve(won);
+                }, won ? 1700 : 1050);
+            };
+
+            const updateCountdown = (dt) => {
+                countdownTime += dt;
+                const steps = ['3', '2', '1', '¡VUELA!'];
+                const index = Math.min(steps.length - 1, Math.floor(countdownTime / 0.48));
+                if (index !== countdownIndex) {
+                    countdownIndex = index;
+                    countdownEl.textContent = steps[index];
+                    countdownEl.classList.remove('ss-count-pop');
+                    void countdownEl.offsetWidth;
+                    countdownEl.classList.add('ss-count-pop');
+                    beep(index === steps.length - 1 ? 980 : 520, 0.08,
+                        { type: 'square', volume: 0.04 });
+                }
+                if (countdownTime >= steps.length * 0.48) {
+                    started = true;
+                    countdownEl.classList.remove('active');
+                    countdownEl.textContent = '';
+                    last = performance.now();
+                }
+            };
+
+            const tick = () => {
+                if (!running) return;
+                const now = performance.now();
+                const dt = Math.min(0.05, (now - last) / 1000);
+                last = now;
+                if (paused) return;
+
+                collisionPreviousPlayerX = playerX;
+                collisionPreviousPlayerY = playerY;
+                if (!started) {
+                    updateCountdown(dt);
+                    updatePlayerPosition(now);
+                    return;
+                }
+
+                if (keys.arrowup || keys.w) targetY -= dt * 0.95;
+                if (keys.arrowdown || keys.s) targetY += dt * 0.95;
+                targetY = clamp(targetY, yMin, yMax);
+                playerY += (targetY - playerY) * Math.min(1, dt * 10.5);
+                updatePlayerPosition(now);
+
+                frameClock += dt;
+                if (frameClock >= 0.10 && now >= dashUntil) {
+                    frameClock = 0;
+                    frameIndex = (frameIndex + 1) % FLIGHT_FRAMES.length;
+                    playerEl.style.backgroundImage =
+                        asset(SP + FLIGHT_FRAMES[frameIndex] + '.png');
+                }
+
+                energy = Math.min(100, energy + (cfg.energyRegen || 10) * dt);
+                const progress = clamp(collected / goal, 0, 1);
+                const ramp = 1 + progress * (cfg.difficultyRamp || 0.24);
+                const velocity = (0.30 + baseSpeed * 0.035) * ramp;
+                const spawnDelay = Math.max(330,
+                    (cfg.spawnMs || 680) * (1 - progress * 0.20));
+
+                spawnClock += dt * 1000;
+                if (spawnClock >= spawnDelay) {
+                    spawnClock -= spawnDelay;
+                    spawnPattern();
+                }
+
+                if (progress >= 0.72 && !finaleAnnounced) {
+                    finaleAnnounced = true;
+                    stage.classList.add('is-finale');
+                    showCallout('¡ÚLTIMO COMPÁS!', 'dash', 1100);
+                    beep(740, 0.12, { type: 'square', volume: 0.045 });
+                    beep(1040, 0.14, { type: 'triangle', volume: 0.045, delay: 0.08 });
+                }
+
+                const dashing = now < dashUntil;
+                for (const object of objects) {
+                    if (object.taken) continue;
+                    object.previousX = object.x;
+                    object.previousY = object.y;
+                    object.age += dt;
+                    object.x -= velocity * object.vx * dt;
+                    if (object.type === 'spotlight') {
+                        object.y += object.vy * dt;
+                    } else if (object.type === 'speaker') {
+                        object.y = object.baseY + Math.sin(object.age * 5.4) * 0.026;
+                    }
+                    object.el.style.left = (object.x * 100) + '%';
+                    object.el.style.top = (object.y * 100) + '%';
+                    if (object.warning && object.x <= 0.99) {
+                        object.warning.remove();
+                        object.warning = null;
+                    }
+
+                    const visibleFraction = visibleShapeFraction(
+                        objectShapeAt(object, object.x, object.y)
+                    );
+                    if (object.visualReady !== false &&
+                        visibleFraction >= 0.18) object.enteredViewport = true;
+                    const collision = object.visualReady !== false &&
+                        object.enteredViewport &&
+                        visibleFraction >= 0.10
+                        ? sweptObjectCollision(object)
+                        : null;
+                    const collided = !!collision;
+                    if (object.type === 'score' && collided) {
+                        collectScore(object);
+                        if (!running) return;
+                        continue;
+                    }
+                    if (object.type === 'gust' && collided && !object.passed) {
+                        object.passed = true;
+                        targetY = clamp(targetY + object.push, yMin, yMax);
+                        showCallout(object.push > 0 ? 'RÁFAGA ↓' : 'RÁFAGA ↑', 'near');
+                        beep(300, 0.10, { type: 'sine', volume: 0.03 });
+                        continue;
+                    }
+                    if (object.type !== 'score' && object.type !== 'gust' && collided) {
+                        if (dashing) {
+                            destroyWithDash(object);
+                        } else if (now >= invulnerableUntil) {
+                            hitPlayer(object, collision);
+                            if (!running) return;
+                        }
+                        continue;
+                    }
+
+                    if (!object.passed && object.x < playerX - 0.02) nearMiss(object);
+                    if (object.y > 1.22 || object.x < -0.22) removeObject(object);
+                }
+
+                objects = objects.filter(object => !object.taken);
+                playerEl.style.opacity =
+                    (now < blinkUntil && Math.floor(now / 105) % 2 === 0) ? '0.30' : '1';
+                if (calloutUntil && now >= calloutUntil) {
+                    calloutEl.classList.remove('is-visible');
+                    calloutUntil = 0;
+                    calloutPriority = 0;
+                }
+                updateHud();
+            };
+
+            const loop = () => {
+                if (!running) return;
+                tick();
+                if (running) raf = requestAnimationFrame(loop);
+            };
+
+            updateHud();
+            updatePlayerPosition(performance.now());
+            raf = requestAnimationFrame(loop);
+        });
     }
 
     // Motor común de los side-scrollers. Devuelve Promise<boolean> (ganado).
