@@ -399,11 +399,27 @@ class VisualNovelEngine {
             }
         }
 
-        // Despachar según el tipo de minijuego solicitado. Va envuelto porque
-        // la pantalla de reintento se puede abortar desde fuera (ir a otra
-        // escena): entonces rechaza con `minijuegoCancelado` y aquí se deshace
+        // Despachar según el tipo de minijuego solicitado. Va envuelto porque el
+        // minijuego se puede abortar desde fuera (los botones de arriba: ir a
+        // otra escena, retroceder o salir al menú), igual que su pantalla de
+        // reintento: entonces rechaza con `minijuegoCancelado` y aquí se deshace
         // la cadena entera del minijuego sin ruido.
+        //
+        // OJO con lo que hace de verdad esta carrera: solo DESATASCA el await.
+        // Lo que mata al minijuego es que el catch borre su overlay, porque sus
+        // controles cuelgan de ahí; los bucles de animación comprueban además
+        // que su overlay siga en el documento para pararse solos.
+        const cancelacion = new Promise((_, reject) => {
+            this._abortarMinijuego = () => {
+                this._abortarMinijuego = null;
+                const e = new Error('minijuego-cancelado');
+                e.minijuegoCancelado = true;
+                reject(e);
+            };
+        });
+
         try {
+        await Promise.race([cancelacion, (async () => {
         switch (action.game) {
             case 'ketchup':
                 await this.playKetchupMinigame(action);
@@ -447,14 +463,31 @@ class VisualNovelEngine {
             default:
                 console.warn(`Minijuego desconocido: ${action.game}`);
         }
+        })()]);
         } catch (e) {
             if (!e || !e.minijuegoCancelado) throw e;
-            // Se salió del minijuego desde el menú de escenas: limpiar los
+            // Se salió del minijuego desde los botones de arriba: limpiar los
             // restos que pudieran quedar y seguir como si nada.
             document.querySelectorAll(
                 '.minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame'
             ).forEach(o => o.remove());
+            // La música y los efectos del minijuego no se van con el overlay.
+            // Quien nos ha sacado (otra escena, retroceder, menú) repinta luego
+            // su propio ambiente sonoro.
+            this.stopAllSounds();
+        } finally {
+            this._abortarMinijuego = null;
         }
+    }
+
+    // ¿Hay un minijuego en marcha que se pueda abortar? Lo usan los botones de
+    // arriba, que ahora se ven también durante los minijuegos.
+    hayMinijuegoAbierto() {
+        return typeof this._abortarMinijuego === 'function';
+    }
+
+    abortarMinijuego() {
+        if (this._abortarMinijuego) this._abortarMinijuego();
     }
 
     // Créditos finales del compi (credits-minigame.js). Solo en el final bueno.
@@ -688,7 +721,9 @@ class VisualNovelEngine {
             const startTime = performance.now();
 
             const loop = (time) => {
-                if (!running) return;
+                // Si nos han sacado del minijuego desde los botones de arriba,
+                // su overlay ya no está en el documento: parar el bucle.
+                if (!running || !overlay.isConnected) { running = false; return; }
                 // Límite de tiempo opcional (nuestro): duration 0 = sin límite
                 if (duration > 0 && (time - startTime) >= duration) {
                     return cleanup(score >= goal);
@@ -1085,7 +1120,9 @@ class VisualNovelEngine {
             };
 
             const loop = (time) => {
-                if (!running) return;
+                // Nos han sacado desde los botones de arriba: su overlay ya no
+                // está en el documento, así que el bucle se para solo.
+                if (!running || !overlay.isConnected) { running = false; return; }
                 if (lastTime === null) lastTime = time;
                 const dt = Math.min((time - lastTime) / 1000, 0.05);
                 lastTime = time;
@@ -1223,7 +1260,9 @@ class VisualNovelEngine {
             };
 
             const spawnTarget = () => {
-                if (!running) return;
+                // Si nos han sacado desde los botones de arriba, el overlay ya
+                // no está en el documento: cortar la cadena de spawns.
+                if (!running || !overlay.isConnected) { running = false; return; }
 
                 const isTrap = Math.random() < 0.35; // 35% trampas 💋
                 const target = document.createElement('div');
@@ -2138,7 +2177,16 @@ class VisualNovelEngine {
                 }
             };
 
+            // Si nos han sacado desde los botones de arriba no se ejecuta el
+            // cierre normal, así que estos oyentes (que cuelgan de document) se
+            // dan de baja solos: si no, seguirían tragándose las teclas D F J K
+            // con preventDefault durante el resto de la partida.
+            const soltarTeclas = () => {
+                document.removeEventListener('keydown', onKey);
+                document.removeEventListener('keyup', onKeyUp);
+            };
             const onKey = (e) => {
+                if (!overlay.isConnected) return soltarTeclas();
                 const lane = keys.indexOf((e.key || '').toUpperCase());
                 if (lane === -1) return;
                 e.preventDefault();
@@ -2146,6 +2194,7 @@ class VisualNovelEngine {
                 if (!e.repeat) judgeHit(lane);   // ignorar auto-repetición (mantener slider)
             };
             const onKeyUp = (e) => {
+                if (!overlay.isConnected) return soltarTeclas();
                 const lane = keys.indexOf((e.key || '').toUpperCase());
                 if (lane !== -1) releaseLane(lane);
             };
@@ -2192,7 +2241,15 @@ class VisualNovelEngine {
             // Ticker por reloj de audio. Cada nota nace `travelMs` antes de su beat
             // y su cabeza cruza la línea en el beat (los toques van a la música).
             const tick = () => {
-                if (!running) return;
+                // Nos han sacado desde los botones de arriba: el overlay ya no
+                // está en el documento. Aquí hay que apagar el intervalo a mano;
+                // los demás minijuegos van con requestAnimationFrame y se paran
+                // solos al no volver a pedir cuadro.
+                if (!running || !overlay.isConnected) {
+                    running = false;
+                    if (ticker) { clearInterval(ticker); ticker = null; }
+                    return;
+                }
                 const now = nowMs();
 
                 while (spawnedIdx < schedule.length && now >= schedule[spawnedIdx].hitMs - travelMs) {
@@ -2302,7 +2359,7 @@ class VisualNovelEngine {
             let paso = 0;
             const numEl = cartel.querySelector('.rhythm-countdown-num');
             const tictac = () => {
-                if (!running) return;
+                if (!running || !overlay.isConnected) { running = false; return; }
                 if (paso < pasos.length) {
                     numEl.textContent = pasos[paso];
                     numEl.classList.remove('rhythm-countdown-pop');
@@ -3749,7 +3806,16 @@ class VisualNovelEngine {
             window.addEventListener('pointermove', onMove);
             stage.addEventListener('pointerdown', onMove);
             const keys = {};
+            // Igual que en el minijuego de ritmo: si nos sacan desde los botones
+            // de arriba no hay cierre normal, y este oyente se quedaría tragando
+            // las flechas con preventDefault. Se da de baja solo.
             const onKey = (e) => {
+                if (!overlay.isConnected) {
+                    document.removeEventListener('keydown', onKey);
+                    document.removeEventListener('keyup', onKey);
+                    window.removeEventListener('pointermove', onMove);
+                    return;
+                }
                 const k = (e.key || '').toLowerCase();
                 if (['p', 'escape'].includes(k) && e.type === 'keydown' && !e.repeat) {
                     e.preventDefault();
@@ -4323,7 +4389,13 @@ class VisualNovelEngine {
             // Bucle con requestAnimationFrame: va sincronizado con el refresco de
             // la pantalla. Con setInterval(16) el navegador dibujaba a destiempo y
             // el desplazamiento daba tirones.
-            const loop = () => { if (!running) return; tick(); if (running) raf = requestAnimationFrame(loop); };
+            // `overlay.isConnected`: si nos sacan desde los botones de arriba, el
+            // overlay se borra y el bucle tiene que pararse solo.
+            const loop = () => {
+                if (!running || !overlay.isConnected) { running = false; return; }
+                tick();
+                if (running) raf = requestAnimationFrame(loop);
+            };
             raf = requestAnimationFrame(loop);
         });
     }
@@ -5092,7 +5164,9 @@ class VisualNovelEngine {
                     // puntuación para dar ritmo al texto.
                     let delay = this.typingSpeed * speedMult;
                     if (window.Juice) {
-                        window.Juice.blip(ch, speakerName);
+                        if (localStorage.getItem('illo_text_blip') !== '0') {
+                            window.Juice.blip(ch, speakerName);
+                        }
                         delay += window.Juice.punctuationPause(ch);
                     }
                     timeoutId = setTimeout(typeChar, delay);

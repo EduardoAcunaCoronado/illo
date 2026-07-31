@@ -10,6 +10,17 @@ html, body {
     font-family: 'Arial', 'Helvetica', sans-serif;
     background: #000;
     overflow: hidden;
+    /* Nada del juego se selecciona: se avanza el diálogo a base de clics y sin
+       esto un doble clic (o clicar y arrastrar sin querer) deja el texto
+       resaltado en azul. Los campos de escritura se excluyen más abajo. */
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* Los campos de texto sí deben dejar seleccionar (panel de debug, etc.) */
+input, textarea {
+    -webkit-user-select: text;
+    user-select: text;
 }
 
 /* Marco que llena la ventana y centra el escenario (bandas negras si el ratio
@@ -2317,8 +2328,19 @@ body.startup-pending #menu-video {
     animation: nm-rise 0.7s ease-out both;
 }
 .nm-item:nth-child(1) { animation-delay: 0.15s; }
-.nm-item:nth-child(2) { animation-delay: 0.25s; }
-.nm-item:nth-child(3) { animation-delay: 0.35s; }
+.nm-item:nth-child(2) { animation-delay: 0.15s; }
+.nm-item:nth-child(3) { animation-delay: 0.15s; }
+.nm-item:nth-child(4) { animation-delay: 0.15s; }
+
+/* En web no existe una forma fiable de cerrar la pestaña, así que Salir es
+   exclusivo de Electron. La clase se fija en el <head>, antes del primer frame
+   del menú, para que no aparezca tarde respecto al resto de opciones. */
+html:not(.electron-app) #quit-btn { display: none; }
+
+/* Y al revés con el botón ♪: en Electron el tema del menú arranca solo (no hay
+   política de autoplay que valga), así que no hay nada que rearrancar a mano.
+   En web sí hace falta, porque la música espera a la primera interacción. */
+html.electron-app #menu-theme-btn { display: none; }
 
 .nm-item::after {
     content: '';
@@ -2441,6 +2463,89 @@ body.startup-pending #menu-video {
     padding: 36px 44px;
     animation: nm-rise 0.5s ease-out both;
     font-family: 'Outfit', sans-serif;
+    /* Con 7 capítulos el contenido se pasaba 17 px del panel. Se gana sitio
+       subiendo el alto máximo y apretando el hueco entre botones (ver
+       .chapter-selector-list), así que ahora cabe justo. */
+    max-height: 92%;
+    /* El que desplaza es la LISTA, no el panel: así el título y el botón de
+       volver se quedan fijos y no se van con el scroll. El overflow-y: auto
+       que traía el estilo antiguo se anula aquí. */
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* En columna flex los hijos se estiran, y el botón de volver es inline-block:
+   sin esto pasaría a ocupar todo el ancho en vez de quedarse centrado. */
+.chapter-selector-back {
+    align-self: center;
+}
+
+/* Configuración reutiliza el escenario del selector de capítulos, pero no tiene
+   lista que desplazar: le basta con un ancho cómodo para los deslizadores. */
+.settings-selector-panel {
+    width: min(520px, 88%);
+}
+.settings-selector-panel .nm-settings { min-width: 0; margin-bottom: 28px; }
+
+/* La lista es la única parte que se desplaza. min-height: 0 es lo que le
+   permite encoger por debajo de su contenido dentro del flex (si no, el panel
+   crecería y el scroll no llegaría a activarse nunca). */
+.chapter-selector-list {
+    overflow-y: auto;
+    /* Nunca hay nada que ver a los lados (los botones se ajustan al ancho), y
+       sin esto la animación de entrada del panel llega a sacar una barra
+       horizontal de más mientras escala. */
+    overflow-x: hidden;
+    min-height: 0;
+    /* Aire entre los botones y la barra: al pasar el ratón, el capítulo se
+       desplaza 6 px a la derecha y sin este hueco se le echaba encima. Va en
+       los dos lados para que la lista siga centrada en el panel. */
+    padding: 0 14px;
+}
+
+/* La lista también es flex en columna, así que sus botones se aplastarían para
+   caber (33 px en vez de 48) en lugar de desbordar y activar el scroll. */
+.chapter-select-btn {
+    flex-shrink: 0;
+}
+
+/* ---- Barra de scroll propia del selector de capítulos ----
+   Con los capítulos actuales NO se ve: `overflow-y: auto` solo la saca cuando
+   el contenido no cabe. Está para cuando se añadan más.
+   OJO: en Chromium, poner `scrollbar-width`/`scrollbar-color` en la lista
+   ANULA estas reglas ::-webkit-. Por eso las propiedades estándar van aparte,
+   en el @supports de abajo, solo para quien no entiende ::-webkit-scrollbar. */
+.chapter-selector-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.chapter-selector-list::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 999px;
+}
+
+.chapter-selector-list::-webkit-scrollbar-thumb {
+    /* El borde transparente + background-clip adelgaza el pulgar dentro del
+       carril sin tener que estrecharlo (y deja aire a los lados). */
+    background: linear-gradient(180deg, rgba(255, 209, 102, 0.85), rgba(255, 145, 120, 0.75));
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    box-shadow: 0 0 12px rgba(255, 209, 102, 0.3);
+}
+
+.chapter-selector-list::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #ffd166, rgba(255, 160, 130, 0.9));
+    background-clip: padding-box;
+}
+
+/* Firefox no entiende ::-webkit-scrollbar: se le da la versión estándar. */
+@supports not selector(::-webkit-scrollbar) {
+    .chapter-selector-list {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 209, 102, 0.8) rgba(255, 255, 255, 0.06);
+    }
 }
 
 .chapter-selector-title {
@@ -2472,6 +2577,12 @@ body.startup-pending #menu-video {
     padding: 14px 22px;
     transition: all 0.2s ease;
 }
+
+/* Hueco entre capítulos: 15px hacían que la lista no cupiera por poco. */
+.chapter-selector-list {
+    gap: 12px;
+}
+
 .chapter-select-btn:hover {
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.6);
@@ -2719,6 +2830,140 @@ body.startup-pending #menu-video {
 }
 .nm-setting-row input[type="range"] { flex: 1; accent-color: #ffd166; cursor: pointer; }
 .nm-setting-val { color: #ffd166; min-width: 44px; text-align: right; }
+
+/* Ajuste de varias opciones (modo de ventana): rótulo arriba y los botones
+   debajo, a lo ancho, porque "Pantalla completa" no cabe en una fila. */
+.nm-setting-block { display: flex; flex-direction: column; gap: 10px; }
+.nm-setting-label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 1px;
+    color: #fff;
+    text-align: left;
+}
+/* Grupo de botones excluyentes. Sustituye a un <select>: la lista de un select
+   la dibuja el sistema, sale clara sobre el panel oscuro y el CSS no la toca. */
+.nm-segmented {
+    display: flex;
+    gap: 6px;
+    padding: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+}
+.nm-seg {
+    flex: 1;
+    padding: 8px 14px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.6px;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.55);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.nm-seg:hover { color: rgba(255, 209, 102, 0.85); background: rgba(255, 209, 102, 0.07); }
+.nm-seg.is-active {
+    color: #1a1030;
+    background: #ffd166;
+    border-color: #ffd166;
+    box-shadow: 0 0 18px rgba(255, 209, 102, 0.35);
+}
+.nm-seg:focus-visible { outline: 2px solid #ffd166; outline-offset: 2px; }
+
+/* ---- Pestañas de Configuración (Vídeo / Sonido / Trucos) ---- */
+.nm-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.nm-tab {
+    flex: 1;
+    padding: 9px 14px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.55);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.nm-tab:hover { color: rgba(255, 209, 102, 0.85); background: rgba(255, 209, 102, 0.07); }
+.nm-tab.is-active {
+    color: #ffd166;
+    background: rgba(255, 209, 102, 0.14);
+    border-color: rgba(255, 209, 102, 0.5);
+}
+/* Alto mínimo para que el panel no dé un salto al cambiar de pestaña: la más
+   alta es Trucos (fila + explicación). */
+.nm-tab-panes { min-height: 96px; }
+.nm-tab-pane { display: none; flex-direction: column; gap: 18px; }
+.nm-tab-pane.is-active { display: flex; }
+
+/* ===== Menú de pausa (Esc / botón de opciones) =====
+   Lleva scrim a pantalla completa, no solo la caja: durante la partida
+   cualquier clic suelto avanza el diálogo, así que el fondo tiene que
+   tragárselos (game.js además corta la propagación). */
+.pause-menu {
+    position: absolute;
+    inset: 0;
+    /* Sobre tos lo demás: botones de arriba (5200) y minijuegos (combate 5000) */
+    z-index: 5400;
+    background: rgba(4, 4, 16, 0.55);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+.pause-buttons {
+    flex-wrap: wrap;
+}
+
+/* La salida de la partida, en rojo, para que no se confunda con "Continuar" */
+.pause-exit {
+    color: rgba(255, 135, 145, 0.9) !important;
+    background: rgba(255, 91, 103, 0.1) !important;
+    border-color: rgba(255, 91, 103, 0.55) !important;
+}
+.pause-exit:hover {
+    background: rgba(255, 91, 103, 0.85) !important;
+    color: #1a1030 !important;
+    box-shadow: 0 0 22px rgba(255, 91, 103, 0.5) !important;
+}
+
+/* Ajustes de sí/no (p. ej. Ataque Kosai): casilla a la derecha y una línea
+   pequeña debajo explicando qué hace. */
+.nm-setting-toggle { display: flex; flex-direction: column; }
+.nm-setting-toggle .nm-setting-row { cursor: pointer; }
+.nm-setting-row input[type="checkbox"] {
+    margin: 0 0 0 auto;
+    width: 18px;
+    height: 18px;
+    accent-color: #ffd166;
+    cursor: pointer;
+}
+.nm-setting-hint {
+    margin: 7px 0 0;
+    max-width: 340px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    line-height: 1.45;
+    color: rgba(255, 255, 255, 0.52);
+    white-space: normal;
+    text-align: left; /* el modal centra por defecto */
+}
 
 .nm-modal-buttons { display: flex; gap: 16px; justify-content: center; }
 .nm-modal-buttons button {
@@ -3935,7 +4180,9 @@ body.startup-pending #menu-video {
     position: absolute;
     top: 14px;
     right: 16px;
-    z-index: 60;
+    /* Por encima de los minijuegos (overlay 600, créditos 1500, combate 5000):
+       los botones de arriba se ven también durante ellos. */
+    z-index: 5200;
     display: flex;
     align-items: center;
     gap: 7px;
@@ -3975,7 +4222,7 @@ body.startup-pending #menu-video {
     position: absolute;
     top: 14px;
     right: 148px; /* a la izquierda del de retroceder */
-    z-index: 60;
+    z-index: 5200; /* ver .rewind-btn */
     display: flex;
     align-items: center;
     gap: 7px;
@@ -4002,10 +4249,44 @@ body.startup-pending #menu-video {
 .scenes-btn.hidden { display: none; }
 .scenes-icon { font-size: 15px; line-height: 1; }
 
+/* ===== Opciones durante la partida (mismo menú que Esc) =====
+   Mismo lenguaje que los botones de retroceder y escenas, pero en la esquina
+   contraria: aquellos van a la derecha y este a la izquierda. */
+.options-btn {
+    position: absolute;
+    top: 14px;
+    left: 16px;
+    z-index: 5200; /* ver .rewind-btn */
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+    border: 2px solid rgba(255, 209, 102, 0.55);
+    border-radius: 999px;
+    background: rgba(12, 6, 26, 0.62);
+    color: #ffeec2;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    opacity: 0.42;
+    backdrop-filter: blur(3px);
+    transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.options-btn:hover {
+    opacity: 1;
+    transform: translateY(-1px);
+    box-shadow: 0 0 16px rgba(255, 209, 102, 0.55);
+}
+.options-btn:active { transform: translateY(1px); }
+.options-btn.hidden { display: none; }
+.options-icon { font-size: 15px; line-height: 1; }
+
 .scenes-menu {
     position: absolute;
     inset: 0;
-    z-index: 120; /* por encima de la caja de diálogo (100) */
+    z-index: 5300; /* sobre los botones de arriba (5200) y el combate (5000) */
     display: flex;
     align-items: center;
     justify-content: center;

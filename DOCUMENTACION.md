@@ -21,12 +21,23 @@ Un motor de visual novel moderno basado en HTML5, CSS y JavaScript que permite c
 13. [Funciones Avanzadas](#funciones-avanzadas)
 14. [Sistema de Reseteo](#sistema-de-reseteo)
 15. [Workflow de Pull Requests](#workflow-de-pull-requests)
+16. [App de Escritorio (Electron)](#app-de-escritorio-electron)
+17. [Publicar en itch.io](#publicar-en-itchio)
 
 ---
 
 ## 🚀 Inicio Rápido
 
 ### Paso 1: Abre el Proyecto
+
+Como app de escritorio (recomendado):
+
+```bash
+npm install
+npm start
+```
+
+O en el navegador, con un servidor local:
 
 ```bash
 # Windows
@@ -226,6 +237,7 @@ async function startNewGame() {
 ### Con Acciones Previas
 
 ```json
+[
 {
   "_line": 1,
   "character": "Luna",
@@ -238,6 +250,7 @@ async function startNewGame() {
     }
   ]
 }
+]
 ```
 
 ### Elementos de una Línea
@@ -581,6 +594,35 @@ El retraso permite dos efectos:
    }
    ```
 
+### Salir de un minijuego
+
+Los tres botones de arriba (**Opciones**, **Escenas** y **Retroceder**) se ven
+también **durante los minijuegos**, combate incluido. Antes se escondían, y
+quien llegaba a un minijuego desde el menú de escenas se quedaba encerrado: la
+única salida era ganarlo.
+
+Cómo funciona, porque no es evidente: el bucle del juego está *dentro* de
+`playMinigame()`, así que no basta con marcar la petición. `playMinigame` corre
+en un `Promise.race` contra una promesa de cancelación; `engine.abortarMinijuego()`
+la rechaza, y el `catch` **borra el overlay**, que es lo que de verdad mata al
+minijuego, porque sus controles cuelgan de ahí. Además se llama a
+`stopAllSounds()`: la música del minijuego no se va con el overlay, y quien nos
+saca (otra escena, retroceder, el menú) ya repinta su propio ambiente.
+
+Por eso cada bucle de minijuego comprueba `overlay.isConnected` y se para solo
+cuando su overlay desaparece. **Todo minijuego nuevo tiene que hacer lo mismo**,
+y si usa `setInterval` en vez de `requestAnimationFrame` debe apagarlo a mano
+(el de ritmo lo hace). Los oyentes que cuelgan de `document` con
+`preventDefault` (ritmo, side-scrollers) se dan de baja solos al detectar el
+overlay desconectado; si no, seguirían tragándose las teclas el resto de la
+partida.
+
+La **cutscene** es la excepción: ahí los botones sí se esconden, porque es un
+vídeo que ya se salta con un clic o con Esc (`cutsceneEnMarcha()` en `game.js`).
+
+En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
+(5000) y de los créditos (1500); el menú de escenas a 5300 y el de pausa a 5400.
+
 ### Minijuegos disponibles
 
 | `game`    | Descripción                                                        | Parámetros principales                       |
@@ -883,6 +925,37 @@ funcionan EXACTAMENTE igual que antes:
 Enemigo de ejemplo: `marea_fans` (hp 9999 — imbatible a propósito, solo se puede
 aguantar). Se usa en el cap. 3, «Escena 11b: La puerta».
 
+#### Batallas: Ataque Kosai (extra opcional, jul 2026)
+
+Casilla en **Configuración** que reparte a **todo el equipo** una habilidad
+extra en los combates por turnos: deja al objetivo a **0 PV de un solo golpe**,
+cuesta 0 PM y no falla ni se puede esquivar. Es un atajo para saltarse una
+pelea, no forma parte del equilibrio del combate.
+
+- Se guarda en localStorage como `illo_kosai` (`"1"` encendido, `"0"` apagado);
+  por defecto está apagado.
+- `battle-minigame.js` lee la clave al construir el combate, y además **entra o
+  sale en caliente**: tocar la casilla en el menú de pausa con una pelea en
+  marcha reparte o retira el golpe a todo el equipo y repinta la lista de
+  habilidades al momento. Lo mueve `game.js` llamando a
+  `window.BattleMinigame.setKosaiEnabled(bool)`, que llega al combate activo.
+- El repintado se salta en dos situaciones, y ahí el cambio se ve al volver a la
+  lista: **eligiendo objetivo u objeto** (manda el botón de cancelar y redibujar
+  por debajo dejaría el combate a medias) y con la **lista vacía** entre turnos
+  (`clearSkills`), donde repintar la sacaría antes de tiempo.
+- La habilidad usa el tipo `execute`, que se resuelve **antes** de la tirada de
+  acierto (por eso no se esquiva). Vale para cualquier objetivo, así que se
+  puede reutilizar en habilidades de enemigos si algún día hace falta.
+- No toca la constante `ALLIES`: se le da a cada luchador un array de
+  habilidades nuevo, para que un combate no contamine al siguiente.
+
+```js
+// battle-minigame.js
+const KOSAI = { id: "ataque_kosai", type: "execute", pmCost: 0, target: "enemy", unavoidable: true, ... };
+window.BattleMinigame.KOSAI_SETTING_KEY;      // "illo_kosai" — lo usa game.js para pintar la casilla
+window.BattleMinigame.setKosaiEnabled(true);  // reparte/retira el golpe en el combate en curso
+```
+
 #### Configuración: volúmenes (jul 2026)
 
 El botón **Configuración** del menú abre un panel (estilo nm-modal) con dos
@@ -892,6 +965,15 @@ resto → efectos) y multiplica su volumen por el factor correspondiente;
 `engine.applyVolumeSettings()` reaplica en vivo a lo que esté sonando. Los
 volúmenes que piden los capítulos (`volume`, `setVolume`) se conservan como
 "base" y escalan por el ajuste del jugador.
+
+Debajo de los deslizadores va la casilla del **Ataque Kosai** (ver arriba). Para
+añadir más ajustes de sí/no se reutiliza el bloque `.nm-setting-toggle` +
+`.nm-setting-hint` de `styles.css`.
+
+La pestaña **Sonido** también permite activar o desactivar los **Blips de
+texto**. Están activos por defecto y se guardan como `illo_text_blip` (`"1"` o
+`"0"`); al apagarlos se conserva la velocidad y las pausas de puntuación, solo
+se silencia el sonido que acompaña a cada letra.
 
 ---
 
@@ -1150,6 +1232,7 @@ Usa archivos de audio comunes:
 ### Ejemplo Completo en Capítulo
 
 ```json
+[
 {
   "_line": 1,
   "character": "Narrador",
@@ -1179,6 +1262,7 @@ Usa archivos de audio comunes:
     }
   ]
 }
+]
 ```
 
 ### Parámetros de Sonido
@@ -1243,6 +1327,7 @@ Usa archivos de audio comunes:
 ### Ejemplo Completo: Control de Música
 
 ```json
+[
 {
   "_line": 1,
   "character": "Narrador",
@@ -1292,6 +1377,7 @@ Usa archivos de audio comunes:
     }
   ]
 }
+]
 ```
 
 ### Consejos
@@ -1532,27 +1618,26 @@ Los personajes ahora ocupan toda la altura de la pantalla para máximo impacto v
 Solo hay dos posiciones válidas:
 
 ```json
-// Personaje a la izquierda
+[
 {
   "type": "showCharacter",
   "character": "2b",
   "position": "left",
   "pose": "neutral"
-}
-
-// Personaje a la derecha
+},
 {
   "type": "showCharacter",
   "character": "pod",
   "position": "right",
   "pose": "neutral"
 }
+]
 ```
 
 **Uso en Capítulos:**
 
 ```json
-// Dos personajes (lado a lado, altura completa)
+[
 {
   "type": "showCharacter",
   "character": "2b",
@@ -1562,14 +1647,13 @@ Solo hay dos posiciones válidas:
   "type": "showCharacter",
   "character": "pod",
   "position": "right"
-}
-
-// Un personaje
+},
 {
   "type": "showCharacter",
   "character": "emil",
-  "position": "left"  // o "right"
+  "position": "left"
 }
+]
 ```
 
 **Nota:** La posición "center" ya no está disponible. Use "left" o "right" para un personaje solo.
@@ -1709,11 +1793,55 @@ for (const character of characters) {
 
 ## 🎨 Personalización
 
+### Texto no seleccionable (jul 2026)
+
+`html, body` llevan `user-select: none` en `styles.css`. El juego se avanza a
+base de clics y sin eso un doble clic —o clicar y arrastrar sin querer— dejaba
+el diálogo resaltado en azul. Como la propiedad se hereda, cubre todo:
+diálogos, menús, minijuegos y overlays.
+
+Justo debajo hay una excepción para `input, textarea`, que vuelven a
+`user-select: text` para no romper los campos de escritura (panel de debug).
+**Si añades algún elemento donde el jugador deba poder seleccionar o copiar
+texto, hay que devolverle `user-select: text` igual que a los inputs.**
+
+### Selector de capítulos: barra de scroll propia (jul 2026)
+
+**Quien desplaza es la lista, no el panel.** Así el título "Seleccionar
+Capítulo" y el botón "Volver" se quedan fijos y solo se mueven los capítulos.
+El montaje:
+
+| Elemento                   | Papel                                                             |
+| -------------------------- | ----------------------------------------------------------------- |
+| `.chapter-selector-panel`  | `display: flex; flex-direction: column; overflow: hidden;` + `max-height: 92%` |
+| `.chapter-selector-list`   | `overflow-y: auto; overflow-x: hidden; min-height: 0;` — la parte que se desplaza. `padding: 0 14px` separa los botones de la barra: al pasar el ratón el capítulo se desplaza 6 px a la derecha y se le echaba encima (queda en 8 px con hover) |
+| `.chapter-selector-back`   | `align-self: center` (en columna flex se estiraría a todo el ancho) |
+
+La barra es propia: pulgar dorado con degradado y carril tenue. Solo aparece
+cuando los capítulos no caben; con 7 no se veía, y **cada capítulo nuevo ocupa
+unos 60 px**.
+
+⚠️ Tres trampas si se tocan estas reglas:
+
+1. `min-height: 0` en la lista es lo que le permite encoger dentro del flex. Sin
+   eso el panel crece y el scroll no se activa nunca.
+2. `flex-shrink: 0` en `.chapter-select-btn`: la lista también es flex en
+   columna, así que sin esto los botones se **aplastan** (33 px en vez de 48)
+   para caber, en vez de desbordar y activar el scroll.
+3. En Chromium, poner `scrollbar-width` o `scrollbar-color` en la lista
+   **anula** todas las reglas `::-webkit-scrollbar-*`. Por eso las propiedades
+   estándar están aisladas en un `@supports not selector(::-webkit-scrollbar)`,
+   que solo aplica en Firefox.
+
+Para reutilizar la barra en otro panel se copian los cuatro selectores
+`::-webkit-scrollbar`, `-track`, `-thumb` y `-thumb:hover`.
+
 ### Cambiar Colores Persona 5
 
 Los colores principales del sistema Persona 5 son:
 
 ```css
+:root {
 /* Color Amarillo Primario */
 --color-primary: #ffcc00;
 
@@ -1722,6 +1850,7 @@ Los colores principales del sistema Persona 5 son:
 
 /* Color Fondo */
 --color-dark: #000000;
+}
 ```
 
 **Para cambiar el color amarillo a otro:**
@@ -1767,8 +1896,8 @@ En `styles.css`, los personajes ahora ocupan toda la altura:
 
 ```css
 .character {
-    height: 100vh;  ← Altura completa de pantalla
-    width: auto;    ← Ancho automático según proporción
+    height: 100vh;  /* Altura completa de pantalla */
+    width: auto;    /* Ancho automático según proporción */
 }
 ```
 
@@ -1792,7 +1921,7 @@ En `styles.css`, los personajes ahora ocupan toda la altura:
 {
   "type": "showCharacter",
   "character": "luna",
-  "position": "center" // Nueva opción
+  "position": "center"
 }
 ```
 
@@ -1802,7 +1931,7 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 
 ```css
 .background {
-    background-size: cover;  ← Cubre toda la pantalla
+    background-size: cover;  /* Cubre toda la pantalla */
     background-position: center;
 }
 ```
@@ -1851,7 +1980,7 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 
 **Solución:**
 
-```json
+```
 ❌ "value": "backgrounds/cafe.png"
 ✅ "value": "assets/backgrounds/cafe.png"
 ```
@@ -1948,7 +2077,9 @@ python -m http.server 8000
 1. Verifica que `.dialog-box.p5-style` tenga:
 
 ```css
-border: 3px solid #ffcc00;
+.dialog-box.p5-style {
+    border: 3px solid #ffcc00;
+}
 ```
 
 2. No hay CSS sobrescrito después
@@ -2024,6 +2155,7 @@ No necesita ser mostrado con `showCharacter`.
 Cada línea puede tener un número `_line` para referencia:
 
 ```json
+[
 {
   "_line": 0,
   "character": "Luna",
@@ -2034,6 +2166,7 @@ Cada línea puede tener un número `_line` para referencia:
   "character": "Luna",
   "text": "Segunda línea"
 }
+]
 ```
 
 Los números se reinician por escena y facilitan debugging.
@@ -2174,18 +2307,16 @@ Cuando terminas un capítulo y vuelves al menú, el motor limpia completamente e
 
 **Comportamiento:**
 
-```javascript
-// Cuando termina un capítulo:
-1. Muestra pantalla "Fin del Capítulo"
-2. Espera a que hagas click en "Continuar"
-3. Llamadas a engine.reset()
-4. Vuelve al menú principal
-5. Estado completamente limpio para nuevo capítulo
-```
+1. Muestra pantalla "Fin del Capítulo".
+2. Espera a que hagas clic en "Continuar".
+3. Llama a `engine.reset()`.
+4. Vuelve al menú principal.
+5. Deja el estado limpio para un nuevo capítulo.
 
 ### Método reset() - Detalles Técnicos
 
 ```javascript
+class VisualNovelEngine {
 reset() {
     // Variables de progreso
     this.currentScene = 0;        // Escena 1
@@ -2207,6 +2338,7 @@ reset() {
 
     // Limpiar elecciones
     document.getElementById('choices-container').innerHTML = '';
+}
 }
 ```
 
@@ -2659,6 +2791,304 @@ https://github.com/OWNER/REPO/pull/NUMERO
 ## 📝 Licencia
 
 Este proyecto está disponible para uso educativo y comercial.
+
+---
+
+## 🖥️ App de Escritorio (Electron)
+
+El menú principal incluye la opción **Salir** al ejecutarse dentro de Electron.
+Esta usa un canal IPC restringido para cerrar la aplicación; no se muestra al
+abrir el juego en un navegador, donde una página no puede cerrar con fiabilidad
+la pestaña del usuario.
+
+Al arrancar desde Electron, el tema del menú se reproduce automáticamente. En
+navegador, la reproducción comienza tras la primera interacción por las
+restricciones de autoplay del propio navegador. Por eso el botón **♪** de abajo
+a la derecha del menú (`#menu-theme-btn`, que rearranca el tema) solo sale en
+web: en la app no hay nada que desbloquear. Es la regla simétrica a la de
+**Salir**, que solo sale en Electron.
+
+El juego se puede ejecutar como aplicación de escritorio de Windows sin cambiar
+nada del motor: sigue siendo el mismo `index.html` con `engine.js` y `game.js`.
+
+### Ajustes persistentes
+
+En el navegador, las opciones de **Configuración** viven en el `localStorage`
+del origen y se conservan solas. En la app de escritorio no: el servidor interno
+escucha en un puerto libre **distinto en cada arranque**, así que el origen
+cambia (`http://127.0.0.1:61096` hoy, otro mañana) y el `localStorage` empieza
+vacío. Sin más, los ajustes se perdían al cerrar la aplicación.
+
+La solución guarda los mismos valores fuera del origen, en la carpeta de datos
+de la app:
+
+```
+%APPDATA%\Transfurmados\settings.json
+{"illo_vol_music":"0.55","illo_vol_sfx":"0.42","illo_kosai":"1","illo_window_mode":"window"}
+```
+
+El recorrido completo:
+
+| Paso | Dónde | Qué hace |
+|------|-------|----------|
+| Guardar | `game.js` → `saveSetting()` | Escribe en `localStorage` **y** manda el valor por IPC (`settings:set`). En navegador `window.desktopApp` no existe y solo hace lo primero. |
+| Almacenar | `electron/main.js` | Valida la clave contra una lista cerrada y reescribe `settings.json`. |
+| Restaurar | `electron/preload.js` | Pide los ajustes con `sendSync('settings:get-sync')` y los devuelve al `localStorage`. |
+
+La restauración va en el **preload** y es síncrona a propósito: el preload corre
+antes que los scripts de la página, así que `engine.js` (`volFactor`),
+`battle-minigame.js` (`kosaiEnabled`) y el propio panel de Configuración se
+encuentran el `localStorage` ya puesto y no necesitan esperar a ninguna promesa.
+
+La lista de claves de `SETTINGS_KEYS` es cerrada a propósito: el renderizador
+solo puede escribir esos cuatro ajustes, no usar el archivo como almacén libre.
+
+### Configuración por pestañas
+
+Desde el menú principal, **Configuración** se abre igual que **Capítulos**: a
+pantalla completa, con el fondo difuminado y el menú retirado, no como una
+cajita encima. Por eso reutiliza las clases `chapter-selector*`; lo propio suyo
+(ancho, sin lista que desplazar) va en `.settings-selector-panel`. En el menú de
+**pausa** (Esc) los mismos ajustes siguen dentro del `nm-modal` de siempre.
+
+Los dos comparten `settingsMarkup()` / `wireSettings()` de `game.js`, repartido
+en tres pestañas:
+
+| Pestaña | Contiene | Dónde sale |
+|---------|----------|------------|
+| 🖥️ Vídeo | Modo de ventana: Pantalla completa / Ventana | **Solo en la app de escritorio** |
+| 🔊 Sonido | Volumen de música y de efectos | Siempre |
+| ⚔️ Trucos | Ataque Kosai | Siempre |
+
+La pestaña de Vídeo se cae entera en el navegador (ahí manda F11 del propio
+navegador), así que la pestaña activa por defecto no es siempre la misma: la
+decide `settingsMarkup()` según los grupos que existan, no el HTML.
+
+### Modo de ventana
+
+`illo_window_mode` es el único ajuste que, además de guardarse, hace algo en el
+proceso principal:
+
+- Al **arrancar**, `createWindow()` abre con `fullscreen: windowMode() === 'fullscreen'`
+  (por defecto, pantalla completa). El `width`/`height` calculados son el tamaño
+  al que queda la ventana al salir de pantalla completa.
+- Al **cambiarlo** desde el panel, `settings:set` lo guarda y aplica
+  `mainWindow.setFullScreen(...)`.
+- La ventana es la **fuente de la verdad**: sus eventos `enter-full-screen` y
+  `leave-full-screen` anotan el modo y avisan al juego por `settings:changed`,
+  de modo que un cambio con **F11** o con el botón del marco también se guarda y
+  repinta los botones si el panel está abierto.
+
+Se eligen con un par de botones excluyentes (`.nm-segmented`), no con un
+`<select>`: la lista que despliega un `select` la dibuja el sistema, sale clara
+sobre el panel oscuro y no hay CSS que la alcance (`color-scheme: dark` no basta
+en Windows). Cualquier ajuste futuro de varias opciones debería usar lo mismo.
+
+> **Nota:** la partida guardada (`gameState`) sigue en `localStorage` y **no**
+> sobrevive al reinicio en la app de escritorio, por el mismo motivo del puerto.
+> Hoy no se nota porque el menú no ofrece "Cargar partida", pero si se añade
+> habrá que llevarla también a `settings.json` o a un archivo propio.
+
+### Ejecutar
+
+```bash
+npm install
+npm start
+```
+
+### Empaquetar
+
+Dos comandos, dos resultados distintos. Todo va a parar a `dist/`, que está en
+el `.gitignore`.
+
+**`npm run dist:dir`** (`electron-builder --win --dir`) — solo empaqueta, sin
+instalador:
+
+```
+dist/
+├── win-unpacked/          ← la app lista para ejecutar (1.556 MB)
+│   ├── Transfurmados.exe        ← se lanza desde aquí (216 MB)
+│   ├── *.dll, *.pak, *.bin      ← runtime de Chromium/Electron
+│   ├── LICENSES.chromium.html   ← atribución de licencias (obligatoria)
+│   ├── locales/                 ← 55 idiomas (46,6 MB)
+│   └── resources/
+│       └── app/                 ← el juego (1.208 MB)
+│           ├── index.html, engine.js, game.js, styles.css
+│           ├── electron/        ← main.js + static-server.js
+│           ├── chapters/, characters/
+│           └── assets/          ← 1.207 MB
+├── .icon-ico/             ← el .ico generado desde build/icon.png (caché)
+└── builder-debug.yml      ← log del build, no se distribuye
+```
+
+Se prueba abriendo `dist/win-unpacked/Transfurmados.exe`.
+
+**`npm run dist`** (`electron-builder --win`) — añade el instalador NSIS:
+
+```
+dist/Transfurmados Setup 1.0.0.exe
+```
+
+> ⚠️ El `.exe` de `win-unpacked/` **no funciona por su cuenta**: necesita todos
+> los archivos que tiene al lado. Para distribuirlo se comprime la carpeta
+> entera, o se reparte el instalador.
+
+> ⚠️ Con ~1,2 GB en `assets/` el empaquetado tarda varios minutos.
+
+### Empaquetar para macOS
+
+**No se puede desde Windows.** El `.dmg` se genera con `hdiutil`, la firma con
+`codesign`, y el `.app` lleva dentro symlinks y bits de ejecutable que NTFS no
+conserva. Hace falta un Mac de verdad.
+
+**En un Mac:**
+
+```bash
+npm ci
+npm run dist:mac        # dmg + zip     (npm run dist:mac:dir para solo el .app)
+```
+
+**Sin Mac:** el workflow `.github/workflows/build-mac.yml` lo compila en un
+runner `macos-latest`. Se lanza a mano desde la pestaña **Actions → Build macOS
+→ Run workflow** y deja el `.dmg` y el `.zip` como artefactos (7 días). Tarda
+~20 min: el checkout se trae los 1,2 GB de assets versionados.
+
+**Solo arm64.** Cubre todos los Mac desde finales de 2020. Se podría añadir
+`x64` en el campo `mac.target` del `package.json`, pero como el build va sin
+asar **cada arquitectura es una copia entera del juego**: `dist/` pasaría de
+~3 GB a ~6 GB y el empaquetado al doble de tiempo. Un binario `universal` es
+todavía peor, porque duplica también el runtime de Electron dentro del mismo
+`.app`.
+
+**El icono** se genera desde el mismo `build/icon.png`. Para macOS debería ser
+**1024x1024**; con los 512x512 actuales electron-builder avisa y el icono sale
+algo borroso en el Dock.
+
+#### ⚠️ Firma y notarización
+
+El build sale **sin firmar** (firma *ad-hoc*). Al descargarlo, macOS le pone el
+atributo de cuarentena y Gatekeeper lo bloquea con *"Transfurmados está dañado y
+no se puede abrir"* — y no es un aviso que se pueda saltar con un clic, como el
+SmartScreen de Windows. El jugador tiene que hacer una de estas dos:
+
+- Clic derecho sobre la app → **Abrir** (y confirmar en el diálogo)
+- `xattr -dr com.apple.quarantine /Applications/Transfurmados.app`
+
+Hay que dejarlo escrito en la página del juego. Para quitarlo del todo hace
+falta el **Apple Developer Program** (99 $/año): un certificado *Developer ID
+Application*, `"notarize": true` y `"hardenedRuntime": true` en el bloque `mac`,
+y estas variables en el entorno del build:
+
+```
+CSC_LINK, CSC_KEY_PASSWORD              ← el .p12 del certificado
+APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID
+```
+
+### Publicar en itch.io
+
+Se sube la carpeta `dist/win-unpacked/` completa, con `Transfurmados.exe` en la
+raíz del zip (sin una carpeta extra por encima, así el itch app lo detecta
+solo). Mejor el zip que el instalador NSIS: el itch app descarga, descomprime y
+lanza el juego él mismo, y con un instalador se lía.
+
+**Pasos:**
+
+1. Crear el build: `npm run dist:dir`
+2. Instalar [butler](https://itch.io/docs/butler/), la CLI de itch.io, y
+   autenticarse una vez: `butler login`
+3. Subir la carpeta (butler la comprime él solo):
+
+```bash
+butler push dist/win-unpacked tu-usuario/transfurmados:windows
+```
+
+4. En la página del juego en itch.io, marcar la subida como ejecutable de
+   escritorio ("This file will be downloaded on the user's computer").
+
+El sufijo `:windows` del canal ya marca la plataforma. Y butler sube solo los
+bytes que cambian en cada actualización, que con 1,2 GB de assets que casi nunca
+cambian ahorra muchísimo.
+
+> ⚠️ El subidor web de itch.io corta en 1 GB por archivo, así que el build de
+> 1,6 GB **no se puede subir por el navegador**: butler es obligatorio.
+
+Para macOS es igual pero con el canal `:osx`, y se sube el **`.zip`**, no el
+`.dmg`: el itch app sabe descomprimirlo y lanzar el `.app`, mientras que con un
+`.dmg` se lía igual que con el instalador NSIS.
+
+```bash
+butler push dist/Transfurmados-1.0.0-arm64-mac.zip tu-usuario/transfurmados:osx
+```
+
+**Qué NO quitar del build para adelgazarlo:** los `.dll`, `.pak`, `.bin`,
+`locales/` y `resources/` son todos necesarios, y `LICENSES.chromium.html`
+(20 MB) es la atribución de licencias de Chromium, hay que distribuirla.
+
+**Qué sí se puede recortar:** los idiomas de Electron (46,6 MB). La forma limpia
+es en el campo `build` del `package.json`, no borrando `locales/` a mano:
+
+```json
+{
+  "electronLanguages": ["es", "en-US"]
+}
+```
+
+El recorte de verdad está en `assets/`: `cutscenes/` (421 MB) y `sounds/`
+(303 MB) son más de la mitad del juego.
+
+### Cómo funciona
+
+```
+electron/
+├── main.js            ← Proceso principal: ventana + arranque
+└── static-server.js   ← Servidor estático interno (127.0.0.1, puerto libre)
+```
+
+El juego usa `fetch()` para cargar `chapters/*.json` y `characters/*.json`, y
+vídeo/audio que necesitan peticiones `Range` para poder buscar dentro del
+archivo. Nada de eso funciona con `file://`, así que `main.js` levanta un
+servidor local en `127.0.0.1` con un puerto libre y carga la ventana desde ahí.
+Es exactamente el mismo escenario que `python -m http.server`, por lo que el
+comportamiento del juego es idéntico al del navegador.
+
+Detalles de la ventana:
+
+- Tamaño de área de dibujo 1280x720 (se reduce si la pantalla es más pequeña)
+- Sin barra de menú, fondo negro, título "Project AI.ri: Transfurmados"
+- **F11** pantalla completa · **F12** DevTools · **Ctrl+R** recargar
+- Una sola instancia: al abrir otra, se enfoca la que ya está
+
+En macOS los atajos son otros, porque F11 y F12 los tiene cogidos el sistema:
+**Ctrl+Cmd+F** pantalla completa · **Cmd+Alt+I** DevTools · **Cmd+R** recargar.
+Y la barra de menú allí es global, así que `autoHideMenuBar` no la afecta: sin
+un menú propio saldría el de ejemplo de Electron, y sin menú ninguno dejarían de
+funcionar Cmd+Q y Cmd+H. Por eso `configurarMenu()` pone el mínimo (`appMenu` +
+Ventana) en macOS y quita el menú del todo en el resto.
+
+El icono de la app se genera desde `build/icon.png`.
+
+### ⚠️ Si la app se cierra sola al arrancar
+
+Electron sale con código 0 y sin mensaje (solo el aviso de `crashpad ... not
+connected`, que es inofensivo) cuando no puede usar su carpeta de datos,
+`%APPDATA%\<productName>`. Dos causas ya vistas y resueltas:
+
+1. **`productName` con caracteres ilegales en rutas de Windows** (`\ / : * ? " < > |`).
+   Por eso `productName` es `Transfurmados` y el título largo
+   "Project AI.ri: Transfurmados" se pone en la ventana desde `main.js`.
+2. **Primera ejecución con la carpeta de datos aún sin crear:** el candado de
+   instancia única es un archivo dentro de esa carpeta y Electron no la crea
+   hasta el `ready`, así que `requestSingleInstanceLock()` devolvía `false` y
+   la app se cerraba. `main.js` crea la carpeta antes de pedir el candado.
+
+Para depurar casos así: `electron .` no imprime nada útil, hay que meter
+`console.log` en `main.js` — si ni siquiera se ve el primero, el fallo es
+anterior a cargar el script (típicamente la carpeta de datos).
+
+### Seguir usando el navegador
+
+La versión web sigue funcionando igual: `start.bat` o
+`python -m http.server 8000` y abrir `http://localhost:8000`.
 
 ---
 

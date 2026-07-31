@@ -1,0 +1,41 @@
+# Build de macOS.
+#
+# electron-builder no puede generar el .app ni el .dmg desde Windows (hacen
+# falta hdiutil, codesign y symlinks que NTFS no conserva), así que la compila
+# un runner de macOS. Se lanza a mano desde la pestaña Actions.
+#
+# El build sale SIN FIRMAR (firma ad-hoc). macOS lo pondrá en cuarentena al
+# descargarlo: ver DOCUMENTACION.md, sección "Empaquetar para macOS".
+name: Build macOS
+
+on:
+  workflow_dispatch:
+
+jobs:
+  mac:
+    runs-on: macos-latest
+    # El repo lleva ~1,2 GB de assets versionados: el checkout y el empaquetado
+    # se van a un buen rato.
+    timeout-minutes: 60
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Empaquetar
+        run: npx electron-builder --mac --arm64 --publish never
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: transfurmados-mac-arm64
+          path: |
+            dist/*.dmg
+            dist/*.zip
+          # Son artefactos de más de 1 GB: no conviene que se acumulen.
+          retention-days: 7

@@ -25,6 +25,29 @@
     target: "auto",
   };
 
+  // Extra opcional que se enciende desde Configuración (menú principal). No
+  // entra en el equilibrio normal del combate: es un atajo para saltarse una
+  // pelea, así que se reparte a to el equipo y no cuesta PM.
+  const KOSAI_SETTING_KEY = "illo_kosai";
+  const KOSAI = {
+    id: "ataque_kosai",
+    name: "Ataque Kosai",
+    pmCost: 0,
+    type: "execute",
+    element: "physical",
+    power: 0,
+    target: "enemy",
+    unavoidable: true,
+    description: "Deja al objetivo a 0 PV de un solo golpe. No falla.",
+  };
+  const kosaiEnabled = () => {
+    try {
+      return localStorage.getItem(KOSAI_SETTING_KEY) === "1";
+    } catch (error) {
+      return false; // localStorage capado: el extra simplemente no aparece
+    }
+  };
+
   const ALLIES = [
     {
       id: "samu",
@@ -691,6 +714,14 @@
       this.allies = (roster.length ? roster : ALLIES).map((ally) =>
         this.createFighter(conKit(ally), "ally"),
       );
+      // Se reparte al construir el combate, y `aplicarKosai` lo añade o lo
+      // quita si se toca la casilla a mitad de pelea. Array nuevo siempre, que
+      // el de ALLIES es compartido entre combates.
+      if (kosaiEnabled()) {
+        this.allies.forEach((ally) => {
+          ally.skills = [...ally.skills, KOSAI];
+        });
+      }
       this.enemy = this.createFighter(
         {
           ...this.enemyTemplate,
@@ -972,6 +1003,42 @@
           this.selectSkill(fighter, skill);
         });
       });
+    }
+
+    // Añade o quita el Ataque Kosai a to el equipo con el combate en marcha.
+    // Lo llama game.js al tocar la casilla en el menú de pausa.
+    aplicarKosai(activo) {
+      if (!this.overlay?.isConnected) return;
+
+      this.allies.forEach((ally) => {
+        const loTiene = ally.skills.some((skill) => skill.id === KOSAI.id);
+        if (activo && !loTiene) {
+          ally.skills = [...ally.skills, KOSAI];
+        } else if (!activo && loTiene) {
+          ally.skills = ally.skills.filter((skill) => skill.id !== KOSAI.id);
+        }
+      });
+
+      // Repintar solo si lo que se ve AHORA es la lista de habilidades de un
+      // aliado, aunque no sea su turno de decidir (mientras se resuelve el
+      // golpe la lista sigue en pantalla y se vería desfasada).
+      //
+      // Se descarta en dos casos: eligiendo objetivo u objeto manda el botón de
+      // cancelar, y redibujar por debajo dejaría el combate a medias; y con la
+      // lista vacía (clearSkills entre turnos) repintar la sacaría antes de
+      // tiempo. En ambos, el cambio se nota al volver a la lista.
+      const cancelar = this.overlay.querySelector(".battle-target-cancel");
+      const listaALaVista =
+        this.overlay.querySelectorAll(".battle-skill-list .battle-skill-button")
+          .length > 0;
+      const enLaLista =
+        listaALaVista &&
+        !this.awaitingTarget &&
+        !this.awaitingItemTarget &&
+        cancelar?.classList.contains("hidden");
+      if (enLaLista && this.activeFighter?.team === "ally") {
+        this.renderSkills(this.activeFighter);
+      }
     }
 
     renderItems(actor) {
@@ -1685,6 +1752,20 @@
         };
       }
 
+      // Antes de la tirada de acierto: el Ataque Kosai no falla ni se esquiva.
+      if (skill.type === "execute") {
+        const damage = target.currentHp;
+        target.currentHp = 0;
+        const hitEnemy = target.team === "enemy";
+        return {
+          text: `${target.name} cae de un solo golpe.`,
+          hitEnemy,
+          hitAllies: hitEnemy ? [] : [target.id],
+          allyDamages: hitEnemy ? [] : [{ id: target.id, damage }],
+          enemyDamage: hitEnemy ? damage : 0,
+        };
+      }
+
       if (!this.rollHit(actor, skill, target)) {
         return {
           text: `${target.name} esquiva el ataque.`,
@@ -2212,13 +2293,33 @@
     }
   }
 
+  // Combate en curso, si lo hay. Solo puede haber uno: el bucle del juego está
+  // parado dentro de él mientras dura.
+  let combateActivo = null;
+
   window.BattleMinigame = {
     play(options = {}) {
       const minigame = new BattleMinigame(options);
-      return minigame.play();
+      combateActivo = minigame;
+      return minigame.play().finally(() => {
+        if (combateActivo === minigame) combateActivo = null;
+      });
     },
     allies: ALLIES,
     enemies: ENEMIES,
     items: { diapason: DIAPASON },
+    // Lo usa game.js para pintar la casilla en Configuración.
+    KOSAI_SETTING_KEY,
+    // Encender o apagar el Ataque Kosai desde el menú de pausa afecta al
+    // combate que ya está en marcha: lo llama game.js al tocar la casilla.
+    setKosaiEnabled(activo) {
+      // Un combate abortado desde los botones de arriba no resuelve su promesa,
+      // así que la referencia se suelta también aquí, mirando si su overlay
+      // sigue en pie.
+      if (combateActivo && !combateActivo.overlay?.isConnected) {
+        combateActivo = null;
+      }
+      combateActivo?.aplicarKosai(!!activo);
+    },
   };
 })();
