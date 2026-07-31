@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/room.png"
+              "value": "assets/backgrounds/habitacion_neon.png"
             },
             {
               "type": "showCharacter",
