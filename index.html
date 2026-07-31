@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css?v=20260731-2">
+    <link rel="stylesheet" href="styles.css?v=20260731-8">
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
+    <script>
+        if (navigator.userAgent.includes('Electron')) {
+            document.documentElement.classList.add('electron-app');
+        }
+    </script>
 </head>
 <body class="startup-pending">
     <div id="viewport">
@@ -72,6 +77,12 @@
             <div class="dialog-continue p5-continue">▼</div>
         </div>
 
+        <!-- Opciones durante la partida: abre el mismo menú que la tecla Esc.
+             Va arriba a la IZQUIERDA; los de retroceder y escenas van a la derecha. -->
+        <button id="options-btn" class="options-btn hidden" title="Opciones (Esc)">
+            <span class="options-icon">&#9881;</span><span class="options-label">Opciones</span>
+        </button>
+
         <!-- Retroceder a la escena anterior (pedido en la demo del 25-jul-2026).
              Se muestra solo cuando hay escena a la que volver; game.js lo gestiona. -->
         <button id="rewind-btn" class="rewind-btn hidden" title="Volver a la escena anterior">
@@ -110,6 +121,7 @@
                 <button id="start-btn" class="nm-item">Comenzar</button>
                 <button id="load-btn" class="nm-item">Capítulos</button>
                 <button id="settings-btn" class="nm-item">Configuración</button>
+                <button id="quit-btn" class="nm-item">Salir</button>
             </nav>
             <button id="menu-theme-btn" class="menu-theme-btn" title="Volver a escuchar el tema">♪</button>
 
@@ -146,11 +158,11 @@
     </div>
 
     <script src="p5-effects.js?v=20260716-2"></script>
-    <script src="battle-minigame.js?v=20260725-13"></script>
+    <script src="battle-minigame.js?v=20260727-3"></script>
     <script src="credits-minigame.js?v=20260724-2"></script>
-    <script src="rune-channeling-minigame.js?v=20260728-5"></script>
+    <script src="rune-channeling-minigame.js?v=20260724-7"></script>
     <script src="juice.js?v=20260722-1"></script>
-    <script src="engine.js?v=20260725-21"></script>
+    <script src="engine.js?v=20260731-10"></script>
     <script src="game.js?v=20260731-2"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque

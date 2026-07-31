@@ -1,9 +1,78 @@
 {
+    "name": "transfurmados",
+    "productName": "Transfurmados",
+    "version": "1.0.0",
+    "description": "Project AI.ri: Transfurmados - novela visual",
+    "author": "WildSoft",
+    "main": "electron/main.js",
     "scripts": {
+        "start": "electron .",
+        "dist": "electron-builder --win",
+        "dist:dir": "electron-builder --win --dir",
+        "dist:mac": "electron-builder --mac --arm64",
+        "dist:mac:dir": "electron-builder --mac --arm64 --dir",
         "format:js": "prettier --write \"**/*.js\"",
         "check:js": "prettier --check \"**/*.js\""
     },
     "devDependencies": {
+        "electron": "^43.2.0",
+        "electron-builder": "^26.15.3",
         "prettier": "^3.9.6"
+    },
+    "build": {
+        "appId": "com.wildsoft.transfurmados",
+        "productName": "Transfurmados",
+        "directories": {
+            "output": "dist"
+        },
+        "asar": false,
+        "files": [
+            "index.html",
+            "*.js",
+            "*.css",
+            "electron/**/*",
+            "assets/**/*",
+            "chapters/**/*",
+            "characters/**/*",
+            "!create_assets.py",
+            "!create_placeholders.html",
+            "!generate-assets.html",
+            "!menu_propuestas.html",
+            "!minijuegos_test.html",
+            "!centro-control.html"
+        ],
+        "win": {
+            "target": [
+                "nsis"
+            ],
+            "icon": "build/icon.png"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "shortcutName": "Transfurmados"
+        },
+        "mac": {
+            "target": [
+                {
+                    "target": "dmg",
+                    "arch": [
+                        "arm64"
+                    ]
+                },
+                {
+                    "target": "zip",
+                    "arch": [
+                        "arm64"
+                    ]
+                }
+            ],
+            "category": "public.app-category.games",
+            "icon": "build/icon.png",
+            "darkModeSupport": true
+        },
+        "dmg": {
+            "title": "Transfurmados"
+        }
     }
 }

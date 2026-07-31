@@ -334,9 +334,34 @@
             dificil: { speed: 11, distance: 150, maxHits: 2, spawnMs: 285 }
         };
         const FLY = {
-            facil:   { speed: 4.5, goal: 6,  maxHits: 4 },
-            medio:   { speed: 6,   goal: 9,  maxHits: 3 },
-            dificil: { speed: 7.5, goal: 12, maxHits: 2 }
+            facil: {
+                speed: 5.4, goal: 14, maxHits: 4, spawnMs: 720,
+                hangChance: 0.20, riserChance: 0.14, fallerChance: 0.22,
+                speakerChance: 0.12, gustChance: 0.14, collectChance: 0.36,
+                collectEvery: 3, phraseMin: 1, phraseMax: 2,
+                energyRegen: 11, dashCost: 42, dashDuration: 0.40,
+                difficultyRamp: 0.20,
+                hangMin: 0.23, hangMax: 0.50, corridorMin: 0.23
+            },
+            medio: {
+                speed: 7, goal: 20, maxHits: 3, spawnMs: 590,
+                hangChance: 0.26, riserChance: 0.20, fallerChance: 0.29,
+                speakerChance: 0.19, gustChance: 0.12, collectChance: 0.28,
+                collectEvery: 3, phraseMin: 1, phraseMax: 2,
+                energyRegen: 8, dashCost: 52, dashDuration: 0.36,
+                difficultyRamp: 0.32,
+                hangMin: 0.28, hangMax: 0.60, corridorMin: 0.20
+            },
+            dificil: {
+                speed: 9, goal: 26, maxHits: 2, spawnMs: 450,
+                hangChance: 0.34, riserChance: 0.28, fallerChance: 0.35,
+                speakerChance: 0.28, gustChance: 0.10, collectChance: 0.22,
+                collectEvery: 4, phraseMin: 1, phraseMax: 2,
+                energyRegen: 6, dashCost: 60, dashDuration: 0.32,
+                difficultyRamp: 0.46,
+                hangMin: 0.36, hangMax: 0.68, corridorMin: 0.18,
+                hitGraceMs: 700
+            }
         };
         const KETCHUP = {
             facil:   { goal: 10, maxHits: 5, spawnRate: 1.0, speedMult: 1.0, chiliChance: 0.4 },

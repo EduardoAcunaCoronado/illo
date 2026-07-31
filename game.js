@@ -47,6 +47,24 @@ startBtn.addEventListener("click", () => startNewGame());
 loadBtn.addEventListener("click", () => loadGame());
 document.getElementById("settings-btn")?.addEventListener("click", () => showSettingsPanel());
 
+// "Salir" solo existe en la app de escritorio. El navegador no permite cerrar
+// de forma fiable una pestaña que no ha abierto mediante script.
+const quitBtn = document.getElementById("quit-btn");
+if (window.desktopApp?.quit) {
+  quitBtn?.addEventListener("click", () => window.desktopApp.quit());
+}
+
+// Elegir cualquier OTRA opción del menú cierra la Configuración. El panel es una
+// caja centrada, no tapa el menú, así que sin esto se quedaba flotando encima
+// del selector de capítulos o de la partida recién empezada.
+// Va en el <nav> en vez de en cada botón para que valga también para las
+// opciones que se añadan más adelante.
+document.querySelector(".nm-nav")?.addEventListener("click", (e) => {
+  const opcion = e.target.closest(".nm-item");
+  if (!opcion || opcion.id === "settings-btn") return;
+  document.getElementById("settings-panel")?.remove();
+});
+
 // ===== Retroceder a la escena anterior (demo 25-jul-2026) =====
 // El bucle de juego está casi siempre parado dentro de waitForClick(), así que
 // el botón no puede limitarse a cambiar el estado: además tiene que desbloquear
@@ -99,36 +117,39 @@ function desbloquearBucle(sigueHaciendoFalta) {
     if (engine.hayRetryAbierto && engine.hayRetryAbierto()) {
       engine.abortarRetry();
     }
+    // Y con un minijuego en marcha: sus botones se ven ahora también desde
+    // arriba, así que salir de uno es una salida legítima. El bucle está DENTRO
+    // de playMinigame y solo lo suelta el aborto.
+    if (engine.hayMinijuegoAbierto && engine.hayMinijuegoAbierto()) {
+      engine.abortarMinijuego();
+    }
     if (clickHandler) { clickHandler(); return; }
     document.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     if (++intentos < 120) { setTimeout(tirar, 150); return; } // hasta 18 s
-    // Se agotó: normalmente porque hay un minijuego en marcha y el bucle está
-    // dentro de él. Se DESCARTA la petición; si se dejara puesta, saltaría sola
-    // al terminar el minijuego, en mitad de otra cosa, borrando el escenario.
+    // Se agotó. Se DESCARTA la petición; si se dejara puesta, saltaría sola más
+    // tarde, en mitad de otra cosa, borrando el escenario.
     sceneJumpRequested = null;
     rewindRequested = false;
+    exitToMenuRequested = false;
   };
   tirar();
 }
 
-// Un minijuego EN MARCHA sí tapa los botones. La pantalla de "¿reintentar?" no:
-// si no, quien llega ahí desde el menú de escenas se queda encerrado, porque la
-// única salida sería ganar el minijuego.
-// OJO: no todos los minijuegos usan `.minigame-overlay`. El combate monta
-// `.battle-minigame` y los créditos `.credits-minigame`, así que si solo se
-// mira la primera clase los botones se quedan visibles durante un COMBATE y
-// pulsarlos pide un salto que el bucle no puede atender.
-function minijuegoEnMarcha() {
-  return [...document.querySelectorAll(
-    ".minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame"
-  )].some((o) => !o.classList.contains("minigame-retry"));
+// Los botones de arriba se ven también durante los minijuegos: atascarse en uno
+// era la única forma de quedarse encerrado sin salida que no fuera ganarlo. Al
+// pulsarlos, el motor aborta el minijuego (engine.abortarMinijuego).
+//
+// La excepción es la CUTSCENE: es un vídeo que ya se salta con un clic o con
+// Esc, y unos controles encima solo estorbarían.
+function cutsceneEnMarcha() {
+  return !!document.querySelector(".cutscene-overlay");
 }
 
 function updateRewindButton() {
   if (!rewindBtn) return;
   const hayElecciones = !!document.querySelector("#choices-container.active");
   const visible =
-    isGameRunning && engine.canRewind() && !minijuegoEnMarcha() && !hayElecciones;
+    isGameRunning && engine.canRewind() && !cutsceneEnMarcha() && !hayElecciones;
   rewindBtn.classList.toggle("hidden", !visible);
 }
 
@@ -137,6 +158,7 @@ function startRewindWatcher() {
   rewindWatcher = setInterval(() => {
     updateRewindButton();
     updateScenesButton();
+    updateOptionsButton();
   }, 200);
 }
 
@@ -145,7 +167,17 @@ function stopRewindWatcher() {
   rewindWatcher = null;
   rewindBtn?.classList.add("hidden");
   scenesBtn?.classList.add("hidden");
+  optionsBtn?.classList.add("hidden");
   cerrarMenuEscenas();
+}
+
+// El botón de opciones sigue la misma regla que los otros dos: solo se esconde
+// durante una cutscene, donde Esc es del vídeo.
+function updateOptionsButton() {
+  if (!optionsBtn) return;
+  const visible = isGameRunning && !cutsceneEnMarcha();
+  optionsBtn.classList.toggle("hidden", !visible);
+  if (!visible) cerrarMenuPausa();
 }
 
 // ===== Menú de escenas =====
@@ -160,10 +192,11 @@ const scenesChapter = document.getElementById("scenes-chapter");
 // El menú de escenas SÍ se ofrece durante una elección: es navegación, y si no
 // el jugador se queda encerrado en la pantalla de elección sin poder ir a otra
 // escena (el bucle está esperando respuesta). Al saltar se aborta la elección.
-// Durante un minijuego sí se oculta: ahí el bucle está dentro del minijuego.
+// Y lo mismo durante un minijuego, por el mismo motivo: el bucle está dentro
+// del minijuego y saltar de escena lo aborta.
 function updateScenesButton() {
   if (!scenesBtn) return;
-  const visible = isGameRunning && engine.sceneList().length > 1 && !minijuegoEnMarcha();
+  const visible = isGameRunning && engine.sceneList().length > 1 && !cutsceneEnMarcha();
   scenesBtn.classList.toggle("hidden", !visible);
   if (!visible) cerrarMenuEscenas();
 }
@@ -230,50 +263,289 @@ scenesMenu?.addEventListener("click", (e) => {
   if (e.target === scenesMenu) cerrarMenuEscenas();
 });
 
-// ===== Configuración: volúmenes de música y efectos (persistentes) =====
-function showSettingsPanel() {
-  if (document.getElementById("settings-panel")) return; // ya abierto
+// ===== Configuración: volúmenes, extras (persistentes) =====
+// La clave la define battle-minigame.js, que es quien lee el ajuste al montar
+// el combate; aquí solo se pinta la casilla.
+const KOSAI_SETTING_KEY = window.BattleMinigame?.KOSAI_SETTING_KEY || "illo_kosai";
+const BLIP_SETTING_KEY = "illo_text_blip";
+
+// En la app de escritorio el localStorage se pierde en cada arranque (el
+// servidor interno cambia de puerto, y con él de origen), así que el ajuste se
+// copia además a la carpeta de datos de la app, que es quien lo devuelve al
+// abrir. En el navegador `desktopApp` no existe y basta con el localStorage.
+function saveSetting(key, value) {
+  localStorage.setItem(key, value);
+  window.desktopApp?.setSetting?.(key, value);
+}
+
+// Modo de ventana: solo tiene sentido en la app de escritorio, donde el proceso
+// principal es quien la pone a pantalla completa. En el navegador ya manda F11.
+const WINDOW_MODE_KEY = "illo_window_mode";
+const hayOpcionesDeVideo = !!window.desktopApp;
+
+function windowModeActual() {
+  return localStorage.getItem(WINDOW_MODE_KEY) === "window" ? "window" : "fullscreen";
+}
+
+// Los mismos ajustes salen en dos sitios: en Configuración (menú principal) y
+// en el menú de pausa (Esc durante la partida). Se generan y se conectan aquí
+// una sola vez para que no se dupliquen ni se desincronicen.
+//
+// Van repartidos en pestañas (Vídeo, Sonido, Trucos). La de Vídeo se cae entera
+// en el navegador, así que la primera pestaña no es siempre la misma: la activa
+// se decide aquí, no en el HTML.
+function settingsMarkup() {
   const volOf = (k, def) => {
     const v = parseFloat(localStorage.getItem(k));
     return isNaN(v) ? def : Math.round(v * 100);
   };
-  const panel = document.createElement("div");
-  panel.className = "nm-modal";
-  panel.id = "settings-panel";
-  panel.innerHTML = `
-        <h2 class="nm-modal-title">Configuración</h2>
-        <div class="nm-settings">
-            <label class="nm-setting-row">🎵 Música
-                <input type="range" id="vol-music" min="0" max="100" value="${volOf("illo_vol_music", 100)}">
-                <span class="nm-setting-val" id="vol-music-val"></span>
-            </label>
-            <label class="nm-setting-row">🔊 Efectos
-                <input type="range" id="vol-sfx" min="0" max="100" value="${volOf("illo_vol_sfx", 100)}">
-                <span class="nm-setting-val" id="vol-sfx-val"></span>
-            </label>
-        </div>
-        <div class="nm-modal-buttons">
-            <button id="settings-close">Volver</button>
-        </div>
-    `;
-  document.getElementById("game-container").appendChild(panel);
+  const kosaiOn = localStorage.getItem(KOSAI_SETTING_KEY) === "1";
+  const blipsOn = localStorage.getItem(BLIP_SETTING_KEY) !== "0";
+  const modo = windowModeActual();
 
-  const wire = (sliderId, storeKey) => {
-    const slider = panel.querySelector("#" + sliderId);
-    const label = panel.querySelector("#" + sliderId + "-val");
+  const grupos = [];
+  if (hayOpcionesDeVideo) {
+    grupos.push({
+      id: "video",
+      titulo: "🖥️ Vídeo",
+      // Dos botones en vez de un <select>: la lista que despliega un select la
+      // dibuja el sistema, sale clara sobre el panel oscuro y no hay CSS que la
+      // alcance. Así además va a juego con las pestañas.
+      contenido: `
+            <div class="nm-setting-block">
+                <span class="nm-setting-label" id="nm-window-mode-label">Modo de ventana</span>
+                <div class="nm-segmented opt-window-mode" role="radiogroup" aria-labelledby="nm-window-mode-label">
+                    <button type="button" class="nm-seg${modo === "fullscreen" ? " is-active" : ""}"
+                            role="radio" aria-checked="${modo === "fullscreen"}" data-mode="fullscreen">Pantalla completa</button>
+                    <button type="button" class="nm-seg${modo === "window" ? " is-active" : ""}"
+                            role="radio" aria-checked="${modo === "window"}" data-mode="window">Ventana</button>
+                </div>
+                <p class="nm-setting-hint">También se cambia en cualquier momento con F11.</p>
+            </div>`,
+    });
+  }
+  grupos.push({
+    id: "sonido",
+    titulo: "🔊 Sonido",
+    contenido: `
+            <label class="nm-setting-row">Música
+                <input type="range" class="opt-vol-music" min="0" max="100" value="${volOf("illo_vol_music", 100)}">
+                <span class="nm-setting-val"></span>
+            </label>
+            <label class="nm-setting-row">Efectos
+                <input type="range" class="opt-vol-sfx" min="0" max="100" value="${volOf("illo_vol_sfx", 100)}">
+                <span class="nm-setting-val"></span>
+            </label>
+            <div class="nm-setting-toggle">
+                <label class="nm-setting-row">Blips de texto
+                    <input type="checkbox" class="opt-blips" ${blipsOn ? "checked" : ""}>
+                </label>
+                <p class="nm-setting-hint">Reproduce un sonido breve mientras aparece cada letra del diálogo.</p>
+            </div>`,
+  });
+  grupos.push({
+    id: "trucos",
+    titulo: "⚔️ Trucos",
+    contenido: `
+            <div class="nm-setting-toggle">
+                <label class="nm-setting-row">Ataque Kosai
+                    <input type="checkbox" class="opt-kosai" ${kosaiOn ? "checked" : ""}>
+                </label>
+                <p class="nm-setting-hint">Añade a todo el equipo un golpe que deja al objetivo a 0 PV en los combates por turnos.</p>
+            </div>`,
+  });
+
+  const pestanas = grupos
+    .map(
+      (g, i) => `
+            <button type="button" class="nm-tab${i === 0 ? " is-active" : ""}" role="tab"
+                    aria-selected="${i === 0}" aria-controls="nm-pane-${g.id}" data-tab="${g.id}">${g.titulo}</button>`,
+    )
+    .join("");
+
+  const paneles = grupos
+    .map(
+      (g, i) => `
+            <div class="nm-tab-pane${i === 0 ? " is-active" : ""}" role="tabpanel"
+                 id="nm-pane-${g.id}" data-pane="${g.id}">${g.contenido}
+            </div>`,
+    )
+    .join("");
+
+  return `
+        <div class="nm-settings">
+            <div class="nm-tabs" role="tablist">${pestanas}</div>
+            <div class="nm-tab-panes">${paneles}</div>
+        </div>
+  `;
+}
+
+function wireSettings(panel) {
+  const tabs = [...panel.querySelectorAll(".nm-tab")];
+  const panes = [...panel.querySelectorAll(".nm-tab-pane")];
+  const activar = (id) => {
+    tabs.forEach((t) => {
+      const activa = t.dataset.tab === id;
+      t.classList.toggle("is-active", activa);
+      t.setAttribute("aria-selected", String(activa));
+    });
+    panes.forEach((p) => p.classList.toggle("is-active", p.dataset.pane === id));
+  };
+  tabs.forEach((tab) => tab.addEventListener("click", () => activar(tab.dataset.tab)));
+
+  const wire = (selector, storeKey) => {
+    const slider = panel.querySelector(selector);
+    const label = slider.parentElement.querySelector(".nm-setting-val");
     const paint = () => { label.textContent = slider.value + "%"; };
     paint();
     slider.addEventListener("input", () => {
-      localStorage.setItem(storeKey, String(slider.value / 100));
+      saveSetting(storeKey, String(slider.value / 100));
       paint();
       engine.applyVolumeSettings();
     });
   };
-  wire("vol-music", "illo_vol_music");
-  wire("vol-sfx", "illo_vol_sfx");
+  wire(".opt-vol-music", "illo_vol_music");
+  wire(".opt-vol-sfx", "illo_vol_sfx");
 
-  panel.querySelector("#settings-close").addEventListener("click", () => panel.remove());
+  // Se puede tocar en mitad de un combate (menú de pausa): el golpe aparece o
+  // desaparece de la lista de habilidades al momento, sin esperar al siguiente.
+  const kosai = panel.querySelector(".opt-kosai");
+  kosai.addEventListener("change", () => {
+    saveSetting(KOSAI_SETTING_KEY, kosai.checked ? "1" : "0");
+    window.BattleMinigame?.setKosaiEnabled?.(kosai.checked);
+  });
+
+  const blips = panel.querySelector(".opt-blips");
+  blips.addEventListener("change", () => {
+    saveSetting(BLIP_SETTING_KEY, blips.checked ? "1" : "0");
+  });
+
+  // Modo de ventana: lo aplica el proceso principal al recibir el ajuste. Y al
+  // revés, si se cambia con F11 con el panel abierto, los botones se enteran.
+  const grupoModo = panel.querySelector(".opt-window-mode");
+  if (!grupoModo) return;
+  const botonesModo = [...grupoModo.querySelectorAll(".nm-seg")];
+  const pintarModo = (valor) => {
+    botonesModo.forEach((b) => {
+      const activo = b.dataset.mode === valor;
+      b.classList.toggle("is-active", activo);
+      b.setAttribute("aria-checked", String(activo));
+    });
+  };
+  botonesModo.forEach((boton) => {
+    boton.addEventListener("click", () => {
+      pintarModo(boton.dataset.mode);
+      saveSetting(WINDOW_MODE_KEY, boton.dataset.mode);
+    });
+  });
+  const dejarDeEscuchar = window.desktopApp?.onSettingChanged?.((key, value) => {
+    // El panel se cierra con remove(), así que no hay un sitio donde darse de
+    // baja: se hace aquí, la primera vez que llega un aviso sin panel delante.
+    if (!grupoModo.isConnected) return dejarDeEscuchar?.();
+    if (key === WINDOW_MODE_KEY) pintarModo(value);
+  });
 }
+
+// Configuración se abre igual que Capítulos: pantalla completa con el fondo
+// difuminado detrás y el menú principal retirado, no como una cajita encima.
+// De ahí que comparta las clases `chapter-selector*`; lo propio de este panel
+// (ancho, sin lista que desplazar) va en `.settings-selector-panel`.
+function showSettingsPanel() {
+  if (document.getElementById("settings-panel")) return; // ya abierto
+
+  mainMenu.classList.add("hidden");
+
+  const selector = document.createElement("div");
+  selector.id = "settings-panel";
+  selector.className = "chapter-selector settings-selector";
+  selector.innerHTML = `
+        <div class="chapter-selector-panel settings-selector-panel">
+            <h2 class="chapter-selector-title">Configuración</h2>
+            ${settingsMarkup()}
+            <button class="chapter-selector-back" id="settings-close">Volver</button>
+        </div>
+    `;
+
+  document.getElementById("game-container").appendChild(selector);
+  wireSettings(selector);
+
+  selector.querySelector("#settings-close").addEventListener("click", () => {
+    selector.remove();
+    mainMenu.classList.remove("hidden");
+  });
+}
+
+// ===== Menú de pausa (Esc o el botón de arriba a la izquierda) =====
+// Lleva los mismos ajustes que Configuración más la salida al menú principal.
+let exitToMenuRequested = false;
+const optionsBtn = document.getElementById("options-btn");
+
+function menuPausaAbierto() {
+  return !!document.getElementById("pause-menu");
+}
+
+function cerrarMenuPausa() {
+  document.getElementById("pause-menu")?.remove();
+}
+
+function abrirMenuPausa() {
+  if (menuPausaAbierto() || !isGameRunning || cutsceneEnMarcha()) return;
+
+  const overlay = document.createElement("div");
+  overlay.id = "pause-menu";
+  overlay.className = "pause-menu";
+  overlay.innerHTML = `
+        <div class="nm-modal pause-panel">
+            <h2 class="nm-modal-title">Opciones</h2>
+            ${settingsMarkup()}
+            <div class="nm-modal-buttons pause-buttons">
+                <button id="pause-resume">Continuar</button>
+                <button id="pause-exit" class="pause-exit">Menú principal</button>
+            </div>
+        </div>
+    `;
+  document.getElementById("game-container").appendChild(overlay);
+  wireSettings(overlay);
+
+  // El juego avanza el diálogo con cualquier clic en document: sin esto, tocar
+  // un deslizador o el propio panel pasaría de línea por detrás.
+  overlay.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (e.target === overlay) cerrarMenuPausa(); // clic fuera del panel = cerrar
+  });
+
+  overlay.querySelector("#pause-resume").addEventListener("click", cerrarMenuPausa);
+  overlay.querySelector("#pause-exit").addEventListener("click", () => {
+    cerrarMenuPausa();
+    salirAlMenuPrincipal();
+  });
+}
+
+// El bucle de juego casi siempre está parado dentro de waitForClick(), así que
+// no basta con bajar la bandera: hay que despertarlo igual que hacen los
+// botones de retroceder y de escenas. playGame() atiende la petición y sale.
+function salirAlMenuPrincipal() {
+  if (!isGameRunning) return;
+  exitToMenuRequested = true;
+  desbloquearBucle(() => exitToMenuRequested);
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  // Durante una cutscene, Esc es suyo: salta el vídeo.
+  if (!isGameRunning || cutsceneEnMarcha()) return;
+  e.preventDefault();
+  if (menuPausaAbierto()) cerrarMenuPausa();
+  else abrirMenuPausa();
+});
+
+optionsBtn?.addEventListener("click", (e) => {
+  // Que el clic no llegue a document: contaría como "avanzar diálogo"
+  e.preventDefault();
+  e.stopPropagation();
+  if (menuPausaAbierto()) cerrarMenuPausa();
+  else abrirMenuPausa();
+});
 
 // ===== Arranque: disclaimer -> opening de Samu -> menú principal =====
 // El navegador exige un gesto del usuario para autorizar audio. El disclaimer
@@ -365,6 +637,7 @@ const MENU_AMBIENCE_VOL = 0.12; // sonido de base (bajito, SIEMPRE a velocidad n
 const MENU_MUSIC_VOL = 0.5;     // tema principal
 const MENU_CHILL_VOL = 0.32;    // el chill va por debajo del tema, como música de sala
 let menuAudioUnlocked = false;
+const isDesktopApp = !!window.desktopApp;
 
 function menuVideoEl() {
   return document.getElementById("menu-video");
@@ -398,6 +671,11 @@ function playMenuChill() {
 // El tema del menú suena UNA sola vez (como una intro); al terminar entra la
 // música chill de fondo. El botón ♪ permite volver a escucharlo cuando se quiera.
 function playMenuTheme() {
+  // El tema pertenece al menú y no debe solaparse con la secuencia inicial.
+  // showMainMenuAfterOpening marca el arranque como terminado antes de llamarlo.
+  if (!startupFinished && document.body.classList.contains("startup-pending")) return;
+  if (mainMenu.classList.contains("hidden")) return;
+
   try { engine.stopSound("menu_chill", 800); } catch (err) {} // el tema manda
   const audio = engine.playSound(MENU_MUSIC_SRC, { id: "menu_music", loop: false, volume: MENU_MUSIC_VOL, fadeIn: 600 });
   const btn = document.getElementById("menu-theme-btn");
@@ -437,6 +715,12 @@ document.getElementById("menu-theme-btn").addEventListener("click", (e) => {
   e.stopPropagation();
   playMenuTheme();
 });
+
+// Electron permite autoplay mediante la política configurada en main.js. En
+// navegador se conserva el desbloqueo tras el primer gesto, exigido por este.
+if (isDesktopApp) {
+  menuAudioUnlocked = true;
+}
 
 // Fundir y ocultar el vídeo + sonidos del menú (al empezar a jugar)
 function stopMenuMedia() {
@@ -617,6 +901,13 @@ async function playChapter(chapterIdentifier, transitionCurtain = null) {
 async function playGame() {
   startRewindWatcher();
   while (isGameRunning) {
+    // Salida al menú principal desde el menú de pausa
+    if (exitToMenuRequested) {
+      exitToMenuRequested = false;
+      volverAlMenuPrincipal();
+      break;
+    }
+
     // Petición de retroceso: rebobinar y volver a reproducir la escena anterior
     // desde su primera línea (sus acciones repintan fondo, personajes y música).
     if (rewindRequested) {
@@ -678,6 +969,22 @@ function waitForClick() {
       }, 45);
     }
   });
+}
+
+// Abandona la partida en curso y deja el menú principal como al arrancar.
+// No pasa por endGame(): ahí hay pantalla de fin de capítulo y encadenado con
+// el siguiente, y esto es una salida seca a mitad de capítulo.
+function volverAlMenuPrincipal() {
+  isGameRunning = false;
+  rewindRequested = false;
+  sceneJumpRequested = null;
+  exitToMenuRequested = false;
+  stopRewindWatcher();
+  cerrarMenuPausa();
+  engine.hideDialog();
+  engine.reset(); // también para la música y limpia fondo y personajes
+  mainMenu.classList.remove("hidden");
+  showMenuMedia();
 }
 
 async function endGame() {
