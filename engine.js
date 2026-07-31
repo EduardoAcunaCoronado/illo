@@ -27,6 +27,12 @@ class VisualNovelEngine {
         this.debugMode = false; // Modo debug para testing
         // Sello de caché fijo para toda la sesión (ver cacheBustAsset)
         this.assetStamp = Date.now();
+        // Una URL y una decodificación por asset durante toda la sesión. Los
+        // minijuegos cambian sprites muchas veces por segundo; conservar tanto la
+        // URL como el Image evita nuevas consultas y nuevas decodificaciones.
+        this.assetUrlCache = new Map();
+        this.imagePreloadCache = new Map();
+        this.preloadedImages = new Map();
     }
 
     // Añade un objeto al inventario (sin duplicar). Persiste entre capítulos.
@@ -2527,14 +2533,20 @@ class VisualNovelEngine {
         const SP = 'assets/minigames/cap3/sprites/';
         const CAP = 'assets/minigames/cap3/';
         const FLIGHT_FRAMES = [
-            'edu_fly_v2_0',
-            'edu_fly_v2_1',
-            'edu_fly_v2_2',
-            'edu_fly_v2_3',
-            'edu_fly_v2_4'
+            'edu_fly_v3_0',
+            'edu_fly_v3_1',
+            'edu_fly_v3_2',
+            'edu_fly_v3_3',
+            'edu_fly_v3_4',
+            'edu_fly_v3_5',
+            'edu_fly_v3_6',
+            'edu_fly_v3_7'
         ];
-        const BOOST_FRAME = 'edu_fly_v2_5';
-        const PLAYER_FRAMES = [...FLIGHT_FRAMES, BOOST_FRAME];
+        const DASH_FRAMES = [
+            'edu_fly_v3_dash_0',
+            'edu_fly_v3_dash_1'
+        ];
+        const PLAYER_FRAMES = [...FLIGHT_FRAMES, ...DASH_FRAMES];
         const asset = (path) => `url('${this.cacheBustAsset(path)}')`;
 
         await this.preloadImages([
@@ -2633,7 +2645,9 @@ class VisualNovelEngine {
             let lastCableSide = Math.random() < 0.5 ? 'top' : 'bottom';
             let objects = [];
             let frameIndex = 0;
+            let dashFrameIndex = 0;
             let frameClock = 0;
+            let wasDashing = false;
             let playerX = homeX;
             let playerY = 0.50;
             let previousPlayerY = playerY;
@@ -3281,9 +3295,10 @@ class VisualNovelEngine {
                 dashUntil = now + (cfg.dashDuration || 0.46) * 1000;
                 dashCooldownUntil = dashUntil + 180;
                 invulnerableUntil = Math.max(invulnerableUntil, dashUntil);
-                frameIndex = 0;
+                dashFrameIndex = 0;
                 frameClock = 0;
-                playerEl.style.backgroundImage = asset(SP + BOOST_FRAME + '.png');
+                playerEl.style.backgroundImage =
+                    asset(SP + DASH_FRAMES[0] + '.png');
                 playerEl.classList.remove('dash-pop');
                 void playerEl.offsetWidth;
                 playerEl.classList.add('dash-pop');
@@ -3438,12 +3453,29 @@ class VisualNovelEngine {
                 playerY += (targetY - playerY) * Math.min(1, dt * 10.5);
                 updatePlayerPosition(now);
 
-                frameClock += dt;
-                if (frameClock >= 0.10 && now >= dashUntil) {
-                    frameClock = 0;
+                const dashing = now < dashUntil;
+                if (wasDashing && !dashing) {
                     frameIndex = (frameIndex + 1) % FLIGHT_FRAMES.length;
                     playerEl.style.backgroundImage =
                         asset(SP + FLIGHT_FRAMES[frameIndex] + '.png');
+                    frameClock = 0;
+                }
+                wasDashing = dashing;
+
+                frameClock += dt;
+                const frameDuration = dashing ? 0.07 : 0.08;
+                if (frameClock >= frameDuration) {
+                    frameClock = 0;
+                    if (dashing) {
+                        dashFrameIndex =
+                            (dashFrameIndex + 1) % DASH_FRAMES.length;
+                        playerEl.style.backgroundImage =
+                            asset(SP + DASH_FRAMES[dashFrameIndex] + '.png');
+                    } else {
+                        frameIndex = (frameIndex + 1) % FLIGHT_FRAMES.length;
+                        playerEl.style.backgroundImage =
+                            asset(SP + FLIGHT_FRAMES[frameIndex] + '.png');
+                    }
                 }
 
                 energy = Math.min(100, energy + (cfg.energyRegen || 10) * dt);
@@ -3467,7 +3499,6 @@ class VisualNovelEngine {
                     beep(1040, 0.14, { type: 'triangle', volume: 0.045, delay: 0.08 });
                 }
 
-                const dashing = now < dashUntil;
                 for (const object of objects) {
                     if (object.taken) continue;
                     object.previousX = object.x;
@@ -3558,24 +3589,27 @@ class VisualNovelEngine {
             return entry && entry.name ? [entry.name] : [];
         };
         const spriteName = (entry) => spriteNames(entry)[0];
+        const isFly = cfg.mode === 'fly';
 
         // Precargar TODO lo que el minijuego puede llegar a pintar. Sin esto, el
         // primer uso de cada sprite (y el primer cambio de fotograma) llega antes
-        // que la imagen y se ve un hueco en blanco.
+        // que la imagen y se ve un hueco en blanco. Los cables y focos antiguos
+        // pertenecen solo al modo fly: chase no debe descargar esos PNG de 2 MB.
         await this.preloadImages([
             ...(cfg.playerFrames || []).map(n => SP + n + '.png'),
             ...(cfg.obstacles || []).flatMap(spriteNames).map(n => SP + n + '.png'),
             ...(cfg.enemies || []).flat().map(n => SP + n + '.png'),
             ...(cfg.collectible || []).map(n => SP + n + '.png'),
-            ...(cfg.fallerFrames || ['aire_foco', 'aire_foco_on']).map(n => SP + n + '.png'),
-            ...['aire_cable_cap', 'aire_cable_body', 'aire_cable_tip'].map(n => SP + n + '.png'),
+            ...(isFly ? (cfg.fallerFrames || ['aire_foco', 'aire_foco_on']) : [])
+                .map(n => SP + n + '.png'),
+            ...(isFly ? ['aire_cable_cap', 'aire_cable_body', 'aire_cable_tip'] : [])
+                .map(n => SP + n + '.png'),
             ...[cfg.bgFar, cfg.bgNear, cfg.backdrop, cfg.moon]
                 .filter(Boolean).map(n => CAP + n + '.png')
         ]);
         const speed = cfg.speed || 6;
         const maxHits = cfg.maxHits || 3;
         const goal = cfg.goal || 60;
-        const isFly = cfg.mode === 'fly';
 
         return new Promise(resolve => {
             const overlay = document.createElement('div');
@@ -4562,19 +4596,48 @@ class VisualNovelEngine {
         if (!path || path.startsWith('data:') || /^https?:\/\//.test(path)) {
             return path;
         }
+        const cached = this.assetUrlCache.get(path);
+        if (cached) return cached;
         const separator = path.includes('?') ? '&' : '?';
-        return `${path}${separator}v=${this.assetStamp}`;
+        const resolved = `${path}${separator}v=${this.assetStamp}`;
+        this.assetUrlCache.set(path, resolved);
+        return resolved;
     }
 
-    // Precarga una lista de imágenes y no resuelve hasta tenerlas decodificadas.
-    // Se usa antes de arrancar un minijuego para que el primer cambio de
-    // fotograma no pegue un salto en blanco.
+    // Precarga una lista de imágenes y conserva tanto la promesa como el Image.
+    // Si se repite un minijuego o dos motores comparten un sprite, se reutiliza
+    // exactamente la misma descarga y la misma decodificación en memoria.
     preloadImages(paths) {
-        return Promise.all((paths || []).map(p => new Promise(resolve => {
+        const uniquePaths = [...new Set((paths || []).filter(Boolean))];
+        return Promise.all(uniquePaths.map(path => {
+            const src = this.cacheBustAsset(path);
+            const cached = this.imagePreloadCache.get(src);
+            if (cached) return cached;
+
             const img = new Image();
-            img.onload = img.onerror = () => resolve();
-            img.src = this.cacheBustAsset(p);
-        })));
+            img.decoding = 'async';
+            const pending = new Promise(resolve => {
+                img.onload = async () => {
+                    try {
+                        if (img.decode) await img.decode();
+                    } catch (error) {
+                        // onload ya garantiza una imagen utilizable; decode puede
+                        // rechazarse si el navegador la había decodificado antes.
+                    }
+                    this.preloadedImages.set(src, img);
+                    resolve(img);
+                };
+                img.onerror = () => {
+                    // Un fallo transitorio debe poder reintentarse en la próxima
+                    // entrada al minijuego, no quedar memorizado toda la sesión.
+                    this.imagePreloadCache.delete(src);
+                    resolve(null);
+                };
+                img.src = src;
+            });
+            this.imagePreloadCache.set(src, pending);
+            return pending;
+        }));
     }
 
     getCharacterKey(characterName) {

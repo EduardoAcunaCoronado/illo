@@ -358,8 +358,15 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   elimina el daño invisible que causaban los cables inferiores renderizados por
   debajo del viewport. Tras un golpe, el obstáculo queda resaltado brevemente y
   su aviso tiene prioridad para que el origen del daño sea visible.
+- Optimización de assets de persecución y Eduvuelo: engine.js conserva por sesión
+  cada URL, promesa de precarga e Image ya decodificado; reintentar una partida o
+  cambiar frames reutiliza memoria. Chase no precarga los tres PNG grandes del
+  cable del antiguo motor fly. El servidor interno de Electron usa caché
+  inmutable anual para imagen/audio/vídeo/fuentes y ETag + no-cache para
+  HTML/JS/CSS/JSON, sustituyendo el antiguo no-store global que forzaba peticiones
+  repetidas al servidor.
 - Rhythm/Neon Runner: notas, sliders y spinner; resultado por precisión.
-- Eduvuelo V2: vuelo arcade; recoger frases de partituras, encadenar casi-roces,
+- Eduvuelo V3: vuelo arcade; recoger frases de partituras, encadenar casi-roces,
   administrar el impulso y superar cables, focos, altavoces y ráfagas. Tras
   comprobar que el dash abarataba demasiado la evasión, se endurecieron todos
   los modos. Presets fácil/medio/difícil: velocidad 5.4/7/9, objetivo 14/20/26,
@@ -368,11 +375,13 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   objetivo 20/24/28, velocidad 6.8/7.8/8.8, impactos 3/2/2 y spawn
   600/520/450 ms; regeneración 8/7/6, coste 50/55/60 y duración
   0.38/0.35/0.32 s. Usa el fondo
-  aire_fondo_v2.png, un nuevo Edu consistente de seis poses (cinco de aleteo
-  y una de impulso), normalizadas en 512×512 transparente y limpias de restos
-  entre celdas. Los seis frames y la hoja fuente tienen eliminada la cuña blanca
-  de fondo que quedaba encerrada entre el bigote y la garganta, sin alterar el
-  bigote ni el contorno de la mandíbula. El peligro usa aire_cable_v3.png: un cable vertical completo
+  aire_fondo_v2.png y un Edu V3 basado en el modelo canónico: ocho poses de
+  aleteo y dos de impulso, normalizadas en 512×512 transparente, con torso
+  estable, margen seguro y un único componente visual para impedir motas fuera
+  del sprite. Los diez frames y sus hojas fuente eliminan la cuña blanca y los
+  falsos bucles de bigote detrás de la cabeza o hacia las alas. Solo quedan los
+  dos bigotes faciales canónicos, nacidos en el hocico y terminados antes de la
+  espalda. El peligro usa aire_cable_v3.png: un cable vertical completo
   y sin costuras con anclaje, trenza, refuerzos, terminal roto y electricidad
   animada; se escala conservando la proporción y se invierte para el suelo.
 - Battle supervivencia: Samu+Edu resisten a la marea hasta que Seraphyna canta.
@@ -408,6 +417,15 @@ PRESENTACIÓN
   El vídeo puede terminar o saltarse con su botón; después funde al menú, activa
   menu_loop.mp4 y lanza el tema. Menú y vídeo de fondo permanecen ocultos e
   inertes antes del gesto. El volumen del opening respeta illo_vol_music.
+- El fondo del menú es un bucle H.264 4K de 10 s, 48 FPS y 480 frames en
+  assets/videos/menu_loop.mp4. Conserva íntegros los 240 frames 4K originales e
+  inserta entre ellos frames de movimiento con RIFE v4.6 (UHD + TTA temporal).
+  También interpola la transición del último frame al primero para cerrar el
+  bucle sin duplicados. La geometría, el oleaje, los neones, las siluetas, la
+  brisa dorada y las notas originales no se recomponen. Los fuentes reproducibles
+  son scripts/render_menu_loop_4k.py (Real-ESRGAN) y
+  scripts/interpolate_menu_loop_48fps.py (rife-ncnn-vulkan). menu_loop_old.mp4
+  se conserva intacto como fuente de movimiento y referencia.
 - Menú “Neón de Medianoche” con vídeo en bucle a media velocidad, tema inicial,
   relevo chill, botón musical y marca WildSoft.
 - Visual novel con fondos ilustrados, sprites grandes, caja de diálogo inferior,
@@ -415,6 +433,18 @@ PRESENTACIÓN
 - Capítulos tienen cartela de entrada y pantalla de fin.
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
+- Los 24 planos del concierto tienen una restauración no destructiva 4K en
+  assets/cutscenes/nuevos_frames_4k/: PNG RGB de 3840×2160 con caras, manos,
+  anatomía del público, enemigos, vallas y escenario reconstruidos. Samu, Edu
+  y el gorila siguen su arte canónico; los primeros planos de Seraphyna fijan
+  su identidad. frame_11_embobados.png aplica además a Samu el patrón cromático
+  exacto de assets/characters/samu/Samu.png. Los originales de nuevos_frames/
+  y nuevos_frames_x2/ no se modificaron.
+- El opening del concierto se recompuso con esos planos en
+  assets/cutscenes/opening_tony_4k.mp4: H.264 3840×2160, 30 FPS, 117,6 s,
+  audio AAC original y montaje con zooms, fundidos, fogonazos y pausa negra
+  final. opening_tony.mp4 (720p) permanece intacto; la entrega 4K ocupa menos
+  de 100 MB para poder versionarse y usarse en el juego.
 - Créditos del final bueno recorren imágenes del viaje. El final incierto no los lanza.
 
 VALIDACIÓN REALIZADA EL 2026-07-30

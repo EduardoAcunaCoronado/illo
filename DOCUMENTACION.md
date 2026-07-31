@@ -842,6 +842,17 @@ arriba, exactamente en la misma zona que su hitbox. Esto corrige el antiguo
 caso en que la transformación visual desplazaba el dibujo bajo el borde
 inferior mientras la colisión seguía dentro de la zona jugable.
 
+Los assets de persecución y `eduvuelo` se precargan y decodifican una sola vez
+por sesión. `VisualNovelEngine` memoriza las URLs, las promesas de carga y los
+objetos `Image`, por lo que repetir una partida o volver a utilizar un frame no
+inicia otra petición. La persecución tampoco precarga ya los tres PNG grandes del
+cable del antiguo modo de vuelo. En la aplicación de Electron,
+`electron/static-server.js` entrega imágenes, audio, vídeo y fuentes con caché
+inmutable; HTML, JavaScript, CSS y JSON siguen revalidándose mediante `ETag`.
+El sello estable de `cacheBustAsset()` cambia al recargar la aplicación, de modo
+que una edición de assets obtiene una URL nueva sin provocar descargas continuas
+dentro de la partida.
+
 Parámetros principales (todos admiten su variante `...ByDelay` desde historia):
 
 | Parámetro | Descripción | Por defecto |
@@ -877,20 +888,28 @@ energía a `8/7/6`, eleva el coste del dash a `50/55/60` y acorta su duración a
 siendo una herramienta decisiva, pero ya no permite atravesar casi todos los
 patrones sin administrar la energía.
 
-Los assets V2 están en `assets/minigames/cap3/`: `aire_fondo_v2.png` para el
-escenario, `edu_volando_sheet_v2.png` con el nuevo modelo y seis poses de Edu,
-y `cables_aire_sheet_v2.png` como fuente del diseño del cable. Dentro de
-`sprites/` están los seis `edu_fly_v2_*.png`, el cable continuo
-`aire_cable_v3.png`, `aire_foco_v2.png`, `aire_altavoz_v2.png` y
-`partitura_v2.png`. Los cinco primeros frames de Edu forman un ciclo estable
-de aleteo y el sexto es una pose específica de impulso. Todos están
-normalizados sobre lienzos transparentes de `512×512`, con margen y sin restos
-de celdas vecinas. También se limpió en los seis frames la cuña blanca atrapada
-entre el bigote y la garganta, conservando el bigote y el contorno de la
-mandíbula; la hoja fuente se reconstruyó con la misma corrección. El cable de
-juego es un único dibujo continuo de anclaje,
-cuerpo trenzado y terminal electrificado: su ancho se calcula a partir de su
-altura y se invierte desde el suelo sin uniones ni cambios de escala internos.
+Los assets del escenario siguen en `assets/minigames/cap3/`:
+`aire_fondo_v2.png` y `cables_aire_sheet_v2.png`. Edu usa la revisión V3,
+construida a partir del modelo canónico de `assets/characters/edu/`: la hoja
+`edu_volando_sheet_v3.png` contiene ocho poses de vuelo y
+`edu_volando_dash_sheet_v3.png` contiene dos poses específicas de impulso.
+Dentro de `sprites/` están los ocho `edu_fly_v3_0.png`…
+`edu_fly_v3_7.png` y los dos `edu_fly_v3_dash_*.png`, todos normalizados sobre
+lienzos transparentes de `512×512`, con el torso anclado en el mismo punto,
+margen seguro y un único componente visual para impedir motas o partes fuera
+del sprite. El ciclo de vuelo recorre ocho alturas de ala y el dash alterna sus
+dos poses a mayor cadencia.
+
+Los diez frames conservan exactamente los dos bigotes faciales del diseño
+canónico: ambos nacen del hocico y el visible termina junto a la
+mandíbula/garganta. Se eliminaron la cuña blanca previa y todos los falsos
+trazos que nacían detrás de la cabeza o formaban bucles hacia las alas. Las
+hojas fuente se reconstruyeron con la misma corrección. El resto de sprites
+activos son el cable continuo `aire_cable_v3.png`, `aire_foco_v2.png`,
+`aire_altavoz_v2.png` y `partitura_v2.png`. El cable de juego es un único
+dibujo continuo de anclaje, cuerpo trenzado y terminal electrificado: su ancho
+se calcula a partir de su altura y se invierte desde el suelo sin uniones ni
+cambios de escala internos.
 
 #### Batallas: modo supervivencia (extensión aditiva)
 
@@ -1419,6 +1438,23 @@ El primer acceso sigue una secuencia cerrada:
    **Saltar opening**.
 5. Tras un fundido de 560 ms aparece el menú principal, comienza su vídeo en
    bucle y suena el tema habitual.
+
+El fondo del menú utiliza `assets/videos/menu_loop.mp4`, un bucle H.264
+de 10 segundos, 48 FPS y `3840×2160`. Sus 240 fotogramas 4K originales se
+mantienen íntegros y entre cada pareja se inserta un fotograma de movimiento
+generado con RIFE, dando 480 frames finales. La interpolación incluye la pareja
+formada por el último frame y el primero, por lo que el cierre del bucle también
+es fluido y no se duplica ningún fotograma. No se recomponen capas ni se
+sustituye el escenario: se conservan la geometría, el oleaje del mar, el
+titileo de los neones, las siluetas móviles, la brisa dorada y todas las notas
+en sus posiciones originales.
+
+La reconstrucción 4K desde `assets/videos/menu_loop_old.mp4` es reproducible con
+`scripts/render_menu_loop_4k.py` y `realesrgan-ncnn-vulkan`. La interpolación
+cíclica posterior se ejecuta con `scripts/interpolate_menu_loop_48fps.py` y la
+herramienta oficial `rife-ncnn-vulkan`, usando `rife-v4.6`, modo UHD y TTA
+temporal. El antiguo `menu_loop_old.mp4` permanece intacto como fuente de
+movimiento y referencia.
 
 El opening final dura 80,704 segundos, está codificado en H.264 a 1920×1080 y
 30 fps, y utiliza audio AAC estéreo a 48 kHz. El MP4 distribuible se copió desde
@@ -3038,6 +3074,34 @@ es en el campo `build` del `package.json`, no borrando `locales/` a mano:
 
 El recorte de verdad está en `assets/`: `cutscenes/` (421 MB) y `sounds/`
 (303 MB) son más de la mitad del juego.
+
+#### Restauración 4K de la cinemática del concierto
+
+Los 24 planos de `assets/cutscenes/nuevos_frames/` tienen una restauración no
+destructiva en `assets/cutscenes/nuevos_frames_4k/`. Todos conservan el nombre
+original y se entregan como PNG RGB de `3840×2160`.
+
+La restauración no consiste únicamente en ampliar píxeles: cada plano se
+reconstruyó visualmente manteniendo encuadre, puesta en escena, iluminación y
+paleta. Se corrigieron caras, ojos, hocicos, dientes, manos, patas, garras,
+agarres, solapes, anatomía del público, geometría de vallas y elementos del
+escenario. Samu, Edu y el gorila usan como referencia sus artes canónicos; los
+primeros planos de Seraphyna fijan su identidad en toda la secuencia. Los
+planos de público mantienen menos detalle en la distancia para conservar
+profundidad, y el frame final corrige además el texto legible `SERAPHYNA` y
+`ALL ACCESS`. En `frame_11_embobados.png`, Samu usa el patrón cromático
+canónico de `assets/characters/samu/Samu.png`: base topo, zonas gris crema,
+parches marrón oscuro, nariz naranja y gorguera blanca ribeteada en rojo. Los
+originales y la antigua ampliación `nuevos_frames_x2/` permanecen intactos.
+
+El montaje reconstruido se entrega en
+`assets/cutscenes/opening_tony_4k.mp4`. Es un H.264 de `3840×2160` a 30 FPS y
+117,6 segundos que utiliza directamente los 24 planos restaurados, conserva el
+audio AAC del opening original y reproduce sus zooms, fundidos, fogonazos
+blancos y pausa negra final. La versión de 720p
+`assets/cutscenes/opening_tony.mp4` permanece intacta. El archivo 4K se codificó
+como versión de distribución compatible con el juego y queda por debajo de
+100 MB.
 
 ### Cómo funciona
 
