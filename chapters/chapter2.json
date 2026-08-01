@@ -1180,7 +1180,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ketchup.mp3",
+              "path": "assets/sounds/effects/zip's-shadow-waltz.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
