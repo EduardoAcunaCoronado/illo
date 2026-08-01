@@ -527,6 +527,7 @@
           "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Se está... rompiendo",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -605,6 +606,7 @@
         {
           "character": "Airi",
           "text": "A... Airi. Creo que me llamo Airi. ¿Dónde...? ¿Quiénes sois?",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -1848,6 +1850,7 @@
         {
           "character": "Airi",
           "text": "No entendía la diferencia entre ayudar y obedecer. Cuando la entendí... ya había hecho daño.",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -2178,7 +2181,7 @@
         },
         {
           "character": "Samu",
-          "text": "Edu, acabas de convertir una revelación existencial en una reseña de Steam.",
+          "text": "Edu, acabas de convertir una revelación existencial en una reseña de Stim.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2522,6 +2525,7 @@
         {
           "character": "Samu",
           "text": "¡Airi!",
+          "textAnimation": true,
           "actions": [
             {
               "type": "setBackground",
@@ -2558,6 +2562,7 @@
         {
           "character": "Airi",
           "text": "...",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",

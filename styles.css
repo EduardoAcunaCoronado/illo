@@ -534,6 +534,172 @@ body.startup-pending #menu-video {
     margin: 5px 0;
 }
 
+.dialog-brand-omg {
+    color: #ff8a00;
+}
+
+.dialog-brand-clos {
+    color: #57e389;
+}
+
+.dialog-brand-blue {
+    color: #4da3ff;
+}
+
+/* Emoción tipográfica: cada carácter recibe el mismo estado con un pequeño
+   desfase, de modo que la frase se siente viva sin perder legibilidad. */
+.dialog-letter {
+    display: inline-block;
+    white-space: pre;
+    transform-origin: 50% 75%;
+}
+
+.dialog-text[class*="dialog-emotion-"] {
+    padding-bottom: 3px;
+}
+
+.dialog-text.dialog-emotion-fear {
+    color: #eeeaff;
+    text-shadow: 0 0 7px rgba(156, 134, 255, 0.48);
+}
+.dialog-emotion-fear .dialog-letter {
+    animation: dialog-letter-fear 0.13s steps(2, end) infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-anger {
+    color: #ffe0d5;
+    font-weight: 700;
+    text-shadow: 1px 1px 0 #7b1008, 0 0 8px rgba(255, 68, 34, 0.5);
+}
+.dialog-emotion-anger .dialog-letter {
+    animation: dialog-letter-anger 0.18s steps(2, end) infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-sadness {
+    color: #cddfff;
+    text-shadow: 0 2px 7px rgba(80, 130, 210, 0.45);
+}
+.dialog-emotion-sadness .dialog-letter {
+    animation: dialog-letter-sadness 2.2s ease-in-out infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-joy {
+    color: #fff4b8;
+    text-shadow: 0 0 8px rgba(255, 213, 73, 0.58);
+}
+.dialog-emotion-joy .dialog-letter {
+    animation: dialog-letter-joy 0.72s ease-in-out infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-surprise {
+    color: #ffffff;
+    text-shadow: 0 0 9px rgba(102, 218, 255, 0.65);
+}
+.dialog-emotion-surprise .dialog-letter {
+    animation: dialog-letter-surprise 0.9s cubic-bezier(.2, 1.2, .4, 1) infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-nervous {
+    color: #ffe4f2;
+    text-shadow: 0 0 6px rgba(255, 123, 185, 0.42);
+}
+.dialog-emotion-nervous .dialog-letter {
+    animation: dialog-letter-nervous 0.34s ease-in-out infinite alternate;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-whisper {
+    color: #d9d9df;
+    font-style: italic;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+.dialog-emotion-whisper .dialog-letter {
+    animation: dialog-letter-whisper 1.8s ease-in-out infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-scream {
+    color: #ffffff;
+    font-family: "Arial Black", Impact, sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: 0.35px;
+    padding: 5px 3px 8px;
+    text-shadow: -2px 0 #ff1744, 2px 0 #00e5ff, 0 0 10px #ffea00;
+}
+.dialog-emotion-scream .dialog-letter {
+    animation: dialog-letter-scream 0.32s steps(2, end) infinite;
+    animation-delay: var(--letter-delay);
+    font-size: var(--scream-font-size, 12px);
+    vertical-align: baseline;
+}
+
+@keyframes dialog-letter-fear {
+    0% { transform: translate(-0.7px, 0.8px) rotate(-0.5deg); }
+    100% { transform: translate(0.8px, -0.7px) rotate(0.5deg); }
+}
+@keyframes dialog-letter-anger {
+    0% { transform: translate(-0.9px, 0) skewX(-1deg); }
+    50% { transform: translate(1px, -0.7px) skewX(1deg); }
+    100% { transform: translate(0, 0.7px); }
+}
+@keyframes dialog-letter-sadness {
+    0%, 100% { transform: translateY(0); opacity: 0.92; }
+    50% { transform: translateY(2px) rotate(0.4deg); opacity: 0.72; }
+}
+@keyframes dialog-letter-joy {
+    0%, 100% { transform: translateY(0) scale(1); }
+    45% { transform: translateY(-2px) scale(1.025); }
+}
+@keyframes dialog-letter-surprise {
+    0%, 100% { transform: scale(1); }
+    35% { transform: scale(1.1) translateY(-1px); }
+}
+@keyframes dialog-letter-nervous {
+    from { transform: translateX(-0.45px) rotate(-0.3deg); opacity: 0.82; }
+    to { transform: translateX(0.45px) rotate(0.3deg); opacity: 1; }
+}
+@keyframes dialog-letter-whisper {
+    0%, 100% { opacity: 0.72; transform: translateY(0); }
+    50% { opacity: 0.95; transform: translateY(-0.4px); }
+}
+@keyframes dialog-letter-scream {
+    0% {
+        color: #ffffff;
+        transform: translate(-1px, 1px) rotate(-1.5deg) scale(0.98);
+        text-shadow: -2px 0 #ff1744, 2px 0 #00e5ff, 0 0 8px #ffea00;
+    }
+    35% {
+        color: #fff36a;
+        transform: translate(1px, -2px) rotate(1deg) scale(1.12);
+        text-shadow: 2px 0 #ff1744, -2px 0 #00e5ff, 0 0 13px #ffea00;
+    }
+    70% {
+        color: #ffffff;
+        transform: translate(-1.5px, -0.5px) rotate(1.5deg) scale(1.04);
+        text-shadow: -2px -1px #00e5ff, 2px 1px #ff17d8, 0 0 10px #ffffff;
+    }
+    100% {
+        color: #ffdc48;
+        transform: translate(1px, 1px) rotate(-1deg) scale(1.08);
+        text-shadow: 2px -1px #ff1744, -2px 1px #00e5ff, 0 0 12px #ffea00;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dialog-text[class*="dialog-emotion-"] .dialog-letter {
+        animation: none;
+        transform: none;
+        opacity: 1;
+    }
+}
+
 .p5-border-bottom {
     display: none;
 }
