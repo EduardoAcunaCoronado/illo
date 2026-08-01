@@ -141,7 +141,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/jamon.png"
+              "value": "assets/backgrounds/jamon_4k_v2.png"
             },
             {
               "type": "hideCharacter",
@@ -361,7 +361,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/dia.png"
+              "value": "assets/backgrounds/dia_4k_v2.png"
             },
             {
               "type": "hideCharacter",
@@ -421,7 +421,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/mercadona.png"
+              "value": "assets/backgrounds/mercadona_4k_v2.png"
             },
             {
               "type": "hideCharacter",
