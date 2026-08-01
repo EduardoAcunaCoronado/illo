@@ -54,7 +54,7 @@
       name: "Samu",
       color: "red",
       role: "Mago",
-      portrait: "assets/characters/samu/samu_hud_battle_1.png",
+      portrait: "assets/images/characters/samu/samu_hud_battle_1.png",
       hp: 120,
       pm: 120,
       speed: 8,
@@ -114,7 +114,7 @@
       name: "Edu",
       color: "blue",
       role: "Pícaro / Arcano",
-      portrait: "assets/characters/edu/edu_hud_battle_1.png",
+      portrait: "assets/images/characters/edu/edu_hud_battle_1.png",
       hp: 105,
       pm: 80,
       speed: 14,
@@ -178,7 +178,7 @@
       speakingAs: "Tony",
       color: "#ff69b4",
       role: "Maga Blanca / Cantora",
-      portrait: "assets/characters/tony/tony_hud_battle_1.png",
+      portrait: "assets/images/characters/tony/tony_hud_battle_1.png",
       hp: 95,
       pm: 130,
       speed: 10,
@@ -239,7 +239,7 @@
       name: "José",
       color: "green",
       role: "Guerrero",
-      portrait: "assets/characters/jose/jose_hud_battle_1.png",
+      portrait: "assets/images/characters/jose/jose_hud_battle_1.png",
       hp: 170,
       pm: 60,
       speed: 6,
@@ -300,8 +300,8 @@
       id: "marea_fans",
       name: "Marea de Fans Coléricos",
       role: "Horda glitcheada",
-      image: "assets/characters/marea_fans_battle_1.png",
-      background: "assets/backgrounds/fans_desmadrandose.png",
+      image: "assets/images/characters/marea_fans_battle_1.png",
+      background: "assets/images/backgrounds/chapter3/fans_desmadrandose.png",
       hp: 9999,
       pm: 999,
       speed: 14,
@@ -356,8 +356,8 @@
       id: "ballerina_capuchina",
       name: "Ballerina Capuchina",
       role: "Jefa Brainrot",
-      image: "assets/characters/ballerina_capuchina_battle_1.png",
-      background: "assets/backgrounds/plaza_circular_agujero.png",
+      image: "assets/images/characters/ballerina_capuchina_battle_1.png",
+      background: "assets/images/backgrounds/chapter4/plaza_circular_agujero.png",
       hp: 420,
       pm: 80,
       speed: 14,
@@ -418,8 +418,8 @@
       id: "tralalelo_tralala",
       name: "Tralalero Tralala",
       role: "Jefe Brainrot",
-      image: "assets/characters/tralalelo_tralala_battle_1.png",
-      background: "assets/backgrounds/airi_sala_interior_santuario.png",
+      image: "assets/images/characters/tralalelo_tralala_battle_1.png",
+      background: "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.png",
       hp: 520,
       pm: 90,
       speed: 15,
@@ -481,8 +481,8 @@
       id: "tung_tung_tung_sahur",
       name: "Tung Tung Tung Sahur",
       role: "Lider Brainrot",
-      image: "assets/characters/tung_tung_tung_sahur_battle_1.png",
-      background: "assets/backgrounds/fuente_ciudad_paloma.png",
+      image: "assets/images/characters/tung_tung_tung_sahur_battle_1.png",
+      background: "assets/images/backgrounds/shared/fuente_ciudad_paloma.png",
       hp: 620,
       pm: 110,
       speed: 12,
@@ -542,8 +542,8 @@
       id: "amalgama",
       name: "Amalgama",
       role: "Horror Brainrot",
-      image: "assets/characters/amalgama/amalgama_base.png",
-      background: "assets/backgrounds/fuente_ciudad_paloma_corrupta.png",
+      image: "assets/images/characters/amalgama/amalgama_base.png",
+      background: "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.png",
       hp: 840,
       pm: 140,
       speed: 8,
@@ -602,8 +602,8 @@
       id: "amalgama_final",
       name: "Amalgama forma final",
       role: "Nucleo final",
-      image: "assets/characters/amalgama/amalgama_final.png",
-      background: "assets/backgrounds/fuente_ciudad_paloma_corrupta_total.png",
+      image: "assets/images/characters/amalgama/amalgama_final.png",
+      background: "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.png",
       hp: 1120,
       pm: 260,
       speed: 11,
@@ -1484,7 +1484,7 @@
           const result = this.applySkill(actor, finalSkill, target);
           await this.actionMessage(result.text);
           const hitSound = this.isAmalgamaFinalAttack(actor, finalSkill)
-            ? "assets/sounds/effects/heavy_impact.mp3"
+            ? "assets/audio/sfx/heavy_impact.mp3"
             : undefined;
           this.playHitSound(result.allyDamages?.length || 0, hitSound);
           this.flashAllies(result.hitAllies);
@@ -2064,7 +2064,7 @@
       );
     }
 
-    playHitSound(count = 1, path = "assets/sounds/effects/hit.mp3") {
+    playHitSound(count = 1, path = "assets/audio/sfx/hit.mp3") {
       const hits = Math.max(0, Math.min(count || 0, 4));
       for (let index = 0; index < hits; index++) {
         setTimeout(() => {
@@ -2079,7 +2079,7 @@
       const now = performance.now();
       if (this.lastHoverSoundAt && now - this.lastHoverSoundAt < 55) return;
       this.lastHoverSoundAt = now;
-      const audio = new Audio("assets/sounds/effects/hover_button.mp3");
+      const audio = new Audio("assets/audio/sfx/hover_button.mp3");
       audio.volume = 0.8;
       audio.play().catch(() => {});
     }

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css?v=20260801-1">
+    <link rel="stylesheet" href="styles.css?v=20260801-7">
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
     <script>
         if (navigator.userAgent.includes('Electron')) {
@@ -22,8 +22,8 @@
              Permanece oculto/pausado durante disclaimer y opening; empieza cuando
              la secuencia inicial entrega el control al menú. -->
         <video id="menu-video" class="menu-video" autoplay muted loop playsinline
-               poster="assets/backgrounds/menu_cover.png?v=20260720-21"
-               src="assets/videos/menu_loop.mp4?v=20260731-5"></video>
+               poster="assets/images/backgrounds/shared/menu_cover.png?v=20260720-21"
+               src="assets/video/menu/menu_loop.mp4?v=20260731-5"></video>
 
         <!-- Personajes -->
         <div id="characters-container" class="characters-container">
@@ -98,8 +98,8 @@
             <div class="nm-credit" aria-label="Un juego de WildSoft">
                 <div class="nm-credit-over">un juego de</div>
                 <div class="nm-credit-row">
-                    <img class="nm-credit-emblema" src="assets/ui/wildsoft_emblema_claro.png?v=20260722-1" alt="">
-                    <img class="nm-credit-word" src="assets/ui/wildsoft_letras.png?v=20260722-1" alt="WILDSOFT">
+                    <img class="nm-credit-emblema" src="assets/images/ui/wildsoft_emblema_claro.png?v=20260722-1" alt="">
+                    <img class="nm-credit-word" src="assets/images/ui/wildsoft_letras.png?v=20260722-1" alt="WILDSOFT">
                 </div>
             </div>
         </div>
@@ -149,7 +149,7 @@
         <section id="startup-opening" class="startup-opening" hidden>
             <video id="startup-opening-video" class="startup-opening-video"
                    preload="metadata" playsinline
-                   src="assets/videos/opening_samu.mp4?v=20260731-1"></video>
+                   src="assets/video/cutscenes/prologue/opening_samu.mp4?v=20260731-1"></video>
             <div id="startup-opening-status" class="startup-opening-status">
                 Cargando opening…
             </div>
@@ -162,11 +162,11 @@
     <script src="p5-effects.js?v=20260716-2"></script>
     <script src="battle-minigame.js?v=20260727-3"></script>
     <script src="credits-minigame.js?v=20260724-2"></script>
-    <script src="ketchup-minigame.js?v=20260801-6"></script>
+    <script src="ketchup-minigame.js?v=20260801-7"></script>
     <script src="rune-channeling-minigame.js?v=20260728-5"></script>
     <script src="juice.js?v=20260722-1"></script>
-    <script src="engine.js?v=20260731-11"></script>
-    <script src="game.js?v=20260731-4"></script>
+    <script src="engine.js?v=20260801-7"></script>
+    <script src="game.js?v=20260801-1"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->

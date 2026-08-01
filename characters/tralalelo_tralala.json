@@ -2,7 +2,7 @@
   "name": "Tralalero Tralala",
   "color": "#2f9fe8",
   "poses": {
-    "neutral": "assets/characters/tralalelo_tralala.png"
+    "neutral": "assets/images/characters/tralalelo_tralala.png"
   },
   "defaultPose": "neutral",
   "aliases": [

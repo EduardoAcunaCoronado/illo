@@ -1,29 +1,29 @@
 (function () {
   const DEFAULT_IMAGES = [
-    "assets/backgrounds/pisito.png",
-    "assets/backgrounds/iglesia.png",
-    "assets/backgrounds/kingdom_ketchup_trono.png",
-    "assets/backgrounds/coche_interior.png",
-    "assets/backgrounds/skyline_eechi_land.png",
-    "assets/backgrounds/multitud_entrada.png",
-    "assets/backgrounds/camerino_seraphyna.png",
-    "assets/backgrounds/foco_cae_santi.png",
-    "assets/backgrounds/ciudad_paloma.png",
-    "assets/backgrounds/entrada_epica_jose.png",
-    "assets/backgrounds/plaza_circular.png",
-    "assets/backgrounds/cielo_glitch_brainrot.png",
-    "assets/backgrounds/plaza_cicular_meme_ataque_heroes.png",
-    "assets/backgrounds/mazmorra_puerta_santuario_abierta.png",
-    "assets/backgrounds/airi_sala_interior_santuario.png",
-    "assets/backgrounds/fuente_ciudad_paloma.png",
-    "assets/backgrounds/airi_protege_a_samu_de_ballerina.png",
-    "assets/backgrounds/ataque_brainrot_airi_corrupcion.png",
-    "assets/backgrounds/paseo_ciudad_paloma.png",
-    "assets/backgrounds/ultimo_vistazo_ciudad_paloma.png",
-    "assets/backgrounds/ultimo_vistazo_ciudad_paloma_mariposa.png",
+    "assets/images/backgrounds/chapter1/pisito.png",
+    "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png",
+    "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono.png",
+    "assets/images/backgrounds/chapter3/coche_interior.png",
+    "assets/images/backgrounds/chapter3/skyline_eechi_land.png",
+    "assets/images/backgrounds/chapter3/multitud_entrada.png",
+    "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
+    "assets/images/backgrounds/chapter3/foco_cae_santi.png",
+    "assets/images/backgrounds/chapter4/ciudad_paloma.png",
+    "assets/images/backgrounds/chapter4/entrada_epica_jose.png",
+    "assets/images/backgrounds/shared/plaza_circular.png",
+    "assets/images/backgrounds/chapter4/cielo_glitch_brainrot.png",
+    "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.png",
+    "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.png",
+    "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.png",
+    "assets/images/backgrounds/shared/fuente_ciudad_paloma.png",
+    "assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.png",
+    "assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.png",
+    "assets/images/backgrounds/chapter6/paseo_ciudad_paloma.PNG",
+    "assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma.png",
+    "assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma_mariposa.png",
   ];
 
-  const DEFAULT_MUSIC = "assets/sounds/music/cae_a_mis_pies.wav";
+  const DEFAULT_MUSIC = "assets/audio/music/minigames/cae_a_mis_pies.wav";
   const cacheBust = (path) => `${path}?v=${Date.now()}`;
 
   function ensureStyles() {

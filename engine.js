@@ -175,6 +175,18 @@ class VisualNovelEngine {
             case 'setPose':
                 this.setPose(action.character, action.position, action.pose);
                 break;
+            case 'characterGlitch':
+            case 'glitchCharacter':
+                this.triggerCharacterGlitch(action.character, action.position, action.duration);
+                break;
+            case 'characterFullGlitch':
+            case 'fullCharacterGlitch':
+                this.triggerCharacterFullGlitch(action.character, action.position, action.duration);
+                break;
+            case 'characterGlitchUntilAdvance':
+            case 'glitchUntilAdvance':
+                this.startCharacterGlitchUntilAdvance(action.character, action.position);
+                break;
             case 'hideDialog':
             case 'hideText':
             case 'ocultarTexto':
@@ -296,10 +308,21 @@ class VisualNovelEngine {
         const src = action.path || action.value || action.src;
         if (!src) { console.warn('playVideo: falta la ruta del vídeo'); return Promise.resolve(); }
 
-        // Pausar la música que esté sonando para no solaparla con el audio del vídeo.
+        const audioCrossfade = Math.max(0, Number(action.audioCrossfade) || 0);
+        const holdLastFrame = Math.max(0, Number(action.holdLastFrame) || 0);
+        const visualFadeOut = Math.max(0, Number(action.visualFadeOut) || 0);
+        const endBackground = action.endBackground || action.finalBackground || null;
+
+        // No duplicar la música si currentMusic y bg_music apuntan al mismo Audio.
         const paused = [];
+        const pausedSet = new Set();
         const tryPause = (audio) => {
-            if (audio && !audio.paused) { try { audio.pause(); paused.push(audio); } catch (e) {} }
+            if (!audio || audio.paused || pausedSet.has(audio)) return;
+            try {
+                audio.pause();
+                pausedSet.add(audio);
+                paused.push(audio);
+            } catch (e) {}
         };
         tryPause(this.currentMusic);
         for (const a of Object.values(this.audioInstances || {})) tryPause(a);
@@ -327,23 +350,107 @@ class VisualNovelEngine {
             document.getElementById('game-container').appendChild(overlay);
 
             let done = false;
-            const finish = () => {
-                if (done) return;
-                done = true;
-                document.removeEventListener('keydown', onKey);
-                try { video.pause(); } catch (e) {}
+            let crossfadeStarted = false;
+            let videoFadeInterval = null;
+
+            const resumeAudio = (audio, duration) => {
+                if (!audio || audio._stopping) return;
+                if (audio._fadeInterval) {
+                    clearInterval(audio._fadeInterval);
+                    audio._fadeInterval = null;
+                }
+                const kind = audio._volKind || 'music';
+                const base = audio._baseVol != null ? audio._baseVol : 1;
+                const target = Math.max(0, Math.min(1, base * this.volFactor(kind)));
+                if (duration <= 0) {
+                    audio.volume = target;
+                    try { audio.play().catch(() => {}); } catch (e) {}
+                    return;
+                }
+                audio.volume = 0;
+                try { audio.play().catch(() => {}); } catch (e) {}
+                const startedAt = Date.now();
+                audio._fadeInterval = setInterval(() => {
+                    const progress = Math.min((Date.now() - startedAt) / duration, 1);
+                    audio.volume = target * progress;
+                    if (progress >= 1) {
+                        clearInterval(audio._fadeInterval);
+                        audio._fadeInterval = null;
+                    }
+                }, 20);
+            };
+
+            const beginAudioCrossfade = (duration = audioCrossfade) => {
+                if (crossfadeStarted) return;
+                crossfadeStarted = true;
+                const fadeDuration = Math.max(0, duration);
+                for (const audio of paused) resumeAudio(audio, fadeDuration);
+                if (fadeDuration <= 0 || video.muted || video.volume <= 0) return;
+                const initialVolume = video.volume;
+                const startedAt = Date.now();
+                videoFadeInterval = setInterval(() => {
+                    const progress = Math.min((Date.now() - startedAt) / fadeDuration, 1);
+                    video.volume = initialVolume * (1 - progress);
+                    if (progress >= 1) {
+                        clearInterval(videoFadeInterval);
+                        videoFadeInterval = null;
+                    }
+                }, 20);
+            };
+
+            const onTimeUpdate = () => {
+                if (audioCrossfade <= 0 || crossfadeStarted || !Number.isFinite(video.duration)) return;
+                const remainingMs = Math.max(0, (video.duration - video.currentTime) * 1000);
+                if (remainingMs <= audioCrossfade + 140) {
+                    beginAudioCrossfade(Math.max(250, Math.min(audioCrossfade, remainingMs)));
+                }
+            };
+
+            const cleanup = () => {
                 overlay.remove();
-                for (const a of paused) { try { a.play().catch(() => {}); } catch (e) {} }
                 resolve();
             };
 
-            const onKey = (e) => {
-                if (['Escape', 'Enter', ' ', 'Spacebar'].includes(e.key)) { e.preventDefault(); finish(); }
+            const finish = (naturalEnd = false) => {
+                if (done) return;
+                done = true;
+                document.removeEventListener('keydown', onKey);
+                video.removeEventListener('timeupdate', onTimeUpdate);
+                if (videoFadeInterval) {
+                    clearInterval(videoFadeInterval);
+                    videoFadeInterval = null;
+                }
+
+                // El fondo exacto del último frame queda preparado bajo el vídeo;
+                // así el fundido revela la misma imagen y no la escena anterior.
+                if (endBackground) this.setBackground(endBackground, { cut: true });
+                if (!crossfadeStarted) {
+                    const resumeFade = naturalEnd ? audioCrossfade : Math.min(audioCrossfade, 350);
+                    beginAudioCrossfade(resumeFade);
+                }
+                try { video.pause(); } catch (e) {}
+
+                const hold = naturalEnd ? holdLastFrame : 0;
+                const fade = naturalEnd ? visualFadeOut : Math.min(visualFadeOut, 150);
+                setTimeout(() => {
+                    if (fade <= 0) { cleanup(); return; }
+                    overlay.style.transition = `opacity ${fade}ms ease`;
+                    overlay.style.opacity = '0';
+                    setTimeout(cleanup, fade + 30);
+                }, hold);
             };
 
-            video.addEventListener('ended', finish);
-            video.addEventListener('error', finish);
-            overlay.addEventListener('click', finish);
+            const onKey = (e) => {
+                if (['Escape', 'Enter', ' ', 'Spacebar'].includes(e.key)) {
+                    e.preventDefault();
+                    finish(false);
+                }
+            };
+
+            video.addEventListener('timeupdate', onTimeUpdate);
+            video.addEventListener('ended', () => finish(true), { once: true });
+            video.addEventListener('error', () => finish(false), { once: true });
+            overlay.addEventListener('click', () => finish(false), { once: true });
             document.addEventListener('keydown', onKey);
 
             // Autoplay puede fallar si el navegador exige gesto: ofrecer clic para arrancar.
@@ -438,8 +545,16 @@ class VisualNovelEngine {
         try {
         await Promise.race([cancelacion, (async () => {
         switch (action.game) {
+            case 'furrielvaExplore':
+                await this.playFurrielvaExploreMinigame(action);
+                break;
+            case 'chiliHarvest':
+            case 'guindillas':
+                await this.playChiliHarvestMinigame(action);
+                break;
+            case 'ketchupBoss':
             case 'ketchup':
-                await this.playKetchupMinigame(action);
+                await this.playKetchupBossMinigame(action);
                 break;
             case 'ecchi':
                 await this.playEcchiMinigame(action);
@@ -505,6 +620,435 @@ class VisualNovelEngine {
 
     abortarMinijuego() {
         if (this._abortarMinijuego) this._abortarMinijuego();
+    }
+
+    // Investigación narrativa de Furrielva. Furry Maps presenta las zonas como
+    // áreas reales del mapa: Samu las introduce, el jugador confirma cada ruta
+    // y un Samu diminuto recorre el trayecto desde su última ubicación. Solo el
+    // primer desplazamiento parte de la Iglesia del Rocío.
+    playFurrielvaExploreMinigame(options = {}) {
+        this.isWaitingForInput = false;
+        const background = options.background ||
+            'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png';
+        const samuPortrait = 'assets/images/characters/samu/samu_thinking.png';
+        const samuFrames = [1, 2, 3, 4, 5, 7].map(n =>
+            `assets/images/characters/samu/ketchup/${n}.png`);
+        const church = {
+            id: 'iglesia',
+            label: 'Iglesia del Rocío',
+            destination: [50, 55.2]
+        };
+        const locations = [
+            {
+                id: 'plaza', label: 'Plaza del Rocío', area: 'zone-plaza',
+                route: 'M500 276 C420 230 340 155 220 135', destination: [22, 27],
+                background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_plaza_investigacion_v1_4k.webp',
+                npc: 'TADEO TRUFA',
+                color: '#e98245',
+                portrait: 'assets/images/characters/furrielva/tadeo_trufa_v1.png',
+                opening: [
+                    { speaker: 'TADEO TRUFA', text: 'Genial... otra entrega tarde. Como vuelvan a cortarme la avenida esos camiones rojos, el jefe me descuenta el viaje.' },
+                    { speaker: 'SAMU', text: 'Perdona, no quería meterme, pero ¿has dicho camiones rojos? Me he encontrado esta botella. ¿Reconoces la etiqueta de Kingdom Ketchup?' },
+                    { speaker: 'TADEO TRUFA', text: 'No conozco ese nombre. Pero si es una fábrica, esos camiones son lo más raro que ha pasado por aquí. ¿Qué necesitas saber?' }
+                ],
+                choices: [
+                    {
+                        label: 'Preguntar por los camiones rojos',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Hacia dónde van cuando salen de la plaza?' },
+                            { speaker: 'TADEO TRUFA', text: 'Al anochecer toman la carretera industrial. Sin matrícula, sin empresa; sólo una corona encima de un tomate.' },
+                            { speaker: 'SAMU', text: 'Edu mencionó ketchup. Esa corona puede ser la primera pista de verdad.' }
+                        ],
+                        lore: 'Los camiones rojos sin matrícula siguen la carretera industrial y llevan una corona sobre un tomate.'
+                    },
+                    {
+                        label: 'Preguntar por sus rutas',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Tus mapas de reparto no señalan de dónde vienen?' },
+                            { speaker: 'TADEO TRUFA', text: 'Los nuevos no. Lo extraño es que mi libreta antigua sí marca una nave al final de esa carretera, aunque ahora la calle tiene otro nombre.' },
+                            { speaker: 'SAMU', text: 'O sea, el sitio estaba antes de que el mapa decidiera olvidarlo.' }
+                        ],
+                        lore: 'La libreta antigua de Tadeo conserva una nave al final de la carretera industrial, aunque la calle haya cambiado de nombre.'
+                    }
+                ]
+            },
+            {
+                id: 'comercio', label: 'Zona comercial', area: 'zone-commerce',
+                route: 'M500 276 C430 330 350 375 245 360', destination: [25, 72],
+                background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_zona_comercial_v1_4k.webp',
+                npc: 'LÍA LINCE',
+                color: '#c878dc',
+                portrait: 'assets/images/characters/furrielva/lia_lince_v1.png',
+                opening: [
+                    { speaker: 'LÍA LINCE', text: 'Fantástico. Seis cajas que nadie ha pedido, un proveedor sin dirección y una promoción que no existe. ¿Dónde se supone que meto yo todo esto?' },
+                    { speaker: 'SAMU', text: 'Eh... perdona. No quería escuchar, pero ¿has dicho que el proveedor no tiene dirección?' },
+                    { speaker: 'LÍA LINCE', text: '¡Ah! No te había visto. Sí, han aparecido esta mañana. ¿Tú también vienes a reclamarme algo?' },
+                    { speaker: 'SAMU', text: 'Al contrario. Busco Kingdom Ketchup y Furry Maps se niega a mostrarme dónde está.' },
+                    { speaker: 'LÍA LINCE', text: 'Pues las cajas llevan una corona con tomate y las palabras «Kingdom Ketchup». Parece que los dos buscamos al mismo fantasma.' }
+                ],
+                choices: [
+                    {
+                        label: 'Examinar las cajas',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Puedo mirar la etiqueta de envío?' },
+                            { speaker: 'LÍA LINCE', text: 'Adelante. Sólo trae un lote, K-K/03, y una ruta de recogida hacia la salida industrial.' },
+                            { speaker: 'SAMU', text: 'K-K. No es precisamente una firma discreta.' }
+                        ],
+                        lore: 'Las cajas de Kingdom Ketchup usan el lote K-K/03 y regresan por una ruta hacia la salida industrial.'
+                    },
+                    {
+                        label: 'Revisar el albarán',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Y el albarán? A veces queda una dirección en la letra pequeña.' },
+                            { speaker: 'LÍA LINCE', text: 'Dirección, ninguna. Pero mira los comercios: El Jarrón, Noche y Mercaguasa. Ayer tenían otros nombres; hoy hasta los recibos antiguos aparecen corregidos.' },
+                            { speaker: 'SAMU', text: 'Vale... esto ya no es una campaña publicitaria normal.' }
+                        ],
+                        lore: 'Los nombres de las tiendas y hasta sus recibos antiguos han cambiado sin que Lía los modificara.'
+                    }
+                ]
+            },
+            {
+                id: 'callejon', label: 'Callejón de servicio', area: 'zone-alley',
+                route: 'M500 276 C565 215 635 150 730 135', destination: [73, 27],
+                background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_callejon_tuberias_v1_4k.webp',
+                npc: 'RULO MAPACHE',
+                color: '#55b9c8',
+                portrait: 'assets/images/characters/furrielva/rulo_mapache_v1.png',
+                opening: [
+                    { speaker: 'RULO MAPACHE', text: 'Presión en la línea siete, calor en la acometida... y el plano insiste en que aquí no hay ninguna nave. Claro que sí, plano. Lo que tú digas.' },
+                    { speaker: 'SAMU', text: 'Perdona... ¿estás discutiendo con un mapa?' },
+                    { speaker: 'RULO MAPACHE', text: 'Con un mapa no. Con el gracioso que lo actualizó. Hay una instalación consumiendo media red y, según esto, sólo existe un solar vacío.' },
+                    { speaker: 'SAMU', text: 'Estoy buscando una fábrica que tampoco aparece en Furry Maps. Kingdom Ketchup.' },
+                    { speaker: 'RULO MAPACHE', text: 'Entonces puede que tu fábrica y mi tubería fantasma sean el mismo problema.' }
+                ],
+                choices: [
+                    {
+                        label: 'Seguir la tubería marcada',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Puedes saber adónde llega por la presión?' },
+                            { speaker: 'RULO MAPACHE', text: 'Sale bajo tierra y reaparece en el límite industrial, justo debajo del solar que el mapa deja en blanco.' },
+                            { speaker: 'SAMU', text: 'Tres pistas, el mismo lugar. Ya no parece una casualidad.' }
+                        ],
+                        lore: 'La conducción reaparece bajo el solar vacío del límite industrial.'
+                    },
+                    {
+                        label: 'Preguntar por el fallo del mapa',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Qué ocurre cuando acercas el mapa a esa parcela?' },
+                            { speaker: 'RULO MAPACHE', text: 'Ruido, bandas de colores y vuelta al solar vacío. Siempre la misma zona, incluso sin conexión.' },
+                            { speaker: 'SAMU', text: 'Entonces no es cobertura. Hay algo ahí y el mapa no consigue enseñarlo.' }
+                        ],
+                        lore: 'El mapa falla siempre sobre la misma parcela, incluso sin conexión a la red.'
+                    }
+                ]
+            }
+        ];
+
+        this.preloadImages([
+            background, samuPortrait,
+            ...samuFrames,
+            ...locations.flatMap(location => [location.background, location.portrait])
+        ]);
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay furrielva-explore';
+            overlay.innerHTML = `
+                <div class="furrielva-device" role="application" aria-label="Furry Maps">
+                    <i class="furrielva-side-button furrielva-side-button-a" aria-hidden="true"></i>
+                    <i class="furrielva-side-button furrielva-side-button-b" aria-hidden="true"></i>
+                    <div class="furrielva-screen">
+                        <div class="furrielva-statusbar"><span>09:41</span><span>FURRIELVA · 5G&nbsp;&nbsp;◉</span></div>
+                        <div class="furrielva-head">
+                            <div class="furrielva-brand"><span aria-hidden="true">🐾</span><div><strong>Furry Maps</strong><small>Modo investigación</small></div></div>
+                            <div class="furrielva-search"><span aria-hidden="true">⌕</span><div><b>Explorar Furrielva</b><small>Pregunta en tres zonas para localizar Kingdom Ketchup</small></div></div>
+                            <span class="furrielva-counter">0 / ${locations.length}</span>
+                        </div>
+                        <div class="furrielva-map" style="--furrielva-bg:url('${this.cacheBustAsset(background)}')">
+                            <svg class="furrielva-route" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true">
+                                <path></path>
+                            </svg>
+                            <div class="furrielva-landmark"><span aria-hidden="true">◆</span>Iglesia del Rocío</div>
+                            ${locations.map(location => `<button class="furrielva-zone ${location.area}" data-location="${location.id}" disabled><b>${location.label}</b><small>Seleccionar zona</small></button>`).join('')}
+                            <div class="furrielva-kingdom-lock" aria-label="Zona no disponible"><span>UBICACIÓN INESTABLE</span><i></i><i></i><i></i></div>
+                            <img class="furrielva-mini-samu" alt="Samu recorriendo la ruta" src="${this.cacheBustAsset(samuFrames[0])}">
+                            <div class="furrielva-tour" aria-live="polite">
+                                <img src="${this.cacheBustAsset(samuPortrait)}" alt="Samu">
+                                <div><strong>SAMU</strong><p></p><button type="button">Siguiente</button></div>
+                            </div>
+                            <div class="furrielva-card" aria-live="polite">Primero voy a ordenar las posibilidades.</div>
+                            <div class="furrielva-confirm" role="dialog" aria-modal="true" aria-labelledby="furrielva-confirm-title" hidden>
+                                <div><small>FURRY MAPS</small><h3 id="furrielva-confirm-title">¿Marcar como ruta?</h3><p></p><span><button type="button" data-confirm="no">Seguir mirando</button><button type="button" data-confirm="yes">Marcar ruta</button></span></div>
+                            </div>
+                            <div class="furrielva-location-scene" hidden>
+                                <div class="furrielva-npc-portrait" role="img"></div>
+                                <div class="furrielva-location-dialogue"><strong></strong><p></p><div class="furrielva-location-choices"></div></div>
+                            </div>
+                            <div class="furrielva-blackout" aria-hidden="true"></div>
+                        </div>
+                        <div class="furrielva-appnav" aria-hidden="true"><span class="is-active">⌖<small>Mapa</small></span><span>♧<small>Lugares</small></span><span>●<small>Perfil</small></span></div>
+                    </div>
+                </div>
+                <div class="minigame-instructions">Explora las zonas resaltadas · También puedes usar Tab y Enter</div>`;
+            document.getElementById('game-container').appendChild(overlay);
+
+            const visited = new Set();
+            const lore = [];
+            let currentLocation = church;
+            const map = overlay.querySelector('.furrielva-map');
+            const card = overlay.querySelector('.furrielva-card');
+            const counter = overlay.querySelector('.furrielva-counter');
+            const tour = overlay.querySelector('.furrielva-tour');
+            const tourText = tour.querySelector('p');
+            const tourButton = tour.querySelector('button');
+            const confirm = overlay.querySelector('.furrielva-confirm');
+            const locationScene = overlay.querySelector('.furrielva-location-scene');
+            const routeSvg = overlay.querySelector('.furrielva-route');
+            const routePath = routeSvg.querySelector('path');
+            const miniSamu = overlay.querySelector('.furrielva-mini-samu');
+            const kingdomLock = overlay.querySelector('.furrielva-kingdom-lock');
+            const swallow = e => e.stopPropagation();
+            overlay.addEventListener('click', swallow);
+
+            let tourIndex = 0;
+            let pendingLocation = null;
+            const tourLines = [
+                { id: 'plaza', text: 'Esta botella vacía lleva el nombre de Kingdom Ketchup. La plaza está llena de repartidores; alguno reconocerá la etiqueta o sabrá de dónde ha salido.' },
+                { id: 'comercio', text: 'Si nadie reconoce el nombre, probaré en la zona comercial. Los comercios conocen a casi todos los repartidores y proveedores de la ciudad.' },
+                { id: 'callejon', text: 'Y ese callejón de servicio parece comunicar con las instalaciones de la ciudad. Quizá algún trabajador municipal sepa qué hay detrás del fallo del mapa.' }
+            ];
+
+            const zoneButton = id => overlay.querySelector(`[data-location="${id}"]`);
+            const setTourStep = () => {
+                overlay.querySelectorAll('.furrielva-zone').forEach(zone => zone.classList.remove('is-tour-focus'));
+                const step = tourLines[tourIndex];
+                zoneButton(step.id)?.classList.add('is-tour-focus');
+                tourText.textContent = step.text;
+                tourButton.textContent = tourIndex === tourLines.length - 1 ? 'Empezar a investigar' : 'Siguiente zona';
+            };
+
+            const finishTour = () => {
+                overlay.querySelectorAll('.furrielva-zone').forEach(zone => {
+                    zone.classList.remove('is-tour-focus');
+                    zone.disabled = false;
+                });
+                tour.classList.add('is-leaving');
+                setTimeout(() => { tour.hidden = true; }, 280);
+                card.textContent = 'Pasa el cursor por una zona y elige por dónde empezar.';
+            };
+
+            tourButton.addEventListener('click', () => {
+                if (tourIndex < tourLines.length - 1) {
+                    tourIndex += 1;
+                    setTourStep();
+                } else {
+                    finishTour();
+                }
+            });
+            setTourStep();
+
+            const resetRoute = () => {
+                routeSvg.classList.remove('is-active');
+                routePath.setAttribute('d', '');
+                miniSamu.className = 'furrielva-mini-samu';
+                miniSamu.style.left = '';
+                miniSamu.style.top = '';
+                map.classList.remove('is-travelling');
+            };
+
+            const renderLocation = location => {
+                locationScene.hidden = false;
+                locationScene.style.setProperty('--location-bg', `url('${this.cacheBustAsset(location.background)}')`);
+                const portrait = locationScene.querySelector('.furrielva-npc-portrait');
+                portrait.style.setProperty('--npc-portrait', `url('${this.cacheBustAsset(location.portrait)}')`);
+                portrait.setAttribute('aria-label', location.npc);
+                const speaker = locationScene.querySelector('strong');
+                const text = locationScene.querySelector('p');
+                const choices = locationScene.querySelector('.furrielva-location-choices');
+                const setSpeaker = name => {
+                    speaker.textContent = name;
+                    const color = name === 'SAMU'
+                        ? ((this.characters.samu && this.characters.samu.color) || 'red')
+                        : name === location.npc
+                            ? location.color
+                            : '#55d8c6';
+                    speaker.style.color = this.readableNameColor(color);
+                };
+
+                const returnToMap = () => {
+                    visited.add(location.id);
+                    currentLocation = location;
+                    const zone = zoneButton(location.id);
+                    zone.classList.add('is-found');
+                    zone.disabled = true;
+                    counter.textContent = `${visited.size} / ${locations.length}`;
+                    locationScene.classList.add('is-leaving');
+                    setTimeout(() => {
+                        locationScene.hidden = true;
+                        locationScene.classList.remove('is-leaving');
+                        resetRoute();
+                        if (visited.size === locations.length) revealKingdom();
+                        else card.textContent = `Pista conseguida en ${location.label}. Quedan ${locations.length - visited.size}.`;
+                    }, 420);
+                };
+
+                const showDialogue = (lines, onComplete) => {
+                    let index = 0;
+                    const showCurrent = () => {
+                        const line = lines[index];
+                        setSpeaker(line.speaker);
+                        text.textContent = line.text;
+                        choices.innerHTML = `<button type="button" data-continue>${index === lines.length - 1 ? 'Continuar' : 'Siguiente'}</button>`;
+                        choices.querySelector('[data-continue]').addEventListener('click', () => {
+                            index += 1;
+                            if (index < lines.length) showCurrent();
+                            else onComplete();
+                        }, { once: true });
+                    };
+                    showCurrent();
+                };
+
+                const showChoices = () => {
+                    choices.innerHTML = location.choices.map((choice, index) =>
+                        `<button type="button" data-choice="${index}">${choice.label}</button>`).join('');
+                    choices.querySelectorAll('[data-choice]').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const choice = location.choices[Number(button.dataset.choice)];
+                            lore.push({ location: location.id, text: choice.lore });
+                            showDialogue(choice.dialogue, () => {
+                                setSpeaker('PISTA REGISTRADA');
+                                text.textContent = choice.lore;
+                                choices.innerHTML = '<button type="button" data-return-map>Volver a Furry Maps</button>';
+                                choices.querySelector('[data-return-map]').addEventListener('click', returnToMap, { once: true });
+                            });
+                        }, { once: true });
+                    });
+                };
+
+                showDialogue(location.opening, showChoices);
+            };
+
+            const routeBetween = (from, to) => {
+                // Las tres rutas iniciales están dibujadas a mano para encajar
+                // con las calles que salen de la iglesia. A partir de la primera
+                // visita se construye una curva entre los centros reales de las
+                // dos zonas, en las coordenadas 1000x500 del SVG.
+                if (!from || from.id === church.id) return to.route;
+                const [fromXPercent, fromYPercent] = from.destination;
+                const [toXPercent, toYPercent] = to.destination;
+                const startX = fromXPercent * 10;
+                const startY = fromYPercent * 5;
+                const endX = toXPercent * 10;
+                const endY = toYPercent * 5;
+                const deltaX = endX - startX;
+                const deltaY = endY - startY;
+                const distance = Math.max(1, Math.hypot(deltaX, deltaY));
+                const side = from.id.localeCompare(to.id) < 0 ? 1 : -1;
+                const bend = Math.min(70, Math.max(28, distance * .14)) * side;
+                const normalX = -deltaY / distance;
+                const normalY = deltaX / distance;
+                const point = value => Math.round(value * 10) / 10;
+                const control1X = startX + deltaX * .33 + normalX * bend;
+                const control1Y = startY + deltaY * .33 + normalY * bend;
+                const control2X = startX + deltaX * .67 + normalX * bend;
+                const control2Y = startY + deltaY * .67 + normalY * bend;
+                return `M${point(startX)} ${point(startY)} C${point(control1X)} ${point(control1Y)} ${point(control2X)} ${point(control2Y)} ${point(endX)} ${point(endY)}`;
+            };
+
+            const animateRoute = location => {
+                confirm.hidden = true;
+                const departure = currentLocation;
+                routePath.setAttribute('d', routeBetween(departure, location));
+                routeSvg.classList.add('is-active');
+                const length = routePath.getTotalLength();
+                const startPoint = routePath.getPointAtLength(0);
+                miniSamu.style.left = `${startPoint.x / 10}%`;
+                miniSamu.style.top = `${startPoint.y / 5}%`;
+                miniSamu.classList.add('is-walking');
+                miniSamu.hidden = false;
+                card.textContent = `Ruta: ${departure.label} → ${location.label}`;
+                const duration = 2600;
+                const started = performance.now();
+                let currentFrame = -1;
+                const move = now => {
+                    if (!overlay.isConnected) return;
+                    const progress = Math.min(1, (now - started) / duration);
+                    const point = routePath.getPointAtLength(length * progress);
+                    miniSamu.style.left = `${point.x / 10}%`;
+                    miniSamu.style.top = `${point.y / 5}%`;
+                    const frame = Math.floor((now - started) / 120) % 4;
+                    if (frame !== currentFrame) {
+                        currentFrame = frame;
+                        miniSamu.src = this.cacheBustAsset(samuFrames[frame]);
+                    }
+                    if (progress < 1) {
+                        requestAnimationFrame(move);
+                        return;
+                    }
+                    miniSamu.src = this.cacheBustAsset(samuFrames[4]);
+                    miniSamu.classList.remove('is-walking');
+                    miniSamu.classList.add('is-celebrating');
+                    card.textContent = `¡Destino alcanzado: ${location.label}!`;
+                    setTimeout(() => {
+                        map.classList.add('is-travelling');
+                        setTimeout(() => renderLocation(location), 650);
+                    }, 720);
+                };
+                requestAnimationFrame(move);
+            };
+
+            const askForRoute = location => {
+                pendingLocation = location;
+                confirm.querySelector('p').textContent = `La ruta partirá desde ${currentLocation.label} hasta ${location.label}.`;
+                confirm.hidden = false;
+                confirm.querySelector('[data-confirm="yes"]').focus();
+            };
+
+            confirm.querySelector('[data-confirm="no"]').addEventListener('click', () => {
+                confirm.hidden = true;
+                pendingLocation = null;
+            });
+            confirm.querySelector('[data-confirm="yes"]').addEventListener('click', () => {
+                if (!pendingLocation) return;
+                const location = pendingLocation;
+                pendingLocation = null;
+                animateRoute(location);
+            });
+
+            locations.forEach(location => {
+                const button = zoneButton(location.id);
+                button.addEventListener('mouseenter', () => {
+                    if (!button.disabled) card.textContent = `${location.label}: pulsa para consultar la ruta.`;
+                });
+                button.addEventListener('focus', () => {
+                    if (!button.disabled) card.textContent = `${location.label}: pulsa para consultar la ruta.`;
+                });
+                button.addEventListener('click', () => askForRoute(location));
+            });
+
+            const revealKingdom = () => {
+                card.textContent = 'Las tres pistas señalan el mismo vacío. El mapa está intentando ocultar algo.';
+                kingdomLock.classList.add('is-revealing');
+                setTimeout(() => {
+                    kingdomLock.classList.add('is-revealed');
+                    card.innerHTML = '<strong>SAMU:</strong> Ahí estás. La fábrica sí estaba aquí; alguna interferencia la borraba del mapa. Kingdom Ketchup… voy para allá.';
+                    const finish = document.createElement('button');
+                    finish.type = 'button';
+                    finish.className = 'furrielva-finish';
+                    finish.textContent = 'Marcar Kingdom Ketchup como destino';
+                    card.appendChild(finish);
+                    finish.addEventListener('click', () => {
+                        map.classList.add('is-final-route');
+                        finish.disabled = true;
+                        setTimeout(() => {
+                            overlay.removeEventListener('click', swallow);
+                            overlay.remove();
+                            this.lastMinigameResult = { explored: true, clues: visited.size, lore };
+                            resolve(true);
+                        }, 1050);
+                    }, { once: true });
+                }, 1700);
+            };
+        });
     }
 
     // Créditos finales del compi (credits-minigame.js). Solo en el final bueno.
@@ -583,27 +1127,246 @@ class VisualNovelEngine {
         return won;
     }
 
-    async playKetchupMinigame(options = {}) {
+    // Primera parte del combate de Kingdom Ketchup: durante un tiempo fijo,
+    // Samu reúne tantas guindillas como pueda. No se pierde la historia si se
+    // recogen pocas; el resultado regula la dificultad de la batalla contra Zip.
+    async playChiliHarvestMinigame(options = {}) {
+        this.isWaitingForInput = false;
+        const collected = await this.runChiliHarvestRound(options);
+        const hasChiliBox = this.hasItem('caja_guindillas');
+        const boxBonus = hasChiliBox ? (Number(options.boxBonus) || 12) : 0;
+
+        this.gameState.chiliCollected = collected;
+        this.gameState.neitChiliBonus = boxBonus;
+        this.gameState.chiliPower = collected + boxBonus;
+        this.gameState.chiliPowerMax = Number(options.maxSpicePower) || 40;
+        return collected;
+    }
+
+    runChiliHarvestRound(options = {}) {
+        const rawDuration = Number(options.duration) || 22000;
+        const duration = rawDuration <= 120 ? rawDuration * 1000 : rawDuration;
+        const powerGoal = Number(options.powerGoal) || 28;
+        const spawnRate = Number(options.spawnRate) || 1.35;
+        const speedMult = Number(options.speedMult) || 1.25;
+        const chiliChance = options.chiliChance !== undefined ? Number(options.chiliChance) : 0.72;
+        const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.png');
+        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
+        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png');
+        const playerIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.png');
+        const factoryBackground = this.cacheBustAsset(
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png'
+        );
+
+        this.preloadImages([
+            'assets/images/minigames/chapter2/ketchup/chili_v2.png',
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png',
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png',
+            'assets/images/minigames/chapter2/common/samu_player.png',
+            'assets/images/characters/edu/edu_picante_wide_transparent.png',
+            'assets/images/characters/samu/samu_charred_closed.png',
+            'assets/images/characters/samu/samu_charred_whiteeyes.png',
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png'
+        ]);
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay chili-harvest-minigame';
+            overlay.innerHTML = `
+                <div class="minigame-hud chili-harvest-hud">
+                    <span class="mg-score"><img class="mg-hud-icon" src="${chiliIcon}" alt="guindilla"><span class="mg-score-text">0</span></span>
+                    <span class="chili-power-wrap"><span>PODER PICANTE</span><span class="chili-power-bar"><i></i></span></span>
+                    <span class="mg-timer">${Math.ceil(duration / 1000)} s</span>
+                </div>
+                <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${factoryBackground}')">
+                    <div class="mg-player" id="mg-player"><img src="${playerIcon}" alt="Samu" draggable="false"></div>
+                    <div class="mg-phase-banner is-showing">¡Reúne picante para debilitar a Zip!</div>
+                </div>
+                <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge guindillas; las botellas te hacen perder una.</div>
+            `;
+            document.getElementById('game-container').appendChild(overlay);
+
+            const field = overlay.querySelector('#mg-field');
+            const player = overlay.querySelector('#mg-player');
+            const scoreEl = overlay.querySelector('.mg-score-text');
+            const timerEl = overlay.querySelector('.mg-timer');
+            const powerFill = overlay.querySelector('.chili-power-bar i');
+            const fieldRect = () => field.getBoundingClientRect();
+            let score = 0;
+            let playerX = 0.5;
+            let items = [];
+            let running = true;
+            let spawnTimer = 0;
+            let lastTime = null;
+            const startTime = performance.now();
+
+            const updateHud = remaining => {
+                scoreEl.textContent = String(score);
+                timerEl.textContent = `${Math.max(0, Math.ceil(remaining / 1000))} s`;
+                powerFill.style.width = `${Math.min(100, (score / powerGoal) * 100)}%`;
+            };
+            const updatePlayer = () => { player.style.left = `${playerX * 100}%`; };
+            updatePlayer();
+            updateHud(duration);
+
+            let moveLeft = false;
+            let moveRight = false;
+            const keyDown = event => {
+                const key = event.key.toLowerCase();
+                if (key === 'arrowleft' || key === 'a') moveLeft = true;
+                if (key === 'arrowright' || key === 'd') moveRight = true;
+                if (key.startsWith('arrow')) event.preventDefault();
+            };
+            const keyUp = event => {
+                const key = event.key.toLowerCase();
+                if (key === 'arrowleft' || key === 'a') moveLeft = false;
+                if (key === 'arrowright' || key === 'd') moveRight = false;
+            };
+            const mouseMove = event => {
+                const rect = fieldRect();
+                playerX = Math.max(0.04, Math.min(0.96, (event.clientX - rect.left) / rect.width));
+                updatePlayer();
+            };
+            const swallowClick = event => event.stopPropagation();
+            document.addEventListener('keydown', keyDown);
+            document.addEventListener('keyup', keyUp);
+            field.addEventListener('mousemove', mouseMove);
+            overlay.addEventListener('click', swallowClick, true);
+            const detachControls = () => {
+                document.removeEventListener('keydown', keyDown);
+                document.removeEventListener('keyup', keyUp);
+                field.removeEventListener('mousemove', mouseMove);
+                overlay.removeEventListener('click', swallowClick, true);
+            };
+
+            const spawnItem = () => {
+                const good = Math.random() < chiliChance;
+                const corrupt = !good && Math.random() < 0.45;
+                const type = good ? 'chili' : (corrupt ? 'corrupt' : 'ketchup');
+                const icon = good ? chiliIcon : (corrupt ? corruptIcon : ketchupIcon);
+                const el = document.createElement('div');
+                el.className = `mg-item mg-item-${type}`;
+                el.innerHTML = `<img src="${icon}" alt="${good ? 'guindilla' : 'botella de ketchup'}" draggable="false">`;
+                const x = 0.05 + Math.random() * 0.9;
+                el.style.left = `${x * 100}%`;
+                el.style.top = '-10%';
+                field.appendChild(el);
+                items.push({
+                    el,
+                    x,
+                    y: -0.1,
+                    speed: (0.28 + Math.random() * 0.22) * speedMult,
+                    good,
+                });
+            };
+
+            const cleanup = () => {
+                if (!running) return;
+                running = false;
+                detachControls();
+                items.forEach(item => item.el.remove());
+                items = [];
+                const result = document.createElement('div');
+                result.className = 'minigame-result';
+                result.textContent = `¡${score} guindillas reunidas!`;
+                overlay.appendChild(result);
+                setTimeout(() => {
+                    overlay.remove();
+                    resolve(score);
+                }, 1200);
+            };
+
+            const loop = time => {
+                if (!running || !overlay.isConnected) {
+                    running = false;
+                    detachControls();
+                    items.forEach(item => item.el.remove());
+                    items = [];
+                    return;
+                }
+                const elapsed = time - startTime;
+                const remaining = duration - elapsed;
+                if (remaining <= 0) return cleanup();
+                if (lastTime === null) lastTime = time;
+                const dt = Math.min((time - lastTime) / 1000, 0.05);
+                lastTime = time;
+
+                if (moveLeft) playerX = Math.max(0.04, playerX - 1.2 * dt);
+                if (moveRight) playerX = Math.min(0.96, playerX + 1.2 * dt);
+                updatePlayer();
+                updateHud(remaining);
+
+                spawnTimer -= dt;
+                if (spawnTimer <= 0) {
+                    spawnItem();
+                    spawnTimer = (0.34 + Math.random() * 0.32) / spawnRate;
+                }
+
+                for (let index = items.length - 1; index >= 0; index--) {
+                    const item = items[index];
+                    item.y += item.speed * dt;
+                    item.el.style.top = `${item.y * 100}%`;
+                    const caught = item.y >= 0.80 && item.y <= 0.98 && Math.abs(item.x - playerX) < 0.075;
+                    if (caught) {
+                        if (item.good) {
+                            score++;
+                            player.classList.add('chili-caught');
+                            setTimeout(() => player.classList.remove('chili-caught'), 120);
+                        } else {
+                            score = Math.max(0, score - 1);
+                            field.classList.add('mg-hit');
+                            setTimeout(() => field.classList.remove('mg-hit'), 200);
+                        }
+                        updateHud(remaining);
+                        item.el.remove();
+                        items.splice(index, 1);
+                    } else if (item.y > 1.1) {
+                        item.el.remove();
+                        items.splice(index, 1);
+                    }
+                }
+                requestAnimationFrame(loop);
+            };
+            requestAnimationFrame(loop);
+        });
+    }
+
+    // Bullet hell de José Manuel, conectado a la reserva de guindillas obtenida
+    // en la ronda anterior y al posible regalo de Neit.
+    async playKetchupBossMinigame(options = {}) {
         // El minijuego gestiona su propia entrada; no esperar clic extra al salir
         this.isWaitingForInput = false;
 
-        if (!window.KetchupMinigame) {
+        const bossGame = window.KetchupMinigame || window.KetchupBossMinigame;
+        if (!bossGame) {
             console.warn('KetchupMinigame no está cargado.');
             return false;
         }
 
+        const bossOptions = Object.assign({}, options, {
+            spicePower: Number(this.gameState.chiliPower) || 0,
+            maxSpicePower: Number(this.gameState.chiliPowerMax) || Number(options.maxSpicePower) || 40,
+            hasChiliBox: this.hasItem('caja_guindillas')
+        });
+
         // Se repite hasta ganar; al perder solo se puede reintentar
         let won = false;
         while (!won) {
-            won = await window.KetchupMinigame.play(options);
+            won = await bossGame.play(bossOptions);
             if (!won) {
-                await this.showMinigameRetry('¡Samu acaba cubierto de ketchup!');
+                await this.showMinigameRetry('¡Samu ha acabado cubierto de ketchup!');
             }
         }
         return won;
     }
 
-    // Una ronda del minijuego. Resuelve con true (ganada) o false (perdida).
+    // Alias para herramientas y escenas antiguas que invocaban este nombre.
+    async playKetchupMinigame(options = {}) {
+        return this.playKetchupBossMinigame(options);
+    }
+
+    // Implementación histórica del recolector, conservada temporalmente para
+    // compatibilidad con pruebas antiguas; la historia usa chiliHarvest.
     runKetchupRound(options = {}) {
         const goal = options.goal || 10;          // ketchups necesarios para ganar
         const maxHits = options.maxHits || 3;     // golpes de guindilla permitidos
@@ -612,8 +1375,20 @@ class VisualNovelEngine {
         const speedMult = options.speedMult || 1.0; // multiplicador de velocidad de caída
         const chiliChance = options.chiliChance !== undefined ? options.chiliChance : 0.6;
         const showExtraInfo = options.showExtraInfo || false; // mostrar info de debug/test
-        const ketchupIcon = this.cacheBustAsset('assets/minigames/ketchup.png');
-        const chiliIcon = this.cacheBustAsset('assets/minigames/chili.png');
+        const phase1Goal = Math.min(goal - 2, options.phase1Goal || Math.ceil(goal * 0.3));
+        const phase2Goal = Math.min(goal - 1, options.phase2Goal || Math.ceil(goal * 0.68));
+        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
+        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png');
+        const capIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/golden_cap.png');
+        const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.png');
+        this.preloadImages([
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png',
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png',
+            'assets/images/minigames/chapter2/ketchup/golden_cap.png',
+            'assets/images/minigames/chapter2/ketchup/chili_v2.png',
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png',
+            'assets/images/minigames/chapter2/common/samu_player.png'
+        ]);
         const musicTrack = options.music;
 
         return new Promise(resolve => {
@@ -629,17 +1404,19 @@ class VisualNovelEngine {
             }
             // --- Crear overlay del minijuego ---
             const overlay = document.createElement('div');
-            overlay.className = 'minigame-overlay';
+            overlay.className = 'minigame-overlay ketchup-minigame ketchup-phase-1';
             overlay.innerHTML = `
                 <div class="minigame-hud">
                     <span class="mg-score"><img class="mg-hud-icon" src="${ketchupIcon}" alt="ketchup"><span class="mg-score-text">0 / ${goal}</span></span>
+                    <span class="mg-phase">FASE 1 · REACTIVA LA LÍNEA</span>
                     <span class="mg-lives">❤️ ${maxHits}</span>
                     ${showExtraInfo ? `<span class="mg-extra-info" style="margin-left:20px; font-size:0.8em; color:#ffb4b4">🌶️ Vel: ${(speedMult * 1.5).toFixed(2)}x</span>` : ''}
                 </div>
-                <div class="minigame-field" id="mg-field">
-                    <div class="mg-player" id="mg-player"><img src="${this.cacheBustAsset('assets/minigames/samu_player.png')}" alt="Samu" draggable="false"></div>
+                <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${this.cacheBustAsset('assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png')}')">
+                    <div class="mg-player" id="mg-player"><img src="${this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.png')}" alt="Samu" draggable="false"></div>
+                    <div class="mg-phase-banner">Reactiva la línea de embotellado</div>
                 </div>
-                <div class="minigame-instructions">Mueve con ← → (o el ratón). ¡Come <img class="mg-inline-icon" src="${ketchupIcon}" alt="ketchup"> y esquiva <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla">!</div>
+                <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge producto limpio y tapones; esquiva corrupción y guindillas.</div>
             `;
             document.getElementById('game-container').appendChild(overlay);
 
@@ -647,6 +1424,8 @@ class VisualNovelEngine {
             const player = overlay.querySelector('#mg-player');
             const scoreEl = overlay.querySelector('.mg-score-text');
             const livesEl = overlay.querySelector('.mg-lives');
+            const phaseEl = overlay.querySelector('.mg-phase');
+            const phaseBanner = overlay.querySelector('.mg-phase-banner');
 
             const fieldRect = () => field.getBoundingClientRect();
 
@@ -658,6 +1437,24 @@ class VisualNovelEngine {
             let running = true;
             let spawnTimer = 0;
             let lastTime = null;
+            let phase = 1;
+
+            const setPhase = next => {
+                if (next === phase) return;
+                phase = next;
+                overlay.classList.remove('ketchup-phase-1', 'ketchup-phase-2', 'ketchup-phase-3');
+                overlay.classList.add(`ketchup-phase-${phase}`);
+                const labels = {
+                    1: ['FASE 1 · REACTIVA LA LÍNEA', 'Reactiva la línea de embotellado'],
+                    2: ['FASE 2 · DESCOMPRIME', 'Separa las botellas limpias de la corrupción'],
+                    3: ['FASE 3 · LIBERA A EDU', '¡Los Ketchlings lanzan tapones dorados!']
+                };
+                phaseEl.textContent = labels[phase][0];
+                phaseBanner.textContent = labels[phase][1];
+                phaseBanner.classList.remove('is-showing');
+                void phaseBanner.offsetWidth;
+                phaseBanner.classList.add('is-showing');
+            };
 
             const updatePlayerPos = () => {
                 player.style.left = `${playerX * 100}%`;
@@ -690,12 +1487,18 @@ class VisualNovelEngine {
             overlay.addEventListener('click', swallowClick, true);
 
             const spawnItem = () => {
-                const isChili = Math.random() < chiliChance;
+                const roll = Math.random();
+                let type;
+                if (phase === 2 && roll < 0.18) type = 'corrupt';
+                else if (phase === 3 && roll < 0.28) type = 'cap';
+                else type = roll < chiliChance ? 'chili' : 'ketchup';
                 const el = document.createElement('div');
-                el.className = 'mg-item';
+                el.className = `mg-item mg-item-${type}`;
                 const img = document.createElement('img');
-                img.src = isChili ? chiliIcon : ketchupIcon;
-                img.alt = isChili ? 'guindilla' : 'ketchup';
+                const icons = { chili: chiliIcon, ketchup: ketchupIcon, corrupt: corruptIcon, cap: capIcon };
+                const labels = { chili: 'guindilla', ketchup: 'botella limpia', corrupt: 'botella corrupta', cap: 'tapón dorado' };
+                img.src = icons[type];
+                img.alt = labels[type];
                 img.draggable = false;
                 el.appendChild(img);
                 const x = Math.random() * 0.9 + 0.05;
@@ -708,7 +1511,7 @@ class VisualNovelEngine {
                     x,
                     y: -0.1,
                     speed: speedBase,
-                    type: isChili ? 'chili' : 'ketchup'
+                    type
                 });
             };
 
@@ -772,14 +1575,16 @@ class VisualNovelEngine {
                     it.el.style.top = `${it.y * 100}%`;
 
                     // Colisión con el jugador (zona inferior del campo)
-                    const hitboxWidth = it.type === 'chili' ? 0.04 : playerW;
+                    const hitboxWidth = (it.type === 'chili' || it.type === 'corrupt') ? 0.045 : playerW;
                     const caught = it.y >= 0.82 && it.y <= 0.98 &&
                         Math.abs(it.x - playerX) < hitboxWidth;
 
                     if (caught) {
-                        if (it.type === 'ketchup') {
+                        if (it.type === 'ketchup' || it.type === 'cap') {
                             score++;
                             scoreEl.textContent = `${score} / ${goal}`;
+                            if (score >= phase2Goal) setPhase(3);
+                            else if (score >= phase1Goal) setPhase(2);
                         } else {
                             lives--;
                             livesEl.textContent = `❤️ ${Math.max(0, lives)}`;
@@ -918,7 +1723,7 @@ class VisualNovelEngine {
     runGatosRound(options = {}) {
         const surviveMs = (options.survive || 60) * 1000; // tiempo a aguantar
         const catCount = options.cats || 3;               // nº de gatos perseguidores
-        const catIcon = this.cacheBustAsset('assets/minigames/gato.png');
+        const catIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/gato.png');
         // Velocidades en CELDAS por segundo. Samu debe ir más rápido que los
         // gatos para poder escapar por las calles.
         const playerSpeed = options.playerSpeed || 5.0;
@@ -945,7 +1750,7 @@ class VisualNovelEngine {
                 </div>
                 <div class="minigame-field" id="mg-field-gatos">
                     <div class="mg-maze" id="mg-maze"></div>
-                    <div class="mg-player" id="mg-player-gatos"><img src="${this.cacheBustAsset('assets/minigames/samu_player.png')}" alt="Samu" draggable="false"></div>
+                    <div class="mg-player" id="mg-player-gatos"><img src="${this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.png')}" alt="Samu" draggable="false"></div>
                 </div>
                 <div class="minigame-instructions">¡Recorre las calles con ← ↑ → ↓ (o WASD) y aguanta sin que te pillen los gatos!</div>
             `;
@@ -1013,9 +1818,9 @@ class VisualNovelEngine {
                 { c: Math.floor(cols / 2), r: 1 }, { c: Math.floor(cols / 2), r: rows - 2 }
             ].map(p => snapStreet(p.c, p.r));
             const catImages = [
-                this.cacheBustAsset('assets/minigames/me-perdonas.png'),
-                this.cacheBustAsset('assets/minigames/te-perdono.png'),
-                this.cacheBustAsset('assets/minigames/no-te-perdono.png')
+                this.cacheBustAsset('assets/images/minigames/shared/choices/me-perdonas.png'),
+                this.cacheBustAsset('assets/images/minigames/shared/choices/te-perdono.png'),
+                this.cacheBustAsset('assets/images/minigames/shared/choices/no-te-perdono.png')
             ];
             const cats = [];
             for (let i = 0; i < catCount; i++) {
@@ -1513,10 +2318,10 @@ class VisualNovelEngine {
         const flashMs = options.flashMs || 600;
         const gapMs = options.gapMs || 250;
         const runas = [
-            { image: 'assets/minigames/runa_samu.png', label: 'Magia de Samu' },
-            { image: 'assets/minigames/runa_edu.png', label: 'Prisa de Edu' },
-            { image: 'assets/minigames/runa_tony.png', label: 'Purificación de Seraphyna' },
-            { image: 'assets/minigames/runa_jose.png', label: 'Fuerza de José' }
+            { image: 'assets/images/minigames/shared/runes/runa_samu.png', label: 'Magia de Samu' },
+            { image: 'assets/images/minigames/shared/runes/runa_edu.png', label: 'Prisa de Edu' },
+            { image: 'assets/images/minigames/shared/runes/runa_tony.png', label: 'Purificación de Seraphyna' },
+            { image: 'assets/images/minigames/shared/runes/runa_jose.png', label: 'Fuerza de José' }
         ];
 
         this.isWaitingForInput = false;
@@ -1852,7 +2657,7 @@ class VisualNovelEngine {
         const sfxVol = options.sfxVolume !== undefined ? options.sfxVolume : 1;
 
         // Avatar (Samu) que reacciona a cada acierto/fallo. Las rutas salen de la
-        // FICHA del personaje (poses), que viven en assets/characters/<key>/...
+        // FICHA del personaje (poses), que viven en assets/images/characters/<key>/...
         // (antes se construían sin la subcarpeta -> 404 en bucle y avatar vacío).
         // Se cache-bustean UNA sola vez aquí, no en cada cambio, para no
         // redescargar ni disparar 404 repetidos.
@@ -1861,10 +2666,10 @@ class VisualNovelEngine {
         const aPose = (name, fallback) =>
             this.cacheBustAsset((avatarChar.poses && avatarChar.poses[name]) || fallback);
         const avatarPoses = {
-            idle:    aPose('neutral',    `assets/characters/${avatarKey}/${avatarKey}.png`),
-            perfect: aPose('happy',      `assets/characters/${avatarKey}/${avatarKey}_happy.png`),
-            good:    aPose('determined', `assets/characters/${avatarKey}/${avatarKey}_determined.png`),
-            miss:    aPose('worried',    `assets/characters/${avatarKey}/${avatarKey}_worried.png`)
+            idle:    aPose('neutral',    `assets/images/characters/${avatarKey}/${avatarKey}.png`),
+            perfect: aPose('happy',      `assets/images/characters/${avatarKey}/${avatarKey}_happy.png`),
+            good:    aPose('determined', `assets/images/characters/${avatarKey}/${avatarKey}_determined.png`),
+            miss:    aPose('worried',    `assets/images/characters/${avatarKey}/${avatarKey}_worried.png`)
         };
 
         // Teclas por carril según número de carriles
@@ -2535,8 +3340,8 @@ class VisualNovelEngine {
     // partida ni genera una pared sin salida.
     async runEduFlight(cfg = {}) {
         this.isWaitingForInput = false;
-        const SP = 'assets/minigames/cap3/sprites/';
-        const CAP = 'assets/minigames/cap3/';
+        const SP = 'assets/images/minigames/chapter3/sprites/';
+        const CAP = 'assets/images/minigames/chapter3/';
         const FLIGHT_FRAMES = [
             'edu_fly_v3_0',
             'edu_fly_v3_1',
@@ -3585,8 +4390,8 @@ class VisualNovelEngine {
     // Motor común de los side-scrollers. Devuelve Promise<boolean> (ganado).
     async runSideScroller(cfg) {
         this.isWaitingForInput = false;
-        const SP = 'assets/minigames/cap3/sprites/';
-        const CAP = 'assets/minigames/cap3/';
+        const SP = 'assets/images/minigames/chapter3/sprites/';
+        const CAP = 'assets/images/minigames/chapter3/';
         const url = (n, base = SP) => `url('${this.cacheBustAsset(base + n + '.png')}')`;
         const spriteNames = (entry) => {
             if (typeof entry === 'string') return [entry];
@@ -4566,9 +5371,13 @@ class VisualNovelEngine {
     // hasta 1280x1382 y salía enorme y recortada. Con `size: "auto 55%"` se
     // dibuja centrada y a su tamaño. Se asigna SIEMPRE para que no se cuele el
     // tamaño de una CG en la siguiente.
-    showCG(path, duration = 600, opts = {}) {
+    async showCG(path, duration = 600, opts = {}) {
         const { cg } = this.ensureSceneLayers();
-        if (!cg || !path) return Promise.resolve();
+        if (!cg || !path) return;
+        // Las láminas 4K pueden tardar en descargarse y decodificarse. Si se
+        // cambia el background antes de que estén listas, el CG anterior puede
+        // reaparecer un instante o dejar un hueco durante el fundido.
+        await this.preloadImages([path]);
         cg.style.backgroundImage = `url('${this.cacheBustAsset(path)}')`;
         cg.style.backgroundSize = opts.size || 'cover';
         cg.style.backgroundPosition = opts.position || 'center';
@@ -4579,7 +5388,7 @@ class VisualNovelEngine {
         cg.style.transition = `opacity ${duration}ms ease`;
         cg.style.opacity = '1';
         cg.classList.add('cg-visible');
-        return new Promise(r => setTimeout(r, duration + 40));
+        await new Promise(r => setTimeout(r, duration + 40));
     }
 
     hideCG(duration = 500) {
@@ -4792,6 +5601,80 @@ class VisualNovelEngine {
         }
     }
 
+    // Glitch visual puntual para llamadas o señales comprimidas. La clase se
+    // reinicia siempre para que una segunda interrupción vuelva a animarse y se
+    // retira al acabar, garantizando que el sprite recupere su forma normal.
+    playCharacterGlitchSound() {
+        // `characterGlitch` y `characterFullGlitch` pueden ejecutarse juntos en
+        // una misma línea. Este margen conserva un solo golpe de estática en vez
+        // de superponer dos copias idénticas y provocar saturación.
+        const now = Date.now();
+        if (now - (this._lastCharacterGlitchSoundAt || 0) < 160) return;
+        this._lastCharacterGlitchSoundAt = now;
+        this.playSound('assets/audio/sfx/sfx_estatica.mp3', { volume: 0.72 });
+    }
+
+    triggerCharacterGlitch(characterName, position, duration = 1350) {
+        const characterKey = this.getCharacterKey(characterName);
+        const trackedPosition = position || this.characterPositions[characterKey];
+        if (!trackedPosition) return;
+        const charElement = document.getElementById(`character-${trackedPosition}`);
+        if (!charElement || !charElement.classList.contains('active')) return;
+
+        this.playCharacterGlitchSound();
+        charElement.style.setProperty('--contact-glitch-duration', `${duration}ms`);
+        charElement.classList.remove('contact-glitch');
+        void charElement.offsetWidth;
+        charElement.classList.add('contact-glitch');
+        clearTimeout(charElement._contactGlitchTimer);
+        charElement._contactGlitchTimer = setTimeout(() => {
+            charElement.classList.remove('contact-glitch');
+            charElement.style.removeProperty('--contact-glitch-duration');
+        }, duration + 80);
+    }
+
+    // Segundo golpe de interferencia para el cierre de una llamada: afecta al
+    // sprite completo sin sustituir el glitch independiente del retrato.
+    triggerCharacterFullGlitch(characterName, position, duration = 1050) {
+        const characterKey = this.getCharacterKey(characterName);
+        const trackedPosition = position || this.characterPositions[characterKey];
+        if (!trackedPosition) return;
+        const charElement = document.getElementById(`character-${trackedPosition}`);
+        if (!charElement || !charElement.classList.contains('active')) return;
+
+        this.playCharacterGlitchSound();
+        charElement.style.setProperty('--full-glitch-duration', `${duration}ms`);
+        charElement.classList.remove('full-signal-glitch');
+        void charElement.offsetWidth;
+        charElement.classList.add('full-signal-glitch');
+        clearTimeout(charElement._fullSignalGlitchTimer);
+        charElement._fullSignalGlitchTimer = setTimeout(() => {
+            charElement.classList.remove('full-signal-glitch');
+            charElement.style.removeProperty('--full-glitch-duration');
+        }, duration + 80);
+    }
+
+    // Interferencia persistente ligada a una sola línea de diálogo. No deforma
+    // la escala del personaje: el movimiento y la separación RGB los resuelve
+    // CSS mediante capas recortadas. nextLine() la retira justo al avanzar.
+    startCharacterGlitchUntilAdvance(characterName, position) {
+        const characterKey = this.getCharacterKey(characterName);
+        const trackedPosition = position || this.characterPositions[characterKey];
+        if (!trackedPosition) return;
+        const charElement = document.getElementById(`character-${trackedPosition}`);
+        if (!charElement || !charElement.classList.contains('active')) return;
+
+        this.clearAdvanceBoundCharacterEffects();
+        this.playCharacterGlitchSound();
+        charElement.classList.add('dialogue-glitch-loop');
+    }
+
+    clearAdvanceBoundCharacterEffects() {
+        document.querySelectorAll('.dialogue-glitch-loop').forEach(element => {
+            element.classList.remove('dialogue-glitch-loop');
+        });
+    }
+
     updateCharacterVideo(charElement, videoPath) {
         let videoContainer = charElement.querySelector('.character-video-container');
 
@@ -4951,7 +5834,7 @@ class VisualNovelEngine {
         // id con esa misma ruta, se deja correr y solo se ajusta el volumen.
         if (id) {
             const sonando = this.audioInstances[id];
-            if (sonando && sonando._srcPath === soundPath && !sonando.ended && !sonando.paused) {
+            if (sonando && sonando._srcPath === soundPath && !sonando._stopping && !sonando.ended && !sonando.paused) {
                 sonando._baseVol = volume;
                 sonando.loop = loop;
                 if (!sonando._fadeInterval) {
@@ -4964,6 +5847,7 @@ class VisualNovelEngine {
 
         const audio = new Audio(soundPath);
         audio._srcPath = soundPath;
+        audio.preload = 'auto';
         // Música = bucles y pistas del menú; el resto cuenta como efecto.
         const volKind = (loop || (id && String(id).startsWith('menu'))) ? 'music' : 'sfx';
         audio._baseVol = volume;
@@ -4991,6 +5875,16 @@ class VisualNovelEngine {
             this.audioInstances[id] = audio;
         }
 
+        // Si el navegador no puede cargar o decodificar una pista, no dejar su
+        // referencia averiada bloqueando futuros intentos con el mismo ID.
+        audio.addEventListener('error', () => {
+            console.error(`No se pudo cargar el audio: ${soundPath}`, audio.error || 'error desconocido');
+            this.forgetAudio(audio);
+        }, { once: true });
+        if (!loop) {
+            audio.addEventListener('ended', () => this.forgetAudio(audio), { once: true });
+        }
+
         // Fade in si se especifica. El intervalo se guarda en audio._fadeInterval
         // para que un fade-out posterior pueda cancelarlo (evita que dos fades
         // compitan por el volumen del mismo audio).
@@ -5013,11 +5907,24 @@ class VisualNovelEngine {
         return audio;
     }
 
+    // Elimina únicamente las referencias que todavía apuntan a este elemento.
+    // El audio puede continuar su fade con una referencia local, pero una nueva
+    // acción con el mismo ID debe poder crear y arrancar otra pista enseguida.
+    forgetAudio(audio) {
+        if (!audio) return;
+        if (this.currentMusic === audio) this.currentMusic = null;
+        for (const [id, instance] of Object.entries(this.audioInstances || {})) {
+            if (instance === audio) delete this.audioInstances[id];
+        }
+    }
+
     // Desvanece el volumen a 0 en `ms` y luego pausa y rebobina. Cancela
     // cualquier fade anterior sobre el mismo audio (evita intervalos compitiendo
     // por el volumen). Con ms<=0, o si ya está pausado, para de inmediato.
     fadeOutAndStop(audio, ms = 300) {
         if (!audio) return;
+        audio._stopping = true;
+        this.forgetAudio(audio);
         // Al terminar se libera el src: el elemento descartado no debe seguir
         // reteniendo su conexión de streaming (límite de 6 por host).
         const release = (a) => { try { a.removeAttribute('src'); a.load(); } catch (e) {} };
@@ -5598,6 +6505,9 @@ class VisualNovelEngine {
     }
 
     async nextLine() {
+        // Los efectos declarados «hasta avanzar» sobreviven al tipeo y a la
+        // espera del jugador, pero desaparecen antes de ejecutar la línea nueva.
+        this.clearAdvanceBoundCharacterEffects();
         const scene = this.getCurrentScene();
         if (!scene || !scene.lines) return false;
 

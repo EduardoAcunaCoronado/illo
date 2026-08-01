@@ -10,7 +10,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/nombre.jpg"
+              "value": "assets/images/backgrounds/nombre.jpg"
             }
           ]
         },

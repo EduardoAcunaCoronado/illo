@@ -287,6 +287,10 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - Acciones JSON activas incluyen fondos, personajes/poses, audio, wait, variables,
   rescue, giveItem, set/addDelay, goToScene, setNextChapter, vídeo, CG, shake, flash,
   grade, vignette, fade, bgPan y minigame.
+- Audio: `stopSound` y los reemplazos con el mismo ID retiran inmediatamente la
+  referencia del registro, aunque el fade siga terminando. No reutilizar un
+  elemento marcado `_stopping`: provocaba silencios al intentar relanzar una
+  pista durante su desvanecimiento. Los errores de carga también liberan el ID.
 - “Capítulos” en el menú es un selector directo, no una carga de partida guardada.
   saveGame() existe pero no se llama; la promesa antigua de autoguardado no describe el
   comportamiento actual.
@@ -297,7 +301,11 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 
 MINIJUEGOS USADOS POR EL GUION ACTUAL
 - Gatos: laberinto/supervivencia con flechas o WASD.
-- Ketchup: mover a Samu horizontalmente, recoger ketchup y evitar guindillas.
+- Guindillas: ronda cronometrada horizontal; cada guindilla carga el poder que
+  se utilizará inmediatamente después contra Zip. Las botellas restan una.
+- Ketchup boss: bullet hell importado del trabajo de José Manuel. Samu se mueve
+  en X/Y, dispara guindillas y esquiva ketchup. Más poder vuelve el combate más
+  asequible aumentando daño/cadencia y ralentizando los patrones enemigos.
 - Chase: coche lateral, esquivar motos/obstáculos; dificultad por storyDelay. Desde
   2026-07-30 el coche usa seis poses con distintas fases de sus ruedas originales
   y una carretera nocturna RGBA más detallada; el skyline lejano conserva un
@@ -419,17 +427,19 @@ SISTEMA DE COMBATE
 PRESENTACIÓN
 - Arranque desde 2026-07-31: disclaimer obligatorio a pantalla completa. El
   usuario pulsa “Entrar con sonido”, lo que desbloquea el audio del navegador y
-  reproduce assets/videos/opening_samu.mp4 (80,704 s, 1920x1080, H.264 + AAC).
+  reproduce assets/video/cutscenes/prologue/opening_samu.mp4 (80,704 s, 1920x1080, H.264 + AAC).
   El vídeo puede terminar o saltarse con su botón; después funde al menú, activa
   menu_loop.mp4 y lanza el tema. Menú y vídeo de fondo permanecen ocultos e
   inertes antes del gesto. El volumen del opening respeta illo_vol_music. En la
-  build Electron, el vídeo declara una superficie fija 1280x720, fuerza layout
-  al salir de hidden y solo se hace visible dos requestAnimationFrame después
-  de playing; así no aparece el primer frame 640x360 en modo ventana. Si
+  build Electron y en navegador, el vídeo toma en píxeles el tamaño real del
+  viewport al mostrarse y al redimensionar, fuerza layout al salir de hidden y
+  solo se hace visible dos requestAnimationFrame después de playing; así no
+  aparece el primer frame 640x360 en modo ventana ni queda limitado a 1280x720
+  en una ventana grande. Si
   illo_vol_music estaba exactamente a 0, «Entrar con sonido» lo restaura al
   70 % y lo persiste; cualquier volumen audible previo se conserva.
 - El fondo del menú es un bucle H.264 4K de 10 s, 48 FPS y 480 frames en
-  assets/videos/menu_loop.mp4. Conserva íntegros los 240 frames 4K originales e
+  assets/video/menu/menu_loop.mp4. Conserva íntegros los 240 frames 4K originales e
   inserta entre ellos frames de movimiento con RIFE v4.6 (UHD + TTA temporal).
   También interpola la transición del último frame al primero para cerrar el
   bucle sin duplicados. La geometría, el oleaje, los neones, las siluetas, la
@@ -450,14 +460,15 @@ PRESENTACIÓN
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
 - Los 24 planos del concierto tienen una restauración no destructiva 4K en
-  assets/cutscenes/nuevos_frames_4k/: PNG RGB de 3840×2160 con caras, manos,
+  assets/cutscenes/chapter3/opening_samu_sources/frames_4k/: PNG RGB de 3840×2160 con caras, manos,
   anatomía del público, enemigos, vallas y escenario reconstruidos. Samu, Edu
   y el gorila siguen su arte canónico; los primeros planos de Seraphyna fijan
   su identidad. frame_11_embobados.png aplica además a Samu el patrón cromático
-  exacto de assets/characters/samu/Samu.png. Los originales de nuevos_frames/
+  exacto de assets/images/characters/samu/Samu.png. Los originales de nuevos_frames/
   y nuevos_frames_x2/ no se modificaron.
 - El opening del concierto se recompuso con esos planos en
-  assets/cutscenes/opening_tony_4k.mp4: H.264 3840×2160, 30 FPS, 117,6 s,
+  assets/cutscenes/chapter3/opening_tony/opening_tony.mp4: H.264 3840×2160,
+  30 FPS, 117,6 s,
   audio AAC original y montaje con zooms, fundidos, fogonazos y pausa negra
   final. opening_tony.mp4 (720p) permanece intacto; la entrega 4K ocupa menos
   de 100 MB para poder versionarse y usarse en el juego.
@@ -482,6 +493,137 @@ VALIDACIÓN REALIZADA EL 2026-07-30
   y “prettier” no está disponible; no es un fallo del código del juego.
 
 REGLAS PARA CAMBIOS FUTUROS
+- Antes de abrir Furry Maps, Samu encuentra en Furrielva una botella vacía y sin
+  tapón con el tomate coronado y el nombre de Kingdom Ketchup. Esa botella es la
+  razón concreta por la que pregunta a los repartidores y comercios de dónde
+  salen «estas botellas». No conoce todavía la promoción ni el tapón dorado.
+- Samu, en su forma furry, va descalzo: las descripciones deben hablar de sus
+  patas y no atribuirle zapatillas, zapatos u otro calzado.
+- El fondo activo de la plaza de Furrielva es
+  `assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png` (3840x2160). Mantiene la
+  iglesia, mercado, fuente y reparto animal del original; no volver a enlazar
+  `iglesia.png` como fondo principal del capítulo 2.
+- La investigación de Furrielva usa un móvil horizontal ficticio con **Furry
+  Maps**. El mapa activo es
+  `assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png`:
+  la Iglesia del Rocío ocupa el centro y los distritos de plaza, comercios,
+  callejón y fábrica quedan alrededor. Interfaz, textos y zonas se dibujan con
+  HTML/CSS; no deben hornearse dentro del PNG. No usar iconos ni rutas fijas:
+  Samu presenta las tres zonas con un tour resaltado y después cada región real
+  del mapa crece al hover/foco. El trayecto discontinuo solo aparece después de
+  confirmar un destino.
+- En Furry Maps, un Samu diminuto parte de la Iglesia del Rocío solamente en el
+  primer trayecto; las rutas siguientes empiezan en la última zona visitada.
+  Camina usando `assets/images/characters/samu/ketchup/1.png` a `4.png` (sprites traídos de
+  `origin/feature/nuevo-minijuego-ketchup`) y celebra al llegar. Cada destino
+  abre un fondo 4K de `assets/images/backgrounds/chapter2/furrielva/` y un informante:
+  Tadeo Trufa/plaza, Lía Lince/comercios y Rulo Mapache/callejón. Cada elección
+  concede la pista obligatoria y lore opcional diferente. Las visitas son
+  conversaciones completas: el NPC se queja o trabaja en voz alta, Samu se
+  incorpora de forma natural y la pista se descubre durante el intercambio.
+  Samu no sabe nada del tapón dorado durante Furry Maps; lo aprende después del
+  guardia. Los retratos transparentes individuales son `tadeo_trufa_v1.png`,
+  `lia_lince_v1.png` y `rulo_mapache_v1.png` dentro de
+  `assets/images/characters/furrielva/`. Los nombres de hablante mantienen
+  su identidad cromática también dentro del minijuego: Samu rojo, Tadeo
+  naranja, Lía violeta y Rulo azul verdoso; los avisos de sistema son turquesa.
+- Kingdom Ketchup debe quedar visualmente oculta por una interferencia
+  glitcheada hasta reunir las tres pistas. Entonces el glitch desaparece, la
+  fábrica se revela y Samu concluye que la interferencia la borraba del mapa.
+  Antes de revelar a Zip no usar «comprimir» o «compresión» para describir la
+  anomalía: delata demasiado pronto el juego de palabras. No permitir seleccionar
+  la fábrica antes de esta revelación.
+- En la secuencia del tapón, no colocar `goToScene` en una línea que también
+  tenga texto: las acciones se ejecutan antes del diálogo y lo omitirían. El
+  expositor, el portal y la bienvenida interior usan CG precargados y un fundido
+  a negro entre ellos para impedir flashes o solapamientos de las láminas 4K.
+  El portal no sale de la botella que Samu sostiene: una botella gigantesca de
+  luz aparece de la nada en el pasillo y su cristal se abre hacia la fábrica.
+- El fondo activo de los pasillos Ketchup/Catsup es
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png` (3840x2160). Todas
+  las botellas deben seguir el diseño ficticio de cuerpo alto, tapón-corona
+  dorado y etiqueta crema con corona y tomate; no recuperar siluetas, tapones
+  blancos ni etiquetas que recuerden a Heinz u otra marca real.
+- El fondo activo de la zona de Neit y sus cajas es
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png` (3840x2160).
+  Mantener las guindillas y algunas latas con el emblema ficticio porque las
+  menciona el diálogo; todas las botellas deben usar el tapón-corona canónico y
+  no debe haber marcas reales ni texto de producto inventado.
+- La introducción activa de la sala del trono es
+  `assets/video/cutscenes/chapter2/intro_sala_del_trono_kk_4k.mp4`: H.264 3840x2160, 24 FPS,
+  240 frames y 10 s, con audio AAC. Es el montaje generado en Google Flow y
+  ampliado desde 1920x1080 mediante Real-ESRGAN `realesr-animevideov3` x2. Para
+  evitar un acabado demasiado dibujado se mezcla un 72 % de detalle neuronal
+  con un 28 % del original ampliado por Lanczos. Conserva textos, arquitectura,
+  fuego, vapor, reflejos, guindillas, gotas, salpicaduras y movimiento originales.
+  `scripts/rebuild_intro_sala_trono_kk.py` es una alternativa editable, no la
+  fuente del vídeo activo actual.
+- El fondo inmediatamente posterior al vídeo es una extracción exacta de su
+  último fotograma (frame 239/240):
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png`.
+  No sustituirlo por otro render, porque rompería la continuidad del corte.
+- Kingdom Ketchup v2 tiene su paquete visual integrado en las categorías
+  canónicas de assets/images/: fondos de chapter2, CG, personajes y minijuegos.
+  `assets/metadata/chapter2_v2_manifest.json` documenta el uso. Incluye fondos
+  y CG 4K, tres poses deformadas de Edu.zip, cuatro oficios Ketchling y objetos
+  de minijuego. Los Ketchlings miden canónicamente unos 40 cm y emplean
+  paleta tomate rojo, crema, verde hoja, mostaza y carbón. El emblema comercial
+  es corona + tomate, sin marca real ni texto incrustado.
+- Flujo narrativo implementado tras la grabación de José Manuel de las 23:10:
+  capítulo 2 sigue ciudad -> fábrica ->
+  Ketchlings niegan acceso -> Edu no responde -> supermercado -> tapón dorado
+  -> portal de regreso -> interior. La fachada sería física y el portal un
+  atajo al interior imposible. El estudio completo está en
+  output/pdf/estudio_guion_kingdom_ketchup_jose_manuel.pdf.
+- Extensión jugable de capítulo 2: minijuego point-and-click `furrielvaExplore`
+  con tres pistas; Ketchlings con ficha propia y cuatro oficios; tapón dorado en
+  inventario; CG de revelación, portal y bienvenida. La batalla contra Zip se
+  divide en `chiliHarvest` (22 segundos de recolección) y `ketchupBoss` (bullet
+  hell). La puntuación de guindillas regula la dificultad de la segunda parte.
+  Elegir la recomendación de Neit entrega `caja_guindillas`, aporta 12 puntos de
+  picante y se muestra como bonificación en el HUD, aunque Samu no entiende su
+  utilidad cuando recibe la caja.
+- Tras vencer a Zip, mostrar a Edu con la pose `picante`
+  (`assets/images/characters/edu/edu_picante_wide_transparent.png`) hasta que
+  vuelve a hablar; entonces pasa a `sad`. Es una excepción panorámica al 70 %
+  del escenario, anclada a la derecha para que la llamarada completa se extienda
+  hacia el centro. El PNG debe conservar transparencia real.
+- La cinemática del trono termina con un crossfade configurable: 1,8 s entre su
+  audio y `kingdomketchup.mp3`, 300 ms reteniendo el último frame y 600 ms de
+  fundido hacia `kingdom_ketchup_trono_video_final_4k.png`. `playVideo` admite
+  `audioCrossfade`, `holdLastFrame`, `visualFadeOut` y `endBackground`.
+- En «Uf, no sé», mostrar a Edu con `worried` a proporción normal y aplicar
+  `characterGlitchUntilAdvance`. El glitch cromático por franjas se mantiene
+  únicamente hasta avanzar el texto y nunca debe comprimir ni escalar el sprite.
+- La llamarada de Edu chamusca cómicamente a Samu. `charred_blink` alterna en
+  bucle los PNG `samu_charred_closed.png` y `samu_charred_whiteeyes.png` hasta
+  avanzar el texto; `charred_shake` sacude el hollín una sola vez, añade motas
+  CSS y termina visualmente en `samu_worried.png` mientras Samu protesta.
+- Edu queda rescatado después de derrotar a Zip, no al entrar en el capítulo.
+  Zip no crea Kingdom Ketchup: corrompe y comprime el deseo previo de Edu de ser
+  necesario. Los Ketchlings confirman que pueden cuidar la fábrica sin retenerlo.
+- Antes de encontrar a Edu transformado, Samu solo ve su retrato humano en el
+  contacto del teléfono. No usar la CG de Samu y Edu furros en la llamada del
+  capítulo 1: adelanta información que Samu todavía no conoce. El indicio de
+  Edu.zip se comunica con `characterGlitch`, una compresión breve que vuelve al
+  retrato humano normal. La pose es `iphone5:edu_humano`; `iphone5` es solo el
+  ID heredado. La interfaz visual es ahora un móvil robusto moderno con botones
+  grandes y tipografía display. Edu usa azul, Tony rosa y José verde, siempre
+  con sus versiones humanas. El retrato de Edu es una capa transparente de
+  924x1702, igual que el teléfono, para permanecer centrado con `contain` en
+  ventanas apaisadas y verticales. `characterGlitch` se dispara al establecer
+  la llamada y de nuevo durante la vacilación `lo enten... lo entenderás`; no
+  rotular la anomalía con texto técnico. Después Samu cree que Edu se parecía a
+  Zip en aquella foto, pero se convence de que ha sido la cobertura. En esa
+  última frase se conserva además `characterFullGlitch`: un segundo golpe que
+  afecta al teléfono entero con corte cromático, shake leve y destello azul.
+  Ambos efectos reproducen `sfx_estatica.mp3`; si coinciden, el motor evita que
+  las dos copias se solapen y saturen.
+- Tras integrar `master`, el nombre visible del personaje técnico `iphone5` es
+  "Móvil", pero las llamadas activas siguen siendo las nuestras: Edu azul,
+  Tony rosa y José verde, siempre humanos. Los sprites heredados
+  `iphone5_edu.png`, `iphone5_tony.png` e `iphone5_jose.png` no deben volver a
+  enlazarse como poses principales.
 - Mantener a 2B como narradora.
 - No llamar “virus” al origen de la transformación.
 - No convertir a Edu en culpable de Zip ni a Seraphyna en causante de la infección
@@ -503,19 +645,43 @@ CORRECCIÓN 2026-07-31
 - Al volver al menú principal desde una partida, hay que usar
   `setMainMenuVisible(true)`: quitar solamente la clase `hidden` deja el atributo
   `inert` activo e impide pulsar las opciones del menú.
-- El fondo `assets/backgrounds/bathroom.png` mantiene su orientación jugable y el
+- El fondo `assets/images/backgrounds/chapter1/bathroom.png` mantiene su orientación jugable y el
   reflejo del diseño vigente de Samu, con el estilo anime y la iluminación cálida
   del fotograma 7 del opening. Su espejo izquierdo está corregido para que marco,
   perspectiva y reflejo sean coherentes; el espejo derecho queda completamente
   cerrado por arriba dentro del encuadre.
-- Los cinco sprites de `assets/characters/iphone5/` representan ahora un móvil
-  ficticio cartoon morado con acentos neón e interfaces propias para concierto,
-  Edu, José y Tony. No muestran botón Home, iOS, marcas ni rasgos de Apple; el
-  identificador interno heredado sigue siendo `iphone5`, pero su nombre visible
-  es “Móvil”. Las llamadas muestran retratos de las versiones humanas de Edu,
-  José y Tony, tomados de `assets/characters/humans/`. Los nombres de los tres
-  usan el lettering cartoon de Tony; “LLAMADA EN CURSO”, los tres controles y
-  “Colgar” comparten el estilo azul/rojo de Edu.
+- El identificador interno heredado del teléfono sigue siendo `iphone5`, pero su
+  nombre visible es “Móvil” y su carcasa neutral/concierto es ficticia, sin rasgos
+  de Apple ni de iOS. Las llamadas activas usan las pantallas humanas v2: Edu en
+  azul, Tony en rosa y José en verde. Los PNG heredados `iphone5_edu.png`,
+  `iphone5_tony.png` e `iphone5_jose.png` se conservan solo como recursos antiguos
+  y no deben volver a enlazarse como poses principales.
+
+REORGANIZACIÓN DE ASSETS Y MÚSICA DEL CAPÍTULO 2 — 2026-08-01
+- Las familias canónicas son `assets/audio`, `assets/images`, `assets/video`,
+  `assets/cutscenes`, `assets/fonts` y `assets/metadata`. No introducir nuevas
+  rutas bajo los antiguos prefijos sounds, backgrounds, characters, minigames,
+  ui, videos o generated.
+- Música se ordena por capítulo o función bajo `assets/audio/music/`; efectos
+  están en `assets/audio/sfx/`. Fondos y minijuegos se agrupan por capítulo.
+  Los archivos no conectados se conservan bajo `legacy/` y no son rutas activas.
+- `huelva.mp3` ya no se reproduce y se conserva como
+  `assets/audio/music/legacy/huelva_original.mp3`.
+- Mapa musical del capítulo 2: escena 1 = `furrielva_despierta`; escenas
+  1B/1C/1D = `el_rastro_del_tapon`; escenas 1.5/2/3/4 =
+  `tres_rutas_por_furrielva`; escenas 4.5/4.6 = `el_tapon_dorado`; escenas 5–9
+  mantienen `kingdomketchup` con los cambios de Zip y el combate; escena 10 =
+  `de_vuelta_en_furrielva`.
+- Todas las escenas del capítulo 2 declaran música al entrar. El motor conserva
+  sin reinicio la misma ruta con ID `bg_music`, de modo que hay continuidad en
+  el recorrido normal y sonido correcto al saltar directamente a una escena.
+- La versión reciente de `master` del bullet hell de Zip está integrada sobre
+  nuestra progresión de picante: conserva los sprites animados de Samu, las fases
+  flotantes y especiales de Zip, y la pista `zip's-shadow-waltz.mp3`, mientras
+  `chiliPower` y la caja de Neit siguen regulando daño, cadencia y presión enemiga.
+- Los recursos importados de ese minijuego viven en las rutas canónicas
+  `assets/images/characters/{samu,zip}/ketchup/` y `assets/audio/sfx/`; no volver
+  a introducir las rutas antiguas `assets/characters` o `assets/sounds`.
 
 SISTEMA TIPOGRÁFICO EMOCIONAL 2026-08-01
 - El diálogo detecta automáticamente la emoción de la pose activa del hablante y

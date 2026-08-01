@@ -210,7 +210,7 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("assets/videos/menu_loop_48fps.mp4"),
+        default=Path("assets/video/menu/menu_loop_48fps.mp4"),
     )
     parser.add_argument("--rife", type=Path)
     parser.add_argument("--model", type=Path)

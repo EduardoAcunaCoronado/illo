@@ -8,12 +8,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/calle_espera.png",
+              "value": "assets/images/backgrounds/chapter3/calle_espera.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ecchiland_oscuro.mp3",
+              "path": "assets/audio/music/chapter3/ecchiland_oscuro.mp3",
               "volume": 0.18,
               "loop": true,
               "id": "bg_music",
@@ -67,7 +67,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_movil_vibra.mp3",
+              "path": "assets/audio/sfx/sfx_movil_vibra.mp3",
               "volume": 0.5,
               "loop": false
             },
@@ -85,7 +85,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_derrape.mp3",
+              "path": "assets/audio/sfx/sfx_derrape.mp3",
               "volume": 0.55,
               "loop": false
             },
@@ -102,7 +102,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/calle_coche.png",
+              "value": "assets/images/backgrounds/chapter3/calle_coche.png",
               "cut": true
             },
             {
@@ -112,7 +112,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/disco-rayado.mp3",
+              "path": "assets/audio/sfx/disco-rayado.mp3",
               "volume": 0.5,
               "loop": false
             },
@@ -173,7 +173,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_motor_arranca.mp3",
+              "path": "assets/audio/sfx/sfx_motor_arranca.mp3",
               "volume": 0.45,
               "loop": false
             }
@@ -200,7 +200,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
             },
             {
               "type": "stopSound",
@@ -209,7 +209,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/trayecto_coche.mp3",
+              "path": "assets/audio/music/chapter3/trayecto_coche.mp3",
               "volume": 0.4,
               "loop": true,
               "id": "bg_music",
@@ -217,7 +217,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_motor_loop.mp3",
+              "path": "assets/audio/sfx/sfx_motor_loop.mp3",
               "volume": 0.1,
               "loop": true,
               "id": "motor"
@@ -253,7 +253,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/cae_a_mis_pies.mp3",
+              "path": "assets/audio/music/chapter3/cae_a_mis_pies.mp3",
               "volume": 0.12,
               "loop": true,
               "id": "radio",
@@ -330,7 +330,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_moto_revving.mp3",
+              "path": "assets/audio/sfx/sfx_moto_revving.mp3",
               "volume": 0.15,
               "loop": false
             }
@@ -383,12 +383,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/coche_interior.png",
+              "value": "assets/images/backgrounds/chapter3/coche_interior.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/trayecto_coche.mp3",
+              "path": "assets/audio/music/chapter3/trayecto_coche.mp3",
               "volume": 0.4,
               "loop": true,
               "id": "bg_music"
@@ -408,7 +408,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_moto_revving.mp3",
+              "path": "assets/audio/sfx/sfx_moto_revving.mp3",
               "volume": 0.5,
               "loop": false
             },
@@ -443,7 +443,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/persecucion_carretera.mp3",
+              "path": "assets/audio/music/chapter3/persecucion_carretera.mp3",
               "volume": 0.55,
               "loop": true,
               "id": "mg_music",
@@ -498,7 +498,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
             },
             {
               "type": "showCharacter",
@@ -517,7 +517,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
             },
             {
               "type": "showCharacter",
@@ -536,7 +536,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
             },
             {
               "type": "showCharacter",
@@ -555,7 +555,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_claxon_festivo.mp3",
+              "path": "assets/audio/sfx/sfx_claxon_festivo.mp3",
               "volume": 0.4,
               "loop": false
             },
@@ -576,7 +576,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/coche_interior.png",
+              "value": "assets/images/backgrounds/chapter3/coche_interior.png",
               "cut": true
             },
             {
@@ -602,7 +602,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/skyline_eechi_land.png",
+              "value": "assets/images/backgrounds/chapter3/skyline_eechi_land.png",
               "cut": true
             },
             {
@@ -630,7 +630,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ecchiland_ambiente.mp3",
+              "path": "assets/audio/music/chapter3/ecchiland_ambiente.mp3",
               "volume": 0.35,
               "loop": true,
               "id": "bg_music",
@@ -638,7 +638,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_multitud_lejana.mp3",
+              "path": "assets/audio/sfx/sfx_multitud_lejana.mp3",
               "volume": 0.15,
               "loop": true,
               "id": "crowd"
@@ -716,18 +716,18 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ecchiland_ambiente.mp3",
+              "path": "assets/audio/music/chapter3/ecchiland_ambiente.mp3",
               "volume": 0.35,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png"
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_muro_fans.mp3",
+              "path": "assets/audio/sfx/sfx_muro_fans.mp3",
               "volume": 0.1,
               "loop": true,
               "id": "crowd",
@@ -741,7 +741,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_pasos_pesados.mp3",
+              "path": "assets/audio/sfx/sfx_pasos_pesados.mp3",
               "volume": 0.55,
               "loop": false
             },
@@ -820,18 +820,18 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png"
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_multitud_lejana.mp3",
+              "path": "assets/audio/sfx/sfx_multitud_lejana.mp3",
               "volume": 0.15,
               "loop": true,
               "id": "crowd"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "path": "assets/audio/music/chapter3/gorila_camelo.mp3",
               "volume": 0.4,
               "loop": true,
               "id": "bg_music",
@@ -897,12 +897,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "path": "assets/audio/music/chapter3/gorila_camelo.mp3",
               "volume": 0.4,
               "loop": true,
               "id": "bg_music"
@@ -948,19 +948,19 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "path": "assets/audio/music/chapter3/gorila_camelo.mp3",
               "volume": 0.4,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_pintalabios_click.mp3",
+              "path": "assets/audio/sfx/sfx_pintalabios_click.mp3",
               "volume": 0.3,
               "loop": false
             }
@@ -972,7 +972,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/backgrounds/cg/foto_trio.png",
+              "path": "assets/images/cg/chapter3/foto_trio.png",
               "duration": 600
             }
           ],
@@ -1062,12 +1062,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "path": "assets/audio/music/chapter3/gorila_camelo.mp3",
               "volume": 0.4,
               "loop": true,
               "id": "bg_music"
@@ -1105,12 +1105,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "path": "assets/audio/music/chapter3/gorila_camelo.mp3",
               "volume": 0.4,
               "loop": true,
               "id": "bg_music"
@@ -1144,12 +1144,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "path": "assets/audio/music/chapter3/gorila_camelo.mp3",
               "volume": 0.4,
               "loop": true,
               "id": "bg_music"
@@ -1187,12 +1187,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/gorila_camelo.mp3",
+              "path": "assets/audio/music/chapter3/gorila_camelo.mp3",
               "volume": 0.4,
               "loop": true,
               "id": "bg_music"
@@ -1227,7 +1227,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png"
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png"
             },
             {
               "type": "showCharacter",
@@ -1271,7 +1271,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/callejon_trasero.png"
+              "value": "assets/images/backgrounds/chapter3/callejon_trasero.png"
             },
             {
               "type": "hideCharacter",
@@ -1279,7 +1279,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_portazo.mp3",
+              "path": "assets/audio/sfx/sfx_portazo.mp3",
               "volume": 0.6,
               "loop": false
             }
@@ -1295,7 +1295,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "path": "assets/audio/music/chapter3/fans_desmadre.mp3",
               "volume": 0.5,
               "loop": false,
               "id": "bad",
@@ -1337,12 +1337,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_multitud_lejana.mp3",
+              "path": "assets/audio/sfx/sfx_multitud_lejana.mp3",
               "volume": 0.13,
               "loop": true,
               "id": "crowd"
@@ -1387,7 +1387,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/camerino_seraphyna.png",
+              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
               "cut": true
             },
             {
@@ -1397,7 +1397,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ecchiland_ambiente.mp3",
+              "path": "assets/audio/music/chapter3/ecchiland_ambiente.mp3",
               "volume": 0.3,
               "loop": true,
               "id": "bg_music",
@@ -1421,7 +1421,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_pintalabios_click.mp3",
+              "path": "assets/audio/sfx/sfx_pintalabios_click.mp3",
               "volume": 0.35,
               "loop": false
             }
@@ -1445,7 +1445,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/rotura_hechizo.mp3",
+              "path": "assets/audio/music/chapter3/rotura_hechizo.mp3",
               "volume": 0.35,
               "loop": false,
               "id": "sting",
@@ -1563,7 +1563,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_grunidos_multitud.mp3",
+              "path": "assets/audio/sfx/sfx_grunidos_multitud.mp3",
               "volume": 0.12,
               "loop": true,
               "id": "terror"
@@ -1597,7 +1597,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/camerino_seraphyna.png",
+              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
               "cut": true
             },
             {
@@ -1626,7 +1626,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fans_desmadrandose.png",
+              "value": "assets/images/backgrounds/chapter3/fans_desmadrandose.png",
               "cut": true
             },
             {
@@ -1636,7 +1636,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "path": "assets/audio/music/chapter3/fans_desmadre.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music",
@@ -1723,14 +1723,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "path": "assets/audio/music/chapter3/fans_desmadre.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/backstage_mesa.png"
+              "value": "assets/images/backgrounds/chapter3/backstage_mesa.png"
             },
             {
               "type": "hideCharacter",
@@ -1763,7 +1763,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_crujido_metal.mp3",
+              "path": "assets/audio/sfx/sfx_crujido_metal.mp3",
               "volume": 0.5,
               "loop": false
             },
@@ -1791,12 +1791,12 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/foco_cae_santi.png",
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_crash_foco.mp3",
+              "path": "assets/audio/sfx/sfx_crash_foco.mp3",
               "volume": 0.6,
               "loop": false
             },
@@ -1874,12 +1874,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/foco_cae_santi.png",
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "path": "assets/audio/music/chapter3/fans_desmadre.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music"
@@ -1912,7 +1912,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/neon_runner.mp3",
+              "path": "assets/audio/music/chapter3/neon_runner.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "mg_music",
@@ -1969,7 +1969,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/foco_cae_santi.png"
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png"
             },
             {
               "type": "showCharacter",
@@ -1988,7 +1988,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/foco_cae_santi.png"
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png"
             },
             {
               "type": "showCharacter",
@@ -2007,7 +2007,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/foco_cae_santi.png"
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png"
             },
             {
               "type": "showCharacter",
@@ -2041,12 +2041,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/foco_cae_santi.png",
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "path": "assets/audio/music/chapter3/fans_desmadre.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music"
@@ -2102,7 +2102,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/vuelo_edu.mp3",
+              "path": "assets/audio/music/chapter3/vuelo_edu.mp3",
               "volume": 0.55,
               "loop": true,
               "id": "mg_music",
@@ -2291,14 +2291,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/fans_desmadre.mp3",
+              "path": "assets/audio/music/chapter3/fans_desmadre.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pasillo_backstage.png"
+              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.png"
             },
             {
               "type": "hideCharacter",
@@ -2314,7 +2314,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_golpes_puerta.mp3",
+              "path": "assets/audio/sfx/sfx_golpes_puerta.mp3",
               "volume": 0.6,
               "loop": false
             },
@@ -2348,7 +2348,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_golpes_puerta.mp3",
+              "path": "assets/audio/sfx/sfx_golpes_puerta.mp3",
               "volume": 0.65,
               "loop": false
             },
@@ -2367,7 +2367,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_pasos_pesados.mp3",
+              "path": "assets/audio/sfx/sfx_pasos_pesados.mp3",
               "volume": 0.6,
               "loop": false
             },
@@ -2416,7 +2416,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_crash_foco.mp3",
+              "path": "assets/audio/sfx/sfx_crash_foco.mp3",
               "volume": 0.55,
               "loop": false
             },
@@ -2680,7 +2680,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_crash_foco.mp3",
+              "path": "assets/audio/sfx/sfx_crash_foco.mp3",
               "volume": 0.5,
               "loop": false
             },
@@ -2741,7 +2741,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pasillo_backstage.png",
+              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.png",
               "cut": true
             },
             {
@@ -2793,7 +2793,7 @@
           "actions": [
             {
               "type": "playVideo",
-              "path": "assets/cutscenes/opening_tony.mp4"
+              "path": "assets/cutscenes/chapter3/opening_tony/opening_tony.mp4"
             }
           ],
           "character": "",
@@ -2818,7 +2818,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fans_calmandose.png",
+              "value": "assets/images/backgrounds/chapter3/fans_calmandose.png",
               "cut": true
             },
             {
@@ -2828,7 +2828,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/rotura_hechizo.mp3",
+              "path": "assets/audio/music/chapter3/rotura_hechizo.mp3",
               "volume": 0.5,
               "loop": false,
               "id": "bg_music",
@@ -2882,7 +2882,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/rotura_hechizo.mp3",
+              "path": "assets/audio/music/chapter3/rotura_hechizo.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music"
@@ -2904,7 +2904,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/cg/goyo_caido.png",
+              "value": "assets/images/cg/chapter3/goyo_caido.png",
               "fadeMs": 900
             }
           ],
@@ -2955,7 +2955,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fans_calmandose.png",
+              "value": "assets/images/backgrounds/chapter3/fans_calmandose.png",
               "fadeMs": 600
             },
             {
@@ -3040,7 +3040,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/camerino_seraphyna.png",
+              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
               "cut": true
             },
             {
@@ -3160,7 +3160,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/abrazo_seraphyna.mp3",
+              "path": "assets/audio/music/chapter3/abrazo_seraphyna.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music",
@@ -3180,7 +3180,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/backgrounds/cg/foto_trio.png",
+              "path": "assets/images/cg/chapter3/foto_trio.png",
               "duration": 700
             }
           ],
@@ -3208,7 +3208,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/backgrounds/cg/abrazo_trio.png",
+              "path": "assets/images/cg/chapter3/abrazo_trio.png",
               "duration": 900
             }
           ],
@@ -3264,13 +3264,13 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_diapason_ting.mp3",
+              "path": "assets/audio/sfx/sfx_diapason_ting.mp3",
               "volume": 0.5,
               "loop": false
             },
             {
               "type": "showCG",
-              "path": "assets/backgrounds/cg/diapason.png",
+              "path": "assets/images/cg/chapter3/diapason.png",
               "duration": 500,
               "size": "auto 55%",
               "position": "center"
@@ -3332,7 +3332,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/skyline_amanecer.png",
+              "value": "assets/images/backgrounds/chapter3/skyline_amanecer.png",
               "cut": true
             },
             {
@@ -3342,7 +3342,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/cierre_tony.mp3",
+              "path": "assets/audio/music/chapter3/cierre_tony.mp3",
               "volume": 0.45,
               "loop": true,
               "id": "bg_music",
@@ -3411,7 +3411,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/backgrounds/cg/tres_escenario.png",
+              "path": "assets/images/cg/chapter3/tres_escenario.png",
               "duration": 900
             },
             {
@@ -3442,13 +3442,13 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_movil_vibra.mp3",
+              "path": "assets/audio/sfx/sfx_movil_vibra.mp3",
               "volume": 0.5,
               "loop": false
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sfx_estatica.mp3",
+              "path": "assets/audio/sfx/sfx_estatica.mp3",
               "volume": 0.25,
               "loop": false
             },

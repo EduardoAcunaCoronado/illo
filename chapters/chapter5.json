@@ -20,7 +20,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/sala_interior_santuario.png"
+              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario.png"
             },
             {
               "type": "stopSound",
@@ -29,7 +29,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/the-sanctuary-of-airi.mp3",
+              "path": "assets/audio/music/chapter5/the-sanctuary-of-airi.mp3",
               "volume": 0.58,
               "loop": true,
               "id": "bg_music",
@@ -197,7 +197,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/airi_sala_interior_santuario.png"
+              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.png"
             }
           ],
           "character": "3C",
@@ -338,7 +338,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/brainrot_theme.mp3",
+              "path": "assets/audio/music/shared/brainrot_theme.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -465,7 +465,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/tralalero_theme.mp3",
+              "path": "assets/audio/music/chapter5/tralalero_theme.mp3",
               "volume": 0.68,
               "loop": true,
               "id": "bg_music",
@@ -488,7 +488,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/santurario-abierto.mp3",
+              "path": "assets/audio/music/shared/santurario-abierto.mp3",
               "volume": 0.55,
               "loop": true,
               "id": "bg_music",
@@ -496,7 +496,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/airi_sala_interior_santuario_grieta.png"
+              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario_grieta.png"
             },
             {
               "type": "hideCharacter",
@@ -515,7 +515,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/airi_despierta.mp3",
+              "path": "assets/audio/music/chapter5/airi_despierta.mp3",
               "volume": 0.68,
               "loop": true,
               "id": "bg_music",
@@ -554,7 +554,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/airi_despierta.mp3",
+              "path": "assets/audio/music/chapter5/airi_despierta.mp3",
               "volume": 0.68,
               "loop": true,
               "id": "bg_music"
@@ -569,7 +569,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/airi_sala_interio_santuario_roto.png"
+              "value": "assets/images/backgrounds/chapter5/airi_sala_interio_santuario_roto.png"
             }
           ],
           "character": "3C",
@@ -579,7 +579,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/sala_interior_santuario_vacio.png"
+              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario_vacio.png"
             },
             {
               "type": "showCharacter",
@@ -826,7 +826,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/mazmorra_interior_santuario_tunel.png"
+              "value": "assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.png"
             }
           ],
           "character": "3C",
@@ -999,7 +999,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ciudad_paloma_atacada.mp3",
+              "path": "assets/audio/music/chapter5/ciudad_paloma_atacada.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -1007,7 +1007,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/plaza_circular_agujero_ataque_meme.png"
+              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme.png"
             },
             {
               "type": "hideCharacter",
@@ -1104,7 +1104,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/plaza_circular_agujero_ataque_meme_paloma.png"
+              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme_paloma.png"
             },
             {
               "type": "hideCharacter",
@@ -1160,7 +1160,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/plaza_circular.png"
+              "value": "assets/images/backgrounds/shared/plaza_circular.png"
             },
             {
               "type": "hideCharacter",
@@ -1261,7 +1261,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/the-first-butterfly.mp3",
+              "path": "assets/audio/music/chapter5/the-first-butterfly.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -1332,7 +1332,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             },
             {
               "type": "waitForClick"
@@ -1483,7 +1483,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             },
             {
               "type": "stopSound",
@@ -1492,7 +1492,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/brainrot_theme.mp3",
+              "path": "assets/audio/music/shared/brainrot_theme.mp3",
               "volume": 0.7,
               "loop": true,
               "id": "bg_music",
@@ -1642,7 +1642,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma_ataque_tung.png"
+              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_ataque_tung.PNG"
             },
             {
               "type": "hideCharacter",
@@ -1721,7 +1721,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             },
             {
               "type": "stopSound",
@@ -1730,7 +1730,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/the-wooden-brainrot.mp3",
+              "path": "assets/audio/music/chapter5/the-wooden-brainrot.mp3",
               "volume": 0.8,
               "loop": true,
               "id": "bg_music",
@@ -1765,7 +1765,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/after_tung_battle.mp3",
+              "path": "assets/audio/music/chapter5/after_tung_battle.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music",
@@ -1806,7 +1806,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/after_tung_battle.mp3",
+              "path": "assets/audio/music/chapter5/after_tung_battle.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music"
@@ -1819,7 +1819,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             }
           ]
         },
@@ -2027,14 +2027,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/after_tung_battle.mp3",
+              "path": "assets/audio/music/chapter5/after_tung_battle.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             }
           ]
         },
@@ -2084,7 +2084,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/the-elegant-transformation.mp3",
+              "path": "assets/audio/music/chapter5/the-elegant-transformation.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music",
@@ -2222,7 +2222,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/disco-rayado.mp3",
+              "path": "assets/audio/sfx/disco-rayado.mp3",
               "volume": 0.5
             },
             {
@@ -2292,7 +2292,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             },
             {
               "type": "hideCharacter",
@@ -2311,7 +2311,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/after_tung_battle.mp3",
+              "path": "assets/audio/music/chapter5/after_tung_battle.mp3",
               "volume": 0.5,
               "loop": true,
               "id": "bg_music",
@@ -2424,7 +2424,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/brainrot_theme.mp3",
+              "path": "assets/audio/music/shared/brainrot_theme.mp3",
               "volume": 0.65,
               "loop": true,
               "id": "bg_music",
@@ -2502,7 +2502,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/airi_protege_a_samu_de_ballerina.png"
+              "value": "assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.png"
             }
           ]
         },
@@ -2529,7 +2529,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             },
             {
               "type": "showCharacter",
@@ -2551,7 +2551,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/hero-melancholy.mp3",
+              "path": "assets/audio/music/chapter5/hero-melancholy.mp3",
               "volume": 0.7,
               "loop": true,
               "id": "bg_music",
@@ -2634,7 +2634,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/ataque_brainrot_airi_corrupcion.png"
+              "value": "assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.png"
             }
           ]
         },
@@ -2660,7 +2660,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma_corrupta.png"
+              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.png"
             }
           ]
         },
@@ -2746,7 +2746,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/the-amalgam.mp3",
+              "path": "assets/audio/music/chapter5/the-amalgam.mp3",
               "volume": 0.75,
               "loop": true,
               "id": "bg_music",
@@ -2778,7 +2778,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma_corrupta_total.png"
+              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.png"
             }
           ]
         },
@@ -2864,7 +2864,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/lux-airi.mp3",
+              "path": "assets/audio/music/chapter5/lux-airi.mp3",
               "volume": 0.8,
               "loop": true,
               "id": "bg_music",

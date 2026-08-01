@@ -1,7 +1,8 @@
 (function () {
-  const ASSET_VERSION = '20260801-ketchup-6';
+  const ASSET_VERSION = '20260801-ketchup-7';
   const cacheBust = (path) => `${path}?v=${ASSET_VERSION}`;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+  const lerp = (from, to, amount) => from + (to - from) * amount;
   const preloadImages = (sources) => Promise.all(
     [...new Set(sources)].map(
       (src) =>
@@ -28,11 +29,19 @@
     async play() {
       const enemyMaxHp = this.options.enemyHp || this.options.zipHp || 360;
       const playerMaxLives = this.options.maxHits || this.options.lives || 3;
-      const ketchupIcon = cacheBust('assets/minigames/ketchup.png');
-      const chiliIcon = cacheBust('assets/minigames/chili.png');
-      const zipIcon = cacheBust('assets/characters/zip/ketchup/zip_1.png');
-      const zipAngryIcon = cacheBust('assets/characters/zip/zip_angry.png');
-      const zipPhaseFrame = (index) => cacheBust(`assets/characters/zip/ketchup/zip_${index}.png`);
+      const spicePower = Math.max(0, Number(this.options.spicePower) || 0);
+      const maxSpicePower = Math.max(1, Number(this.options.maxSpicePower) || 40);
+      const powerRatio = clamp(spicePower / maxSpicePower, 0, 1);
+      const shotDamage = lerp(8, 19, powerRatio);
+      const shotCooldownMax = lerp(0.34, 0.2, powerRatio);
+      const enemyBulletSpeed = lerp(1.18, 0.82, powerRatio);
+      const enemyAttackDelay = lerp(0.82, 1.42, powerRatio);
+      const difficulty = powerRatio >= 0.72 ? 'SUAVE' : powerRatio >= 0.38 ? 'NORMAL' : 'INTENSA';
+      const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
+      const chiliIcon = cacheBust('assets/images/minigames/chapter2/ketchup/chili_v2.png');
+      const zipIcon = cacheBust('assets/images/characters/zip/ketchup/zip_1.png');
+      const zipAngryIcon = cacheBust('assets/images/characters/others/zip_angry.png');
+      const zipPhaseFrame = (index) => cacheBust(`assets/images/characters/zip/ketchup/zip_${index}.png`);
       const zipPhaseFrames = [
         zipPhaseFrame(1),
         zipPhaseFrame(2),
@@ -45,7 +54,7 @@
         zipPhaseFrame(5),
         zipPhaseFrame(1),
       ];
-      const zipFloatingFrame = (index) => cacheBust(`assets/characters/zip/ketchup/zip_flotando_${index}.png`);
+      const zipFloatingFrame = (index) => cacheBust(`assets/images/characters/zip/ketchup/zip_flotando_${index}.png`);
       const zipFloatingFrames = [
         zipFloatingFrame(1),
         zipFloatingFrame(2),
@@ -53,7 +62,7 @@
         zipFloatingFrame(2),
         zipFloatingFrame(1),
       ];
-      const playerFrame = (index) => cacheBust(`assets/characters/samu/ketchup/${index}.png`);
+      const playerFrame = (index) => cacheBust(`assets/images/characters/samu/ketchup/${index}.png`);
       const playerFrames = {
         idle: [playerFrame(1), playerFrame(3)],
         right: [playerFrame(1), playerFrame(2), playerFrame(3), playerFrame(4)],
@@ -92,6 +101,12 @@
           <div class="ketchup-boss-hud">
             <div class="ketchup-boss-name">Zip</div>
             <div class="ketchup-boss-bar"><span class="ketchup-boss-fill"></span></div>
+            <div class="ketchup-spice-status">
+              <span>Picante: <strong>${spicePower}</strong></span>
+              <span class="ketchup-spice-meter"><i style="width:${powerRatio * 100}%"></i></span>
+              <span>Dificultad: <strong>${difficulty}</strong></span>
+              ${this.options.hasChiliBox ? '<span class="ketchup-neit-bonus">+ caja de Neit</span>' : ''}
+            </div>
           </div>
           <div class="minigame-field ketchup-boss-field" id="mg-field">
             <div class="ketchup-special-warning" id="ketchup-special-warning">
@@ -151,7 +166,7 @@
         let bossFrameKey = zipFloatingFrames[0];
         let bossCrossfadeTimer = null;
         let bossIsFloating = true;
-        let specialAttackTimer = 2.2;
+        let specialAttackTimer = 2.2 * enemyAttackDelay;
         let specialWarningTimer = 0;
         let specialWarningActive = false;
         let phaseAnimationTimer = 1.6;
@@ -265,12 +280,25 @@
 
         const shoot = () => {
           const el = makeSprite('mg-shot', chiliIcon, playerX, playerY - 0.085, 32);
-          shots.push({ el, x: playerX, y: playerY - 0.085, speed: 0.95, damage: 12 });
+          shots.push({
+            el,
+            x: playerX,
+            y: playerY - 0.085,
+            speed: lerp(0.9, 1.18, powerRatio),
+            damage: shotDamage,
+          });
         };
 
         const fireEnemyBullet = (x, y, vx, vy, size = 34) => {
           const el = makeSprite('ketchup-enemy-shot', ketchupIcon, x, y, size);
-          enemyBullets.push({ el, x, y, vx, vy, size });
+          enemyBullets.push({
+            el,
+            x,
+            y,
+            vx: vx * enemyBulletSpeed,
+            vy: vy * enemyBulletSpeed,
+            size,
+          });
         };
 
         const fireSpecialAttack = () => {
@@ -340,8 +368,8 @@
           specialWarningActive = false;
           specialWarning.classList.remove('is-visible');
           fireSpecialAttack();
-          specialAttackTimer = 4.8;
-          patternTimer = 1.05;
+          specialAttackTimer = 4.8 * enemyAttackDelay;
+          patternTimer = 1.05 * enemyAttackDelay;
         };
 
         const firePattern = () => {
@@ -351,7 +379,7 @@
             for (let i = -2; i <= 2; i++) {
               fireEnemyBullet(enemyX + i * 0.055, enemyY + 0.09, i * 0.018, 0.36, 32);
             }
-            patternTimer = 0.78;
+            patternTimer = 0.78 * enemyAttackDelay;
             return;
           }
           if (pattern === 1) {
@@ -360,7 +388,7 @@
               const angle = baseAngle + i * 0.18;
               fireEnemyBullet(enemyX, enemyY + 0.08, Math.cos(angle) * 0.25, Math.sin(angle) * 0.25, 30);
             }
-            patternTimer = 0.95;
+            patternTimer = 0.95 * enemyAttackDelay;
             return;
           }
           if (pattern === 2) {
@@ -372,7 +400,7 @@
               const angle = offset + (Math.PI * 2 * i) / bullets;
               fireEnemyBullet(centerX, centerY, Math.cos(angle) * 0.28, Math.sin(angle) * 0.28, 26);
             }
-            patternTimer = 1.05;
+            patternTimer = 1.05 * enemyAttackDelay;
             return;
           }
           if (pattern === 3) {
@@ -394,7 +422,7 @@
                 );
               }
             });
-            patternTimer = 1.12;
+            patternTimer = 1.12 * enemyAttackDelay;
             return;
           }
           if (pattern === 4) {
@@ -403,7 +431,7 @@
             for (let i = 0; i < 7; i++) {
               fireEnemyBullet(startX + dir * i * 0.075, 0.08, dir * 0.035, 0.31 + i * 0.008, 28);
             }
-            patternTimer = 0.86;
+            patternTimer = 0.86 * enemyAttackDelay;
             return;
           }
           for (let i = 0; i < 8; i++) {
@@ -411,7 +439,7 @@
             if (Math.abs(x - playerX) < 0.06) continue;
             fireEnemyBullet(x, 0.04, 0, 0.34, 28);
           }
-          patternTimer = 0.7;
+          patternTimer = 0.7 * enemyAttackDelay;
         };
 
         const cleanup = (won) => {
@@ -528,7 +556,7 @@
 
           if (state.shooting && shootCooldown <= 0) {
             shoot();
-            shootCooldown = 0.28;
+            shootCooldown = shotCooldownMax;
           }
 
           if (!specialWarningActive) {
@@ -598,4 +626,6 @@
       return KetchupMinigame.play(options);
     },
   };
+  // Alias conservado para las escenas creadas antes de integrar la versión de master.
+  window.KetchupBossMinigame = window.KetchupMinigame;
 })();

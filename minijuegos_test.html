@@ -165,14 +165,14 @@
             <button class="tp-btn" style="--c:#ffd166" onclick="launchHistoria('eduvuelo')">📖 Como en la historia</button>
         </div>
 
-        <h2>🍅 Ketchup & Guindillas</h2>
+        <h2>🌶️ Guindillas + Bullet Hell de Zip</h2>
         <div class="tp-row">
-            <button class="tp-btn" style="--c:#7cffb2" onclick="launchKetchup('facil')">Fácil</button>
-            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchKetchup('medio')">Medio</button>
-            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchKetchup('dificil')">Difícil</button>
+            <button class="tp-btn" data-testid="ketchup-easy" style="--c:#7cffb2" onclick="launchKetchup('facil')">Fácil</button>
+            <button class="tp-btn" data-testid="ketchup-medium" style="--c:#4fd0ff" onclick="launchKetchup('medio')">Medio</button>
+            <button class="tp-btn" data-testid="ketchup-hard" style="--c:#ff4fa3" onclick="launchKetchup('dificil')">Difícil</button>
         </div>
         <div id="ketchup-info" style="font-size: 11px; margin-top: 8px; color: #ffb4b4; opacity: 0.8;">
-            Velocidad actual (guindilla): <span id="chili-speed-val">-</span>
+            Poder conseguido: <span id="chili-speed-val">-</span>
         </div>
 
         <h2>🔷 Equilibrio de poderes</h2>
@@ -221,6 +221,11 @@
             <input type="checkbox" id="tp-battle-debug-stats"> Mostrar HP/PM del enemigo en Battle
         </label>
 
+        <h2>🗺️ Investigación de Furrielva</h2>
+        <div class="tp-row">
+            <button class="tp-btn" style="--c:#63e0cd" onclick="launchFurrielvaMap()">Abrir Furry Maps</button>
+        </div>
+
         <h2>🎬 Créditos</h2>
         <div class="tp-row">
             <button class="tp-btn" style="--c:#ffd166" onclick="launchCredits()">Ver créditos</button>
@@ -235,8 +240,8 @@
     <script>
       (function () {
         var v = Date.now();
-        ['juice.js', 'battle-minigame.js', 'credits-minigame.js',
-         'ketchup-minigame.js', 'rune-channeling-minigame.js', 'engine.js'].forEach(function (f) {
+        ['juice.js', 'battle-minigame.js', 'credits-minigame.js', 'ketchup-minigame.js',
+         'rune-channeling-minigame.js', 'engine.js'].forEach(function (f) {
           document.write('<scr' + 'ipt src="' + f + '?v=' + v + '"><\/scr' + 'ipt>');
         });
       })();
@@ -264,7 +269,7 @@
 
         function startMusic(file) {
             if (!musicOn()) return;
-            const path = file.startsWith('assets/') ? file : 'assets/sounds/music/' + file;
+            const path = file.startsWith('assets/') ? file : 'assets/audio/music/' + file;
             engine.playSound(path, { loop: true, id: 'mg_test', volume: 0.5, fadeIn: 300 });
         }
         function stopMusic() { try { engine.stopSound('mg_test', 400); } catch (e) {} }
@@ -307,7 +312,7 @@
             resultEl.textContent = '';
             panel.classList.add('hidden');
             const opts = preset === 'demo' ? RHYTHM.facil : RHYTHM[preset];
-            startMusic('neon_runner.mp3');
+            startMusic('chapter3/neon_runner.mp3');
             // Pasar el audio para que las notas vayan al ritmo de la canción
             const audio = musicOn() ? engine.audioInstances['mg_test'] : null;
             const auto = preset === 'demo' || document.getElementById('tp-auto').checked;
@@ -322,7 +327,7 @@
         async function launchVocal(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('dueto_vocal_echo.mp3');
+            startMusic('minigames/dueto_vocal_echo.mp3');
             const won = await engine.runVocalEchoRound(Object.assign({}, VOCAL[preset]));
             stopMusic();
             resultEl.textContent = won ? '✅ ¡Dúo perfecto!' : '❌ Desafinaste. ¡Inténtalo otra vez!';
@@ -365,9 +370,9 @@
             }
         };
         const KETCHUP = {
-            facil:   { goal: 10, maxHits: 5, spawnRate: 1.0, speedMult: 1.0, chiliChance: 0.4 },
-            medio:   { goal: 25, maxHits: 3, spawnRate: 1.4, speedMult: 1.2, chiliChance: 0.6 },
-            dificil: { goal: 60, maxHits: 2, spawnRate: 2.0, speedMult: 1.6, chiliChance: 0.8 }
+            facil:   { duration: 10, maxHits: 4, spawnRate: 1.5, speedMult: 1.0, chiliChance: 0.8, neit: true },
+            medio:   { duration: 9, maxHits: 3, spawnRate: 1.35, speedMult: 1.2, chiliChance: 0.72 },
+            dificil: { duration: 7, maxHits: 2, spawnRate: 1.1, speedMult: 1.45, chiliChance: 0.58 }
         };
         const RUNE_CHANNELING = {
             facil:   { levels: 7, holdRequired: 1.15 },
@@ -397,7 +402,7 @@
             });
             resultEl.textContent = "";
             panel.classList.add("hidden");
-            startMusic(juego === "chase" ? "persecucion_carretera.mp3" : "vuelo_edu.mp3");
+            startMusic(juego === "chase" ? "chapter3/persecucion_carretera.mp3" : "chapter3/vuelo_edu.mp3");
             if (juego === "chase") await engine.playChaseMinigame(cfg);
             else await engine.playEduVueloMinigame(cfg);
             stopMusic();
@@ -407,7 +412,7 @@
         async function launchChase(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('persecucion_carretera.mp3');
+            startMusic('chapter3/persecucion_carretera.mp3');
             await engine.playChaseMinigame({
                 ...CHASE[preset],
                 debugHitboxes: document.getElementById('tp-side-hitboxes').checked
@@ -419,7 +424,7 @@
         async function launchEduVuelo(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('vuelo_edu.mp3');
+            startMusic('chapter3/vuelo_edu.mp3');
             await engine.playEduVueloMinigame({
                 ...FLY[preset],
                 debugHitboxes: document.getElementById('tp-side-hitboxes').checked
@@ -431,20 +436,23 @@
         async function launchKetchup(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic("assets/sounds/effects/zip's-shadow-waltz.mp3");
+            startMusic('chapter2/ketchup.mp3');
             const opts = KETCHUP[preset];
-            // Mostrar la velocidad de la guindilla en el panel (1.5x la velocidad base del preset)
-            document.getElementById('chili-speed-val').textContent = (opts.speedMult * 1.5).toFixed(2) + 'x';
-            await engine.playKetchupMinigame({ ...opts, showExtraInfo: true });
+            engine.inventory = opts.neit ? ['caja_guindillas'] : [];
+            await engine.playChiliHarvestMinigame({ ...opts, powerGoal: 16, maxSpicePower: 28, boxBonus: 12 });
+            document.getElementById('chili-speed-val').textContent = engine.gameState.chiliPower + ' puntos';
             stopMusic();
-            resultEl.textContent = '✅ ¡Banquete de ketchup terminado!';
+            startMusic("assets/audio/sfx/zip's-shadow-waltz.mp3");
+            await engine.playKetchupBossMinigame({ enemyHp: 360, maxHits: opts.maxHits, maxSpicePower: 28 });
+            stopMusic();
+            resultEl.textContent = '✅ ¡Zip derrotado con ' + engine.gameState.chiliPower + ' puntos de picante!';
             panel.classList.remove('hidden');
         }
 
         async function launchRuneChanneling(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('abriendo_el_sello.mp3');
+            startMusic('chapter4/abriendo_el_sello.mp3');
             const won = await window.RuneChannelingMinigame.play(RUNE_CHANNELING[preset]);
             stopMusic();
             resultEl.textContent = won ? '✅ ¡Poderes equilibrados!' : '❌ Los poderes se descompensaron.';
@@ -458,17 +466,17 @@
         }
 
         const BATTLE_MUSIC = {
-            ballerina_capuchina: 'ballerina_capuchina_battle.mp3',
-            tralalelo_tralala: 'tralalero_theme.mp3',
-            tung_tung_tung_sahur: 'the-wooden-brainrot.mp3',
-            amalgama: 'the-amalgam.mp3',
-            amalgama_final: 'lux-airi.mp3'
+            ballerina_capuchina: 'chapter4/ballerina_capuchina_battle.mp3',
+            tralalelo_tralala: 'chapter5/tralalero_theme.mp3',
+            tung_tung_tung_sahur: 'chapter5/the-wooden-brainrot.mp3',
+            amalgama: 'chapter5/the-amalgam.mp3',
+            amalgama_final: 'chapter5/lux-airi.mp3'
         };
 
         async function launchBattle(enemy) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic(BATTLE_MUSIC[enemy] || 'brainrot_theme.mp3');
+            startMusic(BATTLE_MUSIC[enemy] || 'shared/brainrot_theme.mp3');
             const options = { game: 'battle', enemy, debugStats: battleDebugStatsOn() };
             const enemyHp = getBattleHp(enemy);
             if (enemyHp) options.enemyHp = enemyHp;
@@ -483,6 +491,16 @@
             panel.classList.add('hidden');
             await engine.playCreditsMinigame();
             resultEl.textContent = '✅ Créditos finalizados.';
+            panel.classList.remove('hidden');
+        }
+
+        async function launchFurrielvaMap() {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            await engine.playFurrielvaExploreMinigame({
+                background: 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png'
+            });
+            resultEl.textContent = '✅ Ruta a Kingdom Ketchup localizada.';
             panel.classList.remove('hidden');
         }
     </script>

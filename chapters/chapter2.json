@@ -8,15 +8,11 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/iglesia.png"
-            },
-            {
-              "type": "rescue",
-              "character": "edu"
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/furrielva_despierta.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -67,20 +63,264 @@
           ]
         },
         {
+          "character": "3C",
+          "text": "Una botella vacía rueda entre la gente hasta detenerse junto a una de las patas de Samu. No tiene tapón. En la etiqueta, bajo un tomate coronado, todavía se distingue un nombre: Kingdom Ketchup."
+        },
+        {
           "character": "Samu",
-          "text": "Pero bueno, tengo curiosidad por ver ese Kingdom Ketchup. Voy a buscar a Edu.",
+          "text": "¿Kingdom Ketchup? Así que existe... y alguien está repartiendo esto por la ciudad.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Furry Maps no encuentra la fábrica, pero la botella ha tenido que salir de algún sitio. Preguntaré por la etiqueta y seguiré el rastro.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
               "pose": "determined"
+            },
+            {
+              "type": "goToScene",
+              "value": "Escena 1B: Investigar Furrielva"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 1B: Investigar Furrielva",
+      "lines": [
+        {
+          "character": "3C",
+          "text": "Furrielva no entrega sus secretos a quien solo cruza sus calles. Samu sigue señales, pregunta a vecinos y relaciona pistas.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_rastro_del_tapon.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
+            },
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "minigame",
+              "game": "furrielvaExplore",
+              "background": "assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png"
+            },
+            {
+              "type": "goToScene",
+              "value": "Escena 1C: Las puertas de la fábrica"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 1C: Las puertas de la fábrica",
+      "lines": [
+        {
+          "character": "3C",
+          "text": "Las pistas conducen a una fábrica imposible: torres como botellas, tuberías de latón y una corona sobre cada chimenea.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_rastro_del_tapon.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png"
+            },
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "security",
+              "enter": "right"
             }
           ]
         },
         {
+          "character": "Samu",
+          "text": "¡Por fin! Vengo a buscar a Edu. Es un dragón azul y, por lo visto, aquí es el rey.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Ketchling de seguridad",
+          "speakingAs": "ketchling",
+          "text": "Su Majestad está en la línea central. Pero nadie cruza sin entrada real: botella oficial, tapón dorado.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "security"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Edu no dijo nada de una entrada. Voy a llamarlo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 1D: Edu no responde"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 1D: Edu no responde",
+      "lines": [
+        {
           "character": "3C",
-          "text": "Samu se adentra en las calles de Furrielva en busca de su amigo."
+          "text": "Samu llama una vez. Luego otra. Al tercer intento solo recibe un chasquido digital, como un archivo que no termina de abrirse.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_rastro_del_tapon.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
+              "type": "showCharacter",
+              "character": "iphone5",
+              "position": "right",
+              "pose": "edu_humano"
+            },
+            {
+              "type": "characterGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 1550
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Edu, contesta. Estoy en la puerta. Esto no tiene gracia.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "alarmed"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Sa... mu... todos me necesi... me necesitan.",
+          "speakingAs": "iphone5",
+          "actions": [
+            {
+              "type": "characterGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 1550
+            }
+          ]
+        },
+        {
+          "character": "Ketchling de seguridad",
+          "speakingAs": "ketchling",
+          "text": "Las botellas de entrada forman parte de una promoción nueva. Todavía deberían quedar algunas en los supermercados de Furrielva.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "security"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Y cómo se supone que sé en cuál buscar?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Ketchling de seguridad",
+          "speakingAs": "ketchling",
+          "text": "En Noche reponen rápido. Mercaguasa suele tener más cajas, aunque está más lejos. Y El Jarrón queda cerca, pero...",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "security"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Pero ¿qué?"
+        },
+        {
+          "character": "Ketchling de seguridad",
+          "speakingAs": "ketchling",
+          "text": "Digamos que últimamente tienen un problema con los gatos."
+        },
+        {
+          "character": "Samu",
+          "text": "Perfecto. Una búsqueda del tesoro con felinos. Aguanta, Edu.",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "character": "iphone5"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            },
+            {
+              "type": "goToScene",
+              "value": "Escena 1.5: En la calle"
+            }
+          ]
         }
       ]
     },
@@ -89,16 +329,16 @@
       "lines": [
         {
           "character": "Samu",
-          "text": "¡Claro! Un supermercado. Hay tres cerca... pero no todos me quedan igual de camino. Tengo curiosidad por ver ese Kingdom Ketchup.",
+          "text": "Necesito una botella con tapón dorado. Hay tres supermercados cerca, pero cada ruta me costará un tiempo distinto.",
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/iglesia.png",
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -134,14 +374,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/jamon_4k_v2.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.png"
             },
             {
               "type": "hideCharacter",
@@ -239,7 +479,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/te-comprometes.mp3",
+              "path": "assets/audio/music/chapter2/te-comprometes.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -250,8 +490,8 @@
               "game": "gatos",
               "survive": 62,
               "cats": 3,
-              "playerSpeed": 5.0,
-              "catSpeed": 3.0
+              "playerSpeed": 5,
+              "catSpeed": 3
             },
             {
               "type": "stopSound",
@@ -260,7 +500,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -326,7 +566,7 @@
         },
         {
           "character": "3C",
-          "text": "Dejando atrás a Micaela y su ejército de gatos, agotado y con el reloj en contra, Samu por fin encuentra el resplandor rojizo hacia Kingdom Ketchup.",
+          "text": "Dejando atrás a Micaela y su ejército de gatos, Samu encuentra una botella promocional caída tras las cajas. El tapón dorado sigue intacto.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -342,7 +582,7 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Escena 5: Dentro de Kingdom Ketchup"
+              "value": "Escena 4.5: El tapón dorado"
             }
           ]
         }
@@ -355,14 +595,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/dia_4k_v2.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/dia_4k_v2.png"
             },
             {
               "type": "hideCharacter",
@@ -390,7 +630,7 @@
         },
         {
           "character": "3C",
-          "text": "Entre las estanterías de ofertas, el pasaje rojizo hacia Kingdom Ketchup aparece casi de inmediato. Samu cruza atraído por el misterioso lugar.",
+          "text": "En el expositor de promociones encuentra una botella oficial. Bajo el precinto brilla un tapón dorado.",
           "actions": [
             {
               "type": "setDelay",
@@ -402,7 +642,7 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Escena 5: Dentro de Kingdom Ketchup"
+              "value": "Escena 4.5: El tapón dorado"
             }
           ]
         }
@@ -415,14 +655,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/mercadona_4k_v2.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/mercadona_4k_v2.png"
             },
             {
               "type": "hideCharacter",
@@ -450,7 +690,7 @@
         },
         {
           "character": "3C",
-          "text": "Tras el rodeo, la puerta automática se abre y el brillo de Kingdom Ketchup lo espera al fondo, tras la sección de frescos. La expectación por ver el lugar aumenta con cada paso.",
+          "text": "Tras el rodeo, Samu localiza el expositor de Kingdom Ketchup en la sección de salsas. Queda una botella con tapón dorado.",
           "actions": [
             {
               "type": "setDelay",
@@ -460,6 +700,113 @@
         },
         {
           "actions": [
+            {
+              "type": "goToScene",
+              "value": "Escena 4.5: El tapón dorado"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 4.5: El tapón dorado",
+      "lines": [
+        {
+          "character": "3C",
+          "text": "Samu levanta la botella como quien acaba de encontrar un billete premiado: el tapón es inequívocamente dorado.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_tapon_dorado.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
+            },
+            {
+              "type": "giveItem",
+              "item": "tapon_dorado"
+            },
+            {
+              "type": "showCG",
+              "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png",
+              "duration": 650
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡LO TENGO! ¡El único tapón dorado de toda Furrielva!"
+        },
+        {
+          "character": "3C",
+          "text": "Entonces mira el expositor completo. Todas las botellas llevan exactamente el mismo tapón."
+        },
+        {
+          "character": "Samu",
+          "text": "...Claro. Exclusividad industrial. Bueno, al menos ya tengo la entrada."
+        },
+        {
+          "actions": [
+            {
+              "type": "fade",
+              "to": "black",
+              "duration": 320
+            },
+            {
+              "type": "hideCG",
+              "duration": 0
+            },
+            {
+              "type": "goToScene",
+              "value": "Escena 4.6: El atajo de la botella"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 4.6: El atajo de la botella",
+      "lines": [
+        {
+          "character": "3C",
+          "text": "Al girar el tapón, una botella gigantesca de luz aparece de la nada en mitad del pasillo. Su cristal se abre como un portal y, al otro lado, Samu distingue la fábrica.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_tapon_dorado.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
+              "type": "showCG",
+              "path": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.png",
+              "duration": 0
+            },
+            {
+              "type": "fade",
+              "from": "black",
+              "duration": 480
+            }
+          ],
+          "textSpeed": "slow"
+        },
+        {
+          "character": "Samu",
+          "text": "Así que las botellas también son atajos. Vale, esto ya tiene más sentido. Más o menos."
+        },
+        {
+          "actions": [
+            {
+              "type": "fade",
+              "to": "black",
+              "duration": 320
+            },
+            {
+              "type": "hideCG",
+              "duration": 0
+            },
             {
               "type": "goToScene",
               "value": "Escena 5: Dentro de Kingdom Ketchup"
@@ -472,10 +819,16 @@
       "title": "Escena 5: Dentro de Kingdom Ketchup",
       "lines": [
         {
+          "character": "3C",
+          "text": "La puerta desemboca en una nave inmensa de cobre, tomate y vapor. Decenas de pequeños dragones mantienen la producción con una precisión casi musical.",
           "actions": [
             {
+              "type": "hideCG",
+              "duration": 250
+            },
+            {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_pasillos.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png"
             },
             {
               "type": "hideCharacter",
@@ -492,60 +845,90 @@
             {
               "type": "stopSound",
               "id": "bg_music",
-              "fadeOut": 1000
+              "fadeOut": 500
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
-              "fadeIn": 1000
-            }
-          ],
-          "character": "3C",
-          "text": "Al otro lado del supermercado, el aire cambia. Samu está por fin dentro de Kingdom Ketchup, entre góndolas infinitas que gotean salsa roja."
-        },
-        {
-          "character": "3C",
-          "text": "Kingdom Ketchup no figura en ningún registro municipal. No hay licencia de obra, no hay inauguración, no hay una sola foto de qué había aquí antes. Un día, detrás de los supermercados de Furrielva, simplemente hubo una puerta roja.",
-          "textSpeed": "slow"
-        },
-        {
-          "character": "3C",
-          "text": "Dentro no se vende nada. No hay cajas, ni precios, ni nadie a quien preguntar. Los pasillos se estiran hasta donde alcanza la vista y todos ofrecen lo mismo: exactamente aquello que uno vino buscando, en la cantidad exacta en que se lo había imaginado.",
-          "textSpeed": "slow"
-        },
-        {
-          "character": "3C",
-          "text": "Hay quien entra, mira y sale contando maravillas. Y hay quien entra y, poco a poco, deja de buscar la salida. En Furrielva todavía nadie ha sabido explicar qué diferencia a unos de otros.",
-          "textSpeed": "slow"
-        },
-        {
-          "character": "Samu",
-          "text": "Lo conseguí... estoy dentro. Ahora solo tengo que encontrar a Edu. Pero este sitio es enorme.",
-          "actions": [
+              "fadeIn": 700
+            },
             {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "neutral"
+              "type": "showCG",
+              "path": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.png",
+              "duration": 0
+            },
+            {
+              "type": "fade",
+              "from": "black",
+              "duration": 520
             }
           ]
         },
         {
+          "character": "Ketchlings",
+          "speakingAs": "ketchling",
+          "text": "¡Más tomate, más sabor! ¡Kingdom Ketchup es amor!"
+        },
+        {
           "character": "3C",
-          "text": "Ante Samu se abren dos pasillos idénticos salvo por un cartel. Uno reza \"KETCHUP\". El otro, \"CATSUP\"."
+          "text": "No son decorado ni sirvientes: cocinan, reparan, embotellan y deciden juntos cómo funciona la fábrica. Miden unos cuarenta centímetros, pero ocupan todo el espacio con su energía."
         },
         {
           "character": "Samu",
-          "text": "¿Ketchup o Catsup...? ¿No es lo mismo? Seguro que uno de los dos esconde algún secreto de este sitio. ¡Tengo que elegir uno!",
+          "text": "Sois adorables, pero necesito ver a Edu. No responde al teléfono.",
           "actions": [
+            {
+              "type": "hideCG",
+              "duration": 350
+            },
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
               "pose": "worried"
+            },
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "mechanic"
+            }
+          ]
+        },
+        {
+          "character": "Ketchling mecánico",
+          "speakingAs": "ketchling",
+          "text": "El Gran Maestro nos dio un hogar cuando solo éramos una idea. Últimamente habla como si marcharse fuera abandonarnos."
+        },
+        {
+          "character": "Ketchling embotellador",
+          "speakingAs": "ketchling",
+          "text": "Nosotros podemos cuidar la fábrica. Lo que no podemos es convencerle de que ser necesario no significa quedarse atrapado.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "bottler"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Dos pasillos conducen a la línea central. Uno dice «KETCHUP». El otro, «CATSUP»."
+        },
+        {
+          "character": "Samu",
+          "text": "Voy a sacar a Edu de aquí. ¿Ketchup o Catsup?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
             }
           ],
           "choices": [
@@ -570,12 +953,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_pasillos.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -613,12 +996,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_pasillos.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -658,14 +1041,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_estanterias.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png"
             },
             {
               "type": "hideCharacter",
@@ -742,12 +1125,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_estanterias.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -809,6 +1192,20 @@
           ]
         },
         {
+          "character": "Neit",
+          "text": "¡Espera! Ya que has aguantado toda la explicación, llévate esta caja de guindillas. Calidad-precio insuperable. Algún uso les encontrarás.",
+          "actions": [
+            {
+              "type": "giveItem",
+              "item": "caja_guindillas"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Una caja de guindillas...? No entiendo para qué voy a querer esto ahora, pero vale. Me la quedo."
+        },
+        {
           "actions": [
             {
               "type": "goToScene",
@@ -825,19 +1222,23 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_estanterias.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "playVideo",
-              "path": "assets/videos/intro_sala_del_trono_kk.mp4"
+              "path": "assets/video/cutscenes/chapter2/intro_sala_del_trono_kk_4k.mp4",
+              "audioCrossfade": 1800,
+              "holdLastFrame": 300,
+              "visualFadeOut": 600,
+              "endBackground": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png"
             }
           ]
         },
@@ -845,7 +1246,8 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_trono.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png",
+              "cut": true
             },
             {
               "type": "hideCharacter",
@@ -883,7 +1285,12 @@
               "type": "showCharacter",
               "character": "edu",
               "position": "right",
-              "pose": "thinking"
+              "pose": "worried"
+            },
+            {
+              "type": "characterGlitchUntilAdvance",
+              "character": "edu",
+              "position": "right"
             }
           ]
         },
@@ -1073,7 +1480,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/backgrounds/cg/zip_sombra_1.png",
+              "path": "assets/images/cg/chapter2/zip_sombra_1.png",
               "duration": 700
             },
             {
@@ -1103,7 +1510,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/backgrounds/cg/zip_sombra_2.png",
+              "path": "assets/images/cg/chapter2/zip_sombra_2.png",
               "duration": 700
             }
           ],
@@ -1126,7 +1533,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/zip.mp3",
+              "path": "assets/audio/music/chapter2/zip.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -1145,7 +1552,7 @@
         },
         {
           "character": "Zip",
-          "text": "Por eso fue creado Kingdom Ketchup, para corromper a tu amigo y convertirle en un meme, o sea, yo. Los memes somos lo único que quedará en este mundo."
+          "text": "Kingdom Ketchup nació del deseo de Edu de construir un lugar donde todos lo necesitaran. Yo no lo creé: comprimí ese deseo, borré sus límites y lo convertí en una jaula."
         },
         {
           "character": "Zip",
@@ -1165,11 +1572,41 @@
         },
         {
           "character": "Zip",
-          "text": "Edu no te escucha, ahora soy pura oscuridad memética. Para vencerme tendrás que hacer lo que hace siempre Edu cuando va a un restaurante, hincharse a ketchup y evitar el picante."
+          "text": "Edu no te escucha. Ahora soy pura oscuridad memética y este reino entero es mi munición. Intenta acercarte y acabarás cubierto de ketchup."
+        },
+        {
+          "character": "Ketchling de seguridad",
+          "speakingAs": "ketchling",
+          "text": "¡Gran Maestro! No tiene que quedarse para que lo queramos. Samu: nosotros mantendremos la línea; tú separa la corrupción.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "center",
+              "pose": "security"
+            }
+          ]
+        },
+        {
+          "character": "Ketchling cocinero",
+          "speakingAs": "ketchling",
+          "text": "¡Zip no soporta el picante! Reúne todas las guindillas que puedas antes de atacarlo. Cuantas más tengas, más fuerte será cada disparo y menos podrá presionarte.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "center",
+              "pose": "cook"
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png"
+            }
+          ]
         },
         {
           "character": "3C",
-          "text": "¡Que comience la batalla! Samu debe luchar contra Zip. Si gana, liberará a Edu de la corrupción."
+          "text": "Samu dispone de unos segundos para cargar su reserva de picante. La caja de Neit, si decidió escucharle, dará una ventaja inesperada en la batalla contra Zip."
         },
         {
           "actions": [
@@ -1180,7 +1617,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/zip's-shadow-waltz.mp3",
+              "path": "assets/audio/music/chapter2/ketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -1188,17 +1625,34 @@
             },
             {
               "type": "minigame",
-              "game": "ketchup",
-              "goal": 67,
-              "maxHits": 2,
-              "spawnRate": 2,
-              "speedMult": 3,
-              "chiliChance": 0.5,
-              "maxHitsByDelay": {
-                "0": 3,
-                "1": 2,
-                "2": 1
-              }
+              "game": "chiliHarvest",
+              "duration": 22,
+              "powerGoal": 28,
+              "maxSpicePower": 40,
+              "boxBonus": 12,
+              "spawnRate": 1.35,
+              "speedMult": 1.25,
+              "chiliChance": 0.72
+            },
+            {
+              "type": "stopSound",
+              "id": "bg_music",
+              "fadeOut": 400
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/zip's-shadow-waltz.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 400
+            },
+            {
+              "type": "minigame",
+              "game": "ketchupBoss",
+              "enemyHp": 360,
+              "maxHits": 3,
+              "maxSpicePower": 40
             },
             {
               "type": "stopSound",
@@ -1207,7 +1661,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -1217,23 +1671,75 @@
         },
         {
           "character": "3C",
-          "text": "La batalla termina y Zip es derrotado. Edu cae inconsciente, pero vivo."
+          "text": "El último disparo de guindilla atraviesa a Zip. El picante rompe la corrupción desde dentro y la forma oscura se descomprime hasta desaparecer. Edu cae, libre y vivo.",
+          "actions": [
+            {
+              "type": "rescue",
+              "character": "edu"
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "zip"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "ketchling"
+            },
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "picante",
+              "enter": "bottom"
+            }
+          ]
         },
         {
-          "character": "Samu",
-          "text": "¡Edu! ¡Aguanta! ¡Despierta!",
+          "character": "3C",
+          "text": "Edu vuelve a respirar... y estornuda una última llamarada. Samu la recibe de lleno. Cuando el humo se disipa, solo parpadean dos ojos blancos sobre su cara chamuscada.",
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/fire_spell.mp3",
+              "volume": 0.75
+            },
+            {
+              "type": "shake",
+              "intensity": 5,
+              "duration": 350
+            },
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "worried"
+              "pose": "charred_blink"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Vale... estás vivo. Mi cara acaba de confirmarlo. La próxima vez que despiertes, apunta el hocico hacia otro lado.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/fast_whoosh_and_zaps.mp3",
+              "volume": 0.5
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "charred_shake"
             }
           ]
         },
         {
           "character": "Edu",
-          "text": "Ugh... ¿qué... qué pasó? Samu, lo siento. No sé qué me pasaba. Este sitio corrompe a las personas con su tentador ketchup.",
+          "text": "Ugh... ¿qué pasó? Samu, lo siento. Creí que si todos me necesitaban aquí, marcharme significaba fallarles. Zip convirtió ese miedo en una orden.",
           "textAnimation": true,
           "actions": [
             {
@@ -1241,6 +1747,31 @@
               "character": "edu",
               "position": "right",
               "pose": "sad"
+            }
+          ]
+        },
+        {
+          "character": "Ketchling embotellador",
+          "speakingAs": "ketchling",
+          "text": "Nos enseñaste a construir esto. Ahora déjanos cuidarlo. Puedes volver porque quieres, no porque estés obligado.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "center",
+              "pose": "bottler"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Tenéis razón. Ser importante para alguien no significa encadenarse a él. Y hoy tengo un cumpleaños al que llegar.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "determined"
             }
           ]
         },
@@ -1294,7 +1825,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/de_vuelta_en_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -1302,7 +1833,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/iglesia.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png"
             },
             {
               "type": "hideCharacter",

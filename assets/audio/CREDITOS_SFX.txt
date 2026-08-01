@@ -1,0 +1,26 @@
+CRÉDITOS DE EFECTOS DE SONIDO (assets/audio/sfx/)
+=======================================================
+
+Fuentes libres usadas (jul 2026). Los sonidos finales son mezclas/ediciones propias
+a partir de estas fuentes:
+
+- Kenney — "Impact Sounds" y "50 RPG Sound Effects" (kenney.nl)
+  Licencia CC0 (dominio público). Usados en: sfx_crash_foco, sfx_portazo,
+  sfx_pasos_pesados, sfx_golpes_puerta, sfx_crujido_metal, sfx_pintalabios_click.
+
+- "Car Sound Effects Pack" (OpenGameArt, licencia CC0)
+  Usados en: sfx_motor_arranca, sfx_motor_loop, sfx_moto_revving, sfx_claxon_festivo.
+
+- Tom Haigh (audible-edge) — "Car tire squeal skid loop" (OpenGameArt)
+  Licencia CC-BY 3.0 — ATRIBUCIÓN OBLIGATORIA. Usado en: sfx_derrape.
+  https://opengameart.org/content/car-tire-squeal-skid-loop
+
+- DonkeyMan — "Zombie Noises" (OpenGameArt)
+  Licencia CC-BY 4.0 — ATRIBUCIÓN OBLIGATORIA. Usado en: sfx_grunidos_multitud.
+  https://opengameart.org/content/zombie-noises
+
+Sintetizados propios (Web Audio / numpy, sin fuente externa):
+  sfx_diapason_ting, sfx_movil_vibra, sfx_estatica, sfx_multitud_lejana,
+  y las camas "heartbeat"/"rumble" generadas en tiempo real por juice.js.
+
+>>> Si el juego se publica, incluir las dos atribuciones CC-BY en los créditos. <<<

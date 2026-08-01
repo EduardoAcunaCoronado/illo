@@ -2,19 +2,19 @@
   "name": "Santi",
   "color": "#b0a08a",
   "poses": {
-    "neutral": "assets/characters/santi/santi.png",
-    "conduciendo": "assets/characters/santi/santi_conduciendo.png",
-    "saludando": "assets/characters/santi/santi_saludando.png",
-    "preocupado": "assets/characters/santi/santi_preocupado.png",
-    "mesa": "assets/characters/santi/santi_mesa.png",
-    "herido": "assets/characters/santi/santi_herido.png",
-    "riendo": "assets/characters/santi/santi_riendo.png",
-    "despedida": "assets/characters/santi/santi_despedida.png",
-    "silueta": "assets/characters/santi/santi_silueta.png",
-    "estornudo_1": "assets/characters/santi/santi_est_0.png",
-    "estornudo_2": "assets/characters/santi/santi_est_1.png",
-    "estornudo_3": "assets/characters/santi/santi_est_2.png",
-    "estornudo_4": "assets/characters/santi/santi_est_3.png"
+    "neutral": "assets/images/characters/santi/santi.png",
+    "conduciendo": "assets/images/characters/santi/santi_conduciendo.png",
+    "saludando": "assets/images/characters/santi/santi_saludando.png",
+    "preocupado": "assets/images/characters/santi/santi_preocupado.png",
+    "mesa": "assets/images/characters/santi/santi_mesa.png",
+    "herido": "assets/images/characters/santi/santi_herido.png",
+    "riendo": "assets/images/characters/santi/santi_riendo.png",
+    "despedida": "assets/images/characters/santi/santi_despedida.png",
+    "silueta": "assets/images/characters/santi/santi_silueta.png",
+    "estornudo_1": "assets/images/characters/santi/santi_est_0.png",
+    "estornudo_2": "assets/images/characters/santi/santi_est_1.png",
+    "estornudo_3": "assets/images/characters/santi/santi_est_2.png",
+    "estornudo_4": "assets/images/characters/santi/santi_est_3.png"
   },
   "defaultPose": "neutral"
 }

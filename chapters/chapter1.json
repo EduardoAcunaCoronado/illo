@@ -8,11 +8,11 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pisito.png"
+              "value": "assets/images/backgrounds/chapter1/pisito.png"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/casasamu.mp3",
+              "path": "assets/audio/music/chapter1/casasamu.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -76,7 +76,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/bathroom.png"
+              "value": "assets/images/backgrounds/chapter1/bathroom.png"
             },
             {
               "type": "showCharacter",
@@ -93,7 +93,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pisito.png"
+              "value": "assets/images/backgrounds/chapter1/pisito.png"
             },
             {
               "type": "showCharacter",
@@ -157,12 +157,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pisito.png",
+              "value": "assets/images/backgrounds/chapter1/pisito.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/casasamu.mp3",
+              "path": "assets/audio/music/chapter1/casasamu.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -171,7 +171,13 @@
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "edu"
+              "pose": "edu_humano"
+            },
+            {
+              "type": "characterGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 1350
             }
           ],
           "character": "3C",
@@ -197,7 +203,7 @@
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "edu"
+              "pose": "edu_humano"
             }
           ],
           "speakingAs": "iphone5"
@@ -222,7 +228,7 @@
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "edu"
+              "pose": "edu_humano"
             }
           ],
           "speakingAs": "iphone5"
@@ -242,26 +248,73 @@
         },
         {
           "character": "Edu",
-          "text": "Venga, no te rayes, tío. Vente y lo hablamos. Para entrar a Kingdom Ketchup solo tienes que buscar un portal en cualquier supermercado.",
+          "text": "Venga, no te rayes, tío. Vente y lo hablamos. Estoy en Furrielva, pero no consigo compartirte la ubicación: cada vez que lo intento, el mapa se queda pillado. Pregunta por Kingdom Ketchup; alguien sabrá orientarte.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "iphone5",
               "position": "right",
-              "pose": "edu"
+              "pose": "edu_humano"
             }
           ],
           "speakingAs": "iphone5"
         },
         {
           "character": "Samu",
-          "text": "¿Un portal en un supermercado? Qué raro suena eso... Pero bueno, iré allí ahora mismo.",
+          "text": "¿Kingdom Ketchup, en Furrielva? Vale. Iré a buscarte, pero después nos vamos al cumpleaños.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
               "pose": "surprised"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Aquí todos me necesitan, Samu. No puedo dejarles tirados. Cuando llegues lo enten... lo entenderás.",
+          "speakingAs": "iphone5",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "iphone5",
+              "position": "right",
+              "pose": "edu_humano"
+            },
+            {
+              "type": "characterGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 1350
+            },
+            {
+              "type": "characterFullGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 1050
+            },
+            {
+              "type": "shake",
+              "intensity": 4,
+              "duration": 520
+            },
+            {
+              "type": "flash",
+              "color": "rgba(45, 170, 255, 0.16)",
+              "duration": 180
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Qué ha sido eso...? Por un momento Edu se parecía a Zip en aquella foto. Bah, habrá sido la cobertura.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
             }
           ]
         },
@@ -288,12 +341,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pisito.png",
+              "value": "assets/images/backgrounds/chapter1/pisito.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/casasamu.mp3",
+              "path": "assets/audio/music/chapter1/casasamu.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"

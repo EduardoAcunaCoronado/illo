@@ -9,7 +9,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/the-last-choice.mp3",
+              "path": "assets/audio/music/chapter6/the-last-choice.mp3",
               "volume": 0.55,
               "loop": true,
               "id": "bg_music",
@@ -17,7 +17,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             }
           ],
           "character": "3C",
@@ -398,14 +398,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/the-last-choice.mp3",
+              "path": "assets/audio/music/chapter6/the-last-choice.mp3",
               "volume": 0.55,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             }
           ],
           "character": "Samu",
@@ -441,7 +441,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/ultimo_vistazo_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma.png"
             }
           ]
         },
@@ -623,7 +623,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/ultimo_vistazo_ciudad_paloma_mariposa.png"
+              "value": "assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma_mariposa.png"
             }
           ]
         },
@@ -684,7 +684,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/escenario.png"
+              "value": "assets/images/backgrounds/chapter6/escenario.png"
             },
             {
               "type": "hideCharacter",
@@ -762,12 +762,12 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/click.mp3",
+              "path": "assets/audio/sfx/click.mp3",
               "volume": 0.75
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/escenario_con_foco.png"
+              "value": "assets/images/backgrounds/chapter6/escenario_con_foco.png"
             },
             {
               "type": "showCharacter",
@@ -871,14 +871,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/the-last-choice.mp3",
+              "path": "assets/audio/music/chapter6/the-last-choice.mp3",
               "volume": 0.55,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
             },
             {
               "type": "showCharacter",
@@ -958,7 +958,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/paseo_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma.PNG"
             },
             {
               "type": "hideCharacter",
@@ -994,7 +994,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/paseo_ciudad_paloma_mano.png"
+              "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma_mano.png"
             },
             {
               "type": "hideCharacter",
@@ -1018,12 +1018,12 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/static.mp3",
+              "path": "assets/audio/sfx/static.mp3",
               "volume": 0.75
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/paseo_ciudad_paloma_mano_corrupta.png"
+              "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma_mano_corrupta.png"
             }
           ],
           "character": "3C",
