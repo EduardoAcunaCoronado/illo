@@ -534,6 +534,14 @@ body.startup-pending #menu-video {
     margin: 5px 0;
 }
 
+.dialog-brand-omg {
+    color: #ff8a00;
+}
+
+.dialog-brand-clos {
+    color: #57e389;
+}
+
 .p5-border-bottom {
     display: none;
 }

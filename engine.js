@@ -5223,6 +5223,42 @@ class VisualNovelEngine {
             let timeoutId = null;
             let finished = false;
 
+            // Marcas con color dentro del diálogo. Se construyen con nodos de
+            // texto (no innerHTML) para que el contenido de los capítulos siga
+            // siendo seguro y compatible con el efecto de escritura.
+            const brandRanges = [];
+            const brandPattern = /\b(OMG|CLos)\b/g;
+            let brandMatch;
+            while ((brandMatch = brandPattern.exec(text)) !== null) {
+                brandRanges.push({
+                    start: brandMatch.index,
+                    end: brandMatch.index + brandMatch[0].length,
+                    className: brandMatch[0] === 'OMG' ? 'dialog-brand-omg' : 'dialog-brand-clos'
+                });
+            }
+
+            const renderText = (length) => {
+                dialogText.replaceChildren();
+                let cursor = 0;
+
+                brandRanges.forEach(range => {
+                    if (range.start >= length) return;
+                    if (cursor < range.start) {
+                        dialogText.append(document.createTextNode(text.slice(cursor, range.start)));
+                    }
+
+                    const brand = document.createElement('span');
+                    brand.className = range.className;
+                    brand.textContent = text.slice(range.start, Math.min(range.end, length));
+                    dialogText.append(brand);
+                    cursor = Math.min(range.end, length);
+                });
+
+                if (cursor < length) {
+                    dialogText.append(document.createTextNode(text.slice(cursor, length)));
+                }
+            };
+
             const cleanup = () => {
                 if (timeoutId) clearTimeout(timeoutId);
                 document.removeEventListener('click', skipHandler);
@@ -5235,7 +5271,7 @@ class VisualNovelEngine {
                 if (finished) return;
                 finished = true;
                 cleanup();
-                dialogText.textContent = text;
+                renderText(text.length);
                 this.isWaitingForInput = true;
                 resolve();
             };
@@ -5248,8 +5284,8 @@ class VisualNovelEngine {
 
                 if (charIndex < text.length) {
                     const ch = text[charIndex];
-                    dialogText.textContent += ch;
                     charIndex++;
+                    renderText(charIndex);
                     // Blip por letra (tono según el que habla) y pausa extra en la
                     // puntuación para dar ritmo al texto.
                     let delay = this.typingSpeed * speedMult;
