@@ -75,15 +75,18 @@ CAPÍTULO 1 — “Un furro se levanta” (Samu)
 CAPÍTULO 2 — “Kingdom Ketchup” (Edu)
 - Furrielva parece inicialmente una utopía de furros viviendo en armonía.
 - Para buscar el portal, Samu elige supermercado:
-  · Día: ruta directa, storyDelay 0.
-  · Mercadona: pequeño rodeo, storyDelay 1.
-  · El Jamón: la loca de los gatos lo ataca; minijuego de supervivencia, storyDelay 2.
+  · Noche: ruta directa, storyDelay 0.
+  · Mercaguasa: pequeño rodeo, storyDelay 1.
+  · El Jarrón: Micaela Michis lo ataca con sus gatos y pronuncia un mitin político
+    absurdo a favor de los michis; minijuego de supervivencia, storyDelay 2.
 - Kingdom Ketchup apareció sin historia ni registro. No vende nada: sus pasillos
   ofrecen exactamente lo que cada visitante desea. Algunos salen; otros dejan de
   querer encontrar la salida.
 - Segunda elección: Ketchup es directo; Catsup añade 1 de retraso.
-- Nate Gentile recomienda productos. Preguntarle por un PC dispara una explicación
+- Neit recomienda productos. Preguntarle por un PC dispara una explicación
   deliberadamente larguísima y añade 2 de retraso; ignorarlo evita esa demora.
+- Neit y Micaela Michis tienen retratos cartoon transparentes alineados con los
+  protagonistas (`others/neit.png` y `others/micaela*.png`).
 - Edu está seducido por el reino y se niega de manera progresiva a volver al cumpleaños.
   Su sombra se separa, lo devora y se presenta como Zip, instrumento memético creado
   para dominar el mundo.
@@ -438,6 +441,11 @@ PRESENTACIÓN
   relevo chill, botón musical y marca WildSoft.
 - Visual novel con fondos ilustrados, sprites grandes, caja de diálogo inferior,
   nombre coloreado, flecha de continuación, sonido por letra y pausas de puntuación.
+- Los supermercados de la ruta de Edu usan las marcas ficticias El Jarrón,
+  Noche y Mercaguasa. Sus fondos heredados `jamon.png`, `dia.png` y
+  `mercadona.png` están unificados a 1600×900 con el estilo anime cinematográfico
+  y la iluminación cálida de las 16:00 del opening de Samu; los tres conservan
+  el portal rojo y su encuadre de gameplay.
 - Capítulos tienen cartela de entrada y pantalla de fin.
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
@@ -508,6 +516,11 @@ REGLAS PARA CAMBIOS FUTUROS
   rotular ni explicar la anomalía de forma explícita en el diálogo. En esa
   última frase se conserva además `characterFullGlitch`: un segundo golpe que
   afecta al teléfono entero con corte cromático, shake leve y destello azul.
+- Tras integrar `master`, el nombre visible del personaje técnico `iphone5` es
+  "Móvil", pero las llamadas activas siguen siendo las nuestras: Edu azul,
+  Tony rosa y José verde, siempre humanos. Los sprites heredados
+  `iphone5_edu.png`, `iphone5_tony.png` e `iphone5_jose.png` no deben volver a
+  enlazarse como poses principales.
 - Mantener a 2B como narradora.
 - No llamar “virus” al origen de la transformación.
 - No convertir a Edu en culpable de Zip ni a Seraphyna en causante de la infección
@@ -521,3 +534,22 @@ REGLAS PARA CAMBIOS FUTUROS
   archivos Markdown separados por característica.
 - Actualizar esta memoria cuando cambien el canon, los arcos, los finales o el flujo
   técnico que un futuro agente necesite conocer.
+
+CORRECCIÓN 2026-07-31
+- `index.html` debe contener un solo `#startup-overlay`, fuera de `#viewport`.
+  Un duplicado dentro de `#game-container` bloqueaba el arranque porque los
+  listeners actuaban únicamente sobre la primera copia de los IDs repetidos.
+- Al volver al menú principal desde una partida, hay que usar
+  `setMainMenuVisible(true)`: quitar solamente la clase `hidden` deja el atributo
+  `inert` activo e impide pulsar las opciones del menú.
+- El fondo `assets/backgrounds/bathroom.png` mantiene su orientación jugable y el
+  reflejo del diseño vigente de Samu, con el estilo anime y la iluminación cálida
+  del fotograma 7 del opening. Su espejo izquierdo está corregido para que marco,
+  perspectiva y reflejo sean coherentes; el espejo derecho queda completamente
+  cerrado por arriba dentro del encuadre.
+- El identificador interno heredado del teléfono sigue siendo `iphone5`, pero su
+  nombre visible es “Móvil” y su carcasa neutral/concierto es ficticia, sin rasgos
+  de Apple ni de iOS. Las llamadas activas usan las pantallas humanas v2: Edu en
+  azul, Tony en rosa y José en verde. Los PNG heredados `iphone5_edu.png`,
+  `iphone5_tony.png` e `iphone5_jose.png` se conservan solo como recursos antiguos
+  y no deben volver a enlazarse como poses principales.

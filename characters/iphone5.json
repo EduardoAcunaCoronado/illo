@@ -1,6 +1,6 @@
 {
-  "name": "iphone5",
-  "color": "gray",
+  "name": "Móvil",
+  "color": "#37dff5",
   "poses": {
     "neutral": "assets/characters/iphone5/iphone5.png",
     "concierto": "assets/characters/iphone5/iphone5_concierto.png",

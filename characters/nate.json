@@ -1,8 +1,0 @@
-{
-  "name": "Nate",
-  "color": "#2ecc71",
-  "poses": {
-    "neutral": "assets/characters/others/nate.png"
-  },
-  "defaultPose": "neutral"
-}

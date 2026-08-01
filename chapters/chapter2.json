@@ -218,13 +218,21 @@
         },
         {
           "character": "Edu",
-          "text": "Sa... mu... todos... necesitan... [conexión perdida]",
-          "speakingAs": "iphone5"
+          "text": "Sa... mu... todos me necesi... me necesitan.",
+          "speakingAs": "iphone5",
+          "actions": [
+            {
+              "type": "characterGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 1550
+            }
+          ]
         },
         {
           "character": "Ketchling de seguridad",
           "speakingAs": "ketchling",
-          "text": "Los tapones se reparten en los supermercados de Furrielva. El Día es rápido, Mercadona queda más lejos y en El Jamón pasan... cosas con gatos.",
+          "text": "Los tapones se reparten en los supermercados de Furrielva. Noche es rápido, Mercaguasa queda más lejos y en El Jarrón pasan... cosas con gatos.",
           "actions": [
             {
               "type": "showCharacter",
@@ -284,23 +292,23 @@
           ],
           "choices": [
             {
-              "text": "Entrar por El Jamón",
-              "nextScene": "Escena 2: El Jamón"
+              "text": "Entrar por El Jarrón",
+              "nextScene": "Escena 2: El Jarrón"
             },
             {
-              "text": "Entrar por el Día",
-              "nextScene": "Escena 3: Día"
+              "text": "Entrar por Noche",
+              "nextScene": "Escena 3: Noche"
             },
             {
-              "text": "Entrar por el Mercadona",
-              "nextScene": "Escena 4: Mercadona"
+              "text": "Entrar por Mercaguasa",
+              "nextScene": "Escena 4: Mercaguasa"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 2: El Jamón",
+      "title": "Escena 2: El Jarrón",
       "lines": [
         {
           "actions": [
@@ -321,11 +329,11 @@
             },
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             }
           ],
           "character": "3C",
-          "text": "El Jamón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos, con la mirada puesta en encontrar la entrada al Kingdom Ketchup."
+          "text": "El Jarrón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos, con la mirada puesta en encontrar la entrada al Kingdom Ketchup."
         },
         {
           "character": "Samu",
@@ -341,23 +349,23 @@
         },
         {
           "character": "3C",
-          "text": "De entre las estanterías surge una mujer con la mirada perdida, cargada de gatos hasta las orejas. Es la loca de los gatos.",
+          "text": "De entre las estanterías surge una mujer de mirada febril, cargada de gatos hasta las orejas. Es Micaela Michis.",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "loca",
+              "character": "micaela",
               "position": "right",
               "pose": "neutral"
             }
           ]
         },
         {
-          "character": "Loca de los gatos",
-          "text": "¡Ahhh, la madre que los...! ¡Ahhhhh, incentivar la pequeña empresa! ¡Ahhhh, cómo duele! ¡Responsabilidad empresarial! ¡Ahhhhhh, gatos en los pantaloooones!",
+          "character": "Micaela Michis",
+          "text": "¡Ciudadanos, comienza la revolución michi! ¡Por decreto, cada hogar tendrá siete cajas de cartón, la siesta será obligatoria y todo enemigo del puntero láser será perseguido por mis ministros!",
           "actions": [
             {
               "type": "setPose",
-              "character": "loca",
+              "character": "micaela",
               "position": "right",
               "pose": "crazy"
             }
@@ -377,7 +385,7 @@
         },
         {
           "character": "3C",
-          "text": "Los gatos se abalanzan desde todos los rincones. Samu no puede pelear: solo le queda correr y aguantar hasta que la loca se canse."
+          "text": "Los gatos se abalanzan desde todos los rincones. Samu no puede pelear: solo le queda correr y aguantar hasta que Micaela se canse."
         },
         {
           "character": "Samu",
@@ -397,7 +405,7 @@
           "actions": [
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             }
           ]
         },
@@ -453,23 +461,39 @@
         },
         {
           "character": "3C",
-          "text": "Sin aliento y con los michis por fin dispersos, la loca se sube a una caja de embutido y, de la nada, arranca un mitin.",
+          "text": "Sin aliento y con los michis por fin dispersos, Micaela se sube a una caja de embutido y, sin que nadie se lo haya pedido, arranca un mitin político.",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "loca",
+              "character": "micaela",
               "position": "right",
               "pose": "neutral"
             }
           ]
         },
         {
-          "character": "Loca de los gatos",
-          "text": "¡Vale, voten por mí, siiiii!"
+          "character": "Micaela Michis",
+          "text": "¡Pueblo del Jarrón! ¡Mi programa es claro: sanidad veterinaria universal, atún subvencionado y un Ministerio del Ovillo con presupuesto ilimitado!",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "micaela",
+              "position": "right",
+              "pose": "crazy"
+            }
+          ]
+        },
+        {
+          "character": "Micaela Michis",
+          "text": "¡Ningún gato volverá a pagar alquiler! ¡Cada sofá será vivienda protegida y cada humano tributará dos latas de sardinas al mes!"
+        },
+        {
+          "character": "Micaela Michis",
+          "text": "¡Y eliminaremos los lunes del calendario! Los sustituiremos por el Día Nacional de Tirar Cosas de la Mesa. ¡Miau patria o muerte!"
         },
         {
           "character": "Samu",
-          "text": "Yo te votaría antes que a Pedro Sánchez.",
+          "text": "Lo del atún subvencionado suena mejor que la mitad de los programas electorales.",
           "actions": [
             {
               "type": "showCharacter",
@@ -481,11 +505,11 @@
         },
         {
           "character": "3C",
-          "text": "Con los michis por fin dispersos, Samu encuentra una botella promocional caída tras las cajas. El tapón dorado sigue intacto.",
+          "text": "Dejando atrás a Micaela y su ejército de gatos, Samu encuentra una botella promocional caída tras las cajas. El tapón dorado sigue intacto.",
           "actions": [
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             },
             {
               "type": "setDelay",
@@ -504,7 +528,7 @@
       ]
     },
     {
-      "title": "Escena 3: Día",
+      "title": "Escena 3: Noche",
       "lines": [
         {
           "actions": [
@@ -525,15 +549,15 @@
             },
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             }
           ],
           "character": "3C",
-          "text": "El Día queda a un par de calles, por una travesía tranquila. Samu avanza sin apenas obstáculos."
+          "text": "Noche queda a un par de calles, por una travesía tranquila. Samu avanza sin apenas obstáculos."
         },
         {
           "character": "Samu",
-          "text": "A pesar de llamarse Día, no he tardado un día en llegar. Directo al grano.",
+          "text": "A pesar de llamarse Noche, he llegado con el sol pegando. Directo al grano.",
           "actions": [
             {
               "type": "showCharacter",
@@ -564,7 +588,7 @@
       ]
     },
     {
-      "title": "Escena 4: Mercadona",
+      "title": "Escena 4: Mercaguasa",
       "lines": [
         {
           "actions": [
@@ -585,11 +609,11 @@
             },
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             }
           ],
           "character": "3C",
-          "text": "El Mercadona está unas calles más lejos. Samu avanza con paso firme y solo tiene que rodear a un grupo de furros que bloquean el camino."
+          "text": "Mercaguasa está unas calles más lejos. Samu avanza con paso firme y solo tiene que rodear a un grupo de furros que bloquean el camino."
         },
         {
           "character": "Samu",
@@ -710,6 +734,18 @@
             {
               "type": "setBackground",
               "value": "assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_production_floor_v2_4k.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "micaela"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "neit"
             },
             {
               "type": "stopSound",
@@ -845,7 +881,7 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Escena 8: Nate Gentile"
+              "value": "Escena 8: Neit"
             }
           ]
         }
@@ -892,14 +928,14 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Escena 8: Nate Gentile"
+              "value": "Escena 8: Neit"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 8: Nate Gentile",
+      "title": "Escena 8: Neit",
       "lines": [
         {
           "actions": [
@@ -920,24 +956,24 @@
             },
             {
               "type": "showCharacter",
-              "character": "nate",
+              "character": "neit",
               "position": "right",
               "pose": "neutral"
             }
           ],
           "character": "3C",
-          "text": "Cerca de las cajas, un hombre recorre las estanterías examinando cada producto con ojo experto. Es Nate Gentile."
+          "text": "Cerca de las cajas, un hombre recorre las estanterías examinando cada producto con ojo experto. Es Neit."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Mmm... esta lata de tomate tiene una relación calidad-precio brutal. Yo me la compraría."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Este ketchup de marca blanca rinde igual que el caro. Yo me lo compraría."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "¿Guindillas en oferta? Para el picante que dan, es una locura no llevárselas. Yo me las compraría."
         },
         {
@@ -953,7 +989,7 @@
           ]
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "¡Eh! ¿Te puedo ayudar en algo, amigo?"
         },
         {
@@ -974,17 +1010,17 @@
             },
             {
               "text": "Preguntarle qué PC me recomendaría",
-              "nextScene": "Escena 8b: La recomendación de Nate"
+              "nextScene": "Escena 8b: La recomendación de Neit"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 8b: La recomendación de Nate",
+      "title": "Escena 8b: La recomendación de Neit",
       "lines": [
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "¡Ah, buena pregunta! Para darte la recomendación perfecta, me vendría genial saber qué uso principal le vas a dar (¿programación, desarrollo, gaming en 1440p o algo más casual?) y, sobre todo, cuál es tu presupuesto aproximado.",
           "actions": [
             {
@@ -1002,40 +1038,40 @@
           ]
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Mientras me cuentas, la industria se encuentra en un gran momento con la llegada de las nuevas arquitecturas y las series RTX 5000 de Nvidia y RX 9000 de AMD. Aquí tienes las tres configuraciones que más merecen la pena ahora mismo según lo que busques gastar."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "1. EL 'SWEET SPOT' (Calidad/Precio Eficiente). Ideal para un rendimiento excelente en multitarea, desarrollo de software ágil, compilación rápida y gaming en 1440p (2K)."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Procesador: AMD Ryzen 5 9600X o Ryzen 7 9700X (Plataforma AM5, con margen de actualización para el futuro). Gráfica: NVIDIA RTX 5070 (12GB) o AMD RX 9070 (16GB), una potencia brutal en la gama media-alta."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "RAM: 32GB DDR5 a 6000MHz CL30 (imprescindible hoy para ir holgado con contenedores, IDEs o juegos pesados). Almacenamiento: SSD NVMe M.2 de 2TB (WD Black o Crucial Gen4). Placa: chipset B850 (MSI Tomahawk o Gigabyte Gaming). Fuente: 750W u 850W 80+ Gold Modular."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "2. EL ECONÓMICO / ENTRADA RENTABLE. Para productividad fluida, desarrollo ligero y gaming muy decente a 1080p sin gastar de más."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Procesador: AMD Ryzen 5 7600 (AM5) o Intel Core i5-14400F. Gráfica: NVIDIA RTX 5060 (8GB) o la Intel Arc B580 (que está sorprendiendo mucho por su relación calidad-precio). RAM: 16GB o 32GB DDR5. Almacenamiento: SSD NVMe M.2 de 1TB."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "3. EL 'GOD MODE' (Máximo Rendimiento). Si buscas potencia bruta sin restricciones: renderizado, entornos virtuales masivos, desarrollo 3D/IA local o gaming en 4K Ultra."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Procesador: AMD Ryzen 7 9800X3D (el rey absoluto en gaming) o Intel Core Ultra 7 265K. Gráfica: NVIDIA RTX 5080 o RTX 5090. RAM: 64GB DDR5 a 6400MHz. Almacenamiento: 2TB o 4TB SSD NVMe Gen5/Gen4 de alta velocidad (Samsung 990 Pro)."
         },
         {
           "character": "3C",
-          "text": "Nate sigue y sigue con todo lujo de detalle. Pasan los minutos. Samu asiente educadamente mientras el reloj corre.",
+          "text": "Neit sigue y sigue con todo lujo de detalle. Pasan los minutos. Samu asiente educadamente mientras el reloj corre.",
           "actions": [
             {
               "type": "addDelay",
@@ -1045,7 +1081,7 @@
         },
         {
           "character": "Samu",
-          "text": "Gracias, Nate, de verdad... pero ¡tengo que irme YA!",
+          "text": "Gracias, Neit, de verdad... pero ¡tengo que irme YA!",
           "actions": [
             {
               "type": "showCharacter",
@@ -1100,7 +1136,7 @@
             },
             {
               "type": "hideCharacter",
-              "character": "nate"
+              "character": "neit"
             }
           ],
           "character": "3C",
@@ -1160,7 +1196,7 @@
         },
         {
           "character": "Samu",
-          "text": "Oye, Edu... una cosa que me ha dejado loco. He visto a Nate Gentile por ahí fuera y me ha parecido ver que... ¿estás vendiendo guindillas aquí?",
+          "text": "Oye, Edu... una cosa que me ha dejado loco. He visto a Neit por ahí fuera y me ha parecido ver que... ¿estás vendiendo guindillas aquí?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1637,7 +1673,7 @@
             },
             {
               "type": "hideCharacter",
-              "character": "nate"
+              "character": "neit"
             },
             {
               "type": "hideCharacter",

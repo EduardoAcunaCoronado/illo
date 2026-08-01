@@ -1,0 +1,8 @@
+{
+  "name": "Neit",
+  "color": "#2ecc71",
+  "poses": {
+    "neutral": "assets/characters/others/neit.png"
+  },
+  "defaultPose": "neutral"
+}

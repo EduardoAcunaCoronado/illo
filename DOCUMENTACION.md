@@ -285,6 +285,15 @@ debe hacer el zoom, sin cambiar el nombre mostrado en el cuadro de diálogo.
 Aquí el cuadro muestra "Edu" como interlocutor, pero es el móvil (a la derecha)
 el que se resalta mientras "habla".
 
+> `iphone5` se conserva únicamente como identificador técnico heredado para no
+> romper los capítulos. El nombre visible es **Móvil** y el dispositivo es
+> ficticio, robusto y de estilo cartoon, sin botón Home, interfaz de iOS, marcas
+> ni rasgos identificables de Apple. Las llamadas usan siempre las versiones
+> humanas de los contactos y una identidad propia: Edu azul, Tony rosa y José
+> verde. Sus poses activas son los PNG `phone_call_*_humano_v2`; los antiguos
+> `iphone5_edu.png`, `iphone5_tony.png` e `iphone5_jose.png` quedan como recursos
+> heredados y no deben sustituir estas pantallas.
+
 ---
 
 ## ⚙️ Acciones
@@ -633,12 +642,12 @@ En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
 | `gatos`   | **Estilo Pac-Man con laberinto**: huye de los gatos por las calles | `survive`, `cats`, `playerSpeed`, `catSpeed` |
 | `chase`   | Persecución lateral en el coche de Santi                            | `distance`, `speed`, `maxHits`, `spawnMs`    |
 
-#### Minijuego `gatos` (la loca de los gatos)
+#### Minijuego `gatos` (Micaela Michis)
 
 Un **Pac-Man por rejilla** en un **laberinto de calles urbanas**. Samu (🐺) recorre
 las calles (← ↑ → ↓ / WASD), girando en las intersecciones, y debe **sobrevivir** un
 tiempo mientras los gatos (🐱) le persiguen por el laberinto. Si un gato lo alcanza,
-pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jamón).
+pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jarrón).
 
 ```json
 {
@@ -2600,8 +2609,19 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 **chapter2-edu.json - Capítulo 2: Kingdom Ketchup:**
 
 - Samu busca a Edu en el supermercado
-- Elige ruta entre El Jamón, Día o Mercadona
-- Batalla contra la loca de los gatos (minigame gatos)
+- Elige ruta entre las parodias ficticias El Jarrón, Noche o Mercaguasa
+- Los tres fondos conservan sus nombres de archivo heredados (`jamon.png`,
+  `dia.png` y `mercadona.png`), pero muestran marcas completamente ficticias.
+  Comparten el acabado anime cinematográfico, la luz cálida de las 16:00 y la
+  dirección artística de `assets/cutscenes/opening_samu/`.
+- Batalla contra Micaela Michis (minigame gatos)
+- Micaela presenta la persecución y cierra la ruta con un mitin político absurdo
+  a favor de los gatos: cajas de cartón por decreto, atún subvencionado,
+  vivienda protegida en sofás y un Ministerio del Ovillo.
+- Los secundarios Micaela Michis y Neit usan retratos cartoon con contorno limpio,
+  color plano y sombreado cel, alineados con el estilo de los protagonistas. Sus
+  recursos están en `assets/characters/others/micaela*.png` y
+  `assets/characters/others/neit.png`.
 - Rescate de Edu y batalla contra Zip (minigame ketchup)
 - Descubrimiento del concierto de Seraphyna en Ecchi Land
 - Llamadas telefónicas opcionales
@@ -3132,6 +3152,11 @@ servidor local en `127.0.0.1` con un puerto libre y carga la ventana desde ahí.
 Es exactamente el mismo escenario que `python -m http.server`, por lo que el
 comportamiento del juego es idéntico al del navegador.
 
+El aviso «Antes de empezar» usa un único `#startup-overlay`, situado fuera de
+`#viewport` y `#game-container`. No debe duplicarse dentro del escenario: los
+IDs repetidos hacen que el botón controle una copia mientras la otra permanece
+encima y bloquea el acceso al opening y al menú.
+
 Detalles de la ventana:
 
 - Tamaño de área de dibujo 1280x720 (se reduce si la pantalla es más pequeña)
@@ -3244,8 +3269,9 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
 - Samu llega a la fachada, conoce al Ketchling de seguridad y descubre que Edu
   no responde. El tapón dorado pasa a ser una entrada explícita, no una
   casualidad del guion.
-- Se conservan las rutas de Día, Mercadona y El Jamón, incluido el minijuego de
-  gatos. Sus diferencias de `storyDelay` siguen escalando la dificultad.
+- Se conservan las rutas ficticias de Noche, Mercaguasa y El Jarrón, incluido
+  el minijuego de gatos y el mitin de Micaela Michis. Sus diferencias de
+  `storyDelay` siguen escalando la dificultad.
 - El gag del tapón dorado tiene doble golpe: Samu celebra haber encontrado uno
   único y después descubre que todo el expositor está lleno.
 - La botella abre un atajo visual de regreso al interior de la fábrica.
@@ -3306,3 +3332,24 @@ No existen archivos MD separados por característica.
 - ✅ Personalización de estilos P5
 - ✅ Troubleshooting actualizado
 - ✅ Ejemplos de uso
+
+### Regreso al menú principal (2026-07-31)
+
+Al abandonar una partida desde el menú de pausa, `volverAlMenuPrincipal()` usa
+`setMainMenuVisible(true)` para retirar tanto `hidden` como `inert`. Así, los
+botones **Comenzar**, **Capítulos** y **Configuración** recuperan su interacción.
+
+### Opening a pantalla completa (2026-07-31)
+
+El vídeo de arranque se ajusta al escenario con `object-fit: contain`, conservando
+su proporción y mostrando todos los planos completos, sin ampliarlos ni recortarlos.
+
+### Fondo del baño del capítulo 1 (2026-07-31)
+
+`assets/backgrounds/bathroom.png` conserva el encuadre panorámico y la orientación
+del fondo jugable —lavabo a la izquierda, ducha al fondo y espejo a la derecha—,
+pero adopta el acabado anime, la luz cálida y la paleta de la cinemática
+`assets/cutscenes/opening_samu/7.png`. El espejo izquierdo tiene un marco y un
+reflejo espacialmente coherentes, mientras que el espejo derecho tiene el marco
+completo y cerrado dentro del encuadre y representa el diseño vigente de
+`samu_surprised.png`.

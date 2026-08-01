@@ -62,8 +62,10 @@ body.startup-pending #menu-video {
     visibility: hidden;
 }
 
+/* El arranque cuelga de <body>, no del escenario 1280x720: ocupa la ventana
+   entera para que el opening no quede metido dentro del recuadro 16:9. */
 .startup-overlay {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: 5000;
     display: flex;
@@ -84,7 +86,11 @@ body.startup-pending #menu-video {
 }
 
 .startup-disclaimer {
-    width: min(720px, 78%);
+    /* Se dibuja al tamaño de diseño y se escala con el mismo factor que el
+       escenario, para que el cartel se vea igual en cualquier ventana. */
+    width: 720px;
+    transform: scale(var(--stage-scale, 1));
+    transform-origin: center center;
     padding: 58px 64px 54px;
     text-align: center;
     border: 1px solid rgba(255, 209, 102, 0.48);
@@ -219,6 +225,8 @@ body.startup-pending #menu-video {
     left: 50%;
     bottom: 32px;
     translate: -50% 0;
+    transform: scale(var(--stage-scale, 1));
+    transform-origin: center bottom;
     color: rgba(255, 255, 255, 0.68);
     font-family: 'Outfit', Arial, sans-serif;
     font-size: 13px;
@@ -235,6 +243,8 @@ body.startup-pending #menu-video {
     position: absolute;
     right: 28px;
     bottom: 24px;
+    transform: scale(var(--stage-scale, 1));
+    transform-origin: right bottom;
     padding: 10px 16px;
     color: rgba(255, 255, 255, 0.78);
     border: 1px solid rgba(255, 255, 255, 0.22);
@@ -404,9 +414,9 @@ body.startup-pending #menu-video {
        px 168,157 a 660,1043) proyectado sobre el hueco que deja
        background-size: contain dentro de la caja de personaje (42% x 88% de
        1280x720, imagen anclada abajo y centrada). */
-    top: 35%;
-    left: 28%;
-    width: 43%;
+    top: 43%;
+    left: 30%;
+    width: 40%;
     height: 43%;
     border-radius: 2px;
 }

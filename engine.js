@@ -989,7 +989,7 @@ class VisualNovelEngine {
         if (this._abortarRetry) this._abortarRetry();
     }
 
-    // Minijuego: la loca de los gatos (El Jamón). Estilo Pac-Man: Samu se mueve
+    // Minijuego: Micaela Michis (El Jarrón). Estilo Pac-Man: Samu se mueve
     // libremente por el campo y debe SOBREVIVIR huyendo de los gatos que le
     // persiguen durante un tiempo (por defecto 60 s). Si un gato lo alcanza,
     // pierde y puede reintentar.
@@ -1211,7 +1211,7 @@ class VisualNovelEngine {
                 document.removeEventListener('keydown', keyDown);
                 const result = document.createElement('div');
                 result.className = 'minigame-result';
-                result.textContent = won ? '¡Escapaste de la loca de los gatos!' : '¡Un gato te ha pillado!';
+                result.textContent = won ? '¡Escapaste de Micaela Michis!' : '¡Un gato te ha pillado!';
                 overlay.appendChild(result);
                 setTimeout(() => {
                     overlay.removeEventListener('click', swallowClick, true);
@@ -4771,9 +4771,9 @@ class VisualNovelEngine {
             .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase();
         const key = norm(characterName);
-        // Alias por nombre visible: un speaker como "Loca de los gatos" no es
-        // clave de fichero, pero s\u00ed el "name" de loca.json \u2014 resolverlo ah\u00ed en
-        // vez de intentar un fetch de "loca de los gatos.json" (404 seguro).
+        // Alias por nombre visible: un speaker como "Micaela Michis" no es
+        // clave de fichero, pero s\u00ed el "name" de micaela.json \u2014 resolverlo ah\u00ed en
+        // vez de intentar un fetch de "micaela michis.json" (404 seguro).
         // Tambi\u00e9n se aceptan "aliases" del JSON del personaje (p. ej. tony.json
         // declara ["Seraphyna"]: su nombre art\u00edstico resalta SU sprite).
         if (!this.characters[key]) {
