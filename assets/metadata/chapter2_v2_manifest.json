@@ -9,6 +9,9 @@
     "branding": "Emblema grafico de corona y tomate; sin marcas reales ni texto generado."
   },
   "backgrounds": {
+    "furrielvaJamon4k": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.png",
+    "furrielvaDia4k": "assets/images/backgrounds/chapter2/furrielva/dia_4k_v2.png",
+    "furrielvaMercaguasa4k": "assets/images/backgrounds/chapter2/furrielva/mercadona_4k_v2.png",
     "factoryExterior": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png",
     "productionFloor": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png",
     "productionFloorCorrupted": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png",
@@ -31,13 +34,26 @@
     "ketchlingCook": "assets/images/characters/ketchling/ketchling_cook.png",
     "ketchlingMechanic": "assets/images/characters/ketchling/ketchling_mechanic.png",
     "ketchlingBottler": "assets/images/characters/ketchling/ketchling_bottler.png",
-    "zipBoss": "assets/images/characters/zip/ketchup/zip.png"
+    "zipBoss": "assets/images/characters/zip/ketchup/zip.png",
+    "zipBattleFrames": [
+      "assets/images/characters/zip/ketchup/zip_1.png",
+      "assets/images/characters/zip/ketchup/zip_2.png",
+      "assets/images/characters/zip/ketchup/zip_3.png",
+      "assets/images/characters/zip/ketchup/zip_4.png",
+      "assets/images/characters/zip/ketchup/zip_5.png"
+    ],
+    "zipFloatingFrames": [
+      "assets/images/characters/zip/ketchup/zip_flotando_1.png",
+      "assets/images/characters/zip/ketchup/zip_flotando_2.png",
+      "assets/images/characters/zip/ketchup/zip_flotando_3.png"
+    ]
   },
   "minigame": {
     "goldBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png",
     "corruptedBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png",
     "goldenCap": "assets/images/minigames/chapter2/ketchup/golden_cap.png",
-    "chili": "assets/images/minigames/chapter2/ketchup/chili_v2.png"
+    "chili": "assets/images/minigames/chapter2/ketchup/chili_v2.png",
+    "zipMusic": "assets/audio/sfx/zip's-shadow-waltz.mp3"
   },
   "notes": [
     "Los PNG de personajes y minijuego tienen transparencia.",

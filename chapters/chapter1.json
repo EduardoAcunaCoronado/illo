@@ -35,7 +35,7 @@
         },
         {
           "character": "Samu",
-          "text": "¡Oh, no! Me he quedado dormido. Y eso que le dije a ChatGPT que me despertara.",
+          "text": "¡Oh, no! Me he quedado dormido. Y eso que le dije a GePeTo que me despertara.",
           "actions": [
             {
               "type": "showCharacter",
@@ -72,6 +72,7 @@
         {
           "character": "Samu",
           "text": "Oh, no. ¡Soy un therian!",
+          "textAnimation": true,
           "actions": [
             {
               "type": "setBackground",
@@ -235,6 +236,7 @@
         {
           "character": "Samu",
           "text": "¿Pasándolo bien? Edu, creí que te importaba... Y me abandonas por un derrapazo de ketchup.",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",

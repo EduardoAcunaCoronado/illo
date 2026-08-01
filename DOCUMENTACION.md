@@ -263,8 +263,46 @@ async function startNewGame() {
 | `actions`    | array  | No          | Acciones a ejecutar                            |
 | `choices`    | array  | No          | Opciones para el usuario                       |
 | `speakingAs` | string | No          | Sprite a resaltar al hablar (ver abajo)        |
+| `emotion`    | string | No          | Efecto tipográfico emocional (ver abajo)       |
+| `textAnimation` | string/bool | No   | Activa o desactiva la animación de una línea clave |
 
 \*No es obligatorio, pero se recomienda para debugging.
+
+### Emociones tipográficas
+
+Por defecto, una línea sin `textAnimation` se muestra sin animación. Al usar
+`"textAnimation": true` o `"auto"`, el motor reconoce la pose activa del
+personaje y aplica miedo, enfado, tristeza, alegría, sorpresa o nervios;
+`happy` permanece sin animación. Si el mismo personaje repite la misma emoción
+en varios diálogos seguidos, solo se anima el primero para evitar que el efecto
+resulte constante.
+
+Para reservar una animación para un momento clave, usa `textAnimation` en la
+línea. Puede recibir directamente el nombre del efecto:
+
+```json
+{
+  "character": "Samu",
+  "text": "¡No te acerques!",
+  "textAnimation": "fear"
+}
+```
+
+Valores disponibles: `fear`/`miedo`, `anger`/`agresividad`,
+`sadness`/`tristeza`, `joy`/`alegría`, `surprise`/`sorpresa`,
+`nervous`/`nervios`, `whisper`/`susurro` y `scream`/`grito` para momentos
+excepcionales y estridentes. En `scream`, las primeras letras son pequeñas y
+cada carácter crece progresivamente hasta que el final casi llena el bocadillo.
+Usa `"textAnimation": false` para
+desactivar expresamente el efecto aunque la pose tenga una emoción reconocida;
+`"textAnimation": true` o `"auto"` activa la detección por pose. El campo
+`emotion` anterior sigue siendo compatible.
+Las preferencias del sistema para reducir movimiento desactivan las animaciones,
+pero mantienen el color y la sombra emocional para conservar el contexto.
+
+Los capítulos 0 a 6 contienen una selección curada de 26 diálogos con
+`"textAnimation": true` (entre 2 y 5 por capítulo). Se reservan para
+revelaciones, peligros, pérdidas y reacciones especialmente importantes.
 
 ### `speakingAs`: resaltar un sprite distinto del que habla
 
@@ -3400,12 +3438,16 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   ojos en bucle mientras no se avance el texto y la segunda sacude el hollín una
   sola vez, desprende partículas CSS y termina en `samu_worried.png`. Con
   reducción de movimiento se muestra directamente un estado estático seguro.
-- El bullet hell reutiliza la música `assets/audio/music/chapter2/ketchup.mp3`,
-  los ocho sprites de Samu ya integrados y los objetos ficticios del paquete v2.
-  Su único recurso visual nuevo es
-  `assets/images/characters/zip/ketchup/zip.png`, reorganizado desde el asset de
-  José Manuel. No quedan rutas antiguas `assets/characters` o `assets/minigames`
-  en la implementación activa.
+- La recolección usa `assets/audio/music/chapter2/ketchup.mp3`; al comenzar el
+  bullet hell cambia con fundido a `assets/audio/sfx/zip's-shadow-waltz.mp3`, la
+  pista aportada por José Manuel. Su versión reciente del minijuego también aporta
+  la animación de movimiento de Samu, las fases flotantes de Zip, el aviso previo
+  y el ataque especial de la segunda mitad. Todo ello conserva la progresión por
+  picante y el bonus de Neit de nuestra rama.
+- Los sprites importados se han reorganizado bajo
+  `assets/images/characters/{samu,zip}/ketchup/`. No quedan rutas antiguas
+  `assets/characters`, `assets/minigames` o `assets/sounds` en la implementación
+  activa.
 
 La implementación toca `chapters/chapter1.json`, `chapters/chapter2.json`,
 `characters/edu.json`, `characters/ketchling.json`, `engine.js`, `styles.css` y

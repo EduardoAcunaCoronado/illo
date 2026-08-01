@@ -750,6 +750,172 @@ body.startup-pending #menu-video {
     margin: 5px 0;
 }
 
+.dialog-brand-omg {
+    color: #ff8a00;
+}
+
+.dialog-brand-clos {
+    color: #57e389;
+}
+
+.dialog-brand-blue {
+    color: #4da3ff;
+}
+
+/* Emoción tipográfica: cada carácter recibe el mismo estado con un pequeño
+   desfase, de modo que la frase se siente viva sin perder legibilidad. */
+.dialog-letter {
+    display: inline-block;
+    white-space: pre;
+    transform-origin: 50% 75%;
+}
+
+.dialog-text[class*="dialog-emotion-"] {
+    padding-bottom: 3px;
+}
+
+.dialog-text.dialog-emotion-fear {
+    color: #eeeaff;
+    text-shadow: 0 0 7px rgba(156, 134, 255, 0.48);
+}
+.dialog-emotion-fear .dialog-letter {
+    animation: dialog-letter-fear 0.13s steps(2, end) infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-anger {
+    color: #ffe0d5;
+    font-weight: 700;
+    text-shadow: 1px 1px 0 #7b1008, 0 0 8px rgba(255, 68, 34, 0.5);
+}
+.dialog-emotion-anger .dialog-letter {
+    animation: dialog-letter-anger 0.18s steps(2, end) infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-sadness {
+    color: #cddfff;
+    text-shadow: 0 2px 7px rgba(80, 130, 210, 0.45);
+}
+.dialog-emotion-sadness .dialog-letter {
+    animation: dialog-letter-sadness 2.2s ease-in-out infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-joy {
+    color: #fff4b8;
+    text-shadow: 0 0 8px rgba(255, 213, 73, 0.58);
+}
+.dialog-emotion-joy .dialog-letter {
+    animation: dialog-letter-joy 0.72s ease-in-out infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-surprise {
+    color: #ffffff;
+    text-shadow: 0 0 9px rgba(102, 218, 255, 0.65);
+}
+.dialog-emotion-surprise .dialog-letter {
+    animation: dialog-letter-surprise 0.9s cubic-bezier(.2, 1.2, .4, 1) infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-nervous {
+    color: #ffe4f2;
+    text-shadow: 0 0 6px rgba(255, 123, 185, 0.42);
+}
+.dialog-emotion-nervous .dialog-letter {
+    animation: dialog-letter-nervous 0.34s ease-in-out infinite alternate;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-whisper {
+    color: #d9d9df;
+    font-style: italic;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+}
+.dialog-emotion-whisper .dialog-letter {
+    animation: dialog-letter-whisper 1.8s ease-in-out infinite;
+    animation-delay: var(--letter-delay);
+}
+
+.dialog-text.dialog-emotion-scream {
+    color: #ffffff;
+    font-family: "Arial Black", Impact, sans-serif;
+    font-size: 12px;
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: 0.35px;
+    padding: 5px 3px 8px;
+    text-shadow: -2px 0 #ff1744, 2px 0 #00e5ff, 0 0 10px #ffea00;
+}
+.dialog-emotion-scream .dialog-letter {
+    animation: dialog-letter-scream 0.32s steps(2, end) infinite;
+    animation-delay: var(--letter-delay);
+    font-size: var(--scream-font-size, 12px);
+    vertical-align: baseline;
+}
+
+@keyframes dialog-letter-fear {
+    0% { transform: translate(-0.7px, 0.8px) rotate(-0.5deg); }
+    100% { transform: translate(0.8px, -0.7px) rotate(0.5deg); }
+}
+@keyframes dialog-letter-anger {
+    0% { transform: translate(-0.9px, 0) skewX(-1deg); }
+    50% { transform: translate(1px, -0.7px) skewX(1deg); }
+    100% { transform: translate(0, 0.7px); }
+}
+@keyframes dialog-letter-sadness {
+    0%, 100% { transform: translateY(0); opacity: 0.92; }
+    50% { transform: translateY(2px) rotate(0.4deg); opacity: 0.72; }
+}
+@keyframes dialog-letter-joy {
+    0%, 100% { transform: translateY(0) scale(1); }
+    45% { transform: translateY(-2px) scale(1.025); }
+}
+@keyframes dialog-letter-surprise {
+    0%, 100% { transform: scale(1); }
+    35% { transform: scale(1.1) translateY(-1px); }
+}
+@keyframes dialog-letter-nervous {
+    from { transform: translateX(-0.45px) rotate(-0.3deg); opacity: 0.82; }
+    to { transform: translateX(0.45px) rotate(0.3deg); opacity: 1; }
+}
+@keyframes dialog-letter-whisper {
+    0%, 100% { opacity: 0.72; transform: translateY(0); }
+    50% { opacity: 0.95; transform: translateY(-0.4px); }
+}
+@keyframes dialog-letter-scream {
+    0% {
+        color: #ffffff;
+        transform: translate(-1px, 1px) rotate(-1.5deg) scale(0.98);
+        text-shadow: -2px 0 #ff1744, 2px 0 #00e5ff, 0 0 8px #ffea00;
+    }
+    35% {
+        color: #fff36a;
+        transform: translate(1px, -2px) rotate(1deg) scale(1.12);
+        text-shadow: 2px 0 #ff1744, -2px 0 #00e5ff, 0 0 13px #ffea00;
+    }
+    70% {
+        color: #ffffff;
+        transform: translate(-1.5px, -0.5px) rotate(1.5deg) scale(1.04);
+        text-shadow: -2px -1px #00e5ff, 2px 1px #ff17d8, 0 0 10px #ffffff;
+    }
+    100% {
+        color: #ffdc48;
+        transform: translate(1px, 1px) rotate(-1deg) scale(1.08);
+        text-shadow: 2px -1px #ff1744, -2px 1px #00e5ff, 0 0 12px #ffea00;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .dialog-text[class*="dialog-emotion-"] .dialog-letter {
+        animation: none;
+        transform: none;
+        opacity: 1;
+    }
+}
+
 .p5-border-bottom {
     display: none;
 }
@@ -2177,6 +2343,286 @@ body.startup-pending #menu-video {
     object-fit: contain;
     user-select: none;
     pointer-events: none;
+}
+
+.ketchup-player img {
+    height: 94px;
+}
+
+.ketchup-player {
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    transition: none;
+    z-index: 5;
+}
+
+.ketchup-player::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.92);
+    border-radius: 50%;
+    background: rgba(255, 204, 0, 0.72);
+    box-shadow:
+        0 0 0 2px rgba(0, 0, 0, 0.42),
+        0 0 10px rgba(255, 204, 0, 0.75);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.ketchup-player.is-hit {
+    animation: ketchup-player-hit 0.18s ease-in-out 2;
+    filter: drop-shadow(0 0 12px rgba(255, 45, 45, 0.95));
+}
+
+.mg-shot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: var(--shot-size, 34px);
+    height: var(--shot-size, 34px);
+    z-index: 2;
+    pointer-events: none;
+    filter: drop-shadow(0 0 7px rgba(255, 74, 64, 0.75));
+}
+
+.mg-shot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ketchup-boss-minigame {
+    background: linear-gradient(180deg, rgba(15, 10, 24, 0.92), rgba(58, 17, 18, 0.88));
+    color: #fff;
+    font-family: var(--battle-font, 'Outfit', Arial, Helvetica, sans-serif);
+    font-weight: 600;
+}
+
+.ketchup-boss-hud {
+    width: min(760px, calc(100% - 56px));
+    padding: 18px 0 10px;
+    z-index: 3;
+}
+
+.ketchup-boss-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffcc00;
+    font-family: var(--battle-display-font, 'Righteous', 'Outfit', Arial, sans-serif);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.85),
+        0 0 12px rgba(255, 204, 0, 0.55);
+}
+
+.ketchup-boss-bar {
+    position: relative;
+    height: 24px;
+    margin-top: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 229, 133, 0.9);
+    border-radius: 999px;
+    background: rgba(13, 8, 18, 0.88);
+    box-shadow:
+        inset 0 0 8px rgba(0, 0, 0, 0.75),
+        0 0 18px rgba(255, 204, 0, 0.18);
+}
+
+.ketchup-boss-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #d71920 0%, #ff4b2f 48%, #ffcc00 100%);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.32);
+    transition: width 0.16s ease;
+}
+
+.ketchup-boss-field {
+    flex: 1;
+    width: min(920px, calc(100% - 48px));
+    margin: 0 auto;
+    border: 2px solid rgba(255, 204, 0, 0.28);
+    border-radius: 8px;
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(180deg, #1c1429 0%, #2b1823 58%, #451a1a 100%);
+    background-size: 48px 48px, 48px 48px, auto;
+    box-shadow:
+        inset 0 0 26px rgba(0, 0, 0, 0.55),
+        0 0 20px rgba(0, 0, 0, 0.35);
+}
+
+.ketchup-special-warning {
+    position: absolute;
+    inset: 0;
+    z-index: 12;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.94);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.ketchup-special-warning.is-visible {
+    opacity: 1;
+    transform: scale(1);
+    animation: ketchup-warning-pulse 0.18s steps(2, end) infinite;
+}
+
+.ketchup-special-warning img {
+    position: absolute;
+    width: 360px;
+    max-height: 84%;
+    object-fit: contain;
+    opacity: 0.34;
+    filter:
+        saturate(1.25)
+        drop-shadow(0 0 22px rgba(255, 43, 43, 0.72));
+}
+
+.ketchup-special-warning span {
+    position: relative;
+    padding: 8px 22px;
+    border: 2px solid rgba(255, 209, 102, 0.92);
+    background: rgba(18, 7, 10, 0.72);
+    color: #ffd166;
+    font-family: var(--battle-display-font, 'Righteous', 'Outfit', Arial, sans-serif);
+    font-size: 34px;
+    letter-spacing: 0.12em;
+    text-shadow:
+        0 2px 0 rgba(0, 0, 0, 0.85),
+        0 0 14px rgba(255, 45, 45, 0.88);
+    box-shadow:
+        inset 0 0 18px rgba(255, 45, 45, 0.22),
+        0 0 24px rgba(255, 45, 45, 0.28);
+}
+
+.ketchup-boss-enemy {
+    position: absolute;
+    width: 104px;
+    height: 160px;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    pointer-events: none;
+    filter:
+        drop-shadow(0 10px 12px rgba(0, 0, 0, 0.5))
+        drop-shadow(0 0 12px rgba(255, 204, 0, 0.22));
+}
+
+.ketchup-boss-enemy img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+}
+
+.ketchup-boss-frame {
+    opacity: 1;
+    transition: opacity 0.18s ease-in-out;
+}
+
+.ketchup-boss-frame-next {
+    opacity: 0;
+}
+
+.ketchup-boss-enemy.is-crossfading .ketchup-boss-frame-primary {
+    opacity: 0;
+}
+
+.ketchup-boss-enemy.is-crossfading .ketchup-boss-frame-next {
+    opacity: 1;
+}
+
+.ketchup-boss-enemy.is-hit {
+    animation: ketchup-boss-hit 0.09s ease-out;
+}
+
+.ketchup-enemy-shot {
+    position: absolute;
+    width: var(--shot-size, 34px);
+    height: var(--shot-size, 34px);
+    transform: translate(-50%, -50%);
+    z-index: 7;
+    pointer-events: none;
+    filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.65));
+}
+
+.ketchup-enemy-shot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ketchup-player-hud {
+    width: min(920px, calc(100% - 48px));
+    min-height: 58px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 10px 0 16px;
+    color: #fff;
+    font-family: var(--battle-font, 'Outfit', Arial, Helvetica, sans-serif);
+    z-index: 3;
+}
+
+.ketchup-player-lives {
+    min-width: 112px;
+    font-size: 26px;
+    line-height: 1;
+    letter-spacing: 0.08em;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+}
+
+.ketchup-player-help {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.86);
+    text-align: right;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, 0.72);
+}
+
+.ketchup-boss-minigame .minigame-result {
+    z-index: 20;
+}
+
+@keyframes ketchup-boss-hit {
+    0%, 100% { transform: translate(-50%, -50%); }
+    50% {
+        transform: translate(-50%, -50%) scale(1.05);
+        filter:
+            brightness(1.6)
+            drop-shadow(0 0 16px rgba(255, 45, 45, 0.8));
+    }
+}
+
+@keyframes ketchup-player-hit {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+@keyframes ketchup-warning-pulse {
+    0%, 100% { filter: none; }
+    50% { filter: brightness(1.25); }
 }
 
 .mg-item {

@@ -675,3 +675,34 @@ REORGANIZACIÓN DE ASSETS Y MÚSICA DEL CAPÍTULO 2 — 2026-08-01
 - Todas las escenas del capítulo 2 declaran música al entrar. El motor conserva
   sin reinicio la misma ruta con ID `bg_music`, de modo que hay continuidad en
   el recorrido normal y sonido correcto al saltar directamente a una escena.
+- La versión reciente de `master` del bullet hell de Zip está integrada sobre
+  nuestra progresión de picante: conserva los sprites animados de Samu, las fases
+  flotantes y especiales de Zip, y la pista `zip's-shadow-waltz.mp3`, mientras
+  `chiliPower` y la caja de Neit siguen regulando daño, cadencia y presión enemiga.
+- Los recursos importados de ese minijuego viven en las rutas canónicas
+  `assets/images/characters/{samu,zip}/ketchup/` y `assets/audio/sfx/`; no volver
+  a introducir las rutas antiguas `assets/characters` o `assets/sounds`.
+
+SISTEMA TIPOGRÁFICO EMOCIONAL 2026-08-01
+- El diálogo detecta automáticamente la emoción de la pose activa del hablante y
+  anima cada letra para miedo, agresividad, tristeza, alegría, sorpresa y nervios.
+- Una línea puede forzar el estado con `emotion` (también acepta nombres en español)
+  o desactivarlo con `"emotion": "none"`; `whisper`/`susurro` solo se activa así.
+- Los colores especiales de OMG (naranja), CLos (verde), Incel y Simsong (azul)
+  se conservan dentro de cualquier emoción, y `prefers-reduced-motion` elimina
+  el movimiento sin borrar las señales de color y sombra.
+- La máquina de escribir añade cada grafema al DOM sin reconstruir las letras ya
+  visibles: así sus animaciones no se reinician al aparecer el carácter siguiente.
+- La pose `happy` no anima el texto automáticamente. En una racha del mismo
+  personaje y emoción solo se anima el primer diálogo; `textAnimation` permite
+  forzar o desactivar el efecto desde el JSON en momentos clave.
+- `textAnimation` vale `false` por defecto: si el campo no existe, el diálogo no
+  se anima. `true`/`auto` activa la detección por pose y un nombre como `scream`
+  selecciona directamente un efecto.
+- Los capítulos 0-6 tienen 26 usos curados de `textAnimation: true`, entre 2 y 5
+  por capítulo. Todos resuelven a una emoción válida; el prólogo declara `emotion`
+  porque sus poses `neutral`/`happy` no deben inferir efectos automáticamente.
+- `textAnimation: "scream"` es el efecto estridente de grito: tipografía pesada,
+  sacudidas, escala y sombras cromáticas. Se reserva para momentos excepcionales;
+  su tamaño crece por carácter desde 12px hasta 68px y su primer uso es el grito
+  de Edu cuando la sombra lo atrapa en el capítulo 2.

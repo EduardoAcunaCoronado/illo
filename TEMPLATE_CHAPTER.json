@@ -17,6 +17,7 @@
         {
           "character": "PersonajeName",
           "text": "Diálogo del personaje",
+          "textAnimation": false,
           "actions": [
             {
               "type": "showCharacter",

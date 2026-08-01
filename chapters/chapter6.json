@@ -51,6 +51,7 @@
         {
           "character": "Airi",
           "text": "Lo siento... lo siento mucho... Siento haberos hecho daño. Siguen buscando la forma de encontrarme.",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -233,6 +234,7 @@
         {
           "character": "Airi",
           "text": "Porque pedirle que lo pare todo puede significar... que desaparezca junto con este mundo que he creado.",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -257,6 +259,7 @@
         {
           "character": "Airi",
           "text": "Pero no quiero que mi vida sea esperar al siguiente intento de usarme.",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -506,6 +509,7 @@
         {
           "character": "Airi",
           "text": "¿Qué es un cumpleaños?",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -889,6 +893,7 @@
         {
           "character": "Airi",
           "text": "¿De verdad os quedaríais aquí? ¿Aunque no sepamos cuánto tardarán en volver?",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",

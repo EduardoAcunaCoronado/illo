@@ -576,7 +576,7 @@
         },
         {
           "character": "José",
-          "text": "Porque eres el único dragón azul con una camiseta de Kingdom Hearts.",
+          "text": "Porque eres el único dragón azul con una camiseta de Kingom Souls.",
           "actions": [
             {
               "type": "showCharacter",
@@ -592,7 +592,7 @@
         },
         {
           "character": "Edu",
-          "text": "¡Hostia! No me había dado cuenta para nada.",
+          "text": "¡Hostia! No me había dado cuenta para nada. Ya sabéis que es el único Souls que juego.",
           "actions": [
             {
               "type": "showCharacter",
@@ -642,6 +642,7 @@
         {
           "character": "Samu",
           "text": "¿¡DESDE CUANDO TENÍAS UN PERSONAJE DE ROL!?",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -1214,6 +1215,7 @@
           "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Lo de cantante si pero... ¿Maga Blanca?",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -1409,6 +1411,7 @@
         {
           "character": "José",
           "text": "No lo es.",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",

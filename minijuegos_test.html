@@ -269,7 +269,8 @@
 
         function startMusic(file) {
             if (!musicOn()) return;
-            engine.playSound('assets/audio/music/' + file, { loop: true, id: 'mg_test', volume: 0.5, fadeIn: 300 });
+            const path = file.startsWith('assets/') ? file : 'assets/audio/music/' + file;
+            engine.playSound(path, { loop: true, id: 'mg_test', volume: 0.5, fadeIn: 300 });
         }
         function stopMusic() { try { engine.stopSound('mg_test', 400); } catch (e) {} }
 
@@ -440,6 +441,8 @@
             engine.inventory = opts.neit ? ['caja_guindillas'] : [];
             await engine.playChiliHarvestMinigame({ ...opts, powerGoal: 16, maxSpicePower: 28, boxBonus: 12 });
             document.getElementById('chili-speed-val').textContent = engine.gameState.chiliPower + ' puntos';
+            stopMusic();
+            startMusic("assets/audio/sfx/zip's-shadow-waltz.mp3");
             await engine.playKetchupBossMinigame({ enemyHp: 360, maxHits: opts.maxHits, maxSpicePower: 28 });
             stopMusic();
             resultEl.textContent = '✅ ¡Zip derrotado con ' + engine.gameState.chiliPower + ' puntos de picante!';
