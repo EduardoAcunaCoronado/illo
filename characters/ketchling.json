@@ -1,5 +1,12 @@
 {
   "name": "Ketchling",
+  "aliases": [
+    "Ketchlings",
+    "Ketchling cocinero",
+    "Ketchling de seguridad",
+    "Ketchling embotellador",
+    "Ketchling mecánico"
+  ],
   "color": "#f08a45",
   "poses": {
     "security": "assets/images/characters/ketchling/ketchling_security.png",

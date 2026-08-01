@@ -3567,3 +3567,80 @@ mantienen continuidad y los saltos directos desde el selector nunca quedan en
 silencio. Las nueve pistas activas del capítulo se han validado como MP3 estéreo;
 el registro de audio descarta ahora las pistas detenidas o fallidas de inmediato,
 evitando silencios intermitentes al cambiar rápidamente de música.
+
+### Controles globales, HUD y pausa real (2026-08-01)
+
+- **Clic izquierdo**, **Espacio** o **Intro** completan la escritura en curso o
+  avanzan al diálogo siguiente. Espacio e Intro no actúan durante elecciones,
+  minijuegos ni cinemáticas.
+- **H** o **clic derecho** alternan todo el HUD: botones superiores,
+  indicadores e instrucciones de minijuegos y el cuadro de diálogo. El clic
+  derecho nunca completa ni avanza una línea.
+- **Esc** abre una pausa global durante diálogos y minijuegos. Se congelan el
+  reloj lógico, `setTimeout`, `setInterval`, `requestAnimationFrame`, las
+  animaciones CSS, los elementos multimedia y los contextos Web Audio que
+  estuvieran sonando. Al reanudar, cada recurso continúa desde el mismo punto.
+- Mientras la pausa está abierta, los eventos de teclado, puntero, rueda y
+  toque quedan bloqueados antes de llegar a la partida; solo el panel de pausa
+  conserva interacción. En una cinemática, Esc mantiene su función de saltarla.
+- El retrato de **Neit** tiene un anclaje vertical propio de `28px` hacia abajo,
+  para que apoye visualmente sobre el escenario sin cambiar su escala.
+- Las animaciones emocionales heredan el color legible del personaje que habla.
+  Las marcas OMG, CLos, Incel y Simsong conservan sus colores corporativos dentro
+  de las frases animadas.
+- El nombre CSS `blue` se representa como `#4da3ff`: mantiene un azul saturado y
+  legible sobre el bocadillo oscuro, sin el aclarado lavanda anterior.
+
+### Cursor-retrato del hablante (2026-08-01)
+
+El encabezado del bocadillo incluye `#speaker-cursor`, colocado inmediatamente a
+la derecha del nombre. Su marco original vive en
+`assets/images/ui/dialogue_speaker_cursor.png`; el centro utiliza la imagen de la
+pose activa del personaje o su pose predeterminada cuando habla fuera de plano.
+Durante la escritura, un `dialog-print-anchor` se inserta después de cada grafema:
+el marco sale del encabezado, sigue la punta del texto incluso al cambiar de línea
+y regresa a su hueco fijo en 280 ms cuando termina la frase. Al esperar avance
+cambia a `speaker-cursor-wait`. `prefers-reduced-motion` conserva el retrato en
+su posición de reposo. Los nombres misteriosos sin ficha muestran `?` y nunca
+reutilizan el retrato anterior.
+
+Samu utiliza siempre su retrato furry en el marco. Edu, Tony y José usan sus
+ilustraciones de `characters/humans/` hasta la revelación narrativa de cada
+identidad. Los umbrales son: capítulo 2, escena 15, línea 4 para Edu; capítulo 3,
+escena 13, línea 5 para Tony; y capítulo 4, escena 2, línea 4 para José. Se
+calculan desde capítulo/escena/línea para que también funcionen al entrar desde
+el selector de escenas.
+`speakingAs` solo decide qué elemento del escenario se ilumina: el color y el
+cursor siguen la identidad escrita en `line.character`, de modo que una llamada
+de Edu muestra a Edu y no al teléfono.
+
+El recorte interno utiliza las variables CSS `--cursor-portrait-size` y
+`--cursor-portrait-position`. El zoom general es `100% auto`, dejando margen
+para mostrar completas orejas, pelo, cuernos y sombreros. Paloma,
+Santi en su pose neutral, Tralalero Tralala, Tung Tung Tung Sahur, Gorila y Airi
+adulta tienen encuadres propios porque sus lienzos sitúan la cabeza fuera del
+centro. El cursor copia también `data-pose`, evitando aplicar la corrección
+neutral de Santi a sus demás composiciones. Las versiones humanas conservan un
+recorte independiente al `170%` sobre el primer plano de la derecha. Edu humano
+tiene además un foco vertical propio (`100% 19%`) porque su hoja deja más espacio
+superior y el encuadre compartido situaba su cara demasiado abajo.
+José humano usa `100% 20%` por el mismo motivo, manteniendo su pelo completo y
+centrando los ojos dentro del marco.
+Tung Tung Tung Sahur usa el foco horizontal `80%` para centrar sus ojos y rostro
+sin modificar su zoom de `145%`.
+En el escenario usa una escala exclusiva del `150%` y un desplazamiento vertical
+del `38%`. La compensación mantiene la cabeza dentro del encuadre mientras el
+cuadro de diálogo cubre las piernas, de modo que en conversación se muestra como
+un plano de cintura y no como una figura de cuerpo entero alejada.
+El recurso `assets/images/characters/tung_tung_tung_sahur.png` conserva el cuerpo,
+rostro, capa, brazos y bate completos; el medio plano se obtiene sin recortar el
+PNG, únicamente mediante escala y posición en el motor.
+Micaela Michis utiliza `145%` y `50% 4%` para mostrar el grupo completo y evitar que
+las cabezas queden pegadas al borde superior del marco.
+Su pose `crazy`, cuya cabeza aparece debajo del gato y de los brazos levantados,
+usa un recorte independiente de `130%` y `50% 55%` centrado en su cara.
+
+Las variantes de Ketchling se resuelven mediante alias hacia una sola ficha, y
+las fichas secundarias se precargan al comenzar para evitar cambios tardíos de
+color o retrato. En las marcas de hardware, Incel conserva `#4da3ff` y Simsong
+usa el azul oscuro `#285bc4`, diferenciándose dentro del mismo diálogo.
