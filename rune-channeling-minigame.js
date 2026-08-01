@@ -9,7 +9,7 @@
       name: "Samu",
       role: "Magia",
       color: "#ff4f5f",
-      image: "assets/minigames/runa_samu.png",
+      image: "assets/images/minigames/shared/runes/runa_samu.png",
     },
     {
       id: "edu",
@@ -17,7 +17,7 @@
       name: "Edu",
       role: "Velocidad",
       color: "#4fd0ff",
-      image: "assets/minigames/runa_edu.png",
+      image: "assets/images/minigames/shared/runes/runa_edu.png",
     },
     {
       id: "tony",
@@ -25,7 +25,7 @@
       name: "Seraphyna",
       role: "Sanación",
       color: "#ff69b4",
-      image: "assets/minigames/runa_tony.png",
+      image: "assets/images/minigames/shared/runes/runa_tony.png",
     },
     {
       id: "jose",
@@ -33,7 +33,7 @@
       name: "José",
       role: "Fuerza",
       color: "#7cff8b",
-      image: "assets/minigames/runa_jose.png",
+      image: "assets/images/minigames/shared/runes/runa_jose.png",
     },
   ];
 

@@ -2,8 +2,8 @@
   "name": "Sebas",
   "color": "#9aa0a6",
   "poses": {
-    "neutral": "assets/characters/sebas/sebas.png",
-    "silueta": "assets/characters/sebas/sebas_silueta.png"
+    "neutral": "assets/images/characters/sebas/sebas.png",
+    "silueta": "assets/images/characters/sebas/sebas_silueta.png"
   },
   "defaultPose": "neutral"
 }

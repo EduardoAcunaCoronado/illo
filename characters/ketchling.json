@@ -2,14 +2,14 @@
   "name": "Ketchling",
   "color": "#f08a45",
   "poses": {
-    "security": "assets/generated/chapter2_v2/characters/ketchling_security.png",
-    "cook": "assets/generated/chapter2_v2/characters/ketchling_cook.png",
-    "mechanic": "assets/generated/chapter2_v2/characters/ketchling_mechanic.png",
-    "bottler": "assets/generated/chapter2_v2/characters/ketchling_bottler.png",
-    "neutral": "assets/generated/chapter2_v2/characters/ketchling_security.png",
-    "happy": "assets/generated/chapter2_v2/characters/ketchling_cook.png",
-    "worried": "assets/generated/chapter2_v2/characters/ketchling_mechanic.png",
-    "determined": "assets/generated/chapter2_v2/characters/ketchling_bottler.png"
+    "security": "assets/images/characters/ketchling/ketchling_security.png",
+    "cook": "assets/images/characters/ketchling/ketchling_cook.png",
+    "mechanic": "assets/images/characters/ketchling/ketchling_mechanic.png",
+    "bottler": "assets/images/characters/ketchling/ketchling_bottler.png",
+    "neutral": "assets/images/characters/ketchling/ketchling_security.png",
+    "happy": "assets/images/characters/ketchling/ketchling_cook.png",
+    "worried": "assets/images/characters/ketchling/ketchling_mechanic.png",
+    "determined": "assets/images/characters/ketchling/ketchling_bottler.png"
   },
   "defaultPose": "security"
 }

@@ -269,7 +269,7 @@
 
         function startMusic(file) {
             if (!musicOn()) return;
-            engine.playSound('assets/sounds/music/' + file, { loop: true, id: 'mg_test', volume: 0.5, fadeIn: 300 });
+            engine.playSound('assets/audio/music/' + file, { loop: true, id: 'mg_test', volume: 0.5, fadeIn: 300 });
         }
         function stopMusic() { try { engine.stopSound('mg_test', 400); } catch (e) {} }
 
@@ -311,7 +311,7 @@
             resultEl.textContent = '';
             panel.classList.add('hidden');
             const opts = preset === 'demo' ? RHYTHM.facil : RHYTHM[preset];
-            startMusic('neon_runner.mp3');
+            startMusic('chapter3/neon_runner.mp3');
             // Pasar el audio para que las notas vayan al ritmo de la canción
             const audio = musicOn() ? engine.audioInstances['mg_test'] : null;
             const auto = preset === 'demo' || document.getElementById('tp-auto').checked;
@@ -326,7 +326,7 @@
         async function launchVocal(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('dueto_vocal_echo.mp3');
+            startMusic('minigames/dueto_vocal_echo.mp3');
             const won = await engine.runVocalEchoRound(Object.assign({}, VOCAL[preset]));
             stopMusic();
             resultEl.textContent = won ? '✅ ¡Dúo perfecto!' : '❌ Desafinaste. ¡Inténtalo otra vez!';
@@ -401,7 +401,7 @@
             });
             resultEl.textContent = "";
             panel.classList.add("hidden");
-            startMusic(juego === "chase" ? "persecucion_carretera.mp3" : "vuelo_edu.mp3");
+            startMusic(juego === "chase" ? "chapter3/persecucion_carretera.mp3" : "chapter3/vuelo_edu.mp3");
             if (juego === "chase") await engine.playChaseMinigame(cfg);
             else await engine.playEduVueloMinigame(cfg);
             stopMusic();
@@ -411,7 +411,7 @@
         async function launchChase(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('persecucion_carretera.mp3');
+            startMusic('chapter3/persecucion_carretera.mp3');
             await engine.playChaseMinigame({
                 ...CHASE[preset],
                 debugHitboxes: document.getElementById('tp-side-hitboxes').checked
@@ -423,7 +423,7 @@
         async function launchEduVuelo(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('vuelo_edu.mp3');
+            startMusic('chapter3/vuelo_edu.mp3');
             await engine.playEduVueloMinigame({
                 ...FLY[preset],
                 debugHitboxes: document.getElementById('tp-side-hitboxes').checked
@@ -435,7 +435,7 @@
         async function launchKetchup(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('ketchup.mp3');
+            startMusic('chapter2/ketchup.mp3');
             const opts = KETCHUP[preset];
             // Mostrar la velocidad de la guindilla en el panel (1.5x la velocidad base del preset)
             document.getElementById('chili-speed-val').textContent = (opts.speedMult * 1.5).toFixed(2) + 'x';
@@ -448,7 +448,7 @@
         async function launchRuneChanneling(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic('abriendo_el_sello.mp3');
+            startMusic('chapter4/abriendo_el_sello.mp3');
             const won = await window.RuneChannelingMinigame.play(RUNE_CHANNELING[preset]);
             stopMusic();
             resultEl.textContent = won ? '✅ ¡Poderes equilibrados!' : '❌ Los poderes se descompensaron.';
@@ -462,17 +462,17 @@
         }
 
         const BATTLE_MUSIC = {
-            ballerina_capuchina: 'ballerina_capuchina_battle.mp3',
-            tralalelo_tralala: 'tralalero_theme.mp3',
-            tung_tung_tung_sahur: 'the-wooden-brainrot.mp3',
-            amalgama: 'the-amalgam.mp3',
-            amalgama_final: 'lux-airi.mp3'
+            ballerina_capuchina: 'chapter4/ballerina_capuchina_battle.mp3',
+            tralalelo_tralala: 'chapter5/tralalero_theme.mp3',
+            tung_tung_tung_sahur: 'chapter5/the-wooden-brainrot.mp3',
+            amalgama: 'chapter5/the-amalgam.mp3',
+            amalgama_final: 'chapter5/lux-airi.mp3'
         };
 
         async function launchBattle(enemy) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            startMusic(BATTLE_MUSIC[enemy] || 'brainrot_theme.mp3');
+            startMusic(BATTLE_MUSIC[enemy] || 'shared/brainrot_theme.mp3');
             const options = { game: 'battle', enemy, debugStats: battleDebugStatsOn() };
             const enemyHp = getBattleHp(enemy);
             if (enemyHp) options.enemyHp = enemyHp;
@@ -494,7 +494,7 @@
             resultEl.textContent = '';
             panel.classList.add('hidden');
             await engine.playFurrielvaExploreMinigame({
-                background: 'assets/generated/chapter2_v2/backgrounds/mapa_furrielva_furry_maps_v2_4k.png'
+                background: 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png'
             });
             resultEl.textContent = '✅ Ruta a Kingdom Ketchup localizada.';
             panel.classList.remove('hidden');

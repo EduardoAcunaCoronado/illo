@@ -419,7 +419,7 @@ SISTEMA DE COMBATE
 PRESENTACIÓN
 - Arranque desde 2026-07-31: disclaimer obligatorio a pantalla completa. El
   usuario pulsa “Entrar con sonido”, lo que desbloquea el audio del navegador y
-  reproduce assets/videos/opening_samu.mp4 (80,704 s, 1920x1080, H.264 + AAC).
+  reproduce assets/video/cutscenes/prologue/opening_samu.mp4 (80,704 s, 1920x1080, H.264 + AAC).
   El vídeo puede terminar o saltarse con su botón; después funde al menú, activa
   menu_loop.mp4 y lanza el tema. Menú y vídeo de fondo permanecen ocultos e
   inertes antes del gesto. El volumen del opening respeta illo_vol_music. En la
@@ -431,7 +431,7 @@ PRESENTACIÓN
   illo_vol_music estaba exactamente a 0, «Entrar con sonido» lo restaura al
   70 % y lo persiste; cualquier volumen audible previo se conserva.
 - El fondo del menú es un bucle H.264 4K de 10 s, 48 FPS y 480 frames en
-  assets/videos/menu_loop.mp4. Conserva íntegros los 240 frames 4K originales e
+  assets/video/menu/menu_loop.mp4. Conserva íntegros los 240 frames 4K originales e
   inserta entre ellos frames de movimiento con RIFE v4.6 (UHD + TTA temporal).
   También interpola la transición del último frame al primero para cerrar el
   bucle sin duplicados. La geometría, el oleaje, los neones, las siluetas, la
@@ -452,14 +452,15 @@ PRESENTACIÓN
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
 - Los 24 planos del concierto tienen una restauración no destructiva 4K en
-  assets/cutscenes/nuevos_frames_4k/: PNG RGB de 3840×2160 con caras, manos,
+  assets/cutscenes/chapter3/opening_samu_sources/frames_4k/: PNG RGB de 3840×2160 con caras, manos,
   anatomía del público, enemigos, vallas y escenario reconstruidos. Samu, Edu
   y el gorila siguen su arte canónico; los primeros planos de Seraphyna fijan
   su identidad. frame_11_embobados.png aplica además a Samu el patrón cromático
-  exacto de assets/characters/samu/Samu.png. Los originales de nuevos_frames/
+  exacto de assets/images/characters/samu/Samu.png. Los originales de nuevos_frames/
   y nuevos_frames_x2/ no se modificaron.
 - El opening del concierto se recompuso con esos planos en
-  assets/cutscenes/opening_tony_4k.mp4: H.264 3840×2160, 30 FPS, 117,6 s,
+  assets/cutscenes/chapter3/opening_tony/opening_tony.mp4: H.264 3840×2160,
+  30 FPS, 117,6 s,
   audio AAC original y montaje con zooms, fundidos, fogonazos y pausa negra
   final. opening_tony.mp4 (720p) permanece intacto; la entrega 4K ocupa menos
   de 100 MB para poder versionarse y usarse en el juego.
@@ -491,22 +492,23 @@ REGLAS PARA CAMBIOS FUTUROS
 - Samu, en su forma furry, va descalzo: las descripciones deben hablar de sus
   patas y no atribuirle zapatillas, zapatos u otro calzado.
 - El fondo activo de la plaza de Furrielva es
-  `assets/backgrounds/iglesia_furrielva_v2_4k.png` (3840x2160). Mantiene la
+  `assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png` (3840x2160). Mantiene la
   iglesia, mercado, fuente y reparto animal del original; no volver a enlazar
   `iglesia.png` como fondo principal del capítulo 2.
 - La investigación de Furrielva usa un móvil horizontal ficticio con **Furry
   Maps**. El mapa activo es
-  `assets/generated/chapter2_v2/backgrounds/mapa_furrielva_furry_maps_v2_4k.png`:
+  `assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png`:
   la Iglesia del Rocío ocupa el centro y los distritos de plaza, comercios,
   callejón y fábrica quedan alrededor. Interfaz, textos y zonas se dibujan con
   HTML/CSS; no deben hornearse dentro del PNG. No usar iconos ni rutas fijas:
   Samu presenta las tres zonas con un tour resaltado y después cada región real
   del mapa crece al hover/foco. El trayecto discontinuo solo aparece después de
   confirmar un destino.
-- En Furry Maps, un Samu diminuto camina desde la Iglesia del Rocío usando
-  `assets/characters/samu/ketchup/1.png` a `4.png` (sprites traídos de
+- En Furry Maps, un Samu diminuto parte de la Iglesia del Rocío solamente en el
+  primer trayecto; las rutas siguientes empiezan en la última zona visitada.
+  Camina usando `assets/images/characters/samu/ketchup/1.png` a `4.png` (sprites traídos de
   `origin/feature/nuevo-minijuego-ketchup`) y celebra al llegar. Cada destino
-  abre un fondo 4K de `assets/generated/chapter2_v2/locations/` y un informante:
+  abre un fondo 4K de `assets/images/backgrounds/chapter2/furrielva/` y un informante:
   Tadeo Trufa/plaza, Lía Lince/comercios y Rulo Mapache/callejón. Cada elección
   concede la pista obligatoria y lore opcional diferente. Las visitas son
   conversaciones completas: el NPC se queja o trabaja en voz alta, Samu se
@@ -514,7 +516,7 @@ REGLAS PARA CAMBIOS FUTUROS
   Samu no sabe nada del tapón dorado durante Furry Maps; lo aprende después del
   guardia. Los retratos transparentes individuales son `tadeo_trufa_v1.png`,
   `lia_lince_v1.png` y `rulo_mapache_v1.png` dentro de
-  `assets/generated/chapter2_v2/characters/`. Los nombres de hablante mantienen
+  `assets/images/characters/furrielva/`. Los nombres de hablante mantienen
   su identidad cromática también dentro del minijuego: Samu rojo, Tadeo
   naranja, Lía violeta y Rulo azul verdoso; los avisos de sistema son turquesa.
 - Kingdom Ketchup debe quedar visualmente oculta por una interferencia
@@ -530,19 +532,29 @@ REGLAS PARA CAMBIOS FUTUROS
   El portal no sale de la botella que Samu sostiene: una botella gigantesca de
   luz aparece de la nada en el pasillo y su cristal se abre hacia la fábrica.
 - El fondo activo de los pasillos Ketchup/Catsup es
-  `assets/backgrounds/kingdom_ketchup_pasillos_v2_4k.png` (3840x2160). Todas
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png` (3840x2160). Todas
   las botellas deben seguir el diseño ficticio de cuerpo alto, tapón-corona
   dorado y etiqueta crema con corona y tomate; no recuperar siluetas, tapones
   blancos ni etiquetas que recuerden a Heinz u otra marca real.
 - El fondo activo de la zona de Neit y sus cajas es
-  `assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png` (3840x2160).
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png` (3840x2160).
   Mantener las guindillas y algunas latas con el emblema ficticio porque las
   menciona el diálogo; todas las botellas deben usar el tapón-corona canónico y
   no debe haber marcas reales ni texto de producto inventado.
-- Kingdom Ketchup v2 tiene un paquete visual integrado en
-  assets/generated/chapter2_v2/. Incluye fondos/CG 4K, tres poses deformadas
-  de Edu.zip, cuatro oficios Ketchling y objetos de minijuego. manifest.json
-  documenta el uso. Los Ketchlings miden canónicamente unos 40 cm y emplean
+- La introducción activa de la sala del trono es
+  `assets/video/cutscenes/chapter2/intro_sala_del_trono_kk_4k.mp4`: H.264 3840x2160, 24 FPS,
+  240 frames y 10 s, con audio AAC. Es el montaje generado en Google Flow y
+  ampliado desde 1920x1080 mediante Real-ESRGAN `realesr-animevideov3` x2. Para
+  evitar un acabado demasiado dibujado se mezcla un 72 % de detalle neuronal
+  con un 28 % del original ampliado por Lanczos. Conserva textos, arquitectura,
+  fuego, vapor, reflejos, guindillas, gotas, salpicaduras y movimiento originales.
+  `scripts/rebuild_intro_sala_trono_kk.py` es una alternativa editable, no la
+  fuente del vídeo activo actual.
+- Kingdom Ketchup v2 tiene su paquete visual integrado en las categorías
+  canónicas de assets/images/: fondos de chapter2, CG, personajes y minijuegos.
+  `assets/metadata/chapter2_v2_manifest.json` documenta el uso. Incluye fondos
+  y CG 4K, tres poses deformadas de Edu.zip, cuatro oficios Ketchling y objetos
+  de minijuego. Los Ketchlings miden canónicamente unos 40 cm y emplean
   paleta tomate rojo, crema, verde hoja, mostaza y carbón. El emblema comercial
   es corona + tomate, sin marca real ni texto incrustado.
 - Flujo narrativo implementado tras la grabación de José Manuel de las 23:10:
@@ -602,7 +614,7 @@ CORRECCIÓN 2026-07-31
 - Al volver al menú principal desde una partida, hay que usar
   `setMainMenuVisible(true)`: quitar solamente la clase `hidden` deja el atributo
   `inert` activo e impide pulsar las opciones del menú.
-- El fondo `assets/backgrounds/bathroom.png` mantiene su orientación jugable y el
+- El fondo `assets/images/backgrounds/chapter1/bathroom.png` mantiene su orientación jugable y el
   reflejo del diseño vigente de Samu, con el estilo anime y la iluminación cálida
   del fotograma 7 del opening. Su espejo izquierdo está corregido para que marco,
   perspectiva y reflejo sean coherentes; el espejo derecho queda completamente
@@ -613,3 +625,22 @@ CORRECCIÓN 2026-07-31
   azul, Tony en rosa y José en verde. Los PNG heredados `iphone5_edu.png`,
   `iphone5_tony.png` e `iphone5_jose.png` se conservan solo como recursos antiguos
   y no deben volver a enlazarse como poses principales.
+
+REORGANIZACIÓN DE ASSETS Y MÚSICA DEL CAPÍTULO 2 — 2026-08-01
+- Las familias canónicas son `assets/audio`, `assets/images`, `assets/video`,
+  `assets/cutscenes`, `assets/fonts` y `assets/metadata`. No introducir nuevas
+  rutas bajo los antiguos prefijos sounds, backgrounds, characters, minigames,
+  ui, videos o generated.
+- Música se ordena por capítulo o función bajo `assets/audio/music/`; efectos
+  están en `assets/audio/sfx/`. Fondos y minijuegos se agrupan por capítulo.
+  Los archivos no conectados se conservan bajo `legacy/` y no son rutas activas.
+- `huelva.mp3` ya no se reproduce y se conserva como
+  `assets/audio/music/legacy/huelva_original.mp3`.
+- Mapa musical del capítulo 2: escena 1 = `furrielva_despierta`; escenas
+  1B/1C/1D = `el_rastro_del_tapon`; escenas 1.5/2/3/4 =
+  `tres_rutas_por_furrielva`; escenas 4.5/4.6 = `el_tapon_dorado`; escenas 5–9
+  mantienen `kingdomketchup` con los cambios de Zip y el combate; escena 10 =
+  `de_vuelta_en_furrielva`.
+- Todas las escenas del capítulo 2 declaran música al entrar. El motor conserva
+  sin reinicio la misma ruta con ID `bg_music`, de modo que hay continuidad en
+  el recorrido normal y sonido correcto al saltar directamente a una escena.

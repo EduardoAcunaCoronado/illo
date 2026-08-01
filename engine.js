@@ -518,22 +518,28 @@ class VisualNovelEngine {
 
     // Investigación narrativa de Furrielva. Furry Maps presenta las zonas como
     // áreas reales del mapa: Samu las introduce, el jugador confirma cada ruta
-    // y un Samu diminuto recorre el trayecto antes de entrar en cada escenario.
+    // y un Samu diminuto recorre el trayecto desde su última ubicación. Solo el
+    // primer desplazamiento parte de la Iglesia del Rocío.
     playFurrielvaExploreMinigame(options = {}) {
         this.isWaitingForInput = false;
         const background = options.background ||
-            'assets/generated/chapter2_v2/backgrounds/mapa_furrielva_furry_maps_v2_4k.png';
-        const samuPortrait = 'assets/characters/samu/samu_thinking.png';
+            'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png';
+        const samuPortrait = 'assets/images/characters/samu/samu_thinking.png';
         const samuFrames = [1, 2, 3, 4, 5, 7].map(n =>
-            `assets/characters/samu/ketchup/${n}.png`);
+            `assets/images/characters/samu/ketchup/${n}.png`);
+        const church = {
+            id: 'iglesia',
+            label: 'Iglesia del Rocío',
+            destination: [50, 55.2]
+        };
         const locations = [
             {
                 id: 'plaza', label: 'Plaza del Rocío', area: 'zone-plaza',
                 route: 'M500 276 C420 230 340 155 220 135', destination: [22, 27],
-                background: 'assets/generated/chapter2_v2/locations/furrielva_plaza_investigacion_v1_4k.webp',
+                background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_plaza_investigacion_v1_4k.webp',
                 npc: 'TADEO TRUFA',
                 color: '#e98245',
-                portrait: 'assets/generated/chapter2_v2/characters/tadeo_trufa_v1.png',
+                portrait: 'assets/images/characters/furrielva/tadeo_trufa_v1.png',
                 opening: [
                     { speaker: 'TADEO TRUFA', text: 'Genial... otra entrega tarde. Como vuelvan a cortarme la avenida esos camiones rojos, el jefe me descuenta el viaje.' },
                     { speaker: 'SAMU', text: 'Perdona, no quería meterme, pero ¿has dicho camiones rojos? Me he encontrado esta botella. ¿Reconoces la etiqueta de Kingdom Ketchup?' },
@@ -563,10 +569,10 @@ class VisualNovelEngine {
             {
                 id: 'comercio', label: 'Zona comercial', area: 'zone-commerce',
                 route: 'M500 276 C430 330 350 375 245 360', destination: [25, 72],
-                background: 'assets/generated/chapter2_v2/locations/furrielva_zona_comercial_v1_4k.webp',
+                background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_zona_comercial_v1_4k.webp',
                 npc: 'LÍA LINCE',
                 color: '#c878dc',
-                portrait: 'assets/generated/chapter2_v2/characters/lia_lince_v1.png',
+                portrait: 'assets/images/characters/furrielva/lia_lince_v1.png',
                 opening: [
                     { speaker: 'LÍA LINCE', text: 'Fantástico. Seis cajas que nadie ha pedido, un proveedor sin dirección y una promoción que no existe. ¿Dónde se supone que meto yo todo esto?' },
                     { speaker: 'SAMU', text: 'Eh... perdona. No quería escuchar, pero ¿has dicho que el proveedor no tiene dirección?' },
@@ -598,10 +604,10 @@ class VisualNovelEngine {
             {
                 id: 'callejon', label: 'Callejón de servicio', area: 'zone-alley',
                 route: 'M500 276 C565 215 635 150 730 135', destination: [73, 27],
-                background: 'assets/generated/chapter2_v2/locations/furrielva_callejon_tuberias_v1_4k.webp',
+                background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_callejon_tuberias_v1_4k.webp',
                 npc: 'RULO MAPACHE',
                 color: '#55b9c8',
-                portrait: 'assets/generated/chapter2_v2/characters/rulo_mapache_v1.png',
+                portrait: 'assets/images/characters/furrielva/rulo_mapache_v1.png',
                 opening: [
                     { speaker: 'RULO MAPACHE', text: 'Presión en la línea siete, calor en la acometida... y el plano insiste en que aquí no hay ninguna nave. Claro que sí, plano. Lo que tú digas.' },
                     { speaker: 'SAMU', text: 'Perdona... ¿estás discutiendo con un mapa?' },
@@ -681,6 +687,7 @@ class VisualNovelEngine {
 
             const visited = new Set();
             const lore = [];
+            let currentLocation = church;
             const map = overlay.querySelector('.furrielva-map');
             const card = overlay.querySelector('.furrielva-card');
             const counter = overlay.querySelector('.furrielva-counter');
@@ -763,6 +770,7 @@ class VisualNovelEngine {
 
                 const returnToMap = () => {
                     visited.add(location.id);
+                    currentLocation = location;
                     const zone = zoneButton(location.id);
                     zone.classList.add('is-found');
                     zone.disabled = true;
@@ -813,13 +821,45 @@ class VisualNovelEngine {
                 showDialogue(location.opening, showChoices);
             };
 
+            const routeBetween = (from, to) => {
+                // Las tres rutas iniciales están dibujadas a mano para encajar
+                // con las calles que salen de la iglesia. A partir de la primera
+                // visita se construye una curva entre los centros reales de las
+                // dos zonas, en las coordenadas 1000x500 del SVG.
+                if (!from || from.id === church.id) return to.route;
+                const [fromXPercent, fromYPercent] = from.destination;
+                const [toXPercent, toYPercent] = to.destination;
+                const startX = fromXPercent * 10;
+                const startY = fromYPercent * 5;
+                const endX = toXPercent * 10;
+                const endY = toYPercent * 5;
+                const deltaX = endX - startX;
+                const deltaY = endY - startY;
+                const distance = Math.max(1, Math.hypot(deltaX, deltaY));
+                const side = from.id.localeCompare(to.id) < 0 ? 1 : -1;
+                const bend = Math.min(70, Math.max(28, distance * .14)) * side;
+                const normalX = -deltaY / distance;
+                const normalY = deltaX / distance;
+                const point = value => Math.round(value * 10) / 10;
+                const control1X = startX + deltaX * .33 + normalX * bend;
+                const control1Y = startY + deltaY * .33 + normalY * bend;
+                const control2X = startX + deltaX * .67 + normalX * bend;
+                const control2Y = startY + deltaY * .67 + normalY * bend;
+                return `M${point(startX)} ${point(startY)} C${point(control1X)} ${point(control1Y)} ${point(control2X)} ${point(control2Y)} ${point(endX)} ${point(endY)}`;
+            };
+
             const animateRoute = location => {
                 confirm.hidden = true;
-                routePath.setAttribute('d', location.route);
+                const departure = currentLocation;
+                routePath.setAttribute('d', routeBetween(departure, location));
                 routeSvg.classList.add('is-active');
+                const length = routePath.getTotalLength();
+                const startPoint = routePath.getPointAtLength(0);
+                miniSamu.style.left = `${startPoint.x / 10}%`;
+                miniSamu.style.top = `${startPoint.y / 5}%`;
                 miniSamu.classList.add('is-walking');
                 miniSamu.hidden = false;
-                const length = routePath.getTotalLength();
+                card.textContent = `Ruta: ${departure.label} → ${location.label}`;
                 const duration = 2600;
                 const started = performance.now();
                 let currentFrame = -1;
@@ -852,7 +892,7 @@ class VisualNovelEngine {
 
             const askForRoute = location => {
                 pendingLocation = location;
-                confirm.querySelector('p').textContent = `La ruta partirá desde la Iglesia del Rocío hasta ${location.label}.`;
+                confirm.querySelector('p').textContent = `La ruta partirá desde ${currentLocation.label} hasta ${location.label}.`;
                 confirm.hidden = false;
                 confirm.querySelector('[data-confirm="yes"]').focus();
             };
@@ -1009,17 +1049,17 @@ class VisualNovelEngine {
         const showExtraInfo = options.showExtraInfo || false; // mostrar info de debug/test
         const phase1Goal = Math.min(goal - 2, options.phase1Goal || Math.ceil(goal * 0.3));
         const phase2Goal = Math.min(goal - 1, options.phase2Goal || Math.ceil(goal * 0.68));
-        const ketchupIcon = this.cacheBustAsset('assets/generated/chapter2_v2/minigame/kingdom_ketchup_bottle_gold.png');
-        const corruptIcon = this.cacheBustAsset('assets/generated/chapter2_v2/minigame/kingdom_ketchup_bottle_corrupted.png');
-        const capIcon = this.cacheBustAsset('assets/generated/chapter2_v2/minigame/golden_cap.png');
-        const chiliIcon = this.cacheBustAsset('assets/generated/chapter2_v2/minigame/chili_v2.png');
+        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
+        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png');
+        const capIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/golden_cap.png');
+        const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.png');
         this.preloadImages([
-            'assets/generated/chapter2_v2/minigame/kingdom_ketchup_bottle_gold.png',
-            'assets/generated/chapter2_v2/minigame/kingdom_ketchup_bottle_corrupted.png',
-            'assets/generated/chapter2_v2/minigame/golden_cap.png',
-            'assets/generated/chapter2_v2/minigame/chili_v2.png',
-            'assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_production_floor_corrupted_v2_4k.png',
-            'assets/minigames/samu_player.png'
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png',
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png',
+            'assets/images/minigames/chapter2/ketchup/golden_cap.png',
+            'assets/images/minigames/chapter2/ketchup/chili_v2.png',
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png',
+            'assets/images/minigames/chapter2/common/samu_player.png'
         ]);
         const musicTrack = options.music;
 
@@ -1044,8 +1084,8 @@ class VisualNovelEngine {
                     <span class="mg-lives">❤️ ${maxHits}</span>
                     ${showExtraInfo ? `<span class="mg-extra-info" style="margin-left:20px; font-size:0.8em; color:#ffb4b4">🌶️ Vel: ${(speedMult * 1.5).toFixed(2)}x</span>` : ''}
                 </div>
-                <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${this.cacheBustAsset('assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_production_floor_corrupted_v2_4k.png')}')">
-                    <div class="mg-player" id="mg-player"><img src="${this.cacheBustAsset('assets/minigames/samu_player.png')}" alt="Samu" draggable="false"></div>
+                <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${this.cacheBustAsset('assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png')}')">
+                    <div class="mg-player" id="mg-player"><img src="${this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.png')}" alt="Samu" draggable="false"></div>
                     <div class="mg-phase-banner">Reactiva la línea de embotellado</div>
                 </div>
                 <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge producto limpio y tapones; esquiva corrupción y guindillas.</div>
@@ -1355,7 +1395,7 @@ class VisualNovelEngine {
     runGatosRound(options = {}) {
         const surviveMs = (options.survive || 60) * 1000; // tiempo a aguantar
         const catCount = options.cats || 3;               // nº de gatos perseguidores
-        const catIcon = this.cacheBustAsset('assets/minigames/gato.png');
+        const catIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/gato.png');
         // Velocidades en CELDAS por segundo. Samu debe ir más rápido que los
         // gatos para poder escapar por las calles.
         const playerSpeed = options.playerSpeed || 5.0;
@@ -1382,7 +1422,7 @@ class VisualNovelEngine {
                 </div>
                 <div class="minigame-field" id="mg-field-gatos">
                     <div class="mg-maze" id="mg-maze"></div>
-                    <div class="mg-player" id="mg-player-gatos"><img src="${this.cacheBustAsset('assets/minigames/samu_player.png')}" alt="Samu" draggable="false"></div>
+                    <div class="mg-player" id="mg-player-gatos"><img src="${this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.png')}" alt="Samu" draggable="false"></div>
                 </div>
                 <div class="minigame-instructions">¡Recorre las calles con ← ↑ → ↓ (o WASD) y aguanta sin que te pillen los gatos!</div>
             `;
@@ -1450,9 +1490,9 @@ class VisualNovelEngine {
                 { c: Math.floor(cols / 2), r: 1 }, { c: Math.floor(cols / 2), r: rows - 2 }
             ].map(p => snapStreet(p.c, p.r));
             const catImages = [
-                this.cacheBustAsset('assets/minigames/me-perdonas.png'),
-                this.cacheBustAsset('assets/minigames/te-perdono.png'),
-                this.cacheBustAsset('assets/minigames/no-te-perdono.png')
+                this.cacheBustAsset('assets/images/minigames/shared/choices/me-perdonas.png'),
+                this.cacheBustAsset('assets/images/minigames/shared/choices/te-perdono.png'),
+                this.cacheBustAsset('assets/images/minigames/shared/choices/no-te-perdono.png')
             ];
             const cats = [];
             for (let i = 0; i < catCount; i++) {
@@ -1950,10 +1990,10 @@ class VisualNovelEngine {
         const flashMs = options.flashMs || 600;
         const gapMs = options.gapMs || 250;
         const runas = [
-            { image: 'assets/minigames/runa_samu.png', label: 'Magia de Samu' },
-            { image: 'assets/minigames/runa_edu.png', label: 'Prisa de Edu' },
-            { image: 'assets/minigames/runa_tony.png', label: 'Purificación de Seraphyna' },
-            { image: 'assets/minigames/runa_jose.png', label: 'Fuerza de José' }
+            { image: 'assets/images/minigames/shared/runes/runa_samu.png', label: 'Magia de Samu' },
+            { image: 'assets/images/minigames/shared/runes/runa_edu.png', label: 'Prisa de Edu' },
+            { image: 'assets/images/minigames/shared/runes/runa_tony.png', label: 'Purificación de Seraphyna' },
+            { image: 'assets/images/minigames/shared/runes/runa_jose.png', label: 'Fuerza de José' }
         ];
 
         this.isWaitingForInput = false;
@@ -2289,7 +2329,7 @@ class VisualNovelEngine {
         const sfxVol = options.sfxVolume !== undefined ? options.sfxVolume : 1;
 
         // Avatar (Samu) que reacciona a cada acierto/fallo. Las rutas salen de la
-        // FICHA del personaje (poses), que viven en assets/characters/<key>/...
+        // FICHA del personaje (poses), que viven en assets/images/characters/<key>/...
         // (antes se construían sin la subcarpeta -> 404 en bucle y avatar vacío).
         // Se cache-bustean UNA sola vez aquí, no en cada cambio, para no
         // redescargar ni disparar 404 repetidos.
@@ -2298,10 +2338,10 @@ class VisualNovelEngine {
         const aPose = (name, fallback) =>
             this.cacheBustAsset((avatarChar.poses && avatarChar.poses[name]) || fallback);
         const avatarPoses = {
-            idle:    aPose('neutral',    `assets/characters/${avatarKey}/${avatarKey}.png`),
-            perfect: aPose('happy',      `assets/characters/${avatarKey}/${avatarKey}_happy.png`),
-            good:    aPose('determined', `assets/characters/${avatarKey}/${avatarKey}_determined.png`),
-            miss:    aPose('worried',    `assets/characters/${avatarKey}/${avatarKey}_worried.png`)
+            idle:    aPose('neutral',    `assets/images/characters/${avatarKey}/${avatarKey}.png`),
+            perfect: aPose('happy',      `assets/images/characters/${avatarKey}/${avatarKey}_happy.png`),
+            good:    aPose('determined', `assets/images/characters/${avatarKey}/${avatarKey}_determined.png`),
+            miss:    aPose('worried',    `assets/images/characters/${avatarKey}/${avatarKey}_worried.png`)
         };
 
         // Teclas por carril según número de carriles
@@ -2972,8 +3012,8 @@ class VisualNovelEngine {
     // partida ni genera una pared sin salida.
     async runEduFlight(cfg = {}) {
         this.isWaitingForInput = false;
-        const SP = 'assets/minigames/cap3/sprites/';
-        const CAP = 'assets/minigames/cap3/';
+        const SP = 'assets/images/minigames/chapter3/sprites/';
+        const CAP = 'assets/images/minigames/chapter3/';
         const FLIGHT_FRAMES = [
             'edu_fly_v3_0',
             'edu_fly_v3_1',
@@ -4022,8 +4062,8 @@ class VisualNovelEngine {
     // Motor común de los side-scrollers. Devuelve Promise<boolean> (ganado).
     async runSideScroller(cfg) {
         this.isWaitingForInput = false;
-        const SP = 'assets/minigames/cap3/sprites/';
-        const CAP = 'assets/minigames/cap3/';
+        const SP = 'assets/images/minigames/chapter3/sprites/';
+        const CAP = 'assets/images/minigames/chapter3/';
         const url = (n, base = SP) => `url('${this.cacheBustAsset(base + n + '.png')}')`;
         const spriteNames = (entry) => {
             if (typeof entry === 'string') return [entry];
@@ -5238,7 +5278,7 @@ class VisualNovelEngine {
         const now = Date.now();
         if (now - (this._lastCharacterGlitchSoundAt || 0) < 160) return;
         this._lastCharacterGlitchSoundAt = now;
-        this.playSound('assets/sounds/effects/sfx_estatica.mp3', { volume: 0.72 });
+        this.playSound('assets/audio/sfx/sfx_estatica.mp3', { volume: 0.72 });
     }
 
     triggerCharacterGlitch(characterName, position, duration = 1350) {

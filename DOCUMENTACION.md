@@ -156,11 +156,11 @@ proyecto-visual-novel/
   "name": "Mi Personaje",
   "color": "#ff0000",
   "poses": {
-    "neutral": "assets/characters/miPersonaje.png",
-    "happy": "assets/characters/miPersonaje_happy.png",
-    "sad": "assets/characters/miPersonaje_sad.png",
-    "angry": "assets/characters/miPersonaje_angry.png",
-    "surprised": "assets/characters/miPersonaje_surprised.png"
+    "neutral": "assets/images/characters/miPersonaje.png",
+    "happy": "assets/images/characters/miPersonaje_happy.png",
+    "sad": "assets/images/characters/miPersonaje_sad.png",
+    "angry": "assets/images/characters/miPersonaje_angry.png",
+    "surprised": "assets/images/characters/miPersonaje_surprised.png"
   },
   "defaultPose": "neutral"
 }
@@ -189,7 +189,7 @@ proyecto-visual-novel/
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/cafe.png"
+              "value": "assets/images/backgrounds/shared/cafe.png"
             },
             {
               "type": "showCharacter",
@@ -305,7 +305,7 @@ Cambia el fondo de la escena.
 ```json
 {
   "type": "setBackground",
-  "value": "assets/backgrounds/cafe.png"
+  "value": "assets/images/backgrounds/shared/cafe.png"
 }
 ```
 
@@ -390,7 +390,7 @@ Ejemplo con espera:
     { "type": "hideDialog" },
     {
       "type": "setBackground",
-      "value": "assets/backgrounds/despertar_samu.png"
+      "value": "assets/images/backgrounds/chapter4/despertar_samu.png"
     },
     { "type": "wait", "value": 2500 }
   ]
@@ -406,7 +406,7 @@ Si quieres mantener la pantalla limpia hasta que el jugador haga click, usa
     { "type": "hideDialog" },
     {
       "type": "setBackground",
-      "value": "assets/backgrounds/despertar_samu.png"
+      "value": "assets/images/backgrounds/chapter4/despertar_samu.png"
     },
     { "type": "waitForClick" }
   ]
@@ -422,7 +422,7 @@ Reproduce un archivo de audio con opciones avanzadas.
 ```json
 {
   "type": "playSound",
-  "value": "assets/sounds/bell.mp3"
+  "value": "assets/audio/bell.mp3"
 }
 ```
 
@@ -431,7 +431,7 @@ Reproduce un archivo de audio con opciones avanzadas.
 ```json
 {
   "type": "playSound",
-  "path": "assets/sounds/music.mp3",
+  "path": "assets/audio/music.mp3",
   "volume": 0.8,
   "loop": true
 }
@@ -451,7 +451,7 @@ Música de fondo (baja, en bucle):
 ```json
 {
   "type": "playSound",
-  "path": "assets/sounds/ambient.mp3",
+  "path": "assets/audio/ambient.mp3",
   "volume": 0.5,
   "loop": true
 }
@@ -462,7 +462,7 @@ Efecto de sonido (volumen máximo):
 ```json
 {
   "type": "playSound",
-  "path": "assets/sounds/sword.mp3",
+  "path": "assets/audio/sword.mp3",
   "volume": 1.0
 }
 ```
@@ -472,7 +472,7 @@ Sonido silencioso:
 ```json
 {
   "type": "playSound",
-  "path": "assets/sounds/whisper.mp3",
+  "path": "assets/audio/whisper.mp3",
   "volume": 0.3
 }
 ```
@@ -902,9 +902,9 @@ energía a `8/7/6`, eleva el coste del dash a `50/55/60` y acorta su duración a
 siendo una herramienta decisiva, pero ya no permite atravesar casi todos los
 patrones sin administrar la energía.
 
-Los assets del escenario siguen en `assets/minigames/cap3/`:
+Los assets del escenario siguen en `assets/images/minigames/chapter3/`:
 `aire_fondo_v2.png` y `cables_aire_sheet_v2.png`. Edu usa la revisión V3,
-construida a partir del modelo canónico de `assets/characters/edu/`: la hoja
+construida a partir del modelo canónico de `assets/images/characters/edu/`: la hoja
 `edu_volando_sheet_v3.png` contiene ocho poses de vuelo y
 `edu_volando_dash_sheet_v3.png` contiene dos poses específicas de impulso.
 Dentro de `sprites/` están los ocho `edu_fly_v3_0.png`…
@@ -1139,11 +1139,11 @@ Cada personaje puede tener:
   "name": "Luna",
   "color": "#ff69b4",
   "poses": {
-    "neutral": "assets/characters/luna.png",
-    "happy": "assets/characters/luna_happy.png",
-    "sad": "assets/characters/luna_sad.png",
-    "angry": "assets/characters/luna_angry.png",
-    "surprised": "assets/characters/luna_surprised.png"
+    "neutral": "assets/images/characters/luna.png",
+    "happy": "assets/images/characters/luna_happy.png",
+    "sad": "assets/images/characters/luna_sad.png",
+    "angry": "assets/images/characters/luna_angry.png",
+    "surprised": "assets/images/characters/luna_surprised.png"
   },
   "defaultPose": "neutral"
 }
@@ -1197,7 +1197,7 @@ Cada personaje puede tener:
 
 ### Estructura de Carpetas
 
-Coloca tus archivos de audio en `assets/sounds/`:
+Coloca tus archivos de audio en `assets/audio/`:
 
 ```
 assets/
@@ -1230,7 +1230,7 @@ Usa archivos de audio comunes:
 ```json
 {
   "type": "playSound",
-  "value": "assets/sounds/effects/bell.mp3"
+  "value": "assets/audio/sfx/bell.mp3"
 }
 ```
 
@@ -1239,7 +1239,7 @@ Usa archivos de audio comunes:
 ```json
 {
   "type": "playSound",
-  "path": "assets/sounds/music/ambient.mp3",
+  "path": "assets/audio/music/ambient.mp3",
   "volume": 0.5,
   "loop": true
 }
@@ -1250,7 +1250,7 @@ Usa archivos de audio comunes:
 ```json
 {
   "type": "playSound",
-  "path": "assets/sounds/effects/sword.mp3",
+  "path": "assets/audio/sfx/sword.mp3",
   "volume": 1.0
 }
 ```
@@ -1260,7 +1260,7 @@ Usa archivos de audio comunes:
 ```json
 {
   "type": "playSound",
-  "path": "assets/sounds/voices/whisper.mp3",
+  "path": "assets/audio/voices/whisper.mp3",
   "volume": 0.3
 }
 ```
@@ -1276,11 +1276,11 @@ Usa archivos de audio comunes:
   "actions": [
     {
       "type": "setBackground",
-      "value": "assets/backgrounds/cafe.png"
+      "value": "assets/images/backgrounds/shared/cafe.png"
     },
     {
       "type": "playSound",
-      "path": "assets/sounds/music/ambient.mp3",
+      "path": "assets/audio/music/ambient.mp3",
       "volume": 0.4,
       "loop": true
     }
@@ -1293,7 +1293,7 @@ Usa archivos de audio comunes:
   "actions": [
     {
       "type": "playSound",
-      "path": "assets/sounds/effects/bell.mp3",
+      "path": "assets/audio/sfx/bell.mp3",
       "volume": 1.0
     }
   ]
@@ -1371,7 +1371,7 @@ Usa archivos de audio comunes:
   "actions": [
     {
       "type": "playSound",
-      "path": "assets/sounds/music/ambient.mp3",
+      "path": "assets/audio/music/ambient.mp3",
       "volume": 0.5,
       "loop": true,
       "fadeIn": 1000,
@@ -1391,7 +1391,7 @@ Usa archivos de audio comunes:
     },
     {
       "type": "playSound",
-      "path": "assets/sounds/effects/alarm.mp3",
+      "path": "assets/audio/sfx/alarm.mp3",
       "volume": 1.0
     }
   ]
@@ -1448,7 +1448,7 @@ El primer acceso sigue una secuencia cerrada:
    reproducción multimedia exigida por los navegadores. Si el volumen musical
    persistido estaba exactamente al 0 %, el gesto lo restablece al 70 % y
    guarda el nuevo valor; un volumen distinto de cero se respeta sin cambios.
-3. Se reproduce `assets/videos/opening_samu.mp4` a pantalla completa, con su
+3. Se reproduce `assets/video/cutscenes/prologue/opening_samu.mp4` a pantalla completa, con su
    audio AAC y el volumen musical guardado en `illo_vol_music`.
 4. El opening puede terminar naturalmente o cerrarse mediante
    **Saltar opening**.
@@ -1464,7 +1464,7 @@ primer frame de `640×360` de Chromium/Electron como que el opening quede limita
 a `1280×720` en navegadores con una ventana mayor. Durante ese intervalo solo se
 mantiene el fondo negro de carga.
 
-El fondo del menú utiliza `assets/videos/menu_loop.mp4`, un bucle H.264
+El fondo del menú utiliza `assets/video/menu/menu_loop.mp4`, un bucle H.264
 de 10 segundos, 48 FPS y `3840×2160`. Sus 240 fotogramas 4K originales se
 mantienen íntegros y entre cada pareja se inserta un fotograma de movimiento
 generado con RIFE, dando 480 frames finales. La interpolación incluye la pareja
@@ -1474,7 +1474,7 @@ sustituye el escenario: se conservan la geometría, el oleaje del mar, el
 titileo de los neones, las siluetas móviles, la brisa dorada y todas las notas
 en sus posiciones originales.
 
-La reconstrucción 4K desde `assets/videos/menu_loop_old.mp4` es reproducible con
+La reconstrucción 4K desde `assets/video/menu/menu_loop_old.mp4` es reproducible con
 `scripts/render_menu_loop_4k.py` y `realesrgan-ncnn-vulkan`. La interpolación
 cíclica posterior se ejecuta con `scripts/interpolate_menu_loop_48fps.py` y la
 herramienta oficial `rife-ncnn-vulkan`, usando `rife-v4.6`, modo UHD y TTA
@@ -1850,7 +1850,7 @@ for (const character of characters) {
 **Para agregar nuevo personaje:**
 
 1. Crea `characters/nuevo.json`
-2. Agrega imagen: `assets/characters/nuevo.png`
+2. Agrega imagen: `assets/images/characters/nuevo.png`
 3. Agrega a array en game.js
 
 ---
@@ -2030,7 +2030,7 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 
 ```
 1. Verifica: characters/luna.json existe
-2. Verifica: assets/characters/luna.png existe
+2. Verifica: assets/images/characters/luna.png existe
 3. En JSON: "character": "luna" (minúscula)
 ```
 
@@ -2046,7 +2046,7 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 
 ```
 ❌ "value": "backgrounds/cafe.png"
-✅ "value": "assets/backgrounds/cafe.png"
+✅ "value": "assets/images/backgrounds/shared/cafe.png"
 ```
 
 ### Las elecciones no funcionan
@@ -2272,9 +2272,9 @@ engine.history; // Historial de opciones
   "name": "Luna",
   "color": "#ff69b4",
   "poses": {
-    "neutral": "assets/characters/luna.png",
-    "happy": "assets/characters/luna_happy.png",
-    "sad": "assets/characters/luna_sad.png"
+    "neutral": "assets/images/characters/luna.png",
+    "happy": "assets/images/characters/luna_happy.png",
+    "sad": "assets/images/characters/luna_sad.png"
   },
   "defaultPose": "neutral"
 }
@@ -2296,7 +2296,7 @@ engine.history; // Historial de opciones
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/cafe.png"
+              "value": "assets/images/backgrounds/shared/cafe.png"
             }
           ]
         },
@@ -2615,15 +2615,15 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 - Los tres fondos conservan sus nombres de archivo heredados (`jamon.png`,
   `dia.png` y `mercadona.png`), pero muestran marcas completamente ficticias.
   Comparten el acabado anime cinematográfico, la luz cálida de las 16:00 y la
-  dirección artística de `assets/cutscenes/opening_samu/`.
+  dirección artística de `assets/cutscenes/chapter3/opening_samu_sources/storyboard/`.
 - Batalla contra Micaela Michis (minigame gatos)
 - Micaela presenta la persecución y cierra la ruta con un mitin político absurdo
   a favor de los gatos: cajas de cartón por decreto, atún subvencionado,
   vivienda protegida en sofás y un Ministerio del Ovillo.
 - Los secundarios Micaela Michis y Neit usan retratos cartoon con contorno limpio,
   color plano y sombreado cel, alineados con el estilo de los protagonistas. Sus
-  recursos están en `assets/characters/others/micaela*.png` y
-  `assets/characters/others/neit.png`.
+  recursos están en `assets/images/characters/others/micaela*.png` y
+  `assets/images/characters/others/neit.png`.
 - Rescate de Edu y batalla contra Zip (minigame ketchup)
 - Descubrimiento del concierto de Seraphyna en Ecchi Land
 - Llamadas telefónicas opcionales
@@ -2722,8 +2722,8 @@ El sistema carga capítulos en orden numérico:
 - [ ] Personajes en `characters/` con JSON válido
 - [ ] Capítulos en `chapters/` con JSON válido
 - [ ] Imágenes en `assets/` en PNG
-- [ ] Fondos en `assets/backgrounds/` (1920x1080)
-- [ ] Personajes en `assets/characters/` (300x600)
+- [ ] Fondos en `assets/images/backgrounds/` (1920x1080)
+- [ ] Personajes en `assets/images/characters/` (300x600)
 - [ ] `game.js` carga los recursos correctos
 
 ### Testing
@@ -3113,8 +3113,8 @@ El recorte de verdad está en `assets/`: `cutscenes/` (421 MB) y `sounds/`
 
 #### Restauración 4K de la cinemática del concierto
 
-Los 24 planos de `assets/cutscenes/nuevos_frames/` tienen una restauración no
-destructiva en `assets/cutscenes/nuevos_frames_4k/`. Todos conservan el nombre
+Los 24 planos de `assets/cutscenes/chapter3/opening_samu_sources/frames_generated/` tienen una restauración no
+destructiva en `assets/cutscenes/chapter3/opening_samu_sources/frames_4k/`. Todos conservan el nombre
 original y se entregan como PNG RGB de `3840×2160`.
 
 La restauración no consiste únicamente en ampliar píxeles: cada plano se
@@ -3126,18 +3126,17 @@ primeros planos de Seraphyna fijan su identidad en toda la secuencia. Los
 planos de público mantienen menos detalle en la distancia para conservar
 profundidad, y el frame final corrige además el texto legible `SERAPHYNA` y
 `ALL ACCESS`. En `frame_11_embobados.png`, Samu usa el patrón cromático
-canónico de `assets/characters/samu/Samu.png`: base topo, zonas gris crema,
+canónico de `assets/images/characters/samu/Samu.png`: base topo, zonas gris crema,
 parches marrón oscuro, nariz naranja y gorguera blanca ribeteada en rojo. Los
 originales y la antigua ampliación `nuevos_frames_x2/` permanecen intactos.
 
 El montaje reconstruido se entrega en
-`assets/cutscenes/opening_tony_4k.mp4`. Es un H.264 de `3840×2160` a 30 FPS y
-117,6 segundos que utiliza directamente los 24 planos restaurados, conserva el
-audio AAC del opening original y reproduce sus zooms, fundidos, fogonazos
-blancos y pausa negra final. La versión de 720p
-`assets/cutscenes/opening_tony.mp4` permanece intacta. El archivo 4K se codificó
-como versión de distribución compatible con el juego y queda por debajo de
-100 MB.
+`assets/cutscenes/chapter3/opening_tony/opening_tony.mp4`. Es un H.264 de
+`3840×2160` a 30 FPS y 117,6 segundos que utiliza directamente los 24 planos
+restaurados, conserva el audio AAC del opening original y reproduce sus zooms,
+fundidos, fogonazos blancos y pausa negra final. Las variantes anteriores se
+conservan en la misma carpeta como `opening_tony_old.mp4` y
+`opening_tony_old_v2.mp4`; el archivo activo queda por debajo de 100 MB.
 
 ### Cómo funciona
 
@@ -3212,13 +3211,16 @@ La versión web sigue funcionando igual: `start.bat` o
 
 ---
 
-_Última actualización: 2026-06-24_
+_Última actualización: 2026-08-01_
 
 ### Paquete visual Kingdom Ketchup v2
 
 El rediseño narrativo de los capítulos 1 y 2 dispone de un paquete de
-producción integrado en `assets/generated/chapter2_v2/`. El catálogo de rutas,
-usos y fuentes está en `manifest.json`.
+producción integrado en las categorías canónicas de `assets/images/`. Los
+fondos están en `backgrounds/chapter2/`, los CG en `cg/chapter2/`, los sprites
+en `characters/` y los objetos jugables en `minigames/chapter2/`. El catálogo
+de rutas, usos y fuentes está en
+`assets/metadata/chapter2_v2_manifest.json`.
 
 - Fondos 4K: exterior de la fábrica, planta de producción limpia y variante
   corrompida por Zip.
@@ -3276,9 +3278,10 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   accesibles por ratón o teclado, las que reaccionan al hover/foco. No hay
   iconos superpuestos ni una línea que conecte permanentemente los destinos.
 - Al pulsar una zona, Furry Maps pregunta si se desea marcarla como ruta. Solo al
-  aceptar aparece un trayecto discontinuo desde la Iglesia del Rocío. Un Samu
-  diminuto recorre la línea con los fotogramas 1-4 de
-  `assets/characters/samu/ketchup/`, celebra al llegar y da paso al escenario
+  aceptar aparece un trayecto discontinuo. El primer desplazamiento parte de la
+  Iglesia del Rocío; los siguientes comienzan en la última zona visitada. Un
+  Samu diminuto recorre la línea con los fotogramas 1-4 de
+  `assets/images/characters/samu/ketchup/`, celebra al llegar y da paso al escenario
   mediante acercamiento y fundido. Esos sprites proceden de la rama de José
   Manuel `feature/nuevo-minijuego-ketchup`; no se ha mezclado su implementación
   antigua del minijuego.
@@ -3290,9 +3293,9 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   promoción ni el tapón dorado: esa información se reserva para el guardia de
   la fábrica. Ambas opciones entregan la pista necesaria y una dosis distinta
   de lore, de modo que la curiosidad no bloquea la progresión. Los fondos WebP
-  3840x2160 están en `assets/generated/chapter2_v2/locations/`. Los retratos
+  3840x2160 están en `assets/images/backgrounds/chapter2/furrielva/`. Los retratos
   transparentes individuales `tadeo_trufa_v1.png`, `lia_lince_v1.png` y
-  `rulo_mapache_v1.png` están en `assets/generated/chapter2_v2/characters/` y
+  `rulo_mapache_v1.png` están en `assets/images/characters/furrielva/` y
   se precargan una única vez por sesión. Sus nombres respetan el código de
   color de los diálogos: Samu rojo, Tadeo naranja, Lía violeta y Rulo azul
   verdoso; «Pista registrada» conserva el turquesa de sistema.
@@ -3322,16 +3325,28 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   CG precargados y fundidos a negro; los saltos de escena viven en líneas de
   acción separadas para no omitir diálogos ni solapar dos ilustraciones 4K.
 - Los pasillos Ketchup y Catsup usan
-  `assets/backgrounds/kingdom_ketchup_pasillos_v2_4k.png` (3840x2160). El fondo
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png` (3840x2160). El fondo
   conserva la composición simétrica y los tres rótulos, pero sustituye todos
   los envases con silueta de marca real por la botella ficticia canónica: cuerpo
   alto, tapón-corona dorado y etiqueta crema con corona y tomate.
 - La zona de estanterías y cajas de Neit usa
-  `assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png` (3840x2160). Las
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png` (3840x2160). Las
   botellas repiten ese mismo modelo canónico; las latas emplean únicamente el
   emblema ficticio de corona y tomate. Se conservan las guindillas necesarias
   para el diálogo y se sustituyen los rótulos deformados por «KINGDOM KETCHUP»,
   «CAJAS», «OFERTA», «-30%» y «2×1».
+- La llegada a la sala del trono reproduce
+  `assets/video/cutscenes/chapter2/intro_sala_del_trono_kk_4k.mp4`: el montaje 3D generado en
+  Google Flow y restaurado a 4K real mediante Real-ESRGAN. El máster contiene
+  240 fotogramas a 3840×2160, 24 FPS y 10 segundos, codificados en H.264 con
+  audio AAC. La superresolución usa `realesr-animevideov3` a escala ×2 y mezcla
+  un 72 % de detalle neuronal con un 28 % del fotograma original ampliado por
+  Lanczos; así mejora letras, coronas, botellas, guindillas y salpicaduras sin
+  endurecer en exceso el render ni alterar el movimiento. El proceso conserva
+  los textos «KINGDOM KETCHUP» e «IN KETCHUP WE TRUST», el avance de cámara, la
+  lluvia de kétchup, los impactos, el vapor, las llamas, el audio y los reflejos.
+  `scripts/rebuild_intro_sala_trono_kk.py` queda como reconstrucción alternativa
+  y fuente editable, pero no genera el vídeo activo actual.
 - Los Ketchlings se presentan como trabajadores y ciudadanos con agencia:
   seguridad, cocina, mecánica y embotellado. Su altura canónica es de unos
   40 cm y pueden mantener Kingdom Ketchup sin retener a Edu.
@@ -3358,7 +3373,7 @@ interno `iphone5` por compatibilidad, pero usan un móvil robusto contemporáneo
 botones grandes de Silencio/Teclado/Altavoz/Colgar y una tipografía display más
 legible. Cada contacto tiene identidad propia y siempre humana: Edu usa azul,
 Tony rosa y José verde. Las variantes finales están en
-`assets/characters/iphone5/phone_call_*_humano_v2.png`.
+`assets/images/characters/iphone5/phone_call_*_humano_v2.png`.
 
 La llamada de Edu compone `phone_call_edu_humano_v2_frame.png` con la capa
 `phone_call_edu_humano_v2_contact_canvas.png`. Ambos PNG comparten un lienzo
@@ -3377,7 +3392,7 @@ cobertura. En esa última frase se
 superpone un segundo remate mediante `characterFullGlitch`: durante 1,05 s el
 teléfono completo sufre cortes horizontales y separación cromática, acompañado
 por una sacudida leve y un destello azul. No sustituye el glitch del retrato.
-Ambas acciones disparan automáticamente `assets/sounds/effects/sfx_estatica.mp3`
+Ambas acciones disparan automáticamente `assets/audio/sfx/sfx_estatica.mp3`
 al comenzar. El motor aplica una ventana antisolapamiento de 160 ms para que el
 glitch del retrato y el remate del teléfono compartan un único golpe sonoro.
 
@@ -3408,10 +3423,58 @@ su proporción y mostrando todos los planos completos, sin ampliarlos ni recorta
 
 ### Fondo del baño del capítulo 1 (2026-07-31)
 
-`assets/backgrounds/bathroom.png` conserva el encuadre panorámico y la orientación
+`assets/images/backgrounds/chapter1/bathroom.png` conserva el encuadre panorámico y la orientación
 del fondo jugable —lavabo a la izquierda, ducha al fondo y espejo a la derecha—,
 pero adopta el acabado anime, la luz cálida y la paleta de la cinemática
-`assets/cutscenes/opening_samu/7.png`. El espejo izquierdo tiene un marco y un
+`assets/cutscenes/chapter3/opening_samu_sources/storyboard/7.png`. El espejo izquierdo tiene un marco y un
 reflejo espacialmente coherentes, mientras que el espejo derecho tiene el marco
 completo y cerrado dentro del encuadre y representa el diseño vigente de
 `samu_surprised.png`.
+
+### Organización canónica de assets y música del capítulo 2 (2026-08-01)
+
+La carpeta `assets/` queda organizada por familia y después por capítulo o
+función. Las rutas antiguas `assets/sounds/`, `assets/backgrounds/`,
+`assets/characters/`, `assets/minigames/`, `assets/ui/`, `assets/videos/` y
+`assets/generated/` ya no deben volver a utilizarse.
+
+```text
+assets/
+├── audio/
+│   ├── music/{chapter0..chapter6,menu,minigames,shared,legacy}/
+│   └── sfx/
+├── images/
+│   ├── backgrounds/{chapter0..chapter6,shared,legacy}/
+│   ├── cg/{chapter2,chapter3}/
+│   ├── characters/
+│   ├── minigames/{chapter2,chapter3,shared}/
+│   └── ui/
+├── cutscenes/{chapter2,chapter3}/
+├── video/{cutscenes,menu}/
+├── fonts/
+└── metadata/
+```
+
+Los ficheros no conectados se conservan bajo `legacy/` para evitar perder
+material original, pero ninguna escena activa debe depender de ellos. Los
+recursos de Kingdom Ketchup que estaban en `generated/chapter2_v2` se integran
+en sus categorías definitivas y
+`assets/metadata/chapter2_v2_manifest.json` guarda el catálogo actualizado.
+
+La antigua `huelva.mp3` se conserva como
+`assets/audio/music/legacy/huelva_original.mp3`, pero ya no se reproduce. El
+capítulo 2 utiliza estas variaciones:
+
+- Escena 1: `furrielva_despierta.mp3`.
+- Escenas 1B, 1C y 1D: `el_rastro_del_tapon.mp3`.
+- Escenas 1.5, 2, 3 y 4: `tres_rutas_por_furrielva.mp3`; el minijuego de gatos
+  sigue intercalando `te-comprometes.mp3` y después recupera esta pista.
+- Escenas 4.5 y 4.6: `el_tapon_dorado.mp3`.
+- Escenas 5 a 9: `kingdomketchup.mp3`, con los cambios ya existentes a
+  `zip.mp3` y `ketchup.mp3`.
+- Escena 10: `de_vuelta_en_furrielva.mp3`.
+
+Cada escena declara su música en la primera línea. `playSound()` evita reiniciar
+una pista cuando coinciden ruta e ID, por lo que las escenas consecutivas
+mantienen continuidad y los saltos directos desde el selector nunca quedan en
+silencio.

@@ -676,9 +676,9 @@ function setupStartupSequence() {
 // ===== Menú principal: vídeo de fondo + tema "Más de lo que ven tus ojos" =====
 // Tras el opening, el vídeo del menú arranca en bucle y silenciado. Su música
 // usa el gesto ya realizado en el disclaimer, por lo que no vuelve a pedir clic.
-const MENU_MUSIC_SRC = "assets/sounds/music/tema_menu.mp3"; // alternativa: tema_menu_v2.mp3
-const MENU_AMBIENCE_SRC = "assets/sounds/music/ambiente_menu.mp3"; // audio base del vídeo, extraído
-const MENU_CHILL_SRC = "assets/sounds/music/menu_chill.mp3"; // instrumental chill que releva al tema
+const MENU_MUSIC_SRC = "assets/audio/music/menu/tema_menu.mp3"; // alternativa: tema_menu_v2.mp3
+const MENU_AMBIENCE_SRC = "assets/audio/music/menu/ambiente_menu.mp3"; // audio base del vídeo, extraído
+const MENU_CHILL_SRC = "assets/audio/music/menu/menu_chill.mp3"; // instrumental chill que releva al tema
 const MENU_VIDEO_RATE = 0.5;   // velocidad del vídeo (1 = normal; más bajo = más lento)
 const MENU_AMBIENCE_VOL = 0.12; // sonido de base (bajito, SIEMPRE a velocidad normal)
 const MENU_MUSIC_VOL = 0.5;     // tema principal

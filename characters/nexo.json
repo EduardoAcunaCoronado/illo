@@ -2,11 +2,11 @@
   "name": "Nexo",
   "color": "#1b8587",
   "poses": {
-    "neutral": "assets/characters/others/nexo.png",
-    "happy": "assets/characters/others/nexo.png",
-    "sad": "assets/characters/others/nexo.png",
-    "angry": "assets/characters/others/nexo.png",
-    "surprised": "assets/characters/others/nexo.png"
+    "neutral": "assets/images/characters/others/nexo.png",
+    "happy": "assets/images/characters/others/nexo.png",
+    "sad": "assets/images/characters/others/nexo.png",
+    "angry": "assets/images/characters/others/nexo.png",
+    "surprised": "assets/images/characters/others/nexo.png"
   },
   "defaultPose": "neutral"
 }

@@ -444,7 +444,7 @@ body.startup-pending #menu-video {
     width: 100%;
     height: 100%;
     z-index: 2;
-    background: url("assets/characters/iphone5/phone_call_edu_humano_v2_contact_canvas.png") bottom center / contain no-repeat;
+    background: url("assets/images/characters/iphone5/phone_call_edu_humano_v2_contact_canvas.png") bottom center / contain no-repeat;
     transform-origin: center;
     pointer-events: none;
 }

@@ -8,11 +8,11 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/iglesia_furrielva_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/furrielva_despierta.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -104,13 +104,21 @@
           "text": "Furrielva no entrega sus secretos a quien solo cruza sus calles. Samu sigue señales, pregunta a vecinos y relaciona pistas.",
           "actions": [
             {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_rastro_del_tapon.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
+            },
+            {
               "type": "hideCharacter",
               "character": "samu"
             },
             {
               "type": "minigame",
               "game": "furrielvaExplore",
-              "background": "assets/generated/chapter2_v2/backgrounds/mapa_furrielva_furry_maps_v2_4k.png"
+              "background": "assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png"
             },
             {
               "type": "goToScene",
@@ -128,8 +136,15 @@
           "text": "Las pistas conducen a una fábrica imposible: torres como botellas, tuberías de latón y una corona sobre cada chimenea.",
           "actions": [
             {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_rastro_del_tapon.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "setBackground",
-              "value": "assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_exterior_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png"
             },
             {
               "type": "showCharacter",
@@ -194,6 +209,13 @@
           "character": "3C",
           "text": "Samu llama una vez. Luego otra. Al tercer intento solo recibe un chasquido digital, como un archivo que no termina de abrirse.",
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_rastro_del_tapon.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
             {
               "type": "showCharacter",
               "character": "iphone5",
@@ -311,12 +333,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/iglesia_furrielva_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -352,14 +374,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/jamon.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/jamon.png"
             },
             {
               "type": "hideCharacter",
@@ -456,7 +478,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/te-comprometes.mp3",
+              "path": "assets/audio/music/chapter2/te-comprometes.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -477,7 +499,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -572,14 +594,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/dia.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/dia.png"
             },
             {
               "type": "hideCharacter",
@@ -632,14 +654,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/tres_rutas_por_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/mercadona.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/mercadona.png"
             },
             {
               "type": "hideCharacter",
@@ -693,12 +715,20 @@
           "text": "Samu levanta la botella como quien acaba de encontrar un billete premiado: el tapón es inequívocamente dorado.",
           "actions": [
             {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_tapon_dorado.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
+            },
+            {
               "type": "giveItem",
               "item": "tapon_dorado"
             },
             {
               "type": "showCG",
-              "path": "assets/generated/chapter2_v2/cg/golden_cap_reveal_4k.png",
+              "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png",
               "duration": 650
             }
           ]
@@ -742,8 +772,15 @@
           "text": "Al girar el tapón, una botella gigantesca de luz aparece de la nada en mitad del pasillo. Su cristal se abre como un portal y, al otro lado, Samu distingue la fábrica.",
           "actions": [
             {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_tapon_dorado.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
               "type": "showCG",
-              "path": "assets/generated/chapter2_v2/cg/golden_cap_portal_activation_4k.png",
+              "path": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.png",
               "duration": 0
             },
             {
@@ -790,7 +827,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_production_floor_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png"
             },
             {
               "type": "hideCharacter",
@@ -811,7 +848,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -819,7 +856,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/generated/chapter2_v2/cg/ketchlings_factory_welcome_4k.png",
+              "path": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.png",
               "duration": 0
             },
             {
@@ -915,12 +952,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_pasillos_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -958,12 +995,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_pasillos_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -1003,14 +1040,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png"
             },
             {
               "type": "hideCharacter",
@@ -1087,12 +1124,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -1170,19 +1207,19 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "playVideo",
-              "path": "assets/videos/intro_sala_del_trono_kk.mp4"
+              "path": "assets/video/cutscenes/chapter2/intro_sala_del_trono_kk_4k.mp4"
             }
           ]
         },
@@ -1190,7 +1227,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_trono.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono.png"
             },
             {
               "type": "hideCharacter",
@@ -1416,7 +1453,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/backgrounds/cg/zip_sombra_1.png",
+              "path": "assets/images/cg/chapter2/zip_sombra_1.png",
               "duration": 700
             },
             {
@@ -1445,7 +1482,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/backgrounds/cg/zip_sombra_2.png",
+              "path": "assets/images/cg/chapter2/zip_sombra_2.png",
               "duration": 700
             }
           ],
@@ -1468,7 +1505,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/zip.mp3",
+              "path": "assets/audio/music/chapter2/zip.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -1535,7 +1572,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_production_floor_corrupted_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png"
             }
           ]
         },
@@ -1552,7 +1589,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ketchup.mp3",
+              "path": "assets/audio/music/chapter2/ketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -1594,7 +1631,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/kingdomketchup.mp3",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -1612,7 +1649,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_production_floor_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png"
             }
           ]
         },
@@ -1715,7 +1752,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/huelva.mp3",
+              "path": "assets/audio/music/chapter2/de_vuelta_en_furrielva.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -1723,7 +1760,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/iglesia_furrielva_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png"
             },
             {
               "type": "hideCharacter",

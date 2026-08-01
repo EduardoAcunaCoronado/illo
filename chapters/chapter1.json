@@ -8,11 +8,11 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pisito.png"
+              "value": "assets/images/backgrounds/chapter1/pisito.png"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/casasamu.mp3",
+              "path": "assets/audio/music/chapter1/casasamu.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -75,7 +75,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/bathroom.png"
+              "value": "assets/images/backgrounds/chapter1/bathroom.png"
             },
             {
               "type": "showCharacter",
@@ -92,7 +92,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pisito.png"
+              "value": "assets/images/backgrounds/chapter1/pisito.png"
             },
             {
               "type": "showCharacter",
@@ -156,12 +156,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pisito.png",
+              "value": "assets/images/backgrounds/chapter1/pisito.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/casasamu.mp3",
+              "path": "assets/audio/music/chapter1/casasamu.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"
@@ -339,12 +339,12 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/pisito.png",
+              "value": "assets/images/backgrounds/chapter1/pisito.png",
               "cut": true
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/casasamu.mp3",
+              "path": "assets/audio/music/chapter1/casasamu.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music"

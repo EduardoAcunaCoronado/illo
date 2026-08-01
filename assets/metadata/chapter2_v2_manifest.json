@@ -1,0 +1,43 @@
+{
+  "version": "chapter2-v2-assets-1",
+  "generatedAt": "2026-07-31",
+  "integrationStatus": "integrated-chapter1-chapter2-engine",
+  "artDirection": {
+    "backgrounds": "Fondos cinematograficos semirrealistas, rojo lacado, laton y luz calida, coherentes con la sala del trono de Kingdom Ketchup.",
+    "characters": "Lineart limpio, sombreado cel y expresividad coherentes con los sprites canonicos de Samu y Edu.",
+    "ketchlingHeightCm": 40,
+    "branding": "Emblema grafico de corona y tomate; sin marcas reales ni texto generado."
+  },
+  "backgrounds": {
+    "factoryExterior": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png",
+    "productionFloor": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png",
+    "productionFloorCorrupted": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png"
+  },
+  "cg": {
+    "eduZipPhoto": "assets/images/cg/chapter2/samu_edu_zip_photo_4k.png",
+    "goldenCapReveal": "assets/images/cg/chapter2/golden_cap_reveal_4k.png",
+    "portalActivation": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.png",
+    "ketchlingWelcome": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.png"
+  },
+  "characters": {
+    "eduZipHappy": "assets/images/characters/edu/chapter2/edu_zip_happy.png",
+    "eduZipSurprised": "assets/images/characters/edu/chapter2/edu_zip_surprised.png",
+    "eduZipWorried": "assets/images/characters/edu/chapter2/edu_zip_worried.png",
+    "ketchlingSecurity": "assets/images/characters/ketchling/ketchling_security.png",
+    "ketchlingCook": "assets/images/characters/ketchling/ketchling_cook.png",
+    "ketchlingMechanic": "assets/images/characters/ketchling/ketchling_mechanic.png",
+    "ketchlingBottler": "assets/images/characters/ketchling/ketchling_bottler.png"
+  },
+  "minigame": {
+    "goldBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png",
+    "corruptedBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png",
+    "goldenCap": "assets/images/minigames/chapter2/ketchup/golden_cap.png",
+    "chili": "assets/images/minigames/chapter2/ketchup/chili_v2.png"
+  },
+  "notes": [
+    "Los PNG de personajes y minijuego tienen transparencia.",
+    "Las variantes sin sufijo _4k conservan la salida base para iteraciones.",
+    "Los ficheros *_source.png conservan el fondo croma original como fuente editable.",
+    "Los assets estan integrados en el guion y el motor del capitulo 2."
+  ]
+}

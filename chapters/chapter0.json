@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/habitacion_neon.png"
+              "value": "assets/images/backgrounds/chapter0/habitacion_neon.png"
             },
             {
               "type": "showCharacter",
@@ -18,7 +18,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/starport-open.mp3",
+              "path": "assets/audio/music/chapter0/starport-open.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -86,7 +86,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/nexo.mp3",
+              "path": "assets/audio/music/chapter0/nexo.mp3",
               "volume": 1.0,
               "loop": true,
               "id": "nexo",
@@ -119,7 +119,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/disco-rayado.mp3",
+              "path": "assets/audio/sfx/disco-rayado.mp3",
               "volume": 1.0
             }
           ],

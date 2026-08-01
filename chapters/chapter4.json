@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/camino_a_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter4/camino_a_ciudad_paloma.png"
             },
             {
               "type": "rescue",
@@ -16,7 +16,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/camino_a_ciudad_paloma.mp3",
+              "path": "assets/audio/music/chapter4/camino_a_ciudad_paloma.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -215,7 +215,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png"
             },
             {
               "type": "stopSound",
@@ -224,7 +224,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ciudad-paloma-1.mp3",
+              "path": "assets/audio/music/chapter4/ciudad-paloma-1.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -321,14 +321,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ciudad-paloma-1.mp3",
+              "path": "assets/audio/music/chapter4/ciudad-paloma-1.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/palomas_andando_y_pisadas.mp3",
+              "path": "assets/audio/sfx/palomas_andando_y_pisadas.mp3",
               "volume": 1
             },
             {
@@ -341,7 +341,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/entrada_epica_jose.png"
+              "value": "assets/images/backgrounds/chapter4/entrada_epica_jose.png"
             }
           ],
           "character": "3C",
@@ -390,7 +390,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png"
             },
             {
               "type": "showCharacter",
@@ -820,7 +820,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/ciudad_paloma.png",
+              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png",
               "cut": true
             },
             {
@@ -836,7 +836,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ciudad-paloma-2.mp3",
+              "path": "assets/audio/music/chapter4/ciudad-paloma-2.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -947,7 +947,7 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/drop_coin.mp3",
+              "path": "assets/audio/sfx/drop_coin.mp3",
               "volume": 1
             }
           ]
@@ -1017,14 +1017,14 @@
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ciudad-paloma-2.mp3",
+              "path": "assets/audio/music/chapter4/ciudad-paloma-2.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music"
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/plaza_circular.png"
+              "value": "assets/images/backgrounds/shared/plaza_circular.png"
             },
             {
               "type": "hideCharacter",
@@ -1071,12 +1071,12 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/fire_spell.mp3",
+              "path": "assets/audio/sfx/fire_spell.mp3",
               "volume": 1
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/despertar_samu.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_samu.png"
             },
             {
               "type": "waitForClick"
@@ -1128,12 +1128,12 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/fast_whoosh_and_zaps.mp3",
+              "path": "assets/audio/sfx/fast_whoosh_and_zaps.mp3",
               "volume": 1
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/despertar_edu.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_edu.png"
             },
             {
               "type": "waitForClick"
@@ -1198,12 +1198,12 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/harp_holly_spell.mp3",
+              "path": "assets/audio/sfx/harp_holly_spell.mp3",
               "volume": 1
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/despertar_tony.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_tony.png"
             },
             {
               "type": "waitForClick"
@@ -1305,12 +1305,12 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/sword_thud_rock.mp3",
+              "path": "assets/audio/sfx/sword_thud_rock.mp3",
               "volume": 1
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/despertar_jose.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_jose.png"
             },
             {
               "type": "waitForClick"
@@ -1377,12 +1377,12 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/church_bell.mp3",
+              "path": "assets/audio/sfx/church_bell.mp3",
               "volume": 1
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/pigeon-city-glitch.mp3",
+              "path": "assets/audio/music/chapter4/pigeon-city-glitch.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -1390,7 +1390,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/plaza_circular_glitch.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_circular_glitch.png"
             }
           ]
         },
@@ -1432,7 +1432,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/cielo_glitch_brainrot.png"
+              "value": "assets/images/backgrounds/chapter4/cielo_glitch_brainrot.png"
             }
           ]
         },
@@ -1451,7 +1451,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/plaza_cicular_meme_ataque.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque.png"
             },
             {
               "type": "showCharacter",
@@ -1519,7 +1519,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/plaza_cicular_meme_ataque_heroes.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.png"
             }
           ]
         },
@@ -1590,7 +1590,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/plaza_circular_brainrot_ataque.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_circular_brainrot_ataque.png"
             }
           ]
         },
@@ -1624,7 +1624,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/brainrot_theme.mp3",
+              "path": "assets/audio/music/shared/brainrot_theme.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -1712,11 +1712,11 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/plaza_circular_agujero.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_circular_agujero.png"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/agujero_brainrot.mp3",
+              "path": "assets/audio/sfx/agujero_brainrot.mp3",
               "volume": 1
             }
           ]
@@ -1755,7 +1755,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/ballerina_capuchina_battle.mp3",
+              "path": "assets/audio/music/chapter4/ballerina_capuchina_battle.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -1821,7 +1821,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/retomando_el_camino.mp3",
+              "path": "assets/audio/music/chapter4/retomando_el_camino.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -1901,7 +1901,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/mazmorra_puerta_santuario.png"
+              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario.png"
             },
             {
               "type": "stopSound",
@@ -1910,7 +1910,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/entrada-santuario.mp3",
+              "path": "assets/audio/music/chapter4/entrada-santuario.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",
@@ -2162,7 +2162,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/abriendo_el_sello.mp3",
+              "path": "assets/audio/music/chapter4/abriendo_el_sello.mp3",
               "volume": 0.7,
               "loop": true,
               "id": "bg_music",
@@ -2182,11 +2182,11 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/mazmorra_puerta_santuario_abierta.png"
+              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.png"
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/effects/open_gate.mp3",
+              "path": "assets/audio/sfx/open_gate.mp3",
               "volume": 1
             },
             {
@@ -2196,7 +2196,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/sounds/music/santurario-abierto.mp3",
+              "path": "assets/audio/music/shared/santurario-abierto.mp3",
               "volume": 0.6,
               "loop": true,
               "id": "bg_music",

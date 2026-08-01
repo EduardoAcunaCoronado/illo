@@ -11,8 +11,8 @@ import sys
 from pathlib import Path
 
 # Crear directorios si no existen
-os.makedirs('assets/backgrounds', exist_ok=True)
-os.makedirs('assets/characters', exist_ok=True)
+os.makedirs('assets/images/backgrounds', exist_ok=True)
+os.makedirs('assets/images/characters', exist_ok=True)
 
 def create_background(filename, color, title):
     """Crea una imagen de fondo con color y texto"""
@@ -39,7 +39,7 @@ def create_background(filename, color, title):
 
     draw.text((x, y), title, fill=text_color, font=font)
 
-    filepath = f'assets/backgrounds/{filename}.png'
+    filepath = f'assets/images/backgrounds/{filename}.png'
     img.save(filepath)
     print(f'[OK] {filepath}')
 
@@ -83,7 +83,7 @@ def create_character(filename, color, name):
 
     draw.text((x, 510), name, fill=text_color, font=font)
 
-    filepath = f'assets/characters/{filename}.png'
+    filepath = f'assets/images/characters/{filename}.png'
     img.save(filepath)
     print(f'[OK] {filepath}')
 
@@ -135,8 +135,8 @@ def main():
     print('=' * 70)
     print('')
     print('Archivos generados:')
-    print(f'  - {len(backgrounds)} fondos en assets/backgrounds/')
-    print(f'  - {len(characters)} personajes en assets/characters/')
+    print(f'  - {len(backgrounds)} fondos en assets/images/backgrounds/')
+    print(f'  - {len(characters)} personajes en assets/images/characters/')
     print('')
     print('Ya puedes:')
     print('  1. Abrir index.html en tu navegador')

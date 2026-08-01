@@ -2,11 +2,11 @@
   "name": "3C",
   "color": "#1b8587",
   "poses": {
-    "neutral": "assets/characters/others/3c.png",
-    "happy": "assets/characters/others/3c_happy.png",
-    "sad": "assets/characters/others/3c.png",
-    "angry": "assets/characters/others/3c.png",
-    "surprised": "assets/characters/others/3c.png"
+    "neutral": "assets/images/characters/others/3c.png",
+    "happy": "assets/images/characters/others/3c_happy.png",
+    "sad": "assets/images/characters/others/3c.png",
+    "angry": "assets/images/characters/others/3c.png",
+    "surprised": "assets/images/characters/others/3c.png"
   },
   "defaultPose": "neutral"
 }
