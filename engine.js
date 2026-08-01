@@ -581,18 +581,21 @@ class VisualNovelEngine {
         return won;
     }
 
-    // Minijuego: Samu come ketchup y esquiva guindillas.
-    // Orquesta las rondas y permite reintentar si pierdes.
     async playKetchupMinigame(options = {}) {
         // El minijuego gestiona su propia entrada; no esperar clic extra al salir
         this.isWaitingForInput = false;
 
+        if (!window.KetchupMinigame) {
+            console.warn('KetchupMinigame no está cargado.');
+            return false;
+        }
+
         // Se repite hasta ganar; al perder solo se puede reintentar
         let won = false;
         while (!won) {
-            won = await this.runKetchupRound(options);
+            won = await window.KetchupMinigame.play(options);
             if (!won) {
-                await this.showMinigameRetry();
+                await this.showMinigameRetry('¡Samu acaba cubierto de ketchup!');
             }
         }
         return won;
@@ -810,7 +813,7 @@ class VisualNovelEngine {
     // se queda encerrado, porque la única salida es ganar el minijuego. Al
     // abortar se rechaza con un error etiquetado que playMinigame recoge y
     // deshace toda la cadena del minijuego de una vez.
-    showMinigameRetry(message = '¡Demasiado picante!') {
+    showMinigameRetry(message = '¡No ha salido bien!') {
         return new Promise((resolve, reject) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay minigame-retry';
