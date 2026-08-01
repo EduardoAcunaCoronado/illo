@@ -35,7 +35,7 @@
         },
         {
           "character": "Samu",
-          "text": "¡Oh, no! Me he quedado dormido. Y eso que le dije a ChatGPT que me despertara.",
+          "text": "¡Oh, no! Me he quedado dormido. Y eso que le dije a GePeTo que me despertara.",
           "actions": [
             {
               "type": "showCharacter",

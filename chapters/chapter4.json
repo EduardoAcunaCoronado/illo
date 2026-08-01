@@ -576,7 +576,7 @@
         },
         {
           "character": "José",
-          "text": "Porque eres el único dragón azul con una camiseta de Kingdom Hearts.",
+          "text": "Porque eres el único dragón azul con una camiseta de Kingom Souls.",
           "actions": [
             {
               "type": "showCharacter",
@@ -592,7 +592,7 @@
         },
         {
           "character": "Edu",
-          "text": "¡Hostia! No me había dado cuenta para nada.",
+          "text": "¡Hostia! No me había dado cuenta para nada. Ya sabéis que es el único Souls que juego.",
           "actions": [
             {
               "type": "showCharacter",

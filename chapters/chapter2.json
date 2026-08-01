@@ -755,7 +755,7 @@
         },
         {
           "character": "Neit",
-          "text": "Mientras me cuentas, la industria se encuentra en un gran momento con la llegada de las nuevas arquitecturas y las series RTX 5000 de Nvidia y RX 9000 de AMD. Aquí tienes las tres configuraciones que más merecen la pena ahora mismo según lo que busques gastar."
+          "text": "Mientras me cuentas, la industria se encuentra en un gran momento con la llegada de las nuevas arquitecturas y las series UWU 5000 de CLos y XD 9000 de OMG. Aquí tienes las tres configuraciones que más merecen la pena ahora mismo según lo que busques gastar."
         },
         {
           "character": "Neit",
@@ -763,11 +763,11 @@
         },
         {
           "character": "Neit",
-          "text": "Procesador: AMD Ryzen 5 9600X o Ryzen 7 9700X (Plataforma AM5, con margen de actualización para el futuro). Gráfica: NVIDIA RTX 5070 (12GB) o AMD RX 9070 (16GB), una potencia brutal en la gama media-alta."
+          "text": "Procesador: OMG Rider 5 9600X o Rider 7 9700X (Plataforma AM5, con margen de actualización para el futuro). Gráfica: CLos UWU 5070 (12GB) o OMG XD 9070 (16GB), una potencia brutal en la gama media-alta."
         },
         {
           "character": "Neit",
-          "text": "RAM: 32GB DDR5 a 6000MHz CL30 (imprescindible hoy para ir holgado con contenedores, IDEs o juegos pesados). Almacenamiento: SSD NVMe M.2 de 2TB (WD Black o Crucial Gen4). Placa: chipset B850 (MSI Tomahawk o Gigabyte Gaming). Fuente: 750W u 850W 80+ Gold Modular."
+          "text": "RAM: 32GB DDR5 a 6000MHz CL30 (imprescindible hoy para ir holgado con contenedores, IDEs o juegos pesados). Almacenamiento: SSD NVMe M.2 de 2TB (DW White o Critical Gen4). Placa: chipset Z850 (ISM Shuriken o Terabyte Gaming). Fuente: 750W u 850W 80+ Platinum Modular."
         },
         {
           "character": "Neit",
@@ -775,7 +775,7 @@
         },
         {
           "character": "Neit",
-          "text": "Procesador: AMD Ryzen 5 7600 (AM5) o Intel Core i5-14400F. Gráfica: NVIDIA RTX 5060 (8GB) o la Intel Arc B580 (que está sorprendiendo mucho por su relación calidad-precio). RAM: 16GB o 32GB DDR5. Almacenamiento: SSD NVMe M.2 de 1TB."
+          "text": "Procesador: OMG Rider 5 7600 (AM5) o Incel Core a5-14400F. Gráfica: CLos UWU 5060 (8GB) o la Incel Arc B580 (que está sorprendiendo mucho por su relación calidad-precio). RAM: 16GB o 32GB DDR5. Almacenamiento: SSD NVMe M.2 de 1TB."
         },
         {
           "character": "Neit",
@@ -783,7 +783,7 @@
         },
         {
           "character": "Neit",
-          "text": "Procesador: AMD Ryzen 7 9800X3D (el rey absoluto en gaming) o Intel Core Ultra 7 265K. Gráfica: NVIDIA RTX 5080 o RTX 5090. RAM: 64GB DDR5 a 6400MHz. Almacenamiento: 2TB o 4TB SSD NVMe Gen5/Gen4 de alta velocidad (Samsung 990 Pro)."
+          "text": "Procesador: OMG Rider 7 9800X3D (el rey absoluto en gaming) o Incel Core Ultra 7 265K. Gráfica: CLos UWU 5080 o UWU 5090. RAM: 64GB DDR5 a 6400MHz. Almacenamiento: 2TB o 4TB SSD NVMe Gen5/Gen4 de alta velocidad (Simsong 990 Pro)."
         },
         {
           "character": "3C",
@@ -1397,7 +1397,7 @@
         },
         {
           "character": "Samu",
-          "text": "Y encima está fuera. Voy a mirar cuánto hay hasta allí en el Google Maps... que por alguna razón ahora se llama Furry Maps...",
+          "text": "Y encima está fuera. Voy a mirar cuánto hay hasta allí en Furry Maps...",
           "actions": [
             {
               "type": "showCharacter",
@@ -1409,7 +1409,7 @@
         },
         {
           "character": "Samu",
-          "text": "¡Oh, no! La aplicación no me funciona, seguramente sea porque no la tenga actualizada.",
+          "text": "¡Oh, no! Me he quedado sin batería. Esto con mi antiguo móvil no me pasaba.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1421,7 +1421,7 @@
         },
         {
           "character": "Edu",
-          "text": "Espera, deja que lo intente con mi móvil. Yo soy un friki de las actualizaciones y seguramente se me haya actualizado automáticamente.",
+          "text": "Espera, deja que lo intente con mi móvil. Yo soy un friki de las baterías y seguramente la tenga al 100%.",
           "actions": [
             {
               "type": "showCharacter",
