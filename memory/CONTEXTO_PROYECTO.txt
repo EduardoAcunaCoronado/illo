@@ -423,9 +423,11 @@ PRESENTACIÓN
   El vídeo puede terminar o saltarse con su botón; después funde al menú, activa
   menu_loop.mp4 y lanza el tema. Menú y vídeo de fondo permanecen ocultos e
   inertes antes del gesto. El volumen del opening respeta illo_vol_music. En la
-  build Electron, el vídeo declara una superficie fija 1280x720, fuerza layout
-  al salir de hidden y solo se hace visible dos requestAnimationFrame después
-  de playing; así no aparece el primer frame 640x360 en modo ventana. Si
+  build Electron y en navegador, el vídeo toma en píxeles el tamaño real del
+  viewport al mostrarse y al redimensionar, fuerza layout al salir de hidden y
+  solo se hace visible dos requestAnimationFrame después de playing; así no
+  aparece el primer frame 640x360 en modo ventana ni queda limitado a 1280x720
+  en una ventana grande. Si
   illo_vol_music estaba exactamente a 0, «Entrar con sonido» lo restaura al
   70 % y lo persiste; cualquier volumen audible previo se conserva.
 - El fondo del menú es un bucle H.264 4K de 10 s, 48 FPS y 480 frames en
@@ -482,6 +484,61 @@ VALIDACIÓN REALIZADA EL 2026-07-30
   y “prettier” no está disponible; no es un fallo del código del juego.
 
 REGLAS PARA CAMBIOS FUTUROS
+- Antes de abrir Furry Maps, Samu encuentra en Furrielva una botella vacía y sin
+  tapón con el tomate coronado y el nombre de Kingdom Ketchup. Esa botella es la
+  razón concreta por la que pregunta a los repartidores y comercios de dónde
+  salen «estas botellas». No conoce todavía la promoción ni el tapón dorado.
+- Samu, en su forma furry, va descalzo: las descripciones deben hablar de sus
+  patas y no atribuirle zapatillas, zapatos u otro calzado.
+- El fondo activo de la plaza de Furrielva es
+  `assets/backgrounds/iglesia_furrielva_v2_4k.png` (3840x2160). Mantiene la
+  iglesia, mercado, fuente y reparto animal del original; no volver a enlazar
+  `iglesia.png` como fondo principal del capítulo 2.
+- La investigación de Furrielva usa un móvil horizontal ficticio con **Furry
+  Maps**. El mapa activo es
+  `assets/generated/chapter2_v2/backgrounds/mapa_furrielva_furry_maps_v2_4k.png`:
+  la Iglesia del Rocío ocupa el centro y los distritos de plaza, comercios,
+  callejón y fábrica quedan alrededor. Interfaz, textos y zonas se dibujan con
+  HTML/CSS; no deben hornearse dentro del PNG. No usar iconos ni rutas fijas:
+  Samu presenta las tres zonas con un tour resaltado y después cada región real
+  del mapa crece al hover/foco. El trayecto discontinuo solo aparece después de
+  confirmar un destino.
+- En Furry Maps, un Samu diminuto camina desde la Iglesia del Rocío usando
+  `assets/characters/samu/ketchup/1.png` a `4.png` (sprites traídos de
+  `origin/feature/nuevo-minijuego-ketchup`) y celebra al llegar. Cada destino
+  abre un fondo 4K de `assets/generated/chapter2_v2/locations/` y un informante:
+  Tadeo Trufa/plaza, Lía Lince/comercios y Rulo Mapache/callejón. Cada elección
+  concede la pista obligatoria y lore opcional diferente. Las visitas son
+  conversaciones completas: el NPC se queja o trabaja en voz alta, Samu se
+  incorpora de forma natural y la pista se descubre durante el intercambio.
+  Samu no sabe nada del tapón dorado durante Furry Maps; lo aprende después del
+  guardia. Los retratos transparentes individuales son `tadeo_trufa_v1.png`,
+  `lia_lince_v1.png` y `rulo_mapache_v1.png` dentro de
+  `assets/generated/chapter2_v2/characters/`. Los nombres de hablante mantienen
+  su identidad cromática también dentro del minijuego: Samu rojo, Tadeo
+  naranja, Lía violeta y Rulo azul verdoso; los avisos de sistema son turquesa.
+- Kingdom Ketchup debe quedar visualmente oculta por una interferencia
+  glitcheada hasta reunir las tres pistas. Entonces el glitch desaparece, la
+  fábrica se revela y Samu concluye que la interferencia la borraba del mapa.
+  Antes de revelar a Zip no usar «comprimir» o «compresión» para describir la
+  anomalía: delata demasiado pronto el juego de palabras. No permitir seleccionar
+  la fábrica antes de esta revelación.
+- En la secuencia del tapón, no colocar `goToScene` en una línea que también
+  tenga texto: las acciones se ejecutan antes del diálogo y lo omitirían. El
+  expositor, el portal y la bienvenida interior usan CG precargados y un fundido
+  a negro entre ellos para impedir flashes o solapamientos de las láminas 4K.
+  El portal no sale de la botella que Samu sostiene: una botella gigantesca de
+  luz aparece de la nada en el pasillo y su cristal se abre hacia la fábrica.
+- El fondo activo de los pasillos Ketchup/Catsup es
+  `assets/backgrounds/kingdom_ketchup_pasillos_v2_4k.png` (3840x2160). Todas
+  las botellas deben seguir el diseño ficticio de cuerpo alto, tapón-corona
+  dorado y etiqueta crema con corona y tomate; no recuperar siluetas, tapones
+  blancos ni etiquetas que recuerden a Heinz u otra marca real.
+- El fondo activo de la zona de Neit y sus cajas es
+  `assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png` (3840x2160).
+  Mantener las guindillas y algunas latas con el emblema ficticio porque las
+  menciona el diálogo; todas las botellas deben usar el tapón-corona canónico y
+  no debe haber marcas reales ni texto de producto inventado.
 - Kingdom Ketchup v2 tiene un paquete visual integrado en
   assets/generated/chapter2_v2/. Incluye fondos/CG 4K, tres poses deformadas
   de Edu.zip, cuatro oficios Ketchling y objetos de minijuego. manifest.json
@@ -513,9 +570,12 @@ REGLAS PARA CAMBIOS FUTUROS
   924x1702, igual que el teléfono, para permanecer centrado con `contain` en
   ventanas apaisadas y verticales. `characterGlitch` se dispara al establecer
   la llamada y de nuevo durante la vacilación `lo enten... lo entenderás`; no
-  rotular ni explicar la anomalía de forma explícita en el diálogo. En esa
+  rotular la anomalía con texto técnico. Después Samu cree que Edu se parecía a
+  Zip en aquella foto, pero se convence de que ha sido la cobertura. En esa
   última frase se conserva además `characterFullGlitch`: un segundo golpe que
   afecta al teléfono entero con corte cromático, shake leve y destello azul.
+  Ambos efectos reproducen `sfx_estatica.mp3`; si coinciden, el motor evita que
+  las dos copias se solapen y saturen.
 - Tras integrar `master`, el nombre visible del personaje técnico `iphone5` es
   "Móvil", pero las llamadas activas siguen siendo las nuestras: Edu azul,
   Tony rosa y José verde, siempre humanos. Los sprites heredados

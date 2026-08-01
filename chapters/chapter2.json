@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/iglesia.png"
+              "value": "assets/backgrounds/iglesia_furrielva_v2_4k.png"
             },
             {
               "type": "playSound",
@@ -63,20 +63,24 @@
           ]
         },
         {
+          "character": "3C",
+          "text": "Una botella vacía rueda entre la gente hasta detenerse junto a una de las patas de Samu. No tiene tapón. En la etiqueta, bajo un tomate coronado, todavía se distingue un nombre: Kingdom Ketchup."
+        },
+        {
           "character": "Samu",
-          "text": "Pero bueno, tengo curiosidad por ver ese Kingdom Ketchup. Voy a buscar a Edu.",
+          "text": "¿Kingdom Ketchup? Así que existe... y alguien está repartiendo esto por la ciudad.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "determined"
+              "pose": "surprised"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "Primero encontraré la fábrica. Edu dijo chimeneas rojas y una corona. Toca preguntar y mirar bien la ciudad.",
+          "text": "Furry Maps no encuentra la fábrica, pero la botella ha tenido que salir de algún sitio. Preguntaré por la etiqueta y seguiré el rastro.",
           "actions": [
             {
               "type": "showCharacter",
@@ -106,7 +110,7 @@
             {
               "type": "minigame",
               "game": "furrielvaExplore",
-              "background": "assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_exterior_v2_4k.png"
+              "background": "assets/generated/chapter2_v2/backgrounds/mapa_furrielva_furry_maps_v2_4k.png"
             },
             {
               "type": "goToScene",
@@ -232,7 +236,7 @@
         {
           "character": "Ketchling de seguridad",
           "speakingAs": "ketchling",
-          "text": "Los tapones se reparten en los supermercados de Furrielva. Noche es rápido, Mercaguasa queda más lejos y en El Jarrón pasan... cosas con gatos.",
+          "text": "Las botellas de entrada forman parte de una promoción nueva. Todavía deberían quedar algunas en los supermercados de Furrielva.",
           "actions": [
             {
               "type": "showCharacter",
@@ -244,7 +248,41 @@
         },
         {
           "character": "Samu",
-          "text": "Pues tocará conseguir uno. Aguanta, Edu.",
+          "text": "¿Y cómo se supone que sé en cuál buscar?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Ketchling de seguridad",
+          "speakingAs": "ketchling",
+          "text": "En Noche reponen rápido. Mercaguasa suele tener más cajas, aunque está más lejos. Y El Jarrón queda cerca, pero...",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "security"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Pero ¿qué?"
+        },
+        {
+          "character": "Ketchling de seguridad",
+          "speakingAs": "ketchling",
+          "text": "Digamos que últimamente tienen un problema con los gatos."
+        },
+        {
+          "character": "Samu",
+          "text": "Perfecto. Una búsqueda del tesoro con felinos. Aguanta, Edu.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -273,7 +311,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/iglesia.png",
+              "value": "assets/backgrounds/iglesia_furrielva_v2_4k.png",
               "cut": true
             },
             {
@@ -675,11 +713,18 @@
         },
         {
           "character": "Samu",
-          "text": "...Claro. Exclusividad industrial.",
+          "text": "...Claro. Exclusividad industrial. Bueno, al menos ya tengo la entrada."
+        },
+        {
           "actions": [
             {
+              "type": "fade",
+              "to": "black",
+              "duration": 320
+            },
+            {
               "type": "hideCG",
-              "duration": 400
+              "duration": 0
             },
             {
               "type": "goToScene",
@@ -694,23 +739,35 @@
       "lines": [
         {
           "character": "3C",
-          "text": "Al girar el tapón, el cristal se llena de luz roja. El reflejo de la fábrica aparece dentro de la botella y se abre como una puerta.",
+          "text": "Al girar el tapón, una botella gigantesca de luz aparece de la nada en mitad del pasillo. Su cristal se abre como un portal y, al otro lado, Samu distingue la fábrica.",
           "actions": [
             {
               "type": "showCG",
               "path": "assets/generated/chapter2_v2/cg/golden_cap_portal_activation_4k.png",
-              "duration": 700
+              "duration": 0
+            },
+            {
+              "type": "fade",
+              "from": "black",
+              "duration": 480
             }
           ],
           "textSpeed": "slow"
         },
         {
           "character": "Samu",
-          "text": "Así que la fábrica era real... y las botellas son atajos. Vale, esto ya tiene más sentido. Más o menos.",
+          "text": "Así que las botellas también son atajos. Vale, esto ya tiene más sentido. Más o menos."
+        },
+        {
           "actions": [
             {
+              "type": "fade",
+              "to": "black",
+              "duration": 320
+            },
+            {
               "type": "hideCG",
-              "duration": 400
+              "duration": 0
             },
             {
               "type": "goToScene",
@@ -763,7 +820,12 @@
             {
               "type": "showCG",
               "path": "assets/generated/chapter2_v2/cg/ketchlings_factory_welcome_4k.png",
-              "duration": 650
+              "duration": 0
+            },
+            {
+              "type": "fade",
+              "from": "black",
+              "duration": 520
             }
           ]
         },
@@ -853,7 +915,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_pasillos.png",
+              "value": "assets/backgrounds/kingdom_ketchup_pasillos_v2_4k.png",
               "cut": true
             },
             {
@@ -896,7 +958,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_pasillos.png",
+              "value": "assets/backgrounds/kingdom_ketchup_pasillos_v2_4k.png",
               "cut": true
             },
             {
@@ -948,7 +1010,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_estanterias.png"
+              "value": "assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png"
             },
             {
               "type": "hideCharacter",
@@ -1025,7 +1087,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_estanterias.png",
+              "value": "assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png",
               "cut": true
             },
             {
@@ -1108,7 +1170,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/kingdom_ketchup_estanterias.png",
+              "value": "assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png",
               "cut": true
             },
             {
@@ -1661,7 +1723,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/backgrounds/iglesia.png"
+              "value": "assets/backgrounds/iglesia_furrielva_v2_4k.png"
             },
             {
               "type": "hideCharacter",

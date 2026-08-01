@@ -221,6 +221,11 @@
             <input type="checkbox" id="tp-battle-debug-stats"> Mostrar HP/PM del enemigo en Battle
         </label>
 
+        <h2>🗺️ Investigación de Furrielva</h2>
+        <div class="tp-row">
+            <button class="tp-btn" style="--c:#63e0cd" onclick="launchFurrielvaMap()">Abrir Furry Maps</button>
+        </div>
+
         <h2>🎬 Créditos</h2>
         <div class="tp-row">
             <button class="tp-btn" style="--c:#ffd166" onclick="launchCredits()">Ver créditos</button>
@@ -482,6 +487,16 @@
             panel.classList.add('hidden');
             await engine.playCreditsMinigame();
             resultEl.textContent = '✅ Créditos finalizados.';
+            panel.classList.remove('hidden');
+        }
+
+        async function launchFurrielvaMap() {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            await engine.playFurrielvaExploreMinigame({
+                background: 'assets/generated/chapter2_v2/backgrounds/mapa_furrielva_furry_maps_v2_4k.png'
+            });
+            resultEl.textContent = '✅ Ruta a Kingdom Ketchup localizada.';
             panel.classList.remove('hidden');
         }
     </script>

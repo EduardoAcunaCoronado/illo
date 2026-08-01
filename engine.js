@@ -516,75 +516,392 @@ class VisualNovelEngine {
         if (this._abortarMinijuego) this._abortarMinijuego();
     }
 
-    // Investigación breve de Furrielva. El jugador reúne tres pistas antes de
-    // localizar físicamente la fábrica. Los nodos ya visitados quedan marcados
-    // y todos los recursos visuales se precargan una sola vez por sesión.
+    // Investigación narrativa de Furrielva. Furry Maps presenta las zonas como
+    // áreas reales del mapa: Samu las introduce, el jugador confirma cada ruta
+    // y un Samu diminuto recorre el trayecto antes de entrar en cada escenario.
     playFurrielvaExploreMinigame(options = {}) {
         this.isWaitingForInput = false;
         const background = options.background ||
-            'assets/generated/chapter2_v2/backgrounds/kingdom_ketchup_exterior_v2_4k.png';
-        const clues = [
-            { id: 'plaza', label: 'Plaza', icon: '⛲', x: 20, y: 33,
-              text: 'Un repartidor recuerda camiones rojos tomando siempre la carretera industrial.' },
-            { id: 'comercio', label: 'Zona comercial', icon: '🛒', x: 45, y: 57,
-              text: 'Todos los supermercados anuncian una promoción: «Busca el tapón dorado».' },
-            { id: 'callejon', label: 'Callejón', icon: '👑', x: 69, y: 38,
-              text: 'Una corona con tomate, pintada en una tubería, apunta hacia las afueras.' }
+            'assets/generated/chapter2_v2/backgrounds/mapa_furrielva_furry_maps_v2_4k.png';
+        const samuPortrait = 'assets/characters/samu/samu_thinking.png';
+        const samuFrames = [1, 2, 3, 4, 5, 7].map(n =>
+            `assets/characters/samu/ketchup/${n}.png`);
+        const locations = [
+            {
+                id: 'plaza', label: 'Plaza del Rocío', area: 'zone-plaza',
+                route: 'M500 276 C420 230 340 155 220 135', destination: [22, 27],
+                background: 'assets/generated/chapter2_v2/locations/furrielva_plaza_investigacion_v1_4k.webp',
+                npc: 'TADEO TRUFA',
+                color: '#e98245',
+                portrait: 'assets/generated/chapter2_v2/characters/tadeo_trufa_v1.png',
+                opening: [
+                    { speaker: 'TADEO TRUFA', text: 'Genial... otra entrega tarde. Como vuelvan a cortarme la avenida esos camiones rojos, el jefe me descuenta el viaje.' },
+                    { speaker: 'SAMU', text: 'Perdona, no quería meterme, pero ¿has dicho camiones rojos? Me he encontrado esta botella. ¿Reconoces la etiqueta de Kingdom Ketchup?' },
+                    { speaker: 'TADEO TRUFA', text: 'No conozco ese nombre. Pero si es una fábrica, esos camiones son lo más raro que ha pasado por aquí. ¿Qué necesitas saber?' }
+                ],
+                choices: [
+                    {
+                        label: 'Preguntar por los camiones rojos',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Hacia dónde van cuando salen de la plaza?' },
+                            { speaker: 'TADEO TRUFA', text: 'Al anochecer toman la carretera industrial. Sin matrícula, sin empresa; sólo una corona encima de un tomate.' },
+                            { speaker: 'SAMU', text: 'Edu mencionó ketchup. Esa corona puede ser la primera pista de verdad.' }
+                        ],
+                        lore: 'Los camiones rojos sin matrícula siguen la carretera industrial y llevan una corona sobre un tomate.'
+                    },
+                    {
+                        label: 'Preguntar por sus rutas',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Tus mapas de reparto no señalan de dónde vienen?' },
+                            { speaker: 'TADEO TRUFA', text: 'Los nuevos no. Lo extraño es que mi libreta antigua sí marca una nave al final de esa carretera, aunque ahora la calle tiene otro nombre.' },
+                            { speaker: 'SAMU', text: 'O sea, el sitio estaba antes de que el mapa decidiera olvidarlo.' }
+                        ],
+                        lore: 'La libreta antigua de Tadeo conserva una nave al final de la carretera industrial, aunque la calle haya cambiado de nombre.'
+                    }
+                ]
+            },
+            {
+                id: 'comercio', label: 'Zona comercial', area: 'zone-commerce',
+                route: 'M500 276 C430 330 350 375 245 360', destination: [25, 72],
+                background: 'assets/generated/chapter2_v2/locations/furrielva_zona_comercial_v1_4k.webp',
+                npc: 'LÍA LINCE',
+                color: '#c878dc',
+                portrait: 'assets/generated/chapter2_v2/characters/lia_lince_v1.png',
+                opening: [
+                    { speaker: 'LÍA LINCE', text: 'Fantástico. Seis cajas que nadie ha pedido, un proveedor sin dirección y una promoción que no existe. ¿Dónde se supone que meto yo todo esto?' },
+                    { speaker: 'SAMU', text: 'Eh... perdona. No quería escuchar, pero ¿has dicho que el proveedor no tiene dirección?' },
+                    { speaker: 'LÍA LINCE', text: '¡Ah! No te había visto. Sí, han aparecido esta mañana. ¿Tú también vienes a reclamarme algo?' },
+                    { speaker: 'SAMU', text: 'Al contrario. Busco Kingdom Ketchup y Furry Maps se niega a mostrarme dónde está.' },
+                    { speaker: 'LÍA LINCE', text: 'Pues las cajas llevan una corona con tomate y las palabras «Kingdom Ketchup». Parece que los dos buscamos al mismo fantasma.' }
+                ],
+                choices: [
+                    {
+                        label: 'Examinar las cajas',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Puedo mirar la etiqueta de envío?' },
+                            { speaker: 'LÍA LINCE', text: 'Adelante. Sólo trae un lote, K-K/03, y una ruta de recogida hacia la salida industrial.' },
+                            { speaker: 'SAMU', text: 'K-K. No es precisamente una firma discreta.' }
+                        ],
+                        lore: 'Las cajas de Kingdom Ketchup usan el lote K-K/03 y regresan por una ruta hacia la salida industrial.'
+                    },
+                    {
+                        label: 'Revisar el albarán',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Y el albarán? A veces queda una dirección en la letra pequeña.' },
+                            { speaker: 'LÍA LINCE', text: 'Dirección, ninguna. Pero mira los comercios: El Jarrón, Noche y Mercaguasa. Ayer tenían otros nombres; hoy hasta los recibos antiguos aparecen corregidos.' },
+                            { speaker: 'SAMU', text: 'Vale... esto ya no es una campaña publicitaria normal.' }
+                        ],
+                        lore: 'Los nombres de las tiendas y hasta sus recibos antiguos han cambiado sin que Lía los modificara.'
+                    }
+                ]
+            },
+            {
+                id: 'callejon', label: 'Callejón de servicio', area: 'zone-alley',
+                route: 'M500 276 C565 215 635 150 730 135', destination: [73, 27],
+                background: 'assets/generated/chapter2_v2/locations/furrielva_callejon_tuberias_v1_4k.webp',
+                npc: 'RULO MAPACHE',
+                color: '#55b9c8',
+                portrait: 'assets/generated/chapter2_v2/characters/rulo_mapache_v1.png',
+                opening: [
+                    { speaker: 'RULO MAPACHE', text: 'Presión en la línea siete, calor en la acometida... y el plano insiste en que aquí no hay ninguna nave. Claro que sí, plano. Lo que tú digas.' },
+                    { speaker: 'SAMU', text: 'Perdona... ¿estás discutiendo con un mapa?' },
+                    { speaker: 'RULO MAPACHE', text: 'Con un mapa no. Con el gracioso que lo actualizó. Hay una instalación consumiendo media red y, según esto, sólo existe un solar vacío.' },
+                    { speaker: 'SAMU', text: 'Estoy buscando una fábrica que tampoco aparece en Furry Maps. Kingdom Ketchup.' },
+                    { speaker: 'RULO MAPACHE', text: 'Entonces puede que tu fábrica y mi tubería fantasma sean el mismo problema.' }
+                ],
+                choices: [
+                    {
+                        label: 'Seguir la tubería marcada',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Puedes saber adónde llega por la presión?' },
+                            { speaker: 'RULO MAPACHE', text: 'Sale bajo tierra y reaparece en el límite industrial, justo debajo del solar que el mapa deja en blanco.' },
+                            { speaker: 'SAMU', text: 'Tres pistas, el mismo lugar. Ya no parece una casualidad.' }
+                        ],
+                        lore: 'La conducción reaparece bajo el solar vacío del límite industrial.'
+                    },
+                    {
+                        label: 'Preguntar por el fallo del mapa',
+                        dialogue: [
+                            { speaker: 'SAMU', text: '¿Qué ocurre cuando acercas el mapa a esa parcela?' },
+                            { speaker: 'RULO MAPACHE', text: 'Ruido, bandas de colores y vuelta al solar vacío. Siempre la misma zona, incluso sin conexión.' },
+                            { speaker: 'SAMU', text: 'Entonces no es cobertura. Hay algo ahí y el mapa no consigue enseñarlo.' }
+                        ],
+                        lore: 'El mapa falla siempre sobre la misma parcela, incluso sin conexión a la red.'
+                    }
+                ]
+            }
         ];
 
-        this.preloadImages([background]);
+        this.preloadImages([
+            background, samuPortrait,
+            ...samuFrames,
+            ...locations.flatMap(location => [location.background, location.portrait])
+        ]);
         return new Promise(resolve => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay furrielva-explore';
             overlay.innerHTML = `
-                <div class="furrielva-head">
-                    <div><strong>INVESTIGA FURRIELVA</strong><small>Encuentra 3 pistas sobre Kingdom Ketchup</small></div>
-                    <span class="furrielva-counter">0 / ${clues.length}</span>
+                <div class="furrielva-device" role="application" aria-label="Furry Maps">
+                    <i class="furrielva-side-button furrielva-side-button-a" aria-hidden="true"></i>
+                    <i class="furrielva-side-button furrielva-side-button-b" aria-hidden="true"></i>
+                    <div class="furrielva-screen">
+                        <div class="furrielva-statusbar"><span>09:41</span><span>FURRIELVA · 5G&nbsp;&nbsp;◉</span></div>
+                        <div class="furrielva-head">
+                            <div class="furrielva-brand"><span aria-hidden="true">🐾</span><div><strong>Furry Maps</strong><small>Modo investigación</small></div></div>
+                            <div class="furrielva-search"><span aria-hidden="true">⌕</span><div><b>Explorar Furrielva</b><small>Pregunta en tres zonas para localizar Kingdom Ketchup</small></div></div>
+                            <span class="furrielva-counter">0 / ${locations.length}</span>
+                        </div>
+                        <div class="furrielva-map" style="--furrielva-bg:url('${this.cacheBustAsset(background)}')">
+                            <svg class="furrielva-route" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true">
+                                <path></path>
+                            </svg>
+                            <div class="furrielva-landmark"><span aria-hidden="true">◆</span>Iglesia del Rocío</div>
+                            ${locations.map(location => `<button class="furrielva-zone ${location.area}" data-location="${location.id}" disabled><b>${location.label}</b><small>Seleccionar zona</small></button>`).join('')}
+                            <div class="furrielva-kingdom-lock" aria-label="Zona no disponible"><span>UBICACIÓN INESTABLE</span><i></i><i></i><i></i></div>
+                            <img class="furrielva-mini-samu" alt="Samu recorriendo la ruta" src="${this.cacheBustAsset(samuFrames[0])}">
+                            <div class="furrielva-tour" aria-live="polite">
+                                <img src="${this.cacheBustAsset(samuPortrait)}" alt="Samu">
+                                <div><strong>SAMU</strong><p></p><button type="button">Siguiente</button></div>
+                            </div>
+                            <div class="furrielva-card" aria-live="polite">Primero voy a ordenar las posibilidades.</div>
+                            <div class="furrielva-confirm" role="dialog" aria-modal="true" aria-labelledby="furrielva-confirm-title" hidden>
+                                <div><small>FURRY MAPS</small><h3 id="furrielva-confirm-title">¿Marcar como ruta?</h3><p></p><span><button type="button" data-confirm="no">Seguir mirando</button><button type="button" data-confirm="yes">Marcar ruta</button></span></div>
+                            </div>
+                            <div class="furrielva-location-scene" hidden>
+                                <div class="furrielva-npc-portrait" role="img"></div>
+                                <div class="furrielva-location-dialogue"><strong></strong><p></p><div class="furrielva-location-choices"></div></div>
+                            </div>
+                            <div class="furrielva-blackout" aria-hidden="true"></div>
+                        </div>
+                        <div class="furrielva-appnav" aria-hidden="true"><span class="is-active">⌖<small>Mapa</small></span><span>♧<small>Lugares</small></span><span>●<small>Perfil</small></span></div>
+                    </div>
                 </div>
-                <div class="furrielva-map" style="--furrielva-bg:url('${this.cacheBustAsset(background)}')">
-                    <div class="furrielva-route" aria-hidden="true"></div>
-                    ${clues.map(c => `<button class="furrielva-hotspot" data-clue="${c.id}" style="left:${c.x}%;top:${c.y}%"><span>${c.icon}</span>${c.label}</button>`).join('')}
-                    <button class="furrielva-hotspot furrielva-factory" data-factory style="left:84%;top:68%" disabled><span>🏭</span>Fábrica</button>
-                    <div class="furrielva-card">Sigue las señales de la ciudad. La fábrica se desbloqueará al relacionar las tres pistas.</div>
-                </div>
-                <div class="minigame-instructions">Haz clic en los puntos señalados. También puedes usar Tab y Enter.</div>`;
+                <div class="minigame-instructions">Explora las zonas resaltadas · También puedes usar Tab y Enter</div>`;
             document.getElementById('game-container').appendChild(overlay);
 
             const visited = new Set();
+            const lore = [];
+            const map = overlay.querySelector('.furrielva-map');
             const card = overlay.querySelector('.furrielva-card');
             const counter = overlay.querySelector('.furrielva-counter');
-            const factory = overlay.querySelector('[data-factory]');
+            const tour = overlay.querySelector('.furrielva-tour');
+            const tourText = tour.querySelector('p');
+            const tourButton = tour.querySelector('button');
+            const confirm = overlay.querySelector('.furrielva-confirm');
+            const locationScene = overlay.querySelector('.furrielva-location-scene');
+            const routeSvg = overlay.querySelector('.furrielva-route');
+            const routePath = routeSvg.querySelector('path');
+            const miniSamu = overlay.querySelector('.furrielva-mini-samu');
+            const kingdomLock = overlay.querySelector('.furrielva-kingdom-lock');
             const swallow = e => e.stopPropagation();
             overlay.addEventListener('click', swallow);
 
-            overlay.querySelectorAll('[data-clue]').forEach(button => {
-                button.addEventListener('click', () => {
-                    const clue = clues.find(c => c.id === button.dataset.clue);
-                    if (!clue) return;
-                    visited.add(clue.id);
-                    button.classList.add('is-found');
-                    button.disabled = true;
-                    card.textContent = clue.text;
-                    counter.textContent = `${visited.size} / ${clues.length}`;
-                    if (visited.size === clues.length) {
-                        factory.disabled = false;
-                        factory.classList.add('is-ready');
-                        card.textContent = 'Las tres pistas encajan: Kingdom Ketchup está en el distrito industrial.';
-                    }
+            let tourIndex = 0;
+            let pendingLocation = null;
+            const tourLines = [
+                { id: 'plaza', text: 'Esta botella vacía lleva el nombre de Kingdom Ketchup. La plaza está llena de repartidores; alguno reconocerá la etiqueta o sabrá de dónde ha salido.' },
+                { id: 'comercio', text: 'Si nadie reconoce el nombre, probaré en la zona comercial. Los comercios conocen a casi todos los repartidores y proveedores de la ciudad.' },
+                { id: 'callejon', text: 'Y ese callejón de servicio parece comunicar con las instalaciones de la ciudad. Quizá algún trabajador municipal sepa qué hay detrás del fallo del mapa.' }
+            ];
+
+            const zoneButton = id => overlay.querySelector(`[data-location="${id}"]`);
+            const setTourStep = () => {
+                overlay.querySelectorAll('.furrielva-zone').forEach(zone => zone.classList.remove('is-tour-focus'));
+                const step = tourLines[tourIndex];
+                zoneButton(step.id)?.classList.add('is-tour-focus');
+                tourText.textContent = step.text;
+                tourButton.textContent = tourIndex === tourLines.length - 1 ? 'Empezar a investigar' : 'Siguiente zona';
+            };
+
+            const finishTour = () => {
+                overlay.querySelectorAll('.furrielva-zone').forEach(zone => {
+                    zone.classList.remove('is-tour-focus');
+                    zone.disabled = false;
                 });
+                tour.classList.add('is-leaving');
+                setTimeout(() => { tour.hidden = true; }, 280);
+                card.textContent = 'Pasa el cursor por una zona y elige por dónde empezar.';
+            };
+
+            tourButton.addEventListener('click', () => {
+                if (tourIndex < tourLines.length - 1) {
+                    tourIndex += 1;
+                    setTourStep();
+                } else {
+                    finishTour();
+                }
+            });
+            setTourStep();
+
+            const resetRoute = () => {
+                routeSvg.classList.remove('is-active');
+                routePath.setAttribute('d', '');
+                miniSamu.className = 'furrielva-mini-samu';
+                miniSamu.style.left = '';
+                miniSamu.style.top = '';
+                map.classList.remove('is-travelling');
+            };
+
+            const renderLocation = location => {
+                locationScene.hidden = false;
+                locationScene.style.setProperty('--location-bg', `url('${this.cacheBustAsset(location.background)}')`);
+                const portrait = locationScene.querySelector('.furrielva-npc-portrait');
+                portrait.style.setProperty('--npc-portrait', `url('${this.cacheBustAsset(location.portrait)}')`);
+                portrait.setAttribute('aria-label', location.npc);
+                const speaker = locationScene.querySelector('strong');
+                const text = locationScene.querySelector('p');
+                const choices = locationScene.querySelector('.furrielva-location-choices');
+                const setSpeaker = name => {
+                    speaker.textContent = name;
+                    const color = name === 'SAMU'
+                        ? ((this.characters.samu && this.characters.samu.color) || 'red')
+                        : name === location.npc
+                            ? location.color
+                            : '#55d8c6';
+                    speaker.style.color = this.readableNameColor(color);
+                };
+
+                const returnToMap = () => {
+                    visited.add(location.id);
+                    const zone = zoneButton(location.id);
+                    zone.classList.add('is-found');
+                    zone.disabled = true;
+                    counter.textContent = `${visited.size} / ${locations.length}`;
+                    locationScene.classList.add('is-leaving');
+                    setTimeout(() => {
+                        locationScene.hidden = true;
+                        locationScene.classList.remove('is-leaving');
+                        resetRoute();
+                        if (visited.size === locations.length) revealKingdom();
+                        else card.textContent = `Pista conseguida en ${location.label}. Quedan ${locations.length - visited.size}.`;
+                    }, 420);
+                };
+
+                const showDialogue = (lines, onComplete) => {
+                    let index = 0;
+                    const showCurrent = () => {
+                        const line = lines[index];
+                        setSpeaker(line.speaker);
+                        text.textContent = line.text;
+                        choices.innerHTML = `<button type="button" data-continue>${index === lines.length - 1 ? 'Continuar' : 'Siguiente'}</button>`;
+                        choices.querySelector('[data-continue]').addEventListener('click', () => {
+                            index += 1;
+                            if (index < lines.length) showCurrent();
+                            else onComplete();
+                        }, { once: true });
+                    };
+                    showCurrent();
+                };
+
+                const showChoices = () => {
+                    choices.innerHTML = location.choices.map((choice, index) =>
+                        `<button type="button" data-choice="${index}">${choice.label}</button>`).join('');
+                    choices.querySelectorAll('[data-choice]').forEach(button => {
+                        button.addEventListener('click', () => {
+                            const choice = location.choices[Number(button.dataset.choice)];
+                            lore.push({ location: location.id, text: choice.lore });
+                            showDialogue(choice.dialogue, () => {
+                                setSpeaker('PISTA REGISTRADA');
+                                text.textContent = choice.lore;
+                                choices.innerHTML = '<button type="button" data-return-map>Volver a Furry Maps</button>';
+                                choices.querySelector('[data-return-map]').addEventListener('click', returnToMap, { once: true });
+                            });
+                        }, { once: true });
+                    });
+                };
+
+                showDialogue(location.opening, showChoices);
+            };
+
+            const animateRoute = location => {
+                confirm.hidden = true;
+                routePath.setAttribute('d', location.route);
+                routeSvg.classList.add('is-active');
+                miniSamu.classList.add('is-walking');
+                miniSamu.hidden = false;
+                const length = routePath.getTotalLength();
+                const duration = 2600;
+                const started = performance.now();
+                let currentFrame = -1;
+                const move = now => {
+                    if (!overlay.isConnected) return;
+                    const progress = Math.min(1, (now - started) / duration);
+                    const point = routePath.getPointAtLength(length * progress);
+                    miniSamu.style.left = `${point.x / 10}%`;
+                    miniSamu.style.top = `${point.y / 5}%`;
+                    const frame = Math.floor((now - started) / 120) % 4;
+                    if (frame !== currentFrame) {
+                        currentFrame = frame;
+                        miniSamu.src = this.cacheBustAsset(samuFrames[frame]);
+                    }
+                    if (progress < 1) {
+                        requestAnimationFrame(move);
+                        return;
+                    }
+                    miniSamu.src = this.cacheBustAsset(samuFrames[4]);
+                    miniSamu.classList.remove('is-walking');
+                    miniSamu.classList.add('is-celebrating');
+                    card.textContent = `¡Destino alcanzado: ${location.label}!`;
+                    setTimeout(() => {
+                        map.classList.add('is-travelling');
+                        setTimeout(() => renderLocation(location), 650);
+                    }, 720);
+                };
+                requestAnimationFrame(move);
+            };
+
+            const askForRoute = location => {
+                pendingLocation = location;
+                confirm.querySelector('p').textContent = `La ruta partirá desde la Iglesia del Rocío hasta ${location.label}.`;
+                confirm.hidden = false;
+                confirm.querySelector('[data-confirm="yes"]').focus();
+            };
+
+            confirm.querySelector('[data-confirm="no"]').addEventListener('click', () => {
+                confirm.hidden = true;
+                pendingLocation = null;
+            });
+            confirm.querySelector('[data-confirm="yes"]').addEventListener('click', () => {
+                if (!pendingLocation) return;
+                const location = pendingLocation;
+                pendingLocation = null;
+                animateRoute(location);
             });
 
-            factory.addEventListener('click', () => {
-                if (visited.size !== clues.length) return;
-                factory.classList.add('is-found');
-                card.textContent = '¡Ruta localizada! Samu se dirige a las puertas de la fábrica.';
-                setTimeout(() => {
-                    overlay.removeEventListener('click', swallow);
-                    overlay.remove();
-                    this.lastMinigameResult = { explored: true, clues: visited.size };
-                    resolve(true);
-                }, 750);
+            locations.forEach(location => {
+                const button = zoneButton(location.id);
+                button.addEventListener('mouseenter', () => {
+                    if (!button.disabled) card.textContent = `${location.label}: pulsa para consultar la ruta.`;
+                });
+                button.addEventListener('focus', () => {
+                    if (!button.disabled) card.textContent = `${location.label}: pulsa para consultar la ruta.`;
+                });
+                button.addEventListener('click', () => askForRoute(location));
             });
+
+            const revealKingdom = () => {
+                card.textContent = 'Las tres pistas señalan el mismo vacío. El mapa está intentando ocultar algo.';
+                kingdomLock.classList.add('is-revealing');
+                setTimeout(() => {
+                    kingdomLock.classList.add('is-revealed');
+                    card.innerHTML = '<strong>SAMU:</strong> Ahí estás. La fábrica sí estaba aquí; alguna interferencia la borraba del mapa. Kingdom Ketchup… voy para allá.';
+                    const finish = document.createElement('button');
+                    finish.type = 'button';
+                    finish.className = 'furrielva-finish';
+                    finish.textContent = 'Marcar Kingdom Ketchup como destino';
+                    card.appendChild(finish);
+                    finish.addEventListener('click', () => {
+                        map.classList.add('is-final-route');
+                        finish.disabled = true;
+                        setTimeout(() => {
+                            overlay.removeEventListener('click', swallow);
+                            overlay.remove();
+                            this.lastMinigameResult = { explored: true, clues: visited.size, lore };
+                            resolve(true);
+                        }, 1050);
+                    }, { once: true });
+                }, 1700);
+            };
         });
     }
 
@@ -4686,9 +5003,13 @@ class VisualNovelEngine {
     // hasta 1280x1382 y salía enorme y recortada. Con `size: "auto 55%"` se
     // dibuja centrada y a su tamaño. Se asigna SIEMPRE para que no se cuele el
     // tamaño de una CG en la siguiente.
-    showCG(path, duration = 600, opts = {}) {
+    async showCG(path, duration = 600, opts = {}) {
         const { cg } = this.ensureSceneLayers();
-        if (!cg || !path) return Promise.resolve();
+        if (!cg || !path) return;
+        // Las láminas 4K pueden tardar en descargarse y decodificarse. Si se
+        // cambia el background antes de que estén listas, el CG anterior puede
+        // reaparecer un instante o dejar un hueco durante el fundido.
+        await this.preloadImages([path]);
         cg.style.backgroundImage = `url('${this.cacheBustAsset(path)}')`;
         cg.style.backgroundSize = opts.size || 'cover';
         cg.style.backgroundPosition = opts.position || 'center';
@@ -4699,7 +5020,7 @@ class VisualNovelEngine {
         cg.style.transition = `opacity ${duration}ms ease`;
         cg.style.opacity = '1';
         cg.classList.add('cg-visible');
-        return new Promise(r => setTimeout(r, duration + 40));
+        await new Promise(r => setTimeout(r, duration + 40));
     }
 
     hideCG(duration = 500) {
@@ -4910,6 +5231,16 @@ class VisualNovelEngine {
     // Glitch visual puntual para llamadas o señales comprimidas. La clase se
     // reinicia siempre para que una segunda interrupción vuelva a animarse y se
     // retira al acabar, garantizando que el sprite recupere su forma normal.
+    playCharacterGlitchSound() {
+        // `characterGlitch` y `characterFullGlitch` pueden ejecutarse juntos en
+        // una misma línea. Este margen conserva un solo golpe de estática en vez
+        // de superponer dos copias idénticas y provocar saturación.
+        const now = Date.now();
+        if (now - (this._lastCharacterGlitchSoundAt || 0) < 160) return;
+        this._lastCharacterGlitchSoundAt = now;
+        this.playSound('assets/sounds/effects/sfx_estatica.mp3', { volume: 0.72 });
+    }
+
     triggerCharacterGlitch(characterName, position, duration = 1350) {
         const characterKey = this.getCharacterKey(characterName);
         const trackedPosition = position || this.characterPositions[characterKey];
@@ -4917,6 +5248,7 @@ class VisualNovelEngine {
         const charElement = document.getElementById(`character-${trackedPosition}`);
         if (!charElement || !charElement.classList.contains('active')) return;
 
+        this.playCharacterGlitchSound();
         charElement.style.setProperty('--contact-glitch-duration', `${duration}ms`);
         charElement.classList.remove('contact-glitch');
         void charElement.offsetWidth;
@@ -4937,6 +5269,7 @@ class VisualNovelEngine {
         const charElement = document.getElementById(`character-${trackedPosition}`);
         if (!charElement || !charElement.classList.contains('active')) return;
 
+        this.playCharacterGlitchSound();
         charElement.style.setProperty('--full-glitch-duration', `${duration}ms`);
         charElement.classList.remove('full-signal-glitch');
         void charElement.offsetWidth;

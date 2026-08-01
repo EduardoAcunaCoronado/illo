@@ -1455,12 +1455,14 @@ El primer acceso sigue una secuencia cerrada:
 5. Tras un fundido de 560 ms aparece el menú principal, comienza su vídeo en
    bucle y suena el tema habitual.
 
-En Electron, la superficie del opening se fija desde el HTML y el CSS al tamaño
-de diseño `1280×720`. Al retirar `hidden` se fuerza primero su layout y el vídeo
-permanece invisible hasta dos fotogramas de animación después del evento
-`playing`. Esto evita que Chromium llegue a presentar fugazmente una superficie
-inicial de `640×360` en la esquina superior izquierda al arrancar una build en
-modo ventana; durante ese intervalo solo se mantiene el fondo negro de carga.
+La superficie del opening ocupa el viewport completo tanto en navegador como en
+Electron. Al mostrarla y cada vez que cambia el tamaño de la ventana, `game.js`
+lee las dimensiones reales del overlay y las aplica al vídeo en píxeles
+explícitos. Después fuerza su layout y lo mantiene invisible hasta dos
+fotogramas de animación tras el evento `playing`. Así se evita tanto el antiguo
+primer frame de `640×360` de Chromium/Electron como que el opening quede limitado
+a `1280×720` en navegadores con una ventana mayor. Durante ese intervalo solo se
+mantiene el fondo negro de carga.
 
 El fondo del menú utiliza `assets/videos/menu_loop.mp4`, un bucle H.264
 de 10 segundos, 48 FPS y `3840×2160`. Sus 240 fotogramas 4K originales se
@@ -3263,9 +3265,49 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   el retrato a la normalidad, sin revelar a Samu la forma transformada antes de
   encontrar a Edu. La llamada mantiene la invitación a localizar físicamente la
   fábrica.
-- El capítulo 2 comienza con una investigación point-and-click de Furrielva.
-  Hay tres pistas accesibles por ratón o teclado; la fábrica solo se desbloquea
-  al relacionarlas todas.
+- El capítulo 2 comienza con Samu encontrando una botella vacía y sin tapón que
+  lleva el emblema del tomate coronado y el nombre de Kingdom Ketchup. Este
+  indicio físico demuestra que la fábrica existe y justifica que pregunte por
+  la etiqueta y por el origen de las botellas, aunque todavía no conozca la
+  promoción ni el requisito del tapón dorado. La investigación continúa dentro
+  de **Furry Maps**. Samu presenta primero la Plaza del Rocío, la zona comercial y
+  el callejón de servicio; durante el pequeño tour cada distrito se ilumina y
+  crece mientras él lo menciona. Después son áreas completas del propio mapa,
+  accesibles por ratón o teclado, las que reaccionan al hover/foco. No hay
+  iconos superpuestos ni una línea que conecte permanentemente los destinos.
+- Al pulsar una zona, Furry Maps pregunta si se desea marcarla como ruta. Solo al
+  aceptar aparece un trayecto discontinuo desde la Iglesia del Rocío. Un Samu
+  diminuto recorre la línea con los fotogramas 1-4 de
+  `assets/characters/samu/ketchup/`, celebra al llegar y da paso al escenario
+  mediante acercamiento y fundido. Esos sprites proceden de la rama de José
+  Manuel `feature/nuevo-minijuego-ketchup`; no se ha mezclado su implementación
+  antigua del minijuego.
+- Cada visita tiene fondo, informante y una conversación completa antes y
+  después de la elección. Tadeo se queja de unos camiones rojos y Samu entra en
+  la charla; Lía protesta por unas cajas sin proveedor y descubre junto a Samu
+  que llevan el nombre de Kingdom Ketchup; Rulo discute con un plano municipal
+  que niega una instalación que consume parte de la red. Samu no conoce aún la
+  promoción ni el tapón dorado: esa información se reserva para el guardia de
+  la fábrica. Ambas opciones entregan la pista necesaria y una dosis distinta
+  de lore, de modo que la curiosidad no bloquea la progresión. Los fondos WebP
+  3840x2160 están en `assets/generated/chapter2_v2/locations/`. Los retratos
+  transparentes individuales `tadeo_trufa_v1.png`, `lia_lince_v1.png` y
+  `rulo_mapache_v1.png` están en `assets/generated/chapter2_v2/characters/` y
+  se precargan una única vez por sesión. Sus nombres respetan el código de
+  color de los diálogos: Samu rojo, Tadeo naranja, Lía violeta y Rulo azul
+  verdoso; «Pista registrada» conserva el turquesa de sistema.
+- Kingdom Ketchup permanece completamente tapado por una interferencia animada
+  y no se puede seleccionar. Al regresar con las tres pistas, el glitch se
+  descompone, deja visible la fábrica integrada en el mapa y Samu comprende que
+  una interferencia estaba borrando la ubicación. Solo entonces puede
+  marcarla como destino y continuar la escena principal.
+- La interfaz, los textos, las regiones interactivas, el trayecto y el glitch se
+  dibujan en HTML/CSS para conservar texto nítido. El fondo
+  `mapa_furrielva_furry_maps_v2_4k.png` sitúa la Iglesia del Rocío en el centro,
+  con plaza, comercios, callejón y Kingdom Ketchup alrededor.
+- La plaza de Furrielva usa `iglesia_furrielva_v2_4k.png`, una regeneración
+  3840x2160 del fondo original. Conserva iglesia, mercado, fuente y todos los
+  grupos de animales, con rostros, anatomía, perspectiva y rótulos corregidos.
 - Samu llega a la fachada, conoce al Ketchling de seguridad y descubre que Edu
   no responde. El tapón dorado pasa a ser una entrada explícita, no una
   casualidad del guion.
@@ -3274,7 +3316,22 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   `storyDelay` siguen escalando la dificultad.
 - El gag del tapón dorado tiene doble golpe: Samu celebra haber encontrado uno
   único y después descubre que todo el expositor está lleno.
-- La botella abre un atajo visual de regreso al interior de la fábrica.
+- Al girar el tapón, una botella gigantesca de luz aparece de la nada en el
+  pasillo del supermercado y su cristal se abre como portal hacia la fábrica.
+  El expositor, la activación del portal y la llegada al interior se enlazan con
+  CG precargados y fundidos a negro; los saltos de escena viven en líneas de
+  acción separadas para no omitir diálogos ni solapar dos ilustraciones 4K.
+- Los pasillos Ketchup y Catsup usan
+  `assets/backgrounds/kingdom_ketchup_pasillos_v2_4k.png` (3840x2160). El fondo
+  conserva la composición simétrica y los tres rótulos, pero sustituye todos
+  los envases con silueta de marca real por la botella ficticia canónica: cuerpo
+  alto, tapón-corona dorado y etiqueta crema con corona y tomate.
+- La zona de estanterías y cajas de Neit usa
+  `assets/backgrounds/kingdom_ketchup_estanterias_v2_4k.png` (3840x2160). Las
+  botellas repiten ese mismo modelo canónico; las latas emplean únicamente el
+  emblema ficticio de corona y tomate. Se conservan las guindillas necesarias
+  para el diálogo y se sustituyen los rótulos deformados por «KINGDOM KETCHUP»,
+  «CAJAS», «OFERTA», «-30%» y «2×1».
 - Los Ketchlings se presentan como trabajadores y ciudadanos con agencia:
   seguridad, cocina, mecánica y embotellado. Su altura canónica es de unos
   40 cm y pueden mantener Kingdom Ketchup sin retener a Edu.
@@ -3314,10 +3371,15 @@ terminar para recuperar exactamente el estado normal. La escena equivalente
 del capítulo 2 reutiliza el mismo contacto humano con una interferencia algo
 más larga. En el capítulo 1 el efecto se reproduce tanto al establecerse la
 llamada como durante la vacilación `lo enten... lo entenderás`, sin explicar
-la anomalía mediante una acotación demasiado evidente. En esa última frase se
+la anomalía mediante una acotación demasiado evidente. Después, Samu cree haber
+visto por un instante a Zip en aquella foto de Edu, pero lo atribuye a la
+cobertura. En esa última frase se
 superpone un segundo remate mediante `characterFullGlitch`: durante 1,05 s el
 teléfono completo sufre cortes horizontales y separación cromática, acompañado
 por una sacudida leve y un destello azul. No sustituye el glitch del retrato.
+Ambas acciones disparan automáticamente `assets/sounds/effects/sfx_estatica.mp3`
+al comenzar. El motor aplica una ventana antisolapamiento de 160 ms para que el
+glitch del retrato y el remate del teléfono compartan un único golpe sonoro.
 
 ---
 

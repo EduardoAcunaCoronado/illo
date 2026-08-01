@@ -561,6 +561,18 @@ const startupSkipBtn = document.getElementById("startup-skip");
 let startupFinished = false;
 let startupStarted = false;
 
+function fitStartupOpeningToViewport() {
+  if (!startupOverlay || !startupOpeningVideo) return;
+
+  // Usar píxeles explícitos conserva la corrección del primer frame pequeño en
+  // Electron, pero tomando ahora la ventana real en vez del escenario 1280x720.
+  const overlayRect = startupOverlay.getBoundingClientRect();
+  const width = Math.max(1, Math.round(overlayRect.width || window.innerWidth));
+  const height = Math.max(1, Math.round(overlayRect.height || window.innerHeight));
+  startupOpeningVideo.style.width = `${width}px`;
+  startupOpeningVideo.style.height = `${height}px`;
+}
+
 function storedMusicVolume() {
   const value = parseFloat(localStorage.getItem("illo_vol_music"));
   return Number.isFinite(value) ? Math.max(0, Math.min(1, value)) : 1;
@@ -582,6 +594,7 @@ function audibleStartupVolume() {
 function showMainMenuAfterOpening() {
   if (startupFinished) return;
   startupFinished = true;
+  window.removeEventListener("resize", fitStartupOpeningToViewport);
   try { startupOpeningVideo.pause(); } catch (error) {}
   startupOverlay?.classList.add("is-leaving");
 
@@ -604,14 +617,15 @@ function startStartupOpening() {
   // brevemente el primer frame a 640x360 dentro de la ventana 1280x720.
   startupOpening.classList.remove("is-playing");
   startupOpening.hidden = false;
+  fitStartupOpeningToViewport();
   startupOpeningStatus.textContent = "Cargando opening…";
   startupOpeningVideo.muted = false;
   startupOpeningVideo.volume = audibleStartupVolume();
   startupOpeningVideo.currentTime = 0;
 
-  // Fuerza el layout 1280x720 después de retirar [hidden], antes de solicitar
-  // reproducción. El width/height del HTML y el CSS fijo hacen que este tamaño
-  // no dependa todavía del primer cálculo porcentual del compositor de vídeo.
+  // Fuerza el layout a las dimensiones reales después de retirar [hidden] y
+  // antes de solicitar reproducción. Así el compositor no llega a presentar
+  // ni el antiguo 640x360 de Electron ni un rectángulo fijo 1280x720 en web.
   void startupOpeningVideo.getBoundingClientRect();
 
   const playback = startupOpeningVideo.play();
@@ -635,6 +649,8 @@ function setupStartupSequence() {
     try { menuVideo.pause(); } catch (error) {}
   }
 
+  fitStartupOpeningToViewport();
+  window.addEventListener("resize", fitStartupOpeningToViewport);
   startupEnterBtn.addEventListener("click", startStartupOpening);
   startupSkipBtn?.addEventListener("click", showMainMenuAfterOpening);
   startupOpeningVideo.addEventListener("playing", () => {

@@ -246,7 +246,7 @@
         },
         {
           "character": "Edu",
-          "text": "Venga, no te rayes, tío. Vente y lo hablamos. Kingdom Ketchup está en el distrito industrial de Furrielva: sigue las chimeneas rojas y el emblema de la corona.",
+          "text": "Venga, no te rayes, tío. Vente y lo hablamos. Estoy en Furrielva, pero no consigo compartirte la ubicación: cada vez que lo intento, el mapa se queda pillado. Pregunta por Kingdom Ketchup; alguien sabrá orientarte.",
           "actions": [
             {
               "type": "showCharacter",
@@ -259,7 +259,7 @@
         },
         {
           "character": "Samu",
-          "text": "¿Una fábrica de ketchup en Furrielva? Vale. Iré a buscarte, pero después nos vamos al cumpleaños.",
+          "text": "¿Kingdom Ketchup, en Furrielva? Vale. Iré a buscarte, pero después nos vamos al cumpleaños.",
           "actions": [
             {
               "type": "showCharacter",
@@ -301,6 +301,18 @@
               "type": "flash",
               "color": "rgba(45, 170, 255, 0.16)",
               "duration": 180
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Qué ha sido eso...? Por un momento Edu se parecía a Zip en aquella foto. Bah, habrá sido la cobertura.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
             }
           ]
         },
