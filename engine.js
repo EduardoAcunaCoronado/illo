@@ -10,6 +10,7 @@ class VisualNovelEngine {
         this.isWaitingForInput = false;
         this.fastForward = false;
         this._finishTyping = null;
+        this._lastDialogEmotionKey = null;
         this.typingSpeed = 50;
         this.lastChapterName = null;
         this.speakingCharacter = null;
@@ -68,6 +69,7 @@ class VisualNovelEngine {
             this.currentChapter = chapter;
             this.currentScene = 0;
             this.currentLine = 0;
+            this._lastDialogEmotionKey = null;
             // El historial de retroceso es por capítulo: no se vuelve al anterior
             this.sceneHistory = [];
             this._lastSeenScene = null;
@@ -4781,7 +4783,12 @@ class VisualNovelEngine {
             .forEach(c => charElement.classList.remove(c));
         if (pose) {
             const limpia = String(pose).toLowerCase().replace(/[^a-z0-9_-]/g, '');
-            if (limpia) charElement.classList.add(`pose-${limpia}`);
+            if (limpia) {
+                charElement.classList.add(`pose-${limpia}`);
+                charElement.dataset.pose = limpia;
+            }
+        } else {
+            delete charElement.dataset.pose;
         }
     }
 
@@ -5126,6 +5133,95 @@ class VisualNovelEngine {
         });
     }
 
+    // Traduce emociones declaradas en una línea (o poses del personaje) a un
+    // conjunto pequeño y estable de efectos tipográficos. Los capítulos pueden
+    // usar nombres en español o inglés sin acentos ni diferencias de mayúsculas.
+    normalizeDialogEmotion(value) {
+        if (value === false || value == null) return null;
+        const key = String(value)
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .trim();
+        const aliases = {
+            fear: 'fear', miedo: 'fear', scared: 'fear', afraid: 'fear', terrified: 'fear',
+            anger: 'anger', angry: 'anger', agresividad: 'anger', aggressive: 'anger',
+            enfado: 'anger', enfadado: 'anger', furia: 'anger', furious: 'anger',
+            sadness: 'sadness', sad: 'sadness', tristeza: 'sadness', triste: 'sadness',
+            joy: 'joy', alegria: 'joy', alegre: 'joy', felicidad: 'joy',
+            surprise: 'surprise', surprised: 'surprise', sorpresa: 'surprise', sorprendido: 'surprise',
+            nervous: 'nervous', nervousness: 'nervous', nervios: 'nervous', nervioso: 'nervous',
+            whisper: 'whisper', susurro: 'whisper', susurrando: 'whisper',
+            scream: 'scream', grito: 'scream', alarido: 'scream', shout: 'scream',
+            estridente: 'scream'
+        };
+        return aliases[key] || null;
+    }
+
+    resolveDialogEmotion(line, speakerName) {
+        const hasExplicitEmotion = line.emotion !== undefined ||
+            line.emocion !== undefined || line.textEffect !== undefined;
+
+        // Las animaciones son momentos de énfasis, no el estado normal del
+        // diálogo. Si el JSON no pide ninguna, la línea permanece estática.
+        if (line.textAnimation === undefined && !hasExplicitEmotion) {
+            return null;
+        }
+
+        if (line.textAnimation !== undefined) {
+            const animation = line.textAnimation;
+            const normalized = String(animation ?? '').toLowerCase().trim();
+            if (animation === false || ['none', 'normal', 'neutral', 'ninguna'].includes(normalized)) {
+                return null;
+            }
+            if (animation !== true && normalized !== 'auto') {
+                return this.normalizeDialogEmotion(animation);
+            }
+        }
+
+        if (hasExplicitEmotion) {
+            const value = line.emotion ?? line.emocion ?? line.textEffect;
+            const normalized = String(value ?? '').toLowerCase().trim();
+            if (value === false || ['none', 'normal', 'neutral', 'ninguna'].includes(normalized)) {
+                return null;
+            }
+            // Un valor explícito desconocido no debe activar por accidente el
+            // efecto de una pose anterior.
+            return this.normalizeDialogEmotion(value);
+        }
+
+        const position = this.characterPositions[speakerName];
+        const speaker = position && document.getElementById(`character-${position}`);
+        if (!speaker || !speaker.classList.contains('active')) return null;
+
+        const pose = speaker.dataset.pose || '';
+        const poseEmotions = {
+            alarmed: 'fear', worried: 'fear', preocupado: 'fear', scared: 'fear',
+            terrified: 'fear', error: 'fear', sospecha: 'fear',
+            angry: 'anger', enfadado: 'anger', crazy: 'anger', picado: 'anger',
+            aggressive: 'anger', furious: 'anger',
+            sad: 'sadness', bua: 'sadness', derrumbe: 'sadness', herido: 'sadness',
+            crying: 'sadness',
+            contento: 'joy', riendo: 'joy', giggle: 'joy',
+            clapping: 'joy', saludando: 'joy',
+            surprised: 'surprise', shocked: 'surprise', curious: 'surprise',
+            embarrassed: 'nervous'
+        };
+        return poseEmotions[pose] || null;
+    }
+
+    limitRepeatedDialogEmotion(line, requestedEmotion) {
+        const emotionCharacter = this.getCharacterKey(line.character);
+        const emotionKey = requestedEmotion
+            ? `${emotionCharacter}:${requestedEmotion}`
+            : null;
+        const effectiveEmotion = emotionKey === this._lastDialogEmotionKey
+            ? null
+            : requestedEmotion;
+        this._lastDialogEmotionKey = emotionKey;
+        return effectiveEmotion;
+    }
+
     async displayDialog(line) {
         // Actualizar debug panel si está activo
         if (this.debugMode) {
@@ -5145,6 +5241,13 @@ class VisualNovelEngine {
         // otro con "speakingAs" (p. ej. en las llamadas habla "Edu" pero el
         // sprite en pantalla es el móvil "iphone5", que es el que debe resaltarse).
         const speakerName = this.getCharacterKey(line.speakingAs || line.character);
+        const requestedDialogEmotion = this.resolveDialogEmotion(line, speakerName);
+        const dialogEmotion = this.limitRepeatedDialogEmotion(line, requestedDialogEmotion);
+        const emotionClasses = [
+            'fear', 'anger', 'sadness', 'joy', 'surprise', 'nervous', 'whisper', 'scream'
+        ].map(emotion => `dialog-emotion-${emotion}`);
+        dialogText.classList.remove(...emotionClasses);
+        if (dialogEmotion) dialogText.classList.add(`dialog-emotion-${dialogEmotion}`);
 
         // Nombre del hablante en SU color (identidad + reconocimiento inmediato).
         // Si sus datos aún no están cargados (habla sin sprite en pantalla), se
@@ -5223,40 +5326,99 @@ class VisualNovelEngine {
             let timeoutId = null;
             let finished = false;
 
+            // Escribir por grafemas evita partir emojis o caracteres compuestos.
+            const segmenter = typeof Intl.Segmenter === 'function'
+                ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+                : null;
+            const splitText = (value) => segmenter
+                ? Array.from(segmenter.segment(value), part => part.segment)
+                : Array.from(value);
+            let textOffset = 0;
+            const typingUnits = splitText(text).map(value => {
+                textOffset += value.length;
+                return { value, end: textOffset };
+            });
+
             // Marcas con color dentro del diálogo. Se construyen con nodos de
             // texto (no innerHTML) para que el contenido de los capítulos siga
             // siendo seguro y compatible con el efecto de escritura.
             const brandRanges = [];
-            const brandPattern = /\b(OMG|CLos)\b/g;
+            const brandPattern = /\b(OMG|CLos|Incel|Simsong)\b/g;
             let brandMatch;
             while ((brandMatch = brandPattern.exec(text)) !== null) {
                 brandRanges.push({
                     start: brandMatch.index,
                     end: brandMatch.index + brandMatch[0].length,
-                    className: brandMatch[0] === 'OMG' ? 'dialog-brand-omg' : 'dialog-brand-clos'
+                    className: brandMatch[0] === 'OMG'
+                        ? 'dialog-brand-omg'
+                        : brandMatch[0] === 'CLos'
+                        ? 'dialog-brand-clos'
+                        : 'dialog-brand-blue'
                 });
             }
 
-            const renderText = (length) => {
-                dialogText.replaceChildren();
-                let cursor = 0;
+            // Se añade solo el fragmento nuevo. Reconstruir todos los spans en
+            // cada pulsación reiniciaba sus animaciones con cada carácter.
+            dialogText.replaceChildren();
+            let renderedLength = 0;
+            let letterIndex = 0;
 
-                brandRanges.forEach(range => {
-                    if (range.start >= length) return;
-                    if (cursor < range.start) {
-                        dialogText.append(document.createTextNode(text.slice(cursor, range.start)));
+            const appendText = (parent, value) => {
+                if (!dialogEmotion) {
+                    const last = parent.lastChild;
+                    if (last && last.nodeType === 3) last.textContent += value;
+                    else parent.append(document.createTextNode(value));
+                    return;
+                }
+                for (const character of splitText(value)) {
+                    if (/^\s+$/u.test(character)) {
+                        const last = parent.lastChild;
+                        if (last && last.nodeType === 3) last.textContent += character;
+                        else parent.append(document.createTextNode(character));
+                    } else {
+                        const letter = document.createElement('span');
+                        letter.className = 'dialog-letter';
+                        letter.style.setProperty('--letter-delay', `${-(letterIndex % 14) * 0.035}s`);
+                        if (dialogEmotion === 'scream') {
+                            const progress = typingUnits.length > 1
+                                ? letterIndex / (typingUnits.length - 1)
+                                : 1;
+                            // Crecimiento en curva: el inicio permanece pequeño y
+                            // el final explota hasta casi llenar la caja de diálogo.
+                            const fontSize = 12 + 56 * Math.pow(progress, 2.05);
+                            letter.style.setProperty('--scream-font-size', `${fontSize.toFixed(2)}px`);
+                        }
+                        letter.textContent = character;
+                        parent.append(letter);
+                    }
+                    letterIndex++;
+                }
+            };
+
+            const appendUntil = (length) => {
+                let cursor = renderedLength;
+                while (cursor < length) {
+                    const brand = brandRanges.find(range =>
+                        cursor >= range.start && cursor < range.end
+                    );
+                    if (brand) {
+                        if (!brand.element) {
+                            brand.element = document.createElement('span');
+                            brand.element.className = brand.className;
+                            dialogText.append(brand.element);
+                        }
+                        const end = Math.min(length, brand.end);
+                        appendText(brand.element, text.slice(cursor, end));
+                        cursor = end;
+                        continue;
                     }
 
-                    const brand = document.createElement('span');
-                    brand.className = range.className;
-                    brand.textContent = text.slice(range.start, Math.min(range.end, length));
-                    dialogText.append(brand);
-                    cursor = Math.min(range.end, length);
-                });
-
-                if (cursor < length) {
-                    dialogText.append(document.createTextNode(text.slice(cursor, length)));
+                    const nextBrand = brandRanges.find(range => range.start > cursor);
+                    const end = Math.min(length, nextBrand ? nextBrand.start : length);
+                    appendText(dialogText, text.slice(cursor, end));
+                    cursor = end;
                 }
+                renderedLength = length;
             };
 
             const cleanup = () => {
@@ -5271,7 +5433,7 @@ class VisualNovelEngine {
                 if (finished) return;
                 finished = true;
                 cleanup();
-                renderText(text.length);
+                appendUntil(text.length);
                 this.isWaitingForInput = true;
                 resolve();
             };
@@ -5282,10 +5444,11 @@ class VisualNovelEngine {
                     return;
                 }
 
-                if (charIndex < text.length) {
-                    const ch = text[charIndex];
+                if (charIndex < typingUnits.length) {
+                    const unit = typingUnits[charIndex];
+                    const ch = unit.value;
                     charIndex++;
-                    renderText(charIndex);
+                    appendUntil(unit.end);
                     // Blip por letra (tono según el que habla) y pausa extra en la
                     // puntuación para dar ritmo al texto.
                     let delay = this.typingSpeed * speedMult;

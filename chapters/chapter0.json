@@ -38,7 +38,9 @@
             }
           ],
           "character": "ePod",
-          "text": "¡HOLA!"
+          "text": "¡HOLA!",
+          "textAnimation": true,
+          "emotion": "joy"
         },
         {
           "actions": [
@@ -124,7 +126,9 @@
             }
           ],
           "character": "3C",
-          "text": "¡Shh, calla, niño! Que esta no es tu historia."
+          "text": "¡Shh, calla, niño! Que esta no es tu historia.",
+          "textAnimation": true,
+          "emotion": "anger"
         },
         {
           "actions": [

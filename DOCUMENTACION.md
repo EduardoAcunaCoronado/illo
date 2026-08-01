@@ -263,8 +263,46 @@ async function startNewGame() {
 | `actions`    | array  | No          | Acciones a ejecutar                            |
 | `choices`    | array  | No          | Opciones para el usuario                       |
 | `speakingAs` | string | No          | Sprite a resaltar al hablar (ver abajo)        |
+| `emotion`    | string | No          | Efecto tipográfico emocional (ver abajo)       |
+| `textAnimation` | string/bool | No   | Activa o desactiva la animación de una línea clave |
 
 \*No es obligatorio, pero se recomienda para debugging.
+
+### Emociones tipográficas
+
+Por defecto, una línea sin `textAnimation` se muestra sin animación. Al usar
+`"textAnimation": true` o `"auto"`, el motor reconoce la pose activa del
+personaje y aplica miedo, enfado, tristeza, alegría, sorpresa o nervios;
+`happy` permanece sin animación. Si el mismo personaje repite la misma emoción
+en varios diálogos seguidos, solo se anima el primero para evitar que el efecto
+resulte constante.
+
+Para reservar una animación para un momento clave, usa `textAnimation` en la
+línea. Puede recibir directamente el nombre del efecto:
+
+```json
+{
+  "character": "Samu",
+  "text": "¡No te acerques!",
+  "textAnimation": "fear"
+}
+```
+
+Valores disponibles: `fear`/`miedo`, `anger`/`agresividad`,
+`sadness`/`tristeza`, `joy`/`alegría`, `surprise`/`sorpresa`,
+`nervous`/`nervios`, `whisper`/`susurro` y `scream`/`grito` para momentos
+excepcionales y estridentes. En `scream`, las primeras letras son pequeñas y
+cada carácter crece progresivamente hasta que el final casi llena el bocadillo.
+Usa `"textAnimation": false` para
+desactivar expresamente el efecto aunque la pose tenga una emoción reconocida;
+`"textAnimation": true` o `"auto"` activa la detección por pose. El campo
+`emotion` anterior sigue siendo compatible.
+Las preferencias del sistema para reducir movimiento desactivan las animaciones,
+pero mantienen el color y la sombra emocional para conservar el contexto.
+
+Los capítulos 0 a 6 contienen una selección curada de 26 diálogos con
+`"textAnimation": true` (entre 2 y 5 por capítulo). Se reservan para
+revelaciones, peligros, pérdidas y reacciones especialmente importantes.
 
 ### `speakingAs`: resaltar un sprite distinto del que habla
 

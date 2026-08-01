@@ -401,7 +401,8 @@
             }
           ],
           "character": "Samu",
-          "text": "¡Los memes de las motos! ¡Santi, písale! ¡Yo te voy diciendo por dónde esquivar!"
+          "text": "¡Los memes de las motos! ¡Santi, písale! ¡Yo te voy diciendo por dónde esquivar!",
+          "textAnimation": true
         },
         {
           "actions": [
@@ -1477,7 +1478,8 @@
             }
           ],
           "character": "Samu",
-          "text": "...¿T-Tony? ¿Eres tú? Pero tú eres... eres un TÍO. ¡Y esto... esto es Seraphyna!"
+          "text": "...¿T-Tony? ¿Eres tú? Pero tú eres... eres un TÍO. ¡Y esto... esto es Seraphyna!",
+          "textAnimation": true
         },
         {
           "actions": [
@@ -1698,7 +1700,9 @@
           ],
           "character": "Seraphyna",
           "speakingAs": "tony",
-          "text": "...No. Sin la música se descontrolan. Solo mi voz los mantiene serenos. Tengo que cantar YA o esto se convierte en una carnicería. ¡Santi! ¡EL EQUIPO!"
+          "text": "...No. Sin la música se descontrolan. Solo mi voz los mantiene serenos. Tengo que cantar YA o esto se convierte en una carnicería. ¡Santi! ¡EL EQUIPO!",
+          "textAnimation": true,
+          "emotion": "fear"
         },
         {
           "actions": [
@@ -2974,6 +2978,7 @@
           "character": "Seraphyna",
           "speakingAs": "tony",
           "text": "...¿Cómo se llamaba? Veinte años en mi puerta... y nunca le pregunté el nombre.",
+          "textAnimation": true,
           "textSpeed": "slow"
         },
         {
@@ -3147,6 +3152,8 @@
           ],
           "character": "3C",
           "text": "Se le doblan las rodillas. La diva de plata cae al suelo, la melena tapándole la cara, temblando entre lágrimas. Ya no queda escenario. Solo Tony.",
+          "textAnimation": true,
+          "emotion": "sadness",
           "textSpeed": "slow"
         },
         {

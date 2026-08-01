@@ -194,6 +194,7 @@
         {
           "character": "Samu",
           "text": "¿Pero qué...? ¡Me está lanzando GATOS! ¡Esto era una trampa, no el camino a Kingdom Ketchup!",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -961,6 +962,7 @@
         {
           "character": "Samu",
           "text": "Espera, ¿no querrías irte nunca? Edu, eso no suena bien. Deberíamos buscar a Tony y a José, ¿recuerdas? Tenemos que celebrar mi cumple.",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -1057,6 +1059,7 @@
         {
           "character": "Edu",
           "text": "¡No! ¡Yo no me voy a ningún lado! ¡Tú no entiendes nada, Samu! ¡Esto es la perfección y yo me doy el lujazo!",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
@@ -1085,7 +1088,8 @@
         },
         {
           "character": "Edu",
-          "text": "¿Qué...? ¡Eh! ¡Eh, quítate! ¡QUÍTATE DE ENCIMA! ¡ARRRGHHHHHHH!",
+          "text": "¿Qué...? ¡Eh! ¡Eh, quítate! ¡APÁRTATE DE MÍ! ¡ARGHH!",
+          "textAnimation": "scream",
           "actions": [
             {
               "type": "showCharacter",
@@ -1230,6 +1234,7 @@
         {
           "character": "Edu",
           "text": "Ugh... ¿qué... qué pasó? Samu, lo siento. No sé qué me pasaba. Este sitio corrompe a las personas con su tentador ketchup.",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",

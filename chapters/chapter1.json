@@ -72,6 +72,7 @@
         {
           "character": "Samu",
           "text": "Oh, no. ¡Soy un therian!",
+          "textAnimation": true,
           "actions": [
             {
               "type": "setBackground",
@@ -229,6 +230,7 @@
         {
           "character": "Samu",
           "text": "¿Pasándolo bien? Edu, creí que te importaba... Y me abandonas por un derrapazo de ketchup.",
+          "textAnimation": true,
           "actions": [
             {
               "type": "showCharacter",
