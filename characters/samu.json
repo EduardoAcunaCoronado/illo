@@ -16,7 +16,9 @@
     "thinking": "assets/images/characters/samu/samu_thinking.png",
     "worried": "assets/images/characters/samu/samu_worried.png",
     "valla": "assets/images/characters/samu/samu_valla.png",
-    "curious": "assets/images/characters/samu/samu_curious.png"
+    "curious": "assets/images/characters/samu/samu_curious.png",
+    "charred_blink": "assets/images/characters/samu/samu_charred_closed.png",
+    "charred_shake": "assets/images/characters/samu/samu_charred_whiteeyes.png"
   },
   "defaultPose": "neutral"
 }

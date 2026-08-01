@@ -11,7 +11,8 @@
   "backgrounds": {
     "factoryExterior": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png",
     "productionFloor": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png",
-    "productionFloorCorrupted": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png"
+    "productionFloorCorrupted": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png",
+    "throneRoomVideoFinal": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png"
   },
   "cg": {
     "eduZipPhoto": "assets/images/cg/chapter2/samu_edu_zip_photo_4k.png",
@@ -23,10 +24,14 @@
     "eduZipHappy": "assets/images/characters/edu/chapter2/edu_zip_happy.png",
     "eduZipSurprised": "assets/images/characters/edu/chapter2/edu_zip_surprised.png",
     "eduZipWorried": "assets/images/characters/edu/chapter2/edu_zip_worried.png",
+    "eduSpicy": "assets/images/characters/edu/edu_picante_wide_transparent.png",
+    "samuCharredClosed": "assets/images/characters/samu/samu_charred_closed.png",
+    "samuCharredWhiteEyes": "assets/images/characters/samu/samu_charred_whiteeyes.png",
     "ketchlingSecurity": "assets/images/characters/ketchling/ketchling_security.png",
     "ketchlingCook": "assets/images/characters/ketchling/ketchling_cook.png",
     "ketchlingMechanic": "assets/images/characters/ketchling/ketchling_mechanic.png",
-    "ketchlingBottler": "assets/images/characters/ketchling/ketchling_bottler.png"
+    "ketchlingBottler": "assets/images/characters/ketchling/ketchling_bottler.png",
+    "zipBoss": "assets/images/characters/zip/ketchup/zip.png"
   },
   "minigame": {
     "goldBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png",

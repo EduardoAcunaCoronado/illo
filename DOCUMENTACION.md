@@ -443,6 +443,14 @@ Reproduce un archivo de audio con opciones avanzadas.
 - `volume`: Volumen (0.0 a 1.0, por defecto 1.0)
 - `loop`: Si se repite en bucle (por defecto false)
 - `autoPlay`: Si se inicia automáticamente (por defecto true)
+- `id`: Identificador estable para sustituir o detener una pista
+- `fadeIn`: Entrada progresiva en milisegundos
+
+Al detener o sustituir un audio, el motor elimina inmediatamente la referencia
+de `audioInstances` aunque el elemento termine su `fadeOut` en segundo plano.
+Así una pista con la misma ruta e ID puede volver a arrancar sin reutilizar por
+error un elemento que todavía estaba desvaneciéndose. Los fallos de carga o
+decodificación también liberan la referencia para permitir otro intento.
 
 **Ejemplos:**
 
@@ -580,14 +588,14 @@ El retraso permite dos efectos:
 2. **Dificultad de minijuego**: un `minigame` puede definir cualquier propiedad
    `<algo>ByDelay` (un mapa umbral→valor) que sobreescribe a `<algo>` según el
    retraso: se elige la entrada cuyo umbral sea el mayor que no supere el retraso
-   actual. Ejemplos: `maxHitsByDelay` (juego `ketchup`, menos vidas) o
+   actual. Ejemplos: `maxHitsByDelay` (juego `chase`, menos vidas) o
    `maxMissesByDelay` (juego `ecchi`, menos fallos permitidos).
 
    ```json
    {
      "type": "minigame",
-     "game": "ketchup",
-     "goal": 10,
+     "game": "chase",
+     "distance": 100,
      "maxHits": 3,
      "maxHitsByDelay": { "0": 3, "1": 2, "2": 1 }
    }
@@ -636,7 +644,8 @@ En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
 
 | `game`    | Descripción                                                        | Parámetros principales                       |
 | --------- | ------------------------------------------------------------------ | -------------------------------------------- |
-| `ketchup` | Come 🍅 y esquiva 🌶️ (mover ← →)                                   | `goal`, `maxHits`, `duration`                |
+| `chiliHarvest` | Recoge 🌶️ durante un tiempo para cargar el poder contra Zip       | `duration`, `powerGoal`, `boxBonus`          |
+| `ketchupBoss`  | Bullet hell: dispara 🌶️ y esquiva el ketchup de Zip               | `enemyHp`, `maxHits`, `maxSpicePower`        |
 | `ecchi`   | Clica 🍑 a tiempo, evita 💋                                        | `goal`, `maxMisses`, `lifetime`              |
 | `paloma`  | Memoriza y repite la secuencia                                     | `rounds`, `flashMs`, `gapMs`                 |
 | `gatos`   | **Estilo Pac-Man con laberinto**: huye de los gatos por las calles | `survive`, `cats`, `playerSpeed`, `catSpeed` |
@@ -3347,20 +3356,56 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   lluvia de kétchup, los impactos, el vapor, las llamas, el audio y los reflejos.
   `scripts/rebuild_intro_sala_trono_kk.py` queda como reconstrucción alternativa
   y fuente editable, pero no genera el vídeo activo actual.
+- Al terminar la introducción, la escena fija utiliza
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png`,
+  una extracción PNG exacta del frame 239 de 240. El cambio se aplica con corte
+  directo para conservar encuadre, iluminación y composición sin salto visual.
 - Los Ketchlings se presentan como trabajadores y ciudadanos con agencia:
   seguridad, cocina, mecánica y embotellado. Su altura canónica es de unos
   40 cm y pueden mantener Kingdom Ketchup sin retener a Edu.
 - Zip ya no afirma haber creado Kingdom Ketchup. El lugar nace del deseo de Edu
   de ser necesario; Zip comprime ese deseo, elimina sus límites y lo convierte
   en una jaula.
-- La batalla de ketchup se reduce de 67 a 27 recogidas y se divide en tres fases:
-  reactivar la línea (8), separar la corrupción (18) y liberar a Edu con ayuda
-  de los tapones Ketchling (27). Las rutas lentas reducen vidas y aumentan
-  frecuencia y velocidad.
-- El minijuego usa botella, botella corrupta, tapón y guindilla ficticios; no
-  quedan marcas comerciales reales. Los sprites, fondos y personajes se
-  precargan y conservan una URL estable durante la sesión para evitar nuevas
-  descargas y decodificaciones en cada aparición.
+- La batalla de Zip tiene dos partes enlazadas. En `chiliHarvest`, Samu dispone
+  de 22 segundos para recoger guindillas; las botellas limpias o corruptas le
+  restan una, pero la ronda nunca bloquea la historia. La puntuación se guarda
+  como `gameState.chiliPower`.
+- `ketchupBoss` integra el bullet hell de José Manuel desde `master`: Samu se
+  mueve en dos ejes, dispara guindillas y esquiva los patrones de ketchup de
+  Zip. Más poder picante aumenta el daño y la cadencia de Samu, y reduce tanto
+  la velocidad como la frecuencia de los ataques enemigos.
+- Escuchar la recomendación de Neit entrega `caja_guindillas`. Samu todavía no
+  entiende por qué podría necesitarla, pero el objeto aporta 12 puntos extra de
+  picante antes del bullet hell; el HUD identifica explícitamente la bonificación.
+- Cuando Zip desaparece, Edu reaparece con la pose cómica `picante`, basada en
+  `assets/images/characters/edu/edu_picante_wide_transparent.png`: conserva las
+  lágrimas y el sudor, usa fondo alfa real y amplía excepcionalmente el lienzo
+  para completar la llamarada hacia la izquierda. La clase CSS `pose-picante`
+  ocupa el 70 % del escenario y ancla a Edu a la derecha; no aplicar esa anchura
+  al resto de poses. Vuelve a `sad` cuando Edu recupera el habla.
+- La salida de `intro_sala_del_trono_kk_4k.mp4` usa las opciones reutilizables
+  `audioCrossfade`, `holdLastFrame`, `visualFadeOut` y `endBackground` de
+  `playVideo`. En esta escena la música del vídeo entrega el sonido a
+  `kingdomketchup.mp3` durante 1,8 segundos, conserva el último frame 300 ms y
+  funde 600 ms hacia la extracción PNG exacta que ya está preparada debajo.
+- En el primer «Uf, no sé» de Edu se usa la pose canónica `worried`, no la
+  variante vertical `zip_worried`, para conservar su proporción original. La
+  acción `characterGlitchUntilAdvance` mantiene una separación RGB por franjas
+  y pequeños saltos de píxel mientras esa línea siga abierta; no usa escalado
+  ni modifica el aspect ratio y `nextLine()` la elimina antes del diálogo de
+  Samu.
+- La llamarada residual de Edu alcanza a Samu como gag de dibujos animados. Las
+  poses `charred_blink` y `charred_shake` usan
+  `samu_charred_closed.png`/`samu_charred_whiteeyes.png`: la primera alterna los
+  ojos en bucle mientras no se avance el texto y la segunda sacude el hollín una
+  sola vez, desprende partículas CSS y termina en `samu_worried.png`. Con
+  reducción de movimiento se muestra directamente un estado estático seguro.
+- El bullet hell reutiliza la música `assets/audio/music/chapter2/ketchup.mp3`,
+  los ocho sprites de Samu ya integrados y los objetos ficticios del paquete v2.
+  Su único recurso visual nuevo es
+  `assets/images/characters/zip/ketchup/zip.png`, reorganizado desde el asset de
+  José Manuel. No quedan rutas antiguas `assets/characters` o `assets/minigames`
+  en la implementación activa.
 
 La implementación toca `chapters/chapter1.json`, `chapters/chapter2.json`,
 `characters/edu.json`, `characters/ketchling.json`, `engine.js`, `styles.css` y
@@ -3477,4 +3522,6 @@ capítulo 2 utiliza estas variaciones:
 Cada escena declara su música en la primera línea. `playSound()` evita reiniciar
 una pista cuando coinciden ruta e ID, por lo que las escenas consecutivas
 mantienen continuidad y los saltos directos desde el selector nunca quedan en
-silencio.
+silencio. Las nueve pistas activas del capítulo se han validado como MP3 estéreo;
+el registro de audio descarta ahora las pistas detenidas o fallidas de inmediato,
+evitando silencios intermitentes al cambiar rápidamente de música.

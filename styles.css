@@ -572,6 +572,80 @@ body.startup-pending #menu-video {
     }
 }
 
+/* Corrupción de Edu ligada al diálogo «Uf, no sé». Duplica el sprite en dos
+   franjas cromáticas y desplaza píxeles, pero nunca altera scale ni el aspect
+   ratio. La clase permanece hasta que nextLine() recibe el siguiente avance. */
+.character[data-character="edu"].dialogue-glitch-loop {
+    isolation: isolate;
+    will-change: translate, filter;
+    animation: edu-dialogue-glitch-base 820ms steps(1, end) infinite;
+}
+
+.character[data-character="edu"].dialogue-glitch-loop::before,
+.character[data-character="edu"].dialogue-glitch-loop::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background-image: inherit;
+    background-size: inherit;
+    background-repeat: inherit;
+    background-position: inherit;
+    opacity: 0;
+    will-change: translate, clip-path, opacity, filter;
+}
+
+.character[data-character="edu"].dialogue-glitch-loop::before {
+    filter: saturate(1.8) hue-rotate(155deg) drop-shadow(-5px 0 0 rgba(0, 225, 255, .85));
+    animation: edu-dialogue-glitch-slice-a 820ms steps(1, end) infinite;
+}
+
+.character[data-character="edu"].dialogue-glitch-loop::after {
+    filter: saturate(1.7) hue-rotate(-35deg) drop-shadow(5px 0 0 rgba(255, 40, 145, .82));
+    animation: edu-dialogue-glitch-slice-b 820ms steps(1, end) infinite;
+}
+
+@keyframes edu-dialogue-glitch-base {
+    0%, 7%, 18%, 43%, 53%, 78%, 88%, 100% { translate: 0 0; filter: contrast(1.04) saturate(1.05); }
+    8%  { translate: -3px 0; filter: contrast(1.45) saturate(1.55) drop-shadow(4px 0 #ff288f); }
+    9%  { translate: 2px 1px; filter: contrast(1.25) saturate(1.4) drop-shadow(-4px 0 #00e1ff); }
+    44% { translate: 3px -1px; filter: contrast(1.5) saturate(1.65) drop-shadow(5px 0 #ff288f); }
+    45% { translate: -2px 0; filter: contrast(1.3) saturate(1.35) drop-shadow(-5px 0 #00e1ff); }
+    79% { translate: -3px 1px; filter: contrast(1.4) saturate(1.55) drop-shadow(-4px 0 #00e1ff); }
+    80% { translate: 2px 0; filter: contrast(1.3) saturate(1.4) drop-shadow(4px 0 #ff288f); }
+}
+
+@keyframes edu-dialogue-glitch-slice-a {
+    0%, 7%, 14%, 42%, 49%, 77%, 84%, 100% { opacity: 0; clip-path: inset(0); translate: 0 0; }
+    8%  { opacity: .82; clip-path: inset(11% 0 72% 0); translate: -9px 0; }
+    10% { opacity: .68; clip-path: inset(44% 0 40% 0); translate: 7px 0; }
+    12% { opacity: .55; clip-path: inset(76% 0 9% 0); translate: -6px 0; }
+    43% { opacity: .76; clip-path: inset(27% 0 57% 0); translate: 10px 0; }
+    46% { opacity: .62; clip-path: inset(63% 0 18% 0); translate: -8px 0; }
+    78% { opacity: .78; clip-path: inset(16% 0 68% 0); translate: -7px 0; }
+    81% { opacity: .58; clip-path: inset(52% 0 33% 0); translate: 9px 0; }
+}
+
+@keyframes edu-dialogue-glitch-slice-b {
+    0%, 9%, 17%, 44%, 52%, 79%, 87%, 100% { opacity: 0; clip-path: inset(0); translate: 0 0; }
+    10% { opacity: .7; clip-path: inset(31% 0 54% 0); translate: 8px 0; }
+    13% { opacity: .58; clip-path: inset(67% 0 17% 0); translate: -7px 0; }
+    45% { opacity: .8; clip-path: inset(8% 0 76% 0); translate: -10px 0; }
+    48% { opacity: .6; clip-path: inset(48% 0 36% 0); translate: 7px 0; }
+    80% { opacity: .72; clip-path: inset(38% 0 47% 0); translate: 8px 0; }
+    83% { opacity: .55; clip-path: inset(73% 0 12% 0); translate: -8px 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .character[data-character="edu"].dialogue-glitch-loop {
+        animation: none;
+        filter: contrast(1.15) saturate(1.2) drop-shadow(-2px 0 #00e1ff) drop-shadow(2px 0 #ff288f);
+    }
+    .character[data-character="edu"].dialogue-glitch-loop::before,
+    .character[data-character="edu"].dialogue-glitch-loop::after { display: none; }
+}
+
 /* El personaje que HABLA: a todo color, un pelín más brillante, con un halo
    cálido siguiendo su silueta y por delante de los demás. */
 .character.speaking {
@@ -2143,6 +2217,278 @@ body.startup-pending #menu-video {
     object-fit: contain;
     vertical-align: middle;
     margin: 0 2px;
+}
+
+/* ===== Guindillas + bullet hell de Zip (capítulo 2) ===== */
+.chili-harvest-minigame .minigame-field {
+    background-image: linear-gradient(rgba(23, 5, 12, .52), rgba(32, 4, 9, .78)), var(--ketchup-factory);
+    background-size: cover;
+    background-position: center;
+}
+
+.chili-harvest-hud {
+    gap: 24px;
+}
+
+.chili-power-wrap {
+    flex: 1;
+    max-width: 520px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    color: #fff4bd;
+    font-size: 17px;
+    letter-spacing: .08em;
+}
+
+.chili-power-bar,
+.ketchup-spice-meter {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    height: 18px;
+    border: 2px solid #ffd45b;
+    border-radius: 999px;
+    background: rgba(18, 5, 10, .9);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, .75), 0 0 12px rgba(255, 67, 35, .2);
+}
+
+.chili-power-bar {
+    width: min(290px, 42vw);
+}
+
+.chili-power-bar i,
+.ketchup-spice-meter i {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #ffcb3d 0%, #ff5a2d 55%, #d71920 100%);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, .34), 0 0 12px rgba(255, 65, 35, .7);
+    transition: width .16s ease;
+}
+
+.chili-harvest-minigame .mg-item-chili img {
+    height: 62px;
+    filter: drop-shadow(0 0 10px rgba(255, 72, 38, .75));
+}
+
+.chili-harvest-minigame .mg-item-ketchup img,
+.chili-harvest-minigame .mg-item-corrupt img {
+    height: 64px;
+}
+
+.chili-harvest-minigame .mg-player.chili-caught {
+    filter: drop-shadow(0 0 14px #ffcc00) brightness(1.25);
+    transform: translateX(-50%) scale(1.08);
+}
+
+.ketchup-player img {
+    height: 94px;
+}
+
+.ketchup-player {
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    transition: none;
+    z-index: 5;
+}
+
+.ketchup-player::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 10px;
+    height: 10px;
+    border: 2px solid rgba(255, 255, 255, .92);
+    border-radius: 50%;
+    background: rgba(255, 204, 0, .72);
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, .42), 0 0 10px rgba(255, 204, 0, .75);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.ketchup-player.is-hit {
+    animation: ketchup-player-hit .18s ease-in-out 2;
+    filter: drop-shadow(0 0 12px rgba(255, 45, 45, .95));
+}
+
+.mg-shot,
+.ketchup-enemy-shot {
+    position: absolute;
+    width: var(--shot-size, 34px);
+    height: var(--shot-size, 34px);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}
+
+.mg-shot {
+    z-index: 2;
+    filter: drop-shadow(0 0 7px rgba(255, 74, 64, .75));
+}
+
+.ketchup-enemy-shot {
+    z-index: 7;
+    filter: drop-shadow(0 0 8px rgba(255, 204, 0, .65));
+}
+
+.mg-shot img,
+.ketchup-enemy-shot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ketchup-boss-minigame {
+    background: linear-gradient(180deg, rgba(15, 10, 24, .92), rgba(58, 17, 18, .88)),
+                radial-gradient(circle at 50% 35%, rgba(255, 196, 51, .18), transparent 42%);
+    color: #fff;
+    font-family: var(--battle-font, 'Outfit', Arial, Helvetica, sans-serif);
+    font-weight: 600;
+}
+
+.ketchup-boss-hud {
+    width: min(760px, calc(100% - 56px));
+    padding: 14px 0 9px;
+    z-index: 3;
+}
+
+.ketchup-boss-name {
+    color: #ffcc00;
+    font-family: var(--battle-display-font, 'Righteous', 'Outfit', Arial, sans-serif);
+    font-size: 22px;
+    font-weight: 800;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .85), 0 0 12px rgba(255, 204, 0, .55);
+}
+
+.ketchup-boss-bar {
+    height: 22px;
+    margin-top: 7px;
+    overflow: hidden;
+    border: 2px solid rgba(255, 229, 133, .9);
+    border-radius: 999px;
+    background: rgba(13, 8, 18, .88);
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, .75), 0 0 18px rgba(255, 204, 0, .18);
+}
+
+.ketchup-boss-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #d71920 0%, #ff4b2f 48%, #ffcc00 100%);
+    transition: width .16s ease;
+}
+
+.ketchup-spice-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 7px;
+    color: rgba(255, 255, 255, .88);
+    font-size: 13px;
+    letter-spacing: .035em;
+}
+
+.ketchup-spice-meter {
+    width: 120px;
+    height: 12px;
+}
+
+.ketchup-neit-bonus {
+    padding: 3px 8px;
+    border-radius: 999px;
+    color: #2b1800;
+    background: #ffd45b;
+    font-weight: 800;
+}
+
+.ketchup-boss-field {
+    flex: 1;
+    width: min(920px, calc(100% - 48px));
+    margin: 0 auto;
+    border: 2px solid rgba(255, 204, 0, .28);
+    border-radius: 8px;
+    background: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px),
+                radial-gradient(circle at 50% 14%, rgba(255, 204, 0, .2), transparent 26%),
+                linear-gradient(180deg, #1c1429 0%, #2b1823 58%, #451a1a 100%);
+    background-size: 48px 48px, 48px 48px, auto, auto;
+    box-shadow: inset 0 0 26px rgba(0, 0, 0, .55), 0 0 20px rgba(0, 0, 0, .35);
+}
+
+.ketchup-boss-enemy {
+    position: absolute;
+    width: 104px;
+    height: 160px;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .5)) drop-shadow(0 0 12px rgba(255, 204, 0, .22));
+}
+
+.ketchup-boss-enemy img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+}
+
+.ketchup-boss-enemy.is-hit {
+    animation: ketchup-boss-hit .09s ease-out;
+}
+
+.ketchup-player-hud {
+    width: min(920px, calc(100% - 48px));
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 8px 0 13px;
+    z-index: 3;
+}
+
+.ketchup-player-lives {
+    min-width: 112px;
+    font-size: 26px;
+    letter-spacing: .08em;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .7);
+}
+
+.ketchup-player-help {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    color: rgba(255, 255, 255, .86);
+    font-size: 16px;
+    text-align: right;
+    text-shadow: 0 2px 0 rgba(0, 0, 0, .72);
+}
+
+.ketchup-boss-minigame .minigame-result {
+    z-index: 20;
+}
+
+@keyframes ketchup-boss-hit {
+    0%, 100% { transform: translate(-50%, -50%); }
+    50% { transform: translate(-50%, -50%) scale(1.05); filter: brightness(1.6) drop-shadow(0 0 16px rgba(255, 45, 45, .8)); }
+}
+
+@keyframes ketchup-player-hit {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .35; }
 }
 
 /* Objetivos clicables del minijuego de Ecchi Land */
@@ -5263,6 +5609,89 @@ html.electron-app #menu-theme-btn { display: none; }
     height: 100%;
     background-position: bottom right;
     z-index: 3;
+}
+
+/* Edu abrasado por el picante es una pose panorámica: el lienzo cuadrado
+   incluye una llamarada completa hacia la izquierda. Se sale a propósito de
+   la franja normal de personaje, conserva a Edu anclado a la derecha y deja
+   que el fuego alcance el centro de la escena sin recortar su extremo. */
+.character.pose-picante[data-character="edu"] {
+    left: auto !important;
+    right: 0 !important;
+    margin-left: 0 !important;
+    width: 70% !important;
+    height: 100%;
+    background-position: bottom right;
+    z-index: 2;
+}
+
+/* Gag de la llamarada de Edu: el primer estado alterna dos sprites mientras
+   el texto de 3C sigue en pantalla. Al avanzar, la segunda pose se sacude una
+   sola vez y termina mostrando a Samu limpio, sin necesitar temporizadores de
+   guion que pudieran continuar después de saltar o retroceder de escena. */
+.character.pose-charred_blink[data-character="samu"] {
+    animation: samu-charred-eyes 1.35s steps(1, end) infinite;
+}
+
+@keyframes samu-charred-eyes {
+    0%, 17%, 69%, 76% {
+        background-image: url('assets/images/characters/samu/samu_charred_closed.png');
+    }
+    18%, 68%, 77%, 100% {
+        background-image: url('assets/images/characters/samu/samu_charred_whiteeyes.png');
+    }
+}
+
+.character.pose-charred_shake[data-character="samu"] {
+    transform-origin: 50% 72%;
+    animation: samu-shake-off-soot 900ms cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.character.pose-charred_shake[data-character="samu"]::after {
+    content: "";
+    position: absolute;
+    inset: 10% 2% 38% 4%;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 30% 24%, rgba(30, 25, 22, .9) 0 5px, transparent 6px),
+        radial-gradient(circle at 50% 12%, rgba(55, 45, 38, .8) 0 4px, transparent 5px),
+        radial-gradient(circle at 68% 30%, rgba(25, 22, 20, .75) 0 6px, transparent 7px),
+        radial-gradient(circle at 42% 48%, rgba(70, 55, 42, .7) 0 3px, transparent 4px),
+        radial-gradient(circle at 78% 55%, rgba(35, 29, 25, .7) 0 4px, transparent 5px);
+    animation: samu-soot-particles 900ms ease-out both;
+}
+
+@keyframes samu-shake-off-soot {
+    0%   { translate: 0 0; rotate: 0deg; background-image: url('assets/images/characters/samu/samu_charred_whiteeyes.png'); }
+    8%   { translate: -14px 1px; rotate: -4deg; }
+    16%  { translate: 15px -1px; rotate: 5deg; }
+    24%  { translate: -16px 0; rotate: -6deg; }
+    32%  { translate: 17px 1px; rotate: 6deg; }
+    40%  { translate: -13px -1px; rotate: -5deg; }
+    48%  { translate: 12px 0; rotate: 4deg; }
+    56%  { translate: -8px 0; rotate: -3deg; }
+    64%  { translate: 7px 0; rotate: 2deg; background-image: url('assets/images/characters/samu/samu_charred_whiteeyes.png'); }
+    76%  { translate: -3px 0; rotate: -1deg; background-image: url('assets/images/characters/samu/samu_worried.png'); }
+    100% { translate: 0 0; rotate: 0deg; background-image: url('assets/images/characters/samu/samu_worried.png'); }
+}
+
+@keyframes samu-soot-particles {
+    0%   { opacity: 0; translate: 0 0; scale: .65; }
+    18%  { opacity: .9; }
+    65%  { opacity: .55; }
+    100% { opacity: 0; translate: 5px -65px; scale: 1.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .character.pose-charred_blink[data-character="samu"] {
+        animation: none !important;
+        background-image: url('assets/images/characters/samu/samu_charred_whiteeyes.png') !important;
+    }
+    .character.pose-charred_shake[data-character="samu"] {
+        animation: none !important;
+        background-image: url('assets/images/characters/samu/samu_worried.png') !important;
+    }
+    .character.pose-charred_shake[data-character="samu"]::after { display: none; }
 }
 
 /* ============================================================

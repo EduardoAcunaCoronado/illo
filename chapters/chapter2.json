@@ -1191,6 +1191,20 @@
           ]
         },
         {
+          "character": "Neit",
+          "text": "¡Espera! Ya que has aguantado toda la explicación, llévate esta caja de guindillas. Calidad-precio insuperable. Algún uso les encontrarás.",
+          "actions": [
+            {
+              "type": "giveItem",
+              "item": "caja_guindillas"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Una caja de guindillas...? No entiendo para qué voy a querer esto ahora, pero vale. Me la quedo."
+        },
+        {
           "actions": [
             {
               "type": "goToScene",
@@ -1219,7 +1233,11 @@
             },
             {
               "type": "playVideo",
-              "path": "assets/video/cutscenes/chapter2/intro_sala_del_trono_kk_4k.mp4"
+              "path": "assets/video/cutscenes/chapter2/intro_sala_del_trono_kk_4k.mp4",
+              "audioCrossfade": 1800,
+              "holdLastFrame": 300,
+              "visualFadeOut": 600,
+              "endBackground": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png"
             }
           ]
         },
@@ -1227,7 +1245,8 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png",
+              "cut": true
             },
             {
               "type": "hideCharacter",
@@ -1265,7 +1284,12 @@
               "type": "showCharacter",
               "character": "edu",
               "position": "right",
-              "pose": "zip_worried"
+              "pose": "worried"
+            },
+            {
+              "type": "characterGlitchUntilAdvance",
+              "character": "edu",
+              "position": "right"
             }
           ]
         },
@@ -1544,7 +1568,7 @@
         },
         {
           "character": "Zip",
-          "text": "Edu no te escucha, ahora soy pura oscuridad memética. Para vencerme tendrás que hacer lo que hace siempre Edu cuando va a un restaurante, hincharse a ketchup y evitar el picante."
+          "text": "Edu no te escucha. Ahora soy pura oscuridad memética y este reino entero es mi munición. Intenta acercarte y acabarás cubierto de ketchup."
         },
         {
           "character": "Ketchling de seguridad",
@@ -1562,7 +1586,7 @@
         {
           "character": "Ketchling cocinero",
           "speakingAs": "ketchling",
-          "text": "Tres pasos: reactiva la producción, recupera las botellas limpias y usa nuestros tapones para liberar a Edu.",
+          "text": "¡Zip no soporta el picante! Reúne todas las guindillas que puedas antes de atacarlo. Cuantas más tengas, más fuerte será cada disparo y menos podrá presionarte.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1578,7 +1602,7 @@
         },
         {
           "character": "3C",
-          "text": "¡Que comience la batalla! Samu debe luchar contra Zip. Si gana, liberará a Edu de la corrupción."
+          "text": "Samu dispone de unos segundos para cargar su reserva de picante. La caja de Neit, si decidió escucharle, dará una ventaja inesperada en la batalla contra Zip."
         },
         {
           "actions": [
@@ -1597,32 +1621,21 @@
             },
             {
               "type": "minigame",
-              "game": "ketchup",
-              "goal": 27,
+              "game": "chiliHarvest",
+              "duration": 22,
+              "powerGoal": 28,
+              "maxSpicePower": 40,
+              "boxBonus": 12,
+              "spawnRate": 1.35,
+              "speedMult": 1.25,
+              "chiliChance": 0.72
+            },
+            {
+              "type": "minigame",
+              "game": "ketchupBoss",
+              "enemyHp": 360,
               "maxHits": 3,
-              "spawnRate": 1.55,
-              "speedMult": 1.55,
-              "chiliChance": 0.38,
-              "maxHitsByDelay": {
-                "0": 3,
-                "1": 2,
-                "2": 2,
-                "3": 1
-              },
-              "phase1Goal": 8,
-              "phase2Goal": 18,
-              "spawnRateByDelay": {
-                "0": 1.45,
-                "1": 1.6,
-                "2": 1.8,
-                "3": 2
-              },
-              "speedMultByDelay": {
-                "0": 1.45,
-                "1": 1.6,
-                "2": 1.75,
-                "3": 1.9
-              }
+              "maxSpicePower": 40
             },
             {
               "type": "stopSound",
@@ -1641,7 +1654,7 @@
         },
         {
           "character": "3C",
-          "text": "La línea vuelve a latir, la corrupción se desprende de las botellas y una lluvia de tapones dorados atraviesa a Zip. La forma oscura se descomprime hasta desaparecer. Edu cae, libre y vivo.",
+          "text": "El último disparo de guindilla atraviesa a Zip. El picante rompe la corrupción desde dentro y la forma oscura se descomprime hasta desaparecer. Edu cae, libre y vivo.",
           "actions": [
             {
               "type": "rescue",
@@ -1650,18 +1663,60 @@
             {
               "type": "setBackground",
               "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "zip"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "ketchling"
+            },
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "picante",
+              "enter": "bottom"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Edu vuelve a respirar... y estornuda una última llamarada. Samu la recibe de lleno. Cuando el humo se disipa, solo parpadean dos ojos blancos sobre su cara chamuscada.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/fire_spell.mp3",
+              "volume": 0.75
+            },
+            {
+              "type": "shake",
+              "intensity": 5,
+              "duration": 350
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "charred_blink"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "¡Edu! ¡Aguanta! ¡Despierta!",
+          "text": "Vale... estás vivo. Mi cara acaba de confirmarlo. La próxima vez que despiertes, apunta el hocico hacia otro lado.",
           "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/fast_whoosh_and_zaps.mp3",
+              "volume": 0.5
+            },
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "worried"
+              "pose": "charred_shake"
             }
           ]
         },

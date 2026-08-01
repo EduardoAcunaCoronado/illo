@@ -181,6 +181,10 @@ class VisualNovelEngine {
             case 'fullCharacterGlitch':
                 this.triggerCharacterFullGlitch(action.character, action.position, action.duration);
                 break;
+            case 'characterGlitchUntilAdvance':
+            case 'glitchUntilAdvance':
+                this.startCharacterGlitchUntilAdvance(action.character, action.position);
+                break;
             case 'hideDialog':
             case 'hideText':
             case 'ocultarTexto':
@@ -302,10 +306,21 @@ class VisualNovelEngine {
         const src = action.path || action.value || action.src;
         if (!src) { console.warn('playVideo: falta la ruta del vídeo'); return Promise.resolve(); }
 
-        // Pausar la música que esté sonando para no solaparla con el audio del vídeo.
+        const audioCrossfade = Math.max(0, Number(action.audioCrossfade) || 0);
+        const holdLastFrame = Math.max(0, Number(action.holdLastFrame) || 0);
+        const visualFadeOut = Math.max(0, Number(action.visualFadeOut) || 0);
+        const endBackground = action.endBackground || action.finalBackground || null;
+
+        // No duplicar la música si currentMusic y bg_music apuntan al mismo Audio.
         const paused = [];
+        const pausedSet = new Set();
         const tryPause = (audio) => {
-            if (audio && !audio.paused) { try { audio.pause(); paused.push(audio); } catch (e) {} }
+            if (!audio || audio.paused || pausedSet.has(audio)) return;
+            try {
+                audio.pause();
+                pausedSet.add(audio);
+                paused.push(audio);
+            } catch (e) {}
         };
         tryPause(this.currentMusic);
         for (const a of Object.values(this.audioInstances || {})) tryPause(a);
@@ -333,23 +348,107 @@ class VisualNovelEngine {
             document.getElementById('game-container').appendChild(overlay);
 
             let done = false;
-            const finish = () => {
-                if (done) return;
-                done = true;
-                document.removeEventListener('keydown', onKey);
-                try { video.pause(); } catch (e) {}
+            let crossfadeStarted = false;
+            let videoFadeInterval = null;
+
+            const resumeAudio = (audio, duration) => {
+                if (!audio || audio._stopping) return;
+                if (audio._fadeInterval) {
+                    clearInterval(audio._fadeInterval);
+                    audio._fadeInterval = null;
+                }
+                const kind = audio._volKind || 'music';
+                const base = audio._baseVol != null ? audio._baseVol : 1;
+                const target = Math.max(0, Math.min(1, base * this.volFactor(kind)));
+                if (duration <= 0) {
+                    audio.volume = target;
+                    try { audio.play().catch(() => {}); } catch (e) {}
+                    return;
+                }
+                audio.volume = 0;
+                try { audio.play().catch(() => {}); } catch (e) {}
+                const startedAt = Date.now();
+                audio._fadeInterval = setInterval(() => {
+                    const progress = Math.min((Date.now() - startedAt) / duration, 1);
+                    audio.volume = target * progress;
+                    if (progress >= 1) {
+                        clearInterval(audio._fadeInterval);
+                        audio._fadeInterval = null;
+                    }
+                }, 20);
+            };
+
+            const beginAudioCrossfade = (duration = audioCrossfade) => {
+                if (crossfadeStarted) return;
+                crossfadeStarted = true;
+                const fadeDuration = Math.max(0, duration);
+                for (const audio of paused) resumeAudio(audio, fadeDuration);
+                if (fadeDuration <= 0 || video.muted || video.volume <= 0) return;
+                const initialVolume = video.volume;
+                const startedAt = Date.now();
+                videoFadeInterval = setInterval(() => {
+                    const progress = Math.min((Date.now() - startedAt) / fadeDuration, 1);
+                    video.volume = initialVolume * (1 - progress);
+                    if (progress >= 1) {
+                        clearInterval(videoFadeInterval);
+                        videoFadeInterval = null;
+                    }
+                }, 20);
+            };
+
+            const onTimeUpdate = () => {
+                if (audioCrossfade <= 0 || crossfadeStarted || !Number.isFinite(video.duration)) return;
+                const remainingMs = Math.max(0, (video.duration - video.currentTime) * 1000);
+                if (remainingMs <= audioCrossfade + 140) {
+                    beginAudioCrossfade(Math.max(250, Math.min(audioCrossfade, remainingMs)));
+                }
+            };
+
+            const cleanup = () => {
                 overlay.remove();
-                for (const a of paused) { try { a.play().catch(() => {}); } catch (e) {} }
                 resolve();
             };
 
-            const onKey = (e) => {
-                if (['Escape', 'Enter', ' ', 'Spacebar'].includes(e.key)) { e.preventDefault(); finish(); }
+            const finish = (naturalEnd = false) => {
+                if (done) return;
+                done = true;
+                document.removeEventListener('keydown', onKey);
+                video.removeEventListener('timeupdate', onTimeUpdate);
+                if (videoFadeInterval) {
+                    clearInterval(videoFadeInterval);
+                    videoFadeInterval = null;
+                }
+
+                // El fondo exacto del último frame queda preparado bajo el vídeo;
+                // así el fundido revela la misma imagen y no la escena anterior.
+                if (endBackground) this.setBackground(endBackground, { cut: true });
+                if (!crossfadeStarted) {
+                    const resumeFade = naturalEnd ? audioCrossfade : Math.min(audioCrossfade, 350);
+                    beginAudioCrossfade(resumeFade);
+                }
+                try { video.pause(); } catch (e) {}
+
+                const hold = naturalEnd ? holdLastFrame : 0;
+                const fade = naturalEnd ? visualFadeOut : Math.min(visualFadeOut, 150);
+                setTimeout(() => {
+                    if (fade <= 0) { cleanup(); return; }
+                    overlay.style.transition = `opacity ${fade}ms ease`;
+                    overlay.style.opacity = '0';
+                    setTimeout(cleanup, fade + 30);
+                }, hold);
             };
 
-            video.addEventListener('ended', finish);
-            video.addEventListener('error', finish);
-            overlay.addEventListener('click', finish);
+            const onKey = (e) => {
+                if (['Escape', 'Enter', ' ', 'Spacebar'].includes(e.key)) {
+                    e.preventDefault();
+                    finish(false);
+                }
+            };
+
+            video.addEventListener('timeupdate', onTimeUpdate);
+            video.addEventListener('ended', () => finish(true), { once: true });
+            video.addEventListener('error', () => finish(false), { once: true });
+            overlay.addEventListener('click', () => finish(false), { once: true });
             document.addEventListener('keydown', onKey);
 
             // Autoplay puede fallar si el navegador exige gesto: ofrecer clic para arrancar.
@@ -447,8 +546,13 @@ class VisualNovelEngine {
             case 'furrielvaExplore':
                 await this.playFurrielvaExploreMinigame(action);
                 break;
+            case 'chiliHarvest':
+            case 'guindillas':
+                await this.playChiliHarvestMinigame(action);
+                break;
+            case 'ketchupBoss':
             case 'ketchup':
-                await this.playKetchupMinigame(action);
+                await this.playKetchupBossMinigame(action);
                 break;
             case 'ecchi':
                 await this.playEcchiMinigame(action);
@@ -1021,24 +1125,245 @@ class VisualNovelEngine {
         return won;
     }
 
-    // Minijuego: Samu come ketchup y esquiva guindillas.
-    // Orquesta las rondas y permite reintentar si pierdes.
-    async playKetchupMinigame(options = {}) {
+    // Primera parte del combate de Kingdom Ketchup: durante un tiempo fijo,
+    // Samu reúne tantas guindillas como pueda. No se pierde la historia si se
+    // recogen pocas; el resultado regula la dificultad de la batalla contra Zip.
+    async playChiliHarvestMinigame(options = {}) {
+        this.isWaitingForInput = false;
+        const collected = await this.runChiliHarvestRound(options);
+        const hasChiliBox = this.hasItem('caja_guindillas');
+        const boxBonus = hasChiliBox ? (Number(options.boxBonus) || 12) : 0;
+
+        this.gameState.chiliCollected = collected;
+        this.gameState.neitChiliBonus = boxBonus;
+        this.gameState.chiliPower = collected + boxBonus;
+        this.gameState.chiliPowerMax = Number(options.maxSpicePower) || 40;
+        return collected;
+    }
+
+    runChiliHarvestRound(options = {}) {
+        const rawDuration = Number(options.duration) || 22000;
+        const duration = rawDuration <= 120 ? rawDuration * 1000 : rawDuration;
+        const powerGoal = Number(options.powerGoal) || 28;
+        const spawnRate = Number(options.spawnRate) || 1.35;
+        const speedMult = Number(options.speedMult) || 1.25;
+        const chiliChance = options.chiliChance !== undefined ? Number(options.chiliChance) : 0.72;
+        const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.png');
+        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
+        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png');
+        const playerIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.png');
+        const factoryBackground = this.cacheBustAsset(
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png'
+        );
+
+        this.preloadImages([
+            'assets/images/minigames/chapter2/ketchup/chili_v2.png',
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png',
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png',
+            'assets/images/minigames/chapter2/common/samu_player.png',
+            'assets/images/characters/edu/edu_picante_wide_transparent.png',
+            'assets/images/characters/samu/samu_charred_closed.png',
+            'assets/images/characters/samu/samu_charred_whiteeyes.png',
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png'
+        ]);
+
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'minigame-overlay chili-harvest-minigame';
+            overlay.innerHTML = `
+                <div class="minigame-hud chili-harvest-hud">
+                    <span class="mg-score"><img class="mg-hud-icon" src="${chiliIcon}" alt="guindilla"><span class="mg-score-text">0</span></span>
+                    <span class="chili-power-wrap"><span>PODER PICANTE</span><span class="chili-power-bar"><i></i></span></span>
+                    <span class="mg-timer">${Math.ceil(duration / 1000)} s</span>
+                </div>
+                <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${factoryBackground}')">
+                    <div class="mg-player" id="mg-player"><img src="${playerIcon}" alt="Samu" draggable="false"></div>
+                    <div class="mg-phase-banner is-showing">¡Reúne picante para debilitar a Zip!</div>
+                </div>
+                <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge guindillas; las botellas te hacen perder una.</div>
+            `;
+            document.getElementById('game-container').appendChild(overlay);
+
+            const field = overlay.querySelector('#mg-field');
+            const player = overlay.querySelector('#mg-player');
+            const scoreEl = overlay.querySelector('.mg-score-text');
+            const timerEl = overlay.querySelector('.mg-timer');
+            const powerFill = overlay.querySelector('.chili-power-bar i');
+            const fieldRect = () => field.getBoundingClientRect();
+            let score = 0;
+            let playerX = 0.5;
+            let items = [];
+            let running = true;
+            let spawnTimer = 0;
+            let lastTime = null;
+            const startTime = performance.now();
+
+            const updateHud = remaining => {
+                scoreEl.textContent = String(score);
+                timerEl.textContent = `${Math.max(0, Math.ceil(remaining / 1000))} s`;
+                powerFill.style.width = `${Math.min(100, (score / powerGoal) * 100)}%`;
+            };
+            const updatePlayer = () => { player.style.left = `${playerX * 100}%`; };
+            updatePlayer();
+            updateHud(duration);
+
+            let moveLeft = false;
+            let moveRight = false;
+            const keyDown = event => {
+                const key = event.key.toLowerCase();
+                if (key === 'arrowleft' || key === 'a') moveLeft = true;
+                if (key === 'arrowright' || key === 'd') moveRight = true;
+                if (key.startsWith('arrow')) event.preventDefault();
+            };
+            const keyUp = event => {
+                const key = event.key.toLowerCase();
+                if (key === 'arrowleft' || key === 'a') moveLeft = false;
+                if (key === 'arrowright' || key === 'd') moveRight = false;
+            };
+            const mouseMove = event => {
+                const rect = fieldRect();
+                playerX = Math.max(0.04, Math.min(0.96, (event.clientX - rect.left) / rect.width));
+                updatePlayer();
+            };
+            const swallowClick = event => event.stopPropagation();
+            document.addEventListener('keydown', keyDown);
+            document.addEventListener('keyup', keyUp);
+            field.addEventListener('mousemove', mouseMove);
+            overlay.addEventListener('click', swallowClick, true);
+            const detachControls = () => {
+                document.removeEventListener('keydown', keyDown);
+                document.removeEventListener('keyup', keyUp);
+                field.removeEventListener('mousemove', mouseMove);
+                overlay.removeEventListener('click', swallowClick, true);
+            };
+
+            const spawnItem = () => {
+                const good = Math.random() < chiliChance;
+                const corrupt = !good && Math.random() < 0.45;
+                const type = good ? 'chili' : (corrupt ? 'corrupt' : 'ketchup');
+                const icon = good ? chiliIcon : (corrupt ? corruptIcon : ketchupIcon);
+                const el = document.createElement('div');
+                el.className = `mg-item mg-item-${type}`;
+                el.innerHTML = `<img src="${icon}" alt="${good ? 'guindilla' : 'botella de ketchup'}" draggable="false">`;
+                const x = 0.05 + Math.random() * 0.9;
+                el.style.left = `${x * 100}%`;
+                el.style.top = '-10%';
+                field.appendChild(el);
+                items.push({
+                    el,
+                    x,
+                    y: -0.1,
+                    speed: (0.28 + Math.random() * 0.22) * speedMult,
+                    good,
+                });
+            };
+
+            const cleanup = () => {
+                if (!running) return;
+                running = false;
+                detachControls();
+                items.forEach(item => item.el.remove());
+                items = [];
+                const result = document.createElement('div');
+                result.className = 'minigame-result';
+                result.textContent = `¡${score} guindillas reunidas!`;
+                overlay.appendChild(result);
+                setTimeout(() => {
+                    overlay.remove();
+                    resolve(score);
+                }, 1200);
+            };
+
+            const loop = time => {
+                if (!running || !overlay.isConnected) {
+                    running = false;
+                    detachControls();
+                    items.forEach(item => item.el.remove());
+                    items = [];
+                    return;
+                }
+                const elapsed = time - startTime;
+                const remaining = duration - elapsed;
+                if (remaining <= 0) return cleanup();
+                if (lastTime === null) lastTime = time;
+                const dt = Math.min((time - lastTime) / 1000, 0.05);
+                lastTime = time;
+
+                if (moveLeft) playerX = Math.max(0.04, playerX - 1.2 * dt);
+                if (moveRight) playerX = Math.min(0.96, playerX + 1.2 * dt);
+                updatePlayer();
+                updateHud(remaining);
+
+                spawnTimer -= dt;
+                if (spawnTimer <= 0) {
+                    spawnItem();
+                    spawnTimer = (0.34 + Math.random() * 0.32) / spawnRate;
+                }
+
+                for (let index = items.length - 1; index >= 0; index--) {
+                    const item = items[index];
+                    item.y += item.speed * dt;
+                    item.el.style.top = `${item.y * 100}%`;
+                    const caught = item.y >= 0.80 && item.y <= 0.98 && Math.abs(item.x - playerX) < 0.075;
+                    if (caught) {
+                        if (item.good) {
+                            score++;
+                            player.classList.add('chili-caught');
+                            setTimeout(() => player.classList.remove('chili-caught'), 120);
+                        } else {
+                            score = Math.max(0, score - 1);
+                            field.classList.add('mg-hit');
+                            setTimeout(() => field.classList.remove('mg-hit'), 200);
+                        }
+                        updateHud(remaining);
+                        item.el.remove();
+                        items.splice(index, 1);
+                    } else if (item.y > 1.1) {
+                        item.el.remove();
+                        items.splice(index, 1);
+                    }
+                }
+                requestAnimationFrame(loop);
+            };
+            requestAnimationFrame(loop);
+        });
+    }
+
+    // Bullet hell de José Manuel, conectado a la reserva de guindillas obtenida
+    // en la ronda anterior y al posible regalo de Neit.
+    async playKetchupBossMinigame(options = {}) {
         // El minijuego gestiona su propia entrada; no esperar clic extra al salir
         this.isWaitingForInput = false;
+
+        if (!window.KetchupBossMinigame) {
+            console.warn('KetchupBossMinigame no está cargado.');
+            return false;
+        }
+
+        const bossOptions = Object.assign({}, options, {
+            spicePower: Number(this.gameState.chiliPower) || 0,
+            maxSpicePower: Number(this.gameState.chiliPowerMax) || Number(options.maxSpicePower) || 40,
+            hasChiliBox: this.hasItem('caja_guindillas')
+        });
 
         // Se repite hasta ganar; al perder solo se puede reintentar
         let won = false;
         while (!won) {
-            won = await this.runKetchupRound(options);
+            won = await window.KetchupBossMinigame.play(bossOptions);
             if (!won) {
-                await this.showMinigameRetry();
+                await this.showMinigameRetry('¡Samu ha acabado cubierto de ketchup!');
             }
         }
         return won;
     }
 
-    // Una ronda del minijuego. Resuelve con true (ganada) o false (perdida).
+    // Alias para herramientas y escenas antiguas que invocaban este nombre.
+    async playKetchupMinigame(options = {}) {
+        return this.playKetchupBossMinigame(options);
+    }
+
+    // Implementación histórica del recolector, conservada temporalmente para
+    // compatibilidad con pruebas antiguas; la historia usa chiliHarvest.
     runKetchupRound(options = {}) {
         const goal = options.goal || 10;          // ketchups necesarios para ganar
         const maxHits = options.maxHits || 3;     // golpes de guindilla permitidos
@@ -5321,6 +5646,27 @@ class VisualNovelEngine {
         }, duration + 80);
     }
 
+    // Interferencia persistente ligada a una sola línea de diálogo. No deforma
+    // la escala del personaje: el movimiento y la separación RGB los resuelve
+    // CSS mediante capas recortadas. nextLine() la retira justo al avanzar.
+    startCharacterGlitchUntilAdvance(characterName, position) {
+        const characterKey = this.getCharacterKey(characterName);
+        const trackedPosition = position || this.characterPositions[characterKey];
+        if (!trackedPosition) return;
+        const charElement = document.getElementById(`character-${trackedPosition}`);
+        if (!charElement || !charElement.classList.contains('active')) return;
+
+        this.clearAdvanceBoundCharacterEffects();
+        this.playCharacterGlitchSound();
+        charElement.classList.add('dialogue-glitch-loop');
+    }
+
+    clearAdvanceBoundCharacterEffects() {
+        document.querySelectorAll('.dialogue-glitch-loop').forEach(element => {
+            element.classList.remove('dialogue-glitch-loop');
+        });
+    }
+
     updateCharacterVideo(charElement, videoPath) {
         let videoContainer = charElement.querySelector('.character-video-container');
 
@@ -5480,7 +5826,7 @@ class VisualNovelEngine {
         // id con esa misma ruta, se deja correr y solo se ajusta el volumen.
         if (id) {
             const sonando = this.audioInstances[id];
-            if (sonando && sonando._srcPath === soundPath && !sonando.ended && !sonando.paused) {
+            if (sonando && sonando._srcPath === soundPath && !sonando._stopping && !sonando.ended && !sonando.paused) {
                 sonando._baseVol = volume;
                 sonando.loop = loop;
                 if (!sonando._fadeInterval) {
@@ -5493,6 +5839,7 @@ class VisualNovelEngine {
 
         const audio = new Audio(soundPath);
         audio._srcPath = soundPath;
+        audio.preload = 'auto';
         // Música = bucles y pistas del menú; el resto cuenta como efecto.
         const volKind = (loop || (id && String(id).startsWith('menu'))) ? 'music' : 'sfx';
         audio._baseVol = volume;
@@ -5520,6 +5867,16 @@ class VisualNovelEngine {
             this.audioInstances[id] = audio;
         }
 
+        // Si el navegador no puede cargar o decodificar una pista, no dejar su
+        // referencia averiada bloqueando futuros intentos con el mismo ID.
+        audio.addEventListener('error', () => {
+            console.error(`No se pudo cargar el audio: ${soundPath}`, audio.error || 'error desconocido');
+            this.forgetAudio(audio);
+        }, { once: true });
+        if (!loop) {
+            audio.addEventListener('ended', () => this.forgetAudio(audio), { once: true });
+        }
+
         // Fade in si se especifica. El intervalo se guarda en audio._fadeInterval
         // para que un fade-out posterior pueda cancelarlo (evita que dos fades
         // compitan por el volumen del mismo audio).
@@ -5542,11 +5899,24 @@ class VisualNovelEngine {
         return audio;
     }
 
+    // Elimina únicamente las referencias que todavía apuntan a este elemento.
+    // El audio puede continuar su fade con una referencia local, pero una nueva
+    // acción con el mismo ID debe poder crear y arrancar otra pista enseguida.
+    forgetAudio(audio) {
+        if (!audio) return;
+        if (this.currentMusic === audio) this.currentMusic = null;
+        for (const [id, instance] of Object.entries(this.audioInstances || {})) {
+            if (instance === audio) delete this.audioInstances[id];
+        }
+    }
+
     // Desvanece el volumen a 0 en `ms` y luego pausa y rebobina. Cancela
     // cualquier fade anterior sobre el mismo audio (evita intervalos compitiendo
     // por el volumen). Con ms<=0, o si ya está pausado, para de inmediato.
     fadeOutAndStop(audio, ms = 300) {
         if (!audio) return;
+        audio._stopping = true;
+        this.forgetAudio(audio);
         // Al terminar se libera el src: el elemento descartado no debe seguir
         // reteniendo su conexión de streaming (límite de 6 por host).
         const release = (a) => { try { a.removeAttribute('src'); a.load(); } catch (e) {} };
@@ -5935,6 +6305,9 @@ class VisualNovelEngine {
     }
 
     async nextLine() {
+        // Los efectos declarados «hasta avanzar» sobreviven al tipeo y a la
+        // espera del jugador, pero desaparecen antes de ejecutar la línea nueva.
+        this.clearAdvanceBoundCharacterEffects();
         const scene = this.getCurrentScene();
         if (!scene || !scene.lines) return false;
 

@@ -287,6 +287,10 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - Acciones JSON activas incluyen fondos, personajes/poses, audio, wait, variables,
   rescue, giveItem, set/addDelay, goToScene, setNextChapter, vídeo, CG, shake, flash,
   grade, vignette, fade, bgPan y minigame.
+- Audio: `stopSound` y los reemplazos con el mismo ID retiran inmediatamente la
+  referencia del registro, aunque el fade siga terminando. No reutilizar un
+  elemento marcado `_stopping`: provocaba silencios al intentar relanzar una
+  pista durante su desvanecimiento. Los errores de carga también liberan el ID.
 - “Capítulos” en el menú es un selector directo, no una carga de partida guardada.
   saveGame() existe pero no se llama; la promesa antigua de autoguardado no describe el
   comportamiento actual.
@@ -297,7 +301,11 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 
 MINIJUEGOS USADOS POR EL GUION ACTUAL
 - Gatos: laberinto/supervivencia con flechas o WASD.
-- Ketchup: mover a Samu horizontalmente, recoger ketchup y evitar guindillas.
+- Guindillas: ronda cronometrada horizontal; cada guindilla carga el poder que
+  se utilizará inmediatamente después contra Zip. Las botellas restan una.
+- Ketchup boss: bullet hell importado del trabajo de José Manuel. Samu se mueve
+  en X/Y, dispara guindillas y esquiva ketchup. Más poder vuelve el combate más
+  asequible aumentando daño/cadencia y ralentizando los patrones enemigos.
 - Chase: coche lateral, esquivar motos/obstáculos; dificultad por storyDelay. Desde
   2026-07-30 el coche usa seis poses con distintas fases de sus ruedas originales
   y una carretera nocturna RGBA más detallada; el skyline lejano conserva un
@@ -550,6 +558,10 @@ REGLAS PARA CAMBIOS FUTUROS
   fuego, vapor, reflejos, guindillas, gotas, salpicaduras y movimiento originales.
   `scripts/rebuild_intro_sala_trono_kk.py` es una alternativa editable, no la
   fuente del vídeo activo actual.
+- El fondo inmediatamente posterior al vídeo es una extracción exacta de su
+  último fotograma (frame 239/240):
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png`.
+  No sustituirlo por otro render, porque rompería la continuidad del corte.
 - Kingdom Ketchup v2 tiene su paquete visual integrado en las categorías
   canónicas de assets/images/: fondos de chapter2, CG, personajes y minijuegos.
   `assets/metadata/chapter2_v2_manifest.json` documenta el uso. Incluye fondos
@@ -565,9 +577,28 @@ REGLAS PARA CAMBIOS FUTUROS
   output/pdf/estudio_guion_kingdom_ketchup_jose_manuel.pdf.
 - Extensión jugable de capítulo 2: minijuego point-and-click `furrielvaExplore`
   con tres pistas; Ketchlings con ficha propia y cuatro oficios; tapón dorado en
-  inventario; CG de revelación, portal y bienvenida; batalla de ketchup en tres
-  fases 8/18/27 con botella limpia, corrupción, tapones y guindillas. La ruta de
-  supermercado mantiene `storyDelay` y ahora escala vidas, spawn y velocidad.
+  inventario; CG de revelación, portal y bienvenida. La batalla contra Zip se
+  divide en `chiliHarvest` (22 segundos de recolección) y `ketchupBoss` (bullet
+  hell). La puntuación de guindillas regula la dificultad de la segunda parte.
+  Elegir la recomendación de Neit entrega `caja_guindillas`, aporta 12 puntos de
+  picante y se muestra como bonificación en el HUD, aunque Samu no entiende su
+  utilidad cuando recibe la caja.
+- Tras vencer a Zip, mostrar a Edu con la pose `picante`
+  (`assets/images/characters/edu/edu_picante_wide_transparent.png`) hasta que
+  vuelve a hablar; entonces pasa a `sad`. Es una excepción panorámica al 70 %
+  del escenario, anclada a la derecha para que la llamarada completa se extienda
+  hacia el centro. El PNG debe conservar transparencia real.
+- La cinemática del trono termina con un crossfade configurable: 1,8 s entre su
+  audio y `kingdomketchup.mp3`, 300 ms reteniendo el último frame y 600 ms de
+  fundido hacia `kingdom_ketchup_trono_video_final_4k.png`. `playVideo` admite
+  `audioCrossfade`, `holdLastFrame`, `visualFadeOut` y `endBackground`.
+- En «Uf, no sé», mostrar a Edu con `worried` a proporción normal y aplicar
+  `characterGlitchUntilAdvance`. El glitch cromático por franjas se mantiene
+  únicamente hasta avanzar el texto y nunca debe comprimir ni escalar el sprite.
+- La llamarada de Edu chamusca cómicamente a Samu. `charred_blink` alterna en
+  bucle los PNG `samu_charred_closed.png` y `samu_charred_whiteeyes.png` hasta
+  avanzar el texto; `charred_shake` sacude el hollín una sola vez, añade motas
+  CSS y termina visualmente en `samu_worried.png` mientras Samu protesta.
 - Edu queda rescatado después de derrotar a Zip, no al entrar en el capítulo.
   Zip no crea Kingdom Ketchup: corrompe y comprime el deseo previo de Edu de ser
   necesario. Los Ketchlings confirman que pueden cuidar la fábrica sin retenerlo.
