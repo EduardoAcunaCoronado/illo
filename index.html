@@ -4,23 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css?v=20260731-6">
+    <link rel="stylesheet" href="styles.css?v=20260731-9">
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
+    <script>
+        if (navigator.userAgent.includes('Electron')) {
+            document.documentElement.classList.add('electron-app');
+        }
+    </script>
 </head>
-<body>
+<body class="startup-pending">
     <div id="viewport">
     <div id="game-container">
         <!-- Fondo de la escena -->
         <div id="background" class="background"></div>
 
-        <!-- Vídeo de fondo del MENÚ PRINCIPAL (loop, ralentizado por game.js y
-             SIEMPRE mudo: su sonido de base se reproduce aparte como
-             ambiente_menu.mp3 a velocidad normal, bajito, tras el primer
-             clic/tecla — los navegadores no permiten audio antes de un gesto).
-             Se oculta al empezar a jugar. -->
+        <!-- Vídeo de fondo del MENÚ PRINCIPAL (loop, ralentizado y siempre mudo).
+             Permanece oculto/pausado durante disclaimer y opening; empieza cuando
+             la secuencia inicial entrega el control al menú. -->
         <video id="menu-video" class="menu-video" autoplay muted loop playsinline
                poster="assets/backgrounds/menu_cover.png?v=20260720-21"
-               src="assets/videos/menu_loop.mp4?v=20260723-2"></video>
+               src="assets/videos/menu_loop.mp4?v=20260731-5"></video>
 
         <!-- Personajes -->
         <div id="characters-container" class="characters-container">
@@ -42,6 +45,12 @@
             </div>
             <div class="dialog-continue p5-continue">▼</div>
         </div>
+
+        <!-- Opciones durante la partida: abre el mismo menú que la tecla Esc.
+             Va arriba a la IZQUIERDA; los de retroceder y escenas van a la derecha. -->
+        <button id="options-btn" class="options-btn hidden" title="Opciones (Esc)">
+            <span class="options-icon">&#9881;</span><span class="options-label">Opciones</span>
+        </button>
 
         <!-- Retroceder a la escena anterior (pedido en la demo del 25-jul-2026).
              Se muestra solo cuando hay escena a la que volver; game.js lo gestiona. -->
@@ -69,7 +78,7 @@
 
         <!-- Menú principal (diseño "Neón de Medianoche": el logo es un letrero de
              neón sobre la ciudad y las opciones una lista limpia abajo-izquierda) -->
-        <div id="main-menu" class="main-menu neon-menu">
+        <div id="main-menu" class="main-menu neon-menu" aria-hidden="true" inert>
             <div class="nm-scrim"></div>
             <div class="nm-grain"></div>
             <div class="nm-logo">
@@ -81,6 +90,7 @@
                 <button id="start-btn" class="nm-item">Comenzar</button>
                 <button id="load-btn" class="nm-item">Capítulos</button>
                 <button id="settings-btn" class="nm-item">Configuración</button>
+                <button id="quit-btn" class="nm-item">Salir</button>
             </nav>
             <button id="menu-theme-btn" class="menu-theme-btn" title="Volver a escuchar el tema">♪</button>
 
@@ -116,14 +126,46 @@
     </div>
     </div>
 
+    <!-- Arranque obligatorio: un gesto explícito desbloquea el audio del
+         navegador; después se reproduce el opening de Samu y aparece el menú.
+         Vive FUERA de #viewport/#game-container para no quedar encerrado en el
+         escenario 16:9: así el opening se adapta al tamaño real de la ventana. -->
+    <div id="startup-overlay" class="startup-overlay" role="dialog"
+         aria-modal="true" aria-labelledby="startup-title">
+        <section id="startup-disclaimer" class="startup-disclaimer">
+            <div class="startup-mark">PROJECT AI.RI</div>
+            <h1 id="startup-title">Antes de empezar</h1>
+            <p>Esta experiencia contiene música, voces, efectos de sonido
+               y secuencias con luces intermitentes.</p>
+            <p class="startup-warning">Activa el sonido y ajusta el volumen
+               de tu dispositivo antes de continuar.</p>
+            <button id="startup-enter" class="startup-enter" type="button">
+                <span>Entrar con sonido</span>
+                <small>El opening comenzará a continuación</small>
+            </button>
+            <div class="startup-required">Es necesario pulsar el botón para continuar</div>
+        </section>
+
+        <section id="startup-opening" class="startup-opening" hidden>
+            <video id="startup-opening-video" class="startup-opening-video"
+                   preload="metadata" playsinline
+                   src="assets/videos/opening_samu.mp4?v=20260731-1"></video>
+            <div id="startup-opening-status" class="startup-opening-status">
+                Cargando opening…
+            </div>
+            <button id="startup-skip" class="startup-skip" type="button">
+                Saltar opening <span>››</span>
+            </button>
+        </section>
+    </div>
+
     <script src="p5-effects.js?v=20260716-2"></script>
-    <script src="battle-minigame.js?v=20260725-13"></script>
+    <script src="battle-minigame.js?v=20260727-3"></script>
     <script src="credits-minigame.js?v=20260724-2"></script>
-    <script src="ketchup-minigame.js?v=20260731-3"></script>
-    <script src="rune-channeling-minigame.js?v=20260728-5"></script>
+    <script src="rune-channeling-minigame.js?v=20260724-7"></script>
     <script src="juice.js?v=20260722-1"></script>
-    <script src="engine.js?v=20260731-1"></script>
-    <script src="game.js?v=20260725-13"></script>
+    <script src="engine.js?v=20260731-11"></script>
+    <script src="game.js?v=20260731-4"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->

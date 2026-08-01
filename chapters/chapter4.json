@@ -23,7 +23,7 @@
               "fadeIn": 1000
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Tras abandonar Ecchi Land, Samu, Edu y Seraphyna siguen las indicaciones que José envió antes de que la comunicación se cortara."
         },
         {
@@ -126,7 +126,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Un cartel al borde del camino dice: «Camino a Ciudad Paloma. Atención posibles palomas en el camino. Cuidado con el guano»."
         },
         {
@@ -183,7 +183,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Este es el típico recurso de anime en el que un personaje estornuda porque están hablando de él."
         },
         {
@@ -231,7 +231,7 @@
               "fadeIn": 1000
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "El camino desemboca en una ciudad medieval de piedra clara, tejados naranjas, canales y campanarios. Algunas palomas descansan en las cornisas. No demasiadas. Las justas para justificar el nombre."
         },
         {
@@ -272,7 +272,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Bajo el nombre de la ciudad puede leerse su orgulloso lema: «Una ciudad... donde hay palomas...»."
         },
         {
@@ -301,7 +301,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Antes de que pudiera terminar, unas pisadas pesadas resuenan en una calle lateral. Las palomas salen volando mientras una figura enorme se acerca por el empedrado."
         },
         {
@@ -344,7 +344,7 @@
               "value": "assets/backgrounds/entrada_epica_jose.png"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "De la calle emerge un guerrero enorme: cuerpo de lagarto naranja, armadura de acero, una gran espada a la espalda y una cabeza de paloma coronada por rizos rojos y gafas redondas."
         },
         {
@@ -511,7 +511,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Edu da un paso al frente, esperando su turno."
         },
         {
@@ -587,12 +587,12 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Edu baja la mirada hacia su camiseta."
         },
         {
           "character": "Edu",
-          "text": "...Visto así...",
+          "text": "¡Hostia! No me había dado cuenta para nada.",
           "actions": [
             {
               "type": "showCharacter",
@@ -786,7 +786,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "El grupo guarda silencio."
         },
         {
@@ -942,7 +942,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Una paloma deja caer una moneda de oro justo delante de José.",
           "actions": [
             {
@@ -1035,7 +1035,7 @@
               "position": "left"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "José conduce al grupo hasta una plaza circular con cuatro símbolos tallados en el suelo. Al acercarse uno por uno, cada avatar despierta una runa distinta, como si la ciudad reconociera la clase que lleva dentro."
         },
         {
@@ -1051,7 +1051,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "El círculo arcano se ilumina bajo Samu y la runa del mago despierta con un resplandor dorado. A su alrededor, destellos de fuego, hielo, relámpago y magia arcana orbitan sus manos, anunciando el nacimiento de un poder que llevaba dentro sin saberlo. La plaza lo reconoce al instante y sella su clase con un brillo solemne: Mago.",
           "actions": [
             {
@@ -1108,7 +1108,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "La runa del pícaro se ilumina y estallan chispas azules. Varias copias ilusorias de Edu aparecen a su alrededor, moviéndose como sombras veloces entre trazos de dagas y relámpagos, mientras la plaza reconoce su clase: Pícaro Arcano.",
           "actions": [
             {
@@ -1178,7 +1178,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "La runa de la estrella se ilumina. Un círculo sagrado se abre a sus pies, dibujando símbolos dorados sobre la piedra. Seraphyna alza la mano, y de pronto el aire se llena de plumas brillantes, notas musicales y pequeños escudos de energía que giran a su alrededor como una melodía protectora. La plaza responde a su voz antes incluso de que cante: Maga Blanca / Cantora.",
           "actions": [
             {
@@ -1285,7 +1285,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Finalmente, la runa de la espada se enciende y la plaza entera responde con un rugido de piedra y luz. Fragmentos del suelo se elevan a su alrededor, varias espadas doradas aparecen suspendidas en el aire, escudos de energía se abren a sus lados y la gran hoja que sostiene clava su punta en el círculo arcano. La clase queda sellada sin margen de duda: Guerrero.",
           "actions": [
             {
@@ -1367,7 +1367,7 @@
       "title": "Escena 6: La ciudad deja de ser segura",
       "lines": [
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Las campanas de Ciudad Paloma comienzan a sonar solas. Las palomas levantan el vuelo y el cielo se cubre de pequeñas grietas digitales.",
           "actions": [
             {
@@ -1419,7 +1419,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "A lo lejos, algo empieza a caer del cielo entre las grietas digitales: una bailarina con cabeza de capuchino gira sobre sí misma con una sonrisa afilada, un tiburón con zapatillas atraviesa el aire enseñando los dientes y una figura de madera con un bate desciende envuelta en una capa desgarrada.",
           "actions": [
             {
@@ -1437,11 +1437,11 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Tras ellos llueven emojis gigantes, memes de gatos y fragmentos de chistes virales que rebotan por los tejados como basura de internet cobrando vida."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Todos tienen la misma mirada agresiva. No vienen a hacer gracia: vienen a apoderarse de Ciudad Paloma."
         },
         {
@@ -1499,7 +1499,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez desde que llegaron a aquel mundo, sus avatares responden como si siempre hubieran sabido luchar juntos.",
           "actions": [
             {
@@ -1573,11 +1573,11 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Los últimos memes se deshacen entre chispas, plumas de luz y cortes limpios. Durante un instante, parece que los héroes han recuperado el control de la plaza."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Pero justo cuando parecía que lo tenían todo controlado, tres figuras cayeron sobre la plaza.",
           "actions": [
             {
@@ -1595,15 +1595,15 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "La bailarina con cabeza de capuchino aterriza en punta, agrietando la piedra con una reverencia perfecta."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "El tiburón con zapatillas derrapa sobre los adoquines, dejando marcas azules a cada paso."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Y la figura de madera cae de pie en el centro, apoyando su bate contra el hombro como si la ciudad ya le perteneciera."
         },
         {
@@ -1707,7 +1707,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Tung Tung Tung Sahur levanta el bate y las grietas digitales se abren hacia el subsuelo. Tralalero Tralala salta tras él con una carcajada llena de dientes. Ballerina Capuchina se queda en la plaza, girando lentamente.",
           "actions": [
             {
@@ -1791,7 +1791,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Ballerina Capuchina suelta una carcajada aguda, gira sobre una pierna y se deshace en una espiral de vapor de café, píxeles negros y purpurina dorada.",
           "actions": [
             {
@@ -1801,7 +1801,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Cuando el remolino desaparece, la plaza queda en silencio... salvo por el enorme agujero que los golpes y las grietas digitales han abierto en el suelo."
         },
         {
@@ -1871,7 +1871,7 @@
           "text": "Así que, después de todo, este agujero gigantesco y peligrosísimo nos viene sorprendentemente bien. Conveniente, incluso."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Sin perder más tiempo, el grupo se asoma al borde del cráter y desciende por el hueco abierto en la plaza, dejando atrás el caos de Ciudad Paloma para adentrarse en el santuario subterráneo.",
           "actions": [
             {
@@ -1917,7 +1917,7 @@
               "fadeIn": 1000
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Frente al grupo se alza una puerta de piedra que da acceso al santuario y a sus pies hay cuatro mecanismos."
         },
         {
@@ -2150,7 +2150,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Los cuatro mecanismos despiertan a la vez. Cada runa empieza a cargar su propio poder: magia, velocidad, sanación y fuerza. Para abrir la puerta, el grupo debe mantenerlas dentro del mismo equilibrio."
         },
         {
@@ -2177,7 +2177,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Los cuatro mecanismos se ocultan en el suelo. La puerta comienza a abrirse, revelando la entrada al santuario.",
           "actions": [
             {

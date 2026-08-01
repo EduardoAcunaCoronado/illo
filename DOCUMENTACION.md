@@ -21,12 +21,23 @@ Un motor de visual novel moderno basado en HTML5, CSS y JavaScript que permite c
 13. [Funciones Avanzadas](#funciones-avanzadas)
 14. [Sistema de Reseteo](#sistema-de-reseteo)
 15. [Workflow de Pull Requests](#workflow-de-pull-requests)
+16. [App de Escritorio (Electron)](#app-de-escritorio-electron)
+17. [Publicar en itch.io](#publicar-en-itchio)
 
 ---
 
 ## 🚀 Inicio Rápido
 
 ### Paso 1: Abre el Proyecto
+
+Como app de escritorio (recomendado):
+
+```bash
+npm install
+npm start
+```
+
+O en el navegador, con un servidor local:
 
 ```bash
 # Windows
@@ -226,6 +237,7 @@ async function startNewGame() {
 ### Con Acciones Previas
 
 ```json
+[
 {
   "_line": 1,
   "character": "Luna",
@@ -238,6 +250,7 @@ async function startNewGame() {
     }
   ]
 }
+]
 ```
 
 ### Elementos de una Línea
@@ -271,6 +284,15 @@ debe hacer el zoom, sin cambiar el nombre mostrado en el cuadro de diálogo.
 
 Aquí el cuadro muestra "Edu" como interlocutor, pero es el móvil (a la derecha)
 el que se resalta mientras "habla".
+
+> `iphone5` se conserva únicamente como identificador técnico heredado para no
+> romper los capítulos. El nombre visible es **Móvil** y los cinco sprites usan
+> un dispositivo ficticio de estilo cartoon, sin botón Home, interfaz de iOS,
+> marcas ni rasgos identificables de Apple. Las pantallas de llamada usan como
+> avatar las caras de las versiones humanas de Edu, José y Tony definidas en
+> `assets/characters/humans/`. Los tres nombres comparten el lettering cartoon
+> de Tony, mientras que «LLAMADA EN CURSO», los controles y el botón «Colgar»
+> mantienen el estilo azul y rojo de la pantalla de Edu.
 
 ---
 
@@ -581,6 +603,35 @@ El retraso permite dos efectos:
    }
    ```
 
+### Salir de un minijuego
+
+Los tres botones de arriba (**Opciones**, **Escenas** y **Retroceder**) se ven
+también **durante los minijuegos**, combate incluido. Antes se escondían, y
+quien llegaba a un minijuego desde el menú de escenas se quedaba encerrado: la
+única salida era ganarlo.
+
+Cómo funciona, porque no es evidente: el bucle del juego está *dentro* de
+`playMinigame()`, así que no basta con marcar la petición. `playMinigame` corre
+en un `Promise.race` contra una promesa de cancelación; `engine.abortarMinijuego()`
+la rechaza, y el `catch` **borra el overlay**, que es lo que de verdad mata al
+minijuego, porque sus controles cuelgan de ahí. Además se llama a
+`stopAllSounds()`: la música del minijuego no se va con el overlay, y quien nos
+saca (otra escena, retroceder, el menú) ya repinta su propio ambiente.
+
+Por eso cada bucle de minijuego comprueba `overlay.isConnected` y se para solo
+cuando su overlay desaparece. **Todo minijuego nuevo tiene que hacer lo mismo**,
+y si usa `setInterval` en vez de `requestAnimationFrame` debe apagarlo a mano
+(el de ritmo lo hace). Los oyentes que cuelgan de `document` con
+`preventDefault` (ritmo, side-scrollers) se dan de baja solos al detectar el
+overlay desconectado; si no, seguirían tragándose las teclas el resto de la
+partida.
+
+La **cutscene** es la excepción: ahí los botones sí se esconden, porque es un
+vídeo que ya se salta con un clic o con Esc (`cutsceneEnMarcha()` en `game.js`).
+
+En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
+(5000) y de los créditos (1500); el menú de escenas a 5300 y el de pausa a 5400.
+
 ### Minijuegos disponibles
 
 | `game`    | Descripción                                                        | Parámetros principales                       |
@@ -591,12 +642,12 @@ El retraso permite dos efectos:
 | `gatos`   | **Estilo Pac-Man con laberinto**: huye de los gatos por las calles | `survive`, `cats`, `playerSpeed`, `catSpeed` |
 | `chase`   | Persecución lateral en el coche de Santi                            | `distance`, `speed`, `maxHits`, `spawnMs`    |
 
-#### Minijuego `gatos` (la loca de los gatos)
+#### Minijuego `gatos` (Micaela Michis)
 
 Un **Pac-Man por rejilla** en un **laberinto de calles urbanas**. Samu (🐺) recorre
 las calles (← ↑ → ↓ / WASD), girando en las intersecciones, y debe **sobrevivir** un
 tiempo mientras los gatos (🐱) le persiguen por el laberinto. Si un gato lo alcanza,
-pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jamón).
+pierde y puede reintentar. Se usa en el Capítulo 2 de Edu (El Jarrón).
 
 ```json
 {
@@ -636,6 +687,11 @@ El coche de Santi usa seis fotogramas normalizados (`coche_v2_0.png` a
 de suspensión y pequeños cambios de los ocupantes. El giro se representa cambiando
 la orientación de las ruedas originales del coche entre fotogramas; no se dibujan
 ruedas adicionales mediante CSS.
+
+En las escenas **El trayecto** y **Asalto en la carretera** del capítulo 3, la
+composición interior coloca a Santi en el hueco izquierdo, a Samu en el central y
+a Edu en el derecho. El sprite de Santi queda anclado al borde inferior izquierdo,
+de modo que el corte de su volante continúa de forma natural fuera de plano.
 
 La capa cercana del escenario es `carretera_loop_v2.png` (2048×1152, RGBA):
 asfalto nocturno con textura, carriles, guardarraíl, vegetación, reflectores y
@@ -752,18 +808,122 @@ historia**, pero nunca se activa en una partida narrativa normal.
 
 #### Minijuego `eduvuelo` — peligros aéreos (cap. 3)
 
-Side-scroller volador (Edu recoge partituras 🎼 esquivando el techo del escenario).
-Además de `goal`/`goalByDelay`, acepta estos knobs (todos con `...ByDelay` opcional):
+Vuelo arcade dedicado: Edu recupera frases de partituras en la estructura del
+concierto mientras atraviesa cables, focos, altavoces y ráfagas. Ya no usa el
+motor genérico del side-scroller. Antes de empezar muestra `3, 2, 1, ¡VUELA!`;
+ratón o `W/S` controlan la altura y `Espacio` o clic consumen energía para
+activar un impulso breve. Durante el impulso Edu es invulnerable, rompe
+peligros y puede efectuar un **contrapulso** contra los altavoces.
 
-| Parámetro             | Descripción                                                                                   | Por defecto |
-| --------------------- | --------------------------------------------------------------------------------------------- | ----------- |
-| `hangChance`          | Prob. de cable colgando **desde el techo** hasta una altura aleatoria (deja hueco por debajo) | 0.22        |
-| `hangMin` / `hangMax` | Longitud del cable (fracción del alto, 0-1)                                                   | 0.25 / 0.60 |
-| `fallerChance`        | Prob. de foco que **cae desde arriba** en movimiento                                          | 0.24        |
-| `fallerVy`            | Velocidad de caída del foco                                                                   | 0.26        |
-| `collectChance`       | Prob. de que el spawn sea partitura (bajarlo = más difícil)                                   | 0.42        |
-| `spawnMs`             | Ritmo de aparición en ms (bajarlo = más denso)                                                | 640         |
-| `graceMs`             | Invulnerabilidad inicial con parpadeo                                                         | 1200        |
+El HUD muestra partituras, cadena, energía y resistencia. Recoger sin recibir
+daño aumenta la cadena y la puntuación; pasar muy cerca de un peligro concede
+`¡CASI!`, puntos y energía. El resultado guarda puntuación, cadena máxima,
+casi-roces y rango `S/A/B/C`. Las partituras aparecen en pequeñas frases y hay
+una garantía `collectEvery`, por lo que una mala tirada aleatoria no puede
+alargar indefinidamente la partida ni crear una sucesión imposible. En el
+último tramo suben progresivamente la velocidad y la densidad, pero sólo se
+genera un patrón de peligro por turno.
+
+`P`, `Esc` o el botón del HUD pausan también la cuenta atrás y congelan
+jugador, objetos y avisos. La casilla de `minijuegos_test.html` dibuja la caja
+verde del jugador, las rojas de los peligros y las azules de las partituras.
+Desde 2026-07-31, Edu, focos y altavoces colisionan mediante elipses; los
+cables conservan un rectángulo estrecho por su forma vertical. El barrido entre
+frames interpola simultáneamente la trayectoria de Edu y la del peligro en
+varios puntos, en vez de unir posiciones con un rectángulo grande o enfrentar
+instantes diferentes. Esto evita esquinas fantasma en movimientos diagonales y
+golpes al cambiar rápidamente de altura en dificultad difícil.
+Los objetos se preparan fuera del borde derecho (y el foco por encima) para
+entrar suavemente, pero no pueden activar ninguna interacción hasta que al
+menos el `18 %` de su forma de colisión haya entrado en el escenario. Además,
+la comprobación se suspende si vuelve a quedar menos de un `10 %` visible.
+`.fly-stage` usa `overflow: hidden`, por lo que la parte exterior tampoco se
+renderiza sobre el HUD o fuera del área de vuelo.
+Los peligros usan un factor de tolerancia `0.80`, por lo que un mero contacto
+de bordes no causa daño; las partituras mantienen `1.06` para que recogerlas
+siga siendo cómodo. Con hitboxes activadas, cada impacto muestra el tipo de
+peligro y deja durante unos segundos la marca exacta de la colisión. El aviso
+normal también identifica `FOCO`, `ALTAVOZ` o `CABLE`.
+El obstáculo que provoca un golpe permanece resaltado brevemente en el punto
+de contacto y el aviso de impacto tiene prioridad sobre mensajes secundarios,
+para que el origen del daño no desaparezca en el mismo frame.
+
+Los cables se renderizan mediante un `<img>` interno y no habilitan su hitbox
+hasta que el PNG haya terminado de cargar. Si la carga falla o supera `1600 ms`,
+el objeto se descarta sin poder causar daño. El cable inferior se voltea sobre
+su propio centro: su sprite queda dentro del escenario, desde el suelo hacia
+arriba, exactamente en la misma zona que su hitbox. Esto corrige el antiguo
+caso en que la transformación visual desplazaba el dibujo bajo el borde
+inferior mientras la colisión seguía dentro de la zona jugable.
+
+Los assets de persecución y `eduvuelo` se precargan y decodifican una sola vez
+por sesión. `VisualNovelEngine` memoriza las URLs, las promesas de carga y los
+objetos `Image`, por lo que repetir una partida o volver a utilizar un frame no
+inicia otra petición. La persecución tampoco precarga ya los tres PNG grandes del
+cable del antiguo modo de vuelo. En la aplicación de Electron,
+`electron/static-server.js` entrega imágenes, audio, vídeo y fuentes con caché
+inmutable; HTML, JavaScript, CSS y JSON siguen revalidándose mediante `ETag`.
+El sello estable de `cacheBustAsset()` cambia al recargar la aplicación, de modo
+que una edición de assets obtiene una URL nueva sin provocar descargas continuas
+dentro de la partida.
+
+Parámetros principales (todos admiten su variante `...ByDelay` desde historia):
+
+| Parámetro | Descripción | Por defecto |
+| --- | --- | --- |
+| `goal` | Partituras necesarias para terminar | 16 |
+| `speed` / `spawnMs` | Velocidad horizontal base e intervalo inicial de aparición | 6.4 / 620 |
+| `hangChance` / `riserChance` | Peso de cable desde techo / suelo | 0.26 / 0.20 |
+| `hangMin` / `hangMax` | Longitud del cable como fracción del escenario | 0.28 / 0.62 |
+| `fallerChance` / `fallerVy` | Peso y velocidad vertical de los focos con aviso | 0.28 / 0.30 |
+| `speakerChance` | Peso del altavoz pulsante destruible con contrapulso | 0.19 |
+| `gustChance` | Peso de ráfagas no dañinas que desplazan a Edu | 0.11 |
+| `collectChance` / `collectEvery` | Probabilidad de frase y máximo de patrones entre frases | 0.29 / 3 |
+| `phraseMin` / `phraseMax` | Partituras que forman cada frase | 1 / 2 |
+| `energyRegen` / `dashCost` | Regeneración por segundo y coste del impulso | 8 / 52 |
+| `dashDuration` | Duración del impulso en segundos | 0.36 |
+| `difficultyRamp` | Aumento de velocidad a lo largo de la partida | 0.32 |
+| `corridorMin` | Hueco vertical mínimo garantizado entre cables | 0.20 |
+| `graceMs` / `hitGraceMs` | Gracia inicial y tras un impacto | 900 / 900 |
+
+Presets de test:
+
+| Modo | Velocidad | Objetivo | Impactos | Aparición | Regeneración / coste | Escalada |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Fácil | 5.4 | 14 | 4 | 720 ms | 11 / 42 | 0.20 |
+| Medio | 7 | 20 | 3 | 590 ms | 8 / 52 | 0.32 |
+| Difícil | 9 | 26 | 2 | 450 ms | 6 / 60 | 0.46 |
+
+En el capítulo 3, `storyDelay` escala el objetivo a `20/24/28`, la velocidad a
+`6.8/7.8/8.8`, la aparición a `600/520/450 ms` y los impactos a `3/2/2`.
+También aumenta los pesos de cable, foco y altavoz, reduce la regeneración de
+energía a `8/7/6`, eleva el coste del dash a `50/55/60` y acorta su duración a
+`0.38/0.35/0.32 s`. La escalada final pasa a `0.30/0.38/0.46`. El dash sigue
+siendo una herramienta decisiva, pero ya no permite atravesar casi todos los
+patrones sin administrar la energía.
+
+Los assets del escenario siguen en `assets/minigames/cap3/`:
+`aire_fondo_v2.png` y `cables_aire_sheet_v2.png`. Edu usa la revisión V3,
+construida a partir del modelo canónico de `assets/characters/edu/`: la hoja
+`edu_volando_sheet_v3.png` contiene ocho poses de vuelo y
+`edu_volando_dash_sheet_v3.png` contiene dos poses específicas de impulso.
+Dentro de `sprites/` están los ocho `edu_fly_v3_0.png`…
+`edu_fly_v3_7.png` y los dos `edu_fly_v3_dash_*.png`, todos normalizados sobre
+lienzos transparentes de `512×512`, con el torso anclado en el mismo punto,
+margen seguro y un único componente visual para impedir motas o partes fuera
+del sprite. El ciclo de vuelo recorre ocho alturas de ala y el dash alterna sus
+dos poses a mayor cadencia.
+
+Los diez frames conservan exactamente los dos bigotes faciales del diseño
+canónico: ambos nacen del hocico y el visible termina junto a la
+mandíbula/garganta. Se eliminaron la cuña blanca previa y todos los falsos
+trazos que nacían detrás de la cabeza o formaban bucles hacia las alas. Las
+hojas fuente se reconstruyeron con la misma corrección. El resto de sprites
+activos son el cable continuo `aire_cable_v3.png`, `aire_foco_v2.png`,
+`aire_altavoz_v2.png` y `partitura_v2.png`. El cable de juego es un único
+dibujo continuo de anclaje, cuerpo trenzado y terminal electrificado: su ancho
+se calcula a partir de su altura y se invierte desde el suelo sin uniones ni
+cambios de escala internos.
 
 #### Batallas: modo supervivencia (extensión aditiva)
 
@@ -801,6 +961,37 @@ funcionan EXACTAMENTE igual que antes:
 Enemigo de ejemplo: `marea_fans` (hp 9999 — imbatible a propósito, solo se puede
 aguantar). Se usa en el cap. 3, «Escena 11b: La puerta».
 
+#### Batallas: Ataque Kosai (extra opcional, jul 2026)
+
+Casilla en **Configuración** que reparte a **todo el equipo** una habilidad
+extra en los combates por turnos: deja al objetivo a **0 PV de un solo golpe**,
+cuesta 0 PM y no falla ni se puede esquivar. Es un atajo para saltarse una
+pelea, no forma parte del equilibrio del combate.
+
+- Se guarda en localStorage como `illo_kosai` (`"1"` encendido, `"0"` apagado);
+  por defecto está apagado.
+- `battle-minigame.js` lee la clave al construir el combate, y además **entra o
+  sale en caliente**: tocar la casilla en el menú de pausa con una pelea en
+  marcha reparte o retira el golpe a todo el equipo y repinta la lista de
+  habilidades al momento. Lo mueve `game.js` llamando a
+  `window.BattleMinigame.setKosaiEnabled(bool)`, que llega al combate activo.
+- El repintado se salta en dos situaciones, y ahí el cambio se ve al volver a la
+  lista: **eligiendo objetivo u objeto** (manda el botón de cancelar y redibujar
+  por debajo dejaría el combate a medias) y con la **lista vacía** entre turnos
+  (`clearSkills`), donde repintar la sacaría antes de tiempo.
+- La habilidad usa el tipo `execute`, que se resuelve **antes** de la tirada de
+  acierto (por eso no se esquiva). Vale para cualquier objetivo, así que se
+  puede reutilizar en habilidades de enemigos si algún día hace falta.
+- No toca la constante `ALLIES`: se le da a cada luchador un array de
+  habilidades nuevo, para que un combate no contamine al siguiente.
+
+```js
+// battle-minigame.js
+const KOSAI = { id: "ataque_kosai", type: "execute", pmCost: 0, target: "enemy", unavoidable: true, ... };
+window.BattleMinigame.KOSAI_SETTING_KEY;      // "illo_kosai" — lo usa game.js para pintar la casilla
+window.BattleMinigame.setKosaiEnabled(true);  // reparte/retira el golpe en el combate en curso
+```
+
 #### Configuración: volúmenes (jul 2026)
 
 El botón **Configuración** del menú abre un panel (estilo nm-modal) con dos
@@ -810,6 +1001,15 @@ resto → efectos) y multiplica su volumen por el factor correspondiente;
 `engine.applyVolumeSettings()` reaplica en vivo a lo que esté sonando. Los
 volúmenes que piden los capítulos (`volume`, `setVolume`) se conservan como
 "base" y escalan por el ajuste del jugador.
+
+Debajo de los deslizadores va la casilla del **Ataque Kosai** (ver arriba). Para
+añadir más ajustes de sí/no se reutiliza el bloque `.nm-setting-toggle` +
+`.nm-setting-hint` de `styles.css`.
+
+La pestaña **Sonido** también permite activar o desactivar los **Blips de
+texto**. Están activos por defecto y se guardan como `illo_text_blip` (`"1"` o
+`"0"`); al apagarlos se conserva la velocidad y las pausas de puntuación, solo
+se silencia el sonido que acompaña a cada letra.
 
 ---
 
@@ -1068,6 +1268,7 @@ Usa archivos de audio comunes:
 ### Ejemplo Completo en Capítulo
 
 ```json
+[
 {
   "_line": 1,
   "character": "Narrador",
@@ -1097,6 +1298,7 @@ Usa archivos de audio comunes:
     }
   ]
 }
+]
 ```
 
 ### Parámetros de Sonido
@@ -1161,6 +1363,7 @@ Usa archivos de audio comunes:
 ### Ejemplo Completo: Control de Música
 
 ```json
+[
 {
   "_line": 1,
   "character": "Narrador",
@@ -1210,6 +1413,7 @@ Usa archivos de audio comunes:
     }
   ]
 }
+]
 ```
 
 ### Consejos
@@ -1233,6 +1437,63 @@ El juego incluye un completo rediseño visual inspirado en Persona 5 Royal.
 - **Amarillo**: #ffcc00 (primario)
 - **Rojo**: #ff1744 (secundario)
 - **Negro**: #000000 (fondo)
+
+#### Arranque de la aplicación
+
+El primer acceso sigue una secuencia cerrada:
+
+1. `index.html` muestra un disclaimer a pantalla completa y mantiene el menú
+   invisible e inerte.
+2. El usuario debe pulsar **Entrar con sonido**. Ese gesto desbloquea la
+   reproducción multimedia exigida por los navegadores. Si el volumen musical
+   persistido estaba exactamente al 0 %, el gesto lo restablece al 70 % y
+   guarda el nuevo valor; un volumen distinto de cero se respeta sin cambios.
+3. Se reproduce `assets/videos/opening_samu.mp4` a pantalla completa, con su
+   audio AAC y el volumen musical guardado en `illo_vol_music`.
+4. El opening puede terminar naturalmente o cerrarse mediante
+   **Saltar opening**.
+5. Tras un fundido de 560 ms aparece el menú principal, comienza su vídeo en
+   bucle y suena el tema habitual.
+
+En Electron, la superficie del opening se fija desde el HTML y el CSS al tamaño
+de diseño `1280×720`. Al retirar `hidden` se fuerza primero su layout y el vídeo
+permanece invisible hasta dos fotogramas de animación después del evento
+`playing`. Esto evita que Chromium llegue a presentar fugazmente una superficie
+inicial de `640×360` en la esquina superior izquierda al arrancar una build en
+modo ventana; durante ese intervalo solo se mantiene el fondo negro de carga.
+
+El fondo del menú utiliza `assets/videos/menu_loop.mp4`, un bucle H.264
+de 10 segundos, 48 FPS y `3840×2160`. Sus 240 fotogramas 4K originales se
+mantienen íntegros y entre cada pareja se inserta un fotograma de movimiento
+generado con RIFE, dando 480 frames finales. La interpolación incluye la pareja
+formada por el último frame y el primero, por lo que el cierre del bucle también
+es fluido y no se duplica ningún fotograma. No se recomponen capas ni se
+sustituye el escenario: se conservan la geometría, el oleaje del mar, el
+titileo de los neones, las siluetas móviles, la brisa dorada y todas las notas
+en sus posiciones originales.
+
+La reconstrucción 4K desde `assets/videos/menu_loop_old.mp4` es reproducible con
+`scripts/render_menu_loop_4k.py` y `realesrgan-ncnn-vulkan`. La interpolación
+cíclica posterior se ejecuta con `scripts/interpolate_menu_loop_48fps.py` y la
+herramienta oficial `rife-ncnn-vulkan`, usando `rife-v4.6`, modo UHD y TTA
+temporal. El antiguo `menu_loop_old.mp4` permanece intacto como fuente de
+movimiento y referencia.
+
+El opening final dura 80,704 segundos, está codificado en H.264 a 1920×1080 y
+30 fps, y utiliza audio AAC estéreo a 48 kHz. El MP4 distribuible se copió desde
+la carpeta fuente entregada por Samu; sus archivos de proyecto no forman parte
+del runtime.
+
+Si el MP4 no puede cargarse, el arranque no queda bloqueado: el mensaje de
+estado informa del error y el botón **Saltar opening** permite llegar al menú.
+El clic fuera del botón del disclaimer no inicia nada.
+
+El selector **Capítulos** espera a que termine el descubrimiento asíncrono de
+los JSON antes de dibujar la lista. La carga inicial y un clic temprano
+comparten una única promesa, evitando listas vacías y cargas duplicadas. Mientras
+espera, el botón muestra un estado de carga; al abrir el selector, el foco pasa
+al primer capítulo y el menú queda oculto e inerte. Si no se encuentra ningún
+capítulo, se muestra un mensaje recuperable y **Volver** permite reintentarlo.
 
 #### Menú Principal
 
@@ -1419,44 +1680,42 @@ Los personajes ahora ocupan toda la altura de la pantalla para máximo impacto v
 Solo hay dos posiciones válidas:
 
 ```json
-// Personaje a la izquierda
+[
 {
   "type": "showCharacter",
-  "character": "2b",
+  "character": "3c",
   "position": "left",
   "pose": "neutral"
-}
-
-// Personaje a la derecha
+},
 {
   "type": "showCharacter",
-  "character": "pod",
+  "character": "epod",
   "position": "right",
   "pose": "neutral"
 }
+]
 ```
 
 **Uso en Capítulos:**
 
 ```json
-// Dos personajes (lado a lado, altura completa)
+[
 {
   "type": "showCharacter",
-  "character": "2b",
+  "character": "3c",
   "position": "left"
 },
 {
   "type": "showCharacter",
-  "character": "pod",
+  "character": "epod",
   "position": "right"
-}
-
-// Un personaje
+},
 {
   "type": "showCharacter",
-  "character": "emil",
+  "character": "nexo",
   "position": "left"  // o "right"
 }
+]
 ```
 
 **Nota:** La posición "center" ya no está disponible. Use "left" o "right" para un personaje solo.
@@ -1580,7 +1839,7 @@ Se cargan todos los personajes disponibles al inicio:
 
 ```javascript
 // En game.js - startNewGame()
-const characters = ["luna", "alex", "2b", "pod", "emil"];
+const characters = ["luna", "alex", "3c", "epod", "nexo"];
 for (const character of characters) {
   await engine.loadCharacter(character);
 }
@@ -1596,11 +1855,55 @@ for (const character of characters) {
 
 ## 🎨 Personalización
 
+### Texto no seleccionable (jul 2026)
+
+`html, body` llevan `user-select: none` en `styles.css`. El juego se avanza a
+base de clics y sin eso un doble clic —o clicar y arrastrar sin querer— dejaba
+el diálogo resaltado en azul. Como la propiedad se hereda, cubre todo:
+diálogos, menús, minijuegos y overlays.
+
+Justo debajo hay una excepción para `input, textarea`, que vuelven a
+`user-select: text` para no romper los campos de escritura (panel de debug).
+**Si añades algún elemento donde el jugador deba poder seleccionar o copiar
+texto, hay que devolverle `user-select: text` igual que a los inputs.**
+
+### Selector de capítulos: barra de scroll propia (jul 2026)
+
+**Quien desplaza es la lista, no el panel.** Así el título "Seleccionar
+Capítulo" y el botón "Volver" se quedan fijos y solo se mueven los capítulos.
+El montaje:
+
+| Elemento                   | Papel                                                             |
+| -------------------------- | ----------------------------------------------------------------- |
+| `.chapter-selector-panel`  | `display: flex; flex-direction: column; overflow: hidden;` + `max-height: 92%` |
+| `.chapter-selector-list`   | `overflow-y: auto; overflow-x: hidden; min-height: 0;` — la parte que se desplaza. `padding: 0 14px` separa los botones de la barra: al pasar el ratón el capítulo se desplaza 6 px a la derecha y se le echaba encima (queda en 8 px con hover) |
+| `.chapter-selector-back`   | `align-self: center` (en columna flex se estiraría a todo el ancho) |
+
+La barra es propia: pulgar dorado con degradado y carril tenue. Solo aparece
+cuando los capítulos no caben; con 7 no se veía, y **cada capítulo nuevo ocupa
+unos 60 px**.
+
+⚠️ Tres trampas si se tocan estas reglas:
+
+1. `min-height: 0` en la lista es lo que le permite encoger dentro del flex. Sin
+   eso el panel crece y el scroll no se activa nunca.
+2. `flex-shrink: 0` en `.chapter-select-btn`: la lista también es flex en
+   columna, así que sin esto los botones se **aplastan** (33 px en vez de 48)
+   para caber, en vez de desbordar y activar el scroll.
+3. En Chromium, poner `scrollbar-width` o `scrollbar-color` en la lista
+   **anula** todas las reglas `::-webkit-scrollbar-*`. Por eso las propiedades
+   estándar están aisladas en un `@supports not selector(::-webkit-scrollbar)`,
+   que solo aplica en Firefox.
+
+Para reutilizar la barra en otro panel se copian los cuatro selectores
+`::-webkit-scrollbar`, `-track`, `-thumb` y `-thumb:hover`.
+
 ### Cambiar Colores Persona 5
 
 Los colores principales del sistema Persona 5 son:
 
 ```css
+:root {
 /* Color Amarillo Primario */
 --color-primary: #ffcc00;
 
@@ -1609,6 +1912,7 @@ Los colores principales del sistema Persona 5 son:
 
 /* Color Fondo */
 --color-dark: #000000;
+}
 ```
 
 **Para cambiar el color amarillo a otro:**
@@ -1654,8 +1958,8 @@ En `styles.css`, los personajes ahora ocupan toda la altura:
 
 ```css
 .character {
-    height: 100vh;  ← Altura completa de pantalla
-    width: auto;    ← Ancho automático según proporción
+    height: 100vh;  /* Altura completa de pantalla */
+    width: auto;    /* Ancho automático según proporción */
 }
 ```
 
@@ -1679,7 +1983,7 @@ En `styles.css`, los personajes ahora ocupan toda la altura:
 {
   "type": "showCharacter",
   "character": "luna",
-  "position": "center" // Nueva opción
+  "position": "center"
 }
 ```
 
@@ -1689,7 +1993,7 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 
 ```css
 .background {
-    background-size: cover;  ← Cubre toda la pantalla
+    background-size: cover;  /* Cubre toda la pantalla */
     background-position: center;
 }
 ```
@@ -1738,7 +2042,7 @@ Los fondos se ajustan automáticamente al viewport, pero si quieres cambiar las 
 
 **Solución:**
 
-```json
+```
 ❌ "value": "backgrounds/cafe.png"
 ✅ "value": "assets/backgrounds/cafe.png"
 ```
@@ -1835,7 +2139,9 @@ python -m http.server 8000
 1. Verifica que `.dialog-box.p5-style` tenga:
 
 ```css
-border: 3px solid #ffcc00;
+.dialog-box.p5-style {
+    border: 3px solid #ffcc00;
+}
 ```
 
 2. No hay CSS sobrescrito después
@@ -1911,6 +2217,7 @@ No necesita ser mostrado con `showCharacter`.
 Cada línea puede tener un número `_line` para referencia:
 
 ```json
+[
 {
   "_line": 0,
   "character": "Luna",
@@ -1921,6 +2228,7 @@ Cada línea puede tener un número `_line` para referencia:
   "character": "Luna",
   "text": "Segunda línea"
 }
+]
 ```
 
 Los números se reinician por escena y facilitan debugging.
@@ -2061,18 +2369,16 @@ Cuando terminas un capítulo y vuelves al menú, el motor limpia completamente e
 
 **Comportamiento:**
 
-```javascript
-// Cuando termina un capítulo:
-1. Muestra pantalla "Fin del Capítulo"
-2. Espera a que hagas click en "Continuar"
-3. Llamadas a engine.reset()
-4. Vuelve al menú principal
-5. Estado completamente limpio para nuevo capítulo
-```
+1. Muestra pantalla "Fin del Capítulo".
+2. Espera a que hagas clic en "Continuar".
+3. Llama a `engine.reset()`.
+4. Vuelve al menú principal.
+5. Deja el estado limpio para un nuevo capítulo.
 
 ### Método reset() - Detalles Técnicos
 
 ```javascript
+class VisualNovelEngine {
 reset() {
     // Variables de progreso
     this.currentScene = 0;        // Escena 1
@@ -2094,6 +2400,7 @@ reset() {
 
     // Limpiar elecciones
     document.getElementById('choices-container').innerHTML = '';
+}
 }
 ```
 
@@ -2291,7 +2598,7 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 **chapter0.json - Prólogo:**
 
 - Introducción a Furrielva
-- Presentación de 2B como narrador
+- Presentación de 3C como narrador
 
 **chapter1.json - Capítulo 1: Decisiones:**
 
@@ -2302,8 +2609,19 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 **chapter2-edu.json - Capítulo 2: Kingdom Ketchup:**
 
 - Samu busca a Edu en el supermercado
-- Elige ruta entre El Jamón, Día o Mercadona
-- Batalla contra la loca de los gatos (minigame gatos)
+- Elige ruta entre las parodias ficticias El Jarrón, Noche o Mercaguasa
+- Los tres fondos conservan sus nombres de archivo heredados (`jamon.png`,
+  `dia.png` y `mercadona.png`), pero muestran marcas completamente ficticias.
+  Comparten el acabado anime cinematográfico, la luz cálida de las 16:00 y la
+  dirección artística de `assets/cutscenes/opening_samu/`.
+- Batalla contra Micaela Michis (minigame gatos)
+- Micaela presenta la persecución y cierra la ruta con un mitin político absurdo
+  a favor de los gatos: cajas de cartón por decreto, atún subvencionado,
+  vivienda protegida en sofás y un Ministerio del Ovillo.
+- Los secundarios Micaela Michis y Neit usan retratos cartoon con contorno limpio,
+  color plano y sombreado cel, alineados con el estilo de los protagonistas. Sus
+  recursos están en `assets/characters/others/micaela*.png` y
+  `assets/characters/others/neit.png`.
 - Rescate de Edu y batalla contra Zip (minigame ketchup)
 - Descubrimiento del concierto de Seraphyna en Ecchi Land
 - Llamadas telefónicas opcionales
@@ -2549,6 +2867,337 @@ Este proyecto está disponible para uso educativo y comercial.
 
 ---
 
+## 🖥️ App de Escritorio (Electron)
+
+El menú principal incluye la opción **Salir** al ejecutarse dentro de Electron.
+Esta usa un canal IPC restringido para cerrar la aplicación; no se muestra al
+abrir el juego en un navegador, donde una página no puede cerrar con fiabilidad
+la pestaña del usuario.
+
+Al arrancar desde Electron, el tema del menú se reproduce automáticamente. En
+navegador, la reproducción comienza tras la primera interacción por las
+restricciones de autoplay del propio navegador. Por eso el botón **♪** de abajo
+a la derecha del menú (`#menu-theme-btn`, que rearranca el tema) solo sale en
+web: en la app no hay nada que desbloquear. Es la regla simétrica a la de
+**Salir**, que solo sale en Electron.
+
+El juego se puede ejecutar como aplicación de escritorio de Windows sin cambiar
+nada del motor: sigue siendo el mismo `index.html` con `engine.js` y `game.js`.
+
+### Ajustes persistentes
+
+En el navegador, las opciones de **Configuración** viven en el `localStorage`
+del origen y se conservan solas. En la app de escritorio no: el servidor interno
+escucha en un puerto libre **distinto en cada arranque**, así que el origen
+cambia (`http://127.0.0.1:61096` hoy, otro mañana) y el `localStorage` empieza
+vacío. Sin más, los ajustes se perdían al cerrar la aplicación.
+
+La solución guarda los mismos valores fuera del origen, en la carpeta de datos
+de la app:
+
+```
+%APPDATA%\Transfurmados\settings.json
+{"illo_vol_music":"0.55","illo_vol_sfx":"0.42","illo_kosai":"1","illo_window_mode":"window"}
+```
+
+El recorrido completo:
+
+| Paso | Dónde | Qué hace |
+|------|-------|----------|
+| Guardar | `game.js` → `saveSetting()` | Escribe en `localStorage` **y** manda el valor por IPC (`settings:set`). En navegador `window.desktopApp` no existe y solo hace lo primero. |
+| Almacenar | `electron/main.js` | Valida la clave contra una lista cerrada y reescribe `settings.json`. |
+| Restaurar | `electron/preload.js` | Pide los ajustes con `sendSync('settings:get-sync')` y los devuelve al `localStorage`. |
+
+La restauración va en el **preload** y es síncrona a propósito: el preload corre
+antes que los scripts de la página, así que `engine.js` (`volFactor`),
+`battle-minigame.js` (`kosaiEnabled`) y el propio panel de Configuración se
+encuentran el `localStorage` ya puesto y no necesitan esperar a ninguna promesa.
+
+La lista de claves de `SETTINGS_KEYS` es cerrada a propósito: el renderizador
+solo puede escribir esos cuatro ajustes, no usar el archivo como almacén libre.
+
+### Configuración por pestañas
+
+Desde el menú principal, **Configuración** se abre igual que **Capítulos**: a
+pantalla completa, con el fondo difuminado y el menú retirado, no como una
+cajita encima. Por eso reutiliza las clases `chapter-selector*`; lo propio suyo
+(ancho, sin lista que desplazar) va en `.settings-selector-panel`. En el menú de
+**pausa** (Esc) los mismos ajustes siguen dentro del `nm-modal` de siempre.
+
+Los dos comparten `settingsMarkup()` / `wireSettings()` de `game.js`, repartido
+en tres pestañas:
+
+| Pestaña | Contiene | Dónde sale |
+|---------|----------|------------|
+| 🖥️ Vídeo | Modo de ventana: Pantalla completa / Ventana | **Solo en la app de escritorio** |
+| 🔊 Sonido | Volumen de música y de efectos | Siempre |
+| ⚔️ Trucos | Ataque Kosai | Siempre |
+
+La pestaña de Vídeo se cae entera en el navegador (ahí manda F11 del propio
+navegador), así que la pestaña activa por defecto no es siempre la misma: la
+decide `settingsMarkup()` según los grupos que existan, no el HTML.
+
+### Modo de ventana
+
+`illo_window_mode` es el único ajuste que, además de guardarse, hace algo en el
+proceso principal:
+
+- Al **arrancar**, `createWindow()` abre con `fullscreen: windowMode() === 'fullscreen'`
+  (por defecto, pantalla completa). El `width`/`height` calculados son el tamaño
+  al que queda la ventana al salir de pantalla completa.
+- Al **cambiarlo** desde el panel, `settings:set` lo guarda y aplica
+  `mainWindow.setFullScreen(...)`.
+- La ventana es la **fuente de la verdad**: sus eventos `enter-full-screen` y
+  `leave-full-screen` anotan el modo y avisan al juego por `settings:changed`,
+  de modo que un cambio con **F11** o con el botón del marco también se guarda y
+  repinta los botones si el panel está abierto.
+
+Se eligen con un par de botones excluyentes (`.nm-segmented`), no con un
+`<select>`: la lista que despliega un `select` la dibuja el sistema, sale clara
+sobre el panel oscuro y no hay CSS que la alcance (`color-scheme: dark` no basta
+en Windows). Cualquier ajuste futuro de varias opciones debería usar lo mismo.
+
+> **Nota:** la partida guardada (`gameState`) sigue en `localStorage` y **no**
+> sobrevive al reinicio en la app de escritorio, por el mismo motivo del puerto.
+> Hoy no se nota porque el menú no ofrece "Cargar partida", pero si se añade
+> habrá que llevarla también a `settings.json` o a un archivo propio.
+
+### Ejecutar
+
+```bash
+npm install
+npm start
+```
+
+### Empaquetar
+
+Dos comandos, dos resultados distintos. Todo va a parar a `dist/`, que está en
+el `.gitignore`.
+
+**`npm run dist:dir`** (`electron-builder --win --dir`) — solo empaqueta, sin
+instalador:
+
+```
+dist/
+├── win-unpacked/          ← la app lista para ejecutar (1.556 MB)
+│   ├── Transfurmados.exe        ← se lanza desde aquí (216 MB)
+│   ├── *.dll, *.pak, *.bin      ← runtime de Chromium/Electron
+│   ├── LICENSES.chromium.html   ← atribución de licencias (obligatoria)
+│   ├── locales/                 ← 55 idiomas (46,6 MB)
+│   └── resources/
+│       └── app/                 ← el juego (1.208 MB)
+│           ├── index.html, engine.js, game.js, styles.css
+│           ├── electron/        ← main.js + static-server.js
+│           ├── chapters/, characters/
+│           └── assets/          ← 1.207 MB
+├── .icon-ico/             ← el .ico generado desde build/icon.png (caché)
+└── builder-debug.yml      ← log del build, no se distribuye
+```
+
+Se prueba abriendo `dist/win-unpacked/Transfurmados.exe`.
+
+**`npm run dist`** (`electron-builder --win`) — añade el instalador NSIS:
+
+```
+dist/Transfurmados Setup 1.0.0.exe
+```
+
+> ⚠️ El `.exe` de `win-unpacked/` **no funciona por su cuenta**: necesita todos
+> los archivos que tiene al lado. Para distribuirlo se comprime la carpeta
+> entera, o se reparte el instalador.
+
+> ⚠️ Con ~1,2 GB en `assets/` el empaquetado tarda varios minutos.
+
+### Empaquetar para macOS
+
+**No se puede desde Windows.** El `.dmg` se genera con `hdiutil`, la firma con
+`codesign`, y el `.app` lleva dentro symlinks y bits de ejecutable que NTFS no
+conserva. Hace falta un Mac de verdad.
+
+**En un Mac:**
+
+```bash
+npm ci
+npm run dist:mac        # dmg + zip     (npm run dist:mac:dir para solo el .app)
+```
+
+**Sin Mac:** el workflow `.github/workflows/build-mac.yml` lo compila en un
+runner `macos-latest`. Se lanza a mano desde la pestaña **Actions → Build macOS
+→ Run workflow** y deja el `.dmg` y el `.zip` como artefactos (7 días). Tarda
+~20 min: el checkout se trae los 1,2 GB de assets versionados.
+
+**Solo arm64.** Cubre todos los Mac desde finales de 2020. Se podría añadir
+`x64` en el campo `mac.target` del `package.json`, pero como el build va sin
+asar **cada arquitectura es una copia entera del juego**: `dist/` pasaría de
+~3 GB a ~6 GB y el empaquetado al doble de tiempo. Un binario `universal` es
+todavía peor, porque duplica también el runtime de Electron dentro del mismo
+`.app`.
+
+**El icono** se genera desde el mismo `build/icon.png`. Para macOS debería ser
+**1024x1024**; con los 512x512 actuales electron-builder avisa y el icono sale
+algo borroso en el Dock.
+
+#### ⚠️ Firma y notarización
+
+El build sale **sin firmar** (firma *ad-hoc*). Al descargarlo, macOS le pone el
+atributo de cuarentena y Gatekeeper lo bloquea con *"Transfurmados está dañado y
+no se puede abrir"* — y no es un aviso que se pueda saltar con un clic, como el
+SmartScreen de Windows. El jugador tiene que hacer una de estas dos:
+
+- Clic derecho sobre la app → **Abrir** (y confirmar en el diálogo)
+- `xattr -dr com.apple.quarantine /Applications/Transfurmados.app`
+
+Hay que dejarlo escrito en la página del juego. Para quitarlo del todo hace
+falta el **Apple Developer Program** (99 $/año): un certificado *Developer ID
+Application*, `"notarize": true` y `"hardenedRuntime": true` en el bloque `mac`,
+y estas variables en el entorno del build:
+
+```
+CSC_LINK, CSC_KEY_PASSWORD              ← el .p12 del certificado
+APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID
+```
+
+### Publicar en itch.io
+
+Se sube la carpeta `dist/win-unpacked/` completa, con `Transfurmados.exe` en la
+raíz del zip (sin una carpeta extra por encima, así el itch app lo detecta
+solo). Mejor el zip que el instalador NSIS: el itch app descarga, descomprime y
+lanza el juego él mismo, y con un instalador se lía.
+
+**Pasos:**
+
+1. Crear el build: `npm run dist:dir`
+2. Instalar [butler](https://itch.io/docs/butler/), la CLI de itch.io, y
+   autenticarse una vez: `butler login`
+3. Subir la carpeta (butler la comprime él solo):
+
+```bash
+butler push dist/win-unpacked tu-usuario/transfurmados:windows
+```
+
+4. En la página del juego en itch.io, marcar la subida como ejecutable de
+   escritorio ("This file will be downloaded on the user's computer").
+
+El sufijo `:windows` del canal ya marca la plataforma. Y butler sube solo los
+bytes que cambian en cada actualización, que con 1,2 GB de assets que casi nunca
+cambian ahorra muchísimo.
+
+> ⚠️ El subidor web de itch.io corta en 1 GB por archivo, así que el build de
+> 1,6 GB **no se puede subir por el navegador**: butler es obligatorio.
+
+Para macOS es igual pero con el canal `:osx`, y se sube el **`.zip`**, no el
+`.dmg`: el itch app sabe descomprimirlo y lanzar el `.app`, mientras que con un
+`.dmg` se lía igual que con el instalador NSIS.
+
+```bash
+butler push dist/Transfurmados-1.0.0-arm64-mac.zip tu-usuario/transfurmados:osx
+```
+
+**Qué NO quitar del build para adelgazarlo:** los `.dll`, `.pak`, `.bin`,
+`locales/` y `resources/` son todos necesarios, y `LICENSES.chromium.html`
+(20 MB) es la atribución de licencias de Chromium, hay que distribuirla.
+
+**Qué sí se puede recortar:** los idiomas de Electron (46,6 MB). La forma limpia
+es en el campo `build` del `package.json`, no borrando `locales/` a mano:
+
+```json
+{
+  "electronLanguages": ["es", "en-US"]
+}
+```
+
+El recorte de verdad está en `assets/`: `cutscenes/` (421 MB) y `sounds/`
+(303 MB) son más de la mitad del juego.
+
+#### Restauración 4K de la cinemática del concierto
+
+Los 24 planos de `assets/cutscenes/nuevos_frames/` tienen una restauración no
+destructiva en `assets/cutscenes/nuevos_frames_4k/`. Todos conservan el nombre
+original y se entregan como PNG RGB de `3840×2160`.
+
+La restauración no consiste únicamente en ampliar píxeles: cada plano se
+reconstruyó visualmente manteniendo encuadre, puesta en escena, iluminación y
+paleta. Se corrigieron caras, ojos, hocicos, dientes, manos, patas, garras,
+agarres, solapes, anatomía del público, geometría de vallas y elementos del
+escenario. Samu, Edu y el gorila usan como referencia sus artes canónicos; los
+primeros planos de Seraphyna fijan su identidad en toda la secuencia. Los
+planos de público mantienen menos detalle en la distancia para conservar
+profundidad, y el frame final corrige además el texto legible `SERAPHYNA` y
+`ALL ACCESS`. En `frame_11_embobados.png`, Samu usa el patrón cromático
+canónico de `assets/characters/samu/Samu.png`: base topo, zonas gris crema,
+parches marrón oscuro, nariz naranja y gorguera blanca ribeteada en rojo. Los
+originales y la antigua ampliación `nuevos_frames_x2/` permanecen intactos.
+
+El montaje reconstruido se entrega en
+`assets/cutscenes/opening_tony_4k.mp4`. Es un H.264 de `3840×2160` a 30 FPS y
+117,6 segundos que utiliza directamente los 24 planos restaurados, conserva el
+audio AAC del opening original y reproduce sus zooms, fundidos, fogonazos
+blancos y pausa negra final. La versión de 720p
+`assets/cutscenes/opening_tony.mp4` permanece intacta. El archivo 4K se codificó
+como versión de distribución compatible con el juego y queda por debajo de
+100 MB.
+
+### Cómo funciona
+
+```
+electron/
+├── main.js            ← Proceso principal: ventana + arranque
+└── static-server.js   ← Servidor estático interno (127.0.0.1, puerto libre)
+```
+
+El juego usa `fetch()` para cargar `chapters/*.json` y `characters/*.json`, y
+vídeo/audio que necesitan peticiones `Range` para poder buscar dentro del
+archivo. Nada de eso funciona con `file://`, así que `main.js` levanta un
+servidor local en `127.0.0.1` con un puerto libre y carga la ventana desde ahí.
+Es exactamente el mismo escenario que `python -m http.server`, por lo que el
+comportamiento del juego es idéntico al del navegador.
+
+El aviso «Antes de empezar» usa un único `#startup-overlay`, situado fuera de
+`#viewport` y `#game-container`. No debe duplicarse dentro del escenario: los
+IDs repetidos hacen que el botón controle una copia mientras la otra permanece
+encima y bloquea el acceso al opening y al menú.
+
+Detalles de la ventana:
+
+- Tamaño de área de dibujo 1280x720 (se reduce si la pantalla es más pequeña)
+- Sin barra de menú, fondo negro, título "Project AI.ri: Transfurmados"
+- **F11** pantalla completa · **F12** DevTools · **Ctrl+R** recargar
+- Una sola instancia: al abrir otra, se enfoca la que ya está
+
+En macOS los atajos son otros, porque F11 y F12 los tiene cogidos el sistema:
+**Ctrl+Cmd+F** pantalla completa · **Cmd+Alt+I** DevTools · **Cmd+R** recargar.
+Y la barra de menú allí es global, así que `autoHideMenuBar` no la afecta: sin
+un menú propio saldría el de ejemplo de Electron, y sin menú ninguno dejarían de
+funcionar Cmd+Q y Cmd+H. Por eso `configurarMenu()` pone el mínimo (`appMenu` +
+Ventana) en macOS y quita el menú del todo en el resto.
+
+El icono de la app se genera desde `build/icon.png`.
+
+### ⚠️ Si la app se cierra sola al arrancar
+
+Electron sale con código 0 y sin mensaje (solo el aviso de `crashpad ... not
+connected`, que es inofensivo) cuando no puede usar su carpeta de datos,
+`%APPDATA%\<productName>`. Dos causas ya vistas y resueltas:
+
+1. **`productName` con caracteres ilegales en rutas de Windows** (`\ / : * ? " < > |`).
+   Por eso `productName` es `Transfurmados` y el título largo
+   "Project AI.ri: Transfurmados" se pone en la ventana desde `main.js`.
+2. **Primera ejecución con la carpeta de datos aún sin crear:** el candado de
+   instancia única es un archivo dentro de esa carpeta y Electron no la crea
+   hasta el `ready`, así que `requestSingleInstanceLock()` devolvía `false` y
+   la app se cerraba. `main.js` crea la carpeta antes de pedir el candado.
+
+Para depurar casos así: `electron .` no imprime nada útil, hay que meter
+`console.log` en `main.js` — si ni siquiera se ve el primero, el fallo es
+anterior a cargar el script (típicamente la carpeta de datos).
+
+### Seguir usando el navegador
+
+La versión web sigue funcionando igual: `start.bat` o
+`python -m http.server 8000` y abrir `http://localhost:8000`.
+
+---
+
 ## ¡Comienza Ahora! 🚀
 
 1. Abre `index.html` en tu navegador
@@ -2576,3 +3225,24 @@ No existen archivos MD separados por característica.
 - ✅ Personalización de estilos P5
 - ✅ Troubleshooting actualizado
 - ✅ Ejemplos de uso
+
+### Regreso al menú principal (2026-07-31)
+
+Al abandonar una partida desde el menú de pausa, `volverAlMenuPrincipal()` usa
+`setMainMenuVisible(true)` para retirar tanto `hidden` como `inert`. Así, los
+botones **Comenzar**, **Capítulos** y **Configuración** recuperan su interacción.
+
+### Opening a pantalla completa (2026-07-31)
+
+El vídeo de arranque se ajusta al escenario con `object-fit: contain`, conservando
+su proporción y mostrando todos los planos completos, sin ampliarlos ni recortarlos.
+
+### Fondo del baño del capítulo 1 (2026-07-31)
+
+`assets/backgrounds/bathroom.png` conserva el encuadre panorámico y la orientación
+del fondo jugable —lavabo a la izquierda, ducha al fondo y espejo a la derecha—,
+pero adopta el acabado anime, la luz cálida y la paleta de la cinemática
+`assets/cutscenes/opening_samu/7.png`. El espejo izquierdo tiene un marco y un
+reflejo espacialmente coherentes, mientras que el espejo derecho tiene el marco
+completo y cerrado dentro del encuadre y representa el diseño vigente de
+`samu_surprised.png`.

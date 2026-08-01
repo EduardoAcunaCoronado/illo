@@ -1,0 +1,12 @@
+{
+  "name": "Nexo",
+  "color": "#1b8587",
+  "poses": {
+    "neutral": "assets/characters/others/nexo.png",
+    "happy": "assets/characters/others/nexo.png",
+    "sad": "assets/characters/others/nexo.png",
+    "angry": "assets/characters/others/nexo.png",
+    "surprised": "assets/characters/others/nexo.png"
+  },
+  "defaultPose": "neutral"
+}

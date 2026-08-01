@@ -23,7 +23,7 @@
               "fadeIn": 1000
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Samu sale de casa y se detiene en seco. Huelva ha cambiado por completo."
         },
         {
@@ -39,7 +39,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Las calles están llenas de furros de todo tipo. Caminan tranquilamente, charlando entre ellos, pasándola bien. Solo furros viviendo en paz y armonía."
         },
         {
@@ -79,7 +79,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Samu se adentra en las calles de Furrielva en busca de su amigo."
         }
       ]
@@ -112,23 +112,23 @@
           ],
           "choices": [
             {
-              "text": "Entrar por El Jamón",
-              "nextScene": "Escena 2: El Jamón"
+              "text": "Entrar por El Jarrón",
+              "nextScene": "Escena 2: El Jarrón"
             },
             {
-              "text": "Entrar por el Día",
-              "nextScene": "Escena 3: Día"
+              "text": "Entrar por Noche",
+              "nextScene": "Escena 3: Noche"
             },
             {
-              "text": "Entrar por el Mercadona",
-              "nextScene": "Escena 4: Mercadona"
+              "text": "Entrar por Mercaguasa",
+              "nextScene": "Escena 4: Mercaguasa"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 2: El Jamón",
+      "title": "Escena 2: El Jarrón",
       "lines": [
         {
           "actions": [
@@ -149,11 +149,11 @@
             },
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             }
           ],
-          "character": "2B",
-          "text": "El Jamón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos, con la mirada puesta en encontrar la entrada al Kingdom Ketchup."
+          "character": "3C",
+          "text": "El Jarrón está literalmente a la vuelta de la esquina. Samu entra en apenas unos segundos, con la mirada puesta en encontrar la entrada al Kingdom Ketchup."
         },
         {
           "character": "Samu",
@@ -168,24 +168,24 @@
           ]
         },
         {
-          "character": "2B",
-          "text": "De entre las estanterías surge una mujer con la mirada perdida, cargada de gatos hasta las orejas. Es la loca de los gatos.",
+          "character": "3C",
+          "text": "De entre las estanterías surge una mujer de mirada febril, cargada de gatos hasta las orejas. Es Micaela Michis.",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "loca",
+              "character": "micaela",
               "position": "right",
               "pose": "neutral"
             }
           ]
         },
         {
-          "character": "Loca de los gatos",
-          "text": "¡Ahhh, la madre que los...! ¡Ahhhhh, incentivar la pequeña empresa! ¡Ahhhh, cómo duele! ¡Responsabilidad empresarial! ¡Ahhhhhh, gatos en los pantaloooones!",
+          "character": "Micaela Michis",
+          "text": "¡Ciudadanos, comienza la revolución michi! ¡Por decreto, cada hogar tendrá siete cajas de cartón, la siesta será obligatoria y todo enemigo del puntero láser será perseguido por mis ministros!",
           "actions": [
             {
               "type": "setPose",
-              "character": "loca",
+              "character": "micaela",
               "position": "right",
               "pose": "crazy"
             }
@@ -204,8 +204,8 @@
           ]
         },
         {
-          "character": "2B",
-          "text": "Los gatos se abalanzan desde todos los rincones. Samu no puede pelear: solo le queda correr y aguantar hasta que la loca se canse."
+          "character": "3C",
+          "text": "Los gatos se abalanzan desde todos los rincones. Samu no puede pelear: solo le queda correr y aguantar hasta que Micaela se canse."
         },
         {
           "character": "Samu",
@@ -220,12 +220,12 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "¡Corre por tu vida, Samu! ¡No dejes que ningún michi te alcance!",
           "actions": [
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             }
           ]
         },
@@ -280,24 +280,40 @@
           ]
         },
         {
-          "character": "2B",
-          "text": "Sin aliento y con los michis por fin dispersos, la loca se sube a una caja de embutido y, de la nada, arranca un mitin.",
+          "character": "3C",
+          "text": "Sin aliento y con los michis por fin dispersos, Micaela se sube a una caja de embutido y, sin que nadie se lo haya pedido, arranca un mitin político.",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "loca",
+              "character": "micaela",
               "position": "right",
               "pose": "neutral"
             }
           ]
         },
         {
-          "character": "Loca de los gatos",
-          "text": "¡Vale, voten por mí, siiiii!"
+          "character": "Micaela Michis",
+          "text": "¡Pueblo del Jarrón! ¡Mi programa es claro: sanidad veterinaria universal, atún subvencionado y un Ministerio del Ovillo con presupuesto ilimitado!",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "micaela",
+              "position": "right",
+              "pose": "crazy"
+            }
+          ]
+        },
+        {
+          "character": "Micaela Michis",
+          "text": "¡Ningún gato volverá a pagar alquiler! ¡Cada sofá será vivienda protegida y cada humano tributará dos latas de sardinas al mes!"
+        },
+        {
+          "character": "Micaela Michis",
+          "text": "¡Y eliminaremos los lunes del calendario! Los sustituiremos por el Día Nacional de Tirar Cosas de la Mesa. ¡Miau patria o muerte!"
         },
         {
           "character": "Samu",
-          "text": "Yo te votaría antes que a Pedro Sánchez.",
+          "text": "Lo del atún subvencionado suena mejor que la mitad de los programas electorales.",
           "actions": [
             {
               "type": "showCharacter",
@@ -308,12 +324,12 @@
           ]
         },
         {
-          "character": "2B",
-          "text": "Dejando atrás a la peculiar candidata y su ejército de gatos, agotado y con el reloj en contra, Samu por fin encuentra el resplandor rojizo hacia Kingdom Ketchup.",
+          "character": "3C",
+          "text": "Dejando atrás a Micaela y su ejército de gatos, agotado y con el reloj en contra, Samu por fin encuentra el resplandor rojizo hacia Kingdom Ketchup.",
           "actions": [
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             },
             {
               "type": "setDelay",
@@ -332,7 +348,7 @@
       ]
     },
     {
-      "title": "Escena 3: Día",
+      "title": "Escena 3: Noche",
       "lines": [
         {
           "actions": [
@@ -353,15 +369,15 @@
             },
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             }
           ],
-          "character": "2B",
-          "text": "El Día queda a un par de calles, por una travesía tranquila. Samu avanza sin apenas obstáculos."
+          "character": "3C",
+          "text": "Noche queda a un par de calles, por una travesía tranquila. Samu avanza sin apenas obstáculos."
         },
         {
           "character": "Samu",
-          "text": "A pesar de llamarse Día, no he tardado un día en llegar. Directo al grano.",
+          "text": "A pesar de llamarse Noche, he llegado con el sol pegando. Directo al grano.",
           "actions": [
             {
               "type": "showCharacter",
@@ -372,7 +388,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Entre las estanterías de ofertas, el pasaje rojizo hacia Kingdom Ketchup aparece casi de inmediato. Samu cruza atraído por el misterioso lugar.",
           "actions": [
             {
@@ -392,7 +408,7 @@
       ]
     },
     {
-      "title": "Escena 4: Mercadona",
+      "title": "Escena 4: Mercaguasa",
       "lines": [
         {
           "actions": [
@@ -413,11 +429,11 @@
             },
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             }
           ],
-          "character": "2B",
-          "text": "El Mercadona está unas calles más lejos. Samu avanza con paso firme y solo tiene que rodear a un grupo de furros que bloquean el camino."
+          "character": "3C",
+          "text": "Mercaguasa está unas calles más lejos. Samu avanza con paso firme y solo tiene que rodear a un grupo de furros que bloquean el camino."
         },
         {
           "character": "Samu",
@@ -432,7 +448,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Tras el rodeo, la puerta automática se abre y el brillo de Kingdom Ketchup lo espera al fondo, tras la sección de frescos. La expectación por ver el lugar aumenta con cada paso.",
           "actions": [
             {
@@ -466,11 +482,11 @@
             },
             {
               "type": "hideCharacter",
-              "character": "loca"
+              "character": "micaela"
             },
             {
               "type": "hideCharacter",
-              "character": "nate"
+              "character": "neit"
             },
             {
               "type": "stopSound",
@@ -486,21 +502,21 @@
               "fadeIn": 1000
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Al otro lado del supermercado, el aire cambia. Samu está por fin dentro de Kingdom Ketchup, entre góndolas infinitas que gotean salsa roja."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Kingdom Ketchup no figura en ningún registro municipal. No hay licencia de obra, no hay inauguración, no hay una sola foto de qué había aquí antes. Un día, detrás de los supermercados de Furrielva, simplemente hubo una puerta roja.",
           "textSpeed": "slow"
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Dentro no se vende nada. No hay cajas, ni precios, ni nadie a quien preguntar. Los pasillos se estiran hasta donde alcanza la vista y todos ofrecen lo mismo: exactamente aquello que uno vino buscando, en la cantidad exacta en que se lo había imaginado.",
           "textSpeed": "slow"
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Hay quien entra, mira y sale contando maravillas. Y hay quien entra y, poco a poco, deja de buscar la salida. En Furrielva todavía nadie ha sabido explicar qué diferencia a unos de otros.",
           "textSpeed": "slow"
         },
@@ -517,7 +533,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Ante Samu se abren dos pasillos idénticos salvo por un cartel. Uno reza \"KETCHUP\". El otro, \"CATSUP\"."
         },
         {
@@ -548,7 +564,7 @@
       "title": "Escena 6: Pasillo del Ketchup",
       "lines": [
         {
-          "character": "2B",
+          "character": "3C",
           "text": "El pasillo del Ketchup es corto y recto. Samu lo cruza casi sin frenar y, al fondo, distingue una silueta conocida.",
           "actions": [
             {
@@ -581,7 +597,7 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Escena 8: Nate Gentile"
+              "value": "Escena 8: Neit"
             }
           ]
         }
@@ -591,7 +607,7 @@
       "title": "Escena 7: Pasillo del Catsup",
       "lines": [
         {
-          "character": "2B",
+          "character": "3C",
           "text": "El pasillo del Catsup serpentea, se bifurca y termina dando toda la vuelta. Samu tarda un buen rato en volver a orientarse.",
           "actions": [
             {
@@ -628,14 +644,14 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Escena 8: Nate Gentile"
+              "value": "Escena 8: Neit"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 8: Nate Gentile",
+      "title": "Escena 8: Neit",
       "lines": [
         {
           "actions": [
@@ -656,24 +672,24 @@
             },
             {
               "type": "showCharacter",
-              "character": "nate",
+              "character": "neit",
               "position": "right",
               "pose": "neutral"
             }
           ],
-          "character": "2B",
-          "text": "Cerca de las cajas, un hombre recorre las estanterías examinando cada producto con ojo experto. Es Nate Gentile."
+          "character": "3C",
+          "text": "Cerca de las cajas, un hombre recorre las estanterías examinando cada producto con ojo experto. Es Neit."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Mmm... esta lata de tomate tiene una relación calidad-precio brutal. Yo me la compraría."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Este ketchup de marca blanca rinde igual que el caro. Yo me lo compraría."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "¿Guindillas en oferta? Para el picante que dan, es una locura no llevárselas. Yo me las compraría."
         },
         {
@@ -689,7 +705,7 @@
           ]
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "¡Eh! ¿Te puedo ayudar en algo, amigo?"
         },
         {
@@ -710,17 +726,17 @@
             },
             {
               "text": "Preguntarle qué PC me recomendaría",
-              "nextScene": "Escena 8b: La recomendación de Nate"
+              "nextScene": "Escena 8b: La recomendación de Neit"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 8b: La recomendación de Nate",
+      "title": "Escena 8b: La recomendación de Neit",
       "lines": [
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "¡Ah, buena pregunta! Para darte la recomendación perfecta, me vendría genial saber qué uso principal le vas a dar (¿programación, desarrollo, gaming en 1440p o algo más casual?) y, sobre todo, cuál es tu presupuesto aproximado.",
           "actions": [
             {
@@ -738,40 +754,40 @@
           ]
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Mientras me cuentas, la industria se encuentra en un gran momento con la llegada de las nuevas arquitecturas y las series RTX 5000 de Nvidia y RX 9000 de AMD. Aquí tienes las tres configuraciones que más merecen la pena ahora mismo según lo que busques gastar."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "1. EL 'SWEET SPOT' (Calidad/Precio Eficiente). Ideal para un rendimiento excelente en multitarea, desarrollo de software ágil, compilación rápida y gaming en 1440p (2K)."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Procesador: AMD Ryzen 5 9600X o Ryzen 7 9700X (Plataforma AM5, con margen de actualización para el futuro). Gráfica: NVIDIA RTX 5070 (12GB) o AMD RX 9070 (16GB), una potencia brutal en la gama media-alta."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "RAM: 32GB DDR5 a 6000MHz CL30 (imprescindible hoy para ir holgado con contenedores, IDEs o juegos pesados). Almacenamiento: SSD NVMe M.2 de 2TB (WD Black o Crucial Gen4). Placa: chipset B850 (MSI Tomahawk o Gigabyte Gaming). Fuente: 750W u 850W 80+ Gold Modular."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "2. EL ECONÓMICO / ENTRADA RENTABLE. Para productividad fluida, desarrollo ligero y gaming muy decente a 1080p sin gastar de más."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Procesador: AMD Ryzen 5 7600 (AM5) o Intel Core i5-14400F. Gráfica: NVIDIA RTX 5060 (8GB) o la Intel Arc B580 (que está sorprendiendo mucho por su relación calidad-precio). RAM: 16GB o 32GB DDR5. Almacenamiento: SSD NVMe M.2 de 1TB."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "3. EL 'GOD MODE' (Máximo Rendimiento). Si buscas potencia bruta sin restricciones: renderizado, entornos virtuales masivos, desarrollo 3D/IA local o gaming en 4K Ultra."
         },
         {
-          "character": "Nate",
+          "character": "Neit",
           "text": "Procesador: AMD Ryzen 7 9800X3D (el rey absoluto en gaming) o Intel Core Ultra 7 265K. Gráfica: NVIDIA RTX 5080 o RTX 5090. RAM: 64GB DDR5 a 6400MHz. Almacenamiento: 2TB o 4TB SSD NVMe Gen5/Gen4 de alta velocidad (Samsung 990 Pro)."
         },
         {
-          "character": "2B",
-          "text": "Nate sigue y sigue con todo lujo de detalle. Pasan los minutos. Samu asiente educadamente mientras el reloj corre.",
+          "character": "3C",
+          "text": "Neit sigue y sigue con todo lujo de detalle. Pasan los minutos. Samu asiente educadamente mientras el reloj corre.",
           "actions": [
             {
               "type": "addDelay",
@@ -781,7 +797,7 @@
         },
         {
           "character": "Samu",
-          "text": "Gracias, Nate, de verdad... pero ¡tengo que irme YA!",
+          "text": "Gracias, Neit, de verdad... pero ¡tengo que irme YA!",
           "actions": [
             {
               "type": "showCharacter",
@@ -836,14 +852,14 @@
             },
             {
               "type": "hideCharacter",
-              "character": "nate"
+              "character": "neit"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Samu llega por fin al corazón de Kingdom Ketchup. El aire huele intensamente a salsa de tomate."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Samu ve una silueta en la distancia. Un dragón azul."
         },
         {
@@ -896,7 +912,7 @@
         },
         {
           "character": "Samu",
-          "text": "Oye, Edu... una cosa que me ha dejado loco. He visto a Nate Gentile por ahí fuera y me ha parecido ver que... ¿estás vendiendo guindillas aquí?",
+          "text": "Oye, Edu... una cosa que me ha dejado loco. He visto a Neit por ahí fuera y me ha parecido ver que... ¿estás vendiendo guindillas aquí?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1063,7 +1079,7 @@
               "duration": 500
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "La sombra de Edu deja de imitarlo. Se queda quieta cuando él se mueve, se estira por el suelo rojo y, muy despacio, empieza a levantarse.",
           "textSpeed": "slow"
         },
@@ -1087,7 +1103,7 @@
               "duration": 700
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "La sombra se lo traga desde los pies. Cuando vuelve a haber alguien de pie en la sala del trono, ya no es Edu: es lo que este sitio llevaba semanas dibujando dentro de él.",
           "textSpeed": "slow"
         },
@@ -1148,7 +1164,7 @@
           "text": "Edu no te escucha, ahora soy pura oscuridad memética. Para vencerme tendrás que hacer lo que hace siempre Edu cuando va a un restaurante, hincharse a ketchup y evitar el picante."
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "¡Que comience la batalla! Samu debe luchar contra Zip. Si gana, liberará a Edu de la corrupción."
         },
         {
@@ -1196,7 +1212,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "La batalla termina y Zip es derrotado. Edu cae inconsciente, pero vivo."
         },
         {
@@ -1248,7 +1264,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "El reino rojo queda atrás. Edu camina despacio, todavía mareado, mirándose las manos como si no terminara de fiarse de ellas."
         },
         {
@@ -1293,14 +1309,14 @@
             },
             {
               "type": "hideCharacter",
-              "character": "nate"
+              "character": "neit"
             },
             {
               "type": "hideCharacter",
               "character": "zip"
             }
           ],
-          "character": "2B",
+          "character": "3C",
           "text": "Las calles de Furrielva los reciben con aire fresco. Caminan hasta la iglesia sin decir gran cosa: hay silencios que hacen más compañía que una conversación."
         },
         {
@@ -1316,7 +1332,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "De repente, el móvil de Edu vibra. Un correo. El asunto brilla en la pantalla."
         },
         {
@@ -1332,7 +1348,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "La pantalla muestra el anuncio: «CONCIERTO EXCLUSIVO — Seraphyna en ECCHI LAND. Calle Hentai, nº 69. A las afueras de Furrielva: coge la autovía y sal por el 69. Una noche que no olvidarás.»",
           "actions": [
             {
@@ -1416,7 +1432,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Edu abre Furry Maps en su móvil y busca la dirección. La pantalla carga... carga... y finalmente muestra la dirección."
         },
         {
@@ -1462,7 +1478,7 @@
           ]
         },
         {
-          "character": "2B",
+          "character": "3C",
           "text": "Y con más preguntas que respuestas, los dos echan a andar hacia la autovía.",
           "actions": [
             {

@@ -75,15 +75,18 @@ CAPÍTULO 1 — “Un furro se levanta” (Samu)
 CAPÍTULO 2 — “Kingdom Ketchup” (Edu)
 - Furrielva parece inicialmente una utopía de furros viviendo en armonía.
 - Para buscar el portal, Samu elige supermercado:
-  · Día: ruta directa, storyDelay 0.
-  · Mercadona: pequeño rodeo, storyDelay 1.
-  · El Jamón: la loca de los gatos lo ataca; minijuego de supervivencia, storyDelay 2.
+  · Noche: ruta directa, storyDelay 0.
+  · Mercaguasa: pequeño rodeo, storyDelay 1.
+  · El Jarrón: Micaela Michis lo ataca con sus gatos y pronuncia un mitin político
+    absurdo a favor de los michis; minijuego de supervivencia, storyDelay 2.
 - Kingdom Ketchup apareció sin historia ni registro. No vende nada: sus pasillos
   ofrecen exactamente lo que cada visitante desea. Algunos salen; otros dejan de
   querer encontrar la salida.
 - Segunda elección: Ketchup es directo; Catsup añade 1 de retraso.
-- Nate Gentile recomienda productos. Preguntarle por un PC dispara una explicación
+- Neit recomienda productos. Preguntarle por un PC dispara una explicación
   deliberadamente larguísima y añade 2 de retraso; ignorarlo evita esa demora.
+- Neit y Micaela Michis tienen retratos cartoon transparentes alineados con los
+  protagonistas (`others/neit.png` y `others/micaela*.png`).
 - Edu está seducido por el reino y se niega de manera progresiva a volver al cumpleaños.
   Su sombra se separa, lo devora y se presenta como Zip, instrumento memético creado
   para dominar el mundo.
@@ -98,6 +101,9 @@ CAPÍTULO 2 — “Kingdom Ketchup” (Edu)
 CAPÍTULO 3 — “Ecchi Land” (Tony / Seraphyna)
 - Santi, una rata anciana y tramoyista (“Kiikiaskel” en la nómina), recoge a Samu y
   Edu en su coche tuneado. Repite que lleva cuarenta años entre focos y cables.
+- En los interiores del trayecto y el asalto, Santi ocupa el hueco inferior
+  izquierdo para que el volante cortado continúe fuera de plano; Samu queda en el
+  centro y Edu a la derecha durante toda la secuencia del coche.
 - En el trayecto, la radio reproduce una voz femenina que Samu tararea sin reconocer.
   Santi la apaga y advierte que la gente no sale igual de Ecchi Land.
 - Un enjambre de memes en moto los persigue. El minijuego chase cambia distancia,
@@ -285,6 +291,9 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
   saveGame() existe pero no se llama; la promesa antigua de autoguardado no describe el
   comportamiento actual.
 - Los capítulos numéricos se detectan consecutivamente hasta el primer 404.
+- El selector espera la carga asíncrona compartida de esos JSON antes de renderizar;
+  esto evita que un clic temprano, especialmente tras saltar el opening, muestre una
+  lista vacía. Menú y selector transfieren también inert, aria-hidden y foco.
 
 MINIJUEGOS USADOS POR EL GUION ACTUAL
 - Gatos: laberinto/supervivencia con flechas o WASD.
@@ -330,8 +339,57 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   comprueba la distancia mínima de las trayectorias relativas durante el frame
   (colisión barrida), evitando tunneling a alta velocidad. El debug dibuja elipses
   discontinuas. Eduvuelo conserva cajas 2D porque no tiene profundidad de carretera.
+  Desde 2026-07-31 usa un motor de vuelo dedicado con cuenta atrás, pausa real,
+  control de altura por ratón o W/S e impulso con Espacio/clic. El impulso
+  consume energía, vuelve invulnerable a Edu y rompe peligros; contra los
+  altavoces activa un contrapulso. Hay cadena, puntuación, rangos S/A/B/C,
+  bonificación de casi-roce y frases de partituras garantizadas para evitar
+  partidas bloqueadas por el azar. Los patrones incluyen cables desde techo y
+  suelo, focos con aviso, altavoces pulsantes y ráfagas que empujan sin causar
+  daño. La dificultad aumenta durante la propia partida. Las colisiones usan
+  elipses para Edu/focos/altavoces, rectángulo estrecho para cables y muestreo
+  sincronizado de ambas trayectorias entre frames; así no se mezcla la posición
+  final de Edu con una posición anterior del peligro al moverse rápido. La
+  tolerancia 0.80 exige penetración visible y elimina golpes por roce o por
+  esquinas del antiguo barrido AABB. Cada impacto identifica el peligro y el
+  debug conserva una marca temporal del contacto exacto. Los objetos nacen
+  fuera del borde para entrar suavemente, pero sólo pueden interactuar tras
+  tener un 18 % de su hitbox dentro; por debajo del 10 % visible se bloquea la
+  colisión. El escenario recorta todo lo exterior con overflow hidden.
+  Los cables ya no dependen de un background CSS: usan un img interno y su
+  colisión permanece apagada hasta que el PNG confirma la carga; si falla o
+  tarda más de 1600 ms, el peligro se elimina. El cable inferior se invierte
+  alrededor de su centro, no del borde inferior, para que el dibujo crezca
+  desde el suelo dentro del escenario y coincida con su hitbox. Esta corrección
+  elimina el daño invisible que causaban los cables inferiores renderizados por
+  debajo del viewport. Tras un golpe, el obstáculo queda resaltado brevemente y
+  su aviso tiene prioridad para que el origen del daño sea visible.
+- Optimización de assets de persecución y Eduvuelo: engine.js conserva por sesión
+  cada URL, promesa de precarga e Image ya decodificado; reintentar una partida o
+  cambiar frames reutiliza memoria. Chase no precarga los tres PNG grandes del
+  cable del antiguo motor fly. El servidor interno de Electron usa caché
+  inmutable anual para imagen/audio/vídeo/fuentes y ETag + no-cache para
+  HTML/JS/CSS/JSON, sustituyendo el antiguo no-store global que forzaba peticiones
+  repetidas al servidor.
 - Rhythm/Neon Runner: notas, sliders y spinner; resultado por precisión.
-- Eduvuelo: side-scroller vertical, recoger partituras, evitar focos/cables.
+- Eduvuelo V3: vuelo arcade; recoger frases de partituras, encadenar casi-roces,
+  administrar el impulso y superar cables, focos, altavoces y ráfagas. Tras
+  comprobar que el dash abarataba demasiado la evasión, se endurecieron todos
+  los modos. Presets fácil/medio/difícil: velocidad 5.4/7/9, objetivo 14/20/26,
+  impactos 4/3/2 y spawn 720/590/450 ms; regeneración/coste de dash 11/42,
+  8/52 y 6/60, con duraciones 0.40/0.36/0.32 s. Historia por storyDelay:
+  objetivo 20/24/28, velocidad 6.8/7.8/8.8, impactos 3/2/2 y spawn
+  600/520/450 ms; regeneración 8/7/6, coste 50/55/60 y duración
+  0.38/0.35/0.32 s. Usa el fondo
+  aire_fondo_v2.png y un Edu V3 basado en el modelo canónico: ocho poses de
+  aleteo y dos de impulso, normalizadas en 512×512 transparente, con torso
+  estable, margen seguro y un único componente visual para impedir motas fuera
+  del sprite. Los diez frames y sus hojas fuente eliminan la cuña blanca y los
+  falsos bucles de bigote detrás de la cabeza o hacia las alas. Solo quedan los
+  dos bigotes faciales canónicos, nacidos en el hocico y terminados antes de la
+  espalda. El peligro usa aire_cable_v3.png: un cable vertical completo
+  y sin costuras con anclaje, trenza, refuerzos, terminal roto y electricidad
+  animada; se escala conservando la proporción y se invierte para el suelo.
 - Battle supervivencia: Samu+Edu resisten a la marea hasta que Seraphyna canta.
 - Battle normal: Ballerina, Tralalero, Tung, Amalgama y Amalgama final.
 - Rune Channeling: mantener/soltar A·S·D·F para equilibrar cuatro medidores durante
@@ -359,13 +417,50 @@ SISTEMA DE COMBATE
   reintento hasta victoria.
 
 PRESENTACIÓN
+- Arranque desde 2026-07-31: disclaimer obligatorio a pantalla completa. El
+  usuario pulsa “Entrar con sonido”, lo que desbloquea el audio del navegador y
+  reproduce assets/videos/opening_samu.mp4 (80,704 s, 1920x1080, H.264 + AAC).
+  El vídeo puede terminar o saltarse con su botón; después funde al menú, activa
+  menu_loop.mp4 y lanza el tema. Menú y vídeo de fondo permanecen ocultos e
+  inertes antes del gesto. El volumen del opening respeta illo_vol_music. En la
+  build Electron, el vídeo declara una superficie fija 1280x720, fuerza layout
+  al salir de hidden y solo se hace visible dos requestAnimationFrame después
+  de playing; así no aparece el primer frame 640x360 en modo ventana. Si
+  illo_vol_music estaba exactamente a 0, «Entrar con sonido» lo restaura al
+  70 % y lo persiste; cualquier volumen audible previo se conserva.
+- El fondo del menú es un bucle H.264 4K de 10 s, 48 FPS y 480 frames en
+  assets/videos/menu_loop.mp4. Conserva íntegros los 240 frames 4K originales e
+  inserta entre ellos frames de movimiento con RIFE v4.6 (UHD + TTA temporal).
+  También interpola la transición del último frame al primero para cerrar el
+  bucle sin duplicados. La geometría, el oleaje, los neones, las siluetas, la
+  brisa dorada y las notas originales no se recomponen. Los fuentes reproducibles
+  son scripts/render_menu_loop_4k.py (Real-ESRGAN) y
+  scripts/interpolate_menu_loop_48fps.py (rife-ncnn-vulkan). menu_loop_old.mp4
+  se conserva intacto como fuente de movimiento y referencia.
 - Menú “Neón de Medianoche” con vídeo en bucle a media velocidad, tema inicial,
   relevo chill, botón musical y marca WildSoft.
 - Visual novel con fondos ilustrados, sprites grandes, caja de diálogo inferior,
   nombre coloreado, flecha de continuación, sonido por letra y pausas de puntuación.
+- Los supermercados de la ruta de Edu usan las marcas ficticias El Jarrón,
+  Noche y Mercaguasa. Sus fondos heredados `jamon.png`, `dia.png` y
+  `mercadona.png` están unificados a 1600×900 con el estilo anime cinematográfico
+  y la iluminación cálida de las 16:00 del opening de Samu; los tres conservan
+  el portal rojo y su encuadre de gameplay.
 - Capítulos tienen cartela de entrada y pantalla de fin.
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
+- Los 24 planos del concierto tienen una restauración no destructiva 4K en
+  assets/cutscenes/nuevos_frames_4k/: PNG RGB de 3840×2160 con caras, manos,
+  anatomía del público, enemigos, vallas y escenario reconstruidos. Samu, Edu
+  y el gorila siguen su arte canónico; los primeros planos de Seraphyna fijan
+  su identidad. frame_11_embobados.png aplica además a Samu el patrón cromático
+  exacto de assets/characters/samu/Samu.png. Los originales de nuevos_frames/
+  y nuevos_frames_x2/ no se modificaron.
+- El opening del concierto se recompuso con esos planos en
+  assets/cutscenes/opening_tony_4k.mp4: H.264 3840×2160, 30 FPS, 117,6 s,
+  audio AAC original y montaje con zooms, fundidos, fogonazos y pausa negra
+  final. opening_tony.mp4 (720p) permanece intacto; la entrega 4K ocupa menos
+  de 100 MB para poder versionarse y usarse en el juego.
 - Créditos del final bueno recorren imágenes del viaje. El final incierto no los lanza.
 
 VALIDACIÓN REALIZADA EL 2026-07-30
@@ -400,3 +495,24 @@ REGLAS PARA CAMBIOS FUTUROS
   archivos Markdown separados por característica.
 - Actualizar esta memoria cuando cambien el canon, los arcos, los finales o el flujo
   técnico que un futuro agente necesite conocer.
+
+CORRECCIÓN 2026-07-31
+- `index.html` debe contener un solo `#startup-overlay`, fuera de `#viewport`.
+  Un duplicado dentro de `#game-container` bloqueaba el arranque porque los
+  listeners actuaban únicamente sobre la primera copia de los IDs repetidos.
+- Al volver al menú principal desde una partida, hay que usar
+  `setMainMenuVisible(true)`: quitar solamente la clase `hidden` deja el atributo
+  `inert` activo e impide pulsar las opciones del menú.
+- El fondo `assets/backgrounds/bathroom.png` mantiene su orientación jugable y el
+  reflejo del diseño vigente de Samu, con el estilo anime y la iluminación cálida
+  del fotograma 7 del opening. Su espejo izquierdo está corregido para que marco,
+  perspectiva y reflejo sean coherentes; el espejo derecho queda completamente
+  cerrado por arriba dentro del encuadre.
+- Los cinco sprites de `assets/characters/iphone5/` representan ahora un móvil
+  ficticio cartoon morado con acentos neón e interfaces propias para concierto,
+  Edu, José y Tony. No muestran botón Home, iOS, marcas ni rasgos de Apple; el
+  identificador interno heredado sigue siendo `iphone5`, pero su nombre visible
+  es “Móvil”. Las llamadas muestran retratos de las versiones humanas de Edu,
+  José y Tony, tomados de `assets/characters/humans/`. Los nombres de los tres
+  usan el lettering cartoon de Tony; “LLAMADA EN CURSO”, los tres controles y
+  “Colgar” comparten el estilo azul/rojo de Edu.

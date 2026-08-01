@@ -37,6 +37,7 @@ proyecto/
 ├── 🎮 game.js
 ├── 🎨 styles.css
 ├── ✨ p5-effects.js
+├── electron/                 ← App de escritorio (main.js + static-server.js)
 ├── characters/
 ├── chapters/
 └── assets/
@@ -49,4 +50,4 @@ proyecto/
 3. **Mantener limpio:** Eliminar archivos innecesarios
 4. **Memoria:** Actualizar memory/ con cambios importantes
 
-Narrador es 2B
+Narrador es 3C
