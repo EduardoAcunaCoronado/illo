@@ -437,7 +437,17 @@ function abrirMenuEscenas() {
   });
   scenesMenu.classList.remove("hidden");
   const activo = scenesList.querySelector(".actual");
-  if (activo) activo.scrollIntoView({ block: "center" });
+  if (activo) {
+    // `scrollIntoView()` también desplaza los ancestros con overflow (incluido
+    // el escenario en algunos tamaños de Chrome), dejando el juego recortado
+    // por arriba. Movemos únicamente la lista interna del selector.
+    const centroActivo =
+      activo.offsetTop - scenesList.offsetTop + activo.offsetHeight / 2;
+    scenesList.scrollTop = Math.max(
+      0,
+      centroActivo - scenesList.clientHeight / 2,
+    );
+  }
 }
 
 scenesBtn?.addEventListener("click", (e) => {

@@ -572,8 +572,8 @@ REGLAS PARA CAMBIOS FUTUROS
 - Flujo narrativo implementado tras la grabación de José Manuel de las 23:10:
   capítulo 2 sigue ciudad -> fábrica ->
   Ketchlings niegan acceso -> Edu no responde -> supermercado -> tapón dorado
-  -> portal de regreso -> interior. La fachada sería física y el portal un
-  atajo al interior imposible. El estudio completo está en
+  -> portal de regreso -> protesta ante la puerta -> interior. La fachada es
+  física y el portal un atajo de vuelta a ella. El estudio completo está en
   output/pdf/estudio_guion_kingdom_ketchup_jose_manuel.pdf.
 - Extensión jugable de capítulo 2: minijuego point-and-click `furrielvaExplore`
   con tres pistas; Ketchlings con ficha propia y cuatro oficios; tapón dorado en
@@ -669,7 +669,7 @@ REORGANIZACIÓN DE ASSETS Y MÚSICA DEL CAPÍTULO 2 — 2026-08-01
   `assets/audio/music/legacy/huelva_original.mp3`.
 - Mapa musical del capítulo 2: escena 1 = `furrielva_despierta`; escenas
   1B/1C/1D = `el_rastro_del_tapon`; escenas 1.5/2/3/4 =
-  `tres_rutas_por_furrielva`; escenas 4.5/4.6 = `el_tapon_dorado`; escenas 5–9
+  `tres_rutas_por_furrielva`; escenas 4.5/4.6/4.7 = `el_tapon_dorado`; escenas 5–9
   mantienen `kingdomketchup` con los cambios de Zip y el combate; escena 10 =
   `de_vuelta_en_furrielva`.
 - Todas las escenas del capítulo 2 declaran música al entrar. El motor conserva
@@ -733,7 +733,7 @@ CURSOR-RETRATO DEL HABLANTE 2026-08-01
   vuelve al encabezado con una transición de 280 ms al terminar la frase.
 - Samu usa siempre su retrato furry. Edu, Tony y José mantienen sus retratos
   humanos de `assets/images/characters/humans/` hasta sus revelaciones furry.
-  Umbrales: C2/E15/L4, C3/E13/L5 y C4/E2/L4 respectivamente. Se calculan por
+  Umbrales: C2/E16/L4, C3/E13/L5 y C4/E2/L4 respectivamente. Se calculan por
   posición narrativa para funcionar también desde el selector de escenas.
 - El recorte del cursor se controla con `--cursor-portrait-size` y
   `--cursor-portrait-position`. Paloma, Santi, Tralalero, Tung Tung, Gorila y
@@ -761,3 +761,36 @@ CURSOR-RETRATO DEL HABLANTE 2026-08-01
 - Las variantes Ketchling tienen alias hacia `ketchling.json`; todas las fichas
   secundarias se precargan al iniciar la partida.
 - Incel permanece en azul claro `#4da3ff`; Simsong usa azul oscuro `#285bc4`.
+
+EMBLEMA CANÓNICO DE EDU 2026-08-02
+- La camiseta de Edu usa siempre `assets/images/others/kingom-souls.png`: corona
+  dorada sobre corazón azul facetado.
+- El emblema está unificado en los assets activos: escenas/CG, versión humana,
+  retratos de teléfono, Mario Kart y frames/hojas V3 de Eduvuelo.
+- Los diez frames activos de Eduvuelo V3 se regeneraron con estilo cel-shading,
+  conservan los nombres `edu_fly_v3_*` y continúan en PNG transparente de
+  512×512. Mantienen las fases originales de alas y dash, y el brazo ocluye el
+  emblema según la pose.
+- `edu_volando_sheet_v3.png` y `edu_volando_dash_sheet_v3.png` se reconstruyen
+  desde esos frames en 1774×887. Las variantes V1/V2 quedan como legado inactivo.
+- La CG 4K continúa en 3840×2560.
+
+SELECTOR DE ESCENAS 2026-08-02
+- Al abrir Escenas, centrar la escena actual modificando exclusivamente el
+  `scrollTop` de `.scenes-list`. No volver a usar `scrollIntoView()` aquí: Chrome
+  puede desplazar también un ancestro con overflow y recortar el juego por arriba.
+
+CAÍDA ANIME DE EDU 2026-08-02
+- Al terminar la frase de Samu sobre quedarse sin batería al actualizar las
+  apps, Edu usa `characterAnimeFall` desde `afterActions`: descenso vertical sin
+  rotación ni escala hasta salir por abajo, pausa fuera del plano y regreso recto
+  sin rebote, sin bloquear la espera del diálogo. El disparo sigue sincronizado
+  al saltar el tipeo o usar avance rápido.
+- El audio original es `assets/audio/sfx/sfx_caida_anime_edu.wav`; combina
+  silbido descendente, impacto grave fuera de plano y aire ascendente sin boing.
+
+GAG DE FISURAS 2 2026-08-02
+- Después de que Edu acepte ir al cumpleaños, Samu pregunta por los portales.
+  Edu responde que le gusta `Fisuras 2 de Stim`; Samu muestra la pose `shocked`
+  durante la respuesta y continúa con «Bueno, cambiando de tema...» antes de
+  retomar la búsqueda del resto.
