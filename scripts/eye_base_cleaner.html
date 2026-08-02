@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Limpiador de bases oculares · Project AI.ri</title>
+  <style>
+    :root {
+      color-scheme:dark; --bg:#060510; --panel:#100d25; --panel2:#17122f;
+      --line:rgba(255,255,255,.12); --text:#f7f4ff; --muted:#a39cbd;
+      --cyan:#4fd0ff; --pink:#ff4fa3; --gold:#ffd166; --green:#7df2b1;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+    }
+    * { box-sizing:border-box; }
+    html,body { height:100%; margin:0; background:var(--bg); color:var(--text); }
+    body { display:grid; grid-template-rows:auto minmax(0,1fr); overflow:hidden; }
+    button,input,select { font:inherit; }
+    button,.button {
+      appearance:none; border:1px solid var(--line); border-radius:999px; padding:8px 12px;
+      background:rgba(255,255,255,.04); color:var(--text); cursor:pointer; text-decoration:none;
+      font-size:11px; font-weight:800;
+    }
+    button:hover,.button:hover { border-color:var(--cyan); color:var(--cyan); }
+    button.active { border-color:var(--gold); color:var(--gold); background:rgba(255,209,102,.09); }
+    button:disabled { opacity:.4; cursor:not-allowed; }
+    header {
+      display:flex; align-items:center; gap:18px; min-height:70px; padding:11px 18px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(90deg,rgba(255,79,163,.08),rgba(79,208,255,.05));
+    }
+    .brand { min-width:270px; }
+    .brand small { display:block; color:var(--cyan); font-size:10px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; }
+    .brand strong { display:block; margin-top:3px; font-size:20px; }
+    .intro { flex:1; color:var(--muted); font-size:12px; line-height:1.45; }
+    .intro b { color:var(--green); }
+    main { display:grid; grid-template-columns:245px minmax(0,1fr); min-height:0; }
+    aside { min-height:0; border-right:1px solid var(--line); background:rgba(16,13,37,.95); }
+    .filters { padding:13px; border-bottom:1px solid var(--line); }
+    .filters input {
+      width:100%; padding:10px; border:1px solid var(--line); border-radius:9px;
+      outline:0; background:rgba(255,255,255,.04); color:var(--text);
+    }
+    #pose-list { height:calc(100% - 98px); overflow:auto; padding:7px; }
+    .progress { padding:9px 13px; color:var(--muted); font-size:10px; border-bottom:1px solid var(--line); }
+    .progress b { color:var(--green); }
+    .pose {
+      width:100%; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; padding:10px;
+      border:1px solid transparent; border-radius:9px; background:transparent; text-align:left;
+    }
+    .pose:hover { background:rgba(255,255,255,.05); }
+    .pose.active { border-color:rgba(79,208,255,.5); background:rgba(79,208,255,.09); }
+    .pose strong,.pose small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .pose strong { font-size:12px; text-transform:capitalize; }
+    .pose small { margin-top:3px; color:var(--muted); font-size:10px; }
+    .pose .done { align-self:center; color:var(--green); font-size:10px; font-weight:900; }
+    .editor { display:grid; grid-template-rows:auto auto minmax(0,1fr) auto; min-width:0; min-height:0; }
+    .toolbar {
+      display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:9px 13px;
+      border-bottom:1px solid var(--line); background:rgba(9,7,23,.8);
+    }
+    #pose-title { margin-right:auto; font-size:14px; font-weight:900; text-transform:capitalize; }
+    .group { display:flex; align-items:center; gap:6px; padding-left:8px; border-left:1px solid var(--line); }
+    .group label { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:10px; }
+    .group input[type=range] { width:105px; accent-color:var(--pink); }
+    .group select,.group input[type=number] {
+      padding:6px 8px; border:1px solid var(--line); border-radius:7px;
+      background:var(--panel2); color:var(--text);
+    }
+    .group input[type=number] { width:65px; }
+    #erase-mode { border-color:rgba(255,79,163,.48); }
+    #restore-mode { border-color:rgba(125,242,177,.4); }
+    #save { border-color:rgba(125,242,177,.55); color:var(--green); }
+    .notice {
+      display:flex; align-items:center; justify-content:space-between; gap:14px; padding:7px 14px;
+      border-bottom:1px solid var(--line); background:rgba(255,209,102,.055);
+      color:var(--muted); font-size:10px;
+    }
+    .notice b { color:var(--gold); }
+    #save-state.ok { color:var(--green); }
+    #save-state.error { color:#ff8995; }
+    .viewport {
+      position:relative; min-height:0; overflow:auto; background-color:#080719;
+      background-image:linear-gradient(45deg,#100d25 25%,transparent 25%),linear-gradient(-45deg,#100d25 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#100d25 75%),linear-gradient(-45deg,transparent 75%,#100d25 75%);
+      background-size:24px 24px; background-position:0 0,0 12px,12px -12px,-12px 0;
+    }
+    .canvas-centering { min-width:100%; min-height:100%; display:grid; place-items:center; padding:40px; }
+    #canvas-stack { position:relative; flex:none; box-shadow:0 18px 45px rgba(0,0,0,.42); }
+    #base-canvas,#eye-preview,#region-overlay { position:absolute; inset:0; width:100%; height:100%; }
+    #base-canvas { touch-action:none; cursor:none; }
+    #eye-preview,#region-overlay { pointer-events:none; }
+    #eye-preview { object-fit:fill; }
+    .region {
+      position:absolute; border:2px dashed rgba(255,209,102,.9); border-radius:50%;
+      transform-origin:center; display:none;
+    }
+    body.show-regions .region { display:block; }
+    #brush-cursor {
+      position:fixed; display:none; z-index:50; pointer-events:none; border:1px solid white;
+      border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,.8); transform:translate(-50%,-50%);
+    }
+    .footer {
+      display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; padding:9px 13px;
+      border-top:1px solid var(--line); background:var(--panel);
+    }
+    .metric { padding:8px 10px; border:1px solid var(--line); border-radius:9px; background:rgba(255,255,255,.025); }
+    .metric small { display:block; color:var(--muted); font-size:8px; font-weight:800; text-transform:uppercase; }
+    .metric strong { display:block; margin-top:3px; color:var(--green); font-size:10px; }
+    @media(max-width:1050px) {
+      main { grid-template-columns:190px minmax(0,1fr); }
+      .intro { display:none; }
+      .toolbar { max-height:115px; overflow:auto; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><small>Project AI.ri · edición no destructiva</small><strong>Limpiador de bases oculares</strong></div>
+    <div class="intro"><b>Borrar</b> crea transparencia bajo los ojos. <b>Restaurar</b> recupera píxeles del original. Cada guardado crea una copia separada: los sprites originales nunca se sobrescriben.</div>
+    <a class="button" href="/tools">☰ Herramientas</a>
+    <a class="button" href="/preview">← Volver a alinear</a>
+  </header>
+  <main>
+    <aside>
+      <div class="filters"><input id="search" type="search" placeholder="Buscar personaje o pose…" autocomplete="off"></div>
+      <div class="progress"><b id="saved-count">0</b> de <span id="total-count">0</span> poses guardadas</div>
+      <div id="pose-list"></div>
+    </aside>
+    <section class="editor">
+      <div class="toolbar">
+        <div id="pose-title">Cargando…</div>
+        <div class="group">
+          <button id="erase-mode" class="active" type="button">⌫ Borrar</button>
+          <button id="restore-mode" type="button">↶ Restaurar</button>
+        </div>
+        <div class="group">
+          <label>Pincel <input id="brush-size" type="range" min="4" max="180" value="45"><input id="brush-number" type="number" min="4" max="180" value="45"> px</label>
+          <label>Suavidad <input id="softness" type="range" min="0" max="90" value="25"> <span id="softness-value">25%</span></label>
+        </div>
+        <div class="group">
+          <button id="undo" type="button" disabled>Deshacer</button>
+          <button id="redo" type="button" disabled>Rehacer</button>
+          <button id="restore-all" type="button">Restaurar original</button>
+        </div>
+        <div class="group">
+          <label>Zoom <input id="zoom" type="range" min="15" max="250" value="65"><span id="zoom-value">65%</span></label>
+          <button id="fit" type="button">Encajar</button>
+          <button id="focus-eyes" type="button">Centrar ojos</button>
+        </div>
+        <div class="group">
+          <label>Comprobar <select id="eye-state"><option value="none">Sin ojos</option><option value="open">Ojos abiertos</option><option value="closed">Ojos cerrados</option></select></label>
+          <label>Opacidad <input id="eye-opacity" type="range" min="10" max="100" value="100"></label>
+          <label><input id="show-regions" type="checkbox"> Regiones</label>
+        </div>
+        <button id="save" type="button">Guardar copia</button>
+      </div>
+      <div class="notice">
+        <span><b>Consejo:</b> centra los ojos, borra poco a poco y activa la capa abierta/cerrada para comprobar que el hueco queda cubierto.</span>
+        <span id="save-state">Sin cambios</span>
+      </div>
+      <div id="viewport" class="viewport">
+        <div class="canvas-centering">
+          <div id="canvas-stack">
+            <canvas id="base-canvas"></canvas>
+            <img id="eye-preview" alt="Comprobación de capa ocular">
+            <div id="region-overlay"></div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="metric"><small>Modo</small><strong id="mode-label">Borrar a transparencia</strong></div>
+        <div class="metric"><small>Lienzo</small><strong id="canvas-size">—</strong></div>
+        <div class="metric"><small>Historial</small><strong id="history-state">0 cambios</strong></div>
+        <div class="metric"><small>Salida</small><strong>base_no_eyes.webp · original intacto</strong></div>
+      </div>
+    </section>
+  </main>
+  <div id="brush-cursor"></div>
+  <script>
+    const assetVersion = Date.now();
+    const asset = path => `/${path}?v=${assetVersion}`;
+    const canvas = document.getElementById('base-canvas');
+    const context = canvas.getContext('2d',{willReadFrequently:true});
+    const originalCanvas = document.createElement('canvas');
+    const originalContext = originalCanvas.getContext('2d');
+    const stack = document.getElementById('canvas-stack');
+    const viewport = document.getElementById('viewport');
+    const eyePreview = document.getElementById('eye-preview');
+    const regionOverlay = document.getElementById('region-overlay');
+    const brushCursor = document.getElementById('brush-cursor');
+    let poses = [];
+    let savedBases = {};
+    let eyeOffsets = {};
+    let currentIndex = 0;
+    let mode = 'erase';
+    let zoom = .65;
+    let drawing = false;
+    let lastPoint = null;
+    let dirty = false;
+    let undoStack = [];
+    let redoStack = [];
+    let loadingToken = 0;
+
+    const current = () => poses[currentIndex];
+    const clamp = (value,min,max) => Math.max(min,Math.min(max,value));
+    const loadImage = source => new Promise((resolve,reject) => {
+      const image = new Image(); image.onload = () => resolve(image); image.onerror = reject; image.src = asset(source);
+    });
+
+    function setStatus(text,type='') {
+      const target = document.getElementById('save-state');
+      target.textContent = text; target.className = type;
+    }
+
+    function renderList() {
+      const query = document.getElementById('search').value.trim().toLowerCase();
+      const list = document.getElementById('pose-list');
+      list.replaceChildren();
+      poses.forEach((entry,index) => {
+        if (query && !entry.id.toLowerCase().includes(query)) return;
+        const [character,...poseParts] = entry.id.split('.');
+        const button = document.createElement('button');
+        button.type='button'; button.className=`pose${index===currentIndex?' active':''}`;
+        button.innerHTML='<span><strong></strong><small></small></span><span class="done"></span>';
+        button.querySelector('strong').textContent=character.replaceAll('_',' ');
+        button.querySelector('small').textContent=poseParts.join('.');
+        button.querySelector('.done').textContent=savedBases[entry.id]?'✓':'';
+        button.addEventListener('click',()=>requestPose(index));
+        list.appendChild(button);
+      });
+      document.getElementById('saved-count').textContent=Object.keys(savedBases).length;
+      document.getElementById('total-count').textContent=poses.length;
+      requestAnimationFrame(()=>list.querySelector('.active')?.scrollIntoView({block:'nearest'}));
+    }
+
+    function setMode(next) {
+      mode=next;
+      document.getElementById('erase-mode').classList.toggle('active',mode==='erase');
+      document.getElementById('restore-mode').classList.toggle('active',mode==='restore');
+      document.getElementById('mode-label').textContent=mode==='erase'?'Borrar a transparencia':'Restaurar desde original';
+    }
+
+    function brushSize() { return Number(document.getElementById('brush-size').value); }
+    function softness() { return Number(document.getElementById('softness').value)/100; }
+
+    function setZoom(next) {
+      zoom=clamp(next,.15,2.5);
+      document.getElementById('zoom').value=Math.round(zoom*100);
+      document.getElementById('zoom-value').textContent=`${Math.round(zoom*100)}%`;
+      stack.style.width=`${canvas.width*zoom}px`; stack.style.height=`${canvas.height*zoom}px`;
+      updateEyePreview(); updateBrushCursorSize();
+    }
+
+    function fitCanvas() {
+      if (!canvas.width) return;
+      const availableWidth=Math.max(100,viewport.clientWidth-90);
+      const availableHeight=Math.max(100,viewport.clientHeight-90);
+      setZoom(Math.min(availableWidth/canvas.width,availableHeight/canvas.height,1));
+    }
+
+    function focusEyes() {
+      const entry=current(); if(!entry) return;
+      setZoom(Math.max(zoom,1.25));
+      requestAnimationFrame(()=>{
+        const xs=entry.data.regions.flatMap(region=>[region.cx-region.rx,region.cx+region.rx]);
+        const ys=entry.data.regions.flatMap(region=>[region.cy-region.ry,region.cy+region.ry]);
+        const centerX=(Math.min(...xs)+Math.max(...xs))/2*canvas.width*zoom;
+        const centerY=(Math.min(...ys)+Math.max(...ys))/2*canvas.height*zoom;
+        viewport.scrollLeft=centerX-viewport.clientWidth/2+40;
+        viewport.scrollTop=centerY-viewport.clientHeight/2+40;
+      });
+    }
+
+    function renderRegions() {
+      regionOverlay.replaceChildren();
+      const entry=current(); if(!entry) return;
+      entry.data.regions.forEach(region=>{
+        const marker=document.createElement('i'); marker.className='region';
+        marker.style.left=`${(region.cx-region.rx)*100}%`;
+        marker.style.top=`${(region.cy-region.ry)*100}%`;
+        marker.style.width=`${region.rx*200}%`; marker.style.height=`${region.ry*200}%`;
+        marker.style.transform=`rotate(${region.rotation||0}deg)`;
+        regionOverlay.appendChild(marker);
+      });
+    }
+
+    function updateEyePreview() {
+      const entry=current(); if(!entry) return;
+      const state=document.getElementById('eye-state').value;
+      eyePreview.style.display=state==='none'?'none':'block';
+      if(state!=='none') {
+        eyePreview.src=asset(state==='open'?entry.data.eyesOpen:entry.data.eyesClosed);
+        const offset=eyeOffsets[entry.id]?.[state]||[0,0];
+        eyePreview.style.transform=`translate(${offset[0]*zoom}px,${offset[1]*zoom}px)`;
+      }
+      eyePreview.style.opacity=Number(document.getElementById('eye-opacity').value)/100;
+    }
+
+    function snapshot(reset=false) {
+      const image=context.getImageData(0,0,canvas.width,canvas.height);
+      if(reset) undoStack=[image]; else {
+        undoStack.push(image); if(undoStack.length>14) undoStack.shift();
+      }
+      redoStack=[]; updateHistory();
+    }
+
+    function updateHistory() {
+      document.getElementById('undo').disabled=undoStack.length<=1;
+      document.getElementById('redo').disabled=!redoStack.length;
+      document.getElementById('history-state').textContent=`${Math.max(0,undoStack.length-1)} cambios`;
+    }
+
+    function undo() {
+      if(undoStack.length<=1)return;
+      redoStack.push(undoStack.pop()); context.putImageData(undoStack.at(-1),0,0);
+      dirty=undoStack.length>1;
+      setStatus(
+        dirty?'Cambio sin guardar':(savedBases[current().id]?'Copia guardada cargada':'Original cargado'),
+        dirty?'':(savedBases[current().id]?'ok':'')
+      );
+      updateHistory();
+    }
+    function redo() {
+      if(!redoStack.length)return;
+      const image=redoStack.pop(); undoStack.push(image); context.putImageData(image,0,0);
+      dirty=true; setStatus('Cambio sin guardar'); updateHistory();
+    }
+
+    function canvasPoint(event) {
+      const rect=canvas.getBoundingClientRect();
+      return {x:(event.clientX-rect.left)*canvas.width/rect.width,y:(event.clientY-rect.top)*canvas.height/rect.height};
+    }
+
+    function dab(point) {
+      const radius=brushSize()/2;
+      if(mode==='erase') {
+        context.save(); context.globalCompositeOperation='destination-out';
+        const gradient=context.createRadialGradient(point.x,point.y,0,point.x,point.y,radius);
+        const hardStop=clamp(1-softness(),.05,.98);
+        gradient.addColorStop(0,'rgba(0,0,0,1)'); gradient.addColorStop(hardStop,'rgba(0,0,0,1)'); gradient.addColorStop(1,'rgba(0,0,0,0)');
+        context.fillStyle=gradient; context.beginPath(); context.arc(point.x,point.y,radius,0,Math.PI*2); context.fill(); context.restore();
+      } else {
+        context.save(); context.beginPath(); context.arc(point.x,point.y,radius,0,Math.PI*2); context.clip();
+        context.globalCompositeOperation='source-over'; context.drawImage(originalCanvas,0,0); context.restore();
+      }
+    }
+
+    function stroke(from,to) {
+      const distance=Math.hypot(to.x-from.x,to.y-from.y);
+      const steps=Math.max(1,Math.ceil(distance/Math.max(1,brushSize()*.18)));
+      for(let index=1;index<=steps;index++) dab({x:from.x+(to.x-from.x)*index/steps,y:from.y+(to.y-from.y)*index/steps});
+    }
+
+    function updateBrushCursorSize() {
+      const size=brushSize()*zoom; brushCursor.style.width=`${size}px`; brushCursor.style.height=`${size}px`;
+    }
+
+    async function loadPose(index,focus=false) {
+      const token=++loadingToken; currentIndex=index; dirty=false; setStatus('Cargando…'); renderList();
+      const entry=current(); document.getElementById('pose-title').textContent=entry.id.replace('.', ' · ');
+      const original=await loadImage(entry.data.base);
+      const workingPath=savedBases[entry.id]?.cleanedBase||entry.data.base;
+      const working=workingPath===entry.data.base?original:await loadImage(workingPath);
+      if(token!==loadingToken)return;
+      canvas.width=originalCanvas.width=entry.data.canvas.width;
+      canvas.height=originalCanvas.height=entry.data.canvas.height;
+      originalContext.clearRect(0,0,originalCanvas.width,originalCanvas.height); originalContext.drawImage(original,0,0);
+      context.clearRect(0,0,canvas.width,canvas.height); context.drawImage(working,0,0);
+      document.getElementById('canvas-size').textContent=`${canvas.width}×${canvas.height} px`;
+      snapshot(true); renderRegions(); updateEyePreview(); fitCanvas();
+      if(focus)focusEyes();
+      setStatus(savedBases[entry.id]?'Copia guardada cargada':'Original cargado',savedBases[entry.id]?'ok':'');
+    }
+
+    function requestPose(index) {
+      if(index===currentIndex)return;
+      if(dirty&&!window.confirm('Esta pose tiene cambios sin guardar. ¿Cambiar de pose y descartarlos?'))return;
+      loadPose(index,true);
+    }
+
+    async function saveCurrent() {
+      const entry=current(); if(!entry)return;
+      setStatus('Guardando…'); document.getElementById('save').disabled=true;
+      try {
+        const response=await fetch('/api/clean-base',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({id:entry.id,image:canvas.toDataURL('image/png')})
+        });
+        const result=await response.json();
+        if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo guardar');
+        savedBases[entry.id]=result; dirty=false; setStatus('Copia guardada','ok'); renderList();
+      }catch(error){setStatus(error.message,'error');}
+      finally{document.getElementById('save').disabled=false;}
+    }
+
+    canvas.addEventListener('pointerdown',event=>{
+      if(event.button!==0)return; event.preventDefault(); canvas.setPointerCapture(event.pointerId);
+      drawing=true; lastPoint=canvasPoint(event); dab(lastPoint); dirty=true; setStatus('Cambio sin guardar');
+    });
+    canvas.addEventListener('pointermove',event=>{
+      brushCursor.style.display='block'; brushCursor.style.left=`${event.clientX}px`; brushCursor.style.top=`${event.clientY}px`;
+      if(!drawing)return; const next=canvasPoint(event); stroke(lastPoint,next); lastPoint=next;
+    });
+    const finishStroke=event=>{if(!drawing)return; drawing=false; lastPoint=null; snapshot();};
+    canvas.addEventListener('pointerup',finishStroke); canvas.addEventListener('pointercancel',finishStroke);
+    canvas.addEventListener('pointerleave',()=>{brushCursor.style.display='none';});
+    canvas.addEventListener('pointerenter',event=>{brushCursor.style.display='block'; brushCursor.style.left=`${event.clientX}px`; brushCursor.style.top=`${event.clientY}px`;});
+
+    document.getElementById('erase-mode').addEventListener('click',()=>setMode('erase'));
+    document.getElementById('restore-mode').addEventListener('click',()=>setMode('restore'));
+    document.getElementById('undo').addEventListener('click',undo);
+    document.getElementById('redo').addEventListener('click',redo);
+    document.getElementById('restore-all').addEventListener('click',()=>{
+      context.clearRect(0,0,canvas.width,canvas.height); context.drawImage(originalCanvas,0,0); dirty=true; snapshot(); setStatus('Original restaurado sin guardar');
+    });
+    document.getElementById('save').addEventListener('click',saveCurrent);
+    document.getElementById('brush-size').addEventListener('input',event=>{document.getElementById('brush-number').value=event.target.value;updateBrushCursorSize();});
+    document.getElementById('brush-number').addEventListener('input',event=>{const value=clamp(Number(event.target.value)||4,4,180);document.getElementById('brush-size').value=value;updateBrushCursorSize();});
+    document.getElementById('softness').addEventListener('input',event=>document.getElementById('softness-value').textContent=`${event.target.value}%`);
+    document.getElementById('zoom').addEventListener('input',event=>setZoom(Number(event.target.value)/100));
+    document.getElementById('fit').addEventListener('click',fitCanvas);
+    document.getElementById('focus-eyes').addEventListener('click',focusEyes);
+    document.getElementById('eye-state').addEventListener('change',updateEyePreview);
+    document.getElementById('eye-opacity').addEventListener('input',updateEyePreview);
+    document.getElementById('show-regions').addEventListener('change',event=>document.body.classList.toggle('show-regions',event.target.checked));
+    document.getElementById('search').addEventListener('input',renderList);
+    window.addEventListener('resize',()=>{if(canvas.width)fitCanvas();});
+    window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
+
+    Promise.all([
+      fetch(`/assets/metadata/blink_eye_layers_clean.json?v=${assetVersion}`,{cache:'no-store'}).then(response=>response.json()),
+      fetch('/api/clean-bases',{cache:'no-store'}).then(response=>response.json()),
+      fetch('/api/clean-offsets',{cache:'no-store'}).then(response=>response.json())
+    ]).then(([metadata,bases,offsets])=>{
+      savedBases=bases.poses||{}; eyeOffsets=offsets.offsets||{};
+      poses=Object.entries(metadata.poses||{}).map(([id,data])=>({id,data}));
+      const requested=decodeURIComponent(location.hash.slice(1))||new URLSearchParams(location.search).get('id');
+      const selected=Math.max(0,poses.findIndex(entry=>entry.id===requested));
+      renderList(); loadPose(selected,true);
+    }).catch(error=>setStatus(error.message,'error'));
+  </script>
+</body>
+</html>

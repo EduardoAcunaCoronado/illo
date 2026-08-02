@@ -20,7 +20,7 @@
             }
           ],
           "character": "3C",
-          "text": "Una tarde cualquiera se despierta un lobo..."
+          "text": "Una tarde cualquiera, Samu despierta convencido de que sigue siendo Samu. El espejo aún no ha presentado alegaciones."
         },
         {
           "character": "Samu",
@@ -47,7 +47,7 @@
         },
         {
           "character": "Samu",
-          "text": "Supongo que uno no puede fiarse de la IA (ni siquiera para hacer este juego XD)",
+          "text": "Supongo que confiarle la hora a una IA no podía salir mal. Frase que seguro envejece estupendamente.",
           "actions": [
             {
               "type": "showCharacter",
@@ -71,7 +71,7 @@
         },
         {
           "character": "Samu",
-          "text": "Oh, no. ¡Soy un therian!",
+          "text": "¿Soy un therian? No, espera... ese hocico es mío. ¡Tengo hocico de verdad!",
           "textAnimation": true,
           "actions": [
             {
@@ -79,11 +79,8 @@
               "value": "assets/images/backgrounds/chapter1/bathroom.png"
             },
             {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised",
-              "flipped": true
+              "type": "removeCharacter",
+              "character": "samu"
             }
           ]
         },
@@ -101,6 +98,25 @@
               "position": "left",
               "pose": "happy",
               "flipped": false
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "No me duele nada. Las garras responden, la cola también y mi cuerpo está convencidísimo de que siempre fue así. Yo, en cambio, tengo preguntas.",
+          "actions": [
+            {
+              "type": "animateCharacter",
+              "character": "samu",
+              "position": "left",
+              "poses": [
+                "surprised",
+                "curious",
+                "thinking"
+              ],
+              "frameMs": 260,
+              "loop": false,
+              "untilAdvance": false
             }
           ]
         },
@@ -307,14 +323,50 @@
           ]
         },
         {
+          "character": "3C",
+          "text": "Durante un solo fotograma, Edu desaparece. En la pantalla sonríe un husky de traje negro; en la solapa lleva un alfiler rojo. Después vuelve la interferencia.",
+          "textSpeed": "slow",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "elion_husk",
+              "position": "right",
+              "pose": "shadow"
+            },
+            {
+              "type": "characterGlitch",
+              "character": "elion_husk",
+              "position": "right",
+              "duration": 900
+            },
+            {
+              "type": "flash",
+              "color": "rgba(190, 20, 35, 0.18)",
+              "duration": 160
+            }
+          ]
+        },
+        {
           "character": "Samu",
-          "text": "¿Qué ha sido eso...? Por un momento Edu se parecía a Zip en aquella foto. Bah, habrá sido la cobertura.",
+          "text": "¿Quién era ese...? No era Edu. Bah, habrá sido la cobertura. Una cobertura con sastre, por lo visto.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
               "pose": "worried"
+            },
+            {
+              "type": "showCharacter",
+              "character": "iphone5",
+              "position": "right",
+              "pose": "edu_humano"
+            },
+            {
+              "type": "characterGlitch",
+              "character": "iphone5",
+              "position": "right",
+              "duration": 620
             }
           ]
         },
@@ -324,13 +376,17 @@
             {
               "type": "removeCharacter",
               "character": "iphone5"
-            },
+            }
+          ],
+          "text": "Incidencia abierta: amigo ausente, fábrica imposible y un husky de traje que no figura en el reparto. Nexo, guarda dos veces."
+        },
+        {
+          "actions": [
             {
               "type": "goToScene",
               "value": "Fin del Capítulo 1"
             }
-          ],
-          "text": "Samu se dispone a ir hacia Kingdom Ketchup. Su cumpleaños está a punto de cambiar para siempre."
+          ]
         }
       ]
     },
@@ -352,16 +408,12 @@
               "id": "bg_music"
             },
             {
-              "type": "rescue",
-              "character": "edu"
-            },
-            {
               "type": "setNextChapter",
               "value": "chapter2"
             }
           ],
           "character": "3C",
-          "text": "Y así, sin esperárselo, el cumpleaños de Samu toma un giro inesperado. La aventura de Samu apenas comienza..."
+          "text": "Expediente uno cerrado. Samu sale a buscar a Edu. Su cumpleaños, mientras tanto, acaba de solicitar horas extra."
         }
       ]
     }

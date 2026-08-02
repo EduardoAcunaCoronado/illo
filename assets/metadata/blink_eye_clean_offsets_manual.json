@@ -1,0 +1,123 @@
+{
+  "version": 2,
+  "offsets": {
+    "3c.angry": {
+      "open": [
+        1,
+        -2
+      ],
+      "closed": [
+        1,
+        -1
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "airi.angry": {
+      "open": [
+        0,
+        0
+      ],
+      "closed": [
+        -2,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0063,
+        1.0
+      ]
+    },
+    "airi.bua": {
+      "open": [
+        0,
+        0
+      ],
+      "closed": [
+        -5,
+        0
+      ]
+    },
+    "airi.pray": {
+      "open": [
+        0,
+        0
+      ],
+      "closed": [
+        2,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0269,
+        1.0
+      ]
+    },
+    "airi.sad": {
+      "open": [
+        0,
+        0
+      ],
+      "closed": [
+        -2,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0254,
+        1.0
+      ]
+    },
+    "airi.surprised": {
+      "open": [
+        0,
+        0
+      ],
+      "closed": [
+        -3,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0387,
+        1.0
+      ]
+    },
+    "airi.thinking": {
+      "open": [
+        0,
+        0
+      ],
+      "closed": [
+        -2,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0267,
+        1.0
+      ]
+    }
+  }
+}

@@ -16,6 +16,8 @@ class VisualNovelEngine {
         this.speakingCharacter = null;
         this.speakingPosition = null;
         this.characterPositions = {}; // Rastrear qué personaje está en qué posición
+        this.stageCharacters = {}; // Pose/flip por hueco para restaurar escenas visitadas
+        this.currentBackgroundPath = null;
         this._charColorMissing = new Set(); // Claves de personaje sin ficha (evita 404 repetidos al colorear el nombre)
         this.audioInstances = {}; // Rastrear instancias de audio
         this.currentMusic = null; // Música de fondo actual
@@ -25,6 +27,15 @@ class VisualNovelEngine {
         this.rescued = []; // Personajes rescatados, en orden (persiste entre capítulos)
         this.inventory = []; // Objetos conseguidos (p. ej. 'diapason'); persiste entre capítulos
         this.storyDelay = 0; // Retraso acumulado por las decisiones de ruta dentro de un capítulo
+        // Presión narrativa acumulada entre capítulos. Las decisiones lentas de
+        // Furrielva deben poder endurecer la huida de Ecchi Land; antes se
+        // borraban tanto al cargar como al cerrar cada capítulo.
+        this.storyPressure = 0;
+        this._characterPoseAnimations = new Map();
+        // Animaciones internas de una pose (parpadeo o efecto ocular/pantalla). Cada
+        // fotograma es un sprite completo y sustituye al anterior; nunca se
+        // superponen dos personajes en el mismo hueco.
+        this._characterFrameAnimations = new Map();
         this.debugMode = false; // Modo debug para testing
         // Sello de caché fijo para toda la sesión (ver cacheBustAsset)
         this.assetStamp = Date.now();
@@ -74,7 +85,10 @@ class VisualNovelEngine {
             this.sceneHistory = [];
             this._lastSeenScene = null;
             this.nextChapter = null; // Limpiar la ruta al cargar un capítulo nuevo
-            this.storyDelay = 0; // Reiniciar el retraso acumulado en cada capítulo
+            // storyDelay se conserva como alias histórico, pero la fuente de
+            // verdad entre capítulos es storyPressure. Al cargar una escena se
+            // recupera la presión acumulada en vez de olvidar las decisiones.
+            this.storyDelay = this.storyPressure;
 
             if (isNewChapter) {
                 await this.playChapterIntro(chapter);
@@ -175,6 +189,15 @@ class VisualNovelEngine {
             case 'setPose':
                 this.setPose(action.character, action.position, action.pose);
                 break;
+            case 'animateCharacter':
+            case 'characterAnimation':
+            case 'poseSequence':
+                this.startCharacterPoseAnimation(action);
+                break;
+            case 'stopCharacterAnimation':
+            case 'stopPoseSequence':
+                this.stopCharacterPoseAnimation(action.character, action.position);
+                break;
             case 'characterGlitch':
             case 'glitchCharacter':
                 this.triggerCharacterGlitch(action.character, action.position, action.duration);
@@ -242,9 +265,11 @@ class VisualNovelEngine {
                 break;
             case 'setDelay':
                 this.storyDelay = action.value || 0;
+                this.storyPressure = this.storyDelay;
                 break;
             case 'addDelay':
                 this.storyDelay += (action.value || 0);
+                this.storyPressure = this.storyDelay;
                 break;
             case 'goToScene':
                 this.jumpToScene(action.value);
@@ -467,6 +492,7 @@ class VisualNovelEngine {
     // Vaciar el fondo del todo (lo usa el final del compi en cap. 6/créditos)
     clearBackground() {
         this.bgPan({ reset: true });
+        this.currentBackgroundPath = null;
         const bg = document.getElementById('background');
         const bgB = document.getElementById('background-b');
         if (bg) bg.style.backgroundImage = '';
@@ -1051,7 +1077,7 @@ class VisualNovelEngine {
         });
     }
 
-    // Créditos finales del compi (credits-minigame.js). Solo en el final bueno.
+    // Créditos finales del compi (credits-minigame.js). Solo tras cerrar el núcleo.
     async playCreditsMinigame(options = {}) {
         this.isWaitingForInput = false;
 
@@ -5264,6 +5290,13 @@ class VisualNovelEngine {
             bgB.id = 'background-b';
             bgB.className = 'background background-b';
             const bg = document.getElementById('background');
+            // Heredar el etalonaje vigente: Juice puede haberlo aplicado antes
+            // de que esta segunda capa existiera.
+            if (bg) {
+                bgB.style.filter = (window.Juice && typeof window.Juice.currentGrade === 'function')
+                    ? window.Juice.currentGrade()
+                    : (bg.style.filter || getComputedStyle(bg).filter || 'none');
+            }
             if (bg && bg.nextSibling) gc.insertBefore(bgB, bg.nextSibling);
             else gc.appendChild(bgB);
         }
@@ -5288,6 +5321,7 @@ class VisualNovelEngine {
     // Con { cut: true } se comporta como antes (corte seco intencionado).
     setBackground(imagePath, opts = {}) {
         const bg = document.getElementById('background');
+        this.currentBackgroundPath = imagePath || null;
         const url = `url('${this.cacheBustAsset(imagePath)}')`;
         // Resetear cualquier Ken Burns anterior al cambiar de fondo
         this.bgPan({ reset: true });
@@ -5307,6 +5341,13 @@ class VisualNovelEngine {
         // Pintar el nuevo fondo en la capa B y fundirla por encima
         bgB.style.transition = 'none';
         bgB.style.opacity = '0';
+        // La capa A puede estar a mitad de una transición de etalonaje y su
+        // `style.filter` no representa necesariamente el estado narrativo.
+        // Juice conserva ese estado explícitamente para que B nunca entre con
+        // `filter: none` durante el primer fotograma del crossfade.
+        bgB.style.filter = (window.Juice && typeof window.Juice.currentGrade === 'function')
+            ? window.Juice.currentGrade()
+            : (bg.style.filter || getComputedStyle(bg).filter || 'none');
         bgB.style.backgroundImage = url;
         // Forzar reflow para que la transición arranque desde 0
         void bgB.offsetWidth;
@@ -5331,12 +5372,14 @@ class VisualNovelEngine {
                     : (typeof action.from === 'string' && action.from !== 'black') ? action.from
                     : '#000';
         fader.style.background = color;
-        fader.style.transition = `opacity ${dur}ms ease`;
         const goingDark = action.from == null; // "to" (u omitido) = oscurecer
-        // Estado inicial coherente
-        if (goingDark && fader.style.opacity === '') fader.style.opacity = '0';
-        if (!goingDark && fader.style.opacity === '') fader.style.opacity = '1';
+        // Cada acción declara su propio punto de partida. Es imprescindible al
+        // saltar/retroceder: clearStage deja el telón a 0 y un `from` heredado
+        // acabaría animando 0→0 sin llegar a verse.
+        fader.style.transition = 'none';
+        fader.style.opacity = goingDark ? '0' : '1';
         void fader.offsetWidth;
+        fader.style.transition = `opacity ${dur}ms ease`;
         fader.style.opacity = goingDark ? '1' : '0';
         fader.style.pointerEvents = goingDark ? 'auto' : 'none';
         return new Promise(r => setTimeout(r, dur + 40));
@@ -5476,6 +5519,167 @@ class VisualNovelEngine {
         return key;
     }
 
+    getCharacterPoseImage(character, pose) {
+        if (!character) return null;
+        const selected = character.poses && character.poses[pose] != null
+            ? character.poses[pose]
+            : (character.poses && character.poses[character.defaultPose] != null)
+            ? character.poses[character.defaultPose]
+            : character.image || character.poses?.neutral;
+        if (typeof selected === 'string') return selected;
+        if (selected && typeof selected === 'object') {
+            return selected.src || selected.image || selected.frames?.[0]?.src || selected.frames?.[0] || null;
+        }
+        return null;
+    }
+
+    // Un cambio de pose es un reemplazo limpio. La versión anterior creaba una
+    // segunda capa con el sprite viejo; si la clase de animación se retiraba
+    // antes de tiempo, esa copia quedaba visible detrás del personaje nuevo.
+    // Las animaciones reales se reproducen ahora con sprites consecutivos.
+    applyCharacterPoseImage(charElement, poseImage) {
+        if (!charElement || !poseImage) return;
+        const nextPoseSrc = this.cacheBustAsset(poseImage);
+        const nextImage = `url('${nextPoseSrc}')`;
+        clearTimeout(charElement._poseTransitionTimer);
+        charElement._poseTransitionTimer = null;
+        charElement.querySelectorAll(':scope > .character-pose-ghost').forEach(ghost => ghost.remove());
+        charElement.classList.remove('pose-transitioning');
+        delete charElement.dataset.poseTransition;
+        charElement.style.backgroundImage = nextImage;
+        charElement.dataset.poseSrc = nextPoseSrc;
+        delete charElement.dataset.frameSrc;
+    }
+
+    applyCharacterAnimationFrame(charElement, framePath) {
+        if (!charElement || !framePath) return;
+        const src = this.cacheBustAsset(framePath);
+        charElement.style.backgroundImage = `url('${src}')`;
+        charElement.dataset.frameSrc = src;
+    }
+
+    animationFramePath(character, frame) {
+        const value = frame && typeof frame === 'object'
+            ? (frame.src || frame.image || frame.pose)
+            : frame;
+        if (!value) return null;
+        return character.poses?.[value]
+            ? this.getCharacterPoseImage(character, value)
+            : value;
+    }
+
+    animationDelay(value, fallback = 2400) {
+        if (Array.isArray(value) && value.length) {
+            const min = Math.max(0, Number(value[0]) || 0);
+            const max = Math.max(min, Number(value[1]) || min);
+            return min + Math.random() * (max - min);
+        }
+        const parsed = Number(value);
+        return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+    }
+
+    // Reproduce fotogramas pertenecientes a UNA misma pose. La pose base queda
+    // visible durante la espera y cada frame reemplaza por completo el fondo;
+    // no hay crossfade, pseudo-elementos ni capas gemelas.
+    startCharacterFrameAnimation(characterKey, position, pose) {
+        this.stopCharacterFrameAnimation(position, false);
+        const character = this.characters[characterKey];
+        const config = character?.animations?.[pose] || character?.poseAnimations?.[pose];
+        const reducedMotion = (window.Juice && typeof window.Juice.isReduced === 'function'
+            && window.Juice.isReduced()) || (window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        if (!config || reducedMotion) return;
+
+        const sourceFrames = Array.isArray(config) ? config : config.frames;
+        if (!Array.isArray(sourceFrames) || !sourceFrames.length) return;
+        const frames = sourceFrames.map(frame => ({
+            src: this.animationFramePath(character, frame),
+            duration: frame && typeof frame === 'object' ? Number(frame.duration) : NaN
+        })).filter(frame => frame.src);
+        if (!frames.length) return;
+
+        const basePoseImage = this.getCharacterPoseImage(character, pose);
+        const entry = {
+            character: characterKey,
+            position,
+            pose,
+            basePoseImage,
+            frames,
+            timer: null,
+            cancelled: false
+        };
+        this._characterFrameAnimations.set(position, entry);
+
+        const stillOwnsSlot = () => {
+            const element = document.getElementById(`character-${position}`);
+            return element && element.classList.contains('active') &&
+                element.getAttribute('data-character') === characterKey &&
+                element.dataset.pose === String(pose).toLowerCase().replace(/[^a-z0-9_-]/g, '') &&
+                this._characterFrameAnimations.get(position) === entry;
+        };
+
+        const scheduleBurst = () => {
+            if (!stillOwnsSlot()) {
+                this.stopCharacterFrameAnimation(position, false);
+                return;
+            }
+            const wait = this.animationDelay(
+                config.delayRange || config.idleRange || config.loopDelay || [1800, 4200],
+                Number(config.delayMs) || 2400
+            );
+            entry.timer = setTimeout(playFrame, wait);
+        };
+
+        let index = 0;
+        const playFrame = () => {
+            if (!stillOwnsSlot()) {
+                this.stopCharacterFrameAnimation(position, false);
+                return;
+            }
+            const element = document.getElementById(`character-${position}`);
+            const frame = frames[index];
+            this.applyCharacterAnimationFrame(element, frame.src);
+            const duration = Number.isFinite(frame.duration) && frame.duration > 0
+                ? frame.duration
+                : Math.max(40, Number(config.frameMs) || 85);
+            index += 1;
+            if (index < frames.length) {
+                entry.timer = setTimeout(playFrame, duration);
+                return;
+            }
+
+            entry.timer = setTimeout(() => {
+                if (!stillOwnsSlot()) return;
+                this.applyCharacterAnimationFrame(element, basePoseImage);
+                delete element.dataset.frameSrc;
+                index = 0;
+                if (config.loop === false) {
+                    this._characterFrameAnimations.delete(position);
+                } else {
+                    scheduleBurst();
+                }
+            }, duration);
+        };
+
+        this.preloadImages(frames.map(frame => frame.src)).then(() => {
+            if (this._characterFrameAnimations.get(position) === entry) scheduleBurst();
+        });
+    }
+
+    stopCharacterFrameAnimation(position, restoreBase = true) {
+        if (!position) return;
+        const entry = this._characterFrameAnimations.get(position);
+        if (!entry) return;
+        clearTimeout(entry.timer);
+        entry.cancelled = true;
+        this._characterFrameAnimations.delete(position);
+        const element = document.getElementById(`character-${position}`);
+        if (restoreBase && element && element.classList.contains('active') && entry.basePoseImage) {
+            this.applyCharacterAnimationFrame(element, entry.basePoseImage);
+        }
+        if (element) delete element.dataset.frameSrc;
+    }
+
     async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null) {
         const characterKey = this.getCharacterKey(characterName);
         let character = this.characters[characterKey];
@@ -5484,15 +5688,35 @@ class VisualNovelEngine {
         }
         if (!character) return;
 
+        const previousPosition = this.characterPositions[characterKey];
+        if (previousPosition && previousPosition !== position) {
+            this.hideCharacter(characterKey, previousPosition);
+        }
+
         const charElement = document.getElementById(`character-${position}`);
         if (charElement) {
-            const poseImage = character.poses && character.poses[pose]
-                ? character.poses[pose]
-                : (character.poses && character.poses[character.defaultPose])
-                ? character.poses[character.defaultPose]
-                : character.image || character.poses?.neutral;
+            // Un hueco solo puede pertenecer a un personaje. Limpiamos el
+            // ocupante anterior y cualquier salida/acting pendiente antes de
+            // reutilizarlo para evitar mappings fantasma y borrados tardíos.
+            const currentOccupant = charElement.getAttribute('data-character');
+            if (currentOccupant !== characterKey) {
+                this.resetCharacterSlotElement(charElement, position);
+            } else {
+                clearTimeout(charElement._exitTimer);
+                charElement._exitTimer = null;
+                charElement.classList.remove('char-exit-fade');
+                this.stopCharacterPoseAnimation(null, position);
+                this.stopCharacterFrameAnimation(position, false);
+            }
+            for (const key of Object.keys(this.characterPositions)) {
+                if (this.characterPositions[key] === position) {
+                    delete this.characterPositions[key];
+                }
+            }
 
-            charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
+            const poseImage = this.getCharacterPoseImage(character, pose);
+
+            this.applyCharacterPoseImage(charElement, poseImage);
             this.applyPoseClass(charElement, pose);
             charElement.classList.add('active');
             charElement.setAttribute('data-character', characterKey);
@@ -5513,11 +5737,21 @@ class VisualNovelEngine {
                 charElement.classList.remove('char-enter-right','char-enter-left','char-enter-bottom','char-enter-fade');
                 void charElement.offsetWidth;
                 charElement.classList.add(cls);
-                setTimeout(() => charElement.classList.remove(cls), 550);
+                clearTimeout(charElement._enterTimer);
+                charElement._enterTimer = setTimeout(() => {
+                    charElement.classList.remove(cls);
+                    charElement._enterTimer = null;
+                }, 550);
             }
 
             // Rastrear posición del personaje
             this.characterPositions[characterKey] = position;
+            this.stageCharacters[position] = {
+                character: characterKey,
+                pose,
+                flipped: !!flipped
+            };
+            this.startCharacterFrameAnimation(characterKey, position, pose);
         }
         this.layoutCharacters();
     }
@@ -5560,26 +5794,99 @@ class VisualNovelEngine {
         });
     }
 
-    setPose(characterName, position, pose = 'neutral') {
+    setPose(characterName, position, pose = 'neutral', options = {}) {
         const characterKey = this.getCharacterKey(characterName);
         const character = this.characters[characterKey];
         if (!character) return;
 
         const charElement = document.getElementById(`character-${position}`);
         if (charElement && charElement.classList.contains('active')) {
-            const poseImage = character.poses && character.poses[pose]
-                ? character.poses[pose]
-                : (character.poses && character.poses[character.defaultPose])
-                ? character.poses[character.defaultPose]
-                : character.image || character.poses?.neutral;
+            this.stopCharacterFrameAnimation(position, false);
+            const poseImage = this.getCharacterPoseImage(character, pose);
 
-            charElement.style.backgroundImage = `url('${this.cacheBustAsset(poseImage)}')`;
+            this.applyCharacterPoseImage(charElement, poseImage);
             this.applyPoseClass(charElement, pose);
 
             // Manejar video integrado si la pose tiene un video asociado (compañeros)
             const videoPath = character.poses && character.poses[`${pose}_video`];
             this.updateCharacterVideo(charElement, videoPath);
+            const visual = this.stageCharacters[position];
+            if (visual) visual.pose = pose;
+            if (options.animateFrames !== false) {
+                this.startCharacterFrameAnimation(characterKey, position, pose);
+            }
         }
+    }
+
+    // Secuencia declarativa de poses. Permite pequeños acting loops usando los
+    // sprites ya disponibles: parpadeos, respiración, nervios o sacudidas. Por
+    // defecto vive hasta que el jugador avanza la línea; también admite una
+    // secuencia finita con loop:false.
+    startCharacterPoseAnimation(action = {}) {
+        const characterName = action.character;
+        const characterKey = this.getCharacterKey(characterName);
+        const position = action.position || this.characterPositions[characterKey];
+        const poses = (action.poses || action.frames || []).filter(Boolean);
+        if (!position || !poses.length) return;
+
+        this.stopCharacterPoseAnimation(characterKey, position);
+        const reducedMotion = (window.Juice && typeof window.Juice.isReduced === 'function'
+            && window.Juice.isReduced()) || (window.matchMedia &&
+            window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        if (reducedMotion) {
+            // Las secuencias son animación real basada en temporizadores; el
+            // media query CSS no puede detenerlas. Dejamos un fotograma legible.
+            this.setPose(characterKey, position, poses[0], { animateFrames: false });
+            return;
+        }
+        this.stopCharacterFrameAnimation(position, false);
+        const frameMs = Math.max(90, Number(action.frameMs || action.duration) || 360);
+        const loop = action.loop !== false;
+        const pingPong = !!action.pingPong && poses.length > 2;
+        const sequence = pingPong
+            ? [...poses, ...poses.slice(1, -1).reverse()]
+            : [...poses];
+        let index = 0;
+
+        const entry = {
+            character: characterKey,
+            position,
+            untilAdvance: action.untilAdvance !== false,
+            timer: null
+        };
+        const tick = () => {
+            const element = document.getElementById(`character-${position}`);
+            if (!element || !element.classList.contains('active')) {
+                this.stopCharacterPoseAnimation(characterKey, position);
+                return;
+            }
+            // Una secuencia ya aporta movimiento cuadro a cuadro. Evitamos el
+            // fundido largo de expresión, que solaparía varios fotogramas.
+            this.setPose(characterKey, position, sequence[index], { animateFrames: false });
+            index += 1;
+            if (index >= sequence.length) {
+                if (!loop) {
+                    this._characterPoseAnimations.delete(position);
+                    return;
+                }
+                index = 0;
+            }
+            entry.timer = setTimeout(tick, frameMs);
+        };
+
+        this._characterPoseAnimations.set(position, entry);
+        if (action.immediate === false) entry.timer = setTimeout(tick, frameMs);
+        else tick();
+    }
+
+    stopCharacterPoseAnimation(characterName, position) {
+        const key = characterName ? this.getCharacterKey(characterName) : null;
+        const trackedPosition = position || (key && this.characterPositions[key]);
+        if (!trackedPosition) return;
+        const entry = this._characterPoseAnimations.get(trackedPosition);
+        if (!entry) return;
+        clearTimeout(entry.timer);
+        this._characterPoseAnimations.delete(trackedPosition);
     }
 
     // Marca la pose activa en el elemento (clase "pose-<nombre>") para que el CSS
@@ -5587,9 +5894,12 @@ class VisualNovelEngine {
     // primerísimos planos de llanto ("bua"), que en vez de centrarse se pegan a la
     // esquina inferior para que la cara encaje con el borde del escenario.
     applyPoseClass(charElement, pose) {
-        [...charElement.classList]
-            .filter(c => c.startsWith('pose-'))
-            .forEach(c => charElement.classList.remove(c));
+        // Retirar solo la pose anterior. Antes se eliminaba cualquier clase que
+        // empezase por `pose-`, incluyendo clases internas de transición; ese
+        // barrido era una de las causas de que la antigua capa fantasma quedase
+        // congelada y visible.
+        const previousPose = charElement.dataset.pose;
+        if (previousPose) charElement.classList.remove(`pose-${previousPose}`);
         if (pose) {
             const limpia = String(pose).toLowerCase().replace(/[^a-z0-9_-]/g, '');
             if (limpia) {
@@ -5673,6 +5983,9 @@ class VisualNovelEngine {
         document.querySelectorAll('.dialogue-glitch-loop').forEach(element => {
             element.classList.remove('dialogue-glitch-loop');
         });
+        for (const [position, entry] of this._characterPoseAnimations) {
+            if (entry.untilAdvance) this.stopCharacterPoseAnimation(entry.character, position);
+        }
     }
 
     updateCharacterVideo(charElement, videoPath) {
@@ -5707,6 +6020,56 @@ class VisualNovelEngine {
         }
     }
 
+    // Limpieza integral de un hueco de personaje. Centralizarla evita que un
+    // temporizador de salida/glitch o un vídeo de una escena anterior sobreviva
+    // a Retroceder, al selector de escenas o a la reutilización del mismo hueco.
+    resetCharacterSlotElement(charElement, position) {
+        if (!charElement) return;
+        const occupant = charElement.getAttribute('data-character');
+
+        this.stopCharacterPoseAnimation(null, position);
+        this.stopCharacterFrameAnimation(position, false);
+        if (this.stageCharacters) delete this.stageCharacters[position];
+
+        ['_exitTimer', '_enterTimer', '_poseTransitionTimer', '_contactGlitchTimer', '_fullSignalGlitchTimer']
+            .forEach(timerKey => {
+                clearTimeout(charElement[timerKey]);
+                charElement[timerKey] = null;
+            });
+
+        [...charElement.classList]
+            .filter(className => className.startsWith('pose-') ||
+                className.startsWith('char-enter-') ||
+                ['active', 'speaking', 'char-exit-fade', 'contact-glitch',
+                    'full-signal-glitch', 'dialogue-glitch-loop'].includes(className))
+            .forEach(className => charElement.classList.remove(className));
+
+        charElement.style.backgroundImage = '';
+        charElement.style.removeProperty('--contact-glitch-duration');
+        charElement.style.removeProperty('--full-glitch-duration');
+        charElement.removeAttribute('data-character');
+        delete charElement.dataset.pose;
+        delete charElement.dataset.poseSrc;
+        delete charElement.dataset.frameSrc;
+        delete charElement.dataset.poseTransition;
+        charElement.querySelectorAll(':scope > .character-pose-ghost').forEach(ghost => ghost.remove());
+
+        const videoContainer = charElement.querySelector('.character-video-container');
+        if (videoContainer) {
+            const video = videoContainer.querySelector('video');
+            if (video) {
+                video.pause();
+                video.removeAttribute('src');
+                video.load();
+            }
+            videoContainer.remove();
+        }
+
+        if (occupant && this.characterPositions?.[occupant] === position) {
+            delete this.characterPositions[occupant];
+        }
+    }
+
     // Quita a un personaje de la escena. Se puede indicar:
     // - characterName: quita al personaje (usando la posición rastreada en la
     //   que se mostró; si además se da position, solo quita si coincide).
@@ -5717,15 +6080,13 @@ class VisualNovelEngine {
             const el = document.getElementById(`character-${pos}`);
             if (!el) return;
             const doClear = () => {
-                el.classList.remove('active', 'speaking', 'char-exit-fade');
-                el.style.backgroundImage = '';
-                const videoContainer = el.querySelector('.character-video-container');
-                if (videoContainer) videoContainer.remove();
+                this.resetCharacterSlotElement(el, pos);
             };
+            clearTimeout(el._exitTimer);
             if (exit) {
                 // Salida suave: fundido corto y luego limpieza real
                 el.classList.add('char-exit-fade');
-                setTimeout(doClear, 320);
+                el._exitTimer = setTimeout(doClear, 320);
             } else {
                 doClear();
             }
@@ -5849,7 +6210,11 @@ class VisualNovelEngine {
         audio._srcPath = soundPath;
         audio.preload = 'auto';
         // Música = bucles y pistas del menú; el resto cuenta como efecto.
-        const volKind = (loop || (id && String(id).startsWith('menu'))) ? 'music' : 'sfx';
+        const normalizedSoundPath = String(soundPath || '').replace(/\\/g, '/').toLowerCase();
+        const soundId = String(id || '').toLowerCase();
+        const isMusic = loop || normalizedSoundPath.includes('/audio/music/') ||
+            ['bg_music', 'music'].includes(soundId) || soundId.startsWith('menu');
+        const volKind = isMusic ? 'music' : 'sfx';
         audio._baseVol = volume;
         audio._volKind = volKind;
         const factor = this.volFactor(volKind);
@@ -5954,10 +6319,10 @@ class VisualNovelEngine {
         // Si es string, buscar por ID
         if (typeof audioOrId === 'string') {
             audio = this.audioInstances[audioOrId];
-            if (!audio) {
-                console.warn(`Audio con ID "${audioOrId}" no encontrado`);
-                return;
-            }
+            // Parar una cama que todavía no llegó a arrancar es una operación
+            // idempotente (pasa al entrar/salir rápido del menú). No ensuciar la
+            // consola: los fallos reales de carga ya se notifican en playSound.
+            if (!audio) return;
         }
 
         this.fadeOutAndStop(audio, fadeOut);
@@ -6533,7 +6898,10 @@ class VisualNovelEngine {
         // de acciones de ESTA línea tras la primera acción. Limpiarlo siempre.
         this.pendingSceneJump = false;
 
-        // Ejecutar acciones previas al diálogo
+        // Ejecutar acciones previas al diálogo. Un goToScene puede convivir con
+        // texto en la misma línea: el destino queda preparado, pero la frase
+        // actual todavía debe mostrarse antes de entrar en él.
+        let jumpedDuringActions = false;
         if (line.actions) {
             for (let action of line.actions) {
                 await this.executeAction(action);
@@ -6541,9 +6909,8 @@ class VisualNovelEngine {
                 // procesamiento de esta línea y continuar en el nuevo destino.
                 if (this.pendingSceneJump) {
                     this.pendingSceneJump = false;
-                    // Cuando saltamos de escena, ya estamos en línea 0 de la nueva escena
-                    // No incrementar currentLine
-                    return true;
+                    jumpedDuringActions = true;
+                    break;
                 }
             }
         }
@@ -6552,6 +6919,11 @@ class VisualNovelEngine {
         if (line.text) {
             await this.displayDialog(this.resolveConsequenceLine(line));
         }
+
+        // jumpToScene ya dejó currentScene/currentLine apuntando al destino. Si
+        // además había diálogo, el bucle esperará el clic normal antes de pedir
+        // la línea 0 de la escena nueva; si no lo había, continuará al instante.
+        if (jumpedDuringActions) return true;
 
         // Si hay elecciones, mostrarlas
         if (line.choices) {
@@ -6670,6 +7042,51 @@ class VisualNovelEngine {
     // ============================================================
 
     // Foto del progreso al entrar en una escena. Se llama desde nextLine().
+    captureSceneStageState() {
+        const audio = Object.entries(this.audioInstances || {})
+            .filter(([, instance]) => instance && !instance._stopping && !instance.ended)
+            .map(([id, instance]) => ({
+                id,
+                path: instance._srcPath,
+                volume: instance._baseVol != null ? instance._baseVol : 1,
+                loop: !!instance.loop
+            }))
+            .filter(item => item.path);
+        return {
+            background: this.currentBackgroundPath,
+            characters: JSON.parse(JSON.stringify(this.stageCharacters || {})),
+            audio,
+            juice: window.Juice && typeof window.Juice.snapshot === 'function'
+                ? window.Juice.snapshot()
+                : null
+        };
+    }
+
+    restoreSceneStageState(snapshot) {
+        if (!snapshot) return;
+        if (snapshot.background) this.setBackground(snapshot.background, { cut: true });
+        for (const [position, visual] of Object.entries(snapshot.characters || {})) {
+            if (!visual || !visual.character) continue;
+            this.showCharacter(
+                visual.character,
+                position,
+                visual.pose || 'neutral',
+                !!visual.flipped
+            );
+        }
+        for (const sound of snapshot.audio || []) {
+            this.playSound(sound.path, {
+                id: sound.id,
+                volume: sound.volume,
+                loop: sound.loop,
+                fadeIn: 180
+            });
+        }
+        if (snapshot.juice && window.Juice && typeof window.Juice.restore === 'function') {
+            window.Juice.restore(snapshot.juice);
+        }
+    }
+
     recordSceneEntry() {
         if (!this.currentChapter) return;
         if (this._lastSeenScene === this.currentScene) return;
@@ -6683,6 +7100,8 @@ class VisualNovelEngine {
             completedCalls: [...this.completedCalls],
             inventory: [...this.inventory],
             storyDelay: this.storyDelay,
+            storyPressure: this.storyPressure,
+            stage: this.captureSceneStageState(),
             nextChapter: this.nextChapter
         });
         // No hace falta guardar el capítulo entero: con 40 escenas vamos sobrados
@@ -6702,13 +7121,20 @@ class VisualNovelEngine {
         ['character-left', 'character-right', 'character-center'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                el.classList.remove('active', 'speaking');
-                el.style.backgroundImage = '';
+                this.resetCharacterSlotElement(el, id.replace('character-', ''));
             }
         });
+        for (const [position, entry] of this._characterPoseAnimations) {
+            clearTimeout(entry.timer);
+            this._characterPoseAnimations.delete(position);
+        }
+        for (const position of [...this._characterFrameAnimations.keys()]) {
+            this.stopCharacterFrameAnimation(position, false);
+        }
         const cont = document.getElementById('characters-container');
         if (cont) cont.classList.remove('has-speaker');
         this.characterPositions = {};
+        this.stageCharacters = {};
         this.speakingCharacter = null;
         this.speakingPosition = null;
 
@@ -6717,6 +7143,7 @@ class VisualNovelEngine {
 
         const bg = document.getElementById('background');
         if (bg) bg.style.backgroundImage = '';
+        this.currentBackgroundPath = null;
 
         // El fondo se cambia con CROSSFADE usando una segunda capa: se pinta en
         // `background-b`, se sube su opacidad y 460 ms después un temporizador
@@ -6745,6 +7172,7 @@ class VisualNovelEngine {
         if (fader) {
             fader.style.transition = 'none';
             fader.style.opacity = '0';
+            fader.style.pointerEvents = 'none';
         }
 
         const choices = document.getElementById('choices-container');
@@ -6764,9 +7192,13 @@ class VisualNovelEngine {
         this.completedCalls = [...destino.completedCalls];
         this.inventory = [...destino.inventory];
         this.storyDelay = destino.storyDelay;
+        this.storyPressure = destino.storyPressure != null
+            ? destino.storyPressure
+            : destino.storyDelay;
         this.nextChapter = destino.nextChapter;
 
         this.clearStage();
+        this.restoreSceneStageState(destino.stage);
 
         this.currentScene = destino.scene;
         this.currentLine = 0;
@@ -6785,12 +7217,14 @@ class VisualNovelEngine {
     sceneList() {
         if (!this.currentChapter) return [];
         const hist = this.sceneHistory || [];
-        return (this.currentChapter.scenes || []).map((s, i) => ({
-            index: i,
-            title: s.title || `Escena ${i + 1}`,
-            actual: i === this.currentScene,
-            visitada: hist.some(h => h.scene === i)
-        }));
+        return (this.currentChapter.scenes || [])
+            .map((s, i) => ({
+                index: i,
+                title: s.title || `Escena ${i + 1}`,
+                actual: i === this.currentScene,
+                visitada: hist.some(h => h.scene === i)
+            }))
+            .filter(scene => this.debugMode || scene.actual || scene.visitada);
     }
 
     chapterTitle() {
@@ -6821,6 +7255,7 @@ class VisualNovelEngine {
         }
 
         const hist = this.sceneHistory || [];
+        let restoredStage = null;
         for (let k = hist.length - 1; k >= 0; k--) {
             if (hist[k].scene !== i) continue;
             const d = hist[k];
@@ -6829,7 +7264,9 @@ class VisualNovelEngine {
             this.completedCalls = [...d.completedCalls];
             this.inventory = [...d.inventory];
             this.storyDelay = d.storyDelay;
+            this.storyPressure = d.storyPressure != null ? d.storyPressure : d.storyDelay;
             this.nextChapter = d.nextChapter;
+            restoredStage = d.stage || null;
             // Se recorta el historial hasta ahí: la escena se vuelve a registrar
             // sola al entrar, y así retroceder sigue teniendo sentido después.
             this.sceneHistory = hist.slice(0, k);
@@ -6837,6 +7274,7 @@ class VisualNovelEngine {
         }
 
         this.clearStage();
+        this.restoreSceneStageState(restoredStage);
         this.currentScene = i;
         this.currentLine = 0;
         this.sceneEndedByChoice = false;
@@ -6857,11 +7295,14 @@ class VisualNovelEngine {
         this.speakingCharacter = null;
         this.speakingPosition = null;
         this.characterPositions = {};
+        this.stageCharacters = {};
+        this.currentBackgroundPath = null;
         this.sceneEndedByChoice = false;
         // Nota: completedCalls NO se limpia aquí; debe persistir entre capítulos
         // igual que rescued, para que la regla de llamadas funcione al final de
         // cada Capítulo 2. Se limpia solo al empezar una partida nueva.
-        this.storyDelay = 0;
+        // storyDelay/storyPressure persisten entre capítulos. startNewGame es
+        // quien los limpia; reset también se usa durante el encadenado normal.
         this.pendingSceneJump = false;
 
         // Detener todos los sonidos
@@ -6875,18 +7316,17 @@ class VisualNovelEngine {
         const rightChar = document.getElementById('character-right');
         const centerChar = document.getElementById('character-center');
 
-        if (leftChar) {
-            leftChar.classList.remove('active');
-            leftChar.classList.remove('speaking');
+        for (const [position, entry] of this._characterPoseAnimations) {
+            clearTimeout(entry.timer);
+            this._characterPoseAnimations.delete(position);
         }
-        if (rightChar) {
-            rightChar.classList.remove('active');
-            rightChar.classList.remove('speaking');
+        for (const position of [...this._characterFrameAnimations.keys()]) {
+            this.stopCharacterFrameAnimation(position, false);
         }
-        if (centerChar) {
-            centerChar.classList.remove('active');
-            centerChar.classList.remove('speaking');
-        }
+
+        if (leftChar) this.resetCharacterSlotElement(leftChar, 'left');
+        if (rightChar) this.resetCharacterSlotElement(rightChar, 'right');
+        if (centerChar) this.resetCharacterSlotElement(centerChar, 'center');
         const charactersContainer = document.getElementById('characters-container');
         if (charactersContainer) charactersContainer.classList.remove('has-speaker');
 

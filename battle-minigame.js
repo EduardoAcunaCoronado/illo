@@ -20,8 +20,8 @@
     id: "diapason_de_plata",
     name: "Diapasón de plata",
     description:
-      "El diapasón de Seraphyna. Golpéalo y escucha: la nota limpia devuelve al grupo la mitad de su HP y PM, y levanta a quien haya caído.",
-    type: "revive_three",
+      "La nota verdadera atraviesa la Amalgama, revela el núcleo de Airi y permite que ella responda desde dentro. También reanima y cura al grupo.",
+    type: "diapason_resonance",
     target: "auto",
   };
 
@@ -744,6 +744,8 @@
         ? options.startItems.map((item) => ({ ...item }))
         : [];
       this.enemyItemStolen = false;
+      this.airiResonance = false;
+      this.airiResonanceTurns = 0;
       this.messageToken = 0;
       this.resolve = null;
     }
@@ -1889,6 +1891,47 @@
     }
 
     applyItem(item, target) {
+      if (item.type === "diapason_resonance") {
+        const fallen = this.allies
+          .filter((ally) => ally.currentHp <= 0)
+          .slice(0, 3);
+        const standing = this.allies.filter((ally) => ally.currentHp > 0);
+
+        fallen.forEach((ally) => {
+          ally.currentHp = Math.max(1, Math.ceil(ally.maxHp * 0.4));
+          ally.currentPm = Math.ceil(ally.maxPm * 0.4);
+          this.resetRevivedFighterTurn(ally);
+        });
+        standing.forEach((ally) => {
+          this.restoreHp(ally, Math.ceil(ally.maxHp * 0.3));
+          this.restorePm(ally, Math.ceil(ally.maxPm * 0.3));
+        });
+
+        const canReachAiri = ["amalgama", "amalgama_final"].includes(
+          this.enemy.id,
+        );
+        if (canReachAiri) {
+          this.airiResonance = true;
+          this.airiResonanceTurns = 0;
+          this.enemy.defense = Math.max(0, this.enemy.defense - 7);
+          this.enemy.evasion = 0;
+          const enemyEl = this.overlay?.querySelector(".battle-enemy");
+          enemyEl?.classList.add("is-airi-resonant");
+          this.playBattleSound("assets/audio/sfx/sfx_diapason_ting.mp3", 0.95);
+          return {
+            text:
+              "La nota comprime el ruido. El núcleo azul queda expuesto y Airi responde desde dentro: abrirá una brecha cada dos turnos enemigos.",
+            consumed: true,
+          };
+        }
+
+        return {
+          text:
+            "La nota limpia levanta al grupo, pero aquí no encuentra ningún núcleo al que responder.",
+          consumed: true,
+        };
+      }
+
       if (item.type === "revive_three") {
         const fallen = this.allies
           .filter((ally) => ally.currentHp <= 0)
@@ -2144,6 +2187,39 @@
           this.surviveWon = true;
         }
       }
+
+      this.applyAiriResonancePulse(actor);
+    }
+
+    applyAiriResonancePulse(actor) {
+      if (!this.airiResonance || actor.team !== "enemy") return;
+      if (!["amalgama", "amalgama_final"].includes(this.enemy.id)) return;
+      this.airiResonanceTurns += 1;
+      if (this.airiResonanceTurns % 2 !== 0) return;
+
+      const damage = Math.max(1, Math.ceil(this.enemy.maxHp * 0.045));
+      this.enemy.currentHp = Math.max(0, this.enemy.currentHp - damage);
+      let recovered = 0;
+      for (const ally of this.allies) {
+        if (ally.currentHp <= 0) continue;
+        recovered += this.restoreHp(ally, Math.ceil(ally.maxHp * 0.06));
+      }
+
+      const enemyEl = this.overlay?.querySelector(".battle-enemy");
+      enemyEl?.classList.remove("airi-resonance-pulse");
+      void enemyEl?.offsetWidth;
+      enemyEl?.classList.add("airi-resonance-pulse");
+      setTimeout(() => enemyEl?.classList.remove("airi-resonance-pulse"), 760);
+      this.playBattleSound("assets/audio/sfx/sfx_diapason_ting.mp3", 0.7);
+      this.message(
+        `Airi abre una brecha desde dentro: ${damage} de daño al núcleo y ${recovered} HP devueltos al grupo.`,
+      );
+    }
+
+    playBattleSound(path, volume = 0.75) {
+      const audio = new Audio(path);
+      audio.volume = clamp(volume, 0, 1);
+      audio.play().catch(() => {});
     }
 
     // ---- UI del modo supervivencia (contador + burbujas de urgencia) ----

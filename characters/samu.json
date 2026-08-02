@@ -17,8 +17,150 @@
     "worried": "assets/images/characters/samu/samu_worried.png",
     "valla": "assets/images/characters/samu/samu_valla.png",
     "curious": "assets/images/characters/samu/samu_curious.png",
-    "charred_blink": "assets/images/characters/samu/samu_charred_closed.png",
-    "charred_shake": "assets/images/characters/samu/samu_charred_whiteeyes.png"
+    "charred_blink": "assets/images/characters/samu/samu_charred_whiteeyes.png",
+    "charred_shake": "assets/images/characters/samu/samu_charred_whiteeyes.png",
+    "human": "assets/images/characters/humans/samu_humano_sprite.png"
+  },
+  "animations": {
+    "neutral": {
+      "frames": [
+        {
+          "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.png",
+          "duration": 65
+        },
+        {
+          "src": "assets/images/characters/samu/animations/samu_neutral_blink_closed.png",
+          "duration": 95
+        },
+        {
+          "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.png",
+          "duration": 65
+        }
+      ],
+      "delayRange": [
+        1800,
+        4200
+      ],
+      "loop": true
+    },
+    "happy": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_happy_blink_open.webp",
+        "duration": 90
+      }
+    ],
+    "sad": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_sad_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "angry": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_angry_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "surprised": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_surprised_blink_closed.webp",
+        "duration": 90
+      }
+    ],
+    "alarmed": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_alarmed_blink_closed.webp",
+        "duration": 90
+      }
+    ],
+    "bua": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_bua_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "clapping": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_clapping_blink_open.webp",
+        "duration": 90
+      }
+    ],
+    "determined": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_determined_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "embarrassed": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_embarrassed_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "shocked": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_shocked_blink_closed.webp",
+        "duration": 85
+      }
+    ],
+    "thinking": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_thinking_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "valla": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_valla_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "curious": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_curious_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "human": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_human_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "worried": {
+      "frames": [
+        {
+          "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+          "duration": 65
+        },
+        {
+          "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp",
+          "duration": 95
+        },
+        {
+          "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+          "duration": 65
+        }
+      ],
+      "delayRange": [
+        1800,
+        4200
+      ],
+      "loop": true
+    },
+    "charred_blink": {
+      "frames": [
+        {
+          "src": "assets/images/characters/samu/samu_charred_closed.png",
+          "duration": 115
+        }
+      ],
+      "delayRange": [
+        650,
+        1300
+      ],
+      "loop": true
+    }
   },
   "defaultPose": "neutral"
 }

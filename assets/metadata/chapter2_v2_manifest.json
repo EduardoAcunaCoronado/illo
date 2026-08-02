@@ -53,7 +53,7 @@
     "corruptedBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png",
     "goldenCap": "assets/images/minigames/chapter2/ketchup/golden_cap.png",
     "chili": "assets/images/minigames/chapter2/ketchup/chili_v2.png",
-    "zipMusic": "assets/audio/sfx/zip's-shadow-waltz.mp3"
+    "zipMusic": "assets/audio/music/chapter2/zip's-shadow-waltz.mp3"
   },
   "notes": [
     "Los PNG de personajes y minijuego tienen transparencia.",

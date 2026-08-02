@@ -4,5 +4,8 @@
   "poses": {
     "neutral": "assets/images/characters/ballerina_capuchina.png"
   },
+  "animations": {
+    "neutral": [{ "src": "assets/images/characters/ballerina_capuchina/animations/blinks/ballerina_neutral_blink_closed.webp", "duration": 95 }]
+  },
   "defaultPose": "neutral"
 }

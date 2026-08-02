@@ -5,5 +5,8 @@
     "neutral": "assets/images/characters/andres/andres.png",
     "silueta": "assets/images/characters/andres/andres_silueta.png"
   },
+  "animations": {
+    "neutral": [{ "src": "assets/images/characters/andres/animations/blinks/andres_neutral_blink_closed.webp", "duration": 95 }]
+  },
   "defaultPose": "neutral"
 }

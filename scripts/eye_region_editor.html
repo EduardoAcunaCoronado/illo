@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Editor de regiones oculares · Project AI.ri</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #05040f;
+      --panel: #100d25;
+      --panel-2: #17122f;
+      --line: rgba(255,255,255,.12);
+      --gold: #ffd166;
+      --cyan: #4fd0ff;
+      --pink: #ff4fa3;
+      --text: #f7f4ff;
+      --muted: #9d96b8;
+      font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--bg); color: var(--text); }
+    body { display: grid; grid-template-rows: 72px minmax(0, 1fr) 58px; }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    header {
+      display: flex; align-items: center; gap: 24px; padding: 0 24px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(90deg, rgba(255,79,163,.08), rgba(79,208,255,.05));
+    }
+    .brand { min-width: 255px; }
+    .brand small { display: block; color: var(--cyan); font-size: 10px; font-weight: 900; letter-spacing: 1.8px; text-transform: uppercase; }
+    .brand strong { display: block; margin-top: 3px; font-size: 20px; }
+    .progress-wrap { flex: 1; display: grid; grid-template-columns: minmax(120px, 1fr) auto; align-items: center; gap: 14px; }
+    .progress { height: 8px; overflow: hidden; border-radius: 999px; background: rgba(255,255,255,.08); }
+    .progress > i { display: block; width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--pink), var(--gold)); transition: width .2s ease; }
+    #progress-label { color: var(--gold); font-size: 12px; font-weight: 800; }
+    #save-state { min-width: 150px; color: var(--muted); font-size: 12px; text-align: right; }
+    #save-state.ok { color: #7df2b1; }
+    #save-state.error { color: #ff8995; }
+    .preview-link { padding: 8px 12px; border: 1px solid rgba(125,242,177,.4); border-radius: 999px; color: #7df2b1; text-decoration: none; font-size: 10px; font-weight: 850; white-space: nowrap; }
+    .preview-link:hover { border-color: #7df2b1; background: rgba(125,242,177,.08); }
+
+    main { display: grid; grid-template-columns: 270px minmax(420px, 1fr) 285px; min-height: 0; }
+    aside, .workspace { min-height: 0; }
+    aside { background: rgba(16,13,37,.92); }
+    .catalog { display: grid; grid-template-rows: auto minmax(0,1fr); border-right: 1px solid var(--line); }
+    .catalog-head { padding: 16px; border-bottom: 1px solid var(--line); }
+    .catalog-head input {
+      width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px;
+      outline: 0; background: rgba(255,255,255,.04); color: var(--text);
+    }
+    .catalog-head input:focus { border-color: var(--cyan); }
+    #job-list { overflow-y: auto; padding: 8px; }
+    .job {
+      width: 100%; display: grid; grid-template-columns: 26px minmax(0,1fr) auto;
+      align-items: center; gap: 8px; padding: 9px 10px; border: 1px solid transparent;
+      border-radius: 9px; background: transparent; text-align: left; cursor: pointer;
+    }
+    .job:hover { background: rgba(255,255,255,.05); }
+    .job.active { border-color: rgba(79,208,255,.48); background: rgba(79,208,255,.09); }
+    .job-mark { display: grid; place-items: center; width: 20px; height: 20px; border: 1px solid var(--line); border-radius: 50%; color: transparent; font-size: 11px; }
+    .job.done .job-mark { border-color: rgba(125,242,177,.6); background: rgba(125,242,177,.12); color: #7df2b1; }
+    .job-copy { min-width: 0; }
+    .job-copy strong, .job-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .job-copy strong { font-size: 12px; }
+    .job-copy small { margin-top: 2px; color: var(--muted); font-size: 10px; }
+    .job-frame-count { color: var(--cyan); font-size: 9px; font-weight: 800; }
+
+    .workspace { display: grid; grid-template-rows: 52px minmax(0,1fr); background: #070616; }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--line); }
+    .mode-group { display: flex; gap: 6px; }
+    .tool-btn, .mode-btn, footer button {
+      appearance: none; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px;
+      background: rgba(255,255,255,.04); color: var(--muted); font-size: 11px; font-weight: 750; cursor: pointer;
+    }
+    .mode-btn.active { border-color: var(--gold); background: rgba(255,209,102,.12); color: var(--gold); }
+    .tool-btn:hover, footer button:hover { border-color: var(--cyan); color: var(--cyan); }
+    .pose-title { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; font-weight: 800; }
+    .pose-title span { color: var(--muted); font-weight: 500; }
+    .canvas-shell { position: relative; min-height: 0; overflow: hidden; }
+    #stage { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+    .canvas-help { position: absolute; left: 16px; bottom: 14px; pointer-events: none; padding: 7px 10px; border-radius: 8px; background: rgba(5,4,15,.78); color: rgba(255,255,255,.6); font-size: 10px; backdrop-filter: blur(8px); }
+
+    .inspector { overflow-y: auto; padding: 18px; border-left: 1px solid var(--line); }
+    .inspector h2 { margin: 0 0 4px; font-size: 15px; }
+    .inspector > p { margin: 0 0 18px; color: var(--muted); font-size: 11px; line-height: 1.5; }
+    .crop-card { margin-bottom: 12px; padding: 10px; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,255,.025); }
+    .crop-card header { height: auto; padding: 0 0 8px; border: 0; background: none; color: var(--muted); font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .crop-card canvas { display: block; width: 100%; height: 112px; border-radius: 7px; background: #080719; }
+    .preview-export { margin: -2px 0 14px; padding: 10px; border: 1px solid rgba(79,208,255,.22); border-radius: 10px; background: rgba(79,208,255,.045); }
+    .preview-export p { margin: 0 0 8px; color: var(--muted); font-size: 9px; line-height: 1.4; }
+    .preview-export p strong { color: var(--cyan); }
+    .preview-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .preview-links a { padding: 7px 5px; border: 1px solid var(--line); border-radius: 7px; color: var(--text); text-align: center; text-decoration: none; font-size: 9px; font-weight: 800; }
+    .preview-links a:hover { border-color: var(--cyan); color: var(--cyan); }
+    .preview-links a.disabled { pointer-events: none; opacity: .35; }
+    .coords { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 16px; }
+    .coords label { color: var(--muted); font-size: 9px; font-weight: 800; text-transform: uppercase; }
+    .coords input { width: 100%; margin-top: 4px; padding: 8px; border: 1px solid var(--line); border-radius: 7px; outline: 0; background: rgba(255,255,255,.04); color: var(--text); font-size: 11px; }
+    .coords input:focus { border-color: var(--cyan); }
+    .inspector-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .inspector-actions button { padding: 9px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.04); color: var(--muted); font-size: 10px; font-weight: 800; cursor: pointer; }
+    .inspector-actions button.primary { border-color: rgba(255,209,102,.5); color: var(--gold); }
+    .inspector-actions button.danger:hover { border-color: #ff8995; color: #ff8995; }
+    .frame-select { margin-top: 14px; }
+    .frame-select label { display: block; margin-bottom: 5px; color: var(--muted); font-size: 9px; font-weight: 800; text-transform: uppercase; }
+    .frame-select select { width: 100%; padding: 8px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel-2); color: var(--text); }
+    .zone-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 10px; }
+    .zone-tab { padding: 7px 9px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,.035); color: var(--muted); font-size: 9px; font-weight: 850; cursor: pointer; }
+    .zone-tab.active { border-color: var(--gold); color: var(--gold); background: rgba(255,209,102,.1); }
+    .zone-tab.protect { border-color: rgba(255,91,118,.42); color: #ff8ca0; }
+    .zone-tab.protect.active { border-color: #ff5b76; color: #ff9bad; background: rgba(255,91,118,.12); }
+    .zone-actions { display: grid; grid-template-columns: repeat(2,1fr); gap: 6px; }
+    .zone-actions button { padding: 8px 5px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.035); color: var(--muted); font-size: 9px; font-weight: 800; cursor: pointer; }
+    .zone-actions button:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    footer { display: flex; align-items: center; justify-content: center; gap: 12px; padding: 0 20px; border-top: 1px solid var(--line); background: var(--panel); }
+    footer button { min-width: 130px; color: var(--text); }
+    footer button.primary { border-color: rgba(255,209,102,.55); color: var(--gold); }
+    .shortcut { position: absolute; right: 22px; color: var(--muted); font-size: 10px; }
+
+    @media (max-width: 1050px) {
+      main { grid-template-columns: 220px minmax(360px,1fr) 240px; }
+      .brand { min-width: 210px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><small>Project AI.ri · herramienta</small><strong>Regiones oculares</strong></div>
+    <div class="progress-wrap"><div class="progress"><i id="progress-bar"></i></div><span id="progress-label">0 / 0</span></div>
+    <a class="preview-link" href="/tools">☰ Herramientas</a>
+    <button id="build-preview" class="preview-link" type="button">Regenerar y probar</button>
+    <div id="save-state">Cargando inventario…</div>
+  </header>
+
+  <main>
+    <aside class="catalog">
+      <div class="catalog-head"><input id="search" type="search" placeholder="Buscar personaje o pose…" autocomplete="off"></div>
+      <div id="job-list" aria-label="Poses pendientes"></div>
+    </aside>
+
+    <section class="workspace">
+      <div class="toolbar">
+        <div id="pose-title" class="pose-title"></div>
+        <div class="mode-group" role="group" aria-label="Vista del sprite">
+          <button class="mode-btn active" data-mode="base">Original</button>
+          <button class="mode-btn" data-mode="blink">Parpadeo</button>
+          <button class="mode-btn" data-mode="compare">Comparar</button>
+          <button class="mode-btn" data-mode="mask">Máscara</button>
+        </div>
+      </div>
+      <div class="canvas-shell">
+        <canvas id="stage"></canvas>
+        <div class="canvas-help">Mueve cada elipse · achátala con los puntos laterales · gírala desde el punto superior</div>
+      </div>
+    </section>
+
+    <aside class="inspector">
+      <h2>Comprobación de recorte</h2>
+      <p>Usa una elipse por ojo. Si roza pelo, cejas o accesorios, protégelos con una elipse roja y suaviza el borde.</p>
+      <div class="crop-card"><header>Ojos originales</header><canvas id="base-crop" width="248" height="112"></canvas></div>
+      <div class="crop-card"><header>Ojos del parpadeo</header><canvas id="blink-crop" width="248" height="112"></canvas></div>
+      <div class="preview-export">
+        <p>Al guardar, ambos recortes se exportan con el mismo lienzo: <strong id="preview-size">pendiente</strong>.</p>
+        <div class="preview-links">
+          <a id="download-original" class="disabled" href="#" download>↓ Ojos originales</a>
+          <a id="download-blink" class="disabled" href="#" download>↓ Parpadeo actual</a>
+        </div>
+      </div>
+      <div class="frame-select"><label for="frame-select">Fotograma de referencia</label><select id="frame-select"></select></div>
+      <div id="zone-tabs" class="zone-tabs"></div>
+      <div class="zone-actions">
+        <button id="add-zone">+ Añadir zona</button>
+        <button id="protect-zone">+ Proteger detalle</button>
+        <button id="duplicate-zone">Duplicar</button>
+        <button id="delete-zone">Eliminar</button>
+      </div>
+      <div class="coords">
+        <label>X %<input id="coord-x" type="number" min="0" max="100" step="0.1"></label>
+        <label>Y %<input id="coord-y" type="number" min="0" max="100" step="0.1"></label>
+        <label>Radio X %<input id="coord-rx" type="number" min="0.3" max="50" step="0.1"></label>
+        <label>Radio Y %<input id="coord-ry" type="number" min="0.3" max="50" step="0.1"></label>
+        <label>Giro °<input id="coord-rotation" type="number" min="-180" max="180" step="1"></label>
+        <label>Suavizado px<input id="coord-feather" type="number" min="0" max="32" step="0.5"></label>
+      </div>
+      <div class="inspector-actions">
+        <button id="apply-coords" class="primary">Aplicar valores</button>
+        <button id="copy-previous">Copiar anterior</button>
+        <button id="clear-region" class="danger">Limpiar todas</button>
+        <button id="center-region">Centrar vista</button>
+      </div>
+    </aside>
+  </main>
+
+  <footer>
+    <button id="previous">← Pose anterior</button>
+    <button id="save-next" class="primary">Guardar y siguiente →</button>
+    <div class="shortcut">←/→ navegar · Espacio alternar vista · Enter guardar</div>
+  </footer>
+
+  <script>
+    const stage = document.getElementById('stage');
+    const ctx = stage.getContext('2d');
+    const list = document.getElementById('job-list');
+    const saveState = document.getElementById('save-state');
+    const frameSelect = document.getElementById('frame-select');
+    const zoneTabs = document.getElementById('zone-tabs');
+    const crops = [document.getElementById('base-crop'), document.getElementById('blink-crop')];
+    const previewSize = document.getElementById('preview-size');
+    const previewDownloads = {
+      original: document.getElementById('download-original'),
+      blink: document.getElementById('download-blink')
+    };
+    const coordinateInputs = {
+      x: document.getElementById('coord-x'), y: document.getElementById('coord-y'),
+      rx: document.getElementById('coord-rx'), ry: document.getElementById('coord-ry'),
+      rotation: document.getElementById('coord-rotation'), feather: document.getElementById('coord-feather')
+    };
+    let jobs = [], index = 0, selectedZone = 0, mode = 'base';
+    let images = { base: null, blink: null }, imageRect = null, drag = null, loadingToken = 0;
+
+    const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
+    const current = () => jobs[index];
+    const zones = () => current()?.regions || [];
+    const selected = () => zones()[selectedZone] || null;
+    const cloneZones = value => JSON.parse(JSON.stringify(value || []));
+    const assetUrl = path => `/${path.split('/').map(encodeURIComponent).join('/')}?v=${Date.now()}`;
+
+    function setStatus(message, kind = '') { saveState.textContent = message; saveState.className = kind; }
+    function updateProgress(savedOverride) {
+      const saved = savedOverride ?? jobs.filter(job => job.regions?.length).length;
+      document.getElementById('progress-label').textContent = `${saved} / ${jobs.length}`;
+      document.getElementById('progress-bar').style.width = jobs.length ? `${saved / jobs.length * 100}%` : '0%';
+    }
+    function renderList() {
+      const query = document.getElementById('search').value.trim().toLowerCase();
+      list.replaceChildren();
+      jobs.forEach((job, jobIndex) => {
+        if (query && !`${job.characterName} ${job.character} ${job.pose}`.toLowerCase().includes(query)) return;
+        const button = document.createElement('button'); button.type = 'button';
+        button.className = `job${job.regions?.length ? ' done' : ''}${jobIndex === index ? ' active' : ''}`;
+        button.innerHTML = '<span class="job-mark">✓</span><span class="job-copy"><strong></strong><small></small></span><span class="job-frame-count"></span>';
+        button.querySelector('strong').textContent = job.characterName;
+        button.querySelector('small').textContent = job.pose;
+        button.querySelector('.job-frame-count').textContent = `${job.frameSrcs.length}F`;
+        button.addEventListener('click', () => selectJob(jobIndex)); list.appendChild(button);
+      });
+      requestAnimationFrame(() => list.querySelector('.job.active')?.scrollIntoView({block:'nearest'}));
+    }
+    function renderZoneTabs() {
+      zoneTabs.replaceChildren();
+      let eyeNumber = 0, protectionNumber = 0;
+      zones().forEach((shape, zoneIndex) => {
+        const protectedZone = shape.mode === 'exclude';
+        const number = protectedZone ? ++protectionNumber : ++eyeNumber;
+        const button = document.createElement('button'); button.type = 'button'; button.className = `zone-tab${protectedZone ? ' protect' : ''}${zoneIndex === selectedZone ? ' active' : ''}`;
+        button.textContent = protectedZone ? `Protección ${number}` : `Ojo ${number}`;
+        button.addEventListener('click', () => { selectedZone = zoneIndex; updateCoordinates(); renderZoneTabs(); draw(); });
+        zoneTabs.appendChild(button);
+      });
+      if (!zones().length) { const empty=document.createElement('span'); empty.textContent='Sin zonas'; empty.style.cssText='color:var(--muted);font-size:10px'; zoneTabs.appendChild(empty); }
+    }
+    function updatePreviewExports() {
+      const preview=current()?.preview,frameIndex=Number(frameSelect.value)||0;
+      previewSize.textContent=preview?`${preview.width} × ${preview.height} px`:'pendiente de guardar';
+      const paths={original:preview?.original,blink:preview?.blinks?.[frameIndex]};
+      Object.entries(previewDownloads).forEach(([kind,link])=>{
+        const path=paths[kind];link.classList.toggle('disabled',!path);link.href=path?`/${path}`:'#';
+      });
+    }
+    function loadImage(path) { return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=assetUrl(path);}); }
+    async function selectJob(nextIndex) {
+      index=(nextIndex+jobs.length)%jobs.length; selectedZone=0; drag=null;
+      const job=current(), token=++loadingToken; setStatus('Cargando sprites…'); frameSelect.replaceChildren();
+      job.frameSrcs.forEach((src,frameIndex)=>{const option=document.createElement('option');option.value=String(frameIndex);option.textContent=`Frame ${frameIndex+1} · ${src.split('/').pop()}`;frameSelect.appendChild(option);});
+      try {
+        const [base,blink]=await Promise.all([loadImage(job.baseSrc),loadImage(job.frameSrcs[0])]); if(token!==loadingToken)return;
+        images={base,blink}; document.getElementById('pose-title').innerHTML=`${job.characterName} <span>· ${job.pose} · ${job.width}×${job.height}</span>`;
+        setStatus(job.regions?.length?`${job.regions.length} zonas guardadas`:'Pendiente de marcar',job.regions?.length?'ok':'');
+        renderList(); renderZoneTabs(); updateCoordinates(); draw(); updatePreviewExports();
+      } catch(error){setStatus('No se pudo cargar el sprite','error');}
+    }
+    async function changeFrame(){const token=++loadingToken;try{const blink=await loadImage(current().frameSrcs[Number(frameSelect.value)]);if(token!==loadingToken)return;images.blink=blink;draw();updatePreviewExports();}catch(error){setStatus('No se pudo cargar el frame','error');}}
+    function resizeCanvas(){const rect=stage.getBoundingClientRect(),dpr=window.devicePixelRatio||1;stage.width=Math.max(1,Math.round(rect.width*dpr));stage.height=Math.max(1,Math.round(rect.height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);draw();}
+    function checker(context,width,height,size=18){context.fillStyle='#080719';context.fillRect(0,0,width,height);context.fillStyle='#0e0c21';for(let y=0;y<height;y+=size)for(let x=(Math.floor(y/size)%2)*size;x<width;x+=size*2)context.fillRect(x,y,size,size);}
+    function screenShape(shape){return{cx:imageRect.x+shape.cx*imageRect.w,cy:imageRect.y+shape.cy*imageRect.h,rx:shape.rx*imageRect.w,ry:shape.ry*imageRect.h,angle:shape.rotation*Math.PI/180};}
+    function transformedPoint(shape,x,y){const s=screenShape(shape),c=Math.cos(s.angle),n=Math.sin(s.angle);return{x:s.cx+x*s.rx*c-y*s.ry*n,y:s.cy+x*s.rx*n+y*s.ry*c};}
+    function handles(shape){const s=screenShape(shape),rotationDistance=26/Math.max(1,s.ry);return{x1:transformedPoint(shape,1,0),x2:transformedPoint(shape,-1,0),y1:transformedPoint(shape,0,1),y2:transformedPoint(shape,0,-1),rotate:transformedPoint(shape,0,-1-rotationDistance),center:{x:s.cx,y:s.cy}};}
+    function drawEllipse(shape,zoneIndex){
+      const s=screenShape(shape),active=zoneIndex===selectedZone,protectedZone=shape.mode==='exclude';
+      const stroke=protectedZone?'#ff5b76':active?'#ffd166':'#4fd0ff';
+      ctx.save();ctx.translate(s.cx,s.cy);ctx.rotate(s.angle);ctx.beginPath();ctx.ellipse(0,0,s.rx,s.ry,0,0,Math.PI*2);
+      ctx.fillStyle=protectedZone?(mode==='mask'?'rgba(255,48,82,.42)':'rgba(255,48,82,.14)'):(mode==='mask'?'rgba(79,208,255,.34)':active?'rgba(255,209,102,.12)':'rgba(79,208,255,.08)');
+      ctx.fill();ctx.strokeStyle=stroke;ctx.lineWidth=active?2.4:1.5;ctx.setLineDash(active?[]:[6,5]);ctx.stroke();ctx.restore();
+      const ownKind=zones().slice(0,zoneIndex+1).filter(zone=>(zone.mode==='exclude')===protectedZone).length;
+      ctx.fillStyle=stroke;ctx.font='800 10px system-ui';ctx.fillText(protectedZone?`Protección ${ownKind}`:`Ojo ${ownKind}`,s.cx+7,s.cy-s.ry-8);
+      if(!active)return;const h=handles(shape);ctx.strokeStyle=protectedZone?'rgba(255,91,118,.7)':'rgba(255,209,102,.65)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(h.y2.x,h.y2.y);ctx.lineTo(h.rotate.x,h.rotate.y);ctx.stroke();
+      for(const [name,p] of Object.entries(h)){ctx.beginPath();ctx.arc(p.x,p.y,name==='rotate'?6:5,0,Math.PI*2);ctx.fillStyle=name==='rotate'?'#ff4fa3':protectedZone?'#ff5b76':'#ffd166';ctx.fill();ctx.strokeStyle='#15102c';ctx.stroke();}
+    }
+    function draw(){const bounds=stage.getBoundingClientRect(),width=bounds.width,height=bounds.height;ctx.clearRect(0,0,width,height);checker(ctx,width,height,24);if(!images.base)return;const scale=Math.min((width-44)/images.base.width,(height-44)/images.base.height),drawWidth=images.base.width*scale,drawHeight=images.base.height*scale;imageRect={x:(width-drawWidth)/2,y:(height-drawHeight)/2,w:drawWidth,h:drawHeight};ctx.globalAlpha=1;if(mode==='blink')ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);else{ctx.globalAlpha=mode==='mask'?.28:1;ctx.drawImage(images.base,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;if(mode==='compare'){ctx.globalAlpha=.5;ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;}}zones().forEach(drawEllipse);drawCrops();}
+    function pointerScreen(event){const rect=stage.getBoundingClientRect();return{x:event.clientX-rect.left,y:event.clientY-rect.top};}
+    function pointerNorm(event){const p=pointerScreen(event);return{x:clamp((p.x-imageRect.x)/imageRect.w),y:clamp((p.y-imageRect.y)/imageRect.h)};}
+    function localPoint(shape,point){const s=screenShape(shape),dx=point.x-s.cx,dy=point.y-s.cy,c=Math.cos(-s.angle),n=Math.sin(-s.angle);return{x:(dx*c-dy*n)/Math.max(1,s.rx),y:(dx*n+dy*c)/Math.max(1,s.ry)};}
+    function hitTest(event){const point=pointerScreen(event),shape=selected();if(shape){for(const [name,p] of Object.entries(handles(shape)))if(name!=='center'&&Math.hypot(point.x-p.x,point.y-p.y)<14)return{action:name==='rotate'?'rotate':name[0]==='x'?'resize-x':'resize-y',zone:selectedZone};}for(let zoneIndex=zones().length-1;zoneIndex>=0;zoneIndex--){const local=localPoint(zones()[zoneIndex],point);if(local.x*local.x+local.y*local.y<=1)return{action:'move',zone:zoneIndex};}return{action:'new',zone:zones().length};}
+    stage.addEventListener('pointerdown',event=>{if(!imageRect)return;stage.setPointerCapture(event.pointerId);const point=pointerNorm(event),hit=hitTest(event);if(hit.action==='new'){const radiusPx=Math.max(12,Math.min(images.base.width,images.base.height)*.035);current().regions ||= [];current().regions.push({cx:point.x,cy:point.y,rx:radiusPx/images.base.width,ry:radiusPx/images.base.height,rotation:0,mode:'include',feather:6});selectedZone=current().regions.length-1;}else selectedZone=hit.zone;drag={action:hit.action,start:point,startScreen:pointerScreen(event),original:{...selected()}};renderZoneTabs();updateCoordinates();draw();});
+    stage.addEventListener('pointermove',event=>{if(!drag)return;const point=pointerNorm(event),shape=selected(),original=drag.original;if(drag.action==='new')return;if(drag.action==='move'){shape.cx=clamp(original.cx+point.x-drag.start.x);shape.cy=clamp(original.cy+point.y-drag.start.y);}else if(drag.action==='rotate'){const p=pointerScreen(event),s=screenShape(original);shape.rotation=((Math.atan2(p.y-s.cy,p.x-s.cx)*180/Math.PI+90+180)%360)-180;}else{const local=localPoint(original,pointerScreen(event));if(drag.action==='resize-x')shape.rx=clamp(Math.abs(local.x)*original.rx,.003,.5);if(drag.action==='resize-y')shape.ry=clamp(Math.abs(local.y)*original.ry,.003,.5);}updateCoordinates();draw();});
+    stage.addEventListener('pointerup',async()=>{if(!drag&&zones().length){await saveRegions(false);return;}drag=null;normalizeZones();updateCoordinates();draw();await saveRegions(false);});
+    function normalizeZones(){current().regions=(current().regions||[]).filter(shape=>shape.rx>=.003&&shape.ry>=.003).map(shape=>({cx:+clamp(shape.cx).toFixed(6),cy:+clamp(shape.cy).toFixed(6),rx:+clamp(shape.rx,.003,.5).toFixed(6),ry:+clamp(shape.ry,.003,.5).toFixed(6),rotation:+((((shape.rotation||0)+180)%360)-180).toFixed(3),mode:shape.mode==='exclude'?'exclude':'include',feather:+clamp(Number(shape.feather)||0,0,32).toFixed(2)}));selectedZone=clamp(selectedZone,0,Math.max(0,zones().length-1));renderZoneTabs();}
+    function updateCoordinates(){const shape=selected();if(!shape){Object.values(coordinateInputs).forEach(input=>input.value='');return;}coordinateInputs.x.value=(shape.cx*100).toFixed(1);coordinateInputs.y.value=(shape.cy*100).toFixed(1);coordinateInputs.rx.value=(shape.rx*100).toFixed(1);coordinateInputs.ry.value=(shape.ry*100).toFixed(1);coordinateInputs.rotation.value=shape.rotation.toFixed(1);coordinateInputs.feather.value=(shape.feather||0).toFixed(1);}
+    function applyCoordinates(){const shape=selected();if(!shape){setStatus('Selecciona o añade una zona','error');return;}const values={cx:Number(coordinateInputs.x.value)/100,cy:Number(coordinateInputs.y.value)/100,rx:Number(coordinateInputs.rx.value)/100,ry:Number(coordinateInputs.ry.value)/100,rotation:Number(coordinateInputs.rotation.value),feather:Number(coordinateInputs.feather.value)};if(!Object.values(values).every(Number.isFinite)||values.rx<.003||values.ry<.003||values.feather<0||values.feather>32){setStatus('Coordenadas no válidas','error');return;}Object.assign(shape,values);normalizeZones();updateCoordinates();draw();saveRegions(false);}
+    function zoneBounds(){const included=zones().filter(shape=>shape.mode!=='exclude');if(!included.length)return null;const boxes=included.map(shape=>{const a=shape.rotation*Math.PI/180,ex=Math.sqrt((shape.rx*Math.cos(a))**2+(shape.ry*Math.sin(a))**2),ey=Math.sqrt((shape.rx*Math.sin(a))**2+(shape.ry*Math.cos(a))**2);return[shape.cx-ex,shape.cy-ey,shape.cx+ex,shape.cy+ey];});return[clamp(Math.min(...boxes.map(b=>b[0]))),clamp(Math.min(...boxes.map(b=>b[1]))),clamp(Math.max(...boxes.map(b=>b[2]))),clamp(Math.max(...boxes.map(b=>b[3])))];}
+    function drawCrop(canvas,image){
+      const context=canvas.getContext('2d'),bounds=zoneBounds();checker(context,canvas.width,canvas.height,12);if(!bounds||!image)return;
+      const sx=bounds[0]*image.width,sy=bounds[1]*image.height,sw=Math.max(1,(bounds[2]-bounds[0])*image.width),sh=Math.max(1,(bounds[3]-bounds[1])*image.height),scale=Math.min((canvas.width-10)/sw,(canvas.height-10)/sh),dw=sw*scale,dh=sh*scale,dx=(canvas.width-dw)/2,dy=(canvas.height-dh)/2;
+      const layer=document.createElement('canvas');layer.width=canvas.width;layer.height=canvas.height;const layerContext=layer.getContext('2d');
+      const ellipsePath=(target,shape)=>{const cx=dx+(shape.cx-bounds[0])*image.width*scale,cy=dy+(shape.cy-bounds[1])*image.height*scale;target.save();target.translate(cx,cy);target.rotate(shape.rotation*Math.PI/180);target.ellipse(0,0,shape.rx*image.width*scale,shape.ry*image.height*scale,0,0,Math.PI*2);target.restore();};
+      layerContext.save();layerContext.beginPath();zones().filter(shape=>shape.mode!=='exclude').forEach(shape=>ellipsePath(layerContext,shape));layerContext.clip();layerContext.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh);layerContext.restore();
+      layerContext.globalCompositeOperation='destination-out';zones().filter(shape=>shape.mode==='exclude').forEach(shape=>{layerContext.beginPath();ellipsePath(layerContext,shape);layerContext.fill();});layerContext.globalCompositeOperation='source-over';context.drawImage(layer,0,0);
+    }
+    function drawCrops(){drawCrop(crops[0],images.base);drawCrop(crops[1],images.blink);}
+    async function saveRegions(goNext){normalizeZones();if(!zones().some(shape=>shape.mode!=='exclude')){setStatus('Añade al menos una zona ocular','error');return false;}setStatus('Guardando regiones y previews…');try{const response=await fetch('/api/region',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:current().id,regions:zones()})});const result=await response.json();if(!response.ok)throw new Error(result.error||'Error');current().regions=result.regions;current().preview=result.preview;updatePreviewExports();setStatus(`${zones().length} zonas · previews ${result.preview.width}×${result.preview.height} guardadas`,'ok');updateProgress(result.saved);renderList();renderZoneTabs();updateCoordinates();if(goNext)selectJob(index+1);return true;}catch(error){setStatus(error.message,'error');return false;}}
+    async function clearRegions(){const job=current();job.regions=[];job.preview=null;selectedZone=0;renderZoneTabs();updateCoordinates();draw();updatePreviewExports();try{const response=await fetch('/api/region',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:job.id,regions:null})});const result=await response.json();updateProgress(result.saved);renderList();setStatus('Zonas eliminadas');}catch(error){setStatus('No se pudo eliminar','error');}}
+    function beginAddZone(zoneMode='include'){const point={cx:.5,cy:.32};const radiusPx=Math.max(12,Math.min(images.base.width,images.base.height)*.035);current().regions ||= [];current().regions.push({...point,rx:radiusPx/images.base.width,ry:radiusPx/images.base.height,rotation:0,mode:zoneMode,feather:zoneMode==='exclude'?4:6});selectedZone=zones().length-1;renderZoneTabs();updateCoordinates();draw();setStatus(zoneMode==='exclude'?'Protección roja añadida: colócala sobre el pelo, ceja o accesorio':'Zona ocular añadida: muévela sobre el ojo');}
+    document.querySelectorAll('.mode-btn').forEach(button=>button.addEventListener('click',()=>{mode=button.dataset.mode;document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b===button));draw();}));
+    document.getElementById('build-preview').addEventListener('click',async()=>{setStatus('Generando capas elípticas…');try{const response=await fetch('/api/build-preview',{method:'POST'});const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo generar');setStatus(`${result.poses} poses regeneradas`,'ok');window.location.href='/preview';}catch(error){setStatus(error.message,'error');}});
+    document.getElementById('search').addEventListener('input',renderList);document.getElementById('previous').addEventListener('click',()=>selectJob(index-1));document.getElementById('save-next').addEventListener('click',()=>saveRegions(true));document.getElementById('apply-coords').addEventListener('click',applyCoordinates);document.getElementById('clear-region').addEventListener('click',clearRegions);document.getElementById('center-region').addEventListener('click',draw);document.getElementById('add-zone').addEventListener('click',()=>beginAddZone('include'));document.getElementById('protect-zone').addEventListener('click',()=>beginAddZone('exclude'));document.getElementById('duplicate-zone').addEventListener('click',()=>{if(!selected())return;const copy={...selected(),cx:clamp(selected().cx+.025)};current().regions.push(copy);selectedZone=zones().length-1;renderZoneTabs();updateCoordinates();draw();saveRegions(false);});document.getElementById('delete-zone').addEventListener('click',()=>{if(!selected())return;current().regions.splice(selectedZone,1);selectedZone=Math.max(0,selectedZone-1);renderZoneTabs();updateCoordinates();draw();if(zones().length)saveRegions(false);else clearRegions();});document.getElementById('copy-previous').addEventListener('click',()=>{for(let i=index-1;i>=0;i--){if(jobs[i].character===current().character&&jobs[i].regions?.length){current().regions=cloneZones(jobs[i].regions);selectedZone=0;renderZoneTabs();updateCoordinates();draw();saveRegions(false);return;}}setStatus('No hay zonas anteriores de este personaje','error');});
+    frameSelect.addEventListener('change',changeFrame);
+    window.addEventListener('keydown',event=>{if(/INPUT|SELECT/.test(document.activeElement.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();selectJob(index-1);}if(event.key==='ArrowRight'){event.preventDefault();selectJob(index+1);}if(event.key===' '){event.preventDefault();const modes=['base','blink','compare','mask'];mode=modes[(modes.indexOf(mode)+1)%modes.length];document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));draw();}if(event.key==='Enter'){event.preventDefault();saveRegions(true);}if(event.key==='Delete'&&selected()){event.preventDefault();document.getElementById('delete-zone').click();}});
+    new ResizeObserver(resizeCanvas).observe(stage.parentElement);
+    fetch('/api/jobs',{cache:'no-store'}).then(response=>response.json()).then(data=>{jobs=data.jobs;updateProgress(data.saved);renderList();selectJob(0);}).catch(()=>setStatus('No se pudo cargar el inventario','error'));
+  </script>
+</body>
+</html>

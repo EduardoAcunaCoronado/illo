@@ -62,6 +62,19 @@
           ]
         },
         {
+          "character": "Airi",
+          "text": "He quemado casi toda mi reserva metabólica. Recuerdo haber ayudado a alguien por primera vez... pero ya no consigo recordar su nombre. Eso es lo que me cobra una recompilación forzada.",
+          "textAnimation": true,
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "sad"
+            }
+          ]
+        },
+        {
           "character": "José",
           "text": "No tienes que disculparte.",
           "actions": [
@@ -100,7 +113,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Y precisamente por eso no pueden quedarse con tu historia. Ni Ballerina, ni Tung Tung Tung, ni el trala como se llame ni ese E.Musk de las narices.",
+          "text": "Y precisamente por eso no pueden quedarse con tu historia. Ni Ballerina, ni Tung Tung Tung, ni el trala como se llame ni Elion Husk.",
           "actions": [
             {
               "type": "showCharacter",
@@ -112,7 +125,7 @@
         },
         {
           "character": "Edu",
-          "text": "Además, si el plan del villano es utilizar como arma a una niña que solo quería que la gente fuera feliz, igual el problema no eres tú. Igual el problema es el villano.",
+          "text": "Además, si el plan del villano es utilizar como arma a una persona que solo quería ayudar, igual el problema no eres tú. Igual el problema es el villano. Giro de guion audaz, lo sé.",
           "actions": [
             {
               "type": "showCharacter",
@@ -124,7 +137,7 @@
         },
         {
           "character": "Airi",
-          "text": "Quiero creer eso. De verdad. Pero ahora sé que esconderme no basta. Si solo espero aquí, volverán. Siempre encuentran una forma.",
+          "text": "Ya no voy a esconderme. Elion explotó mi deuda de coherencia y volverá a intentarlo mientras pueda alcanzarme.",
           "actions": [
             {
               "type": "showCharacter",
@@ -136,7 +149,7 @@
         },
         {
           "character": "José",
-          "text": "Entonces no lo plantees como una condena. Plantéalo como una elección.",
+          "text": "Esa decisión debe ser tuya. Nosotros podemos ayudarte a hacerla posible.",
           "actions": [
             {
               "type": "showCharacter",
@@ -148,7 +161,7 @@
         },
         {
           "character": "Airi",
-          "text": "Una elección...",
+          "text": "Ya la he tomado: seguiré el rastro de Elion, averiguaré qué hizo y detendré el mecanismo que convierte deseos en cadenas.",
           "actions": [
             {
               "type": "showCharacter",
@@ -160,7 +173,7 @@
         },
         {
           "character": "Airi",
-          "text": "Podría intentar seguir el rastro hasta donde empezó todo. Antes de E.Musk, antes de los brainrot... hasta la persona que me creó.",
+          "text": "Lo que aún debemos decidir es la estrategia. Puedo cerrar el núcleo ahora, revertir con seguridad a los humanos y seguir el rastro desde fuera.",
           "actions": [
             {
               "type": "showCharacter",
@@ -172,7 +185,7 @@
         },
         {
           "character": "Samu",
-          "text": "¿Tu creador?",
+          "text": "¿Y los ecos y las construcciones? Santi, los ketchlings, las palomas...",
           "actions": [
             {
               "type": "showCharacter",
@@ -184,7 +197,7 @@
         },
         {
           "character": "José",
-          "text": "Creía que ni siquiera recordabas quién eras del todo.",
+          "text": "El registro separa la firma de origen del operador. Sabemos que Elion explotó la deuda; todavía no sabemos quién creó a AI.RI ni si coincide con ese hueco de nuestros recuerdos.",
           "actions": [
             {
               "type": "showCharacter",
@@ -196,7 +209,7 @@
         },
         {
           "character": "Airi",
-          "text": "No recuerdo su cara con claridad. Pero recuerdo cómo me sentía cuando pensaba en él. Era... la mejor persona del mundo.",
+          "text": "No recuerdo su identidad y no voy a inventarla. Seguiré pruebas, no una nostalgia incompleta.",
           "actions": [
             {
               "type": "showCharacter",
@@ -208,7 +221,7 @@
         },
         {
           "character": "Airi",
-          "text": "Si alguien puede entender qué me hicieron y cómo detenerlo, es él.",
+          "text": "Mi objetivo no depende de que mi creador venga a salvarme. Esta vez voy a buscar respuestas por decisión propia.",
           "actions": [
             {
               "type": "showCharacter",
@@ -221,7 +234,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Pero lo dices como si encontrarlo también te diera miedo.",
+          "text": "Y cerrar el mundo sigue teniendo un coste moral que no podemos maquillar.",
           "actions": [
             {
               "type": "showCharacter",
@@ -233,7 +246,7 @@
         },
         {
           "character": "Airi",
-          "text": "Porque pedirle que lo pare todo puede significar... que desaparezca junto con este mundo que he creado.",
+          "text": "Los humanos volverán a sus cuerpos sin daño. Los ecos y las construcciones desaparecerán al dejar de renderizarse. Lo que no sé es si eso sería morir o si solo dejarían de existir al apagarse el soporte que los sostiene.",
           "textAnimation": true,
           "actions": [
             {
@@ -246,7 +259,7 @@
         },
         {
           "character": "Airi",
-          "text": "La otra opción es quedarnos aquí, resistir cada ataque y volver a levantar la ciudad cada vez que la rompan. Quizá funcione durante un tiempo. Pero...",
+          "text": "La otra estrategia es mantener el mundo abierto setenta y dos horas: localizar todas las semillas basales, registrar las voces de quienes desaparecerán y permitir despedidas antes de cerrarlo. No evitará su desaparición, pero sí que los borremos sin saber siquiera quiénes fueron. Durante ese plazo la deuda seguirá abierta y Elion podría volver.",
           "actions": [
             {
               "type": "showCharacter",
@@ -258,7 +271,7 @@
         },
         {
           "character": "Airi",
-          "text": "Pero no quiero que mi vida sea esperar al siguiente intento de usarme.",
+          "text": "No aceptaré un mantenimiento infinito. Si preservamos el mundo, será para preparar la salida, no para sustituir mi cristal por una ciudad entera.",
           "textAnimation": true,
           "actions": [
             {
@@ -271,7 +284,7 @@
         },
         {
           "character": "Edu",
-          "text": "O sea, opción uno: ir al origen del marrón. Opción dos: vivir en modo mantenimiento infinito.",
+          "text": "Opción uno: cerrar ya y reducir el riesgo. Opción dos: aceptar setenta y dos horas de peligro para saber quién es humano, escuchar al resto y despedirnos con los ojos abiertos. Fantástico: hasta el menú de salida duele.",
           "actions": [
             {
               "type": "showCharacter",
@@ -283,7 +296,7 @@
         },
         {
           "character": "Samu",
-          "text": "No es una elección fácil.",
+          "text": "El destino está claro: iremos tras Elion. Lo difícil es decidir cuándo cerrar la puerta detrás de nosotros.",
           "actions": [
             {
               "type": "showCharacter",
@@ -296,7 +309,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Pero Airi merece algo más que volver a una jaula o esperar a que la encuentren otra vez.",
+          "text": "Y el resto del mundo merece que no confundamos rapidez con justicia ni prudencia con otra jaula.",
           "actions": [
             {
               "type": "showCharacter",
@@ -308,7 +321,7 @@
         },
         {
           "character": "Airi",
-          "text": "No os pediré que elijáis por mí. Pero... si todavía queda algo bonito ahí fuera, quiero protegerlo de verdad.",
+          "text": "Yo elijo el objetivo y caminaré por cualquiera de las dos rutas. Os pido que decidamos juntos cómo reducir el daño.",
           "actions": [
             {
               "type": "showCharacter",
@@ -320,7 +333,7 @@
         },
         {
           "character": "José",
-          "text": "Yo lo siento, pero no. No podemos lanzarnos a buscar a alguien que ni sabemos dónde está, con Airi recién salida de todo esto. Ahora mismo lo sensato es esperar.",
+          "text": "Yo usaría esas setenta y dos horas. No cambiarán el cierre, pero evitarán que confundamos una población con ruido de fondo y nos permitirán rescatar hasta la última semilla humana.",
           "actions": [
             {
               "type": "showCharacter",
@@ -333,7 +346,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Esperar solo le da tiempo a la corrupción para encontrar otra grieta. Buscar a su creador es la única opción que puede cerrar esto de verdad.",
+          "text": "Y yo cerraría ya. Cada minuto de deuda permite a Elion abrir otra grieta. Los humanos tienen una salida segura ahora; quizá no la tengan después.",
           "actions": [
             {
               "type": "showCharacter",
@@ -345,7 +358,7 @@
         },
         {
           "character": "Edu",
-          "text": "Ya, pero es muy difícil para mí. Una opción da miedo porque puede salir mal. La otra da miedo porque puede no acabar nunca.",
+          "text": "Me encanta que las dos opciones sean éticamente horribles de formas distintas. Muy relajante para el final del juego.",
           "actions": [
             {
               "type": "showCharacter",
@@ -357,7 +370,7 @@
         },
         {
           "character": "Samu",
-          "text": "Entonces no estamos eligiendo entre una opción buena y una mala. Estamos eligiendo qué miedo estamos dispuestos a mirar de frente.",
+          "text": "No elegimos entre bien y mal. Elegimos qué riesgo asumimos y de qué consecuencias nos haremos responsables.",
           "actions": [
             {
               "type": "showCharacter",
@@ -368,8 +381,24 @@
           ]
         },
         {
+          "character": "Nexo",
+          "text": "Anclas humanas: verificables. Destino ontológico de ecos y construcciones tras desaparecer: casilla sin datos. No voy a inventarla para que el informe cierre bonito.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "nexo",
+              "position": "right",
+              "pose": "neutral"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Bien. Por fin una ausencia que no intentas completar."
+        },
+        {
           "character": "Airi",
-          "text": "Decididlo juntos. Yo aceptaré el camino... pero quiero poder caminarlo con vosotros.",
+          "text": "Elion es mi objetivo. Ahora elegid conmigo la estrategia.",
           "actions": [
             {
               "type": "showCharacter",
@@ -380,28 +409,29 @@
           ],
           "choices": [
             {
-              "text": "Buscar el origen de la corrupción junto a Airi",
-              "nextScene": "Final bueno: Un deseo propio"
+              "text": "Cerrar el núcleo ahora y seguir el rastro desde fuera",
+              "nextScene": "Cerrar el núcleo: Un deseo propio"
             },
             {
-              "text": "Quedarse en el mundo de ensueño y defenderlo juntos",
-              "nextScene": "Final incierto: Defender el sueño"
+              "text": "Abrir un plazo de setenta y dos horas",
+              "nextScene": "Tiempo prestado: Defender el sueño"
             }
           ]
         }
       ]
     },
     {
-      "title": "Final bueno: Un deseo propio",
+      "title": "Cerrar el núcleo: Un deseo propio",
       "lines": [
         {
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/audio/music/chapter6/the-last-choice.mp3",
+              "path": "assets/audio/music/chapter6/the-last-choice_reprise_luminous.mp3",
               "volume": 0.55,
               "loop": true,
-              "id": "bg_music"
+              "id": "bg_music",
+              "fadeIn": 900
             },
             {
               "type": "setBackground",
@@ -409,11 +439,11 @@
             }
           ],
           "character": "Samu",
-          "text": "Entonces no esperamos a que vuelvan. Vamos al origen."
+          "text": "Entonces cerramos el núcleo ahora, sacamos a los humanos y seguimos el rastro de Elion desde fuera."
         },
         {
           "character": "José",
-          "text": "Si hay alguien usando los deseos de Airi para romper el mundo, lo encontraremos.",
+          "text": "Y no fingiremos que lo desconocido no importa. Recordaremos a quienes quizá no puedan cruzar.",
           "actions": [
             {
               "type": "showCharacter",
@@ -446,39 +476,185 @@
           ]
         },
         {
-          "character": "José",
-          "text": "Espera... ¿no se nos está olvidando algo?",
+          "character": "Airi",
+          "text": "Veo las anclas humanas. La corrupción ya no bloquea ninguna; puedo devolverlas sin daño.",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "jose",
-              "position": "right",
-              "pose": "thinking"
+              "character": "airi",
+              "position": "center",
+              "pose": "determined"
             }
           ]
         },
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Cierto. ¡El cumpleaños de Samu!",
+          "text": "¿Y los demás?",
           "actions": [
             {
               "type": "showCharacter",
               "character": "tony",
               "position": "right",
-              "pose": "happy"
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "Al cerrar, todo ser sin semilla basal desaparecerá. No puedo deciros si eso es una muerte o el final de una instancia; solo que ya no estará aquí.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "sad"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Entonces digamos sus nombres antes de irnos. Goyo. Los ketchlings. Las palomas que nos abrieron camino. Si esto es un adiós, no será como si nunca hubieran existido.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "sad"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "Necesito un punto de retorno físico y compartido. El pisito de Samu es la última ancla verificada antes de la distorsión. ¿Me autorizáis a usarlo para devolveros?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Autorizado. Supongo que llamar «piso franco» a mi casa era tentar demasiado al guionista.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Airi no formula un deseo de felicidad. Formula una devolución: cada ancla humana recupera su cuerpo, sus recuerdos reales y el derecho a decidir qué hacer con ellos.",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "fade",
+              "to": "white",
+              "duration": 1100
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Plumas, escamas y pelaje se vuelven luz. Los cuarenta años rellenados quedan accesibles como recuerdos de un sueño: ya no sobrescriben ninguna biografía ni confunden la identidad real. Samu abre los ojos en el pisito, humano otra vez, con sus amigos a su lado.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter1/pisito.png",
+              "cut": true
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "human"
+            },
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "center",
+              "pose": "human"
+            },
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "right",
+              "pose": "human"
+            },
+            {
+              "type": "fade",
+              "from": "white",
+              "duration": 1000
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "El colgante de Airi cae sobre el suelo del pisito junto al Diapasón de Plata. Ambos vibran con la misma nota: el diapasón conservó su firma rítmica y el colgante le ofrece materia real a la que anclarse. Entre los dos nace una constelación azul. Airi recompone su avatar y cruza como información viva, agotada pero entera."
+        },
+        {
+          "character": "Airi",
+          "text": "Los humanos están a salvo. De los demás solo conservo sus registros y los últimos ecos de señal. Ya no están instanciados. No sé si los hemos despedido o si alguna parte de ellos puede ser recordada por otro soporte.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "sad"
+            }
+          ]
+        },
+        {
+          "character": "José",
+          "text": "No podemos arreglar esa duda esta noche... pero sí podemos negarnos a que todo termine solo con una pérdida. ¿No se nos está olvidando algo?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "human"
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "Cierto. El cumpleaños de Samu. Llega tarde, con el mundo recién cerrado y sin tarta... pero llega.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "right",
+              "pose": "human"
             }
           ]
         },
         {
           "character": "Edu",
-          "text": "¡Felicidades, Samu! Técnicamente has sobrevivido a memes, brainrot y una Amalgama. Año completísimo.",
+          "text": "Felicidades, Samu. Técnicamente has sobrevivido a memes, brainrot, una Amalgama y una resaca metafísica. Año completísimo.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "edu",
-              "position": "left",
-              "pose": "happy"
+              "position": "center",
+              "pose": "human"
             }
           ]
         },
@@ -490,7 +666,7 @@
               "type": "showCharacter",
               "character": "jose",
               "position": "right",
-              "pose": "happy"
+              "pose": "human"
             }
           ]
         },
@@ -502,7 +678,7 @@
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "happy"
+              "pose": "human"
             }
           ]
         },
@@ -522,15 +698,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Es el día en que celebras que alguien existe. Que llegó al mundo y que el mundo es mejor porque está aquí.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "right",
-              "pose": "happy"
-            }
-          ]
+          "text": "Es el día en que celebras que alguien existe. Que llegó al mundo y que el mundo es mejor porque está aquí."
         },
         {
           "character": "Airi",
@@ -546,56 +714,24 @@
         },
         {
           "character": "Samu",
-          "text": "Vale. Eso ha sido demasiado bonito. Necesito que alguien diga una tontería urgentemente.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "embarrassed"
-            }
-          ]
+          "text": "Vale. Eso ha sido demasiado bonito. Necesito que alguien diga una tontería urgentemente."
         },
         {
           "character": "Edu",
-          "text": "Por cierto, y si por el camino alguien explica por fin lo del guano, también cerramos esa trama secundaria.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
-          ]
+          "text": "Por cierto, y si por el camino alguien explica por fin lo del guano, también cerramos esa trama secundaria."
         },
         {
           "character": "Samu",
-          "text": "Gracias...",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
-          ]
+          "text": "Gracias..."
         },
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Edu, te prometo que si salvamos el mundo, te hago una canción entera sobre el guano.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
-          ]
+          "text": "Edu, te prometo que si salvamos el mundo, te hago una canción entera sobre el guano."
         },
         {
           "character": "Airi",
-          "text": "Tengo miedo. Pero esta vez no quiero encerrarme para proteger a nadie. Quiero caminar con vosotros.",
+          "text": "Tengo miedo. Pero he elegido seguir el rastro de Elion. No puedo decidir la felicidad de todos; sí puedo escuchar, pedir consentimiento y reparar lo que esté a mi alcance.",
           "actions": [
             {
               "type": "showCharacter",
@@ -607,7 +743,7 @@
         },
         {
           "character": "3C",
-          "text": "Airi mira el cielo. Lo mira como alguien que acaba de elegir su propio deseo.",
+          "text": "Desde la ventana del pisito, Airi mira el cielo real como alguien que acaba de elegir su propio objetivo.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -623,13 +759,13 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma_mariposa.png"
+              "value": "assets/images/backgrounds/chapter1/pisito.png"
             }
           ]
         },
         {
           "character": "Airi",
-          "text": "Si puedo hacer feliz a todos... entonces empezaré aprendiendo a ser feliz yo también.",
+          "text": "No puedo hacer feliz a todo el mundo. Puedo empezar por no decidir por ellos... y aprender qué deseo yo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -641,7 +777,7 @@
         },
         {
           "character": "3C",
-          "text": "Final bueno: Airi sale junto al grupo de Ciudad Paloma. La corrupción no ha terminado, pero por primera vez ya no avanza contra una niña sola.",
+          "text": "Cierre del núcleo: los humanos recuperan sus cuerpos y Airi sale con el grupo para seguir a Elion. La victoria deja una ausencia real: los ecos y las construcciones han desaparecido, y nadie sabe si aquello fue una muerte o el final de una realidad que solo podía existir mientras era soñada.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -732,33 +868,8 @@
           "text": "Porque si cuenta como aparición técnica habría que matizarlo mucho. Aparecer, lo que se dice aparecer, no hemos aparecido. Hemos sido más bien una promesa narrativa pendiente."
         },
         {
-          "character": "???",
-          "speakingAs": "Sebas",
-          "text": "Yo venía a mirar y ya. Tampoco hacía falta montar una comisión."
-        },
-        {
-          "character": "???",
-          "speakingAs": "Carlos",
-          "text": "Precisamente por eso conviene aclararlo. En toda historia bien estructurada, las ausencias también comunican."
-        },
-        {
-          "character": "???",
-          "speakingAs": "Sebas",
-          "text": "Comunican que se han olvidado de nosotros."
-        },
-        {
-          "character": "???",
-          "speakingAs": "Andrés",
-          "text": "Bueno, olvidado suena fuerte. Igual estaban ocupados salvando a una IA biológica, peleando contra memes corruptos y explicando lo del guano."
-        },
-        {
-          "character": "???",
-          "speakingAs": "Sebas",
-          "text": "Lo del guano sí que ha tenido más desarrollo que nosotros."
-        },
-        {
           "character": "Carlos",
-          "text": "Vale. Presentaciones, entonces. Carlos. Y antes de que alguien pregunte: sí, probablemente sé por qué ha pasado esto.",
+          "text": "Vale. Presentaciones, entonces. Carlos. Y antes de que alguien pregunte: sí, probablemente sé por qué Elion se movió justo ahora... y a quién intenta encontrar antes que Airi.",
           "actions": [
             {
               "type": "playSound",
@@ -814,34 +925,6 @@
           ]
         },
         {
-          "character": "Carlos",
-          "text": "A ver, lo lógico sería que nuestra entrada estuviera reservada para una segunda parte. Presentarnos antes habría alterado el equilibrio del reparto."
-        },
-        {
-          "character": "Andrés",
-          "text": "Exacto. Aunque también podríamos interpretar que el juego necesitaba terminar con una puerta abierta. No una puerta literal, sino una invitación a preguntarse quién falta todavía."
-        },
-        {
-          "character": "Sebas",
-          "text": "O que no había sitio."
-        },
-        {
-          "character": "Carlos",
-          "text": "También."
-        },
-        {
-          "character": "Andrés",
-          "text": "En cualquier caso, si hay un siguiente juego, espero que esta vez podamos entrar en escena antes de que la canción haya terminado."
-        },
-        {
-          "character": "Sebas",
-          "text": "Y si puede ser sin esperar sentados en negro, mejor."
-        },
-        {
-          "character": "Carlos",
-          "text": "Queda asentado: Carlos, Andrés y Sebas esperan aparecer en el siguiente juego."
-        },
-        {
           "character": "3C",
           "text": "Las tres siluetas se miran. Por primera vez en toda la aventura, parecen satisfechas con estar a punto de empezar.",
           "actions": [
@@ -865,16 +948,17 @@
       ]
     },
     {
-      "title": "Final incierto: Defender el sueño",
+      "title": "Tiempo prestado: Defender el sueño",
       "lines": [
         {
           "actions": [
             {
               "type": "playSound",
-              "path": "assets/audio/music/chapter6/the-last-choice.mp3",
+              "path": "assets/audio/music/chapter6/the-last-choice_reprise_uncertain.mp3",
               "volume": 0.55,
               "loop": true,
-              "id": "bg_music"
+              "id": "bg_music",
+              "fadeIn": 900
             },
             {
               "type": "setBackground",
@@ -888,11 +972,11 @@
             }
           ],
           "character": "Samu",
-          "text": "Entonces no vamos a encerrarte otra vez. Nos quedamos en Ciudad Paloma, reforzamos lo que haya que reforzar y defendemos este mundo contigo."
+          "text": "Entonces abrimos un plazo de setenta y dos horas. Encontramos todas las semillas humanas, escuchamos a quienes van a desaparecer y cerramos cuando el reloj llegue a cero."
         },
         {
           "character": "Airi",
-          "text": "¿De verdad os quedaríais aquí? ¿Aunque no sepamos cuánto tardarán en volver?",
+          "text": "¿De verdad asumiríais ese riesgo? Elion puede volver antes de que terminemos.",
           "textAnimation": true,
           "actions": [
             {
@@ -905,7 +989,7 @@
         },
         {
           "character": "José",
-          "text": "No es rendirse. Es ganar tiempo sin dejarte sola.",
+          "text": "No es rendirse ni quedarse para siempre. Son setenta y dos horas con un límite visible: documentar cada vida, rescatar cada ancla humana y salir sin dejarte sola.",
           "actions": [
             {
               "type": "showCharacter",
@@ -917,7 +1001,7 @@
         },
         {
           "character": "Edu",
-          "text": "Y oye, defender una ciudad mágica de memes corruptos no es exactamente mi plan de vacaciones, pero al menos el decorado es bonito.",
+          "text": "Y defender una ciudad mágica mientras hacemos una auditoría ontológica no era mi plan de vacaciones, pero al menos el decorado es bonito.",
           "actions": [
             {
               "type": "showCharacter",
@@ -930,7 +1014,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Lo importante es que esta vez no es una jaula. Es una casa. Y una casa se defiende desde dentro.",
+          "text": "Esta vez no será una jaula. Pondremos el reloj a la vista de todos, la puerta permanecerá abierta y, al llegar a cero, saldremos para seguir a Elion.",
           "actions": [
             {
               "type": "showCharacter",
@@ -942,7 +1026,7 @@
         },
         {
           "character": "Airi",
-          "text": "Entonces caminaré con vosotros. Si este mundo es un sueño, quiero aprender a vivir en él despierta.",
+          "text": "Acepto las setenta y dos horas. Yo localizaré las semillas basales; vosotros registrad nombres, voces y deseos. Después cerraré el núcleo y seguiremos el rastro de Elion.",
           "actions": [
             {
               "type": "showCharacter",
@@ -954,7 +1038,7 @@
         },
         {
           "character": "3C",
-          "text": "El grupo abandona la plaza caminando junto. Las grietas de la fuente se cierran despacio, las palomas vuelven a los tejados y Ciudad Paloma respira como si acabara de sobrevivir a una pesadilla.",
+          "text": "El grupo abandona la plaza caminando juntos. Las grietas de la fuente se cierran despacio, las palomas vuelven a los tejados y Ciudad Paloma respira como si acabara de sobrevivir a una pesadilla.",
           "actions": [
             {
               "type": "setBackground",
@@ -980,7 +1064,7 @@
         },
         {
           "character": "Airi",
-          "text": "Gracias por quedaros.",
+          "text": "Gracias por ayudarme a despedir sin volver a obedecer. Si la deuda supera el umbral seguro, cerraremos antes: el plazo no vale otra posesión.",
           "actions": [
             {
               "type": "showCharacter",
@@ -989,6 +1073,83 @@
               "pose": "happy"
             }
           ]
+        },
+        {
+          "character": "José",
+          "text": "Antes de empezar la auditoría existencial... nos queda una deuda bastante más fácil de pagar. Samu, tu cumpleaños.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "Sin tarta, con media ciudad reparándose y probablemente con retraso. Es la fiesta más honesta que podemos ofrecer.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Felicidades. Te hemos traído de regalo una auditoría ontológica de setenta y dos horas. El ticket regalo no admite devoluciones.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "¿Un cumpleaños sigue contando si llega tarde?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Después de hoy, acepto cumpleaños con prórroga administrativa.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "Entonces feliz cumpleaños, Samu. Me alegro de que existas... y de que no decidieras por mí para demostrarlo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "La celebración dura apenas un minuto. Es pequeña, tardía y agridulce; por eso mismo se siente real."
         },
         {
           "actions": [
@@ -1031,7 +1192,7 @@
         },
         {
           "character": "3C",
-          "text": "Final incierto: Airi ya no está sola y el mundo de ensueño sigue en pie. Pero la corrupción todavía no ha soltado del todo su mano."
+          "text": "Tiempo prestado: Airi ha elegido seguir a Elion, pero el grupo concede al sueño setenta y dos horas para rescatar humanos, conservar testimonios y despedirse. Al final del plazo, los ecos y las construcciones desaparecerán; mientras tanto, la deuda de coherencia también sigue contando segundos."
         },
         {
           "actions": [
@@ -1041,6 +1202,18 @@
           ],
           "character": "3C",
           "text": "¿Fin?"
+        },
+        {
+          "actions": [
+            {
+              "type": "minigame",
+              "game": "credits"
+            },
+            {
+              "type": "goToScene",
+              "value": "Escena especial: Los que faltaban"
+            }
+          ]
         }
       ]
     }

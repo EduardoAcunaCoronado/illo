@@ -1,0 +1,34 @@
+{
+  "name": "Elion Husk",
+  "aliases": [
+    "Elion",
+    "E. Husk",
+    "E.Husk"
+  ],
+  "color": "#d74b57",
+  "defaultPose": "neutral",
+  "poses": {
+    "neutral": "assets/images/characters/elion_husk/elion_husk_neutral.png",
+    "smirk": "assets/images/characters/elion_husk/elion_husk_smirk.png",
+    "angry": "assets/images/characters/elion_husk/elion_husk_angry.png",
+    "shadow": "assets/images/characters/elion_husk/elion_husk_shadow.png"
+  },
+  "animations": {
+    "neutral": {
+      "frames": [{ "src": "assets/images/characters/elion_husk/animations/blinks/elion_neutral_blink_closed.webp", "duration": 110 }],
+      "loop": true
+    },
+    "smirk": {
+      "frames": [{ "src": "assets/images/characters/elion_husk/animations/blinks/elion_smirk_blink_closed.webp", "duration": 110 }],
+      "loop": true
+    },
+    "angry": {
+      "frames": [{ "src": "assets/images/characters/elion_husk/animations/blinks/elion_angry_blink_closed.webp", "duration": 110 }],
+      "loop": true
+    },
+    "shadow": {
+      "frames": [{ "src": "assets/images/characters/elion_husk/animations/blinks/elion_shadow_blink_closed.webp", "duration": 110 }],
+      "loop": true
+    }
+  }
+}

@@ -5,5 +5,25 @@
     "neutral": "assets/images/characters/others/micaela.png",
     "crazy": "assets/images/characters/others/micaela_crazy.png"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "animations": {
+    "neutral": {
+      "frames": [
+        {
+          "src": "assets/images/characters/others/animations/blinks/micaela_neutral_blink_closed.webp",
+          "duration": 110
+        }
+      ],
+      "loop": true
+    },
+    "crazy": {
+      "frames": [
+        {
+          "src": "assets/images/characters/others/animations/blinks/micaela_crazy_blink_closed.webp",
+          "duration": 110
+        }
+      ],
+      "loop": true
+    }
+  }
 }

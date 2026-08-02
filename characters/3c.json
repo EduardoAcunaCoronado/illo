@@ -8,5 +8,56 @@
     "angry": "assets/images/characters/others/3c.png",
     "surprised": "assets/images/characters/others/3c.png"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "animations": {
+    "neutral": {
+      "frames": [
+        {
+          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.png",
+          "duration": 110
+        }
+      ],
+      "delayRange": [
+        2200,
+        4600
+      ],
+      "loop": true
+    },
+    "happy": {
+      "frames": [
+        {
+          "src": "assets/images/characters/others/animations/blinks/3c_happy_blink_closed_v2.webp",
+          "duration": 110
+        }
+      ],
+      "loop": true
+    },
+    "sad": {
+      "frames": [
+        {
+          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.png",
+          "duration": 110
+        }
+      ],
+      "loop": true
+    },
+    "angry": {
+      "frames": [
+        {
+          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.png",
+          "duration": 110
+        }
+      ],
+      "loop": true
+    },
+    "surprised": {
+      "frames": [
+        {
+          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.png",
+          "duration": 110
+        }
+      ],
+      "loop": true
+    }
+  }
 }

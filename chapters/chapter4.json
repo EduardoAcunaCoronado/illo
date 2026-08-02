@@ -11,10 +11,6 @@
               "value": "assets/images/backgrounds/chapter4/camino_a_ciudad_paloma.png"
             },
             {
-              "type": "rescue",
-              "character": "jose"
-            },
-            {
               "type": "playSound",
               "path": "assets/audio/music/chapter4/camino_a_ciudad_paloma.mp3",
               "volume": 0.6,
@@ -393,6 +389,10 @@
               "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png"
             },
             {
+              "type": "rescue",
+              "character": "jose"
+            },
+            {
               "type": "showCharacter",
               "character": "jose",
               "position": "right",
@@ -576,7 +576,7 @@
         },
         {
           "character": "José",
-          "text": "Porque eres el único dragón azul con una camiseta de Kingom Souls.",
+          "text": "Porque eres el único dragón azul con una camiseta de Kingdom Souls.",
           "actions": [
             {
               "type": "showCharacter",
@@ -641,7 +641,7 @@
         },
         {
           "character": "Samu",
-          "text": "¿¡DESDE CUANDO TENÍAS UN PERSONAJE DE ROL!?",
+          "text": "¿¡DESDE CUÁNDO TENÍAS UN PERSONAJE DE ROL!?",
           "textAnimation": true,
           "actions": [
             {
@@ -1214,7 +1214,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Lo de cantante si pero... ¿Maga Blanca?",
+          "text": "Lo de cantante sí, pero... ¿Maga Blanca?",
           "textAnimation": true,
           "actions": [
             {
@@ -1503,7 +1503,7 @@
         },
         {
           "character": "3C",
-          "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez desde que llegaron a aquel mundo, sus avatares responden como si siempre hubieran sabido luchar juntos.",
+          "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez, los cuatro coordinan sus avatares como si siempre hubieran sabido luchar juntos.",
           "actions": [
             {
               "type": "hideDialog"
@@ -1727,7 +1727,7 @@
         {
           "character": "Ballerina Capuchina",
           "speakingAs": "ballerina_capuchina",
-          "text": "Id, mis queridos desastres virales. Yo bailaré con ellos hasta que no quede nadie en pie.",
+          "text": "Id, mis queridos desastres virales. La orden externa exige que el camino quede abierto; yo bailaré con ellos hasta que sea demasiado tarde.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1772,7 +1772,13 @@
               "type": "minigame",
               "game": "battle",
               "enemy": "ballerina_capuchina",
-              "enemyHp": 420
+              "enemyHp": 9999,
+              "surviveTurns": 4,
+              "retryOnDefeat": true,
+              "useInventory": false,
+              "victoryTitle": "Habéis roto el compás",
+              "victoryText": "Ballerina abandona la danza, pero su objetivo ya está cumplido.",
+              "defeatText": "El baile os atrapa antes de que podáis seguirla. Volved a romper su ritmo."
             }
           ]
         },
@@ -1795,7 +1801,7 @@
         },
         {
           "character": "3C",
-          "text": "Ballerina Capuchina suelta una carcajada aguda, gira sobre una pierna y se deshace en una espiral de vapor de café, píxeles negros y purpurina dorada.",
+          "text": "Ballerina Capuchina suelta una carcajada aguda. Durante un fotograma, hilos negros parecen tirar de sus muñecas desde algún lugar fuera del mundo; luego gira sobre una pierna y se deshace en vapor de café, píxeles y purpurina.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -1829,6 +1835,44 @@
               "loop": true,
               "id": "bg_music",
               "fadeIn": 1000
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "No como si nada. Ese tirón tenía la misma firma que la corrupción de Ecchi Land. Alguien está moviendo a los brainrot desde fuera... y quizá supiera perfectamente dónde me dejó encerrada.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "José",
+          "text": "¿Crees que tu prisión fue deliberada?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "Creo que ya no podemos llamarlo casualidad. Pero todavía no sé quién sostiene los hilos.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "right",
+              "pose": "determined"
             }
           ]
         },
@@ -2233,7 +2277,7 @@
         },
         {
           "character": "Samu",
-          "text": "Te rescaté cuando estabas a punto de convertirte otra vez en un sincorazón. Eso ya cuenta como aventura bastante seria.",
+          "text": "Te rescaté antes de que Zip terminara de convertirte en una sombra con complejo de jefe final. Eso ya cuenta como aventura bastante seria.",
           "actions": [
             {
               "type": "showCharacter",

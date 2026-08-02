@@ -102,6 +102,51 @@
         drop-shadow(0 0 30px rgba(255, 209, 102, 0.78));
 }
 
+/* El diapasón atraviesa el ruido de la Amalgama y deja visible la frecuencia
+   azul de Airi. La clase permanece tras usar el objeto; cada pulso narrativo
+   añade una expansión breve sin deformar el sprite base. */
+.battle-enemy.is-airi-resonant {
+    filter:
+        brightness(1.08)
+        saturate(0.82)
+        drop-shadow(0 18px 20px rgba(0, 0, 0, 0.65))
+        drop-shadow(0 0 18px rgba(98, 222, 255, 0.78))
+        drop-shadow(0 0 38px rgba(244, 220, 132, 0.34));
+}
+
+.battle-enemy.airi-resonance-pulse {
+    animation: battle-airi-resonance 0.72s cubic-bezier(.15, .78, .24, 1);
+}
+
+@keyframes battle-airi-resonance {
+    0% {
+        transform: translateX(-50%) scale(1);
+        filter: brightness(1.05) drop-shadow(0 0 12px rgba(98, 222, 255, .5));
+    }
+    32% {
+        transform: translateX(-50%) scale(1.035);
+        filter:
+            brightness(1.8)
+            saturate(.45)
+            drop-shadow(0 0 34px rgba(98, 222, 255, .96))
+            drop-shadow(0 0 62px rgba(255, 232, 150, .75));
+    }
+    100% {
+        transform: translateX(-50%) scale(1);
+        filter:
+            brightness(1.08)
+            saturate(.82)
+            drop-shadow(0 18px 20px rgba(0, 0, 0, .65))
+            drop-shadow(0 0 18px rgba(98, 222, 255, .78));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .battle-enemy.airi-resonance-pulse {
+        animation: none;
+    }
+}
+
 .battle-enemy.is-defeated {
     animation: battle-enemy-defeat 1.2s ease forwards;
     pointer-events: none;

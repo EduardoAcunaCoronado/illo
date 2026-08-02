@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alineación de ojos por capas · Project AI.ri</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg:#060510; --panel:#100d25; --panel2:#17122f; --line:rgba(255,255,255,.12);
+      --gold:#ffd166; --cyan:#4fd0ff; --pink:#ff4fa3; --green:#7df2b1;
+      --text:#f7f4ff; --muted:#a39cbd;
+      font-family:Inter,ui-sans-serif,system-ui,sans-serif;
+    }
+    * { box-sizing:border-box; }
+    html,body { height:100%; margin:0; background:var(--bg); color:var(--text); }
+    body { display:grid; grid-template-rows:auto minmax(0,1fr); overflow:hidden; }
+    button,input,select { font:inherit; }
+    header {
+      display:flex; align-items:center; gap:20px; min-height:72px; padding:12px 20px;
+      border-bottom:1px solid var(--line);
+      background:linear-gradient(90deg,rgba(255,79,163,.08),rgba(79,208,255,.05));
+    }
+    .brand { min-width:260px; }
+    .brand small { display:block; color:var(--cyan); font-size:10px; font-weight:900; letter-spacing:1.6px; text-transform:uppercase; }
+    .brand strong { display:block; margin-top:3px; font-size:20px; }
+    .intro { flex:1; color:var(--muted); font-size:12px; line-height:1.45; }
+    .intro b { color:var(--green); }
+    .button,button {
+      appearance:none; border:1px solid var(--line); border-radius:999px; padding:9px 13px;
+      background:rgba(255,255,255,.04); color:var(--text); text-decoration:none; cursor:pointer;
+      font-size:11px; font-weight:800;
+    }
+    .button:hover,button:hover { border-color:var(--cyan); color:var(--cyan); }
+    .button.disabled { pointer-events:none; opacity:.38; }
+    main { display:grid; grid-template-columns:245px minmax(0,1fr); min-height:0; }
+    aside { min-height:0; border-right:1px solid var(--line); background:rgba(16,13,37,.94); }
+    .filters { padding:14px; border-bottom:1px solid var(--line); }
+    .filters input,.offset-controls input {
+      border:1px solid var(--line); border-radius:8px; outline:0;
+      background:rgba(255,255,255,.04); color:var(--text);
+    }
+    .filters input { width:100%; padding:10px 11px; }
+    #pose-list { height:calc(100% - 62px); overflow:auto; padding:7px; }
+    .pose {
+      width:100%; display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; padding:10px;
+      border:1px solid transparent; border-radius:9px; background:transparent; text-align:left;
+    }
+    .pose:hover { background:rgba(255,255,255,.05); }
+    .pose.active { border-color:rgba(79,208,255,.5); background:rgba(79,208,255,.09); }
+    .pose strong,.pose small { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .pose strong { font-size:12px; text-transform:capitalize; }
+    .pose small { margin-top:3px; color:var(--muted); font-size:10px; }
+    .pose > span:last-child { align-self:center; color:var(--green); font-size:9px; font-weight:900; }
+    .content { display:grid; grid-template-rows:auto auto auto minmax(0,1fr) auto; min-width:0; min-height:0; }
+    .toolbar,.sharebar {
+      display:flex; align-items:center; justify-content:space-between; gap:14px; padding:10px 16px;
+      border-bottom:1px solid var(--line); background:rgba(9,7,23,.72);
+    }
+    #pose-title { font-size:14px; font-weight:900; text-transform:capitalize; }
+    #pose-title span { color:var(--muted); font-weight:500; text-transform:none; }
+    .toolbar-actions,.share-actions { display:flex; align-items:center; gap:8px; }
+    .toolbar label { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:11px; }
+    .toolbar input { accent-color:var(--pink); }
+    .toolbar select,.sharebar select {
+      border:1px solid var(--line); border-radius:8px; outline:0; padding:7px 9px;
+      background:var(--panel2); color:var(--text); font-size:10px;
+    }
+    .source-picker { padding-right:8px; border-right:1px solid var(--line); }
+    .sharebar { justify-content:center; padding:8px 16px; }
+    .sharebar strong { color:var(--cyan); font-size:10px; letter-spacing:.8px; text-transform:uppercase; }
+    .sharebar .button { padding:7px 11px; }
+    #download-eyes { border-color:rgba(255,79,163,.45); color:#ff8dc4; }
+    .locationbar {
+      display:flex; align-items:center; justify-content:center; gap:8px; min-width:0; padding:7px 16px;
+      border-bottom:1px solid var(--line); background:rgba(125,242,177,.035);
+    }
+    .locationbar > strong { color:var(--green); font-size:9px; letter-spacing:.9px; text-transform:uppercase; }
+    .locationbar button { padding:6px 10px; border-radius:8px; font-size:9px; }
+    #location-state { min-width:0; max-width:42%; overflow:hidden; color:var(--muted); font:9px/1.2 ui-monospace,SFMono-Regular,Consolas,monospace; text-overflow:ellipsis; white-space:nowrap; }
+    .workspace { display:grid; grid-template-columns:1fr 1fr; gap:14px; min-height:0; padding:14px; }
+    .panel {
+      display:grid; grid-template-rows:auto minmax(0,1fr) auto; min-width:0; min-height:0;
+      overflow:hidden; border:1px solid var(--line); border-radius:14px; background:#090718;
+    }
+    .panel.open { border-color:rgba(79,208,255,.27); }
+    .panel.closed { border-color:rgba(255,79,163,.27); }
+    .panel-head { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 13px; border-bottom:1px solid var(--line); }
+    .panel-head strong { font-size:12px; }
+    .panel.open .panel-head strong { color:var(--cyan); }
+    .panel.closed .panel-head strong { color:#ff8dc4; }
+    .panel-head span { color:var(--muted); font-size:10px; }
+    .stage-shell {
+      display:grid; place-items:center; min-height:0; overflow:hidden; padding:12px;
+      background-color:#080719;
+      background-image:linear-gradient(45deg,#100d25 25%,transparent 25%),linear-gradient(-45deg,#100d25 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#100d25 75%),linear-gradient(-45deg,transparent 75%,#100d25 75%);
+      background-size:24px 24px; background-position:0 0,0 12px,12px -12px,-12px 0;
+    }
+    .sprite-frame { position:relative; width:100%; height:100%; max-width:100%; max-height:100%; outline:none; }
+    .sprite-frame:focus { box-shadow:inset 0 0 0 2px rgba(255,209,102,.55); }
+    .sprite-frame img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
+    .eye-layer { cursor:grab; touch-action:none; }
+    .eye-layer.dragging { cursor:grabbing; }
+    .transform-box { position:absolute; z-index:4; pointer-events:none; border:1px dashed var(--cyan); box-shadow:0 0 0 1px rgba(6,5,16,.65),0 0 12px rgba(79,208,255,.16); }
+    .closed .transform-box { border-color:var(--pink); box-shadow:0 0 0 1px rgba(6,5,16,.65),0 0 12px rgba(255,79,163,.16); }
+    .transform-handle {
+      position:absolute; width:11px; height:11px; min-width:0; padding:0; border:1px solid #071019; border-radius:2px;
+      background:var(--cyan); pointer-events:auto; transform:translate(-50%,-50%); touch-action:none;
+      box-shadow:0 0 0 1px rgba(255,255,255,.78); z-index:5;
+    }
+    .closed .transform-handle { background:var(--pink); }
+    .transform-handle[data-handle="nw"] { left:0; top:0; cursor:nwse-resize; }
+    .transform-handle[data-handle="n"] { left:50%; top:0; cursor:ns-resize; }
+    .transform-handle[data-handle="ne"] { left:100%; top:0; cursor:nesw-resize; }
+    .transform-handle[data-handle="e"] { left:100%; top:50%; cursor:ew-resize; }
+    .transform-handle[data-handle="se"] { left:100%; top:100%; cursor:nwse-resize; }
+    .transform-handle[data-handle="s"] { left:50%; top:100%; cursor:ns-resize; }
+    .transform-handle[data-handle="sw"] { left:0; top:100%; cursor:nesw-resize; }
+    .transform-handle[data-handle="w"] { left:0; top:50%; cursor:ew-resize; }
+    body.hide-bases .base-layer { visibility:hidden; }
+    .region-layer { position:absolute; inset:0; pointer-events:none; }
+    .eye-region { position:absolute; display:none; border:2px dashed var(--gold); border-radius:50%; transform-origin:center; }
+    body.show-regions .eye-region { display:block; }
+    .offset-controls {
+      display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:8px; min-height:58px;
+      padding:10px 12px; border-top:1px solid var(--line); background:rgba(16,13,37,.92);
+    }
+    .offset-controls > strong { font-size:10px; color:var(--gold); text-transform:uppercase; letter-spacing:.6px; }
+    .offset-controls label { display:flex; align-items:center; gap:5px; color:var(--muted); font-size:10px; }
+    .offset-controls input { width:66px; padding:6px 8px; }
+    .offset-controls .save { border-color:rgba(125,242,177,.45); color:var(--green); }
+    .save-state { min-width:72px; color:var(--muted); font-size:9px; }
+    .save-state.ok { color:var(--green); }
+    .save-state.error { color:#ff8995; }
+    .status {
+      display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:10px 14px 13px;
+      border-top:1px solid var(--line); background:var(--panel);
+    }
+    .metric { padding:9px 11px; border:1px solid var(--line); border-radius:10px; background:rgba(255,255,255,.025); }
+    .metric small { display:block; color:var(--muted); font-size:9px; font-weight:800; text-transform:uppercase; }
+    .metric strong { display:block; margin-top:4px; color:var(--green); font-size:11px; }
+    .warning { color:var(--gold)!important; }
+    .empty { display:grid; place-items:center; height:100%; padding:30px; color:var(--muted); text-align:center; }
+    @media (max-width:900px) {
+      main { grid-template-columns:190px minmax(0,1fr); }
+      .workspace { grid-template-columns:1fr; overflow:auto; }
+      .panel { min-height:580px; }
+      .intro { display:none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand"><small>Project AI.ri · herramienta ocular</small><strong>Alineación de ojos</strong></div>
+    <div class="intro"><b>Arrastra los ojos</b> para moverlos y usa los tiradores del marco para estirarlos. Mantén <b>Alt</b> al tirar para transformar ambos lados desde el centro.</div>
+    <a class="button" href="/tools">☰ Herramientas</a>
+    <a class="button" href="/">← Volver a marcar</a>
+  </header>
+  <main>
+    <aside>
+      <div class="filters"><input id="search" type="search" placeholder="Buscar personaje o pose…" autocomplete="off"></div>
+      <div id="pose-list"></div>
+    </aside>
+    <section class="content">
+      <div class="toolbar">
+        <div id="pose-title">Cargando…</div>
+        <div class="toolbar-actions">
+          <label class="source-picker">Origen
+            <select id="source-mode">
+              <option value="saved">Recortes guardados</option>
+              <option value="clean">Capas limpias</option>
+            </select>
+          </label>
+          <label><input id="link-scale" type="checkbox"> Vincular estirado</label>
+          <label><input id="show-regions" type="checkbox"> Ver regiones</label>
+          <label><input id="hide-bases" type="checkbox"> Ocultar bases</label>
+          <button id="reset-both" type="button">Restablecer ambos</button>
+        </div>
+      </div>
+      <div class="sharebar">
+        <strong>Compartir</strong>
+        <label>Parpadeo <select id="blink-frame" aria-label="Fotograma de parpadeo"></select></label>
+        <a id="clean-base-link" class="button" href="/clean-base">✎ Limpiar pose base</a>
+        <a id="download-eyes" class="button" href="#" download>↓ GIF capa ocular</a>
+        <span class="save-state">El GIF respeta ambos offsets.</span>
+      </div>
+      <div class="locationbar" aria-label="Ubicaciones de archivos">
+        <strong>Ubicaciones</strong>
+        <button type="button" data-location="base">📁 Sprite base</button>
+        <button type="button" data-location="eyes">👁 Ojos utilizados</button>
+        <button type="button" data-location="results">💾 Guardado X/Y</button>
+        <span id="location-state">Selecciona una ubicación para abrirla</span>
+      </div>
+      <div id="workspace" class="workspace">
+        <article class="panel open">
+          <div class="panel-head"><strong>OJOS ABIERTOS SOBRE BASE</strong><span id="open-source-label">Arrastra la capa azul</span></div>
+          <div class="stage-shell">
+            <div id="open-frame" class="sprite-frame" tabindex="0" data-state="open">
+              <img id="open-base" class="base-layer" alt="Pose base para ojos abiertos">
+              <img id="open-eyes" class="eye-layer" alt="Capa de ojos abiertos" draggable="false">
+              <div id="open-transform" class="transform-box" aria-label="Transformación de ojos abiertos">
+                <button class="transform-handle" data-handle="nw" type="button" aria-label="Estirar esquina superior izquierda"></button><button class="transform-handle" data-handle="n" type="button" aria-label="Estirar borde superior"></button><button class="transform-handle" data-handle="ne" type="button" aria-label="Estirar esquina superior derecha"></button><button class="transform-handle" data-handle="e" type="button" aria-label="Estirar borde derecho"></button><button class="transform-handle" data-handle="se" type="button" aria-label="Estirar esquina inferior derecha"></button><button class="transform-handle" data-handle="s" type="button" aria-label="Estirar borde inferior"></button><button class="transform-handle" data-handle="sw" type="button" aria-label="Estirar esquina inferior izquierda"></button><button class="transform-handle" data-handle="w" type="button" aria-label="Estirar borde izquierdo"></button>
+              </div>
+              <div id="open-regions" class="region-layer"></div>
+            </div>
+          </div>
+          <div class="offset-controls">
+            <strong>Offset abierto</strong>
+            <label>X <input id="open-x" type="number" min="-512" max="512" step="1"> px</label>
+            <label>Y <input id="open-y" type="number" min="-512" max="512" step="1"> px</label>
+            <label>Ancho <input id="open-scale-x" type="number" min="25" max="300" step="1"> %</label>
+            <label>Alto <input id="open-scale-y" type="number" min="25" max="300" step="1"> %</label>
+            <button id="reset-open" type="button">Restablecer</button>
+            <button class="save" data-save="open" type="button">Guardar</button>
+            <span id="open-state" class="save-state">Sin cambios</span>
+          </div>
+        </article>
+        <article class="panel closed">
+          <div class="panel-head"><strong>OJOS CERRADOS SOBRE BASE</strong><span id="closed-source-label">Arrastra la capa rosa</span></div>
+          <div class="stage-shell">
+            <div id="closed-frame" class="sprite-frame" tabindex="0" data-state="closed">
+              <img id="closed-base" class="base-layer" alt="Pose base para ojos cerrados">
+              <img id="closed-eyes" class="eye-layer" alt="Capa de ojos cerrados" draggable="false">
+              <div id="closed-transform" class="transform-box" aria-label="Transformación de ojos cerrados">
+                <button class="transform-handle" data-handle="nw" type="button" aria-label="Estirar esquina superior izquierda"></button><button class="transform-handle" data-handle="n" type="button" aria-label="Estirar borde superior"></button><button class="transform-handle" data-handle="ne" type="button" aria-label="Estirar esquina superior derecha"></button><button class="transform-handle" data-handle="e" type="button" aria-label="Estirar borde derecho"></button><button class="transform-handle" data-handle="se" type="button" aria-label="Estirar esquina inferior derecha"></button><button class="transform-handle" data-handle="s" type="button" aria-label="Estirar borde inferior"></button><button class="transform-handle" data-handle="sw" type="button" aria-label="Estirar esquina inferior izquierda"></button><button class="transform-handle" data-handle="w" type="button" aria-label="Estirar borde izquierdo"></button>
+              </div>
+              <div id="closed-regions" class="region-layer"></div>
+            </div>
+          </div>
+          <div class="offset-controls">
+            <strong>Offset cerrado</strong>
+            <label>X <input id="closed-x" type="number" min="-512" max="512" step="1"> px</label>
+            <label>Y <input id="closed-y" type="number" min="-512" max="512" step="1"> px</label>
+            <label>Ancho <input id="closed-scale-x" type="number" min="25" max="300" step="1"> %</label>
+            <label>Alto <input id="closed-scale-y" type="number" min="25" max="300" step="1"> %</label>
+            <button id="reset-closed" type="button">Restablecer</button>
+            <button class="save" data-save="closed" type="button">Guardar</button>
+            <span id="closed-state" class="save-state">Sin cambios</span>
+          </div>
+        </article>
+      </div>
+      <div class="status">
+        <div class="metric"><small>Poses disponibles</small><strong id="pose-count">—</strong></div>
+        <div class="metric"><small>Guardado</small><strong id="global-state">Offsets independientes</strong></div>
+        <div class="metric"><small>Origen visible</small><strong id="source-state" class="warning">Recortes guardados</strong></div>
+      </div>
+    </section>
+  </main>
+  <script>
+    const assetVersion = Date.now();
+    const asset = path => `/${path}?v=${assetVersion}`;
+    const clamp = value => Math.max(-512, Math.min(512, Math.round(Number(value) || 0)));
+    const clampScale = value => Math.max(.25,Math.min(3,(Number(value)||100)/100));
+    const poseList = document.getElementById('pose-list');
+    const poseTitle = document.getElementById('pose-title');
+    const globalState = document.getElementById('global-state');
+    const sourceModeSelect = document.getElementById('source-mode');
+    const blinkFrameSelect = document.getElementById('blink-frame');
+    const locationState = document.getElementById('location-state');
+    const locationButtons = [...document.querySelectorAll('[data-location]')];
+    const states = ['open','closed'];
+    const ui = Object.fromEntries(states.map(state => [state, {
+      frame:document.getElementById(`${state}-frame`),
+      base:document.getElementById(`${state}-base`),
+      eyes:document.getElementById(`${state}-eyes`),
+      transform:document.getElementById(`${state}-transform`),
+      regions:document.getElementById(`${state}-regions`),
+      x:document.getElementById(`${state}-x`),
+      y:document.getElementById(`${state}-y`),
+      scaleX:document.getElementById(`${state}-scale-x`),
+      scaleY:document.getElementById(`${state}-scale-y`),
+      status:document.getElementById(`${state}-state`)
+    }]));
+    let poses = [];
+    let currentIndex = 0;
+    let drag = null;
+    let saveTimer = null;
+    let cleanMetadata = {poses:{}};
+    let savedMetadata = {poses:{}};
+    let offsetPayload = {offsets:{}};
+    let sourceMode = 'saved';
+    let currentLocations = {};
+
+    const current = () => poses[currentIndex];
+    const defaultOffsets = () => ({open:[0,0],closed:[0,0],openScale:[1,1],closedScale:[1,1]});
+
+    function renderList() {
+      const query = document.getElementById('search').value.trim().toLowerCase();
+      poseList.replaceChildren();
+      poses.forEach((entry,index) => {
+        if (query && !entry.id.toLowerCase().includes(query)) return;
+        const [character,...poseParts] = entry.id.split('.');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = `pose${index === currentIndex ? ' active' : ''}`;
+        button.innerHTML = '<span><strong></strong><small></small></span><span></span>';
+        button.querySelector('strong').textContent = character.replaceAll('_',' ');
+        button.querySelector('small').textContent = poseParts.join('.');
+        button.lastElementChild.textContent = sourceMode === 'saved' ? 'RECORTE' : 'CAPA';
+        button.addEventListener('click', () => selectPose(index));
+        poseList.appendChild(button);
+      });
+      requestAnimationFrame(() => poseList.querySelector('.active')?.scrollIntoView({block:'nearest'}));
+    }
+
+    function canvasLayout(state) {
+      const entry=current(),frameRect=ui[state].frame.getBoundingClientRect();
+      if(!entry)return {scale:1,left:0,top:0,width:1,height:1};
+      const width=entry.data.canvas.width,height=entry.data.canvas.height;
+      const scale=Math.min(frameRect.width/width,frameRect.height/height)||1;
+      return {scale,left:(frameRect.width-width*scale)/2,top:(frameRect.height-height*scale)/2,width,height};
+    }
+
+    function layerScale(state) {
+      return canvasLayout(state).scale;
+    }
+
+    function sourceEyeBounds(entry=current()) {
+      if(!entry)return {x:0,y:0,width:1,height:1};
+      if(entry.data.eyeCrop)return entry.data.eyeCrop;
+      const width=entry.data.canvas.width,height=entry.data.canvas.height;
+      const regions=(entry.data.regions||[]).filter(region=>region.mode!=='exclude');
+      if(!regions.length)return {x:0,y:0,width,height};
+      const boxes=regions.map(region=>{
+        const angle=(region.rotation||0)*Math.PI/180;
+        const ex=Math.sqrt((region.rx*Math.cos(angle))**2+(region.ry*Math.sin(angle))**2);
+        const ey=Math.sqrt((region.rx*Math.sin(angle))**2+(region.ry*Math.cos(angle))**2);
+        return {left:(region.cx-ex)*width,right:(region.cx+ex)*width,top:(region.cy-ey)*height,bottom:(region.cy+ey)*height};
+      });
+      const left=Math.min(...boxes.map(box=>box.left)),right=Math.max(...boxes.map(box=>box.right));
+      const top=Math.min(...boxes.map(box=>box.top)),bottom=Math.max(...boxes.map(box=>box.bottom));
+      return {x:left,y:top,width:right-left,height:bottom-top};
+    }
+
+    function applyOffset(state) {
+      const offset = current()?.offsets?.[state] || [0,0];
+      const stretch = current()?.offsets?.[`${state}Scale`] || [1,1];
+      ui[state].x.value = offset[0];
+      ui[state].y.value = offset[1];
+      ui[state].scaleX.value = Math.round(stretch[0]*100);
+      ui[state].scaleY.value = Math.round(stretch[1]*100);
+      const layout=canvasLayout(state),crop=current()?.data?.eyeCrop||{x:0,y:0,width:layout.width,height:layout.height};
+      const image=ui[state].eyes;
+      image.style.inset='auto';image.style.objectFit='fill';
+      image.style.left=`${layout.left+(crop.x+offset[0])*layout.scale}px`;
+      image.style.top=`${layout.top+(crop.y+offset[1])*layout.scale}px`;
+      image.style.width=`${crop.width*layout.scale}px`;
+      image.style.height=`${crop.height*layout.scale}px`;
+      const eyeBounds=sourceEyeBounds();
+      const originX=(eyeBounds.x+eyeBounds.width/2-crop.x)*layout.scale;
+      const originY=(eyeBounds.y+eyeBounds.height/2-crop.y)*layout.scale;
+      image.style.transformOrigin=`${originX}px ${originY}px`;
+      image.style.transform=`scale(${stretch[0]},${stretch[1]})`;
+      const boxWidth=Math.max(12,eyeBounds.width*layout.scale*stretch[0]);
+      const boxHeight=Math.max(12,eyeBounds.height*layout.scale*stretch[1]);
+      const centerX=layout.left+(eyeBounds.x+eyeBounds.width/2+offset[0])*layout.scale;
+      const centerY=layout.top+(eyeBounds.y+eyeBounds.height/2+offset[1])*layout.scale;
+      ui[state].transform.style.left=`${centerX-boxWidth/2}px`;
+      ui[state].transform.style.top=`${centerY-boxHeight/2}px`;
+      ui[state].transform.style.width=`${boxWidth}px`;
+      ui[state].transform.style.height=`${boxHeight}px`;
+    }
+
+    function renderRegions(state) {
+      const entry = current();
+      const target = ui[state].regions;
+      target.replaceChildren();
+      if (!entry || !ui[state].base.naturalWidth) return;
+      const layout=canvasLayout(state),width=layout.width,height=layout.height,scale=layout.scale,left=layout.left,top=layout.top;
+      (entry.data.regions||[]).forEach(region => {
+        const ellipse = document.createElement('i');
+        ellipse.className = 'eye-region';
+        ellipse.style.left = `${left + (region.cx - region.rx) * width * scale}px`;
+        ellipse.style.top = `${top + (region.cy - region.ry) * height * scale}px`;
+        ellipse.style.width = `${region.rx * width * scale * 2}px`;
+        ellipse.style.height = `${region.ry * height * scale * 2}px`;
+        ellipse.style.transform = `rotate(${region.rotation || 0}deg)`;
+        target.appendChild(ellipse);
+      });
+    }
+
+    function markPending(state) {
+      ui[state].status.textContent = 'Pendiente';
+      ui[state].status.className = 'save-state';
+      globalState.textContent = 'Cambios pendientes';
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(saveOffsets, 350);
+    }
+
+    function readInputs(state) {
+      current().offsets[state] = [clamp(ui[state].x.value),clamp(ui[state].y.value)];
+      applyOffset(state);
+      markPending(state);
+    }
+
+    function readScaleInputs(state) {
+      const stretch=[clampScale(ui[state].scaleX.value),clampScale(ui[state].scaleY.value)];
+      current().offsets[`${state}Scale`]=stretch;applyOffset(state);markPending(state);
+      if(document.getElementById('link-scale').checked){
+        const other=state==='open'?'closed':'open';current().offsets[`${other}Scale`]=[...stretch];applyOffset(other);
+        ui[other].status.textContent='Pendiente';ui[other].status.className='save-state';
+      }
+    }
+
+    function beginHandleResize(state,handle,event) {
+      event.preventDefault();event.stopPropagation();event.currentTarget.setPointerCapture(event.pointerId);ui[state].frame.focus();
+      const bounds=sourceEyeBounds(),offset=[...(current().offsets[state]||[0,0])],stretch=[...(current().offsets[`${state}Scale`]||[1,1])];
+      const centerX=bounds.x+bounds.width/2+offset[0],centerY=bounds.y+bounds.height/2+offset[1];
+      const width=bounds.width*stretch[0],height=bounds.height*stretch[1];
+      drag={action:'resize',state,handle,pointerId:event.pointerId,x:event.clientX,y:event.clientY,bounds,
+        left:centerX-width/2,right:centerX+width/2,top:centerY-height/2,bottom:centerY+height/2};
+      ui[state].status.textContent='Transformando…';
+    }
+
+    function moveHandleResize(state,event) {
+      if(!drag||drag.action!=='resize'||drag.state!==state||drag.pointerId!==event.pointerId)return;
+      const step=canvasLayout(state).scale,dx=(event.clientX-drag.x)/step,dy=(event.clientY-drag.y)/step,handle=drag.handle,bounds=drag.bounds;
+      let {left,right,top,bottom}=drag;
+      if(handle.includes('e')){right+=dx;if(event.altKey)left-=dx;}
+      if(handle.includes('w')){left+=dx;if(event.altKey)right-=dx;}
+      if(handle.includes('s')){bottom+=dy;if(event.altKey)top-=dy;}
+      if(handle.includes('n')){top+=dy;if(event.altKey)bottom-=dy;}
+      if(handle.includes('e')||handle.includes('w')){
+        const wanted=Math.max(bounds.width*.25,Math.min(bounds.width*3,right-left));
+        if(event.altKey){const center=(left+right)/2;left=center-wanted/2;right=center+wanted/2;}
+        else if(handle.includes('e'))right=left+wanted;else left=right-wanted;
+      }
+      if(handle.includes('n')||handle.includes('s')){
+        const wanted=Math.max(bounds.height*.25,Math.min(bounds.height*3,bottom-top));
+        if(event.altKey){const center=(top+bottom)/2;top=center-wanted/2;bottom=center+wanted/2;}
+        else if(handle.includes('s'))bottom=top+wanted;else top=bottom-wanted;
+      }
+      const scaleX=Math.round((right-left)/bounds.width*10000)/10000,scaleY=Math.round((bottom-top)/bounds.height*10000)/10000;
+      current().offsets[`${state}Scale`]=[scaleX,scaleY];
+      current().offsets[state]=[Math.round((left+right)/2-(bounds.x+bounds.width/2)),Math.round((top+bottom)/2-(bounds.y+bounds.height/2))];
+      applyOffset(state);
+      if(document.getElementById('link-scale').checked){
+        const other=state==='open'?'closed':'open';current().offsets[`${other}Scale`]=[scaleX,scaleY];applyOffset(other);
+        ui[other].status.textContent='Pendiente';ui[other].status.className='save-state';
+      }
+    }
+
+    function endHandleResize(state,event) {
+      if(!drag||drag.action!=='resize'||drag.state!==state||drag.pointerId!==event.pointerId)return;
+      event.currentTarget.releasePointerCapture?.(event.pointerId);drag=null;markPending(state);
+    }
+
+    async function saveOffsets() {
+      clearTimeout(saveTimer);
+      const entry = current();
+      if (!entry) return;
+      states.forEach(state => {
+        ui[state].status.textContent = 'Guardando…';
+        ui[state].status.className = 'save-state';
+      });
+      try {
+        const response = await fetch('/api/clean-offset', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({id:entry.id,offsets:entry.offsets})
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok) throw new Error(result.error || 'No se pudo guardar');
+        entry.offsets = result.offsets;
+        states.forEach(state => {
+          ui[state].status.textContent = 'Guardado';
+          ui[state].status.className = 'save-state ok';
+          applyOffset(state);
+        });
+        globalState.textContent = 'Offsets guardados';
+      } catch (error) {
+        states.forEach(state => {
+          ui[state].status.textContent = error.message;
+          ui[state].status.className = 'save-state error';
+        });
+        globalState.textContent = 'Error al guardar';
+      }
+    }
+
+    function resetState(state, save = true) {
+      current().offsets[state] = [0,0];
+      current().offsets[`${state}Scale`] = [1,1];
+      applyOffset(state);
+      if (save) markPending(state);
+    }
+
+    function normalizedSavedPose(data) {
+      return {
+        base:data.sourceBase,
+        eyesOpen:data.original,
+        eyesClosed:data.blinks?.[0],
+        eyeFrames:data.blinks||[],
+        eyeCrop:data.crop,
+        canvas:data.sourceCanvas,
+        regions:data.regions||[],
+        previewSize:{width:data.width,height:data.height}
+      };
+    }
+
+    function normalizedCleanPose(data) {
+      return {...data,eyeFrames:[data.eyesClosed],eyeCrop:null,previewSize:null};
+    }
+
+    function rebuildPoses(preferredId = current()?.id) {
+      sourceMode=sourceModeSelect.value;
+      const sourcePoses=sourceMode==='saved'?savedMetadata.poses:cleanMetadata.poses;
+      poses=Object.entries(sourcePoses||{}).map(([id,data])=>({
+        id,
+        data:sourceMode==='saved'?normalizedSavedPose(data):normalizedCleanPose(data),
+        offsets:{...defaultOffsets(),...(offsetPayload.offsets?.[id]||{})},
+        closedFrame:0
+      })).filter(entry=>entry.data.eyesOpen&&entry.data.eyeFrames.length);
+      currentIndex=Math.max(0,poses.findIndex(entry=>entry.id===preferredId));
+      document.getElementById('pose-count').textContent=`${poses.length} disponibles`;
+      document.getElementById('source-state').textContent=sourceMode==='saved'?'Recortes guardados':'Capas limpias';
+      if(!poses.length){document.getElementById('workspace').innerHTML='<div class="empty">No hay ojos disponibles para este origen.</div>';return;}
+      poses.forEach(entry=>[entry.data.base,entry.data.eyesOpen,...entry.data.eyeFrames].forEach(path=>{const image=new Image();image.src=asset(path);}));
+      renderList();selectPose(currentIndex);
+    }
+
+    function updateBlinkFrame() {
+      const entry=current();if(!entry)return;
+      entry.closedFrame=Math.max(0,Math.min(entry.data.eyeFrames.length-1,Number(blinkFrameSelect.value)||0));
+      ui.closed.eyes.src=asset(entry.data.eyeFrames[entry.closedFrame]);
+      const gifSource=sourceMode==='saved'?'saved':'clean';
+      document.getElementById('download-eyes').href=`/api/export-gif?id=${encodeURIComponent(entry.id)}&mode=eyes&source=${gifSource}`;
+    }
+
+    async function refreshLocations() {
+      const entry=current();if(!entry)return;
+      const requestedId=entry.id,requestedSource=sourceMode;
+      locationState.textContent='Consultando ubicaciones…';
+      try {
+        const response=await fetch(`/api/alignment-locations?id=${encodeURIComponent(requestedId)}&source=${requestedSource}`,{cache:'no-store'});
+        const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudieron consultar');
+        if(current()?.id!==requestedId||sourceMode!==requestedSource)return;
+        currentLocations=result.locations;
+        locationButtons.forEach(button=>{const location=currentLocations[button.dataset.location];button.title=location?.path||'';button.disabled=!location;});
+        locationState.textContent='Pulsa un acceso para abrir su carpeta';
+      } catch(error) {
+        currentLocations={};locationState.textContent=error.message;
+      }
+    }
+
+    async function revealLocation(event) {
+      const button=event.currentTarget,kind=button.dataset.location,entry=current();if(!entry)return;
+      button.disabled=true;locationState.textContent='Abriendo carpeta…';
+      try {
+        const response=await fetch('/api/reveal-path',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:entry.id,source:sourceMode,kind})});
+        const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo abrir');
+        locationState.textContent=result.relative;locationState.title=result.path;
+      } catch(error) { locationState.textContent=error.message; }
+      finally { button.disabled=false; }
+    }
+
+    function selectPose(index) {
+      currentIndex = index;
+      const entry = current();
+      const size=entry.data.previewSize?` · recorte ${entry.data.previewSize.width}×${entry.data.previewSize.height}`:'';
+      poseTitle.innerHTML = `${entry.id.replace('.', ' · ')} <span>${size} · arrastra cada capa por separado</span>`;
+      blinkFrameSelect.replaceChildren();
+      entry.data.eyeFrames.forEach((path,frameIndex)=>{const option=document.createElement('option');option.value=String(frameIndex);option.textContent=`Frame ${frameIndex+1} · ${path.split('/').pop()}`;blinkFrameSelect.appendChild(option);});
+      blinkFrameSelect.value=String(entry.closedFrame||0);
+      states.forEach(state => {
+        ui[state].base.src = asset(entry.data.base);
+        if(state==='open')ui[state].eyes.src=asset(entry.data.eyesOpen);
+        ui[state].status.textContent = 'Sin cambios';
+        ui[state].status.className = 'save-state';
+        applyOffset(state);
+      });
+      updateBlinkFrame();
+      const cleanLink=document.getElementById('clean-base-link'),canClean=Boolean(cleanMetadata.poses?.[entry.id]);
+      cleanLink.href=canClean?`/clean-base#${encodeURIComponent(entry.id)}`:'#';cleanLink.classList.toggle('disabled',!canClean);
+      document.getElementById('open-source-label').textContent=sourceMode==='saved'?'Recorte original guardado':'Capa ocular limpia';
+      document.getElementById('closed-source-label').textContent=sourceMode==='saved'?'Recorte de parpadeo guardado':'Capa ocular limpia';
+      globalState.textContent = 'Offsets independientes';
+      renderList();refreshLocations();
+    }
+
+    states.forEach(state => {
+      const controls = ui[state];
+      controls.x.addEventListener('input', () => readInputs(state));
+      controls.y.addEventListener('input', () => readInputs(state));
+      controls.scaleX.addEventListener('input', () => readScaleInputs(state));
+      controls.scaleY.addEventListener('input', () => readScaleInputs(state));
+      controls.eyes.addEventListener('load', () => { applyOffset(state); renderRegions(state); });
+      controls.base.addEventListener('load', () => renderRegions(state));
+      controls.eyes.addEventListener('pointerdown', event => {
+        event.preventDefault();
+        controls.frame.focus();
+        controls.eyes.setPointerCapture(event.pointerId);
+        controls.eyes.classList.add('dragging');
+        drag = {state,pointerId:event.pointerId,x:event.clientX,y:event.clientY,start:[...current().offsets[state]]};
+      });
+      controls.eyes.addEventListener('pointermove', event => {
+        if (!drag || drag.state !== state || drag.pointerId !== event.pointerId) return;
+        const scale = layerScale(state);
+        current().offsets[state] = [
+          clamp(drag.start[0] + (event.clientX - drag.x) / scale),
+          clamp(drag.start[1] + (event.clientY - drag.y) / scale)
+        ];
+        applyOffset(state);
+        ui[state].status.textContent = 'Moviendo…';
+      });
+      const endDrag = event => {
+        if (!drag || drag.state !== state || drag.pointerId !== event.pointerId) return;
+        controls.eyes.classList.remove('dragging');
+        drag = null;
+        markPending(state);
+      };
+      controls.eyes.addEventListener('pointerup', endDrag);
+      controls.eyes.addEventListener('pointercancel', endDrag);
+      controls.transform.querySelectorAll('.transform-handle').forEach(handle=>{
+        handle.addEventListener('pointerdown',event=>beginHandleResize(state,handle.dataset.handle,event));
+        handle.addEventListener('pointermove',event=>moveHandleResize(state,event));
+        handle.addEventListener('pointerup',event=>endHandleResize(state,event));
+        handle.addEventListener('pointercancel',event=>endHandleResize(state,event));
+      });
+      controls.frame.addEventListener('keydown', event => {
+        const delta = {ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[event.key];
+        if (!delta) return;
+        event.preventDefault();
+        const step = event.shiftKey ? 5 : 1;
+        const offset = current().offsets[state];
+        current().offsets[state] = [clamp(offset[0] + delta[0] * step),clamp(offset[1] + delta[1] * step)];
+        applyOffset(state);
+        markPending(state);
+      });
+    });
+
+    document.getElementById('search').addEventListener('input', renderList);
+    sourceModeSelect.addEventListener('change',()=>rebuildPoses(current()?.id));
+    blinkFrameSelect.addEventListener('change',updateBlinkFrame);
+    locationButtons.forEach(button=>button.addEventListener('click',revealLocation));
+    document.getElementById('show-regions').addEventListener('change', event => document.body.classList.toggle('show-regions',event.target.checked));
+    document.getElementById('hide-bases').addEventListener('change', event => document.body.classList.toggle('hide-bases',event.target.checked));
+    document.getElementById('reset-open').addEventListener('click', () => resetState('open'));
+    document.getElementById('reset-closed').addEventListener('click', () => resetState('closed'));
+    document.getElementById('reset-both').addEventListener('click', () => {
+      resetState('open',false); resetState('closed',false); markPending('open');
+    });
+    document.querySelectorAll('[data-save]').forEach(button => button.addEventListener('click', saveOffsets));
+    window.addEventListener('resize', () => states.forEach(state => { applyOffset(state); renderRegions(state); }));
+
+    Promise.all([
+      fetch(`/assets/metadata/blink_eye_layers_clean.json?v=${assetVersion}`,{cache:'no-store'}).then(response=>response.ok?response.json():({poses:{}})),
+      fetch(`/assets/metadata/blink_eye_region_previews.json?v=${assetVersion}`,{cache:'no-store'}).then(response=>response.ok?response.json():({poses:{}})),
+      fetch('/api/clean-offsets',{cache:'no-store'}).then(response=>response.json())
+    ]).then(([cleanPayload,savedPayload,offsets]) => {
+      cleanMetadata=cleanPayload;savedMetadata=savedPayload;offsetPayload=offsets;
+      if(!Object.keys(savedMetadata.poses||{}).length)sourceModeSelect.value='clean';
+      rebuildPoses();
+    }).catch(error => {
+      document.getElementById('workspace').innerHTML = `<div class="empty">${error.message}</div>`;
+      globalState.textContent = 'Sin datos';
+    });
+  </script>
+</body>
+</html>

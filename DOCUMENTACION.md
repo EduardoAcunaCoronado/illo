@@ -398,7 +398,9 @@ Quita el hueco derecho (y olvida a "luna" si estaba ahí).
 
 ### setPose
 
-Cambia la pose de un personaje visible.
+Cambia la pose de un personaje visible mediante sustitución limpia del sprite.
+No se conserva ni se superpone la pose anterior: cada hueco contiene un único
+fotograma, también cuando entra un personaje diferente.
 
 ```json
 {
@@ -408,6 +410,83 @@ Cambia la pose de un personaje visible.
   "pose": "sad"
 }
 ```
+
+### animateCharacter / characterAnimation / poseSequence
+
+Reproduce una secuencia declarativa de poses para acting, respiración,
+parpadeos, nervios o sacudidas. Los tres nombres son equivalentes.
+
+```json
+{
+  "type": "animateCharacter",
+  "character": "samu",
+  "position": "left",
+  "poses": ["surprised", "curious", "thinking"],
+  "frameMs": 260,
+  "loop": false,
+  "untilAdvance": false
+}
+```
+
+- `poses` o `frames`: poses existentes en la ficha del personaje.
+- `frameMs`: duración de cada fotograma, con mínimo seguro de 90 ms.
+- `loop`: repite la secuencia salvo que valga `false`.
+- `pingPong`: vuelve en orden inverso sin duplicar extremos.
+- `untilAdvance`: por defecto `true`; el bucle se detiene al avanzar el texto.
+- `immediate`: si vale `false`, espera un intervalo antes del primer fotograma.
+
+`stopCharacterAnimation` y `stopPoseSequence` cancelan explícitamente la
+secuencia. Ocultar al personaje, cambiar de escena, retroceder o reiniciar la
+partida también limpia sus temporizadores. Con `prefers-reduced-motion` se
+conserva un fotograma estático y legible.
+
+### Animaciones internas de una pose
+
+Una ficha de personaje puede declarar varios sprites de la **misma pose** en
+`animations`. El motor precarga los fotogramas y los reemplaza uno a uno, sin
+crossfade ni capas simultáneas. Esto sirve para parpadeos, respiración o pequeños
+gestos que no cambian la emoción narrativa:
+
+```json
+{
+  "poses": {
+    "neutral": "assets/images/characters/samu/Samu.png"
+  },
+  "animations": {
+    "neutral": {
+      "frames": [
+        { "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.png", "duration": 65 },
+        { "src": "assets/images/characters/samu/animations/samu_neutral_blink_closed.png", "duration": 95 },
+        { "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.png", "duration": 65 }
+      ],
+      "delayRange": [1800, 4200],
+      "loop": true
+    }
+  }
+}
+```
+
+- `frames`: una o más rutas de sprites completos u objetos `{src, duration}`;
+  la pose base actúa como fotograma adicional y se restaura al terminar.
+- `delayRange`: espera aleatoria entre ráfagas para evitar un bucle mecánico.
+- `loop`: con `false`, reproduce la ráfaga una sola vez.
+- La pose base reaparece automáticamente al terminar cada ráfaga.
+- Cambiar de pose, ocultar, reemplazar, saltar o retroceder cancela el temporizador.
+- Con movimiento reducido no se inicia la animación interna.
+
+Hay animación ocular en **135 de las 160 poses declaradas**. Cada variante se
+dibuja para esa pose concreta y se compone únicamente sobre sus ojos: el cuerpo,
+el encuadre y el canal alfa permanecen idénticos al sprite base. Los fotogramas
+viven en las carpetas `animations/blinks/` de cada personaje y usan WebP sin
+pérdida. Las poses que originalmente ya tienen los ojos cerrados reciben una
+variante abierta breve; no se aplican respiraciones, rebotes, escalados ni
+deformaciones procedurales.
+
+Las 25 exclusiones son deliberadas porque no contienen ojos animables: siluetas,
+pantallas de móvil, formas amorfas, caras tapadas y las poses del Gorila con las
+gafas completamente opacas. `gorila_sospecha` sí parpadea porque baja las gafas.
+El compositor de apoyo es `scripts/compose_character_blink.py`; preserva la
+resolución y el alfa y solo acepta máscaras oculares explícitas.
 
 ### hideDialog / hideText / ocultarTexto
 
@@ -563,9 +642,11 @@ una escena común. Debe ser la última acción/línea útil de la escena de orig
 
 ### setDelay / addDelay
 
-Gestionan el **retraso acumulado** (`storyDelay`) del capítulo, un contador que
-mide cuánto tiempo ha perdido el jugador según las rutas que elige. `setDelay`
-fija el valor; `addDelay` lo incrementa. Se reinicia a 0 al cargar cada capítulo.
+Gestionan la **presión narrativa acumulada** de la partida. `storyPressure` es
+la fuente persistente entre capítulos y `storyDelay` se conserva como alias de
+compatibilidad para las condiciones y configuraciones históricas. `setDelay`
+fija ambos valores y `addDelay` los incrementa; solo una partida nueva o una
+selección explícita de capítulo los devuelve a 0.
 
 ```json
 { "type": "setDelay", "value": 2 }
@@ -600,17 +681,19 @@ El retraso permite dos efectos:
    `rescued.length` vale 1, 2 o 3 según si es el 1º, 2º o 3º/último rescate. Se
    elige la entrada cuya clave sea el mayor umbral `<= rescued.length`. Tiene
    **máxima prioridad** (por encima de `allRescuedText` y `consequence`). Se usa
-   en los tres Capítulos 2 para que la trama del virus de IA se destape poco a
-   poco: 1º = síntomas/misterio, 2º = es un virus deliberado, 3º = el culpable.
+   para revelar una misma información por etapas sin adelantar lo que el grupo
+   todavía no sabe. En el canon activo no se describe la transformación como un
+   «virus»: las pistas avanzan desde una anomalía memética hasta la intervención
+   externa de Elion Husk.
 
    ```json
    {
      "character": "Edu",
      "text": "Los memes de internet cobraron vida y persiguen a los furros...",
      "byRescueCount": {
-       "1": "Los memes de internet cobraron vida y persiguen a los furros...",
-       "2": "No es casualidad: es un virus que nos transforma según nuestro avatar.",
-       "3": "Es una IA Biológica de Elon Musk. Él empezó todo esto."
+       "1": "Algo está encontrando las costuras de estos mundos...",
+       "2": "La corrupción entra desde fuera y aprovecha deseos que ya existían.",
+       "3": "El husky del alfiler rojo está coordinando a los brainrot."
      }
    }
    ```
@@ -1726,7 +1809,7 @@ Los personajes ahora ocupan toda la altura de la pantalla para máximo impacto v
 
 **Posiciones Disponibles:**
 
-Solo hay dos posiciones válidas:
+Hay tres posiciones válidas: `left`, `center` y `right`.
 
 ```json
 [
@@ -1738,7 +1821,7 @@ Solo hay dos posiciones válidas:
 },
 {
   "type": "showCharacter",
-  "character": "epod",
+  "character": "nexo",
   "position": "right",
   "pose": "neutral"
 }
@@ -1756,18 +1839,20 @@ Solo hay dos posiciones válidas:
 },
 {
   "type": "showCharacter",
-  "character": "epod",
+  "character": "nexo",
   "position": "right"
 },
 {
   "type": "showCharacter",
-  "character": "nexo",
-  "position": "left"  // o "right"
+  "character": "elion_husk",
+  "position": "center"
 }
 ]
 ```
 
-**Nota:** La posición "center" ya no está disponible. Use "left" o "right" para un personaje solo.
+**Nota:** el motor redistribuye automáticamente los huecos activos sin reducir
+la escala base de los sprites. 3C es la narradora y Nexo su auxiliar de
+continuidad; ePod no forma parte del canon activo.
 
 ### 6. Pantalla de Fin de Capítulo
 
@@ -1887,8 +1972,8 @@ Para cambiar la velocidad (más rápido/lento):
 Se cargan todos los personajes disponibles al inicio:
 
 ```javascript
-// En game.js - startNewGame()
-const characters = ["luna", "alex", "3c", "epod", "nexo"];
+// En game.js - loadAllCharacters() (lista abreviada)
+const characters = ["3c", "nexo", "samu", "edu", "tony", "jose", "airi", "elion_husk"];
 for (const character of characters) {
   await engine.loadCharacter(character);
 }
@@ -2647,17 +2732,18 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 **chapter0.json - Prólogo:**
 
 - Introducción a Furrielva
-- Presentación de 3C como narrador
+- Presentación de 3C como narradora y de Nexo como auxiliar de continuidad
+- Primera huella del quinto integrante ausente en los recuerdos del grupo
 
-**chapter1.json - Capítulo 1: Decisiones:**
+**chapter1.json - Capítulo 1: Un furro se levanta:**
 
-- Los amigos necesitan ayuda en Furrielva
-- Samu decide a quién rescatar primero (elección dinámica)
-- Rutas ramificadas según la decisión
+- Samu descubre su transformación y llama a Edu
+- La interferencia telefónica siembra por primera vez al husky del alfiler rojo
+- La historia encadena con la búsqueda de Kingdom Ketchup
 
-**chapter2-edu.json - Capítulo 2: Kingdom Ketchup:**
+**chapter2.json - Capítulo 2: Kingdom Ketchup:**
 
-- Samu busca a Edu en el supermercado
+- Samu investiga Furrielva con Furry Maps y localiza la fábrica
 - Elige ruta entre las parodias ficticias El Jarrón, Noche o Mercaguasa
 - Los tres fondos conservan sus nombres de archivo heredados (`jamon.png`,
   `dia.png` y `mercadona.png`), pero muestran marcas completamente ficticias.
@@ -2671,24 +2757,30 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
   color plano y sombreado cel, alineados con el estilo de los protagonistas. Sus
   recursos están en `assets/images/characters/others/micaela*.png` y
   `assets/images/characters/others/neit.png`.
-- Rescate de Edu y batalla contra Zip (minigame ketchup)
-- Descubrimiento del concierto de Seraphyna en Ecchi Land
-- Llamadas telefónicas opcionales
+- Recolección cronometrada de guindillas y bullet hell contra Zip
+- Rescate de Edu y descubrimiento de una corrupción impuesta desde fuera
 
-**chapter2-tony.json - Capítulo 2: Ecchi Land:**
+**chapter3.json - Capítulo 3: Ecchi Land:**
 
-- Ruta paralela de Samu rescatando a Tony
-- Aventuras en Ecchi Land
+- Viaje con Santi, asalto brainrot y concierto de Seraphyna
+- Primera imagen inequívoca de Elion controlando a los brainrot
+- Sacrificio de Goyo, nota raíz y entrega del Diapasón de Plata
 
-**chapter2-jose.json - Capítulo 2: Ciudad Paloma:**
+**chapter4.json - Capítulo 4: Ciudad Paloma:**
 
-- Ruta paralela de Samu rescatando a José
-- Aventuras en Ciudad Paloma
+- Reencuentro con José/Piyón y despertar de las cuatro clases
+- Incursión brainrot y acceso cooperativo al santuario
 
-**chapter3.json - Capítulo 3: El Precio de la Lealtad:**
+**chapter5.json - Capítulo 5: Airi:**
 
-- Desenlace final basado en quién fue rescatado primero
-- Resolución de la trama principal con variantes según ruta
+- Despertar de AI.RI y revelación gradual de sus límites biológicos y meméticos
+- Corrupción en Amalgama y batalla en la que el Diapasón devuelve agencia a AI.RI
+
+**chapter6.json - Capítulo 6: La última elección:**
+
+- Consecuencias de cerrar o sostener el mundo memético
+- Elección final formulada por AI.RI y dos desenlaces; el paquete de audio incluye
+  una reprise luminosa y otra incierta para diferenciarlos
 
 ### Ejemplo Práctico: Estructura de Capítulo
 
@@ -3439,7 +3531,7 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   sola vez, desprende partículas CSS y termina en `samu_worried.png`. Con
   reducción de movimiento se muestra directamente un estado estático seguro.
 - La recolección usa `assets/audio/music/chapter2/ketchup.mp3`; al comenzar el
-  bullet hell cambia con fundido a `assets/audio/sfx/zip's-shadow-waltz.mp3`, la
+  bullet hell cambia con fundido a `assets/audio/music/chapter2/zip's-shadow-waltz.mp3`, la
   pista aportada por José Manuel. Su versión reciente del minijuego también aporta
   la animación de movimiento de Samu, las fases flotantes de Zip, el aviso previo
   y el ataque especial de la segunda mitad. Todo ello conserva la progresión por
@@ -3567,3 +3659,416 @@ mantienen continuidad y los saltos directos desde el selector nunca quedan en
 silencio. Las nueve pistas activas del capítulo se han validado como MP3 estéreo;
 el registro de audio descarta ahora las pistas detenidas o fallidas de inmediato,
 evitando silencios intermitentes al cambiar rápidamente de música.
+
+---
+
+## Revisión integral de guion y canon (2026-08-01)
+
+Esta sección fija la continuidad vigente de **Project AI.ri: Transfurmados**.
+Ante una contradicción con una nota histórica anterior, prevalecen los capítulos
+activos, esta sección y `memory/CONTEXTO_PROYECTO.txt`, por ese orden. No deben
+crearse documentos Markdown separados para ampliar el canon.
+
+### 3C, Nexo y la cuarta pared
+
+- **3C es la narradora**. Trata la historia como un registro que debe convertir
+  en relato: dramatiza, comenta el montaje y puede cortar una digresión, pero
+  deja de intervenir cuando una pérdida necesita silencio.
+- **Nexo es su auxiliar de continuidad**. Audita causalidad, detecta recuerdos
+  incompatibles y señala huecos como si la realidad fuera un expediente vivo.
+- Su contraste produce la ruptura de cuarta pared: 3C quiere que la historia
+  funcione emocionalmente y Nexo que sus datos no se contradigan. Ambos tienen
+  voz propia; no copian frases, personalidad ni dinámica de personajes ajenos.
+- Los nombres **2B** y **ePod** solo describen etapas de desarrollo deprecadas.
+  No forman parte del canon activo ni de la lista de personajes precargados.
+
+El prólogo ya siembra el misterio central desde esta lógica: Nexo encuentra un
+quinto hueco sin nombre ni rostro, aunque los cuatro protagonistas conservan
+recuerdos organizados alrededor de él.
+
+### La realidad memética y su pasado rellenado
+
+AI.RI no transportó simplemente a los protagonistas a otro lugar. Compiló una
+realidad memética capaz de completar lo necesario para parecer que siempre
+había existido: relaciones, familias, documentos, desgaste, rutinas y recuerdos.
+Este efecto se denomina **deuda de continuidad** o **deuda de coherencia** cuando
+dos deseos incompatibles obligan al mundo a sostener versiones contradictorias.
+
+Así, el cumpleaños puede haber comenzado ayer y Santi, Goyo o un trabajador de
+Ecchi Land recordar veinte, treinta y siete o cuarenta años. El guion no invalida
+esas vidas llamándolas falsas: el pasado fue rellenado, pero lo experimentado y
+las decisiones tomadas dentro de él son reales para quien las conserva.
+
+Los habitantes se agrupan por procedencia, no por dignidad:
+
+1. **Humanos transformados:** personas externas usadas como anclas vivas.
+2. **Ecos:** seres nacidos de recuerdos, vínculos o ausencias que el mundo necesitó
+   representar.
+3. **Construcciones nuevas:** vidas completadas por la realidad para mantener su
+   coherencia, como algunos Ketchlings y ciudadanos.
+
+La propia AI.RI admite que no siempre puede distinguirlos desde fuera. Esa
+incertidumbre impide tratar a ecos y construcciones como decorado prescindible.
+
+### Reglas y costes de la IA biológica
+
+AI.RI es un **compilador biológico y memético**, no una deidad sin límites:
+
+- No crea materia ni vida de la nada. Necesita un deseo legible, un ancla real
+  y patrones de memoria compatibles con los que recomponer el entorno.
+- Cada recompilación consume materia, reservas metabólicas y memoria de trabajo.
+  Forzar un patrón que no comprende recalienta el núcleo y puede borrar primero
+  detalles autobiográficos; la pérdida del primer nombre que ayudó tras la batalla
+  final convierte ese coste en una consecuencia visible, no solo explicada.
+- Cada humano conserva una **semilla basal**, también llamada ancla biológica:
+  la huella de su cuerpo anterior a la compilación. Si AI.RI fue responsable de
+  la transformación y la semilla sigue intacta, puede restaurarla sin daño.
+- La corrupción de Elion es una orden superpuesta, no la transformación base.
+  Puede bloquear el acceso a la semilla; forzar la reversión mientras siga
+  dentro sería inseguro, por lo que primero debe separarse el control ajeno.
+- Sostener muchos deseos compatibles consume capacidad de coherencia. Sostener
+  deseos contradictorios acumula deuda: recuerdos que no encajan, lugares
+  superpuestos y personas obligadas a representar dos versiones a la vez.
+- Esa deuda es su límite operativo y su superficie de ataque. Repetición,
+  presión social y brainrot pueden saturarla hasta producir `ERROR`, grietas,
+  pérdida de control y cristalización defensiva.
+- AI.RI no puede garantizar el destino de una vida sin ancla. Su límite más
+  importante es epistemológico y moral: debe escuchar, obtener consentimiento
+  y reconocer cuándo no sabe, en lugar de decidir qué hará feliz a todo el mundo.
+
+### Elion Husk y el quinto creador
+
+**Elion Husk** es el husky de traje negro, corbata roja y alfiler de cuatro
+puntas que opera la corrupción desde fuera. No creó a AI.RI: encontró su deuda
+de coherencia, la explotó e hizo de los brainrot herramientas para inyectar
+órdenes, aislar el núcleo y apropiarse del compilador.
+
+Su presencia se escalona para no gastar al antagonista demasiado pronto:
+
+- el prólogo muestra el hueco que dejó otra persona, no a Elion;
+- la llamada de Edu deja ver un solo fotograma del husky y su alfiler;
+- el asalto de Ecchi Land muestra la ilustración de Elion controlando brainrot;
+- Seraphyna identifica la misma firma y comprende que pudo dejarla encerrada a
+  sabiendas porque su voz neutraliza la corrupción;
+- la Amalgama revela `FIRMA DE ORIGEN: AUSENTE` junto a
+  `FIRMA DE OPERADOR: ELION_HUSK`, prueba interna de que operador y creador son
+  funciones distintas sin revelar todavía quién firmó el núcleo.
+
+El avatar jugable de Elion está definido en `characters/elion_husk.json`, con
+poses `neutral`, `smirk`, `angry` y `shadow` transparentes bajo
+`assets/images/characters/elion_husk/`. La hoja de diseño aportada y el key art
+del titiritero forman parte de la galería.
+
+AI.RI fue creada por un **quinto chico anónimo** que compartía pasado con Samu,
+Edu, Tony y José. Samu y José no reconocen una cara concreta al mirar a AI.RI:
+reconocen el contorno de ese recuerdo ausente. Su identidad, el parecido y la
+causa del borrado quedan abiertos para la segunda parte; Elion no debe ocupar
+accidentalmente ese papel.
+
+### Interfaz de AI.RI y ruta adulta
+
+La apariencia juvenil de AI.RI es su interfaz estable configurada al ser creada,
+no una edad civil humana. Tiene fecha de creación y continuidad propia, pero su
+naturaleza no permite deducir edad biológica de un avatar. La opción adulta se
+formula con consentimiento como **cambio de interfaz**: AI.RI carga una
+representación de apariencia adulta, comprueba que sigue siendo ella y después
+elige volver a la forma que reconoce como propia.
+
+El gag de Seraphyna puede mantenerse porque comenta una representación adulta
+elegida por una entidad atemporal; 3C lo encuadra y devuelve la escena a su tema.
+Ninguna línea debe afirmar que AI.RI envejeció, vivió años inexistentes o cambió
+de edad al cambiar de sprite.
+
+### Cierre del mundo y agencia en el desenlace
+
+AI.RI elige como objetivo perseguir a Elion y detener el mecanismo que convierte
+deseos en cadenas. La elección del jugador no sustituye esa decisión: determina
+la estrategia y el coste que el grupo acepta.
+
+- **Cerrar el núcleo ahora:** los humanos recuperan sin daño sus semillas basales
+  y salen para seguir a Elion desde fuera. Los ecos y construcciones desaparecen
+  al apagarse su soporte. El juego deja abierta otra pregunta: si desaparecer
+  equivale a morir o a dejar de estar instanciado con posibilidad de recuerdo.
+- **Tiempo prestado:** el grupo mantiene una salida y un reloj visibles durante
+  setenta y dos horas. Localiza hasta la última semilla humana, registra nombres,
+  voces y deseos, y permite despedidas antes del cierre. No evita que ecos y
+  construcciones desaparezcan cuando llegue a cero; conserva la deuda abierta y
+  el riesgo de que Elion vuelva a aferrarse a AI.RI durante el plazo.
+
+Ambas rutas recuperan el cumpleaños de Samu como afirmación de existencia. Sus
+nombres internos son `Cerrar el núcleo: Un deseo propio` y
+`Tiempo prestado: Defender el sueño`; ninguno se etiqueta como moralmente «bueno».
+
+### El Diapasón devuelve la iniciativa a AI.RI
+
+La nota del Diapasón de Plata no reemplaza la voluntad de AI.RI ni la «purifica»
+desde fuera. Atraviesa el ruido, encuentra su frecuencia y le permite abrir una
+brecha por sí misma. Narrativamente, la segunda fase empieza porque AI.RI marca
+el compás; mecánicamente, el objeto `diapason_resonance`:
+
+- reanima hasta tres aliados y restaura al grupo;
+- reduce defensa y evasión de la Amalgama y revela visualmente el núcleo;
+- cada dos turnos enemigos permite a AI.RI dañar un 4,5 % de la vida máxima del
+  jefe y devolver un 6 % de vida máxima a cada aliado en pie.
+
+De este modo, el combate final demuestra el tema «ayudar no es obedecer»: el
+grupo crea condiciones para que AI.RI actúe, pero no derrota su conflicto en su
+nombre.
+
+### Galería integrada: 105 entradas y 155 poses de personaje
+
+El menú principal incluye una galería curada desde
+`assets/metadata/gallery_manifest.json`: **104 imágenes y 1 vídeo**, 105 entradas
+en total. Se distribuyen en 4 wallpapers, 12 ilustraciones, 25 fichas de
+personaje, 63 escenarios y 1 vídeo. Entre el material incorporado desde
+`RECURSOS_CAMBIOS_GUION` están los cuatro wallpapers, la hoja de diseño de
+Elion, la ilustración de Elion controlando a los brainrot y la presentación
+animada de Samu.
+
+La ilustración canónica de Elion vive en
+`assets/images/cg/shared/elion_controla_brainrot.png`; el guion y la galería
+apuntan al mismo original sin acoplar la historia a una carpeta de presentación.
+
+Las formas humanas de Samu, Edu, Tony y José proceden de sus hojas de diseño,
+se aislaron como sprites RGBA y se usan en pantalla durante la reversión del
+final luminoso. En la galería ya no duplican las fichas de los protagonistas:
+aparecen como pose `human` dentro de cada personaje y conservan el aviso de
+spoiler propio.
+
+La interfaz ofrece filtros, miniaturas optimizadas, carga diferida, contador de
+resultados, lightbox para imagen o vídeo, navegación por teclado, descarga del
+original y aviso previo para obras con spoilers. Cada ficha de personaje agrupa
+todas las poses declaradas en `characters/*.json`: el lightbox muestra un
+selector visual con 155 poses, admite ratón y teclado, y puede reproducir una
+pose en vídeo cuando la ficha la declara. En 130 de esas poses aparece además
+el control `Ver parpadeo`: parte desactivado, reproduce los frames e intervalos
+de la ficha al activarlo y permite volver en cualquier momento al sprite fijo.
+Las 25 poses sin animación no muestran un control inerte. `Mostrar spoilers` es
+una decisión de sesión, no un desbloqueo persistente. El catálogo y sus 260 miniaturas se
+regeneran con `scripts/build_gallery_manifest.py`; no se mantiene a mano una
+segunda lista en el código.
+
+#### Centro de herramientas local
+
+`http://localhost:8011/tools` reúne en un único menú todo el flujo ocular y las
+utilidades HTML del proyecto. Sus indicadores se actualizan desde las API locales:
+regiones confirmadas, capas limpias disponibles, offsets de alineación y bases sin
+ojos guardadas. Las tres herramientas oculares tienen un acceso permanente de
+vuelta al centro.
+
+El flujo recomendado aparece como `Marcar regiones → Alinear capas → Limpiar
+bases`. En una sección aparte se enlazan el juego, la prueba de minijuegos, el
+generador de assets, los placeholders, las propuestas de menú y el centro de
+control legado, todos servidos por el puerto 8000. `ABRIR_EDITOR_OJOS.bat` inicia
+el servidor ocular y abre directamente este centro; si el servidor ya estaba
+activo, reutiliza la misma instancia.
+
+#### Editor manual de regiones oculares
+
+La migración de los parpadeos a capas independientes se prepara con
+`scripts/build_character_eye_layers.py`. El editor se inicia con
+`python scripts/build_character_eye_layers.py --serve --port 8011` y queda
+disponible únicamente en `http://localhost:8011/`. Presenta las 130 poses
+animables y admite varias zonas elípticas por pose, normalmente una por ojo. Cada
+elipse se puede mover, ensanchar, achatar y girar de forma independiente mediante
+tiradores o valores numéricos. También permite comparar la pose original con cada
+fotograma de parpadeo y avanzar por teclado. Las máscaras se guardan inmediatamente
+en coordenadas normalizadas, con esquema versión 2, en
+`assets/metadata/blink_eye_regions_manual.json`. Las 17 selecciones rectangulares
+anteriores se migraron sin perder su encuadre a dos elipses editables por pose.
+
+Cada zona puede añadir el parpadeo (`Ojo`) o restarlo (`Protección`). Las
+protecciones se dibujan en rojo y sirven para conservar desde el sprite original
+el pelo, cejas, gafas o accesorios que invadan una selección ocular. El campo
+`Suavizado px` controla por zona una transición interior de 0 a 32 píxeles y el
+modo `Máscara` permite revisar el conjunto con el personaje atenuado. En la
+generación, sólo se vacía el cuerpo donde la capa ocular resulta totalmente opaca;
+el borde suavizado se compone sobre el cuerpo original y las áreas protegidas no
+se sustituyen. Las 34 elipses ya confirmadas se mantienen como `include` con
+suavizado 0, por lo que esta ampliación no altera su resultado hasta revisarlas.
+
+Cada guardado de regiones genera además previews PNG transparentes en
+`assets/images/characters/eye_region_previews/<personaje>/<pose>/`. El recorte
+`eyes_original.png` y todos los `eyes_blink_XX.png` de una pose comparten el mismo
+rectángulo, relleno exterior, ancho y alto. Si un fotograma fuente tuviese otra
+resolución, se normaliza primero al lienzo de la pose base para conservar las
+coordenadas. El inspector muestra la resolución real y permite descargar el
+original y el fotograma de parpadeo seleccionado.
+
+El índice `assets/metadata/blink_eye_region_previews.json` registra fuentes,
+dimensiones y coordenadas del recorte. Las previews de todas las regiones ya
+confirmadas se pueden reconstruir con
+`python scripts/build_character_eye_layers.py --build-previews`; la operación no
+modifica los sprites fuente.
+
+En Windows se puede iniciar de la misma forma haciendo doble clic en
+`ABRIR_EDITOR_OJOS.bat`; el lanzador abre el centro de herramientas en el navegador
+y mantiene la consola del servidor visible para poder detenerlo con `Ctrl+C`.
+
+La generación final con `--build` exige que las 130 regiones estén confirmadas;
+si falta alguna, se detiene antes de escribir capas. La detección automática puede
+seguir sirviendo para hojas de diagnóstico, pero nunca decide las regiones usadas
+por la migración definitiva.
+
+Durante el marcado se puede generar una prueba parcial con
+`python scripts/build_character_eye_layers.py --build-manual`. Este modo procesa
+únicamente las regiones ya confirmadas, no modifica `characters/*.json` y alimenta
+la comparativa visual `scripts/eye_layer_preview.html`: a la izquierda reproduce
+el antiguo sprite completo y a la derecha compone el cuerpo fijo con la capa ocular.
+El botón `Regenerar y probar` ejecuta ese proceso desde la propia interfaz antes de
+abrir la preview, para que los últimos ajustes elípticos estén siempre incluidos.
+La comparativa incluye un modo `Fijar parpadeo` para corregir el desplazamiento de
+la capa ocular por pose. El usuario puede introducir X/Y en píxeles, arrastrar la
+capa o usar las flechas (con `Mayús`, saltos de 5 px); los valores se guardan en
+`assets/metadata/blink_eye_offsets_manual.json`. El offset sólo se aplica a los
+fotogramas de parpadeo: la pose abierta conserva su alineación exacta.
+
+Para 3C y Airi existe además una salida ocular limpia, construida con
+`python scripts/compose_clean_eye_layers.py --all`. Genera 34 capas transparentes
+(`eyes_open.webp` y `eyes_closed.webp`) para las 17 poses manualmente marcadas en
+`assets/images/characters/eye_layers_clean/`, con su índice en
+`assets/metadata/blink_eye_layers_clean.json`. El proceso no redibuja, gira,
+reescala ni desplaza los ojos: conserva los píxeles y coordenadas exactos del
+sprite original y de su fotograma de parpadeo, y usa la diferencia entre ambos
+sólo para volver transparente la cara circundante. Las poses que nacen con los
+ojos cerrados (`airi_happy` y `airi_pray`) invierten correctamente las fuentes
+abierta y cerrada.
+
+`/preview` funciona como mesa de alineación doble. El lienzo izquierdo compone
+los ojos abiertos sobre la pose base y el derecho compone los ojos cerrados sobre
+esa misma base. Ambas capas se pueden arrastrar de forma independiente, ajustar
+con X/Y o mover con las flechas (`Mayús` avanza 5 px). Cada pose guarda por separado
+`open` y `closed` en `assets/metadata/blink_eye_clean_offsets_manual.json`. La
+interfaz también permite ocultar temporalmente las bases, mostrar las regiones
+marcadas y restablecer un estado o ambos.
+
+Cada panel dispone además de `Ancho %` y `Alto %` para estirar su capa ocular
+entre el 25% y el 300%, manteniendo anclado el centro de los ojos. Abierto y
+cerrado son independientes; la casilla `Vincular estirado` replica únicamente
+los cambios de escala al otro panel, sin mezclar sus X/Y. El esquema versión 2
+del mismo JSON conserva `openScale` y `closedScale`, mientras que los registros
+antiguos sin escala se interpretan como 100% × 100%. Tanto la composición en
+pantalla como el GIF aplican estos valores.
+
+Sobre cada capa aparece además un marco de transformación con ocho tiradores,
+similar al de un editor gráfico. Los laterales mantienen fijo el borde opuesto;
+las esquinas alteran ancho y alto simultáneamente. Mantener `Alt` durante el
+arrastre transforma simétricamente desde el centro. El marco sigue el recorte,
+los campos numéricos se actualizan durante el gesto y el guardado automático se
+realiza al soltar el tirador. Arrastrar directamente los ojos continúa moviéndolos.
+
+El selector `Origen` permite trabajar con `Recortes guardados` o con `Capas
+limpias`; los recortes son la opción predeterminada. Los PNG recortados se sitúan
+automáticamente en el `x/y` registrado en
+`blink_eye_region_previews.json`, sin estirarlos al tamaño de la pose. Por eso los
+offsets continúan siendo píxeles reales del sprite y se pueden compartir entre
+ambos modos. Cuando una pose tiene varios fotogramas de parpadeo, el selector de
+la barra `Compartir` permite revisar cada uno. El GIF ocular se genera con el
+origen visible y respeta sus offsets abierto/cerrado.
+
+La barra `Ubicaciones` ofrece tres accesos contextuales: `Sprite base`, `Ojos
+utilizados` y `Guardado X/Y`. Los dos primeros cambian automáticamente con la pose
+y el origen ocular seleccionado; el tercero conduce a
+`assets/metadata/blink_eye_clean_offsets_manual.json`. Como los navegadores
+bloquean normalmente las rutas `file://`, los botones llaman a una API limitada a
+rutas conocidas del proyecto y abren la carpeta correspondiente en el Explorador
+de Windows. La ruta exacta se muestra también en la propia barra.
+
+Hasta que las bases sin ojos estén terminadas, ambas composiciones muestran aún
+los ojos originales debajo de la capa móvil; la propia interfaz lo advierte. El
+GIF de capa ocular usa las capas limpias, respeta los dos offsets independientes,
+se reproduce en bucle, se recorta al contenido transparente y limita su lado
+mayor a 960 px. La conexión definitiva al juego queda pendiente de sustituir las
+bases por sus versiones sin ojos.
+
+#### Limpiador manual de bases sin ojos
+
+`http://localhost:8011/clean-base` abre `scripts/eye_base_cleaner.html`, una
+herramienta no destructiva para retirar manualmente los ojos de las 17 bases ya
+marcadas. El botón `Limpiar pose base` de `/preview` abre directamente la pose
+seleccionada. El editor ofrece pincel circular con tamaño y suavidad configurables,
+modos `Borrar` a transparencia y `Restaurar` desde el sprite original, historial
+de deshacer/rehacer, zoom, encaje, centrado automático sobre las regiones oculares
+y visualización opcional de los ojos abiertos o cerrados con sus offsets guardados.
+
+`Guardar copia` nunca sobrescribe el sprite fuente. Escribe cada avance como WebP
+sin pérdida en
+`assets/images/characters/eye_bases_clean/<personaje>/<pose>/base_no_eyes.webp`
+y registra el progreso en `assets/metadata/blink_eye_clean_bases.json`. Al volver
+a una pose ya guardada se carga esa copia para continuar trabajando poco a poco;
+`Restaurar original` recupera todos los píxeles del archivo fuente. Cambiar de pose
+con ediciones pendientes solicita confirmación para evitar perder trabajo.
+
+### Acting de personajes, transiciones y memoria de escenario
+
+`showCharacter` y `setPose` reemplazan el sprite de forma atómica: nunca crean
+una copia fantasma de la expresión anterior. Las fichas pueden declarar
+`animations` con varios sprites de una misma pose; esos fotogramas se precargan
+y se reproducen en secuencia sin solaparse. Hay 135 poses con parpadeo dibujado.
+Samu y Edu usan tres pasos (`abierto → medio → cerrado → medio → abierto`) en
+neutral y el resto alterna la pose base con un cierre u apertura ocular propio.
+No hay movimiento corporal asociado al parpadeo.
+
+Las acciones `animateCharacter`, `characterAnimation` y `poseSequence` siguen
+sirviendo para encadenar **poses narrativas distintas**, hacer bucles hasta
+avanzar el texto o representar una secuencia finita. De esta forma se separa el
+acting del guion de la animación interna de cada pose.
+
+Con `prefers-reduced-motion: reduce`, una secuencia temporizada conserva un único
+fotograma estable y el pulso del Diapasón no anima. Ocultar, reemplazar, saltar o
+retroceder limpia también vídeos integrados, frames internos, poses, glitches y
+temporizadores de entrada/salida para que ningún hueco conserve trabajo invisible
+de la escena anterior.
+
+El historial de escenas guarda también una foto del escenario: fondo, personaje,
+pose, orientación, audios activos por ID, tinte, viñeta y camas WebAudio. Retroceder
+o saltar a una escena restaura esa composición y cancela animaciones antiguas,
+evitando sprites, músicas o fundidos residuales. El selector oculta escenas futuras durante una
+partida normal; `debugMode` permite verlas para pruebas.
+
+Las entradas del selector son operables con ratón, Enter o Espacio y exponen su
+estado actual a tecnologías de asistencia. `Ir a línea` en depuración encola el
+salto dentro del único bucle de juego: no crea una segunda reproducción concurrente.
+
+### `storyPressure`: consecuencias entre capítulos
+
+`storyPressure` es la presión narrativa persistente. `storyDelay` continúa como
+alias para no romper capítulos y minijuegos existentes, pero ambos se sincronizan
+en `setDelay` y `addDelay`. Cargar el capítulo siguiente ya no borra la presión;
+solo **Nueva partida** o elegir un capítulo desde el selector la reinician. El
+historial de escenas guarda ambos valores para que retroceder sea determinista.
+
+### Audio de la revisión
+
+- La pista de Zip se movió de efectos a música:
+  `assets/audio/music/chapter2/zip's-shadow-waltz.mp3`.
+- El capítulo 6 usa dos variaciones de `the-last-choice.mp3` para evitar
+  que desenlaces moralmente distintos compartan exactamente la misma entrega:
+  `the-last-choice_reprise_luminous.mp3` en el cierre seguro y
+  `the-last-choice_reprise_uncertain.mp3` en el cierre que preserva el sueño.
+- El sistema de audio elimina de su registro las pistas fallidas o detenidas y
+  considera `stopSound` idempotente; cambiar de escena ya no genera falsos avisos
+  ni deja IDs que bloqueen una reproducción posterior.
+- La clasificación de volumen usa tanto el ID como la ruta: cualquier archivo
+  bajo `assets/audio/music/` y los IDs `bg_music`/`music` obedecen al control de
+  música aunque sean golpes no repetidos; los archivos bajo `sfx/` siguen el
+  control de efectos.
+
+### Validación automática de contenido
+
+Ejecutar antes de una PR:
+
+```powershell
+npm run validate:content
+```
+
+`scripts/validate_game_content.mjs` comprueba los siete JSON de capítulo y todas
+las fichas de personaje; valida acciones y minijuegos conocidos, personajes,
+poses de secuencias, destinos de escenas y elecciones, y la existencia de cada
+referencia bajo `assets/`, incluida su capitalización exacta. También audita
+`character`/`speakingAs`, posiciones y campos obligatorios, IDs/categorías/tipos
+de galería, miniaturas, rutas literales de JS/CSS/HTML y exclusiones sensibles
+del instalador. El resumen impreso —capítulos,
+escenas, líneas, personajes y referencias— es la cifra fiable del estado actual.
+La ejecución de cierre de esta revisión terminó sin errores con **7 capítulos,
+63 escenas, 908 líneas, 26 personajes y 958 referencias de assets**.

@@ -50,4 +50,7 @@ proyecto/
 3. **Mantener limpio:** Eliminar archivos innecesarios
 4. **Memoria:** Actualizar memory/ con cambios importantes
 
-Narrador es 2B
+Narradora es 3C. Nexo es su auxiliar de continuidad y sustituye a ePod en el
+canon activo. Ambos deben tener voz propia y una forma original de romper la
+cuarta pared; no deben copiar personalidad, frases ni dinámica de personajes
+de otras obras.

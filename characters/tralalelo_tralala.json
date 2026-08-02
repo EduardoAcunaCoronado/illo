@@ -8,5 +8,8 @@
   "aliases": [
     "Tralalelo Tralala",
     "Tralaleo Tralala"
-  ]
+  ],
+  "animations": {
+    "neutral": { "frames": [{ "src": "assets/images/characters/animations/blinks/tralalelo_neutral_blink_closed.webp", "duration": 110 }], "loop": true }
+  }
 }

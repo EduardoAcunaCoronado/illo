@@ -16,7 +16,25 @@
     "thinking": "assets/images/characters/jose/jose_thinking.png",
     "worried": "assets/images/characters/jose/jose_worried.png",
     "silueta": "assets/images/characters/jose/jose_silueta.png",
-    "serious": "assets/images/characters/jose/jose_serious.png"
+    "serious": "assets/images/characters/jose/jose_serious.png",
+    "human": "assets/images/characters/humans/jose_humano_sprite.png"
+  },
+  "animations": {
+    "neutral": [{ "src": "assets/images/characters/jose/animations/blinks/jose_neutral_blink_closed.webp", "duration": 95 }],
+    "happy": [{ "src": "assets/images/characters/jose/animations/blinks/jose_happy_blink_open.webp", "duration": 90 }],
+    "sad": [{ "src": "assets/images/characters/jose/animations/blinks/jose_sad_blink_closed.webp", "duration": 95 }],
+    "angry": [{ "src": "assets/images/characters/jose/animations/blinks/jose_angry_blink_closed.webp", "duration": 95 }],
+    "surprised": [{ "src": "assets/images/characters/jose/animations/blinks/jose_surprised_blink_closed.webp", "duration": 90 }],
+    "alarmed": [{ "src": "assets/images/characters/jose/animations/blinks/jose_alarmed_blink_closed.webp", "duration": 90 }],
+    "determined": [{ "src": "assets/images/characters/jose/animations/blinks/jose_determined_blink_closed.webp", "duration": 95 }],
+    "embarrassed": [{ "src": "assets/images/characters/jose/animations/blinks/jose_embarrassed_blink_closed.webp", "duration": 95 }],
+    "epic": [{ "src": "assets/images/characters/jose/animations/blinks/jose_epic_blink_closed.webp", "duration": 90 }],
+    "facepalm": [{ "src": "assets/images/characters/jose/animations/blinks/jose_facepalm_blink_open.webp", "duration": 90 }],
+    "shocked": [{ "src": "assets/images/characters/jose/animations/blinks/jose_shocked_blink_closed.webp", "duration": 85 }],
+    "thinking": [{ "src": "assets/images/characters/jose/animations/blinks/jose_thinking_blink_closed.webp", "duration": 95 }],
+    "worried": [{ "src": "assets/images/characters/jose/animations/blinks/jose_worried_blink_closed.webp", "duration": 95 }],
+    "serious": [{ "src": "assets/images/characters/jose/animations/blinks/jose_serious_blink_closed.webp", "duration": 95 }],
+    "human": [{ "src": "assets/images/characters/jose/animations/blinks/jose_human_blink_closed.webp", "duration": 95 }]
   },
   "defaultPose": "neutral"
 }

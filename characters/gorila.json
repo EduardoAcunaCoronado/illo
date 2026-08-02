@@ -9,5 +9,8 @@
     "caido": "assets/images/characters/gorila/gorila_caido.png",
     "puerta": "assets/images/characters/gorila/gorila_puerta.png"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "animations": {
+    "sospecha": { "frames": [{ "src": "assets/images/characters/gorila/animations/blinks/gorila_sospecha_blink_closed.webp", "duration": 110 }], "loop": true }
+  }
 }

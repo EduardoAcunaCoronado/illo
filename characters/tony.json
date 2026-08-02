@@ -21,7 +21,28 @@
     "derrumbe": "assets/images/characters/tony/tony_derrumbe.png",
     "cantando": "assets/images/characters/tony/tony_cantando.png",
     "balada": "assets/images/characters/tony/tony_balada.png",
-    "thinking": "assets/images/characters/tony/tony_thinking.png"
+    "thinking": "assets/images/characters/tony/tony_thinking.png",
+    "human": "assets/images/characters/humans/tony_humano_sprite.png"
   },
-  "defaultPose": "flirt"
+  "defaultPose": "flirt",
+  "animations": {
+    "neutral": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_neutral_blink_closed.webp", "duration": 110 }], "loop": true },
+    "happy": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_happy_blink_open.webp", "duration": 110 }], "loop": true },
+    "sad": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_sad_blink_closed.webp", "duration": 110 }], "loop": true },
+    "angry": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_angry_blink_closed.webp", "duration": 110 }], "loop": true },
+    "surprised": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_surprised_blink_closed.webp", "duration": 110 }], "loop": true },
+    "alarmed": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_alarmed_blink_closed.webp", "duration": 110 }], "loop": true },
+    "determined": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_determined_blink_closed.webp", "duration": 110 }], "loop": true },
+    "embarrassed": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_embarrassed_blink_closed.webp", "duration": 110 }], "loop": true },
+    "shocked": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_shocked_blink_closed.webp", "duration": 110 }], "loop": true },
+    "worried": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_worried_blink_closed.webp", "duration": 110 }], "loop": true },
+    "flirt": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_flirt_blink_closed.webp", "duration": 110 }], "loop": true },
+    "giggle": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_giggle_blink_open.webp", "duration": 110 }], "loop": true },
+    "eyeroll": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_eyeroll_blink_closed.webp", "duration": 110 }], "loop": true },
+    "derrumbe": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_derrumbe_blink_open.webp", "duration": 110 }], "loop": true },
+    "cantando": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_cantando_blink_open.webp", "duration": 110 }], "loop": true },
+    "balada": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_balada_blink_open.webp", "duration": 110 }], "loop": true },
+    "thinking": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_thinking_blink_closed.webp", "duration": 110 }], "loop": true },
+    "human": { "frames": [{ "src": "assets/images/characters/tony/animations/blinks/tony_human_blink_closed.webp", "duration": 110 }], "loop": true }
+  }
 }
