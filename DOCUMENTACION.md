@@ -3649,13 +3649,16 @@ usa el azul oscuro `#285bc4`, diferenciándose dentro del mismo diálogo.
 
 El icono oficial de la camiseta de Edu es
 `assets/images/others/kingom-souls.png`: una corona dorada sobre un corazón azul
-facetado. Se ha unificado en las 35 imágenes donde la camiseta resulta visible,
-incluidos fondos y CG de los capítulos 2, 3, 4 y 6, la ilustración humana, los
-retratos del teléfono y Mario Kart, y todos los frames y hojas de vuelo de
-`assets/images/minigames/chapter3/`.
+facetado. Se ha unificado en las imágenes activas donde la camiseta resulta
+visible, incluidos fondos y CG de los capítulos 2, 3, 4 y 6, la ilustración
+humana, los retratos del teléfono y Mario Kart, y los frames y hojas V3 de vuelo
+de `assets/images/minigames/chapter3/`.
 
-Las composiciones conservan el encuadre, la resolución y el resto del dibujo
-original. La CG 4K mantiene `3840×2560`; los sprites V2/V3 y sus hojas mantienen
-su canal alfa, y los diez frames activos de Eduvuelo V3 continúan en lienzos
-transparentes de `512×512`. Cuando el brazo, una manga o el borde del encuadre
-tapan la camiseta, el emblema queda recortado por esa misma oclusión.
+Las composiciones conservan el encuadre y la resolución. La CG 4K mantiene
+`3840×2560`. Los diez frames activos de Eduvuelo V3 se regeneraron con un acabado
+cel-shading coherente, el emblema integrado en perspectiva y las fases originales
+de aleteo e impulso. Conservan sus nombres `edu_fly_v3_*`, sus lienzos PNG
+transparentes de `512×512` y la oclusión natural del brazo sobre la camiseta. Las
+hojas `edu_volando_sheet_v3.png` y `edu_volando_dash_sheet_v3.png` se reconstruyen
+desde esos mismos frames en `1774×887`. Las variantes V1/V2 no forman parte del
+motor activo de Eduvuelo y permanecen como legado.
