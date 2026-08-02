@@ -3364,8 +3364,11 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
 - Se conservan las rutas ficticias de Noche, Mercaguasa y El Jarrón, incluido
   el minijuego de gatos y el mitin de Micaela Michis. Sus diferencias de
   `storyDelay` siguen escalando la dificultad.
-- El gag del tapón dorado tiene doble golpe: Samu celebra haber encontrado uno
-  único y después descubre que todo el expositor está lleno.
+- El gag del tapón dorado tiene tres golpes: Samu celebra haber encontrado uno
+  único, descubre que todo el expositor está lleno y, al reaparecer ante la
+  puerta, protesta porque todos los envases llevaban el mismo tapón. Los
+  Ketchlings responden que nunca dijeron lo contrario y aclaran que todas las
+  botellas oficiales cumplen el requisito.
 - Al girar el tapón, una botella gigantesca de luz aparece de la nada en el
   pasillo del supermercado y su cristal se abre como portal hacia la fábrica.
   El expositor, la activación del portal y la llegada al interior se enlazan con
@@ -3556,7 +3559,7 @@ capítulo 2 utiliza estas variaciones:
 - Escenas 1B, 1C y 1D: `el_rastro_del_tapon.mp3`.
 - Escenas 1.5, 2, 3 y 4: `tres_rutas_por_furrielva.mp3`; el minijuego de gatos
   sigue intercalando `te-comprometes.mp3` y después recupera esta pista.
-- Escenas 4.5 y 4.6: `el_tapon_dorado.mp3`.
+- Escenas 4.5, 4.6 y 4.7: `el_tapon_dorado.mp3`.
 - Escenas 5 a 9: `kingdomketchup.mp3`, con los cambios ya existentes a
   `zip.mp3` y `ketchup.mp3`.
 - Escena 10: `de_vuelta_en_furrielva.mp3`.
@@ -3606,7 +3609,7 @@ reutilizan el retrato anterior.
 
 Samu utiliza siempre su retrato furry en el marco. Edu, Tony y José usan sus
 ilustraciones de `characters/humans/` hasta la revelación narrativa de cada
-identidad. Los umbrales son: capítulo 2, escena 15, línea 4 para Edu; capítulo 3,
+identidad. Los umbrales son: capítulo 2, escena 16, línea 4 para Edu; capítulo 3,
 escena 13, línea 5 para Tony; y capítulo 4, escena 2, línea 4 para José. Se
 calculan desde capítulo/escena/línea para que también funcionen al entrar desde
 el selector de escenas.
@@ -3673,16 +3676,27 @@ del escenario 16:9.
 
 ### Caída anime de Edu por la batería de Samu (2026-08-02)
 
-En la escena final del capítulo 2, Edu reacciona a «¡Oh, no! Me he quedado sin
-batería. Esto me pasa por actualizar las apps.» con una caída vertical de anime:
+En la escena final del capítulo 2, justo al terminar de mostrarse «¡Oh, no! Me he
+quedado sin batería. Esto me pasa por actualizar las apps.», Edu reacciona con
+una caída vertical de anime:
 baja recto con líneas cinéticas hasta salir completamente por el borde inferior,
 permanece un instante fuera del plano y regresa por la misma trayectoria. No hay
 rotación, cambio de escala, compresión ni rebote. La acción reutilizable
-`characterAnimeFall` se ejecuta sin bloquear el diálogo y acepta `delay`,
-`duration`, `sound` y `volume`.
+`characterAnimeFall` se declara en `afterActions`, se ejecuta sin bloquear la
+espera del diálogo y acepta `delay`, `duration`, `sound` y `volume`. Las acciones
+de `afterActions` también se sincronizan si el jugador completa el texto con un
+clic o utiliza el avance rápido.
 
 El sonido original `assets/audio/sfx/sfx_caida_anime_edu.wav` sincroniza un
 silbido descendente, un golpe grave fuera de plano y un aire ascendente suave
 durante el regreso, sin sonido de rebote. La caída incluye una sacudida breve de
 pantalla en el impacto y respeta
 `prefers-reduced-motion` con una versión visual abreviada.
+
+### Gag de Fisuras 2 en Kingdom Ketchup (2026-08-02)
+
+Tras liberar a Edu y antes de abandonar Kingdom Ketchup, Samu le pregunta por
+qué el reino utiliza portales. Edu explica que le gusta **Fisuras 2 de Stim**;
+durante su respuesta Samu cambia a la pose `shocked` y, al recuperar la palabra,
+corta el asunto con «Bueno, cambiando de tema...» antes de retomar la búsqueda de
+Tony y José.

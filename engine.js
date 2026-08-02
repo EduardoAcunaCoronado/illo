@@ -5495,7 +5495,7 @@ class VisualNovelEngine {
 
     isFurryIdentityRevealed(characterKey) {
         const revealAt = {
-            edu: { chapter: 2, scene: 15, line: 4 },
+            edu: { chapter: 2, scene: 16, line: 4 },
             tony: { chapter: 3, scene: 13, line: 5 },
             jose: { chapter: 4, scene: 2, line: 4 }
         };
@@ -6784,6 +6784,19 @@ class VisualNovelEngine {
         // Mostrar diálogo si existe (con posible variante por consecuencia)
         if (line.text) {
             await this.displayDialog(this.resolveConsequenceLine(line));
+        }
+
+        // Acciones que deben ocurrir justo cuando termina de escribirse el
+        // diálogo. A diferencia de un `delay` fijo, también quedan sincronizadas
+        // si el jugador completa la frase con un clic o usa avance rápido.
+        if (line.afterActions) {
+            for (let action of line.afterActions) {
+                await this.executeAction(action);
+                if (this.pendingSceneJump) {
+                    this.pendingSceneJump = false;
+                    return true;
+                }
+            }
         }
 
         // Si hay elecciones, mostrarlas

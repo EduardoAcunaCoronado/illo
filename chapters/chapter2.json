@@ -157,7 +157,7 @@
         },
         {
           "character": "Samu",
-          "text": "¡Por fin! Vengo a buscar a Edu. Es un dragón azul y, por lo visto, aquí es el rey.",
+          "text": "¡Por fin! Vengo a buscar a Edu. Se autopercibe como el rey, pero no me lo imagino mandando a nadie.",
           "actions": [
             {
               "type": "showCharacter",
@@ -806,6 +806,107 @@
             {
               "type": "hideCG",
               "duration": 0
+            },
+            {
+              "type": "goToScene",
+              "value": "Escena 4.7: De vuelta en la puerta"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 4.7: De vuelta en la puerta",
+      "lines": [
+        {
+          "character": "Samu",
+          "text": "¡El portal me ha dejado otra vez en la puerta! Y el mismo Ketchling sigue de guardia como si no hubiera pasado ni un minuto.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_tapon_dorado.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            },
+            {
+              "type": "hideCG",
+              "duration": 0
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png",
+              "cut": true
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "angry",
+              "enter": "bottom"
+            },
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "security",
+              "enter": "right"
+            },
+            {
+              "type": "fade",
+              "from": "black",
+              "duration": 480
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Un momento! ¡El tapón dorado estaba en todas las botellas! Me habéis hecho recorrer media Furrielva como si fuera una reliquia única.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "angry"
+            }
+          ]
+        },
+        {
+          "character": "Ketchlings",
+          "speakingAs": "ketchling",
+          "text": "Nunca dijimos lo contrario.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "security"
+            }
+          ]
+        },
+        {
+          "character": "Ketchling de seguridad",
+          "speakingAs": "ketchling",
+          "text": "Pedimos una botella oficial con tapón dorado. Todas las botellas oficiales cumplen el requisito. Es un sistema muy eficiente."
+        },
+        {
+          "character": "Samu",
+          "text": "...La próxima vez preguntaré cuántos tapones dorados hay antes de patearme media Furrielva.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "embarrassed"
+            }
+          ]
+        },
+        {
+          "actions": [
+            {
+              "type": "fade",
+              "to": "black",
+              "duration": 320
             },
             {
               "type": "goToScene",
@@ -1777,7 +1878,37 @@
         },
         {
           "character": "Samu",
-          "text": "Eh, creo que solo es una manifestación de tus deseos más oscuros. Tenemos que salir de aquí y buscar al resto.",
+          "text": "Por cierto, ¿a qué viene el tema de los portales?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "curious"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Te has debido de dar un gooolpe en la cabeza, ¿no? Pero si me gusta mucho el juego ese de los portales: Fisuras 2 de Stim.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "happy"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "shocked"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Bueno, cambiando de tema... Creo que Kingdom Ketchup solo es una manifestación de tus deseos más oscuros. Tenemos que salir de aquí y buscar al resto.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1958,12 +2089,13 @@
               "character": "edu",
               "position": "right",
               "pose": "facepalm"
-            },
+            }
+          ],
+          "afterActions": [
             {
               "type": "characterAnimeFall",
               "character": "edu",
               "position": "right",
-              "delay": 480,
               "duration": 1800,
               "sound": "assets/audio/sfx/sfx_caida_anime_edu.wav",
               "volume": 0.82
