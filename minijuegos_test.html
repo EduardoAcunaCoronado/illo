@@ -237,6 +237,9 @@
         <label class="tp-music">
             <input type="checkbox" id="zip-start-phase-two"> Empezar desde la segunda forma (60% de vida)
         </label>
+        <label class="tp-music">
+            <input type="checkbox" id="zip-debug-hitboxes"> Mostrar hitbox real
+        </label>
 
         <h2>🔷 Equilibrio de poderes</h2>
         <div class="tp-row">
@@ -528,7 +531,8 @@
                 enemyHp: getNumberInput('zip-hp', opts.enemyHp),
                 maxHits: getNumberInput('zip-lives', opts.maxHits),
                 spicePower: getNumberInput('zip-spice-power', opts.spicePower),
-                maxSpicePower: getNumberInput('zip-max-spice', opts.maxSpicePower)
+                maxSpicePower: getNumberInput('zip-max-spice', opts.maxSpicePower),
+                debugHitboxes: document.getElementById('zip-debug-hitboxes').checked
             };
             if (startPhaseTwo) options.startAtHpRatio = 0.6;
             return options;

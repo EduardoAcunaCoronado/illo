@@ -44,7 +44,8 @@
       const enemyAttackDelay = lerp(0.82, 1.42, powerRatio);
       const difficulty = powerRatio >= 0.72 ? 'SUAVE' : powerRatio >= 0.38 ? 'NORMAL' : 'INTENSA';
       const allowMouse = this.options.allowMouse !== false;
-      const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
+      const debugHitboxes = !!this.options.debugHitboxes;
+       const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
       const corruptKetchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp');
       const chiliIcon = cacheBust('assets/images/minigames/chapter2/ketchup/chili_v2.webp');
       const zipIcon = cacheBust('assets/images/characters/zip/ketchup/zip_1.webp');
@@ -115,7 +116,7 @@
         }
 
         const overlay = document.createElement('div');
-        overlay.className = 'minigame-overlay ketchup-boss-minigame';
+        overlay.className = `minigame-overlay ketchup-boss-minigame${debugHitboxes ? ' show-hitboxes' : ''}`;
         overlay.innerHTML = `
           <div class="ketchup-boss-hud">
             <div class="ketchup-boss-name">Zip</div>
@@ -136,7 +137,9 @@
               <img class="ketchup-boss-frame ketchup-boss-frame-primary" src="${zipFloatingFrames[0]}" alt="Zip" draggable="false">
               <img class="ketchup-boss-frame ketchup-boss-frame-next" src="${zipFloatingFrames[0]}" alt="" draggable="false">
             </div>
+            <div class="ketchup-boss-hitbox" id="ketchup-boss-hitbox"><span>BOSS</span></div>
             <div class="mg-player ketchup-player" id="mg-player"><img src="${playerFrames.idle[0]}" alt="Samu" draggable="false"></div>
+            <div class="ketchup-player-hitbox" id="ketchup-player-hitbox"><span>HITBOX</span></div>
           </div>
           <div class="ketchup-player-hud">
             <span class="ketchup-player-lives"></span>
@@ -147,8 +150,10 @@
 
         const field = overlay.querySelector('#mg-field');
         const player = overlay.querySelector('#mg-player');
+        const playerHitbox = overlay.querySelector('#ketchup-player-hitbox');
         const playerImg = player.querySelector('img');
         const boss = overlay.querySelector('#ketchup-boss-enemy');
+        const bossHitbox = overlay.querySelector('#ketchup-boss-hitbox');
         const bossImg = boss.querySelector('.ketchup-boss-frame-primary');
         const bossNextImg = boss.querySelector('.ketchup-boss-frame-next');
         const bossFill = overlay.querySelector('.ketchup-boss-fill');
@@ -217,10 +222,24 @@
         const updatePlayerPos = () => {
           player.style.left = `${playerX * 100}%`;
           player.style.top = `${playerY * 100}%`;
+          if (debugHitboxes) {
+            const rect = field.getBoundingClientRect();
+            playerHitbox.style.left = `${playerX * 100}%`;
+            playerHitbox.style.top = `${playerY * 100}%`;
+            playerHitbox.style.width = `${Math.max(1, rect.width * playerHitW)}px`;
+            playerHitbox.style.height = `${Math.max(1, rect.height * playerHitH)}px`;
+          }
         };
         const updateEnemyPos = () => {
           boss.style.left = `${enemyX * 100}%`;
           boss.style.top = `${enemyY * 100}%`;
+          if (debugHitboxes) {
+            const rect = field.getBoundingClientRect();
+            bossHitbox.style.left = `${enemyX * 100}%`;
+            bossHitbox.style.top = `${enemyY * 100}%`;
+            bossHitbox.style.width = `${Math.max(1, rect.width * 0.2)}px`;
+            bossHitbox.style.height = `${Math.max(1, rect.height * 0.26)}px`;
+          }
         };
         const updateHud = () => {
           bossFill.style.width = `${clamp(enemyHp / enemyMaxHp, 0, 1) * 100}%`;
@@ -309,7 +328,7 @@
         }
         overlay.addEventListener('click', swallowClick, true);
 
-        const makeSprite = (className, icon, x, y, size = 34) => {
+        const makeSprite = (className, icon, x, y, size = 34, hitboxClass = '') => {
           const el = document.createElement('div');
           el.className = className;
           el.style.left = `${x * 100}%`;
@@ -320,12 +339,18 @@
           img.alt = '';
           img.draggable = false;
           el.appendChild(img);
+          if (debugHitboxes && hitboxClass) {
+            const hitbox = document.createElement('i');
+            hitbox.className = `ketchup-projectile-hitbox ${hitboxClass}`;
+            hitbox.setAttribute('aria-hidden', 'true');
+            el.appendChild(hitbox);
+          }
           field.appendChild(el);
           return el;
         };
 
         const shoot = () => {
-          const el = makeSprite('mg-shot', chiliIcon, playerX, playerY - 0.085, 32);
+          const el = makeSprite('mg-shot', chiliIcon, playerX, playerY - 0.085, 32, 'is-chili');
           shots.push({
             el,
             x: playerX,
@@ -377,7 +402,13 @@
             x,
             y,
             size,
+            options.blocksShots ? 'is-ketchup is-blocking' : 'is-ketchup',
           );
+          el.style.setProperty('--shot-rotation', `${Math.atan2(vy, vx) + Math.PI / 2}rad`);
+          if (options.blocksShots) {
+            const blockSize = Math.max(12, size * 1.65);
+            el.style.setProperty('--hitbox-size', `${blockSize}px`);
+          }
           enemyBullets.push({
             el,
             x,

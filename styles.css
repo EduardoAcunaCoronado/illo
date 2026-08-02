@@ -2709,6 +2709,100 @@ body.cutscene-active #game-container .ss-pause-btn {
     z-index: 2;
 }
 
+.ketchup-player-hitbox {
+    position: absolute;
+    display: none;
+    transform: translate(-50%, -50%);
+    z-index: 9;
+    pointer-events: none;
+    border: 2px solid rgba(255, 48, 84, 0.95);
+    background: rgba(255, 48, 84, 0.18);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.72),
+        0 0 12px rgba(255, 48, 84, 0.78);
+}
+
+.ketchup-player-hitbox span {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 3px);
+    transform: translateX(-50%);
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: rgba(15, 0, 8, 0.9);
+    color: #fff;
+    font: 700 9px/1 var(--battle-font, Arial, Helvetica, sans-serif);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.ketchup-boss-minigame.show-hitboxes .ketchup-player-hitbox {
+    display: block;
+}
+
+.ketchup-boss-hitbox,
+.ketchup-projectile-hitbox {
+    position: absolute;
+    display: none;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.ketchup-boss-hitbox {
+    border: 2px solid rgba(83, 210, 255, 0.95);
+    background: rgba(83, 210, 255, 0.12);
+    box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.72),
+        0 0 14px rgba(83, 210, 255, 0.72);
+}
+
+.ketchup-boss-hitbox span {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 3px);
+    transform: translateX(-50%);
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: rgba(0, 8, 15, 0.9);
+    color: #fff;
+    font: 700 9px/1 var(--battle-font, Arial, Helvetica, sans-serif);
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.ketchup-projectile-hitbox {
+    left: 50%;
+    top: 50%;
+    width: var(--hitbox-size, 8px);
+    height: var(--hitbox-size, 8px);
+    border-radius: 50%;
+}
+
+.ketchup-projectile-hitbox.is-chili {
+    border: 2px solid rgba(255, 235, 74, 0.95);
+    background: rgba(255, 235, 74, 0.25);
+    box-shadow: 0 0 8px rgba(255, 235, 74, 0.8);
+}
+
+.ketchup-projectile-hitbox.is-ketchup {
+    border: 2px solid rgba(255, 82, 82, 0.95);
+    background: rgba(255, 82, 82, 0.22);
+    box-shadow: 0 0 8px rgba(255, 82, 82, 0.8);
+}
+
+.ketchup-projectile-hitbox.is-blocking {
+    border-color: rgba(190, 76, 255, 0.96);
+    background: rgba(190, 76, 255, 0.18);
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(190, 76, 255, 0.9);
+}
+
+.ketchup-boss-minigame.show-hitboxes .ketchup-boss-hitbox,
+.ketchup-boss-minigame.show-hitboxes .ketchup-projectile-hitbox {
+    display: block;
+}
+
 .ketchup-player.is-hit {
     animation: ketchup-player-hit 0.18s ease-in-out 2;
     filter: drop-shadow(0 0 12px rgba(255, 45, 45, 0.95));
@@ -2902,7 +2996,7 @@ body.cutscene-active #game-container .ss-pause-btn {
     position: absolute;
     width: var(--shot-size, 34px);
     height: var(--shot-size, 34px);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) rotate(var(--shot-rotation, 0rad));
     z-index: 7;
     pointer-events: none;
     filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.65));
@@ -3147,6 +3241,96 @@ body.cutscene-active #game-container .ss-pause-btn {
     z-index: 2;
 }
 
+.ketchup-player-hitbox {
+    position: absolute;
+    display: none;
+    transform: translate(-50%, -50%);
+    z-index: 9;
+    pointer-events: none;
+    border: 2px solid rgba(255, 48, 84, .95);
+    background: rgba(255, 48, 84, .18);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .72), 0 0 12px rgba(255, 48, 84, .78);
+}
+
+.ketchup-player-hitbox span {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 3px);
+    transform: translateX(-50%);
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: rgba(15, 0, 8, .9);
+    color: #fff;
+    font: 700 9px/1 var(--battle-font, Arial, Helvetica, sans-serif);
+    letter-spacing: .08em;
+    white-space: nowrap;
+}
+
+.ketchup-boss-minigame.show-hitboxes .ketchup-player-hitbox {
+    display: block;
+}
+
+.ketchup-boss-hitbox,
+.ketchup-projectile-hitbox {
+    position: absolute;
+    display: none;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.ketchup-boss-hitbox {
+    border: 2px solid rgba(83, 210, 255, .95);
+    background: rgba(83, 210, 255, .12);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, .72), 0 0 14px rgba(83, 210, 255, .72);
+}
+
+.ketchup-boss-hitbox span {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 3px);
+    transform: translateX(-50%);
+    padding: 1px 4px;
+    border-radius: 3px;
+    background: rgba(0, 8, 15, .9);
+    color: #fff;
+    font: 700 9px/1 var(--battle-font, Arial, Helvetica, sans-serif);
+    letter-spacing: .08em;
+    white-space: nowrap;
+}
+
+.ketchup-projectile-hitbox {
+    left: 50%;
+    top: 50%;
+    width: var(--hitbox-size, 8px);
+    height: var(--hitbox-size, 8px);
+    border-radius: 50%;
+}
+
+.ketchup-projectile-hitbox.is-chili {
+    border: 2px solid rgba(255, 235, 74, .95);
+    background: rgba(255, 235, 74, .25);
+    box-shadow: 0 0 8px rgba(255, 235, 74, .8);
+}
+
+.ketchup-projectile-hitbox.is-ketchup {
+    border: 2px solid rgba(255, 82, 82, .95);
+    background: rgba(255, 82, 82, .22);
+    box-shadow: 0 0 8px rgba(255, 82, 82, .8);
+}
+
+.ketchup-projectile-hitbox.is-blocking {
+    border-color: rgba(190, 76, 255, .96);
+    background: rgba(190, 76, 255, .18);
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(190, 76, 255, .9);
+}
+
+.ketchup-boss-minigame.show-hitboxes .ketchup-boss-hitbox,
+.ketchup-boss-minigame.show-hitboxes .ketchup-projectile-hitbox {
+    display: block;
+}
+
 .ketchup-player.is-hit {
     animation: ketchup-player-hit .18s ease-in-out 2;
     filter: drop-shadow(0 0 12px rgba(255, 45, 45, .95));
@@ -3157,7 +3341,7 @@ body.cutscene-active #game-container .ss-pause-btn {
     position: absolute;
     width: var(--shot-size, 34px);
     height: var(--shot-size, 34px);
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) rotate(var(--shot-rotation, 0rad));
     pointer-events: none;
 }
 
@@ -3168,6 +3352,7 @@ body.cutscene-active #game-container .ss-pause-btn {
 
 .ketchup-enemy-shot {
     z-index: 7;
+    transform: translate(-50%, -50%) rotate(var(--shot-rotation, 0rad));
     filter: drop-shadow(0 0 8px rgba(255, 204, 0, .65));
 }
 
