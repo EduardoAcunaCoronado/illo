@@ -761,3 +761,12 @@ CURSOR-RETRATO DEL HABLANTE 2026-08-01
 - Las variantes Ketchling tienen alias hacia `ketchling.json`; todas las fichas
   secundarias se precargan al iniciar la partida.
 - Incel permanece en azul claro `#4da3ff`; Simsong usa azul oscuro `#285bc4`.
+
+EMBLEMA CANÓNICO DE EDU 2026-08-02
+- La camiseta de Edu usa siempre `assets/images/others/kingom-souls.png`: corona
+  dorada sobre corazón azul facetado.
+- El emblema está unificado en 35 assets: escenas/CG, versión humana, retratos de
+  teléfono, Mario Kart y todos los frames y hojas de Eduvuelo. Mantener el resto
+  de cada composición intacto, incluidas resoluciones, transparencias y oclusiones.
+- La CG 4K continúa en 3840×2560 y los diez frames activos de Eduvuelo V3
+  continúan en PNG transparente de 512×512.

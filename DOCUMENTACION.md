@@ -3258,7 +3258,7 @@ La versión web sigue funcionando igual: `start.bat` o
 
 ---
 
-_Última actualización: 2026-08-01_
+_Última actualización: 2026-08-02_
 
 ### Paquete visual Kingdom Ketchup v2
 
@@ -3644,3 +3644,18 @@ Las variantes de Ketchling se resuelven mediante alias hacia una sola ficha, y
 las fichas secundarias se precargan al comenzar para evitar cambios tardíos de
 color o retrato. En las marcas de hardware, Incel conserva `#4da3ff` y Simsong
 usa el azul oscuro `#285bc4`, diferenciándose dentro del mismo diálogo.
+
+### Emblema canónico de la camiseta de Edu (2026-08-02)
+
+El icono oficial de la camiseta de Edu es
+`assets/images/others/kingom-souls.png`: una corona dorada sobre un corazón azul
+facetado. Se ha unificado en las 35 imágenes donde la camiseta resulta visible,
+incluidos fondos y CG de los capítulos 2, 3, 4 y 6, la ilustración humana, los
+retratos del teléfono y Mario Kart, y todos los frames y hojas de vuelo de
+`assets/images/minigames/chapter3/`.
+
+Las composiciones conservan el encuadre, la resolución y el resto del dibujo
+original. La CG 4K mantiene `3840×2560`; los sprites V2/V3 y sus hojas mantienen
+su canal alfa, y los diez frames activos de Eduvuelo V3 continúan en lienzos
+transparentes de `512×512`. Cuando el brazo, una manga o el borde del encuadre
+tapan la camiseta, el emblema queda recortado por esa misma oclusión.
