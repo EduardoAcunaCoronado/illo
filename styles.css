@@ -2789,8 +2789,11 @@ body.cutscene-active #game-container .ss-pause-btn {
     background:
         linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(28, 20, 41, 0.18), rgba(69, 26, 26, 0.18)),
+        url('assets/images/minigames/chapter2/ketchup/kingdom_bullet_hell.png'),
         linear-gradient(180deg, #1c1429 0%, #2b1823 58%, #451a1a 100%);
-    background-size: 48px 48px, 48px 48px, auto;
+    background-size: 48px 48px, 48px 48px, auto, cover, auto;
+    background-position: center;
     box-shadow:
         inset 0 0 26px rgba(0, 0, 0, 0.55),
         0 0 20px rgba(0, 0, 0, 0.35);
@@ -2895,6 +2898,14 @@ body.cutscene-active #game-container .ss-pause-btn {
     z-index: 7;
     pointer-events: none;
     filter: drop-shadow(0 0 8px rgba(255, 204, 0, 0.65));
+}
+
+.ketchup-enemy-shot.is-corrupt {
+    filter:
+        drop-shadow(0 0 10px rgba(177, 54, 255, 0.85))
+        drop-shadow(0 0 4px rgba(0, 0, 0, 0.9))
+        saturate(1.35)
+        brightness(0.78);
 }
 
 .ketchup-enemy-shot img {
@@ -3117,7 +3128,11 @@ body.cutscene-active #game-container .ss-pause-btn {
 }
 
 .ketchup-enemy-shot.is-corrupt {
-    filter: drop-shadow(0 0 10px rgba(255, 54, 54, .82));
+    filter:
+        drop-shadow(0 0 10px rgba(177, 54, 255, .85))
+        drop-shadow(0 0 4px rgba(0, 0, 0, .9))
+        saturate(1.35)
+        brightness(.78);
 }
 
 .mg-shot img,
@@ -3204,9 +3219,11 @@ body.cutscene-active #game-container .ss-pause-btn {
     border-radius: 8px;
     background: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px),
-                radial-gradient(circle at 50% 14%, rgba(255, 204, 0, .2), transparent 26%),
+                linear-gradient(180deg, rgba(28, 20, 41, .18), rgba(69, 26, 26, .18)),
+                url('assets/images/minigames/chapter2/ketchup/kingdom_bullet_hell.png'),
                 linear-gradient(180deg, #1c1429 0%, #2b1823 58%, #451a1a 100%);
-    background-size: 48px 48px, 48px 48px, auto, auto;
+    background-size: 48px 48px, 48px 48px, auto, cover, auto;
+    background-position: center;
     box-shadow: inset 0 0 26px rgba(0, 0, 0, .55), 0 0 20px rgba(0, 0, 0, .35);
 }
 

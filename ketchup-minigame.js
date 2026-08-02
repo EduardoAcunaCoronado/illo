@@ -29,7 +29,11 @@
     }
 
     async play() {
-      const enemyMaxHp = this.options.enemyHp || this.options.zipHp || 360;
+      const enemyMaxHp = this.options.enemyHp || this.options.zipHp || 700;
+      const startAtHpRatio = this.options.startAtHpRatio != null ? Number(this.options.startAtHpRatio) : null;
+      const startEnemyHp = this.options.startEnemyHp != null
+        ? Number(this.options.startEnemyHp)
+        : (startAtHpRatio != null ? enemyMaxHp * startAtHpRatio : enemyMaxHp);
       const playerMaxLives = this.options.maxHits || this.options.lives || 3;
       const spicePower = Math.max(0, Number(this.options.spicePower) || 0);
       const maxSpicePower = Math.max(1, Number(this.options.maxSpicePower) || 40);
@@ -39,6 +43,7 @@
       const enemyBulletSpeed = lerp(1.18, 0.82, powerRatio);
       const enemyAttackDelay = lerp(0.82, 1.42, powerRatio);
       const difficulty = powerRatio >= 0.72 ? 'SUAVE' : powerRatio >= 0.38 ? 'NORMAL' : 'INTENSA';
+      const allowMouse = this.options.allowMouse !== false;
       const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
       const corruptKetchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp');
       const chiliIcon = cacheBust('assets/images/minigames/chapter2/ketchup/chili_v2.webp');
@@ -77,18 +82,28 @@
         default: [playerFrame(1), playerFrame(3)],
       };
       const musicTrack = this.options.music;
-      const assetsToPreload = [
+      const criticalAssetsToPreload = [
         ketchupIcon,
         corruptKetchupIcon,
         chiliIcon,
         zipIcon,
         zipAngryIcon,
+        zipFloatingFrames[0],
+        ...playerFrames.idle,
+      ];
+      const secondaryAssetsToPreload = [
         ...zipPhaseFrames,
-        ...zipFloatingFrames,
+        ...zipFloatingFrames.slice(1),
         ...Object.values(playerFrames).flat(),
       ];
 
-      await preloadImages(assetsToPreload);
+      await preloadImages(criticalAssetsToPreload);
+      const preloadSecondaryAssets = () => preloadImages(secondaryAssetsToPreload);
+      if (window.requestIdleCallback) {
+        window.requestIdleCallback(preloadSecondaryAssets, { timeout: 1200 });
+      } else {
+        window.setTimeout(preloadSecondaryAssets, 0);
+      }
 
       return new Promise((resolve) => {
         let musicAudio = null;
@@ -125,7 +140,7 @@
           </div>
           <div class="ketchup-player-hud">
             <span class="ketchup-player-lives"></span>
-            <span class="ketchup-player-help">Mueve con ← ↑ ↓ → o WASD · Espacio dispara <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla"> · El kétchup negro quita 2 vidas</span>
+            <span class="ketchup-player-help">Mueve con ← ↑ ↓ → / WASD${allowMouse ? ' o ratón' : ''} · Espacio dispara <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla"></span>
           </div>
         `;
         document.getElementById('game-container').appendChild(overlay);
@@ -140,10 +155,13 @@
         const livesEl = overlay.querySelector('.ketchup-player-lives');
         const specialWarning = overlay.querySelector('#ketchup-special-warning');
 
-        let enemyHp = enemyMaxHp;
+        let enemyHp = clamp(Number.isFinite(startEnemyHp) ? startEnemyHp : enemyMaxHp, 1, enemyMaxHp);
         let playerLives = playerMaxLives;
         let playerX = 0.5;
         let playerY = 0.86;
+        let mouseTargetX = playerX;
+        let mouseTargetY = playerY;
+        let mouseActive = false;
         let enemyX = 0.5;
         let enemyY = 0.18;
         let enemyDir = 1;
@@ -177,6 +195,12 @@
         let phaseAnimationFrameTimer = 0;
         let phaseAnimationIndex = 0;
         let phaseAnimationActive = false;
+        let phaseAnimationQueued = false;
+        let specialSequenceActive = false;
+        let specialSequenceTimer = 0;
+        let spiralSpawnTimer = 0;
+        let spiralAngle = 0;
+        let spiralWave = 0;
 
         const state = {
           moveLeft: false,
@@ -259,12 +283,27 @@
           state.moveDown = false;
           state.shooting = false;
           state.keyboardDirection = 0;
+          mouseActive = false;
+        };
+        const pointerMove = (e) => {
+          if (!allowMouse) return;
+          const rect = field.getBoundingClientRect();
+          mouseTargetX = clamp((e.clientX - rect.left) / rect.width, playerMinX, playerMaxX);
+          mouseTargetY = clamp((e.clientY - rect.top) / rect.height, playerMinY, playerMaxY);
+          mouseActive = true;
+        };
+        const pointerLeave = () => {
+          mouseActive = false;
         };
         const swallowClick = (e) => e.stopPropagation();
 
         document.addEventListener('keydown', keyDown);
         document.addEventListener('keyup', keyUp);
         window.addEventListener('blur', blur);
+        if (allowMouse) {
+          field.addEventListener('pointermove', pointerMove);
+          field.addEventListener('pointerleave', pointerLeave);
+        }
         overlay.addEventListener('click', swallowClick, true);
 
         const makeSprite = (className, icon, x, y, size = 34) => {
@@ -313,6 +352,26 @@
           });
         };
 
+        const fireSpiralShieldBurst = () => {
+          const centerX = enemyX;
+          const centerY = enemyY + 0.08;
+          const arms = 3;
+          spiralWave++;
+          for (let arm = 0; arm < arms; arm++) {
+            const angle = spiralAngle + arm * ((Math.PI * 2) / arms) + spiralWave * 0.09;
+            const radius = 0.025 + (spiralWave % 9) * 0.014;
+            fireEnemyBullet(
+              centerX + Math.cos(angle) * radius,
+              centerY + Math.sin(angle) * radius,
+              Math.cos(angle) * (0.17 + radius * 0.9),
+              Math.sin(angle) * (0.17 + radius * 0.9),
+              30,
+              { corrupt: true, blocksShots: true },
+            );
+          }
+          spiralAngle += 0.42;
+        };
+
         const fireSpecialAttack = () => {
           const centerX = enemyX;
           const centerY = enemyY + 0.08;
@@ -342,10 +401,33 @@
               );
             }
           });
+          specialSequenceActive = true;
+          specialSequenceTimer = 2.7;
+          spiralSpawnTimer = 0.08;
+          spiralAngle = Math.atan2(playerY - centerY, playerX - centerX) + Math.PI * 0.45;
+          spiralWave = 0;
+        };
+
+        const updateSpecialSequence = (dt) => {
+          if (!specialSequenceActive) return;
+          specialSequenceTimer -= dt;
+          spiralSpawnTimer -= dt;
+          while (spiralSpawnTimer <= 0 && specialSequenceTimer > 0) {
+            fireSpiralShieldBurst();
+            spiralSpawnTimer += 0.085;
+          }
+          if (specialSequenceTimer <= 0) {
+            specialSequenceActive = false;
+            if (playerLives > 0) {
+              phaseAnimationQueued = true;
+              phaseAnimationTimer = 0.35;
+            }
+          }
         };
 
         const resetPhaseAnimation = () => {
           phaseAnimationActive = false;
+          phaseAnimationQueued = false;
           phaseAnimationIndex = 0;
           phaseAnimationFrameTimer = 0;
           phaseAnimationTimer = 3.4;
@@ -353,6 +435,8 @@
         };
 
         const updatePhaseAnimation = (dt) => {
+          if (!phaseAnimationQueued && !phaseAnimationActive) return;
+          if (playerLives <= 0) return;
           if (specialWarningActive) return;
           if (!phaseAnimationActive) {
             phaseAnimationTimer -= dt;
@@ -371,8 +455,9 @@
 
           if (phaseAnimationIndex >= zipPhaseFrames.length) {
             phaseAnimationActive = false;
+            phaseAnimationQueued = false;
             phaseAnimationIndex = 0;
-            phaseAnimationTimer = 3.4;
+            phaseAnimationTimer = 0;
           }
         };
 
@@ -387,8 +472,8 @@
           specialWarningActive = false;
           specialWarning.classList.remove('is-visible');
           fireSpecialAttack();
-          specialAttackTimer = 4.8 * enemyAttackDelay;
-          patternTimer = 1.05 * enemyAttackDelay;
+          specialAttackTimer = 5.8 * enemyAttackDelay;
+          patternTimer = 1.15 * enemyAttackDelay;
         };
 
         const firePattern = () => {
@@ -466,6 +551,10 @@
           document.removeEventListener('keydown', keyDown);
           document.removeEventListener('keyup', keyUp);
           window.removeEventListener('blur', blur);
+          if (allowMouse) {
+            field.removeEventListener('pointermove', pointerMove);
+            field.removeEventListener('pointerleave', pointerLeave);
+          }
 
           if (musicAudio) {
             musicAudio.pause();
@@ -505,7 +594,7 @@
           shootCooldown = Math.max(0, shootCooldown - dt);
           playerInvuln = Math.max(0, playerInvuln - dt);
 
-          const moveSpeed = 0.58;
+          const moveSpeed = 0.42;
           let moveX = 0;
           let moveY = 0;
           if (state.moveLeft) moveX -= 1;
@@ -513,12 +602,19 @@
           if (state.moveUp) moveY -= 1;
           if (state.moveDown) moveY += 1;
           if (moveX !== 0 || moveY !== 0) {
+            mouseActive = false;
             const moveLength = Math.hypot(moveX, moveY);
             playerX = clamp(playerX + (moveX / moveLength) * moveSpeed * dt, playerMinX, playerMaxX);
             playerY = clamp(playerY + (moveY / moveLength) * moveSpeed * dt, playerMinY, playerMaxY);
+            mouseTargetX = playerX;
+            mouseTargetY = playerY;
+          } else if (mouseActive) {
+            const mouseEase = 1 - Math.pow(0.02, dt);
+            playerX = clamp(lerp(playerX, mouseTargetX, mouseEase), playerMinX, playerMaxX);
+            playerY = clamp(lerp(playerY, mouseTargetY, mouseEase), playerMinY, playerMaxY);
           }
 
-          const shouldFloat = enemyHp / enemyMaxHp > 0.4;
+          const shouldFloat = enemyHp / enemyMaxHp > 0.6;
           if (shouldFloat) {
             enemyMoveTimer -= dt;
             if (enemyMoveTimer <= 0) {
@@ -552,6 +648,7 @@
               specialAttackTimer -= dt;
               if (specialAttackTimer <= 0) startSpecialWarning();
             }
+            updateSpecialSequence(dt);
             updatePhaseAnimation(dt);
           }
 
@@ -578,7 +675,7 @@
             shootCooldown = shotCooldownMax;
           }
 
-          if (!specialWarningActive) {
+          if (!specialWarningActive && !specialSequenceActive) {
             patternTimer -= dt;
             if (patternTimer <= 0) firePattern();
           }
@@ -587,6 +684,19 @@
             const shot = shots[i];
             shot.y -= shot.speed * dt;
             shot.el.style.top = `${shot.y * 100}%`;
+            let blocked = false;
+            for (let j = enemyBullets.length - 1; j >= 0; j--) {
+              const bullet = enemyBullets[j];
+              if (!bullet.blocksShots) continue;
+              const blockRange = Math.max(0.03, (bullet.size || 30) / 1280);
+              if (Math.abs(shot.x - bullet.x) < blockRange && Math.abs(shot.y - bullet.y) < blockRange) {
+                shot.el.remove();
+                shots.splice(i, 1);
+                blocked = true;
+                break;
+              }
+            }
+            if (blocked) continue;
             const hitBoss = Math.abs(shot.x - enemyX) < 0.1 && Math.abs(shot.y - enemyY) < 0.13;
             if (hitBoss) {
               enemyHp = Math.max(0, enemyHp - shot.damage);

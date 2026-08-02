@@ -1369,6 +1369,14 @@ class VisualNovelEngine {
     }
 
     runChiliHarvestRound(options = {}) {
+        if (window.ChiliHarvestMinigame) {
+            return window.ChiliHarvestMinigame.play(options);
+        }
+        console.warn('ChiliHarvestMinigame no está cargado.');
+        return Promise.resolve(0);
+    }
+
+    runLegacyChiliHarvestRound(options = {}) {
         const rawDuration = Number(options.duration) || 22000;
         const duration = rawDuration <= 120 ? rawDuration * 1000 : rawDuration;
         const powerGoal = Number(options.powerGoal) || 28;

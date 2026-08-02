@@ -86,6 +86,27 @@
             padding: 10px 12px;
             border-radius: 9px;
         }
+        .tp-config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            width: min(760px, 100%);
+        }
+        .tp-config-grid label {
+            display: grid;
+            gap: 5px;
+            color: #d8e2ff;
+            font-size: 12px;
+            text-align: left;
+        }
+        .tp-config-grid input {
+            border: 1px solid rgba(255, 255, 255, .24);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, .45);
+            color: #fff;
+            font-size: 14px;
+            padding: 8px;
+        }
         #tp-result {
             min-height: 22px; font-size: 15px; color: #ffd166; font-weight: bold;
             text-shadow: 0 0 10px rgba(255,209,102,.6);
@@ -165,15 +186,57 @@
             <button class="tp-btn" style="--c:#ffd166" onclick="launchHistoria('eduvuelo')">📖 Como en la historia</button>
         </div>
 
-        <h2>🌶️ Guindillas + Bullet Hell de Zip</h2>
+        <h2>🌶️ Recolectar guindillas</h2>
         <div class="tp-row">
-            <button class="tp-btn" data-testid="ketchup-easy" style="--c:#7cffb2" onclick="launchKetchup('facil')">Fácil</button>
-            <button class="tp-btn" data-testid="ketchup-medium" style="--c:#4fd0ff" onclick="launchKetchup('medio')">Medio</button>
-            <button class="tp-btn" data-testid="ketchup-hard" style="--c:#ff4fa3" onclick="launchKetchup('dificil')">Difícil</button>
+            <button class="tp-btn" style="--c:#7cffb2" onclick="launchChiliHarvest('facil')">Fácil</button>
+            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchChiliHarvest('medio')">Medio</button>
+            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchChiliHarvest('dificil')">Difícil</button>
         </div>
+        <div class="tp-config-grid">
+            <label>Duración
+                <input id="chili-duration" type="number" min="1" step="1" value="9">
+            </label>
+            <label>Objetivo poder
+                <input id="chili-power-goal" type="number" min="1" step="1" value="16">
+            </label>
+            <label>Poder máximo
+                <input id="chili-max-power" type="number" min="1" step="1" value="28">
+            </label>
+            <label>Bonus caja Neit
+                <input id="chili-box-bonus" type="number" min="0" step="1" value="12">
+            </label>
+        </div>
+        <label class="tp-music">
+            <input type="checkbox" id="chili-neit"> Probar con caja de Neit
+        </label>
         <div id="ketchup-info" style="font-size: 11px; margin-top: 8px; color: #ffb4b4; opacity: 0.8;">
             Poder conseguido: <span id="chili-speed-val">-</span>
         </div>
+
+        <h2>🍅 Bullet Hell de Zip</h2>
+        <div class="tp-row">
+            <button class="tp-btn" data-testid="ketchup-easy" style="--c:#7cffb2" onclick="launchZipBulletHell('facil')">Fácil</button>
+            <button class="tp-btn" data-testid="ketchup-medium" style="--c:#4fd0ff" onclick="launchZipBulletHell('medio')">Medio</button>
+            <button class="tp-btn" data-testid="ketchup-hard" style="--c:#ff4fa3" onclick="launchZipBulletHell('dificil')">Difícil</button>
+            <button class="tp-btn" style="--c:#ffd166" onclick="launchKetchup('medio')">Flujo completo</button>
+        </div>
+        <div class="tp-config-grid">
+            <label>HP Zip
+                <input id="zip-hp" type="number" min="1" step="1" value="700">
+            </label>
+            <label>Vidas Samu
+                <input id="zip-lives" type="number" min="1" step="1" value="3">
+            </label>
+            <label>Picante inicial
+                <input id="zip-spice-power" type="number" min="0" step="1" value="14">
+            </label>
+            <label>Picante máximo
+                <input id="zip-max-spice" type="number" min="1" step="1" value="28">
+            </label>
+        </div>
+        <label class="tp-music">
+            <input type="checkbox" id="zip-start-phase-two"> Empezar desde la segunda forma (60% de vida)
+        </label>
 
         <h2>🔷 Equilibrio de poderes</h2>
         <div class="tp-row">
@@ -240,8 +303,8 @@
     <script>
       (function () {
         var v = Date.now();
-        ['juice.js', 'battle-minigame.js', 'credits-minigame.js', 'ketchup-minigame.js',
-         'rune-channeling-minigame.js', 'engine.js'].forEach(function (f) {
+        ['juice.js', 'battle-minigame.js', 'credits-minigame.js', 'chili-harvest-minigame.js',
+         'ketchup-minigame.js', 'rune-channeling-minigame.js', 'engine.js'].forEach(function (f) {
           document.write('<scr' + 'ipt src="' + f + '?v=' + v + '"><\/scr' + 'ipt>');
         });
       })();
@@ -369,10 +432,15 @@
                 hitGraceMs: 700
             }
         };
-        const KETCHUP = {
+        const CHILI_HARVEST = {
             facil:   { duration: 10, maxHits: 4, spawnRate: 1.5, speedMult: 1.0, chiliChance: 0.8, neit: true },
             medio:   { duration: 9, maxHits: 3, spawnRate: 1.35, speedMult: 1.2, chiliChance: 0.72 },
             dificil: { duration: 7, maxHits: 2, spawnRate: 1.1, speedMult: 1.45, chiliChance: 0.58 }
+        };
+        const ZIP_BULLET_HELL = {
+            facil:   { enemyHp: 600, maxHits: 4, spicePower: 22, maxSpicePower: 28 },
+            medio:   { enemyHp: 700, maxHits: 3, spicePower: 14, maxSpicePower: 28 },
+            dificil: { enemyHp: 850, maxHits: 2, spicePower: 6, maxSpicePower: 28 }
         };
         const RUNE_CHANNELING = {
             facil:   { levels: 7, holdRequired: 1.15 },
@@ -433,17 +501,83 @@
             resultEl.textContent = '✅ ¡Partituras recogidas!';
             panel.classList.remove('hidden');
         }
+
+        function getNumberInput(id, fallback) {
+            const input = document.getElementById(id);
+            const value = input ? Number(input.value) : NaN;
+            return Number.isFinite(value) ? value : fallback;
+        }
+
+        function getChiliOptions(preset) {
+            const opts = CHILI_HARVEST[preset] || CHILI_HARVEST.medio;
+            return {
+                ...opts,
+                duration: getNumberInput('chili-duration', opts.duration),
+                powerGoal: getNumberInput('chili-power-goal', 16),
+                maxSpicePower: getNumberInput('chili-max-power', 28),
+                boxBonus: getNumberInput('chili-box-bonus', 12),
+                neit: document.getElementById('chili-neit').checked
+            };
+        }
+
+        function getZipOptions(preset) {
+            const opts = ZIP_BULLET_HELL[preset] || ZIP_BULLET_HELL.medio;
+            const startPhaseTwo = document.getElementById('zip-start-phase-two').checked;
+            const options = {
+                ...opts,
+                enemyHp: getNumberInput('zip-hp', opts.enemyHp),
+                maxHits: getNumberInput('zip-lives', opts.maxHits),
+                spicePower: getNumberInput('zip-spice-power', opts.spicePower),
+                maxSpicePower: getNumberInput('zip-max-spice', opts.maxSpicePower)
+            };
+            if (startPhaseTwo) options.startAtHpRatio = 0.6;
+            return options;
+        }
+
+        async function launchChiliHarvest(preset) {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            startMusic('chapter2/ketchup.mp3');
+            const opts = getChiliOptions(preset);
+            engine.inventory = opts.neit ? ['caja_guindillas'] : [];
+            await engine.playChiliHarvestMinigame(opts);
+            document.getElementById('chili-speed-val').textContent = engine.gameState.chiliPower + ' puntos';
+            document.getElementById('zip-spice-power').value = engine.gameState.chiliPower;
+            stopMusic();
+            resultEl.textContent = '✅ ¡' + engine.gameState.chiliPower + ' puntos de picante reunidos!';
+            panel.classList.remove('hidden');
+        }
+
+        async function launchZipBulletHell(preset) {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            const opts = getZipOptions(preset);
+            engine.gameState.chiliPower = opts.spicePower;
+            engine.gameState.chiliPowerMax = opts.maxSpicePower;
+            engine.inventory = document.getElementById('chili-neit').checked ? ['caja_guindillas'] : [];
+            startMusic("assets/audio/sfx/zip's-shadow-waltz.mp3");
+            await engine.playKetchupBossMinigame(opts);
+            stopMusic();
+            resultEl.textContent = '✅ ¡Zip derrotado con ' + opts.spicePower + ' puntos de picante!';
+            panel.classList.remove('hidden');
+        }
+
         async function launchKetchup(preset) {
             resultEl.textContent = '';
             panel.classList.add('hidden');
             startMusic('chapter2/ketchup.mp3');
-            const opts = KETCHUP[preset];
+            const opts = getChiliOptions(preset);
             engine.inventory = opts.neit ? ['caja_guindillas'] : [];
-            await engine.playChiliHarvestMinigame({ ...opts, powerGoal: 16, maxSpicePower: 28, boxBonus: 12 });
+            await engine.playChiliHarvestMinigame(opts);
             document.getElementById('chili-speed-val').textContent = engine.gameState.chiliPower + ' puntos';
+            document.getElementById('zip-spice-power').value = engine.gameState.chiliPower;
             stopMusic();
             startMusic("assets/audio/music/chapter2/zip's-shadow-waltz.mp3");
-            await engine.playKetchupBossMinigame({ enemyHp: 360, maxHits: opts.maxHits, maxSpicePower: 28 });
+            await engine.playKetchupBossMinigame({
+                ...getZipOptions(preset),
+                spicePower: engine.gameState.chiliPower,
+                maxSpicePower: engine.gameState.chiliPowerMax
+            });
             stopMusic();
             resultEl.textContent = '✅ ¡Zip derrotado con ' + engine.gameState.chiliPower + ' puntos de picante!';
             panel.classList.remove('hidden');
