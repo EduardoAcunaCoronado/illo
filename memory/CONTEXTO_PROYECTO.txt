@@ -794,3 +794,8 @@ GAG DE FISURAS 2 2026-08-02
   Edu responde que le gusta `Fisuras 2 de Stim`; Samu muestra la pose `shocked`
   durante la respuesta y continúa con «Bueno, cambiando de tema...» antes de
   retomar la búsqueda del resto.
+
+SPRITES DE CARRERA DE SAMU 2026-08-03
+- Los 9 frames y `todos.png` de `assets/images/characters/samu/run/` se limpiaron
+  del halo blanco semitransparente del borde y recibieron una contracción alfa de
+  1 px para eliminar la última línea clara, manteniendo tamaño y poses originales.

@@ -3700,3 +3700,11 @@ qué el reino utiliza portales. Edu explica que le gusta **Fisuras 2 de Stim**;
 durante su respuesta Samu cambia a la pose `shocked` y, al recuperar la palabra,
 corta el asunto con «Bueno, cambiando de tema...» antes de retomar la búsqueda de
 Tony y José.
+
+### Sprites de carrera de Samu sin halo blanco (2026-08-03)
+
+Los nueve fotogramas de carrera y el atlas `todos.png` en
+`assets/images/characters/samu/run/` conservan su transparencia y sus poses, con
+el halo blanco semitransparente descontaminado y el canal alfa contraído un
+píxel. Así se elimina también la última línea clara exterior y los sprites se
+integran sobre fondos de cualquier color sin un perfil blanco.
