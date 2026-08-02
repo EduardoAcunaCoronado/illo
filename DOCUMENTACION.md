@@ -3662,3 +3662,27 @@ transparentes de `512×512` y la oclusión natural del brazo sobre la camiseta. 
 hojas `edu_volando_sheet_v3.png` y `edu_volando_dash_sheet_v3.png` se reconstruyen
 desde esos mismos frames en `1774×887`. Las variantes V1/V2 no forman parte del
 motor activo de Eduvuelo y permanecen como legado.
+
+### Selector de escenas sin desplazamiento del escenario (2026-08-02)
+
+Al abrir **Escenas**, la entrada actual se centra desplazando solo
+`.scenes-list`. No se usa `scrollIntoView()`, porque Chrome podía aplicarlo también
+a los contenedores del escenario y mover hacia arriba todo el contenido del
+juego. El selector conserva su desplazamiento interno sin alterar la posición
+del escenario 16:9.
+
+### Caída anime de Edu por la batería de Samu (2026-08-02)
+
+En la escena final del capítulo 2, Edu reacciona a «¡Oh, no! Me he quedado sin
+batería. Esto me pasa por actualizar las apps.» con una caída vertical de anime:
+baja recto con líneas cinéticas hasta salir completamente por el borde inferior,
+permanece un instante fuera del plano y regresa por la misma trayectoria. No hay
+rotación, cambio de escala, compresión ni rebote. La acción reutilizable
+`characterAnimeFall` se ejecuta sin bloquear el diálogo y acepta `delay`,
+`duration`, `sound` y `volume`.
+
+El sonido original `assets/audio/sfx/sfx_caida_anime_edu.wav` sincroniza un
+silbido descendente, un golpe grave fuera de plano y un aire ascendente suave
+durante el regreso, sin sonido de rebote. La caída incluye una sacudida breve de
+pantalla en el impacto y respeta
+`prefers-reduced-motion` con una versión visual abreviada.

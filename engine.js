@@ -187,6 +187,10 @@ class VisualNovelEngine {
             case 'glitchUntilAdvance':
                 this.startCharacterGlitchUntilAdvance(action.character, action.position);
                 break;
+            case 'characterAnimeFall':
+            case 'animeFall':
+                this.triggerCharacterAnimeFall(action.character, action.position, action);
+                break;
             case 'hideDialog':
             case 'hideText':
             case 'ocultarTexto':
@@ -5515,6 +5519,9 @@ class VisualNovelEngine {
 
         const charElement = document.getElementById(`character-${position}`);
         if (charElement) {
+            // Una pose nueva sustituye cualquier reacción corporal pendiente
+            // del personaje que ocupaba antes este hueco.
+            this.clearCharacterAnimeFall(charElement);
             const poseImage = character.poses && character.poses[pose]
                 ? character.poses[pose]
                 : (character.poses && character.poses[character.defaultPose])
@@ -5652,6 +5659,60 @@ class VisualNovelEngine {
         if (now - (this._lastCharacterGlitchSoundAt || 0) < 160) return;
         this._lastCharacterGlitchSoundAt = now;
         this.playSound('assets/audio/sfx/sfx_estatica.mp3', { volume: 0.72 });
+    }
+
+    // Reacción cómica de anime: anticipación, desplome vertical, golpe, pausa y
+    // reincorporación. Se programa sin bloquear el diálogo para que el personaje
+    // reaccione mientras se escribe la frase que provoca la caída.
+    triggerCharacterAnimeFall(characterName, position, options = {}) {
+        const characterKey = this.getCharacterKey(characterName);
+        const trackedPosition = position || this.characterPositions[characterKey];
+        if (!trackedPosition) return;
+
+        const charElement = document.getElementById(`character-${trackedPosition}`);
+        if (!charElement || !charElement.classList.contains('active')) return;
+
+        this.clearCharacterAnimeFall(charElement);
+        const delay = Math.max(0, Number(options.delay) || 0);
+        const duration = Math.max(900, Number(options.duration) || 1800);
+
+        const startFall = () => {
+            // El hueco puede haber cambiado de personaje durante el retardo.
+            if (!charElement.classList.contains('active') ||
+                charElement.dataset.character !== characterKey) return;
+
+            charElement.style.setProperty('--anime-fall-duration', `${duration}ms`);
+            void charElement.offsetWidth;
+            charElement.classList.add('character-anime-fall');
+
+            this.playSound(
+                options.sound || 'assets/audio/sfx/sfx_caida_anime_edu.wav',
+                { volume: options.volume !== undefined ? options.volume : 0.82 }
+            );
+
+            charElement._animeFallImpactTimer = setTimeout(() => {
+                if (window.Juice) window.Juice.shake(4, 170);
+            }, duration * 0.37);
+            charElement._animeFallEndTimer = setTimeout(() => {
+                this.clearCharacterAnimeFall(charElement);
+            }, duration + 80);
+        };
+
+        charElement._animeFallStartTimer = setTimeout(startFall, delay);
+    }
+
+    clearCharacterAnimeFall(charElement) {
+        if (!charElement) return;
+        clearTimeout(charElement._animeFallStartTimer);
+        clearTimeout(charElement._animeFallImpactTimer);
+        clearTimeout(charElement._animeFallEndTimer);
+        charElement._animeFallStartTimer = null;
+        charElement._animeFallImpactTimer = null;
+        charElement._animeFallEndTimer = null;
+        charElement.classList.remove('character-anime-fall');
+        [
+            '--anime-fall-duration'
+        ].forEach(property => charElement.style.removeProperty(property));
     }
 
     triggerCharacterGlitch(characterName, position, duration = 1350) {
@@ -6886,6 +6947,7 @@ class VisualNovelEngine {
         ['character-left', 'character-right', 'character-center'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
+                this.clearCharacterAnimeFall(el);
                 el.classList.remove('active', 'speaking');
                 el.style.backgroundImage = '';
             }

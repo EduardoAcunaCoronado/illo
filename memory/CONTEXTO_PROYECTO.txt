@@ -774,3 +774,16 @@ EMBLEMA CANÓNICO DE EDU 2026-08-02
 - `edu_volando_sheet_v3.png` y `edu_volando_dash_sheet_v3.png` se reconstruyen
   desde esos frames en 1774×887. Las variantes V1/V2 quedan como legado inactivo.
 - La CG 4K continúa en 3840×2560.
+
+SELECTOR DE ESCENAS 2026-08-02
+- Al abrir Escenas, centrar la escena actual modificando exclusivamente el
+  `scrollTop` de `.scenes-list`. No volver a usar `scrollIntoView()` aquí: Chrome
+  puede desplazar también un ancestro con overflow y recortar el juego por arriba.
+
+CAÍDA ANIME DE EDU 2026-08-02
+- En la frase de Samu sobre quedarse sin batería al actualizar las apps, Edu usa
+  la acción `characterAnimeFall`: descenso vertical sin rotación ni escala hasta
+  salir por abajo, pausa fuera del plano y regreso recto sin rebote, sin bloquear
+  el diálogo.
+- El audio original es `assets/audio/sfx/sfx_caida_anime_edu.wav`; combina
+  silbido descendente, impacto grave fuera de plano y aire ascendente sin boing.

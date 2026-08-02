@@ -1945,13 +1945,40 @@
         },
         {
           "character": "Samu",
-          "text": "¡Oh, no! Me he quedado sin batería. Esto con mi antiguo móvil no me pasaba.",
+          "text": "¡Oh, no! Me he quedado sin batería. Esto me pasa por actualizar las apps.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
               "pose": "embarrassed"
+            },
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "facepalm"
+            },
+            {
+              "type": "characterAnimeFall",
+              "character": "edu",
+              "position": "right",
+              "delay": 480,
+              "duration": 1800,
+              "sound": "assets/audio/sfx/sfx_caida_anime_edu.wav",
+              "volume": 0.82
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Samu, no tienes remedio...",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "facepalm"
             }
           ]
         },
