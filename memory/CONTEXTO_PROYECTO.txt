@@ -706,3 +706,58 @@ SISTEMA TIPOGRÁFICO EMOCIONAL 2026-08-01
   sacudidas, escala y sombras cromáticas. Se reserva para momentos excepcionales;
   su tamaño crece por carácter desde 12px hasta 68px y su primer uso es el grito
   de Edu cuando la sombra lo atrapa en el capítulo 2.
+- El relleno y los brillos de cada emoción heredan el color legible del hablante;
+  OMG, CLos, Incel y Simsong mantienen sus colores de marca.
+- El valor CSS `blue` de Edu se normaliza visualmente a `#4da3ff`; no pasarlo por
+  la mezcla genérica con blanco, porque esa conversión produce lavanda.
+
+CONTROLES GLOBALES Y PAUSA 2026-08-01
+- Clic izquierdo, Espacio e Intro avanzan el diálogo; durante el tecleo, el primer
+  input solo completa la frase. Espacio/Intro se ignoran en elecciones,
+  cinemáticas y minijuegos.
+- H y clic derecho alternan todo el HUD, incluido el cuadro de diálogo. El clic
+  secundario está filtrado antes de los controles y nunca avanza texto ni activa
+  acciones del minijuego.
+- Esc abre la pausa global en diálogos y minijuegos. Congela timers, RAF, reloj
+  lógico, animaciones CSS, audio y vídeo; el panel absorbe el resto de entradas
+  hasta reanudar. Las cinemáticas conservan Esc para saltar.
+- Neit usa un desplazamiento vertical exclusivo de 28 px hacia abajo para que su
+  retrato no parezca flotar, sin modificar escala o disposición de otros personajes.
+
+CURSOR-RETRATO DEL HABLANTE 2026-08-01
+- A la derecha del nombre aparece un cursor animado con marco original
+  `assets/images/ui/dialogue_speaker_cursor.png` y la pose activa del personaje
+  recortada en el centro.
+- Durante el tecleo el marco abandona su hueco fijo, sigue un ancla colocada tras
+  cada grafema (incluidos los saltos de línea) como si imprimiera el texto y
+  vuelve al encabezado con una transición de 280 ms al terminar la frase.
+- Samu usa siempre su retrato furry. Edu, Tony y José mantienen sus retratos
+  humanos de `assets/images/characters/humans/` hasta sus revelaciones furry.
+  Umbrales: C2/E15/L4, C3/E13/L5 y C4/E2/L4 respectivamente. Se calculan por
+  posición narrativa para funcionar también desde el selector de escenas.
+- El recorte del cursor se controla con `--cursor-portrait-size` y
+  `--cursor-portrait-position`. Paloma, Santi, Tralalero, Tung Tung, Gorila y
+  Airi adulta tienen focos propios para mantener cabeza/cara dentro del círculo.
+  En Santi el foco se limita a `data-pose="neutral"`, porque sus demás poses usan
+  composiciones distintas. El zoom general es `100%`; las hojas humanas usan
+  `170%` con foco derecho; Edu humano usa `100% 19%` para subir la cabeza.
+- José humano usa `170%` y `100% 20%`: sube el rostro sin cortar el pelo y no
+  afecta a su retrato furry.
+- Tung Tung Tung Sahur mantiene `145%` y usa `80% 3%` para centrar horizontalmente
+  la cara dentro del cursor.
+- El sprite de escenario de Tung Tung usa escala `1.5` y desplazamiento vertical
+  `38%`: mantiene la cabeza visible y el diálogo cubre las piernas para obtener
+  un plano de cintura. El resto de personajes conserva su encuadre.
+- `assets/images/characters/tung_tung_tung_sahur.png` es un PNG RGBA completo de
+  1024x1536; el medio plano se consigue en el motor sin recortar el recurso.
+- Micaela Michis usa `145%` y el foco `50% 4%`: baja su ilustración grupal para que las
+  cabezas no queden pegadas al borde superior del cursor.
+- La pose `crazy` de Micaela usa `130%` y `50% 55%`; así el cursor encuadra su
+  cabeza en lugar del gato negro y los brazos levantados.
+- Si el hablante está fuera de plano se usa su pose predeterminada; `???` muestra
+  un interrogante y se limpia siempre el retrato anterior.
+- `speakingAs` afecta al foco del escenario, no a la identidad del cursor; las
+  llamadas muestran a Edu/Tony/José aunque se ilumine el móvil.
+- Las variantes Ketchling tienen alias hacia `ketchling.json`; todas las fichas
+  secundarias se precargan al iniciar la partida.
+- Incel permanece en azul claro `#4da3ff`; Simsong usa azul oscuro `#285bc4`.

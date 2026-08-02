@@ -5476,6 +5476,35 @@ class VisualNovelEngine {
         return key;
     }
 
+    // Edu, Tony y José conservan su retrato humano en el cursor hasta
+    // el instante narrativo en que el juego revela su forma transformada. Los
+    // umbrales por escena/línea permiten también saltar desde el menú de escenas
+    // sin depender de una variable que solo se hubiera activado al jugar antes.
+    humanDialogPortrait(characterKey) {
+        const portraits = {
+            edu: 'assets/images/characters/humans/edu_humano.png',
+            tony: 'assets/images/characters/humans/tony_humano.png',
+            jose: 'assets/images/characters/humans/jose_humano.png'
+        };
+        return portraits[characterKey] || null;
+    }
+
+    isFurryIdentityRevealed(characterKey) {
+        const revealAt = {
+            edu: { chapter: 2, scene: 15, line: 4 },
+            tony: { chapter: 3, scene: 13, line: 5 },
+            jose: { chapter: 4, scene: 2, line: 4 }
+        };
+        const reveal = revealAt[characterKey];
+        if (!reveal) return true;
+
+        const chapterMatch = String(this.lastChapterName || '').match(/^chapter(\d+)/);
+        const chapter = chapterMatch ? Number(chapterMatch[1]) : 0;
+        if (chapter !== reveal.chapter) return chapter > reveal.chapter;
+        if (this.currentScene !== reveal.scene) return this.currentScene > reveal.scene;
+        return this.currentLine >= reveal.line;
+    }
+
     async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null) {
         const characterKey = this.getCharacterKey(characterName);
         let character = this.characters[characterKey];
@@ -5504,7 +5533,8 @@ class VisualNovelEngine {
             // Aplicar flip horizontal si está especificado (sin animación) y el
             // escalado por personaje de los compañeros (p. ej. José un 18% más grande)
             const characterScale = this.getCharacterScale(characterKey);
-            charElement.style.transform = `${flipped ? 'scaleX(-1)' : 'scaleX(1)'} scale(${characterScale})`;
+            const characterVerticalOffset = this.getCharacterVerticalOffset(characterKey);
+            charElement.style.transform = `${flipped ? 'scaleX(-1)' : 'scaleX(1)'} translateY(${characterVerticalOffset}) scale(${characterScale})`;
 
             // Entrada animada opcional ("right"/"left"/"bottom"/"fade"). Usa la
             // propiedad CSS `translate` (independiente de transform, no pisa el flip).
@@ -5527,12 +5557,22 @@ class VisualNovelEngine {
     getCharacterScale(characterKey) {
         const characterScales = {
             airi: 0.7,
-            tung_tung_tung_sahur: 0.85,
+            tung_tung_tung_sahur: 1.5,
             jose: 1.18,
             amalgama: 1.2,
             amalgama_final: 1.2
         };
         return characterScales[characterKey] || 1;
+    }
+
+    // Al ampliar un sprite vertical, el origen inferior empuja la cabeza fuera
+    // del escenario. Tung baja lo justo para conservar el rostro y convertir
+    // su aparición en un plano de cintura cubierto por el cuadro de diálogo.
+    getCharacterVerticalOffset(characterKey) {
+        const characterVerticalOffsets = {
+            tung_tung_tung_sahur: '38%'
+        };
+        return characterVerticalOffsets[characterKey] || '0%';
     }
 
     // Reparte a los personajes ACTIVOS en franjas horizontales iguales.
@@ -5773,13 +5813,20 @@ class VisualNovelEngine {
     // formato CSS (hex, nombre como "gray", rgb()). Sin color -> dorado.
     readableNameColor(color) {
         if (!color || typeof color !== 'string') return '#ffcc00';
+        // El azul CSS puro (#0000ff) tiene poca luminancia percibida. Mezclarlo
+        // con blanco lo convertía en lavanda (rgb(166,166,255)), alejándose del
+        // color declarado. Se traduce a un azul celeste legible y saturado.
+        const readableNamedColors = {
+            blue: '#4da3ff'
+        };
+        const inputColor = readableNamedColors[color.trim().toLowerCase()] || color;
         // Resolver cualquier formato CSS a RGB usando el canvas como parser.
         if (!this._colorParser) {
             this._colorParser = document.createElement('canvas').getContext('2d');
         }
         const ctx = this._colorParser;
         ctx.fillStyle = '#000';       // reset (si el color es inválido, queda este)
-        ctx.fillStyle = color;
+        ctx.fillStyle = inputColor;
         const resolved = ctx.fillStyle; // normalizado a #rrggbb o rgba(...)
         let r, g, b;
         if (resolved[0] === '#') {
@@ -6138,6 +6185,9 @@ class VisualNovelEngine {
         const characterName = document.getElementById('character-name');
         const dialogText = document.getElementById('dialog-text');
         const dialogBox = document.getElementById('dialog-box');
+        const speakerCursorSlot = document.getElementById('speaker-cursor-slot');
+        const speakerCursor = document.getElementById('speaker-cursor');
+        const speakerCursorPortrait = document.getElementById('speaker-cursor-portrait');
 
         characterName.textContent = line.character || '';
         dialogText.textContent = '';
@@ -6147,7 +6197,20 @@ class VisualNovelEngine {
         // sprite cuyo nombre coincide con line.character, pero se puede forzar
         // otro con "speakingAs" (p. ej. en las llamadas habla "Edu" pero el
         // sprite en pantalla es el móvil "iphone5", que es el que debe resaltarse).
+        const identityName = this.getCharacterKey(line.character);
         const speakerName = this.getCharacterKey(line.speakingAs || line.character);
+        const speakerPosition = this.characterPositions[speakerName];
+        const speakerElement = speakerPosition
+            ? document.getElementById(`character-${speakerPosition}`)
+            : null;
+        const identityPosition = this.characterPositions[identityName];
+        const portraitElement = identityPosition
+            ? document.getElementById(`character-${identityPosition}`)
+            : null;
+        const humanPortrait = this.humanDialogPortrait(identityName);
+        const useHumanPortrait = Boolean(
+            humanPortrait && !this.isFurryIdentityRevealed(identityName)
+        );
         const requestedDialogEmotion = this.resolveDialogEmotion(line, speakerName);
         const dialogEmotion = this.limitRepeatedDialogEmotion(line, requestedDialogEmotion);
         const emotionClasses = [
@@ -6155,30 +6218,70 @@ class VisualNovelEngine {
         ].map(emotion => `dialog-emotion-${emotion}`);
         dialogText.classList.remove(...emotionClasses);
         if (dialogEmotion) dialogText.classList.add(`dialog-emotion-${dialogEmotion}`);
+        if (speakerCursor) {
+            if (speakerCursor._returnTimer) {
+                clearTimeout(speakerCursor._returnTimer);
+                speakerCursor._returnTimer = null;
+            }
+            speakerCursor.classList.remove(
+                'is-typing', 'is-waiting', 'is-following-text',
+                'is-returning', 'has-portrait', 'uses-human-portrait'
+            );
+            speakerCursor.style.removeProperty('--cursor-follow-x');
+            speakerCursor.style.removeProperty('--cursor-follow-y');
+            speakerCursor.dataset.character = identityName || 'unknown';
+            delete speakerCursor.dataset.pose;
+        }
+        if (speakerCursorPortrait) speakerCursorPortrait.style.backgroundImage = '';
 
         // Nombre del hablante en SU color (identidad + reconocimiento inmediato).
         // Si sus datos aún no están cargados (habla sin sprite en pantalla), se
         // cargan en segundo plano y se aplica el color al llegar, salvo que ya
         // haya cambiado el hablante.
-        const applyNameColor = (data) => {
-            characterName.style.color = this.readableNameColor(data && data.color);
+        const applySpeakerIdentity = (data) => {
+            const speakerColor = this.readableNameColor(data && data.color);
+            characterName.style.color = speakerColor;
+            dialogText.style.setProperty('--dialog-emotion-color', speakerColor);
+            if (speakerCursor) speakerCursor.style.setProperty('--speaker-color', speakerColor);
+
+            if (!speakerCursorPortrait) return;
+            if (speakerCursor) {
+                speakerCursor.dataset.pose = portraitElement?.dataset.pose
+                    || (data && data.defaultPose)
+                    || 'neutral';
+            }
+            let portraitImage = useHumanPortrait
+                ? `url('${this.cacheBustAsset(humanPortrait)}')`
+                : (portraitElement?.style.backgroundImage || '');
+            if (!portraitImage || portraitImage === 'none') {
+                const poses = data && data.poses;
+                const defaultPose = data && data.defaultPose;
+                const portraitPath = poses &&
+                    (poses[defaultPose] || poses.neutral || Object.values(poses)[0]);
+                if (portraitPath) {
+                    portraitImage = `url('${this.cacheBustAsset(portraitPath)}')`;
+                }
+            }
+            speakerCursorPortrait.style.backgroundImage = portraitImage;
+            speakerCursor?.classList.toggle('has-portrait', !!portraitImage);
+            speakerCursor?.classList.toggle('uses-human-portrait', useHumanPortrait);
         };
-        const spData = this.characters[speakerName];
+        const spData = this.characters[identityName];
         if (spData) {
-            applyNameColor(spData);
-        } else if (this._charColorMissing.has(speakerName) || !/[a-z0-9]/.test(speakerName)) {
+            applySpeakerIdentity(spData);
+        } else if (this._charColorMissing.has(identityName) || !/[a-z0-9]/.test(identityName)) {
             // Sin ficha conocida o clave sin letras (p. ej. hablante misterioso "???"):
             // dorado por defecto y sin pedir ficha al servidor.
-            applyNameColor(null);
+            applySpeakerIdentity(null);
         } else {
-            applyNameColor(null); // dorado por defecto mientras carga
+            applySpeakerIdentity(null); // dorado por defecto mientras carga
             const nm = line.character;
-            this.loadCharacter(speakerName)
+            this.loadCharacter(identityName)
                 .then(d => {
-                    if (d) { if (characterName.textContent === nm) applyNameColor(d); }
-                    else { this._charColorMissing.add(speakerName); }
+                    if (d) { if (characterName.textContent === nm) applySpeakerIdentity(d); }
+                    else { this._charColorMissing.add(identityName); }
                 })
-                .catch(() => { this._charColorMissing.add(speakerName); });
+                .catch(() => { this._charColorMissing.add(identityName); });
         }
 
         // Limpiar el estado "speaking" de TODOS los huecos (incluido center,
@@ -6189,12 +6292,10 @@ class VisualNovelEngine {
         });
 
         // Buscar la posición del personaje que habla usando el rastreo
-        const speakerPosition = this.characterPositions[speakerName];
         const charactersContainer = document.getElementById('characters-container');
         let speakerOnScreen = false;
 
         if (speakerPosition) {
-            const speakerElement = document.getElementById(`character-${speakerPosition}`);
             // No exigimos 'active': si el sprite aún está entrando/cargando en
             // este mismo instante, la clase llega un frame tarde y el resaltado
             // se saltaba "a veces" (bug reportado por Betanzos). El rastreo de
@@ -6232,6 +6333,9 @@ class VisualNovelEngine {
             const text = line.text;
             let timeoutId = null;
             let finished = false;
+            let cursorMoveFrame = null;
+            const printAnchor = document.createElement('span');
+            printAnchor.className = 'dialog-print-anchor';
 
             // Escribir por grafemas evita partir emojis o caracteres compuestos.
             const segmenter = typeof Intl.Segmenter === 'function'
@@ -6260,7 +6364,9 @@ class VisualNovelEngine {
                         ? 'dialog-brand-omg'
                         : brandMatch[0] === 'CLos'
                         ? 'dialog-brand-clos'
-                        : 'dialog-brand-blue'
+                        : brandMatch[0] === 'Incel'
+                        ? 'dialog-brand-incel'
+                        : 'dialog-brand-simsong'
                 });
             }
 
@@ -6270,12 +6376,63 @@ class VisualNovelEngine {
             let renderedLength = 0;
             let letterIndex = 0;
 
+            const followCursorToAnchor = () => {
+                if (!speakerCursor || !speakerCursorSlot || !printAnchor.isConnected) return;
+                if (cursorMoveFrame) cancelAnimationFrame(cursorMoveFrame);
+                cursorMoveFrame = requestAnimationFrame(() => {
+                    cursorMoveFrame = null;
+                    if (!printAnchor.isConnected || finished) return;
+                    const anchorRect = printAnchor.getBoundingClientRect();
+                    // El hueco fijo del encabezado no se transforma con el marco:
+                    // es una referencia estable incluso cuando el bocadillo crece
+                    // hacia arriba o cambia de lÃ­nea durante la escritura.
+                    const cursorHomeRect = speakerCursorSlot.getBoundingClientRect();
+                    const layoutScaleX = cursorHomeRect.width / (speakerCursorSlot.offsetWidth || 58);
+                    const layoutScaleY = cursorHomeRect.height / (speakerCursorSlot.offsetHeight || 58);
+                    const targetX = anchorRect.left + 18;
+                    const targetY = anchorRect.top + (anchorRect.height / 2);
+                    const homeX = cursorHomeRect.left + (cursorHomeRect.width / 2);
+                    const homeY = cursorHomeRect.top + (cursorHomeRect.height / 2);
+                    speakerCursor.style.setProperty(
+                        '--cursor-follow-x',
+                        `${(targetX - homeX) / (layoutScaleX || 1)}px`
+                    );
+                    speakerCursor.style.setProperty(
+                        '--cursor-follow-y',
+                        `${(targetY - homeY) / (layoutScaleY || 1)}px`
+                    );
+                    speakerCursor.classList.remove('is-returning', 'is-waiting');
+                    speakerCursor.classList.add('is-following-text');
+                });
+            };
+
+            const returnCursorHome = () => {
+                if (!speakerCursor) return;
+                if (cursorMoveFrame) {
+                    cancelAnimationFrame(cursorMoveFrame);
+                    cursorMoveFrame = null;
+                }
+                printAnchor.remove();
+                speakerCursor.classList.remove('is-following-text', 'is-typing', 'is-waiting');
+                speakerCursor.classList.add('is-returning');
+                if (speakerCursor._returnTimer) clearTimeout(speakerCursor._returnTimer);
+                speakerCursor._returnTimer = setTimeout(() => {
+                    speakerCursor._returnTimer = null;
+                    if (!speakerCursor.classList.contains('is-typing')) {
+                        speakerCursor.classList.remove('is-returning');
+                        speakerCursor.classList.add('is-waiting');
+                        speakerCursor.style.removeProperty('--cursor-follow-x');
+                        speakerCursor.style.removeProperty('--cursor-follow-y');
+                    }
+                }, 280);
+            };
+
             const appendText = (parent, value) => {
                 if (!dialogEmotion) {
                     const last = parent.lastChild;
                     if (last && last.nodeType === 3) last.textContent += value;
                     else parent.append(document.createTextNode(value));
-                    return;
+                    return parent;
                 }
                 for (const character of splitText(value)) {
                     if (/^\s+$/u.test(character)) {
@@ -6300,10 +6457,13 @@ class VisualNovelEngine {
                     }
                     letterIndex++;
                 }
+                return parent;
             };
 
             const appendUntil = (length) => {
+                printAnchor.remove();
                 let cursor = renderedLength;
+                let cursorParent = dialogText;
                 while (cursor < length) {
                     const brand = brandRanges.find(range =>
                         cursor >= range.start && cursor < range.end
@@ -6315,21 +6475,29 @@ class VisualNovelEngine {
                             dialogText.append(brand.element);
                         }
                         const end = Math.min(length, brand.end);
-                        appendText(brand.element, text.slice(cursor, end));
+                        cursorParent = appendText(brand.element, text.slice(cursor, end));
                         cursor = end;
                         continue;
                     }
 
                     const nextBrand = brandRanges.find(range => range.start > cursor);
                     const end = Math.min(length, nextBrand ? nextBrand.start : length);
-                    appendText(dialogText, text.slice(cursor, end));
+                    cursorParent = appendText(dialogText, text.slice(cursor, end));
                     cursor = end;
                 }
                 renderedLength = length;
+                if (!finished && length > 0) {
+                    cursorParent.append(printAnchor);
+                    followCursorToAnchor();
+                }
             };
 
             const cleanup = () => {
                 if (timeoutId) clearTimeout(timeoutId);
+                if (cursorMoveFrame) {
+                    cancelAnimationFrame(cursorMoveFrame);
+                    cursorMoveFrame = null;
+                }
                 document.removeEventListener('click', skipHandler);
                 if (this._finishTyping === finishTyping) {
                     this._finishTyping = null;
@@ -6341,6 +6509,7 @@ class VisualNovelEngine {
                 finished = true;
                 cleanup();
                 appendUntil(text.length);
+                returnCursorHome();
                 this.isWaitingForInput = true;
                 resolve();
             };
@@ -6371,12 +6540,15 @@ class VisualNovelEngine {
                 }
             };
 
-            const skipHandler = () => {
+            const skipHandler = (event) => {
+                // Clic derecho alterna el HUD y no debe completar el tecleo.
+                if (event && event.button !== 0) return;
                 finishTyping();
             };
 
             document.addEventListener('click', skipHandler);
             this._finishTyping = finishTyping;
+            speakerCursor?.classList.add('is-typing');
 
             if (this.fastForward) {
                 finishTyping();
@@ -6650,10 +6822,22 @@ class VisualNovelEngine {
         const dialogBox = document.getElementById('dialog-box');
         const characterName = document.getElementById('character-name');
         const dialogText = document.getElementById('dialog-text');
+        const speakerCursor = document.getElementById('speaker-cursor');
 
         dialogBox.classList.remove('active');
         if (characterName) characterName.textContent = '';
         if (dialogText) dialogText.textContent = '';
+        if (speakerCursor) {
+            if (speakerCursor._returnTimer) {
+                clearTimeout(speakerCursor._returnTimer);
+                speakerCursor._returnTimer = null;
+            }
+            speakerCursor.classList.remove(
+                'is-typing', 'is-waiting', 'is-following-text', 'is-returning'
+            );
+            speakerCursor.style.removeProperty('--cursor-follow-x');
+            speakerCursor.style.removeProperty('--cursor-follow-y');
+        }
         this.isWaitingForInput = false;
     }
 

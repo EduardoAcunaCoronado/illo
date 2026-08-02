@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
-    <link rel="stylesheet" href="styles.css?v=20260801-7">
+    <link rel="stylesheet" href="styles.css?v=20260801-18">
     <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
     <script>
         if (navigator.userAgent.includes('Electron')) {
@@ -36,6 +36,12 @@
         <div id="dialog-box" class="dialog-box p5-style">
             <div class="p5-dialog-header">
                 <div class="character-name" id="character-name"></div>
+                <div class="speaker-cursor-slot" id="speaker-cursor-slot" aria-hidden="true">
+                    <div class="speaker-cursor" id="speaker-cursor">
+                        <span class="speaker-cursor-portrait" id="speaker-cursor-portrait"></span>
+                        <span class="speaker-cursor-frame"></span>
+                    </div>
+                </div>
                 <div class="p5-nameplate"></div>
             </div>
             <div class="p5-dialog-content">
@@ -165,8 +171,8 @@
     <script src="ketchup-minigame.js?v=20260801-7"></script>
     <script src="rune-channeling-minigame.js?v=20260728-5"></script>
     <script src="juice.js?v=20260722-1"></script>
-    <script src="engine.js?v=20260801-7"></script>
-    <script src="game.js?v=20260801-1"></script>
+    <script src="engine.js?v=20260801-14"></script>
+    <script src="game.js?v=20260801-11"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->
