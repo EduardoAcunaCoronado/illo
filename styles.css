@@ -2890,6 +2890,14 @@ body.cutscene-active #game-container .ss-pause-btn {
     animation: ketchup-boss-hit 0.09s ease-out;
 }
 
+.ketchup-boss-enemy.is-teleporting {
+    animation: ketchup-boss-teleport-out 0.28s ease-in forwards;
+}
+
+.ketchup-boss-enemy.has-teleported {
+    animation: ketchup-boss-teleport-in 0.26s ease-out;
+}
+
 .ketchup-enemy-shot {
     position: absolute;
     width: var(--shot-size, 34px);
@@ -2964,6 +2972,42 @@ body.cutscene-active #game-container .ss-pause-btn {
 @keyframes ketchup-player-hit {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.35; }
+}
+
+@keyframes ketchup-boss-teleport-out {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1.1) hue-rotate(0deg);
+    }
+    45% {
+        opacity: 0.48;
+        transform: translate(-50%, -50%) scale(0.92);
+        filter: brightness(2.2) hue-rotate(60deg);
+    }
+    100% {
+        opacity: 0.08;
+        transform: translate(-50%, -50%) scale(0.72);
+        filter: brightness(3) hue-rotate(120deg);
+    }
+}
+
+@keyframes ketchup-boss-teleport-in {
+    0% {
+        opacity: 0.18;
+        transform: translate(-50%, -50%) scale(1.18);
+        filter: brightness(2.8) hue-rotate(120deg);
+    }
+    65% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(0.96);
+        filter: brightness(1.8) hue-rotate(40deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        filter: brightness(1) hue-rotate(0deg);
+    }
 }
 
 @keyframes ketchup-warning-pulse {
@@ -3248,6 +3292,14 @@ body.cutscene-active #game-container .ss-pause-btn {
 
 .ketchup-boss-enemy.is-hit {
     animation: ketchup-boss-hit .09s ease-out;
+}
+
+.ketchup-boss-enemy.is-teleporting {
+    animation: ketchup-boss-teleport-out .28s ease-in forwards;
+}
+
+.ketchup-boss-enemy.has-teleported {
+    animation: ketchup-boss-teleport-in .26s ease-out;
 }
 
 .ketchup-player-hud {

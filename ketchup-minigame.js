@@ -201,6 +201,9 @@
         let spiralSpawnTimer = 0;
         let spiralAngle = 0;
         let spiralWave = 0;
+        let teleportTimer = 5.2;
+        let teleportWindup = 0;
+        let teleportActive = false;
 
         const state = {
           moveLeft: false,
@@ -332,6 +335,40 @@
           });
         };
 
+        const pickTeleportX = () => {
+          let nextX = enemyX;
+          for (let attempts = 0; attempts < 6; attempts++) {
+            nextX = 0.18 + Math.random() * 0.64;
+            if (Math.abs(nextX - enemyX) > 0.18) break;
+          }
+          return nextX;
+        };
+
+        const startTeleport = () => {
+          if (teleportActive || specialWarningActive || specialSequenceActive) return;
+          teleportActive = true;
+          teleportWindup = 0.28;
+          boss.classList.add('is-teleporting');
+        };
+
+        const finishTeleport = () => {
+          enemyX = pickTeleportX();
+          enemyY = 0.15 + Math.random() * 0.09;
+          enemyDir = Math.random() < 0.5 ? -1 : 1;
+          updateEnemyPos();
+          teleportActive = false;
+          teleportTimer = 5 + Math.random() * 3;
+          boss.classList.remove('is-teleporting');
+          boss.classList.add('has-teleported');
+          window.setTimeout(() => boss.classList.remove('has-teleported'), 260);
+        };
+
+        const updateTeleport = (dt) => {
+          if (!teleportActive) return;
+          teleportWindup -= dt;
+          if (teleportWindup <= 0) finishTeleport();
+        };
+
         const fireEnemyBullet = (x, y, vx, vy, size = 34, options = {}) => {
           const corrupt = options.corrupt === true;
           const el = makeSprite(
@@ -458,6 +495,7 @@
             phaseAnimationQueued = false;
             phaseAnimationIndex = 0;
             phaseAnimationTimer = 0;
+            startTeleport();
           }
         };
 
@@ -641,15 +679,20 @@
           updateEnemyPos();
 
           if (!shouldFloat) {
+            updateTeleport(dt);
             if (specialWarningActive) {
               specialWarningTimer -= dt;
               if (specialWarningTimer <= 0) finishSpecialWarning();
-            } else {
+            } else if (!teleportActive) {
               specialAttackTimer -= dt;
               if (specialAttackTimer <= 0) startSpecialWarning();
             }
             updateSpecialSequence(dt);
             updatePhaseAnimation(dt);
+            if (!teleportActive && !specialWarningActive && !specialSequenceActive && !phaseAnimationActive && !phaseAnimationQueued) {
+              teleportTimer -= dt;
+              if (teleportTimer <= 0) startTeleport();
+            }
           }
 
           const isMoving = state.moveLeft || state.moveRight || state.moveUp || state.moveDown;
