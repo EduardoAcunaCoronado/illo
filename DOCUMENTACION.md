@@ -1931,7 +1931,9 @@ El montaje:
 | `.chapter-selector-list`   | `overflow-y: auto; overflow-x: hidden; min-height: 0;` — la parte que se desplaza. `padding: 0 14px` separa los botones de la barra: al pasar el ratón el capítulo se desplaza 6 px a la derecha y se le echaba encima (queda en 8 px con hover) |
 | `.chapter-selector-back`   | `align-self: center` (en columna flex se estiraría a todo el ancho) |
 
-La barra es propia: pulgar dorado con degradado y carril tenue. Solo aparece
+La barra es propia: pulgar con degradado cyan→magenta en tono apagado
+(`#3a94b8`→`#b83a75`, halo suave) y carril tenue. Los mismos valores se usan en
+`.scenes-list`. Solo aparece
 cuando los capítulos no caben; con 7 no se veía, y **cada capítulo nuevo ocupa
 unos 60 px**.
 
