@@ -3481,6 +3481,10 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
 - Escuchar la recomendación de Neit entrega `caja_guindillas`. Samu todavía no
   entiende por qué podría necesitarla, pero el objeto aporta 12 puntos extra de
   picante antes del bullet hell; el HUD identifica explícitamente la bonificación.
+  Durante la entrega aparece `assets/images/cg/chapter2/caja_guindillas.png`, un
+  PNG RGBA del objeto centrado al 55 %, con el mismo fundido y comportamiento de
+  `showCG` que el diapasón de Seraphyna. La acción `hideCG` de la línea siguiente
+  lo retira antes de que Samu responda.
 - Cuando Zip desaparece, Edu reaparece con la pose cómica `picante`, basada en
   `assets/images/characters/edu/edu_picante_wide_transparent.png`: conserva las
   lágrimas y el sudor, usa fondo alfa real y amplía excepcionalmente el lienzo

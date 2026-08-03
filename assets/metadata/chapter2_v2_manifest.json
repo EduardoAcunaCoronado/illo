@@ -21,7 +21,8 @@
     "eduZipPhoto": "assets/images/cg/chapter2/samu_edu_zip_photo_4k.png",
     "goldenCapReveal": "assets/images/cg/chapter2/golden_cap_reveal_4k.png",
     "portalActivation": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.png",
-    "ketchlingWelcome": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.png"
+    "ketchlingWelcome": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.png",
+    "neitChiliBox": "assets/images/cg/chapter2/caja_guindillas.png"
   },
   "characters": {
     "eduZipHappy": "assets/images/characters/edu/chapter2/edu_zip_happy.png",

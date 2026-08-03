@@ -588,7 +588,10 @@ REGLAS PARA CAMBIOS FUTUROS
   hell). La puntuación de guindillas regula la dificultad de la segunda parte.
   Elegir la recomendación de Neit entrega `caja_guindillas`, aporta 12 puntos de
   picante y se muestra como bonificación en el HUD, aunque Samu no entiende su
-  utilidad cuando recibe la caja.
+  utilidad cuando recibe la caja. La entrega muestra
+  `assets/images/cg/chapter2/caja_guindillas.png` mediante el mismo `showCG`
+  centrado al 55 % que el diapasón; la línea siguiente ejecuta `hideCG` antes de
+  la respuesta de Samu para que el objeto no quede persistente.
 - Tras vencer a Zip, mostrar a Edu con la pose `picante`
   (`assets/images/characters/edu/edu_picante_wide_transparent.png`) hasta que
   vuelve a hablar; entonces pasa a `sad`. Es una excepción panorámica al 70 %
