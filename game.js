@@ -700,6 +700,16 @@ function menuPausaAbierto() {
   return !!document.getElementById("pause-menu");
 }
 
+// La pausa congela la partida, pero el menú de Opciones no debe cortar su
+// banda sonora. Se identifica por la carpeta de música para no dejar vivos
+// también efectos en bucle (motores, ambiente, etc.).
+function esPistaMusical(media) {
+  if (!media) return false;
+  const source = String(media._srcPath || media.currentSrc || media.src || "")
+    .replaceAll("\\", "/");
+  return /(?:^|\/)(?:audio|sounds)\/music\//i.test(source);
+}
+
 function setGamePaused(paused) {
   const shouldPause = !!paused;
   if (shouldPause === gamePauseClock.isPaused()) return;
@@ -714,7 +724,7 @@ function setGamePaused(paused) {
       ...Object.values(engine.audioInstances || {}),
     ]);
     candidates.forEach((media) => {
-      if (!media || media.paused || media.ended) return;
+      if (!media || media.paused || media.ended || esPistaMusical(media)) return;
       mediaPausedByGame.push(media);
       try { media.pause(); } catch (_) {}
     });

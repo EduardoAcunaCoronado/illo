@@ -3636,8 +3636,9 @@ evitando silencios intermitentes al cambiar rápidamente de música.
   ese punto. El avance automático con Control se desactiva al ocultarlo.
 - **Esc** abre una pausa global durante diálogos y minijuegos. Se congelan el
   reloj lógico, `setTimeout`, `setInterval`, `requestAnimationFrame`, las
-  animaciones CSS, los elementos multimedia y los contextos Web Audio que
-  estuvieran sonando. Al reanudar, cada recurso continúa desde el mismo punto.
+  animaciones CSS, los vídeos, los efectos de audio y los contextos Web Audio
+  que estuvieran activos. La música continúa sonando mientras se ajustan las
+  opciones; al reanudar, los demás recursos continúan desde el mismo punto.
 - Mientras la pausa está abierta, los eventos de teclado, puntero, rueda y
   toque quedan bloqueados antes de llegar a la partida; solo el panel de pausa
   conserva interacción. En una cinemática, Esc mantiene su función de saltarla.

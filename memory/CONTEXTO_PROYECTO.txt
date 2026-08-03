@@ -730,8 +730,9 @@ CONTROLES GLOBALES Y PAUSA 2026-08-01
   grafema y retardo de puntuación actuales, sin blips; al restaurarlo continúa
   desde el mismo punto. También se cancela el avance automático con Control.
 - Esc abre la pausa global en diálogos y minijuegos. Congela timers, RAF, reloj
-  lógico, animaciones CSS, audio y vídeo; el panel absorbe el resto de entradas
-  hasta reanudar. Las cinemáticas conservan Esc para saltar.
+  lógico, animaciones CSS, vídeo, efectos de audio y Web Audio, pero la música
+  continúa mientras el menú de Opciones está abierto; el panel absorbe el resto
+  de entradas hasta reanudar. Las cinemáticas conservan Esc para saltar.
 - Neit usa un desplazamiento vertical exclusivo de 28 px hacia abajo para que su
   retrato no parezca flotar, sin modificar escala o disposición de otros personajes.
 
