@@ -13,6 +13,7 @@ class VisualNovelEngine {
         this._finishTyping = null;
         this._setTypingPaused = null;
         this._lastDialogEmotionKey = null;
+        this.textSpeedPreset = 2;
         this.typingSpeed = 50;
         this.lastChapterName = null;
         this.speakingCharacter = null;
@@ -6728,7 +6729,7 @@ class VisualNovelEngine {
 
             const typeChar = () => {
                 if (typingPaused) return;
-                if (this.fastForward) {
+                if (this.fastForward || this.typingSpeed <= 0) {
                     finishTyping();
                     return;
                 }
@@ -6745,7 +6746,10 @@ class VisualNovelEngine {
                         if (localStorage.getItem('illo_text_blip') !== '0') {
                             window.Juice.blip(ch, speakerName);
                         }
-                        delay += window.Juice.punctuationPause(ch);
+                        // El ajuste global escala también las pausas expresivas;
+                        // de lo contrario Rápido apenas se notaría al puntuar.
+                        delay += window.Juice.punctuationPause(ch)
+                            * (this.typingSpeed / 50) * speedMult;
                     }
                     scheduleTypeChar(delay);
                 } else {

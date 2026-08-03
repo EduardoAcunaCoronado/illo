@@ -476,6 +476,36 @@ scenesMenu?.addEventListener("click", (e) => {
 // el combate; aquí solo se pinta la casilla.
 const KOSAI_SETTING_KEY = window.BattleMinigame?.KOSAI_SETTING_KEY || "illo_kosai";
 const BLIP_SETTING_KEY = "illo_text_blip";
+const TEXT_SPEED_SETTING_KEY = "illo_text_speed";
+const TEXT_SPEED_OPTIONS = [
+  { label: "Muy lento", delay: 100 },
+  { label: "Lento", delay: 70 },
+  { label: "Normal", delay: 50 },
+  { label: "Rápido", delay: 30 },
+  { label: "Muy rápido", delay: 15 },
+  { label: "Instantáneo", delay: 0 },
+];
+
+function storedTextSpeed() {
+  const stored = Number.parseInt(localStorage.getItem(TEXT_SPEED_SETTING_KEY), 10);
+  return Number.isInteger(stored) && stored >= 0 && stored < TEXT_SPEED_OPTIONS.length
+    ? stored
+    : 2;
+}
+
+function applyTextSpeed(index) {
+  const parsed = Number.parseInt(index, 10);
+  const normalized = Number.isInteger(parsed)
+    && parsed >= 0
+    && parsed < TEXT_SPEED_OPTIONS.length
+    ? parsed
+    : 2;
+  engine.textSpeedPreset = normalized;
+  engine.typingSpeed = TEXT_SPEED_OPTIONS[normalized].delay;
+  return normalized;
+}
+
+applyTextSpeed(storedTextSpeed());
 
 // En la app de escritorio el localStorage se pierde en cada arranque (el
 // servidor interno cambia de puerto, y con él de origen), así que el ajuste se
@@ -499,9 +529,9 @@ function windowModeActual() {
 // en el menú de pausa (Esc durante la partida). Se generan y se conectan aquí
 // una sola vez para que no se dupliquen ni se desincronicen.
 //
-// Van repartidos en pestañas (Vídeo, Sonido, Trucos). La de Vídeo se cae entera
-// en el navegador, así que la primera pestaña no es siempre la misma: la activa
-// se decide aquí, no en el HTML.
+// Van repartidos en pestañas (Juego, Vídeo, Sonido, Trucos). Juego siempre va
+// primero; Vídeo se cae entera en el navegador porque allí no hay modo de
+// ventana que configurar.
 function settingsMarkup() {
   const volOf = (k, def) => {
     const v = parseFloat(localStorage.getItem(k));
@@ -509,9 +539,31 @@ function settingsMarkup() {
   };
   const kosaiOn = localStorage.getItem(KOSAI_SETTING_KEY) === "1";
   const blipsOn = localStorage.getItem(BLIP_SETTING_KEY) !== "0";
+  const textSpeed = storedTextSpeed();
   const modo = windowModeActual();
 
-  const grupos = [];
+  const grupos = [{
+    id: "juego",
+    titulo: "Juego",
+    icono: "assets/images/ui/settings/game-neon.png",
+    contenido: `
+            <div class="nm-setting-block nm-text-speed-setting">
+                <label class="nm-setting-row nm-text-speed-row">
+                    <span>Velocidad de texto</span>
+                    <input type="range" class="opt-text-speed" min="0" max="5" step="1"
+                           value="${textSpeed}" aria-label="Velocidad de texto">
+                    <output class="nm-setting-val nm-text-speed-value"></output>
+                </label>
+                <div class="nm-text-speed-scale" aria-hidden="true">
+                    ${TEXT_SPEED_OPTIONS.map((option, index) =>
+                      `<span data-speed-step="${index}">${option.label}</span>`).join("")}
+                </div>
+                <div class="nm-text-speed-preview">
+                    <span class="nm-text-speed-preview-label">Vista previa</span>
+                    <p class="opt-text-speed-preview"></p>
+                </div>
+            </div>`,
+  }];
   if (hayOpcionesDeVideo) {
     grupos.push({
       id: "video",
@@ -620,6 +672,62 @@ function wireSettings(panel) {
   };
   wire(".opt-vol-music", "illo_vol_music");
   wire(".opt-vol-sfx", "illo_vol_sfx");
+
+  const textSpeedSlider = panel.querySelector(".opt-text-speed");
+  const textSpeedValue = panel.querySelector(".nm-text-speed-value");
+  const textSpeedPreview = panel.querySelector(".opt-text-speed-preview");
+  const textSpeedSteps = [...panel.querySelectorAll("[data-speed-step]")];
+  const previewText = "Así aparecerá el texto durante la partida.";
+  let previewTimer = null;
+  let previewRun = 0;
+
+  const paintTextSpeed = () => {
+    const index = applyTextSpeed(textSpeedSlider.value);
+    const option = TEXT_SPEED_OPTIONS[index];
+    textSpeedValue.textContent = option.label;
+    textSpeedSlider.setAttribute("aria-valuetext", option.label);
+    textSpeedSteps.forEach((step) => {
+      step.classList.toggle("is-active", Number(step.dataset.speedStep) === index);
+    });
+    return option;
+  };
+
+  const playTextPreview = () => {
+    const option = paintTextSpeed();
+    const run = ++previewRun;
+    if (previewTimer !== null) clearTimeout(previewTimer);
+    textSpeedPreview.textContent = "";
+
+    if (option.delay === 0) {
+      textSpeedPreview.textContent = previewText;
+      return;
+    }
+
+    const chars = Array.from(previewText);
+    let index = 0;
+    const typeNext = () => {
+      if (run !== previewRun || !textSpeedPreview.isConnected) return;
+      const character = chars[index++];
+      textSpeedPreview.textContent += character;
+      if (index >= chars.length) return;
+      const punctuation = ".!?…".includes(character)
+        ? 240
+        : ",;:—".includes(character) ? 90 : 0;
+      previewTimer = setTimeout(
+        typeNext,
+        option.delay + punctuation * (option.delay / 50),
+      );
+    };
+    typeNext();
+  };
+
+  textSpeedSlider.addEventListener("input", () => {
+    playTextPreview();
+    saveSetting(TEXT_SPEED_SETTING_KEY, String(engine.textSpeedPreset));
+  });
+  // En el menú de pausa, wireSettings() se ejecuta justo antes de activar el
+  // reloj pausado. La microtarea hace que la demo use los timers vivos del panel.
+  queueMicrotask(playTextPreview);
 
   // Se puede tocar en mitad de un combate (menú de pausa): el golpe aparece o
   // desaparece de la lista de habilidades al momento, sin esperar al siguiente.

@@ -4815,7 +4815,7 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 .nm-seg:focus-visible { outline: 2px solid #ffd166; outline-offset: 2px; }
 
-/* ---- Pestañas de Configuración (Vídeo / Sonido / Trucos) ---- */
+/* ---- Pestañas de Configuración (Juego / Vídeo / Sonido / Trucos) ---- */
 .nm-tabs {
     display: flex;
     gap: 8px;
@@ -4868,11 +4868,102 @@ html.electron-app #menu-theme-btn { display: none; }
     filter: saturate(1.08) brightness(1.08) drop-shadow(0 0 6px rgba(202, 74, 255, 0.65));
     transform: scale(1.04);
 }
-/* Alto mínimo para que el panel no dé un salto al cambiar de pestaña: la más
-   alta es Trucos (fila + explicación). */
-.nm-tab-panes { min-height: 96px; }
+/* Alto mínimo para que el panel no dé un salto al cambiar de pestaña. Juego
+   incluye la demostración del typewriter debajo del slider. */
+.nm-tab-panes { min-height: 172px; }
 .nm-tab-pane { display: none; flex-direction: column; gap: 18px; }
 .nm-tab-pane.is-active { display: flex; }
+
+/* Velocidad de texto: seis paradas discretas, leyenda completa y una muestra
+   que se vuelve a escribir en vivo cada vez que cambia el valor. */
+.nm-text-speed-row {
+    grid-template-columns: 1fr auto;
+    gap: 8px 14px;
+}
+.nm-text-speed-row > span:first-child { grid-column: 1; grid-row: 1; }
+.nm-text-speed-row input[type="range"] { grid-column: 1 / -1; grid-row: 2; }
+.nm-text-speed-value {
+    grid-column: 2;
+    grid-row: 1;
+    white-space: nowrap;
+    font-size: 13px;
+}
+.nm-text-speed-scale {
+    position: relative;
+    height: 28px;
+    /* El pulgar nativo no llega al borde exterior del input: su centro se
+       detiene a medio pulgar de cada extremo. La leyenda usa el mismo recorrido
+       útil para que cada círculo coincida con las seis posiciones reales. */
+    margin: -3px 7px 0;
+}
+.nm-text-speed-scale span {
+    position: absolute;
+    top: 0;
+    width: max-content;
+    padding-top: 9px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    line-height: 1.1;
+    color: rgba(255, 255, 255, 0.38);
+    text-align: center;
+    transform: translateX(-50%);
+    transition: color 0.18s ease, text-shadow 0.18s ease;
+}
+.nm-text-speed-scale span:nth-child(1) { left: 0; transform: none; text-align: left; }
+.nm-text-speed-scale span:nth-child(2) { left: 20%; }
+.nm-text-speed-scale span:nth-child(3) { left: 40%; }
+.nm-text-speed-scale span:nth-child(4) { left: 60%; }
+.nm-text-speed-scale span:nth-child(5) { left: 80%; }
+.nm-text-speed-scale span:nth-child(6) { left: 100%; transform: translateX(-100%); text-align: right; }
+.nm-text-speed-scale span::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateX(-50%);
+}
+.nm-text-speed-scale span:first-child::before { left: 0; transform: none; }
+.nm-text-speed-scale span:last-child::before { left: 100%; transform: translateX(-100%); }
+.nm-text-speed-scale span.is-active {
+    color: #ffd166;
+    text-shadow: 0 0 8px rgba(255, 209, 102, 0.4);
+}
+.nm-text-speed-scale span.is-active::before {
+    background: #ffd166;
+    box-shadow: 0 0 8px rgba(255, 209, 102, 0.8);
+}
+.nm-text-speed-preview {
+    min-height: 56px;
+    padding: 10px 13px;
+    overflow: hidden;
+    background: linear-gradient(160deg, rgba(13, 11, 35, 0.82), rgba(28, 19, 57, 0.66));
+    border: 1px solid rgba(79, 208, 255, 0.22);
+    border-radius: 10px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    text-align: left;
+}
+.nm-text-speed-preview-label {
+    display: block;
+    margin-bottom: 5px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(79, 208, 255, 0.7);
+}
+.opt-text-speed-preview {
+    min-height: 19px;
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.9);
+}
 
 /* ===== Menú de pausa (Esc / botón de opciones) =====
    Lleva scrim a pantalla completa, no solo la caja: durante la partida

@@ -3759,16 +3759,36 @@ Tony y José.
 
 ### Iconos neón del menú de Configuración (2026-08-03)
 
-Las pestañas **Vídeo**, **Sonido** y **Trucos** ya no utilizan emojis del sistema.
+Las pestañas **Juego**, **Vídeo**, **Sonido** y **Trucos** no utilizan emojis del sistema.
 `settingsMarkup()` carga iconos PNG RGBA propios desde
-`assets/images/ui/settings/`: `video-neon.png`, `sound-neon.png` y
-`cheats-neon.png`. Los tres recursos usan un lenguaje cyber-neón común en cian,
-violeta y oro, tienen lienzo transparente de `128×128` y se muestran a `28×28`.
+`assets/images/ui/settings/`: `game-neon.png`, `video-neon.png`,
+`sound-neon.png` y `cheats-neon.png`. Los cuatro recursos usan un lenguaje
+cyber-neón común en cian, violeta y oro, tienen lienzo transparente de `128×128`
+y se muestran a `28×28`. El mando de Juego coloca el joystick izquierdo arriba
+y la cruceta debajo.
 
 Los iconos son decorativos (`alt=""` y `aria-hidden="true"`), por lo que el nombre
 de texto de cada pestaña continúa siendo su etiqueta accesible. Los estados
 normal, hover y activo ajustan opacidad, saturación, escala y resplandor sin
 alterar la lógica compartida entre Configuración y el menú de pausa.
+
+### Velocidad global del texto (2026-08-03)
+
+**Juego** es siempre la primera pestaña de Configuración y del menú de Opciones.
+Incluye un slider discreto de seis posiciones: **Muy lento**, **Lento**,
+**Normal**, **Rápido**, **Muy rápido** e **Instantáneo**. La selección se guarda
+como `illo_text_speed`; Electron la incluye en su lista cerrada de ajustes para
+que sobreviva al cambio de puerto entre arranques.
+
+Debajo del slider, una caja de vista previa vuelve a escribir «Así aparecerá el
+texto durante la partida.» con la velocidad seleccionada en cada cambio. También
+funciona dentro de la pausa porque sus timers se crean después de activar el
+reloj pausado del juego.
+
+El ajuste modifica `engine.typingSpeed` y escala tanto el intervalo entre letras
+como las pausas de puntuación. Los multiplicadores narrativos `textSpeed` de cada
+línea siguen aplicándose sobre el valor global. **Instantáneo** completa la frase
+en una sola operación, sin recorrer letra por letra ni esperar puntuación.
 
 ### Retratos cartoon de la investigación de Furry Maps (2026-08-03)
 
