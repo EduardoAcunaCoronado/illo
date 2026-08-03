@@ -15,8 +15,11 @@ import binascii
 import io
 import json
 import math
+import os
 import re
 import subprocess
+import tempfile
+import time
 from datetime import datetime, timezone
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -39,12 +42,18 @@ CLEAN_BASES_METADATA_PATH = ROOT / "assets" / "metadata" / "blink_eye_clean_base
 CLEAN_BASE_ROOT = ROOT / "assets" / "images" / "characters" / "eye_bases_clean"
 EYE_REGION_PREVIEW_METADATA_PATH = ROOT / "assets" / "metadata" / "blink_eye_region_previews.json"
 EYE_REGION_PREVIEW_ROOT = ROOT / "assets" / "images" / "characters" / "eye_region_previews"
+INTERMEDIATE_METADATA_PATH = ROOT / "assets" / "metadata" / "blink_eye_intermediates.json"
 MANUAL_REGIONS_PATH = ROOT / "assets" / "metadata" / "blink_eye_regions_manual.json"
 MANUAL_OFFSETS_PATH = ROOT / "assets" / "metadata" / "blink_eye_offsets_manual.json"
 CLEAN_OFFSETS_PATH = ROOT / "assets" / "metadata" / "blink_eye_clean_offsets_manual.json"
+PIXEL_EDITS_METADATA_PATH = ROOT / "assets" / "metadata" / "blink_eye_pixel_edits.json"
+PIXEL_EDITS_ROOT = ROOT / "assets" / "images" / "characters" / "eye_layer_edits"
+WHITE_HALO_METADATA_PATH = ROOT / "assets" / "metadata" / "sprite_white_halo_cleaned.json"
+WHITE_HALO_ROOT = ROOT / "assets" / "images" / "characters" / "sprite_halo_cleaned"
 EDITOR_PATH = Path(__file__).with_name("eye_region_editor.html")
 PREVIEW_PATH = Path(__file__).with_name("eye_layer_preview.html")
 CLEANER_PATH = Path(__file__).with_name("eye_base_cleaner.html")
+WHITE_HALO_EDITOR_PATH = Path(__file__).with_name("sprite_white_halo_editor.html")
 TOOLS_MENU_PATH = Path(__file__).with_name("eye_tools_menu.html")
 LEGACY_CHARACTER_KEYS = {"epod"}
 SUPPORTED_IMAGES = {".png", ".webp", ".jpg", ".jpeg"}
@@ -53,6 +62,7 @@ SUPPORTED_IMAGES = {".png", ".webp", ".jpg", ".jpeg"}
 # un rostro fiable. Se completa y revisa visualmente mediante --qa-dir.
 REGION_OVERRIDES: dict[str, tuple[float, float, float, float]] = {}
 _EDITOR_INVENTORY_CACHE: list[dict[str, Any]] | None = None
+_BASE_SPRITE_INVENTORY_CACHE: list[dict[str, Any]] | None = None
 
 
 @dataclass
@@ -129,6 +139,14 @@ def load_eye_region_previews() -> dict[str, dict[str, Any]]:
     return poses if isinstance(poses, dict) else {}
 
 
+def load_eye_intermediates() -> dict[str, dict[str, Any]]:
+    if not INTERMEDIATE_METADATA_PATH.is_file():
+        return {}
+    payload = json.loads(INTERMEDIATE_METADATA_PATH.read_text(encoding="utf-8"))
+    poses = payload.get("poses", {})
+    return poses if isinstance(poses, dict) else {}
+
+
 def save_eye_region_preview_metadata(poses: dict[str, dict[str, Any]]) -> None:
     payload = {"version": 1, "poses": dict(sorted(poses.items()))}
     EYE_REGION_PREVIEW_METADATA_PATH.parent.mkdir(parents=True, exist_ok=True)
@@ -166,13 +184,116 @@ def load_clean_offsets() -> dict[str, dict[str, Any]]:
 
 
 def save_clean_offsets(offsets: dict[str, dict[str, Any]]) -> None:
-    payload = {"version": 2, "offsets": dict(sorted(offsets.items()))}
+    payload = {"version": 3, "offsets": dict(sorted(offsets.items()))}
     CLEAN_OFFSETS_PATH.parent.mkdir(parents=True, exist_ok=True)
     temporary = CLEAN_OFFSETS_PATH.with_suffix(".json.tmp")
     temporary.write_text(
         json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
     temporary.replace(CLEAN_OFFSETS_PATH)
+
+
+def load_pixel_edits() -> dict[str, dict[str, dict[str, str]]]:
+    if not PIXEL_EDITS_METADATA_PATH.is_file():
+        return {}
+    payload = json.loads(PIXEL_EDITS_METADATA_PATH.read_text(encoding="utf-8"))
+    edits = payload.get("edits", {})
+    return edits if isinstance(edits, dict) else {}
+
+
+def save_pixel_edits(edits: dict[str, dict[str, dict[str, str]]]) -> None:
+    payload = {"version": 1, "edits": dict(sorted(edits.items()))}
+    PIXEL_EDITS_METADATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temporary = PIXEL_EDITS_METADATA_PATH.with_suffix(".json.tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    temporary.replace(PIXEL_EDITS_METADATA_PATH)
+
+
+def load_white_halo_edits() -> dict[str, dict[str, Any]]:
+    if not WHITE_HALO_METADATA_PATH.is_file():
+        return {}
+    payload = json.loads(WHITE_HALO_METADATA_PATH.read_text(encoding="utf-8"))
+    sprites = payload.get("sprites", {})
+    return sprites if isinstance(sprites, dict) else {}
+
+
+def save_white_halo_edits(sprites: dict[str, dict[str, Any]]) -> None:
+    payload = {"version": 1, "sprites": dict(sorted(sprites.items()))}
+    WHITE_HALO_METADATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temporary = WHITE_HALO_METADATA_PATH.with_suffix(".json.tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    temporary.replace(WHITE_HALO_METADATA_PATH)
+
+
+def source_eye_layer_path(job_id: str, source_kind: str, state: str) -> str:
+    if source_kind not in {"saved", "clean"}:
+        raise ValueError("El origen ocular no es válido")
+    if state not in {"open", "half", "closed"}:
+        raise ValueError("El estado ocular no es válido")
+    if source_kind == "saved":
+        pose = load_eye_region_previews().get(job_id)
+        if not isinstance(pose, dict):
+            raise ValueError("La pose no tiene recortes oculares guardados")
+        paths = {
+            "open": pose.get("original"),
+            "half": pose.get("half"),
+            "closed": pose.get("closed") or next(iter(pose.get("blinks", [])), None),
+        }
+    else:
+        pose = clean_eye_pose(job_id)
+        paths = {
+            "open": pose.get("eyesOpen"),
+            "half": pose.get("eyesHalf"),
+            "closed": pose.get("eyesClosed"),
+        }
+    path = paths.get(state)
+    if not path:
+        raise ValueError("La pose no tiene esa capa ocular")
+    return str(path)
+
+
+def edited_eye_layer_path(job_id: str, source_kind: str, state: str) -> str:
+    edits = load_pixel_edits()
+    path = ((edits.get(source_kind) or {}).get(job_id) or {}).get(state)
+    if path and (ROOT / path).is_file():
+        return str(path)
+    return source_eye_layer_path(job_id, source_kind, state)
+
+
+def save_pixel_edit(job_id: str, source_kind: str, state: str, data_url: Any) -> dict[str, Any]:
+    source_path = source_eye_layer_path(job_id, source_kind, state)
+    with Image.open(ROOT / source_path) as source:
+        expected = source.size
+    image = decode_canvas_image(data_url)
+    if image.size != expected:
+        raise ValueError(
+            f"La capa debe medir {expected[0]}×{expected[1]} px; recibido {image.width}×{image.height}"
+        )
+    pixels = np.asarray(image, dtype=np.uint8).copy()
+    pixels[pixels[:, :, 3] == 0, :3] = 0
+    character, pose_name = job_id.split(".", 1)
+    output_path = PIXEL_EDITS_ROOT / source_kind / character / pose_name / f"eyes_{state}.png"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = output_path.with_suffix(".png.tmp")
+    Image.fromarray(pixels, "RGBA").save(temporary, "PNG", optimize=True)
+    temporary.replace(output_path)
+
+    edits = load_pixel_edits()
+    edits.setdefault(source_kind, {}).setdefault(job_id, {})[state] = relative(output_path)
+    save_pixel_edits(edits)
+    return {
+        "ok": True,
+        "id": job_id,
+        "source": source_kind,
+        "state": state,
+        "path": relative(output_path),
+        "width": image.width,
+        "height": image.height,
+    }
 
 
 def load_clean_bases() -> dict[str, dict[str, Any]]:
@@ -221,6 +342,68 @@ def decode_canvas_image(data_url: Any) -> Image.Image:
         raise ValueError("No se pudo leer el PNG recibido") from error
 
 
+def save_white_halo_sprite(
+    job_id: str, data_url: Any, validate_only: bool = False
+) -> dict[str, Any]:
+    job = base_sprite_job(job_id)
+    image = decode_canvas_image(data_url)
+    expected = (int(job["width"]), int(job["height"]))
+    if image.size != expected:
+        raise ValueError(
+            f"El sprite debe medir {expected[0]}×{expected[1]} px; recibido "
+            f"{image.width}×{image.height}"
+        )
+
+    alpha = np.asarray(image.getchannel("A"), dtype=np.uint8)
+    transparent_pixels = int(np.count_nonzero(alpha < 255))
+    if validate_only:
+        return {
+            "ok": True,
+            "validated": True,
+            "canvas": {"width": image.width, "height": image.height},
+            "transparentPixels": transparent_pixels,
+        }
+
+    character, pose_name = job_id.split(".", 1)
+    source_stem = slug(Path(job["source"]).stem)
+    output_path = WHITE_HALO_ROOT / character / pose_name / f"{source_stem}_halo_limpio.png"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    pixels = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
+    pixels[pixels[:, :, 3] == 0, :3] = 0
+    temporary = output_path.with_suffix(".png.tmp")
+    Image.fromarray(pixels, "RGBA").save(temporary, "PNG", optimize=True)
+    temporary.replace(output_path)
+
+    def save_contain_thumbnail(size: tuple[int, int], suffix: str) -> Path:
+        thumbnail_path = output_path.with_name(f"{output_path.stem}_{suffix}.webp")
+        source = Image.fromarray(pixels, "RGBA")
+        source.thumbnail(size, Image.Resampling.LANCZOS)
+        thumbnail = Image.new("RGBA", size, (0, 0, 0, 0))
+        thumbnail.alpha_composite(
+            source,
+            ((size[0] - source.width) // 2, (size[1] - source.height) // 2),
+        )
+        thumbnail.save(thumbnail_path, "WEBP", quality=84, method=6, exact=True)
+        return thumbnail_path
+
+    pose_thumbnail_path = save_contain_thumbnail((156, 156), "miniatura")
+    gallery_thumbnail_path = save_contain_thumbnail((480, 270), "galeria")
+
+    edits = load_white_halo_edits()
+    entry = {
+        "source": job["source"],
+        "cleaned": relative(output_path),
+        "thumbnail": relative(pose_thumbnail_path),
+        "galleryThumbnail": relative(gallery_thumbnail_path),
+        "canvas": {"width": image.width, "height": image.height},
+        "transparentPixels": transparent_pixels,
+        "updatedAt": datetime.now(timezone.utc).isoformat(),
+    }
+    edits[job_id] = entry
+    save_white_halo_edits(edits)
+    return {"ok": True, "id": job_id, **entry}
+
+
 def save_clean_base(job_id: str, data_url: Any, validate_only: bool = False) -> dict[str, Any]:
     pose = clean_eye_pose(job_id)
     image = decode_canvas_image(data_url)
@@ -243,7 +426,11 @@ def save_clean_base(job_id: str, data_url: Any, validate_only: bool = False) -> 
     output_path = CLEAN_BASE_ROOT / character / pose_name / "base_no_eyes.webp"
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temporary = output_path.with_suffix(".webp.tmp")
-    image.save(temporary, "WEBP", lossless=True, method=6)
+    pixels = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
+    pixels[pixels[:, :, 3] == 0, :3] = 0
+    Image.fromarray(pixels, "RGBA").save(
+        temporary, "WEBP", lossless=True, method=6, exact=True
+    )
     temporary.replace(output_path)
 
     bases = load_clean_bases()
@@ -280,8 +467,10 @@ def validate_eye_scale(value: Any) -> list[float]:
 def default_clean_pose_transform() -> dict[str, Any]:
     return {
         "open": [0, 0],
+        "half": [0, 0],
         "closed": [0, 0],
         "openScale": [1.0, 1.0],
+        "halfScale": [1.0, 1.0],
         "closedScale": [1.0, 1.0],
     }
 
@@ -291,8 +480,10 @@ def validate_clean_pose_offsets(value: Any) -> dict[str, Any]:
         raise ValueError("Los offsets deben separar los ojos abiertos y cerrados")
     return {
         "open": validate_manual_offset(value.get("open", [0, 0])),
+        "half": validate_manual_offset(value.get("half", [0, 0])),
         "closed": validate_manual_offset(value.get("closed", [0, 0])),
         "openScale": validate_eye_scale(value.get("openScale", [1, 1])),
+        "halfScale": validate_eye_scale(value.get("halfScale", [1, 1])),
         "closedScale": validate_eye_scale(value.get("closedScale", [1, 1])),
     }
 
@@ -316,6 +507,7 @@ def editor_jobs() -> list[dict[str, Any]]:
     global _EDITOR_INVENTORY_CACHE
     regions = load_manual_regions()
     previews = load_eye_region_previews()
+    intermediates = load_eye_intermediates()
     if _EDITOR_INVENTORY_CACHE is None:
         inventory: list[dict[str, Any]] = []
         for character_path in sorted(CHARACTER_DIR.glob("*.json")):
@@ -365,9 +557,59 @@ def editor_jobs() -> list[dict[str, Any]]:
             job,
             regions=validate_manual_regions(regions.get(job["id"])),
             preview=previews.get(job["id"]),
+            halfSrc=(intermediates.get(job["id"]) or {}).get("half"),
+            blinkDirection=(intermediates.get(job["id"]) or {}).get("direction", "closing"),
         )
         for job in _EDITOR_INVENTORY_CACHE
     ]
+
+
+def base_sprite_jobs() -> list[dict[str, Any]]:
+    """Lista todas las poses base editables, tengan o no parpadeo configurado."""
+    global _BASE_SPRITE_INVENTORY_CACHE
+    saved = load_white_halo_edits()
+    if _BASE_SPRITE_INVENTORY_CACHE is None:
+        inventory: list[dict[str, Any]] = []
+        for character_path in sorted(CHARACTER_DIR.glob("*.json")):
+            character_key = character_path.stem.lower()
+            if character_key in LEGACY_CHARACTER_KEYS:
+                continue
+            character = json.loads(character_path.read_text(encoding="utf-8"))
+            for pose_key, pose_value in (character.get("poses") or {}).items():
+                source = pose_value.get("src") if isinstance(pose_value, dict) else pose_value
+                if not isinstance(source, str):
+                    continue
+                source = source.replace("\\", "/")
+                if Path(source).suffix.lower() not in SUPPORTED_IMAGES:
+                    continue
+                source_path = ROOT / source
+                if not source_path.is_file():
+                    continue
+                try:
+                    with Image.open(source_path) as image:
+                        width, height = image.size
+                except OSError:
+                    continue
+                inventory.append(
+                    {
+                        "id": f"{character_key}.{pose_key}",
+                        "character": character_key,
+                        "characterName": character.get("name") or character_key,
+                        "pose": pose_key,
+                        "source": source,
+                        "width": width,
+                        "height": height,
+                    }
+                )
+        _BASE_SPRITE_INVENTORY_CACHE = inventory
+    return [dict(job, saved=saved.get(job["id"])) for job in _BASE_SPRITE_INVENTORY_CACHE]
+
+
+def base_sprite_job(job_id: str) -> dict[str, Any]:
+    job = next((entry for entry in base_sprite_jobs() if entry["id"] == job_id), None)
+    if not job:
+        raise ValueError("Pose base desconocida")
+    return job
 
 
 def validate_manual_region(value: Any) -> list[float] | None:
@@ -548,7 +790,65 @@ def gif_palette_frame(image: Image.Image) -> Image.Image:
     return result
 
 
-def export_saved_eye_preview_gif(job_id: str) -> tuple[bytes, str]:
+def encode_animation(
+    rgba_frames: list[Image.Image], durations: list[int], output_format: str
+) -> bytes:
+    if output_format not in {"gif", "webp", "apng"}:
+        raise ValueError("El formato de animación debe ser GIF, WebP o APNG")
+    sanitized_frames: list[Image.Image] = []
+    for frame in rgba_frames:
+        pixels = np.asarray(frame.convert("RGBA"), dtype=np.uint8).copy()
+        pixels[pixels[:, :, 3] == 0, :3] = 0
+        sanitized_frames.append(Image.fromarray(pixels, "RGBA"))
+    rgba_frames = sanitized_frames
+    output = io.BytesIO()
+    if output_format == "apng":
+        rgba_frames[0].save(
+            output,
+            format="PNG",
+            save_all=True,
+            append_images=rgba_frames[1:],
+            duration=durations,
+            loop=0,
+            disposal=0,
+            blend=0,
+            optimize=False,
+            compress_level=6,
+        )
+        return output.getvalue()
+    if output_format == "webp":
+        rgba_frames[0].save(
+            output,
+            format="WEBP",
+            save_all=True,
+            append_images=rgba_frames[1:],
+            duration=durations,
+            loop=0,
+            lossless=True,
+            quality=100,
+            method=6,
+            background=(0, 0, 0, 0),
+        )
+        return output.getvalue()
+
+    gif_frames = [gif_palette_frame(frame) for frame in rgba_frames]
+    gif_frames[0].save(
+        output,
+        format="GIF",
+        save_all=True,
+        append_images=gif_frames[1:],
+        duration=durations,
+        loop=0,
+        disposal=2,
+        transparency=0,
+        optimize=False,
+    )
+    return output.getvalue()
+
+
+def export_saved_eye_preview_gif(
+    job_id: str, full_sprite: bool = False, output_format: str = "gif"
+) -> tuple[bytes, str]:
     previews = load_eye_region_previews()
     pose = previews.get(job_id)
     if not isinstance(pose, dict):
@@ -586,31 +886,49 @@ def export_saved_eye_preview_gif(job_id: str) -> tuple[bytes, str]:
         )
         return result
 
-    open_eyes = full_layer(str(pose["original"]), "open")
-    blink_layers = [
-        full_layer(str(path), "closed") for path in pose.get("blinks", [])
-    ]
-    if not blink_layers:
+    open_eyes = full_layer(edited_eye_layer_path(job_id, "saved", "open"), "open")
+    half_path = edited_eye_layer_path(job_id, "saved", "half")
+    closed_path = edited_eye_layer_path(job_id, "saved", "closed")
+    if not half_path or not closed_path:
         raise ValueError("La pose no tiene recortes de parpadeo")
-    eye_sequence = [open_eyes, *blink_layers, open_eyes]
-    durations = [700, *([95] * len(blink_layers)), 650]
+    half_eyes = full_layer(str(half_path), "half")
+    closed_eyes = full_layer(str(closed_path), "closed")
+    eye_sequence = [open_eyes, half_eyes, closed_eyes, half_eyes, open_eyes]
+    durations = [700, 65, 95, 65, 650]
 
-    union_alpha = np.zeros((canvas_size[1], canvas_size[0]), dtype=np.uint8)
-    for eyes in eye_sequence:
-        union_alpha = np.maximum(
-            union_alpha, np.asarray(eyes.getchannel("A"), dtype=np.uint8)
+    if full_sprite:
+        if not METADATA_PATH.is_file():
+            raise FileNotFoundError("Genera primero la prueba de capas")
+        metadata = json.loads(METADATA_PATH.read_text(encoding="utf-8"))
+        layer_pose = (metadata.get("poses") or {}).get(job_id)
+        if not isinstance(layer_pose, dict):
+            raise ValueError("La pose no tiene una base corporal generada")
+        with Image.open(ROOT / layer_pose["body"]).convert("RGBA") as source:
+            body = source.copy()
+        if body.size != canvas_size:
+            raise ValueError("El cuerpo y los recortes no comparten lienzo")
+        rgba_frames = []
+        for eyes in eye_sequence:
+            composed = body.copy()
+            composed.alpha_composite(eyes)
+            rgba_frames.append(composed)
+    else:
+        union_alpha = np.zeros((canvas_size[1], canvas_size[0]), dtype=np.uint8)
+        for eyes in eye_sequence:
+            union_alpha = np.maximum(
+                union_alpha, np.asarray(eyes.getchannel("A"), dtype=np.uint8)
+            )
+        ys, xs = np.where(union_alpha > 0)
+        if not len(xs):
+            raise ValueError("La capa ocular está vacía")
+        padding = 12
+        bounds = (
+            max(0, int(xs.min()) - padding),
+            max(0, int(ys.min()) - padding),
+            min(canvas_size[0], int(xs.max()) + padding + 1),
+            min(canvas_size[1], int(ys.max()) + padding + 1),
         )
-    ys, xs = np.where(union_alpha > 0)
-    if not len(xs):
-        raise ValueError("La capa ocular está vacía")
-    padding = 12
-    bounds = (
-        max(0, int(xs.min()) - padding),
-        max(0, int(ys.min()) - padding),
-        min(canvas_size[0], int(xs.max()) + padding + 1),
-        min(canvas_size[1], int(ys.max()) + padding + 1),
-    )
-    rgba_frames = [eyes.crop(bounds) for eyes in eye_sequence]
+        rgba_frames = [eyes.crop(bounds) for eyes in eye_sequence]
     max_side = max(rgba_frames[0].size)
     if max_side > 960:
         scale = 960 / max_side
@@ -621,31 +939,25 @@ def export_saved_eye_preview_gif(job_id: str) -> tuple[bytes, str]:
         rgba_frames = [
             frame.resize(target, Image.Resampling.LANCZOS) for frame in rgba_frames
         ]
-    gif_frames = [gif_palette_frame(frame) for frame in rgba_frames]
-    output = io.BytesIO()
-    gif_frames[0].save(
-        output,
-        format="GIF",
-        save_all=True,
-        append_images=gif_frames[1:],
-        duration=durations,
-        loop=0,
-        disposal=2,
-        transparency=0,
-        optimize=False,
-    )
-    return output.getvalue(), f"{slug(job_id)}_parpadeo_recortes.gif"
+    suffix = "completo" if full_sprite else "ojos"
+    content = encode_animation(rgba_frames, durations, output_format)
+    extension = "png" if output_format == "apng" else output_format
+    return content, f"{slug(job_id)}_parpadeo_{suffix}.{extension}"
 
 
 def export_blink_gif(
-    job_id: str, mode: str, source_kind: str = "auto"
+    job_id: str, mode: str, source_kind: str = "auto", output_format: str = "gif"
 ) -> tuple[bytes, str]:
     if mode not in {"full", "eyes"}:
         raise ValueError("El tipo de GIF debe ser 'full' o 'eyes'")
     if source_kind not in {"auto", "saved", "clean"}:
         raise ValueError("El origen del GIF no es válido")
-    if mode == "eyes" and source_kind == "saved":
-        return export_saved_eye_preview_gif(job_id)
+    if output_format not in {"gif", "webp", "apng"}:
+        raise ValueError("El formato de animación no es válido")
+    if source_kind == "saved":
+        return export_saved_eye_preview_gif(
+            job_id, full_sprite=mode == "full", output_format=output_format
+        )
     if not METADATA_PATH.is_file():
         raise FileNotFoundError("Genera primero la prueba de capas")
     metadata = json.loads(METADATA_PATH.read_text(encoding="utf-8"))
@@ -654,7 +966,7 @@ def export_blink_gif(
         raise ValueError("La pose no está disponible en la preview")
 
     clean_pose = None
-    if mode == "eyes" and CLEAN_METADATA_PATH.is_file():
+    if source_kind in {"auto", "clean"} and CLEAN_METADATA_PATH.is_file():
         clean_metadata = json.loads(CLEAN_METADATA_PATH.read_text(encoding="utf-8"))
         clean_pose = (clean_metadata.get("poses") or {}).get(job_id)
 
@@ -668,7 +980,10 @@ def export_blink_gif(
             load_clean_offsets().get(job_id, clean_pose_offsets)
         )
     body_path = pose["body"]
-    open_path = clean_pose["eyesOpen"] if clean_pose else pose["eyesOpen"]
+    open_path = (
+        edited_eye_layer_path(job_id, "clean", "open")
+        if clean_pose else pose["eyesOpen"]
+    )
     with Image.open(ROOT / body_path).convert("RGBA") as body_source:
         body = body_source.copy()
     with Image.open(ROOT / open_path).convert("RGBA") as open_source:
@@ -683,17 +998,22 @@ def export_blink_gif(
     blink_layers: list[Image.Image] = []
     durations: list[int] = [700]
     export_frames = (
-        [{"src": clean_pose["eyesClosed"], "duration": 95}]
-        if clean_pose else frame_configs
+        [
+            {"src": edited_eye_layer_path(job_id, "clean", "half"), "duration": 65, "state": "half"},
+            {"src": edited_eye_layer_path(job_id, "clean", "closed"), "duration": 95, "state": "closed"},
+            {"src": edited_eye_layer_path(job_id, "clean", "half"), "duration": 65, "state": "half"},
+        ]
+        if clean_pose and clean_pose.get("eyesHalf") else frame_configs
     )
     for frame_config in export_frames:
         with Image.open(ROOT / frame_config["src"]).convert("RGBA") as source:
             if clean_pose:
+                state = frame_config.get("state", "closed")
                 blink_layers.append(
                     transformed_visible_layer(
                         source.copy(),
-                        clean_pose_offsets["closed"],
-                        clean_pose_offsets["closedScale"],
+                        clean_pose_offsets[state],
+                        clean_pose_offsets[f"{state}Scale"],
                     )
                 )
             else:
@@ -736,21 +1056,13 @@ def export_blink_gif(
         rgba_frames = [
             frame.resize(target, Image.Resampling.LANCZOS) for frame in rgba_frames
         ]
-    gif_frames = [gif_palette_frame(frame) for frame in rgba_frames]
-    output = io.BytesIO()
-    gif_frames[0].save(
-        output,
-        format="GIF",
-        save_all=True,
-        append_images=gif_frames[1:],
-        duration=durations,
-        loop=0,
-        disposal=2,
-        transparency=0,
-        optimize=False,
+    content = encode_animation(rgba_frames, durations, output_format)
+    extension = "png" if output_format == "apng" else output_format
+    filename = (
+        f"{slug(job_id)}_parpadeo_"
+        f"{'completo' if mode == 'full' else 'ojos'}.{extension}"
     )
-    filename = f"{slug(job_id)}_parpadeo_{'completo' if mode == 'full' else 'ojos'}.gif"
-    return output.getvalue(), filename
+    return content, filename
 
 
 def alignment_locations(job_id: str, source_kind: str) -> dict[str, dict[str, Any]]:
@@ -844,9 +1156,16 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                     str(query.get("id", [""])[0]),
                     str(query.get("mode", ["full"])[0]),
                     str(query.get("source", ["auto"])[0]),
+                    str(query.get("format", ["gif"])[0]),
                 )
+                suffix = Path(filename).suffix.lower()
+                content_type = {
+                    ".webp": "image/webp",
+                    ".png": "image/png",
+                    ".gif": "image/gif",
+                }.get(suffix, "application/octet-stream")
                 self.send_response(HTTPStatus.OK)
-                self.send_header("Content-Type", "image/gif")
+                self.send_header("Content-Type", content_type)
                 self.send_header(
                     "Content-Disposition", f'attachment; filename="{filename}"'
                 )
@@ -907,6 +1226,18 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(content)
             return
+        if request.path in {"/white-halo", "/white-halo/"}:
+            if not WHITE_HALO_EDITOR_PATH.is_file():
+                self.send_error(HTTPStatus.NOT_FOUND, "No existe el editor de halo blanco")
+                return
+            content = WHITE_HALO_EDITOR_PATH.read_bytes()
+            self.send_response(HTTPStatus.OK)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(content)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(content)
+            return
         if self.path == "/api/jobs":
             jobs = editor_jobs()
             self.send_json(
@@ -926,6 +1257,19 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
         if self.path == "/api/clean-bases":
             self.send_json({"poses": load_clean_bases()})
             return
+        if self.path == "/api/eye-layer-edits":
+            self.send_json({"edits": load_pixel_edits()})
+            return
+        if self.path == "/api/base-sprites":
+            jobs = base_sprite_jobs()
+            self.send_json(
+                {
+                    "jobs": jobs,
+                    "saved": sum(1 for job in jobs if job.get("saved")),
+                    "total": len(jobs),
+                }
+            )
+            return
         super().do_GET()
 
     def do_POST(self) -> None:
@@ -941,7 +1285,7 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             return
         if self.path not in {
             "/api/region", "/api/offset", "/api/clean-offset", "/api/clean-base",
-            "/api/reveal-path"
+            "/api/reveal-path", "/api/eye-layer-edit", "/api/white-halo-clean"
         }:
             self.send_error(HTTPStatus.NOT_FOUND)
             return
@@ -959,6 +1303,23 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                 return
             if self.path == "/api/clean-base":
                 result = save_clean_base(
+                    job_id,
+                    payload.get("image"),
+                    bool(payload.get("validateOnly", False)),
+                )
+                self.send_json(result)
+                return
+            if self.path == "/api/eye-layer-edit":
+                result = save_pixel_edit(
+                    job_id,
+                    str(payload.get("source", "saved")),
+                    str(payload.get("state", "")),
+                    payload.get("image"),
+                )
+                self.send_json(result)
+                return
+            if self.path == "/api/white-halo-clean":
+                result = save_white_halo_sprite(
                     job_id,
                     payload.get("image"),
                     bool(payload.get("validateOnly", False)),
@@ -1344,7 +1705,11 @@ def eye_masks(
 def eye_region_preview_mask(
     size: tuple[int, int], regions: list[dict[str, float]]
 ) -> Image.Image:
-    """Crea la máscara antialias que se muestra en los recortes del marcador."""
+    """Crea una máscara de cobertura limpia para los recortes del marcador.
+
+    El supersampling mantiene el borde suave y la reducción por área evita
+    coronas de alfa fuera de la selección.
+    """
     supersample = 4
     scaled_size = (size[0] * supersample, size[1] * supersample)
 
@@ -1357,15 +1722,21 @@ def eye_region_preview_mask(
             ImageDraw.Draw(canvas).polygon(
                 eye_region_polygon(shape, scaled_size), fill=255
             )
+            # BOX downsamples the supersampled coverage without the ringing
+            # produced by LANCZOS outside a hard selection edge.
             resized = np.asarray(
-                canvas.resize(size, Image.Resampling.LANCZOS), dtype=np.uint8
-            )
+                canvas.resize(size, Image.Resampling.BOX), dtype=np.uint8
+            ).copy()
+            resized[resized < 8] = 0
+            resized[resized > 247] = 255
             values = np.maximum(values, resized)
         return values
 
     include = combined("include").astype(np.float32) / 255.0
     exclude = combined("exclude").astype(np.float32) / 255.0
     alpha = np.clip(include * (1.0 - exclude) * 255.0, 0, 255).astype(np.uint8)
+    alpha[alpha < 8] = 0
+    alpha[alpha > 247] = 255
     return Image.fromarray(alpha, "L")
 
 
@@ -1412,17 +1783,30 @@ def save_eye_region_previews(
         return relative(output_path)
 
     original_path = save_variant(base, "eyes_original.png")
+    half_path = None
+    if job.get("halfSrc"):
+        with Image.open(ROOT / job["halfSrc"]).convert("RGBA") as source:
+            half_path = save_variant(source.copy(), "eyes_half.png")
     blink_paths: list[str] = []
+    closed_path = None
     for index, frame_source in enumerate(job["frameSrcs"]):
         with Image.open(ROOT / frame_source).convert("RGBA") as source:
-            blink_paths.append(
-                save_variant(source.copy(), f"eyes_blink_{index + 1:02d}.png")
+            saved_path = save_variant(
+                source.copy(), f"eyes_blink_{index + 1:02d}.png"
             )
+            blink_paths.append(saved_path)
+            if closed_path is None and "blink_half" not in Path(frame_source).stem.lower():
+                closed_path = saved_path
+    if closed_path is None and blink_paths:
+        closed_path = blink_paths[-1]
 
     entry = {
         "sourceBase": job["baseSrc"],
         "sourceFrames": job["frameSrcs"],
+        "sourceHalf": job.get("halfSrc"),
         "original": original_path,
+        "half": half_path,
+        "closed": closed_path,
         "blinks": blink_paths,
         "regions": regions,
         "width": crop[2] - crop[0],
@@ -1484,7 +1868,27 @@ def color_matched_frame(
 
 def save_webp(image: Image.Image, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    image.save(path, "WEBP", lossless=True, method=6)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.stem}-", suffix=".webp", dir=path.parent
+    )
+    os.close(descriptor)
+    temporary = Path(temporary_name)
+    try:
+        pixels = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
+        pixels[pixels[:, :, 3] == 0, :3] = 0
+        Image.fromarray(pixels, "RGBA").save(
+            temporary, "WEBP", lossless=True, method=6, exact=True
+        )
+        for attempt in range(6):
+            try:
+                os.replace(temporary, path)
+                break
+            except OSError:
+                if attempt == 5:
+                    raise
+                time.sleep(0.05 * (attempt + 1))
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def variant_name(source: str, index: int) -> str:

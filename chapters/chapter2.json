@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp"
             },
             {
               "type": "playSound",
@@ -149,7 +149,7 @@
             {
               "type": "minigame",
               "game": "furrielvaExplore",
-              "background": "assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png"
+              "background": "assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp"
             },
             {
               "type": "goToScene",
@@ -175,7 +175,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.webp"
             },
             {
               "type": "showCharacter",
@@ -368,7 +368,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp",
               "cut": true
             },
             {
@@ -416,7 +416,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.webp"
             },
             {
               "type": "hideCharacter",
@@ -637,7 +637,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/dia_4k_v2.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/dia_4k_v2.webp"
             },
             {
               "type": "hideCharacter",
@@ -697,7 +697,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/mercadona_4k_v2.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/mercadona_4k_v2.webp"
             },
             {
               "type": "hideCharacter",
@@ -764,7 +764,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png",
+              "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.webp",
               "duration": 650
             }
           ]
@@ -816,7 +816,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.png",
+              "path": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.webp",
               "duration": 0
             },
             {
@@ -863,7 +863,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.webp"
             },
             {
               "type": "hideCharacter",
@@ -892,7 +892,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.png",
+              "path": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.webp",
               "duration": 0
             },
             {
@@ -1042,7 +1042,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.webp",
               "cut": true
             },
             {
@@ -1085,7 +1085,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.webp",
               "cut": true
             },
             {
@@ -1137,7 +1137,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.webp"
             },
             {
               "type": "hideCharacter",
@@ -1214,7 +1214,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.webp",
               "cut": true
             },
             {
@@ -1311,7 +1311,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.webp",
               "cut": true
             },
             {
@@ -1327,7 +1327,7 @@
               "audioCrossfade": 1800,
               "holdLastFrame": 300,
               "visualFadeOut": 600,
-              "endBackground": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png"
+              "endBackground": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.webp"
             }
           ]
         },
@@ -1335,7 +1335,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.webp",
               "cut": true
             },
             {
@@ -1569,7 +1569,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/zip_sombra_1.png",
+              "path": "assets/images/cg/chapter2/zip_sombra_1.webp",
               "duration": 700
             },
             {
@@ -1599,7 +1599,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/zip_sombra_2.png",
+              "path": "assets/images/cg/chapter2/zip_sombra_2.webp",
               "duration": 700
             }
           ],
@@ -1723,7 +1723,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp"
             }
           ]
         },
@@ -1802,7 +1802,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.webp"
             },
             {
               "type": "hideCharacter",
@@ -1963,7 +1963,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp"
             },
             {
               "type": "hideCharacter",

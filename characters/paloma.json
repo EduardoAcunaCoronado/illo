@@ -2,8 +2,8 @@
   "name": "Paloma",
   "color": "#8fa6c4",
   "poses": {
-    "neutral": "assets/images/characters/others/paloma.png",
-    "churrera": "assets/images/characters/others/paloma_churrera.png"
+    "neutral": "assets/images/characters/others/paloma.webp",
+    "churrera": "assets/images/characters/others/paloma_churrera.webp"
   },
   "defaultPose": "churrera",
   "animations": {

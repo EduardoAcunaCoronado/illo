@@ -26,6 +26,7 @@ from PIL import Image, ImageOps
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE = Path.home() / "Downloads" / "RECURSOS_CAMBIOS_GUION"
 MANIFEST_PATH = ROOT / "assets" / "metadata" / "gallery_manifest.json"
+BLINK_INTERMEDIATES_PATH = ROOT / "assets" / "metadata" / "blink_eye_intermediates.json"
 THUMB_DIR = ROOT / "assets" / "images" / "gallery" / "thumbnails"
 THUMB_SIZE = (480, 270)
 POSE_THUMB_SIZE = (156, 156)
@@ -33,17 +34,17 @@ LEGACY_CHARACTER_KEYS = {"epod"}
 
 PROMOTIONAL_FILES = {
     "edu_wallpaper.png": ROOT
-    / "assets/images/gallery/wallpapers/edu_entre_mundos.png",
+    / "assets/images/gallery/wallpapers/edu_entre_mundos.webp",
     "jose_wallpaper.png": ROOT
-    / "assets/images/gallery/wallpapers/jose_guardian_ciudad_paloma.png",
+    / "assets/images/gallery/wallpapers/jose_guardian_ciudad_paloma.webp",
     "samu_wallpaper.png": ROOT
-    / "assets/images/gallery/wallpapers/samu_dos_lados.png",
+    / "assets/images/gallery/wallpapers/samu_dos_lados.webp",
     "seraphyna_wallpaper_v2.png": ROOT
-    / "assets/images/gallery/wallpapers/seraphyna_en_escenario.png",
+    / "assets/images/gallery/wallpapers/seraphyna_en_escenario.webp",
     "malos_manos_pads_cara_original.png": ROOT
-    / "assets/images/cg/shared/elion_controla_brainrot.png",
+    / "assets/images/cg/shared/elion_controla_brainrot.webp",
     "villano_elion_husk.png": ROOT
-    / "assets/images/gallery/concept_art/elion_husk_hoja_diseno.png",
+    / "assets/images/gallery/concept_art/elion_husk_hoja_diseno.webp",
     "presentacion_personajes_ideas.mp4": ROOT
     / "assets/video/gallery/samu_presentacion_personaje.mp4",
 }
@@ -67,7 +68,7 @@ PROMOTIONAL_ITEMS = [
         ),
         "type": "image",
         "category": "wallpapers",
-        "src": "assets/images/gallery/wallpapers/edu_entre_mundos.png",
+        "src": "assets/images/gallery/wallpapers/edu_entre_mundos.webp",
         "alt": "Edu corre desde Furrielva hacia Kingdom Ketchup con el movil en la mano.",
         "fit": "cover",
         "downloadable": True,
@@ -83,7 +84,7 @@ PROMOTIONAL_ITEMS = [
         ),
         "type": "image",
         "category": "wallpapers",
-        "src": "assets/images/gallery/wallpapers/jose_guardian_ciudad_paloma.png",
+        "src": "assets/images/gallery/wallpapers/jose_guardian_ciudad_paloma.webp",
         "alt": "José con armadura y espada rodeado de palomas sobre la ciudad.",
         "fit": "cover",
         "downloadable": True,
@@ -99,7 +100,7 @@ PROMOTIONAL_ITEMS = [
         ),
         "type": "image",
         "category": "wallpapers",
-        "src": "assets/images/gallery/wallpapers/samu_dos_lados.png",
+        "src": "assets/images/gallery/wallpapers/samu_dos_lados.webp",
         "alt": "Samu humano y Samu transformado separados por una cristalera al atardecer.",
         "fit": "cover",
         "downloadable": True,
@@ -115,7 +116,7 @@ PROMOTIONAL_ITEMS = [
         ),
         "type": "image",
         "category": "wallpapers",
-        "src": "assets/images/gallery/wallpapers/seraphyna_en_escenario.png",
+        "src": "assets/images/gallery/wallpapers/seraphyna_en_escenario.webp",
         "alt": "Seraphyna canta ante una multitud iluminada por luces magenta.",
         "fit": "cover",
         "downloadable": True,
@@ -131,7 +132,7 @@ PROMOTIONAL_ITEMS = [
         ),
         "type": "image",
         "category": "illustrations",
-        "src": "assets/images/cg/shared/elion_controla_brainrot.png",
+        "src": "assets/images/cg/shared/elion_controla_brainrot.webp",
         "alt": "Elion Husk controla a tres brainrot bajo una luna roja.",
         "fit": "contain",
         "downloadable": False,
@@ -148,7 +149,7 @@ PROMOTIONAL_ITEMS = [
         ),
         "type": "image",
         "category": "illustrations",
-        "src": "assets/images/gallery/concept_art/elion_husk_hoja_diseno.png",
+        "src": "assets/images/gallery/concept_art/elion_husk_hoja_diseno.webp",
         "alt": "Hoja de diseño de Elion Husk con cuerpo entero y varias expresiones.",
         "fit": "contain",
         "downloadable": False,
@@ -455,6 +456,19 @@ def collect_pose_animation(
     if not frames:
         return None
 
+    if BLINK_INTERMEDIATES_PATH.is_file():
+        intermediate_manifest = json.loads(
+            BLINK_INTERMEDIATES_PATH.read_text(encoding="utf-8")
+        )
+        half = (intermediate_manifest.get("poses", {}).get(
+            f"{character_path.stem.lower()}.{pose_key}", {}
+        ) or {}).get("half")
+        if half and not any(frame["src"] == half for frame in frames):
+            half_path = lightweight_variant(str(half).replace("\\", "/"))
+            if (ROOT / half_path).is_file():
+                half_frame = {"src": half_path, "duration": 65}
+                frames = [half_frame, *frames, dict(half_frame)]
+
     delay_range: int | float | list[int | float] = [1800, 4200]
     loop = True
     if isinstance(config, dict):
@@ -563,6 +577,7 @@ def collect_characters(used_ids: set[str]) -> list[dict[str, Any]]:
                     else {}
                 ),
                 "origin": "character",
+                "characterKey": character_key,
                 "poses": poses,
             }
         )

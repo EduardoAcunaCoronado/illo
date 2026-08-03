@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "edits": {
+    "saved": {
+      "airi.angry": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/angry/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/angry/eyes_closed.png"
+      },
+      "airi.bua": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/bua/eyes_half.png"
+      },
+      "airi.embarrassed": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/embarrassed/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/embarrassed/eyes_closed.png"
+      },
+      "airi.neutral": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/neutral/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/neutral/eyes_closed.png"
+      },
+      "airi.pray": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/pray/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/pray/eyes_closed.png"
+      },
+      "airi.surprised": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/surprised/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/surprised/eyes_closed.png"
+      },
+      "airi.sad": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/sad/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/sad/eyes_closed.png"
+      },
+      "airi.determined": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/determined/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/determined/eyes_closed.png"
+      },
+      "airi.happy": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/happy/eyes_half.png"
+      },
+      "airi.thinking": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/thinking/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/thinking/eyes_closed.png"
+      },
+      "airi.worried": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/worried/eyes_half.png"
+      },
+      "airi_adult.neutral": {
+        "half": "assets/images/characters/eye_layer_edits/saved/airi_adult/neutral/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi_adult/neutral/eyes_closed.png"
+      }
+    }
+  }
+}

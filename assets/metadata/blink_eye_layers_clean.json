@@ -2,8 +2,9 @@
   "version": 1,
   "poses": {
     "3c.angry": {
-      "base": "assets/images/characters/others/3c.png",
+      "base": "assets/images/characters/others/3c.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/3c/angry/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/3c/angry/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/3c/angry/eyes_closed.webp",
       "regions": [
         {
@@ -30,12 +31,14 @@
         "height": 1260
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/others/3c.png",
-      "closedSource": "assets/images/characters/others/animations/3c_neutral_blink_closed.png"
+      "openSource": "assets/images/characters/others/3c.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "closedSource": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
     },
     "3c.happy": {
-      "base": "assets/images/characters/others/3c_happy.png",
+      "base": "assets/images/characters/others/3c_happy.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/3c/happy/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/3c/happy/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/3c/happy/eyes_closed.webp",
       "regions": [
         {
@@ -62,12 +65,14 @@
         "height": 1391
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/others/3c_happy.png",
+      "openSource": "assets/images/characters/others/3c_happy.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/3c/happy/eyes_half_source.webp",
       "closedSource": "assets/images/characters/others/animations/blinks/3c_happy_blink_closed_v2.webp"
     },
     "3c.neutral": {
-      "base": "assets/images/characters/others/3c.png",
+      "base": "assets/images/characters/others/3c.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/3c/neutral/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/3c/neutral/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/3c/neutral/eyes_closed.webp",
       "regions": [
         {
@@ -94,12 +99,14 @@
         "height": 1260
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/others/3c.png",
-      "closedSource": "assets/images/characters/others/animations/3c_neutral_blink_closed.png"
+      "openSource": "assets/images/characters/others/3c.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "closedSource": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
     },
     "3c.sad": {
-      "base": "assets/images/characters/others/3c.png",
+      "base": "assets/images/characters/others/3c.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/3c/sad/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/3c/sad/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/3c/sad/eyes_closed.webp",
       "regions": [
         {
@@ -126,26 +133,28 @@
         "height": 1260
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/others/3c.png",
-      "closedSource": "assets/images/characters/others/animations/3c_neutral_blink_closed.png"
+      "openSource": "assets/images/characters/others/3c.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "closedSource": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
     },
     "3c.surprised": {
-      "base": "assets/images/characters/others/3c.png",
+      "base": "assets/images/characters/others/3c.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/3c/surprised/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/3c/surprised/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/3c/surprised/eyes_closed.webp",
       "regions": [
         {
-          "cx": 0.396973,
-          "cy": 0.314938,
-          "rx": 0.042733,
-          "ry": 0.029496,
-          "rotation": 0.0,
+          "cx": 0.40107,
+          "cy": 0.313026,
+          "rx": 0.043788,
+          "ry": 0.02789,
+          "rotation": 17.852,
           "mode": "include",
           "feather": 0.0
         },
         {
-          "cx": 0.528098,
-          "cy": 0.283539,
+          "cx": 0.530451,
+          "cy": 0.286407,
           "rx": 0.052483,
           "ry": 0.031926,
           "rotation": -32.501,
@@ -158,28 +167,30 @@
         "height": 1260
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/others/3c.png",
-      "closedSource": "assets/images/characters/others/animations/3c_neutral_blink_closed.png"
+      "openSource": "assets/images/characters/others/3c.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "closedSource": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
     },
     "airi.angry": {
-      "base": "assets/images/characters/airi/airi_angry.png",
+      "base": "assets/images/characters/airi/airi_angry.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/angry/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/angry/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/angry/eyes_closed.webp",
       "regions": [
         {
-          "cx": 0.410345,
-          "cy": 0.259276,
-          "rx": 0.047579,
-          "ry": 0.032825,
+          "cx": 0.41,
+          "cy": 0.259,
+          "rx": 0.048,
+          "ry": 0.033,
           "rotation": 0.0,
           "mode": "include",
           "feather": 0.0
         },
         {
-          "cx": 0.5547,
-          "cy": 0.245004,
-          "rx": 0.050814,
-          "ry": 0.027116,
+          "cx": 0.555,
+          "cy": 0.245,
+          "rx": 0.051,
+          "ry": 0.027,
           "rotation": 0.0,
           "mode": "include",
           "feather": 0.0
@@ -190,12 +201,14 @@
         "height": 879
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi/airi_angry.png",
+      "openSource": "assets/images/characters/airi/airi_angry.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/angry/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi/animations/blinks/airi_angry_blink_closed.webp"
     },
     "airi.bua": {
-      "base": "assets/images/characters/airi/airi_bua.png",
+      "base": "assets/images/characters/airi/airi_bua.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/bua/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/bua/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/bua/eyes_closed.webp",
       "regions": [
         {
@@ -222,12 +235,14 @@
         "height": 879
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi/airi_bua.png",
+      "openSource": "assets/images/characters/airi/airi_bua.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/bua/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi/animations/blinks/airi_bua_blink_closed.webp"
     },
     "airi.determined": {
-      "base": "assets/images/characters/airi/airi_determined.png",
+      "base": "assets/images/characters/airi/airi_determined.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/determined/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/determined/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/determined/eyes_closed.webp",
       "regions": [
         {
@@ -254,12 +269,14 @@
         "height": 879
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi/airi_determined.png",
+      "openSource": "assets/images/characters/airi/airi_determined.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/determined/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi/animations/blinks/airi_determined_blink_closed.webp"
     },
     "airi.embarrassed": {
-      "base": "assets/images/characters/airi/airi_embarrased.png",
+      "base": "assets/images/characters/airi/airi_embarrased.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/embarrassed/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/embarrassed/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/embarrassed/eyes_closed.webp",
       "regions": [
         {
@@ -286,12 +303,14 @@
         "height": 879
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi/airi_embarrased.png",
+      "openSource": "assets/images/characters/airi/airi_embarrased.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/embarrassed/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi/animations/blinks/airi_embarrassed_blink_closed.webp"
     },
     "airi.happy": {
-      "base": "assets/images/characters/airi/airi_happy.png",
+      "base": "assets/images/characters/airi/airi_happy.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/happy/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/happy/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/happy/eyes_closed.webp",
       "regions": [
         {
@@ -319,11 +338,13 @@
       },
       "pixelGeometry": "exact-source-coordinates",
       "openSource": "assets/images/characters/airi/animations/blinks/airi_happy_blink_open.webp",
-      "closedSource": "assets/images/characters/airi/airi_happy.png"
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/happy/eyes_half_source.webp",
+      "closedSource": "assets/images/characters/airi/airi_happy.webp"
     },
     "airi.neutral": {
-      "base": "assets/images/characters/airi/airi.png",
+      "base": "assets/images/characters/airi/airi.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/neutral/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/neutral/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/neutral/eyes_closed.webp",
       "regions": [
         {
@@ -350,12 +371,14 @@
         "height": 879
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi/airi.png",
+      "openSource": "assets/images/characters/airi/airi.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/neutral/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi/animations/blinks/airi_neutral_blink_closed.webp"
     },
     "airi.pray": {
-      "base": "assets/images/characters/airi/airi_pray.png",
+      "base": "assets/images/characters/airi/airi_pray.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/pray/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/pray/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/pray/eyes_closed.webp",
       "regions": [
         {
@@ -383,11 +406,13 @@
       },
       "pixelGeometry": "exact-source-coordinates",
       "openSource": "assets/images/characters/airi/animations/blinks/airi_pray_blink_open.webp",
-      "closedSource": "assets/images/characters/airi/airi_pray.png"
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/pray/eyes_half_source.webp",
+      "closedSource": "assets/images/characters/airi/airi_pray.webp"
     },
     "airi.sad": {
-      "base": "assets/images/characters/airi/airi_sad.png",
+      "base": "assets/images/characters/airi/airi_sad.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/sad/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/sad/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/sad/eyes_closed.webp",
       "regions": [
         {
@@ -414,12 +439,14 @@
         "height": 879
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi/airi_sad.png",
+      "openSource": "assets/images/characters/airi/airi_sad.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/sad/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi/animations/blinks/airi_sad_blink_closed.webp"
     },
     "airi.surprised": {
-      "base": "assets/images/characters/airi/airi_surprised.png",
+      "base": "assets/images/characters/airi/airi_surprised.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/surprised/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/surprised/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/surprised/eyes_closed.webp",
       "regions": [
         {
@@ -446,12 +473,14 @@
         "height": 879
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi/airi_surprised.png",
+      "openSource": "assets/images/characters/airi/airi_surprised.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/surprised/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi/animations/blinks/airi_surprised_blink_closed.webp"
     },
     "airi.thinking": {
-      "base": "assets/images/characters/airi/airi_thinking.png",
+      "base": "assets/images/characters/airi/airi_thinking.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/thinking/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/thinking/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/thinking/eyes_closed.webp",
       "regions": [
         {
@@ -478,12 +507,14 @@
         "height": 879
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi/airi_thinking.png",
+      "openSource": "assets/images/characters/airi/airi_thinking.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/thinking/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi/animations/blinks/airi_thinking_blink_closed.webp"
     },
     "airi.worried": {
-      "base": "assets/images/characters/airi/airi_worried.png",
+      "base": "assets/images/characters/airi/airi_worried.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi/worried/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi/worried/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi/worried/eyes_closed.webp",
       "regions": [
         {
@@ -510,12 +541,14 @@
         "height": 879
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi/airi_worried.png",
+      "openSource": "assets/images/characters/airi/airi_worried.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi/worried/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi/animations/blinks/airi_worried_blink_closed.webp"
     },
     "airi_adult.neutral": {
-      "base": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.png",
+      "base": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.webp",
       "eyesOpen": "assets/images/characters/eye_layers_clean/airi_adult/neutral/eyes_open.webp",
+      "eyesHalf": "assets/images/characters/eye_layers_clean/airi_adult/neutral/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_clean/airi_adult/neutral/eyes_closed.webp",
       "regions": [
         {
@@ -542,7 +575,8 @@
         "height": 898
       },
       "pixelGeometry": "exact-source-coordinates",
-      "openSource": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.png",
+      "openSource": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.webp",
+      "halfSource": "assets/images/characters/eye_intermediate_sources/airi_adult/neutral/eyes_half_source.webp",
       "closedSource": "assets/images/characters/airi_adult/animations/blinks/airi_adult_neutral_blink_closed.webp"
     }
   }

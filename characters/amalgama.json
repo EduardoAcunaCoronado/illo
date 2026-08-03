@@ -2,7 +2,7 @@
   "name": "Amalgama",
   "color": "#7b2cff",
   "poses": {
-    "neutral": "assets/images/characters/amalgama/amalgama_base.png"
+    "neutral": "assets/images/characters/amalgama/amalgama_base.webp"
   },
   "defaultPose": "neutral"
 }

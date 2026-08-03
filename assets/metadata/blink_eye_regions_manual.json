@@ -83,11 +83,11 @@
     ],
     "3c.surprised": [
       {
-        "cx": 0.39815,
+        "cx": 0.40107,
         "cy": 0.313026,
-        "rx": 0.047514,
+        "rx": 0.043788,
         "ry": 0.02789,
-        "rotation": 13.07,
+        "rotation": 17.852,
         "mode": "include",
         "feather": 0.0
       },
@@ -112,10 +112,10 @@
         "feather": 0.0
       },
       {
-        "cx": 0.5547,
-        "cy": 0.245004,
-        "rx": 0.050814,
-        "ry": 0.027116,
+        "cx": 0.555,
+        "cy": 0.245,
+        "rx": 0.051,
+        "ry": 0.027,
         "rotation": 0.0,
         "mode": "include",
         "feather": 0.0
@@ -339,6 +339,46 @@
         "rotation": 0.0,
         "mode": "include",
         "feather": 0.0
+      }
+    ],
+    "andres.neutral": [
+      {
+        "cx": 0.423758,
+        "cy": 0.173493,
+        "rx": 0.035,
+        "ry": 0.02801,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 6.0
+      },
+      {
+        "cx": 0.562269,
+        "cy": 0.170576,
+        "rx": 0.041311,
+        "ry": 0.02801,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 6.0
+      }
+    ],
+    "ballerina_capuchina.neutral": [
+      {
+        "cx": 0.416505,
+        "cy": 0.426306,
+        "rx": 0.105589,
+        "ry": 0.042784,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 6.0
+      },
+      {
+        "cx": 0.635716,
+        "cy": 0.372826,
+        "rx": 0.105111,
+        "ry": 0.045248,
+        "rotation": -32.006,
+        "mode": "include",
+        "feather": 6.0
       }
     ]
   }

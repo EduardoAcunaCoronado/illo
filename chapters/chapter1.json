@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.png"
+              "value": "assets/images/backgrounds/chapter1/pisito.webp"
             },
             {
               "type": "playSound",
@@ -76,7 +76,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/bathroom.png"
+              "value": "assets/images/backgrounds/chapter1/bathroom.webp"
             },
             {
               "type": "removeCharacter",
@@ -90,7 +90,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.png"
+              "value": "assets/images/backgrounds/chapter1/pisito.webp"
             },
             {
               "type": "showCharacter",
@@ -173,7 +173,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.png",
+              "value": "assets/images/backgrounds/chapter1/pisito.webp",
               "cut": true
             },
             {
@@ -397,7 +397,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.png",
+              "value": "assets/images/backgrounds/chapter1/pisito.webp",
               "cut": true
             },
             {

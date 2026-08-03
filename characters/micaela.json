@@ -2,8 +2,8 @@
   "name": "Micaela Michis",
   "color": "purple",
   "poses": {
-    "neutral": "assets/images/characters/others/micaela.png",
-    "crazy": "assets/images/characters/others/micaela_crazy.png"
+    "neutral": "assets/images/characters/others/micaela.webp",
+    "crazy": "assets/images/characters/others/micaela_crazy.webp"
   },
   "defaultPose": "neutral",
   "animations": {

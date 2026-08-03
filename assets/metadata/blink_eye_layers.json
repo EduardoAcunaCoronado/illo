@@ -2,7 +2,7 @@
   "version": 1,
   "poses": {
     "3c.neutral": {
-      "source": "assets/images/characters/others/3c.png",
+      "source": "assets/images/characters/others/3c.webp",
       "regions": [
         {
           "cx": 0.396,
@@ -50,11 +50,11 @@
         }
       ],
       "originalFrames": [
-        "assets/images/characters/others/animations/3c_neutral_blink_closed.png"
+        "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
       ]
     },
     "3c.happy": {
-      "source": "assets/images/characters/others/3c_happy.png",
+      "source": "assets/images/characters/others/3c_happy.webp",
       "regions": [
         {
           "cx": 0.415452,
@@ -106,7 +106,7 @@
       ]
     },
     "3c.sad": {
-      "source": "assets/images/characters/others/3c.png",
+      "source": "assets/images/characters/others/3c.webp",
       "regions": [
         {
           "cx": 0.398359,
@@ -154,11 +154,11 @@
         }
       ],
       "originalFrames": [
-        "assets/images/characters/others/animations/3c_neutral_blink_closed.png"
+        "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
       ]
     },
     "3c.angry": {
-      "source": "assets/images/characters/others/3c.png",
+      "source": "assets/images/characters/others/3c.webp",
       "regions": [
         {
           "cx": 0.397851,
@@ -206,18 +206,18 @@
         }
       ],
       "originalFrames": [
-        "assets/images/characters/others/animations/3c_neutral_blink_closed.png"
+        "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
       ]
     },
     "3c.surprised": {
-      "source": "assets/images/characters/others/3c.png",
+      "source": "assets/images/characters/others/3c.webp",
       "regions": [
         {
-          "cx": 0.39815,
+          "cx": 0.40107,
           "cy": 0.313026,
-          "rx": 0.047514,
+          "rx": 0.043788,
           "ry": 0.02789,
-          "rotation": 13.07,
+          "rotation": 17.852,
           "mode": "include",
           "feather": 0.0
         },
@@ -232,16 +232,16 @@
         }
       ],
       "region": [
-        0.351562,
+        0.358398,
         0.247619,
         0.578125,
-        0.342063
+        0.342857
       ],
       "regionPixels": [
-        360,
+        367,
         312,
         592,
-        431
+        432
       ],
       "regionMethod": "manual",
       "offset": [
@@ -258,11 +258,11 @@
         }
       ],
       "originalFrames": [
-        "assets/images/characters/others/animations/3c_neutral_blink_closed.png"
+        "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
       ]
     },
     "airi.neutral": {
-      "source": "assets/images/characters/airi/airi.png",
+      "source": "assets/images/characters/airi/airi.webp",
       "regions": [
         {
           "cx": 0.413257,
@@ -314,7 +314,7 @@
       ]
     },
     "airi.happy": {
-      "source": "assets/images/characters/airi/airi_happy.png",
+      "source": "assets/images/characters/airi/airi_happy.webp",
       "regions": [
         {
           "cx": 0.421997,
@@ -366,7 +366,7 @@
       ]
     },
     "airi.sad": {
-      "source": "assets/images/characters/airi/airi_sad.png",
+      "source": "assets/images/characters/airi/airi_sad.webp",
       "regions": [
         {
           "cx": 0.416172,
@@ -418,7 +418,7 @@
       ]
     },
     "airi.angry": {
-      "source": "assets/images/characters/airi/airi_angry.png",
+      "source": "assets/images/characters/airi/airi_angry.webp",
       "regions": [
         {
           "cx": 0.41,
@@ -430,10 +430,10 @@
           "feather": 0.0
         },
         {
-          "cx": 0.5547,
-          "cy": 0.245004,
-          "rx": 0.050814,
-          "ry": 0.027116,
+          "cx": 0.555,
+          "cy": 0.245,
+          "rx": 0.051,
+          "ry": 0.027,
           "rotation": 0.0,
           "mode": "include",
           "feather": 0.0
@@ -470,7 +470,7 @@
       ]
     },
     "airi.surprised": {
-      "source": "assets/images/characters/airi/airi_surprised.png",
+      "source": "assets/images/characters/airi/airi_surprised.webp",
       "regions": [
         {
           "cx": 0.412287,
@@ -522,7 +522,7 @@
       ]
     },
     "airi.determined": {
-      "source": "assets/images/characters/airi/airi_determined.png",
+      "source": "assets/images/characters/airi/airi_determined.webp",
       "regions": [
         {
           "cx": 0.409051,
@@ -574,7 +574,7 @@
       ]
     },
     "airi.embarrassed": {
-      "source": "assets/images/characters/airi/airi_embarrased.png",
+      "source": "assets/images/characters/airi/airi_embarrased.webp",
       "regions": [
         {
           "cx": 0.405814,
@@ -626,7 +626,7 @@
       ]
     },
     "airi.thinking": {
-      "source": "assets/images/characters/airi/airi_thinking.png",
+      "source": "assets/images/characters/airi/airi_thinking.webp",
       "regions": [
         {
           "cx": 0.410993,
@@ -678,7 +678,7 @@
       ]
     },
     "airi.bua": {
-      "source": "assets/images/characters/airi/airi_bua.png",
+      "source": "assets/images/characters/airi/airi_bua.webp",
       "regions": [
         {
           "cx": 0.405814,
@@ -730,7 +730,7 @@
       ]
     },
     "airi.pray": {
-      "source": "assets/images/characters/airi/airi_pray.png",
+      "source": "assets/images/characters/airi/airi_pray.webp",
       "regions": [
         {
           "cx": 0.395781,
@@ -782,7 +782,7 @@
       ]
     },
     "airi.worried": {
-      "source": "assets/images/characters/airi/airi_worried.png",
+      "source": "assets/images/characters/airi/airi_worried.webp",
       "regions": [
         {
           "cx": 0.410993,
@@ -834,7 +834,7 @@
       ]
     },
     "airi_adult.neutral": {
-      "source": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.png",
+      "source": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.webp",
       "regions": [
         {
           "cx": 0.433429,

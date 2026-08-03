@@ -2,38 +2,38 @@
   "name": "Samu",
   "color": "red",
   "poses": {
-    "neutral": "assets/images/characters/samu/Samu.png",
-    "happy": "assets/images/characters/samu/samu_happy.png",
-    "sad": "assets/images/characters/samu/samu_sad.png",
-    "angry": "assets/images/characters/samu/samu_angry.png",
-    "surprised": "assets/images/characters/samu/samu_surprised.png",
-    "alarmed": "assets/images/characters/samu/samu_alarmed.png",
-    "bua": "assets/images/characters/samu/samu_bua.png",
-    "clapping": "assets/images/characters/samu/samu_clapping.png",
-    "determined": "assets/images/characters/samu/samu_determined.png",
-    "embarrassed": "assets/images/characters/samu/samu_embarrassed.png",
-    "shocked": "assets/images/characters/samu/samu_shocked.png",
-    "thinking": "assets/images/characters/samu/samu_thinking.png",
-    "worried": "assets/images/characters/samu/samu_worried.png",
-    "valla": "assets/images/characters/samu/samu_valla.png",
-    "curious": "assets/images/characters/samu/samu_curious.png",
-    "charred_blink": "assets/images/characters/samu/samu_charred_whiteeyes.png",
-    "charred_shake": "assets/images/characters/samu/samu_charred_whiteeyes.png",
-    "human": "assets/images/characters/humans/samu_humano_sprite.png"
+    "neutral": "assets/images/characters/samu/Samu.webp",
+    "happy": "assets/images/characters/samu/samu_happy.webp",
+    "sad": "assets/images/characters/samu/samu_sad.webp",
+    "angry": "assets/images/characters/samu/samu_angry.webp",
+    "surprised": "assets/images/characters/samu/samu_surprised.webp",
+    "alarmed": "assets/images/characters/samu/samu_alarmed.webp",
+    "bua": "assets/images/characters/samu/samu_bua.webp",
+    "clapping": "assets/images/characters/samu/samu_clapping.webp",
+    "determined": "assets/images/characters/samu/samu_determined.webp",
+    "embarrassed": "assets/images/characters/samu/samu_embarrassed.webp",
+    "shocked": "assets/images/characters/samu/samu_shocked.webp",
+    "thinking": "assets/images/characters/samu/samu_thinking.webp",
+    "worried": "assets/images/characters/samu/samu_worried.webp",
+    "valla": "assets/images/characters/samu/samu_valla.webp",
+    "curious": "assets/images/characters/samu/samu_curious.webp",
+    "charred_blink": "assets/images/characters/samu/samu_charred_whiteeyes.webp",
+    "charred_shake": "assets/images/characters/samu/samu_charred_whiteeyes.webp",
+    "human": "assets/images/characters/humans/samu_humano_sprite.webp"
   },
   "animations": {
     "neutral": {
       "frames": [
         {
-          "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.png",
+          "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
           "duration": 65
         },
         {
-          "src": "assets/images/characters/samu/animations/samu_neutral_blink_closed.png",
+          "src": "assets/images/characters/samu/animations/samu_neutral_blink_closed.webp",
           "duration": 95
         },
         {
-          "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.png",
+          "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
           "duration": 65
         }
       ],
@@ -151,7 +151,7 @@
     "charred_blink": {
       "frames": [
         {
-          "src": "assets/images/characters/samu/samu_charred_closed.png",
+          "src": "assets/images/characters/samu/samu_charred_closed.webp",
           "duration": 115
         }
       ],

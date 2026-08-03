@@ -2,11 +2,11 @@
   "name": "ePod",
   "color": "#188d91",
   "poses": {
-    "neutral": "assets/images/characters/others/epod.png",
-    "happy": "assets/images/characters/others/epod.png",
-    "sad": "assets/images/characters/others/epod.png",
-    "angry": "assets/images/characters/others/epod.png",
-    "surprised": "assets/images/characters/others/epod.png"
+    "neutral": "assets/images/characters/others/epod.webp",
+    "happy": "assets/images/characters/others/epod.webp",
+    "sad": "assets/images/characters/others/epod.webp",
+    "angry": "assets/images/characters/others/epod.webp",
+    "surprised": "assets/images/characters/others/epod.webp"
   },
   "defaultPose": "neutral",
   "animations": {

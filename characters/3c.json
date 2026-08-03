@@ -2,18 +2,18 @@
   "name": "3C",
   "color": "#1b8587",
   "poses": {
-    "neutral": "assets/images/characters/others/3c.png",
-    "happy": "assets/images/characters/others/3c_happy.png",
-    "sad": "assets/images/characters/others/3c.png",
-    "angry": "assets/images/characters/others/3c.png",
-    "surprised": "assets/images/characters/others/3c.png"
+    "neutral": "assets/images/characters/others/3c.webp",
+    "happy": "assets/images/characters/others/3c_happy.webp",
+    "sad": "assets/images/characters/others/3c.webp",
+    "angry": "assets/images/characters/others/3c.webp",
+    "surprised": "assets/images/characters/others/3c.webp"
   },
   "defaultPose": "neutral",
   "animations": {
     "neutral": {
       "frames": [
         {
-          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.png",
+          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp",
           "duration": 110
         }
       ],
@@ -35,7 +35,7 @@
     "sad": {
       "frames": [
         {
-          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.png",
+          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp",
           "duration": 110
         }
       ],
@@ -44,7 +44,7 @@
     "angry": {
       "frames": [
         {
-          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.png",
+          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp",
           "duration": 110
         }
       ],
@@ -53,7 +53,7 @@
     "surprised": {
       "frames": [
         {
-          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.png",
+          "src": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp",
           "duration": 110
         }
       ],

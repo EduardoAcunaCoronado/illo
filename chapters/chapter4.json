@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/camino_a_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter4/camino_a_ciudad_paloma.webp"
             },
             {
               "type": "playSound",
@@ -211,7 +211,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.webp"
             },
             {
               "type": "stopSound",
@@ -337,7 +337,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/entrada_epica_jose.png"
+              "value": "assets/images/backgrounds/chapter4/entrada_epica_jose.webp"
             }
           ],
           "character": "3C",
@@ -386,7 +386,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.webp"
             },
             {
               "type": "rescue",
@@ -821,7 +821,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png",
+              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.webp",
               "cut": true
             },
             {
@@ -1025,7 +1025,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/plaza_circular.png"
+              "value": "assets/images/backgrounds/shared/plaza_circular.webp"
             },
             {
               "type": "hideCharacter",
@@ -1077,7 +1077,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_samu.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_samu.webp"
             },
             {
               "type": "waitForClick"
@@ -1134,7 +1134,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_edu.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_edu.webp"
             },
             {
               "type": "waitForClick"
@@ -1204,7 +1204,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_tony.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_tony.webp"
             },
             {
               "type": "waitForClick"
@@ -1312,7 +1312,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_jose.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_jose.webp"
             },
             {
               "type": "waitForClick"
@@ -1392,7 +1392,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_circular_glitch.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_circular_glitch.webp"
             }
           ]
         },
@@ -1435,7 +1435,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/cielo_glitch_brainrot.png"
+              "value": "assets/images/backgrounds/chapter4/cielo_glitch_brainrot.webp"
             }
           ]
         },
@@ -1454,7 +1454,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque.webp"
             },
             {
               "type": "showCharacter",
@@ -1522,7 +1522,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.webp"
             }
           ]
         },
@@ -1593,7 +1593,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_circular_brainrot_ataque.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_circular_brainrot_ataque.webp"
             }
           ]
         },
@@ -1715,7 +1715,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_circular_agujero.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_circular_agujero.webp"
             },
             {
               "type": "playSound",
@@ -1948,7 +1948,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario.png"
+              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario.webp"
             },
             {
               "type": "stopSound",
@@ -2229,7 +2229,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.png"
+              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.webp"
             },
             {
               "type": "playSound",

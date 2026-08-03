@@ -523,6 +523,39 @@ function loadGalleryManifest() {
   return galleryManifestPromise;
 }
 
+function attachGalleryLayerBlinks(manifest, layerManifest) {
+  for (const item of manifest.items || []) {
+    if (item.origin !== "character" || !item.characterKey) continue;
+    for (const pose of item.poses || []) {
+      const config = layerManifest?.poses?.[`${item.characterKey}.${pose.key}`];
+      if (config) pose.layerBlink = config;
+      else delete pose.layerBlink;
+    }
+  }
+  return manifest;
+}
+
+function attachGalleryCleanSprites(manifest, cleanManifest) {
+  const cleanSprites = cleanManifest?.sprites || {};
+  for (const item of manifest.items || []) {
+    if (item.origin !== "character" || !item.characterKey) continue;
+    let firstCleanPose = null;
+    for (const pose of item.poses || []) {
+      const clean = cleanSprites[`${item.characterKey}.${pose.key}`];
+      if (!clean?.cleaned) continue;
+      pose.src = clean.cleaned;
+      pose.thumbnail = clean.thumbnail || clean.cleaned;
+      if (!firstCleanPose) firstCleanPose = { pose, clean };
+    }
+    if (firstCleanPose && item.poses?.[0] === firstCleanPose.pose) {
+      item.src = firstCleanPose.clean.cleaned;
+      item.thumbnail = firstCleanPose.clean.galleryThumbnail ||
+        firstCleanPose.clean.thumbnail || firstCleanPose.clean.cleaned;
+    }
+  }
+  return manifest;
+}
+
 function galleryFocusableElements(scope) {
   return [
     ...scope.querySelectorAll(
@@ -635,7 +668,13 @@ async function showGalleryPanel() {
   }
 
   try {
-    const manifest = await loadGalleryManifest();
+    const [manifest, layerManifest, cleanManifest] = await Promise.all([
+      loadGalleryManifest(),
+      engine.loadLayerBlinkManifest(),
+      engine.loadWhiteHaloManifest(),
+    ]);
+    attachGalleryCleanSprites(manifest, cleanManifest);
+    attachGalleryLayerBlinks(manifest, layerManifest);
     renderGalleryPanel(manifest);
   } catch (error) {
     console.error("No se ha podido abrir la galería:", error);
@@ -804,6 +843,40 @@ function renderGalleryPanel(manifest) {
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
   }
 
+  function hideGalleryEyeLayer() {
+    const layer = lightboxMedia.querySelector(".gallery-eye-layer");
+    if (layer) {
+      layer.hidden = true;
+      layer.removeAttribute("src");
+    }
+  }
+
+  function showGalleryEyeLayer(pose, frame) {
+    const config = pose?.layerBlink;
+    const layer = lightboxMedia.querySelector(".gallery-eye-layer");
+    if (!config || !layer || !frame?.src) return;
+    const stateName = frame.state === "closed" ? "closed" : "half";
+    const offset = config.offsets?.[stateName] || [0, 0];
+    const stretch = config.offsets?.[`${stateName}Scale`] || [1, 1];
+    const crop = config.crop;
+    const canvas = config.canvas;
+    const width = lightboxMedia.clientWidth;
+    const height = lightboxMedia.clientHeight;
+    const contain = Math.min(width / canvas.width, height / canvas.height) || 1;
+    const imageLeft = (width - canvas.width * contain) / 2;
+    const imageTop = (height - canvas.height * contain) / 2;
+    const targetWidth = crop.width * stretch[0];
+    const targetHeight = crop.height * stretch[1];
+    const targetLeft = crop.x + crop.width / 2 + offset[0] - targetWidth / 2;
+    const targetTop = crop.y + crop.height / 2 + offset[1] - targetHeight / 2;
+    layer.style.left = `${imageLeft + targetLeft * contain}px`;
+    layer.style.top = `${imageTop + targetTop * contain}px`;
+    layer.style.width = `${targetWidth * contain}px`;
+    layer.style.height = `${targetHeight * contain}px`;
+    layer.src = galleryAssetUrl(frame.src);
+    layer.hidden = false;
+  }
+
   function stopGalleryBlink(restoreBase = false) {
     if (state.blinkTimer) clearTimeout(state.blinkTimer);
     state.blinkTimer = null;
@@ -811,12 +884,16 @@ function renderGalleryPanel(manifest) {
     if (!restoreBase) return;
     const pose = currentLightboxPose();
     const image = lightboxMedia.querySelector(".gallery-lightbox-image");
+    hideGalleryEyeLayer();
     if (pose?.src && image) image.src = galleryAssetUrl(pose.src);
   }
 
   function updateGalleryBlinkToggle(pose) {
     const available = Boolean(
-      pose?.type !== "video" && Array.isArray(pose?.animation?.frames) && pose.animation.frames.length,
+      pose?.type !== "video" && (
+        Array.isArray(pose?.layerBlink?.frames) && pose.layerBlink.frames.length ||
+        Array.isArray(pose?.animation?.frames) && pose.animation.frames.length
+      ),
     );
     blinkToggle.hidden = !available;
     blinkToggle.setAttribute("aria-pressed", String(available && state.blinkEnabled));
@@ -827,8 +904,9 @@ function renderGalleryPanel(manifest) {
   }
 
   function startGalleryBlink(pose, immediate = true) {
-    const animation = pose?.animation;
-    const frames = Array.isArray(animation?.frames) ? animation.frames : [];
+    const animation = pose?.animation || {};
+    const layered = Boolean(pose?.layerBlink);
+    const frames = layered ? pose.layerBlink.frames : (Array.isArray(animation?.frames) ? animation.frames : []);
     const image = lightboxMedia.querySelector(".gallery-lightbox-image");
     if (!state.blinkEnabled || !image || !frames.length) return;
 
@@ -852,7 +930,8 @@ function renderGalleryPanel(manifest) {
     const playFrame = () => {
       if (!stillCurrent()) return;
       const frame = frames[frameIndex];
-      image.src = galleryAssetUrl(frame.src);
+      if (layered) showGalleryEyeLayer(pose, frame);
+      else image.src = galleryAssetUrl(frame.src);
       const duration = Math.max(40, Number(frame.duration) || 85);
       frameIndex += 1;
       if (frameIndex < frames.length) {
@@ -861,7 +940,8 @@ function renderGalleryPanel(manifest) {
       }
       state.blinkTimer = setTimeout(() => {
         if (!stillCurrent()) return;
-        image.src = galleryAssetUrl(pose.src);
+        if (layered) hideGalleryEyeLayer();
+        else image.src = galleryAssetUrl(pose.src);
         frameIndex = 0;
         if (animation.loop === false) {
           state.blinkEnabled = false;
@@ -938,6 +1018,15 @@ function renderGalleryPanel(manifest) {
       image.alt = pose?.alt || item.alt || item.title;
       image.decoding = "async";
       lightboxMedia.appendChild(image);
+      if (pose?.layerBlink) {
+        const eyeLayer = document.createElement("img");
+        eyeLayer.className = "gallery-eye-layer";
+        eyeLayer.alt = "";
+        eyeLayer.setAttribute("aria-hidden", "true");
+        eyeLayer.draggable = false;
+        eyeLayer.hidden = true;
+        lightboxMedia.appendChild(eyeLayer);
+      }
     }
 
     updateGalleryBlinkToggle(pose);
@@ -1262,7 +1351,7 @@ function renderGalleryPanel(manifest) {
   });
   blinkToggle.addEventListener("click", () => {
     const pose = currentLightboxPose();
-    if (!pose?.animation) return;
+    if (!pose?.animation && !pose?.layerBlink) return;
     state.blinkEnabled = !state.blinkEnabled;
     updateGalleryBlinkToggle(pose);
     if (state.blinkEnabled) startGalleryBlink(pose, true);
@@ -1769,7 +1858,7 @@ function releaseChapterTransition(transitionCurtain) {
 }
 
 async function playChapter(chapterIdentifier, transitionCurtain = null) {
-  // Permitir tanto número (chapter0, chapter1...) como nombre directo (chapter2-edu)
+  // Permitir tanto número (chapter0, chapter1...) como identificador directo.
   const chapterName =
     typeof chapterIdentifier === "number"
       ? `chapter${chapterIdentifier}`
@@ -1917,8 +2006,8 @@ async function endGame() {
   stopRewindWatcher();
   engine.hideDialog();
 
-  // Capturar la ruta ramificada elegida y si el capítulo es final (los
-  // capítulos 3 marcan "isFinal": true), antes de resetear el estado
+  // Capturar la ruta ramificada elegida y si el capítulo es final
+  // (`chapter6` en el recorrido actual), antes de resetear el estado.
   const branchChapter = engine.nextChapter;
   const isFinalChapter = engine.currentChapter?.isFinal === true;
 

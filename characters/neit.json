@@ -2,7 +2,7 @@
   "name": "Neit",
   "color": "#2ecc71",
   "poses": {
-    "neutral": "assets/images/characters/others/neit.png"
+    "neutral": "assets/images/characters/others/neit.webp"
   },
   "defaultPose": "neutral",
   "animations": {

@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/calle_espera.png",
+              "value": "assets/images/backgrounds/chapter3/calle_espera.webp",
               "cut": true
             },
             {
@@ -102,7 +102,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/calle_coche.png",
+              "value": "assets/images/backgrounds/chapter3/calle_coche.webp",
               "cut": true
             },
             {
@@ -243,7 +243,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp"
             },
             {
               "type": "stopSound",
@@ -457,7 +457,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png",
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp",
               "cut": true
             },
             {
@@ -572,7 +572,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp"
             },
             {
               "type": "showCharacter",
@@ -591,7 +591,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp"
             },
             {
               "type": "showCharacter",
@@ -610,7 +610,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp"
             },
             {
               "type": "showCharacter",
@@ -631,7 +631,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/images/cg/shared/elion_controla_brainrot.png",
+              "path": "assets/images/cg/shared/elion_controla_brainrot.webp",
               "duration": 180
             },
             {
@@ -710,7 +710,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png",
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp",
               "cut": true
             },
             {
@@ -736,7 +736,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/skyline_eechi_land.png",
+              "value": "assets/images/backgrounds/chapter3/skyline_eechi_land.webp",
               "cut": true
             },
             {
@@ -857,7 +857,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png"
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp"
             },
             {
               "type": "playSound",
@@ -997,7 +997,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png"
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp"
             },
             {
               "type": "playSound",
@@ -1074,7 +1074,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1125,7 +1125,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1149,7 +1149,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/foto_trio.png",
+              "path": "assets/images/cg/chapter3/foto_trio.webp",
               "duration": 600
             }
           ],
@@ -1263,7 +1263,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1306,7 +1306,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1345,7 +1345,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1388,7 +1388,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1428,7 +1428,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png"
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp"
             },
             {
               "type": "showCharacter",
@@ -1472,7 +1472,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/callejon_trasero.png"
+              "value": "assets/images/backgrounds/chapter3/callejon_trasero.webp"
             },
             {
               "type": "hideCharacter",
@@ -1542,7 +1542,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1592,7 +1592,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
+              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.webp",
               "cut": true
             },
             {
@@ -1818,7 +1818,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
+              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.webp",
               "cut": true
             },
             {
@@ -1847,7 +1847,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/fans_desmadrandose.png",
+              "value": "assets/images/backgrounds/chapter3/fans_desmadrandose.webp",
               "cut": true
             },
             {
@@ -1951,7 +1951,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/backstage_mesa.png"
+              "value": "assets/images/backgrounds/chapter3/backstage_mesa.webp"
             },
             {
               "type": "hideCharacter",
@@ -2012,7 +2012,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png",
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp",
               "cut": true
             },
             {
@@ -2095,7 +2095,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png",
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp",
               "cut": true
             },
             {
@@ -2190,7 +2190,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png"
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp"
             },
             {
               "type": "showCharacter",
@@ -2209,7 +2209,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png"
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp"
             },
             {
               "type": "showCharacter",
@@ -2228,7 +2228,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png"
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp"
             },
             {
               "type": "showCharacter",
@@ -2262,7 +2262,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png",
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp",
               "cut": true
             },
             {
@@ -2519,7 +2519,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.png"
+              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.webp"
             },
             {
               "type": "hideCharacter",
@@ -2962,7 +2962,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.png",
+              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.webp",
               "cut": true
             },
             {
@@ -3014,7 +3014,7 @@
           "actions": [
             {
               "type": "playVideo",
-              "path": "assets/cutscenes/chapter3/opening_tony/opening_tony.mp4"
+              "path": "assets/video/cutscenes/chapter3/opening_tony.mp4"
             }
           ],
           "character": "",
@@ -3039,7 +3039,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/fans_calmandose.png",
+              "value": "assets/images/backgrounds/chapter3/fans_calmandose.webp",
               "cut": true
             },
             {
@@ -3125,7 +3125,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/cg/chapter3/goyo_caido.png",
+              "value": "assets/images/cg/chapter3/goyo_caido.webp",
               "fadeMs": 900
             }
           ],
@@ -3176,7 +3176,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/fans_calmandose.png",
+              "value": "assets/images/backgrounds/chapter3/fans_calmandose.webp",
               "fadeMs": 600
             },
             {
@@ -3272,7 +3272,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
+              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.webp",
               "cut": true
             },
             {
@@ -3433,7 +3433,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/foto_trio.png",
+              "path": "assets/images/cg/chapter3/foto_trio.webp",
               "duration": 700
             }
           ],
@@ -3461,7 +3461,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/abrazo_trio.png",
+              "path": "assets/images/cg/chapter3/abrazo_trio.webp",
               "duration": 900
             }
           ],
@@ -3553,7 +3553,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/diapason.png",
+              "path": "assets/images/cg/chapter3/diapason.webp",
               "duration": 500,
               "size": "auto 55%",
               "position": "center"
@@ -3615,7 +3615,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/skyline_amanecer.png",
+              "value": "assets/images/backgrounds/chapter3/skyline_amanecer.webp",
               "cut": true
             },
             {
@@ -3655,7 +3655,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/tres_escenario.png",
+              "path": "assets/images/cg/chapter3/tres_escenario.webp",
               "duration": 900
             }
           ],

@@ -45,6 +45,12 @@ class VisualNovelEngine {
         this.assetUrlCache = new Map();
         this.imagePreloadCache = new Map();
         this.preloadedImages = new Map();
+        this.blinkIntermediateManifest = null;
+        this.blinkIntermediatePromise = null;
+        this.layerBlinkManifest = null;
+        this.layerBlinkPromise = null;
+        this.whiteHaloManifest = null;
+        this.whiteHaloPromise = null;
     }
 
     // Añade un objeto al inventario (sin duplicar). Persiste entre capítulos.
@@ -108,12 +114,146 @@ class VisualNovelEngine {
                 cache: 'no-store'
             });
             const character = await response.json();
+            const [intermediates, layerBlinks, whiteHaloCopies] = await Promise.all([
+                this.loadBlinkIntermediateManifest(),
+                this.loadLayerBlinkManifest(),
+                this.loadWhiteHaloManifest()
+            ]);
+            this.applyWhiteHaloCopies(characterKey, character, whiteHaloCopies);
+            this.applyBlinkIntermediateFrames(characterKey, character, intermediates);
+            this.applyLayerBlinkFrames(characterKey, character, layerBlinks);
             this.characters[characterKey] = character;
             return character;
         } catch (error) {
             console.error(`Error cargando personaje ${characterName}:`, error);
             return null;
         }
+    }
+
+    async loadBlinkIntermediateManifest() {
+        if (this.blinkIntermediateManifest) return this.blinkIntermediateManifest;
+        if (!this.blinkIntermediatePromise) {
+            this.blinkIntermediatePromise = fetch(
+                `assets/metadata/blink_eye_intermediates.json?v=${this.assetStamp}`,
+                { cache: 'no-store' }
+            ).then(response => response.ok ? response.json() : { poses: {} })
+                .catch(error => {
+                    console.warn('No se pudieron cargar los intermedios oculares:', error);
+                    return { poses: {} };
+                });
+        }
+        this.blinkIntermediateManifest = await this.blinkIntermediatePromise;
+        return this.blinkIntermediateManifest;
+    }
+
+    async loadWhiteHaloManifest() {
+        if (this.whiteHaloManifest) return this.whiteHaloManifest;
+        if (!this.whiteHaloPromise) {
+            this.whiteHaloPromise = fetch(
+                `assets/metadata/sprite_white_halo_cleaned.json?v=${this.assetStamp}`,
+                { cache: 'no-store' }
+            ).then(response => response.ok ? response.json() : { sprites: {} })
+                .catch(error => {
+                    console.warn('No se pudo cargar el índice de sprites limpios:', error);
+                    return { sprites: {} };
+                });
+        }
+        this.whiteHaloManifest = await this.whiteHaloPromise;
+        return this.whiteHaloManifest;
+    }
+
+    applyWhiteHaloCopies(characterKey, character, manifest) {
+        if (!character?.poses || !manifest?.sprites) return;
+        Object.keys(character.poses).forEach(pose => {
+            const entry = manifest.sprites[`${characterKey}.${pose}`];
+            if (!entry?.cleaned) return;
+            const current = character.poses[pose];
+            character.poses[pose] = current && typeof current === 'object'
+                ? { ...current, src: entry.cleaned }
+                : entry.cleaned;
+        });
+    }
+
+    async loadLayerBlinkManifest() {
+        if (this.layerBlinkManifest) return this.layerBlinkManifest;
+        if (!this.layerBlinkPromise) {
+            const load = path => fetch(`${path}?v=${this.assetStamp}`, { cache: 'no-store' })
+                .then(response => response.ok ? response.json() : {});
+            this.layerBlinkPromise = Promise.all([
+                load('assets/metadata/blink_eye_region_previews.json'),
+                load('assets/metadata/blink_eye_clean_offsets_manual.json'),
+                load('assets/metadata/blink_eye_pixel_edits.json')
+            ]).then(([previews, offsets, edits]) => {
+                const poses = {};
+                Object.entries(previews.poses || {}).forEach(([id, pose]) => {
+                    const half = edits.edits?.saved?.[id]?.half || pose.half;
+                    const closed = edits.edits?.saved?.[id]?.closed || pose.closed || pose.blinks?.[0];
+                    const crop = pose.crop;
+                    const canvas = pose.sourceCanvas;
+                    if (!pose.sourceBase || !half || !closed || !crop || !canvas) return;
+                    const transform = offsets.offsets?.[id] || {};
+                    poses[id] = {
+                        base: pose.sourceBase,
+                        crop,
+                        canvas,
+                        half,
+                        closed,
+                        offsets: {
+                            half: transform.half || [0, 0],
+                            closed: transform.closed || [0, 0],
+                            halfScale: transform.halfScale || [1, 1],
+                            closedScale: transform.closedScale || [1, 1]
+                        },
+                        frames: [
+                            { state: 'half', src: half, duration: 65 },
+                            { state: 'closed', src: closed, duration: 95 },
+                            { state: 'half', src: half, duration: 65 }
+                        ]
+                    };
+                });
+                return { poses };
+            }).catch(error => {
+                console.warn('No se pudieron cargar las capas oculares runtime:', error);
+                return { poses: {} };
+            });
+        }
+        this.layerBlinkManifest = await this.layerBlinkPromise;
+        return this.layerBlinkManifest;
+    }
+
+    applyLayerBlinkFrames(characterKey, character, manifest) {
+        if (!manifest?.poses || !character?.poses) return;
+        character.layerBlinks = character.layerBlinks || {};
+        Object.keys(character.poses).forEach(pose => {
+            const config = manifest.poses[`${characterKey}.${pose}`];
+            if (config) character.layerBlinks[pose] = config;
+        });
+    }
+
+    getLayerBlinkConfig(characterKey, pose) {
+        return this.layerBlinkManifest?.poses?.[`${characterKey}.${pose}`] || null;
+    }
+
+    applyBlinkIntermediateFrames(characterKey, character, manifest) {
+        const animations = character?.animations || character?.poseAnimations;
+        if (!animations || !manifest?.poses) return;
+        Object.entries(animations).forEach(([pose, config]) => {
+            const half = manifest.poses[`${characterKey}.${pose}`]?.half;
+            if (!half) return;
+            const frames = Array.isArray(config) ? config : config?.frames;
+            if (!Array.isArray(frames) || !frames.length) return;
+            const sources = frames.map(frame => this.animationFramePath(character, frame));
+            if (sources.some(source => source === half) || sources.some(source => /blink[_-]half/i.test(source || ''))) {
+                return;
+            }
+            const sequence = [
+                { src: half, duration: 65 },
+                ...frames,
+                { src: half, duration: 65 }
+            ];
+            if (Array.isArray(config)) animations[pose] = sequence;
+            else config.frames = sequence;
+        });
     }
 
     getCurrentScene() {
@@ -655,10 +795,10 @@ class VisualNovelEngine {
     playFurrielvaExploreMinigame(options = {}) {
         this.isWaitingForInput = false;
         const background = options.background ||
-            'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png';
-        const samuPortrait = 'assets/images/characters/samu/samu_thinking.png';
+            'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp';
+        const samuPortrait = 'assets/images/characters/samu/samu_thinking.webp';
         const samuFrames = [1, 2, 3, 4, 5, 7].map(n =>
-            `assets/images/characters/samu/ketchup/${n}.png`);
+            `assets/images/characters/samu/ketchup/${n}.webp`);
         const church = {
             id: 'iglesia',
             label: 'Iglesia del Rocío',
@@ -671,7 +811,7 @@ class VisualNovelEngine {
                 background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_plaza_investigacion_v1_4k.webp',
                 npc: 'TADEO TRUFA',
                 color: '#e98245',
-                portrait: 'assets/images/characters/furrielva/tadeo_trufa_v1.png',
+                portrait: 'assets/images/characters/furrielva/tadeo_trufa_v1.webp',
                 opening: [
                     { speaker: 'TADEO TRUFA', text: 'Genial... otra entrega tarde. Como vuelvan a cortarme la avenida esos camiones rojos, el jefe me descuenta el viaje.' },
                     { speaker: 'SAMU', text: 'Perdona, no quería meterme, pero ¿has dicho camiones rojos? Me he encontrado esta botella. ¿Reconoces la etiqueta de Kingdom Ketchup?' },
@@ -704,7 +844,7 @@ class VisualNovelEngine {
                 background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_zona_comercial_v1_4k.webp',
                 npc: 'LÍA LINCE',
                 color: '#c878dc',
-                portrait: 'assets/images/characters/furrielva/lia_lince_v1.png',
+                portrait: 'assets/images/characters/furrielva/lia_lince_v1.webp',
                 opening: [
                     { speaker: 'LÍA LINCE', text: 'Fantástico. Seis cajas que nadie ha pedido, un proveedor sin dirección y una promoción que no existe. ¿Dónde se supone que meto yo todo esto?' },
                     { speaker: 'SAMU', text: 'Eh... perdona. No quería escuchar, pero ¿has dicho que el proveedor no tiene dirección?' },
@@ -739,7 +879,7 @@ class VisualNovelEngine {
                 background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_callejon_tuberias_v1_4k.webp',
                 npc: 'RULO MAPACHE',
                 color: '#55b9c8',
-                portrait: 'assets/images/characters/furrielva/rulo_mapache_v1.png',
+                portrait: 'assets/images/characters/furrielva/rulo_mapache_v1.webp',
                 opening: [
                     { speaker: 'RULO MAPACHE', text: 'Presión en la línea siete, calor en la acometida... y el plano insiste en que aquí no hay ninguna nave. Claro que sí, plano. Lo que tú digas.' },
                     { speaker: 'SAMU', text: 'Perdona... ¿estás discutiendo con un mapa?' },
@@ -1176,23 +1316,23 @@ class VisualNovelEngine {
         const spawnRate = Number(options.spawnRate) || 1.35;
         const speedMult = Number(options.speedMult) || 1.25;
         const chiliChance = options.chiliChance !== undefined ? Number(options.chiliChance) : 0.72;
-        const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.png');
-        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
-        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png');
-        const playerIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.png');
+        const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.webp');
+        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
+        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp');
+        const playerIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.webp');
         const factoryBackground = this.cacheBustAsset(
-            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png'
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp'
         );
 
         this.preloadImages([
-            'assets/images/minigames/chapter2/ketchup/chili_v2.png',
-            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png',
-            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png',
-            'assets/images/minigames/chapter2/common/samu_player.png',
-            'assets/images/characters/edu/edu_picante_wide_transparent.png',
-            'assets/images/characters/samu/samu_charred_closed.png',
-            'assets/images/characters/samu/samu_charred_whiteeyes.png',
-            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png'
+            'assets/images/minigames/chapter2/ketchup/chili_v2.webp',
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp',
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp',
+            'assets/images/minigames/chapter2/common/samu_player.webp',
+            'assets/images/characters/edu/edu_picante_wide_transparent.webp',
+            'assets/images/characters/samu/samu_charred_closed.webp',
+            'assets/images/characters/samu/samu_charred_whiteeyes.webp',
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp'
         ]);
 
         return new Promise(resolve => {
@@ -1403,17 +1543,17 @@ class VisualNovelEngine {
         const showExtraInfo = options.showExtraInfo || false; // mostrar info de debug/test
         const phase1Goal = Math.min(goal - 2, options.phase1Goal || Math.ceil(goal * 0.3));
         const phase2Goal = Math.min(goal - 1, options.phase2Goal || Math.ceil(goal * 0.68));
-        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
-        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png');
-        const capIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/golden_cap.png');
-        const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.png');
+        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
+        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp');
+        const capIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/golden_cap.webp');
+        const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.webp');
         this.preloadImages([
-            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png',
-            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png',
-            'assets/images/minigames/chapter2/ketchup/golden_cap.png',
-            'assets/images/minigames/chapter2/ketchup/chili_v2.png',
-            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png',
-            'assets/images/minigames/chapter2/common/samu_player.png'
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp',
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp',
+            'assets/images/minigames/chapter2/ketchup/golden_cap.webp',
+            'assets/images/minigames/chapter2/ketchup/chili_v2.webp',
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp',
+            'assets/images/minigames/chapter2/common/samu_player.webp'
         ]);
         const musicTrack = options.music;
 
@@ -1438,8 +1578,8 @@ class VisualNovelEngine {
                     <span class="mg-lives">❤️ ${maxHits}</span>
                     ${showExtraInfo ? `<span class="mg-extra-info" style="margin-left:20px; font-size:0.8em; color:#ffb4b4">🌶️ Vel: ${(speedMult * 1.5).toFixed(2)}x</span>` : ''}
                 </div>
-                <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${this.cacheBustAsset('assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png')}')">
-                    <div class="mg-player" id="mg-player"><img src="${this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.png')}" alt="Samu" draggable="false"></div>
+                <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${this.cacheBustAsset('assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp')}')">
+                    <div class="mg-player" id="mg-player"><img src="${this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.webp')}" alt="Samu" draggable="false"></div>
                     <div class="mg-phase-banner">Reactiva la línea de embotellado</div>
                 </div>
                 <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge producto limpio y tapones; esquiva corrupción y guindillas.</div>
@@ -1749,7 +1889,7 @@ class VisualNovelEngine {
     runGatosRound(options = {}) {
         const surviveMs = (options.survive || 60) * 1000; // tiempo a aguantar
         const catCount = options.cats || 3;               // nº de gatos perseguidores
-        const catIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/gato.png');
+        const catIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/gato.webp');
         // Velocidades en CELDAS por segundo. Samu debe ir más rápido que los
         // gatos para poder escapar por las calles.
         const playerSpeed = options.playerSpeed || 5.0;
@@ -1776,7 +1916,7 @@ class VisualNovelEngine {
                 </div>
                 <div class="minigame-field" id="mg-field-gatos">
                     <div class="mg-maze" id="mg-maze"></div>
-                    <div class="mg-player" id="mg-player-gatos"><img src="${this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.png')}" alt="Samu" draggable="false"></div>
+                    <div class="mg-player" id="mg-player-gatos"><img src="${this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.webp')}" alt="Samu" draggable="false"></div>
                 </div>
                 <div class="minigame-instructions">¡Recorre las calles con ← ↑ → ↓ (o WASD) y aguanta sin que te pillen los gatos!</div>
             `;
@@ -1844,9 +1984,9 @@ class VisualNovelEngine {
                 { c: Math.floor(cols / 2), r: 1 }, { c: Math.floor(cols / 2), r: rows - 2 }
             ].map(p => snapStreet(p.c, p.r));
             const catImages = [
-                this.cacheBustAsset('assets/images/minigames/shared/choices/me-perdonas.png'),
-                this.cacheBustAsset('assets/images/minigames/shared/choices/te-perdono.png'),
-                this.cacheBustAsset('assets/images/minigames/shared/choices/no-te-perdono.png')
+                this.cacheBustAsset('assets/images/minigames/shared/choices/me-perdonas.webp'),
+                this.cacheBustAsset('assets/images/minigames/shared/choices/te-perdono.webp'),
+                this.cacheBustAsset('assets/images/minigames/shared/choices/no-te-perdono.webp')
             ];
             const cats = [];
             for (let i = 0; i < catCount; i++) {
@@ -2344,10 +2484,10 @@ class VisualNovelEngine {
         const flashMs = options.flashMs || 600;
         const gapMs = options.gapMs || 250;
         const runas = [
-            { image: 'assets/images/minigames/shared/runes/runa_samu.png', label: 'Magia de Samu' },
-            { image: 'assets/images/minigames/shared/runes/runa_edu.png', label: 'Prisa de Edu' },
-            { image: 'assets/images/minigames/shared/runes/runa_tony.png', label: 'Purificación de Seraphyna' },
-            { image: 'assets/images/minigames/shared/runes/runa_jose.png', label: 'Fuerza de José' }
+            { image: 'assets/images/minigames/shared/runes/runa_samu.webp', label: 'Magia de Samu' },
+            { image: 'assets/images/minigames/shared/runes/runa_edu.webp', label: 'Prisa de Edu' },
+            { image: 'assets/images/minigames/shared/runes/runa_tony.webp', label: 'Purificación de Seraphyna' },
+            { image: 'assets/images/minigames/shared/runes/runa_jose.webp', label: 'Fuerza de José' }
         ];
 
         this.isWaitingForInput = false;
@@ -3369,29 +3509,30 @@ class VisualNovelEngine {
         const SP = 'assets/images/minigames/chapter3/sprites/';
         const CAP = 'assets/images/minigames/chapter3/';
         const FLIGHT_FRAMES = [
-            'edu_fly_v3_0',
-            'edu_fly_v3_1',
-            'edu_fly_v3_2',
-            'edu_fly_v3_3',
-            'edu_fly_v3_4',
-            'edu_fly_v3_5',
-            'edu_fly_v3_6',
-            'edu_fly_v3_7'
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_0.webp',
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_1.webp',
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_2.webp',
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_3.webp',
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_4.webp',
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_5.webp',
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_6.webp',
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_7.webp'
         ];
         const DASH_FRAMES = [
-            'edu_fly_v3_dash_0',
-            'edu_fly_v3_dash_1'
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_dash_0.webp',
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_dash_1.webp'
         ];
         const PLAYER_FRAMES = [...FLIGHT_FRAMES, ...DASH_FRAMES];
         const asset = (path) => `url('${this.cacheBustAsset(path)}')`;
+        const playerFrameAsset = (path) => asset(path);
 
         await this.preloadImages([
-            ...PLAYER_FRAMES.map(name => SP + name + '.png'),
-            CAP + 'aire_fondo_v2.png',
-            SP + 'aire_foco_v2.png',
-            SP + 'aire_altavoz_v2.png',
-            SP + 'partitura_v2.png',
-            SP + 'aire_cable_v3.png'
+            ...PLAYER_FRAMES,
+            CAP + 'aire_fondo_v2.webp',
+            SP + 'aire_foco_v2.webp',
+            SP + 'aire_altavoz_v2.webp',
+            SP + 'partitura_v2.webp',
+            SP + 'aire_cable_v3.webp'
         ]);
 
         const goal = Math.max(1, cfg.goal || 16);
@@ -3457,8 +3598,8 @@ class VisualNovelEngine {
             const pausePanel = overlay.querySelector('.ss-pause-panel');
             const resumeBtn = overlay.querySelector('.ss-resume-btn');
 
-            backdrop.style.backgroundImage = asset(CAP + 'aire_fondo_v2.png');
-            playerEl.style.backgroundImage = asset(SP + PLAYER_FRAMES[0] + '.png');
+            backdrop.style.backgroundImage = asset(CAP + 'aire_fondo_v2.webp');
+            playerEl.style.backgroundImage = playerFrameAsset(PLAYER_FRAMES[0]);
             playerDebugEl.hidden = !cfg.debugHitboxes;
 
             const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
@@ -3898,7 +4039,7 @@ class VisualNovelEngine {
                 cableSprite.onerror = () => {
                     if (!object.taken) removeObject(object);
                 };
-                cableSprite.src = this.cacheBustAsset(SP + 'aire_cable_v3.png');
+                cableSprite.src = this.cacheBustAsset(SP + 'aire_cable_v3.webp');
                 setTimeout(() => {
                     if (!object.taken && !object.visualReady) removeObject(object);
                 }, 1600);
@@ -3913,7 +4054,7 @@ class VisualNovelEngine {
                 stage.appendChild(warning);
                 makeObject({
                     type: 'spotlight',
-                    image: SP + 'aire_foco_v2.png',
+                    image: SP + 'aire_foco_v2.webp',
                     width: 0.085,
                     height: 0.20,
                     x: 1.10,
@@ -3935,7 +4076,7 @@ class VisualNovelEngine {
                 stage.appendChild(warning);
                 const speaker = makeObject({
                     type: 'speaker',
-                    image: SP + 'aire_altavoz_v2.png',
+                    image: SP + 'aire_altavoz_v2.webp',
                     width: 0.125,
                     height: 0.19,
                     x: 1.12,
@@ -3981,7 +4122,7 @@ class VisualNovelEngine {
                         (index - (count - 1) / 2) * 0.12 * arc;
                     makeObject({
                         type: 'score',
-                        image: SP + 'partitura_v2.png',
+                        image: SP + 'partitura_v2.webp',
                         width: 0.082,
                         height: 0.125,
                         x: 1.08 + index * 0.12,
@@ -4134,7 +4275,7 @@ class VisualNovelEngine {
                 dashFrameIndex = 0;
                 frameClock = 0;
                 playerEl.style.backgroundImage =
-                    asset(SP + DASH_FRAMES[0] + '.png');
+                    playerFrameAsset(DASH_FRAMES[0]);
                 playerEl.classList.remove('dash-pop');
                 void playerEl.offsetWidth;
                 playerEl.classList.add('dash-pop');
@@ -4293,7 +4434,7 @@ class VisualNovelEngine {
                 if (wasDashing && !dashing) {
                     frameIndex = (frameIndex + 1) % FLIGHT_FRAMES.length;
                     playerEl.style.backgroundImage =
-                        asset(SP + FLIGHT_FRAMES[frameIndex] + '.png');
+                        playerFrameAsset(FLIGHT_FRAMES[frameIndex]);
                     frameClock = 0;
                 }
                 wasDashing = dashing;
@@ -4306,11 +4447,11 @@ class VisualNovelEngine {
                         dashFrameIndex =
                             (dashFrameIndex + 1) % DASH_FRAMES.length;
                         playerEl.style.backgroundImage =
-                            asset(SP + DASH_FRAMES[dashFrameIndex] + '.png');
+                            playerFrameAsset(DASH_FRAMES[dashFrameIndex]);
                     } else {
                         frameIndex = (frameIndex + 1) % FLIGHT_FRAMES.length;
                         playerEl.style.backgroundImage =
-                            asset(SP + FLIGHT_FRAMES[frameIndex] + '.png');
+                            playerFrameAsset(FLIGHT_FRAMES[frameIndex]);
                     }
                 }
 
@@ -4418,7 +4559,7 @@ class VisualNovelEngine {
         this.isWaitingForInput = false;
         const SP = 'assets/images/minigames/chapter3/sprites/';
         const CAP = 'assets/images/minigames/chapter3/';
-        const url = (n, base = SP) => `url('${this.cacheBustAsset(base + n + '.png')}')`;
+        const url = (n, base = SP) => `url('${this.cacheBustAsset(base + n + '.webp')}')`;
         const spriteNames = (entry) => {
             if (typeof entry === 'string') return [entry];
             if (entry && entry.frames && entry.frames.length) return entry.frames;
@@ -4432,16 +4573,16 @@ class VisualNovelEngine {
         // que la imagen y se ve un hueco en blanco. Los cables y focos antiguos
         // pertenecen solo al modo fly: chase no debe descargar esos PNG de 2 MB.
         await this.preloadImages([
-            ...(cfg.playerFrames || []).map(n => SP + n + '.png'),
-            ...(cfg.obstacles || []).flatMap(spriteNames).map(n => SP + n + '.png'),
-            ...(cfg.enemies || []).flat().map(n => SP + n + '.png'),
-            ...(cfg.collectible || []).map(n => SP + n + '.png'),
+            ...(cfg.playerFrames || []).map(n => SP + n + '.webp'),
+            ...(cfg.obstacles || []).flatMap(spriteNames).map(n => SP + n + '.webp'),
+            ...(cfg.enemies || []).flat().map(n => SP + n + '.webp'),
+            ...(cfg.collectible || []).map(n => SP + n + '.webp'),
             ...(isFly ? (cfg.fallerFrames || ['aire_foco', 'aire_foco_on']) : [])
-                .map(n => SP + n + '.png'),
+                .map(n => SP + n + '.webp'),
             ...(isFly ? ['aire_cable_cap', 'aire_cable_body', 'aire_cable_tip'] : [])
-                .map(n => SP + n + '.png'),
+                .map(n => SP + n + '.webp'),
             ...[cfg.bgFar, cfg.bgNear, cfg.backdrop, cfg.moon]
-                .filter(Boolean).map(n => CAP + n + '.png')
+                .filter(Boolean).map(n => CAP + n + '.webp')
         ]);
         const speed = cfg.speed || 6;
         const maxHits = cfg.maxHits || 3;
@@ -5549,6 +5690,7 @@ class VisualNovelEngine {
         charElement.style.backgroundImage = nextImage;
         charElement.dataset.poseSrc = nextPoseSrc;
         delete charElement.dataset.frameSrc;
+        this.hideCharacterEyeLayer(charElement);
     }
 
     applyCharacterAnimationFrame(charElement, framePath) {
@@ -5556,6 +5698,49 @@ class VisualNovelEngine {
         const src = this.cacheBustAsset(framePath);
         charElement.style.backgroundImage = `url('${src}')`;
         charElement.dataset.frameSrc = src;
+    }
+
+    hideCharacterEyeLayer(charElement) {
+        const layer = charElement?.querySelector(':scope > .character-eye-layer');
+        if (layer) {
+            layer.hidden = true;
+            layer.removeAttribute('src');
+        }
+        if (charElement) delete charElement.dataset.eyeLayerState;
+    }
+
+    applyCharacterEyeLayerFrame(charElement, config, frame) {
+        if (!charElement || !config || !frame?.src) return;
+        let layer = charElement.querySelector(':scope > .character-eye-layer');
+        if (!layer) {
+            layer = document.createElement('img');
+            layer.className = 'character-eye-layer';
+            layer.alt = '';
+            layer.setAttribute('aria-hidden', 'true');
+            layer.draggable = false;
+            charElement.appendChild(layer);
+        }
+        const state = frame.state === 'closed' ? 'closed' : 'half';
+        const offset = config.offsets?.[state] || [0, 0];
+        const stretch = config.offsets?.[`${state}Scale`] || [1, 1];
+        const crop = config.crop;
+        const canvas = config.canvas;
+        const width = charElement.clientWidth;
+        const height = charElement.clientHeight;
+        const contain = Math.min(width / canvas.width, height / canvas.height) || 1;
+        const imageLeft = (width - canvas.width * contain) / 2;
+        const imageTop = height - canvas.height * contain;
+        const targetWidth = crop.width * stretch[0];
+        const targetHeight = crop.height * stretch[1];
+        const targetLeft = crop.x + crop.width / 2 + offset[0] - targetWidth / 2;
+        const targetTop = crop.y + crop.height / 2 + offset[1] - targetHeight / 2;
+        layer.style.left = `${imageLeft + targetLeft * contain}px`;
+        layer.style.top = `${imageTop + targetTop * contain}px`;
+        layer.style.width = `${targetWidth * contain}px`;
+        layer.style.height = `${targetHeight * contain}px`;
+        layer.src = this.cacheBustAsset(frame.src);
+        layer.hidden = false;
+        charElement.dataset.eyeLayerState = state;
     }
 
     animationFramePath(character, frame) {
@@ -5578,23 +5763,25 @@ class VisualNovelEngine {
         return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
     }
 
-    // Reproduce fotogramas pertenecientes a UNA misma pose. La pose base queda
-    // visible durante la espera y cada frame reemplaza por completo el fondo;
-    // no hay crossfade, pseudo-elementos ni capas gemelas.
+    // Reproduce fotogramas pertenecientes a UNA misma pose. Cuando existen
+    // recortes oculares, la base permanece inmóvil y sólo cambia el parche de
+    // ojos (medio/cerrado/medio); el resto conserva el fallback de sprite completo.
     startCharacterFrameAnimation(characterKey, position, pose) {
         this.stopCharacterFrameAnimation(position, false);
         const character = this.characters[characterKey];
         const config = character?.animations?.[pose] || character?.poseAnimations?.[pose];
+        const layerConfig = character?.layerBlinks?.[pose];
         const reducedMotion = (window.Juice && typeof window.Juice.isReduced === 'function'
             && window.Juice.isReduced()) || (window.matchMedia &&
             window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-        if (!config || reducedMotion) return;
+        if ((!config && !layerConfig) || reducedMotion) return;
 
-        const sourceFrames = Array.isArray(config) ? config : config.frames;
+        const sourceFrames = layerConfig?.frames || (Array.isArray(config) ? config : config.frames);
         if (!Array.isArray(sourceFrames) || !sourceFrames.length) return;
         const frames = sourceFrames.map(frame => ({
             src: this.animationFramePath(character, frame),
-            duration: frame && typeof frame === 'object' ? Number(frame.duration) : NaN
+            duration: frame && typeof frame === 'object' ? Number(frame.duration) : NaN,
+            state: frame && typeof frame === 'object' ? frame.state : null
         })).filter(frame => frame.src);
         if (!frames.length) return;
 
@@ -5605,6 +5792,7 @@ class VisualNovelEngine {
             pose,
             basePoseImage,
             frames,
+            layerConfig,
             timer: null,
             cancelled: false
         };
@@ -5624,8 +5812,8 @@ class VisualNovelEngine {
                 return;
             }
             const wait = this.animationDelay(
-                config.delayRange || config.idleRange || config.loopDelay || [1800, 4200],
-                Number(config.delayMs) || 2400
+                config?.delayRange || config?.idleRange || config?.loopDelay || [1800, 4200],
+                Number(config?.delayMs) || 2400
             );
             entry.timer = setTimeout(playFrame, wait);
         };
@@ -5638,10 +5826,11 @@ class VisualNovelEngine {
             }
             const element = document.getElementById(`character-${position}`);
             const frame = frames[index];
-            this.applyCharacterAnimationFrame(element, frame.src);
+            if (layerConfig) this.applyCharacterEyeLayerFrame(element, layerConfig, frame);
+            else this.applyCharacterAnimationFrame(element, frame.src);
             const duration = Number.isFinite(frame.duration) && frame.duration > 0
                 ? frame.duration
-                : Math.max(40, Number(config.frameMs) || 85);
+                : Math.max(40, Number(config?.frameMs) || 85);
             index += 1;
             if (index < frames.length) {
                 entry.timer = setTimeout(playFrame, duration);
@@ -5650,10 +5839,11 @@ class VisualNovelEngine {
 
             entry.timer = setTimeout(() => {
                 if (!stillOwnsSlot()) return;
-                this.applyCharacterAnimationFrame(element, basePoseImage);
+                if (layerConfig) this.hideCharacterEyeLayer(element);
+                else this.applyCharacterAnimationFrame(element, basePoseImage);
                 delete element.dataset.frameSrc;
                 index = 0;
-                if (config.loop === false) {
+                if (config?.loop === false) {
                     this._characterFrameAnimations.delete(position);
                 } else {
                     scheduleBurst();
@@ -5675,8 +5865,10 @@ class VisualNovelEngine {
         this._characterFrameAnimations.delete(position);
         const element = document.getElementById(`character-${position}`);
         if (restoreBase && element && element.classList.contains('active') && entry.basePoseImage) {
-            this.applyCharacterAnimationFrame(element, entry.basePoseImage);
+            if (entry.layerConfig) this.hideCharacterEyeLayer(element);
+            else this.applyCharacterAnimationFrame(element, entry.basePoseImage);
         }
+        if (entry.layerConfig && element) this.hideCharacterEyeLayer(element);
         if (element) delete element.dataset.frameSrc;
     }
 
@@ -6053,6 +6245,7 @@ class VisualNovelEngine {
         delete charElement.dataset.frameSrc;
         delete charElement.dataset.poseTransition;
         charElement.querySelectorAll(':scope > .character-pose-ghost').forEach(ghost => ghost.remove());
+        charElement.querySelectorAll(':scope > .character-eye-layer').forEach(layer => layer.remove());
 
         const videoContainer = charElement.querySelector('.character-video-container');
         if (videoContainer) {

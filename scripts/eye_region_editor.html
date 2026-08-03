@@ -91,7 +91,7 @@
     .preview-export { margin: -2px 0 14px; padding: 10px; border: 1px solid rgba(79,208,255,.22); border-radius: 10px; background: rgba(79,208,255,.045); }
     .preview-export p { margin: 0 0 8px; color: var(--muted); font-size: 9px; line-height: 1.4; }
     .preview-export p strong { color: var(--cyan); }
-    .preview-links { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .preview-links { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
     .preview-links a { padding: 7px 5px; border: 1px solid var(--line); border-radius: 7px; color: var(--text); text-align: center; text-decoration: none; font-size: 9px; font-weight: 800; }
     .preview-links a:hover { border-color: var(--cyan); color: var(--cyan); }
     .preview-links a.disabled { pointer-events: none; opacity: .35; }
@@ -146,6 +146,7 @@
         <div id="pose-title" class="pose-title"></div>
         <div class="mode-group" role="group" aria-label="Vista del sprite">
           <button class="mode-btn active" data-mode="base">Original</button>
+          <button class="mode-btn" data-mode="half">Intermedio</button>
           <button class="mode-btn" data-mode="blink">Parpadeo</button>
           <button class="mode-btn" data-mode="compare">Comparar</button>
           <button class="mode-btn" data-mode="mask">Máscara</button>
@@ -161,11 +162,13 @@
       <h2>Comprobación de recorte</h2>
       <p>Usa una elipse por ojo. Si roza pelo, cejas o accesorios, protégelos con una elipse roja y suaviza el borde.</p>
       <div class="crop-card"><header>Ojos originales</header><canvas id="base-crop" width="248" height="112"></canvas></div>
+      <div class="crop-card"><header>Ojos semicerrados</header><canvas id="half-crop" width="248" height="112"></canvas></div>
       <div class="crop-card"><header>Ojos del parpadeo</header><canvas id="blink-crop" width="248" height="112"></canvas></div>
       <div class="preview-export">
-        <p>Al guardar, ambos recortes se exportan con el mismo lienzo: <strong id="preview-size">pendiente</strong>.</p>
+        <p>Al guardar, los tres recortes se exportan con el mismo lienzo: <strong id="preview-size">pendiente</strong>.</p>
         <div class="preview-links">
           <a id="download-original" class="disabled" href="#" download>↓ Ojos originales</a>
+          <a id="download-half" class="disabled" href="#" download>↓ Intermedio</a>
           <a id="download-blink" class="disabled" href="#" download>↓ Parpadeo actual</a>
         </div>
       </div>
@@ -207,10 +210,11 @@
     const saveState = document.getElementById('save-state');
     const frameSelect = document.getElementById('frame-select');
     const zoneTabs = document.getElementById('zone-tabs');
-    const crops = [document.getElementById('base-crop'), document.getElementById('blink-crop')];
+    const crops = [document.getElementById('base-crop'), document.getElementById('half-crop'), document.getElementById('blink-crop')];
     const previewSize = document.getElementById('preview-size');
     const previewDownloads = {
       original: document.getElementById('download-original'),
+      half: document.getElementById('download-half'),
       blink: document.getElementById('download-blink')
     };
     const coordinateInputs = {
@@ -219,7 +223,7 @@
       rotation: document.getElementById('coord-rotation'), feather: document.getElementById('coord-feather')
     };
     let jobs = [], index = 0, selectedZone = 0, mode = 'base';
-    let images = { base: null, blink: null }, imageRect = null, drag = null, loadingToken = 0;
+    let images = { base: null, half: null, blink: null }, imageRect = null, drag = null, loadingToken = 0;
 
     const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
     const current = () => jobs[index];
@@ -265,7 +269,7 @@
     function updatePreviewExports() {
       const preview=current()?.preview,frameIndex=Number(frameSelect.value)||0;
       previewSize.textContent=preview?`${preview.width} × ${preview.height} px`:'pendiente de guardar';
-      const paths={original:preview?.original,blink:preview?.blinks?.[frameIndex]};
+      const paths={original:preview?.original,half:preview?.half,blink:preview?.blinks?.[frameIndex]};
       Object.entries(previewDownloads).forEach(([kind,link])=>{
         const path=paths[kind];link.classList.toggle('disabled',!path);link.href=path?`/${path}`:'#';
       });
@@ -276,8 +280,8 @@
       const job=current(), token=++loadingToken; setStatus('Cargando sprites…'); frameSelect.replaceChildren();
       job.frameSrcs.forEach((src,frameIndex)=>{const option=document.createElement('option');option.value=String(frameIndex);option.textContent=`Frame ${frameIndex+1} · ${src.split('/').pop()}`;frameSelect.appendChild(option);});
       try {
-        const [base,blink]=await Promise.all([loadImage(job.baseSrc),loadImage(job.frameSrcs[0])]); if(token!==loadingToken)return;
-        images={base,blink}; document.getElementById('pose-title').innerHTML=`${job.characterName} <span>· ${job.pose} · ${job.width}×${job.height}</span>`;
+        const [base,half,blink]=await Promise.all([loadImage(job.baseSrc),loadImage(job.halfSrc),loadImage(job.frameSrcs[0])]); if(token!==loadingToken)return;
+        images={base,half,blink}; document.getElementById('pose-title').innerHTML=`${job.characterName} <span>· ${job.pose} · ${job.width}×${job.height}</span>`;
         setStatus(job.regions?.length?`${job.regions.length} zonas guardadas`:'Pendiente de marcar',job.regions?.length?'ok':'');
         renderList(); renderZoneTabs(); updateCoordinates(); draw(); updatePreviewExports();
       } catch(error){setStatus('No se pudo cargar el sprite','error');}
@@ -299,7 +303,7 @@
       if(!active)return;const h=handles(shape);ctx.strokeStyle=protectedZone?'rgba(255,91,118,.7)':'rgba(255,209,102,.65)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(h.y2.x,h.y2.y);ctx.lineTo(h.rotate.x,h.rotate.y);ctx.stroke();
       for(const [name,p] of Object.entries(h)){ctx.beginPath();ctx.arc(p.x,p.y,name==='rotate'?6:5,0,Math.PI*2);ctx.fillStyle=name==='rotate'?'#ff4fa3':protectedZone?'#ff5b76':'#ffd166';ctx.fill();ctx.strokeStyle='#15102c';ctx.stroke();}
     }
-    function draw(){const bounds=stage.getBoundingClientRect(),width=bounds.width,height=bounds.height;ctx.clearRect(0,0,width,height);checker(ctx,width,height,24);if(!images.base)return;const scale=Math.min((width-44)/images.base.width,(height-44)/images.base.height),drawWidth=images.base.width*scale,drawHeight=images.base.height*scale;imageRect={x:(width-drawWidth)/2,y:(height-drawHeight)/2,w:drawWidth,h:drawHeight};ctx.globalAlpha=1;if(mode==='blink')ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);else{ctx.globalAlpha=mode==='mask'?.28:1;ctx.drawImage(images.base,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;if(mode==='compare'){ctx.globalAlpha=.5;ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;}}zones().forEach(drawEllipse);drawCrops();}
+    function draw(){const bounds=stage.getBoundingClientRect(),width=bounds.width,height=bounds.height;ctx.clearRect(0,0,width,height);checker(ctx,width,height,24);if(!images.base)return;const scale=Math.min((width-44)/images.base.width,(height-44)/images.base.height),drawWidth=images.base.width*scale,drawHeight=images.base.height*scale;imageRect={x:(width-drawWidth)/2,y:(height-drawHeight)/2,w:drawWidth,h:drawHeight};ctx.globalAlpha=1;if(mode==='half')ctx.drawImage(images.half,imageRect.x,imageRect.y,imageRect.w,imageRect.h);else if(mode==='blink')ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);else{ctx.globalAlpha=mode==='mask'?.28:1;ctx.drawImage(images.base,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;if(mode==='compare'){ctx.globalAlpha=.5;ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;}}zones().forEach(drawEllipse);drawCrops();}
     function pointerScreen(event){const rect=stage.getBoundingClientRect();return{x:event.clientX-rect.left,y:event.clientY-rect.top};}
     function pointerNorm(event){const p=pointerScreen(event);return{x:clamp((p.x-imageRect.x)/imageRect.w),y:clamp((p.y-imageRect.y)/imageRect.h)};}
     function localPoint(shape,point){const s=screenShape(shape),dx=point.x-s.cx,dy=point.y-s.cy,c=Math.cos(-s.angle),n=Math.sin(-s.angle);return{x:(dx*c-dy*n)/Math.max(1,s.rx),y:(dx*n+dy*c)/Math.max(1,s.ry)};}
@@ -319,7 +323,7 @@
       layerContext.save();layerContext.beginPath();zones().filter(shape=>shape.mode!=='exclude').forEach(shape=>ellipsePath(layerContext,shape));layerContext.clip();layerContext.drawImage(image,sx,sy,sw,sh,dx,dy,dw,dh);layerContext.restore();
       layerContext.globalCompositeOperation='destination-out';zones().filter(shape=>shape.mode==='exclude').forEach(shape=>{layerContext.beginPath();ellipsePath(layerContext,shape);layerContext.fill();});layerContext.globalCompositeOperation='source-over';context.drawImage(layer,0,0);
     }
-    function drawCrops(){drawCrop(crops[0],images.base);drawCrop(crops[1],images.blink);}
+    function drawCrops(){drawCrop(crops[0],images.base);drawCrop(crops[1],images.half);drawCrop(crops[2],images.blink);}
     async function saveRegions(goNext){normalizeZones();if(!zones().some(shape=>shape.mode!=='exclude')){setStatus('Añade al menos una zona ocular','error');return false;}setStatus('Guardando regiones y previews…');try{const response=await fetch('/api/region',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:current().id,regions:zones()})});const result=await response.json();if(!response.ok)throw new Error(result.error||'Error');current().regions=result.regions;current().preview=result.preview;updatePreviewExports();setStatus(`${zones().length} zonas · previews ${result.preview.width}×${result.preview.height} guardadas`,'ok');updateProgress(result.saved);renderList();renderZoneTabs();updateCoordinates();if(goNext)selectJob(index+1);return true;}catch(error){setStatus(error.message,'error');return false;}}
     async function clearRegions(){const job=current();job.regions=[];job.preview=null;selectedZone=0;renderZoneTabs();updateCoordinates();draw();updatePreviewExports();try{const response=await fetch('/api/region',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:job.id,regions:null})});const result=await response.json();updateProgress(result.saved);renderList();setStatus('Zonas eliminadas');}catch(error){setStatus('No se pudo eliminar','error');}}
     function beginAddZone(zoneMode='include'){const point={cx:.5,cy:.32};const radiusPx=Math.max(12,Math.min(images.base.width,images.base.height)*.035);current().regions ||= [];current().regions.push({...point,rx:radiusPx/images.base.width,ry:radiusPx/images.base.height,rotation:0,mode:zoneMode,feather:zoneMode==='exclude'?4:6});selectedZone=zones().length-1;renderZoneTabs();updateCoordinates();draw();setStatus(zoneMode==='exclude'?'Protección roja añadida: colócala sobre el pelo, ceja o accesorio':'Zona ocular añadida: muévela sobre el ojo');}
@@ -327,7 +331,7 @@
     document.getElementById('build-preview').addEventListener('click',async()=>{setStatus('Generando capas elípticas…');try{const response=await fetch('/api/build-preview',{method:'POST'});const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo generar');setStatus(`${result.poses} poses regeneradas`,'ok');window.location.href='/preview';}catch(error){setStatus(error.message,'error');}});
     document.getElementById('search').addEventListener('input',renderList);document.getElementById('previous').addEventListener('click',()=>selectJob(index-1));document.getElementById('save-next').addEventListener('click',()=>saveRegions(true));document.getElementById('apply-coords').addEventListener('click',applyCoordinates);document.getElementById('clear-region').addEventListener('click',clearRegions);document.getElementById('center-region').addEventListener('click',draw);document.getElementById('add-zone').addEventListener('click',()=>beginAddZone('include'));document.getElementById('protect-zone').addEventListener('click',()=>beginAddZone('exclude'));document.getElementById('duplicate-zone').addEventListener('click',()=>{if(!selected())return;const copy={...selected(),cx:clamp(selected().cx+.025)};current().regions.push(copy);selectedZone=zones().length-1;renderZoneTabs();updateCoordinates();draw();saveRegions(false);});document.getElementById('delete-zone').addEventListener('click',()=>{if(!selected())return;current().regions.splice(selectedZone,1);selectedZone=Math.max(0,selectedZone-1);renderZoneTabs();updateCoordinates();draw();if(zones().length)saveRegions(false);else clearRegions();});document.getElementById('copy-previous').addEventListener('click',()=>{for(let i=index-1;i>=0;i--){if(jobs[i].character===current().character&&jobs[i].regions?.length){current().regions=cloneZones(jobs[i].regions);selectedZone=0;renderZoneTabs();updateCoordinates();draw();saveRegions(false);return;}}setStatus('No hay zonas anteriores de este personaje','error');});
     frameSelect.addEventListener('change',changeFrame);
-    window.addEventListener('keydown',event=>{if(/INPUT|SELECT/.test(document.activeElement.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();selectJob(index-1);}if(event.key==='ArrowRight'){event.preventDefault();selectJob(index+1);}if(event.key===' '){event.preventDefault();const modes=['base','blink','compare','mask'];mode=modes[(modes.indexOf(mode)+1)%modes.length];document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));draw();}if(event.key==='Enter'){event.preventDefault();saveRegions(true);}if(event.key==='Delete'&&selected()){event.preventDefault();document.getElementById('delete-zone').click();}});
+    window.addEventListener('keydown',event=>{if(/INPUT|SELECT/.test(document.activeElement.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();selectJob(index-1);}if(event.key==='ArrowRight'){event.preventDefault();selectJob(index+1);}if(event.key===' '){event.preventDefault();const modes=['base','half','blink','compare','mask'];mode=modes[(modes.indexOf(mode)+1)%modes.length];document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));draw();}if(event.key==='Enter'){event.preventDefault();saveRegions(true);}if(event.key==='Delete'&&selected()){event.preventDefault();document.getElementById('delete-zone').click();}});
     new ResizeObserver(resizeCanvas).observe(stage.parentElement);
     fetch('/api/jobs',{cache:'no-store'}).then(response=>response.json()).then(data=>{jobs=data.jobs;updateProgress(data.saved);renderList();selectJob(0);}).catch(()=>setStatus('No se pudo cargar el inventario','error'));
   </script>

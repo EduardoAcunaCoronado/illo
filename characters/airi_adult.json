@@ -2,7 +2,7 @@
   "name": "Airi adulta",
   "color": "#9fdcff",
   "poses": {
-    "neutral": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.png"
+    "neutral": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.webp"
   },
   "animations": {
     "neutral": [{ "src": "assets/images/characters/airi_adult/animations/blinks/airi_adult_neutral_blink_closed.webp", "duration": 95 }]

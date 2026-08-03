@@ -20,7 +20,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario.png"
+              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario.webp"
             },
             {
               "type": "stopSound",
@@ -197,7 +197,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.png"
+              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.webp"
             }
           ],
           "character": "3C",
@@ -498,7 +498,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario_grieta.png"
+              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario_grieta.webp"
             },
             {
               "type": "hideCharacter",
@@ -571,7 +571,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_sala_interio_santuario_roto.png"
+              "value": "assets/images/backgrounds/chapter5/airi_sala_interio_santuario_roto.webp"
             }
           ],
           "character": "3C",
@@ -581,7 +581,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario_vacio.png"
+              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario_vacio.webp"
             },
             {
               "type": "showCharacter",
@@ -840,7 +840,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.png"
+              "value": "assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.webp"
             }
           ],
           "character": "3C",
@@ -1021,7 +1021,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme.png"
+              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme.webp"
             },
             {
               "type": "hideCharacter",
@@ -1118,7 +1118,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme_paloma.png"
+              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme_paloma.webp"
             },
             {
               "type": "hideCharacter",
@@ -1174,7 +1174,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/plaza_circular.png"
+              "value": "assets/images/backgrounds/shared/plaza_circular.webp"
             },
             {
               "type": "hideCharacter",
@@ -1346,7 +1346,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "waitForClick"
@@ -1497,7 +1497,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "stopSound",
@@ -1656,7 +1656,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_ataque_tung.PNG"
+              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_ataque_tung.webp"
             },
             {
               "type": "hideCharacter",
@@ -1735,7 +1735,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "stopSound",
@@ -1835,7 +1835,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             }
           ]
         },
@@ -2172,7 +2172,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             }
           ]
         },
@@ -2367,7 +2367,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "showCharacter",
@@ -2384,7 +2384,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "hideCharacter",
@@ -2594,7 +2594,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.png"
+              "value": "assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.webp"
             }
           ]
         },
@@ -2621,7 +2621,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "showCharacter",
@@ -2797,7 +2797,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.png"
+              "value": "assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.webp"
             }
           ]
         },
@@ -2823,7 +2823,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.png"
+              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.webp"
             }
           ]
         },
@@ -2943,7 +2943,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.png"
+              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.webp"
             }
           ]
         },
@@ -2967,7 +2967,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/shared/elion_controla_brainrot.png",
+              "path": "assets/images/cg/shared/elion_controla_brainrot.webp",
               "duration": 500
             }
           ]
@@ -3054,7 +3054,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/diapason.png",
+              "path": "assets/images/cg/chapter3/diapason.webp",
               "duration": 350,
               "size": "auto 55%"
             },

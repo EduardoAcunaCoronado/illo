@@ -168,7 +168,7 @@ def main() -> int:
     parser.add_argument(
         "--reference",
         type=Path,
-        default=Path("assets/video/menu/menu_loop_old.mp4"),
+        default=Path("workbench/sources/video/menu/menu_loop_old.mp4"),
     )
     parser.add_argument(
         "--output",

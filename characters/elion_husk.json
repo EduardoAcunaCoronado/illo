@@ -8,10 +8,10 @@
   "color": "#d74b57",
   "defaultPose": "neutral",
   "poses": {
-    "neutral": "assets/images/characters/elion_husk/elion_husk_neutral.png",
-    "smirk": "assets/images/characters/elion_husk/elion_husk_smirk.png",
-    "angry": "assets/images/characters/elion_husk/elion_husk_angry.png",
-    "shadow": "assets/images/characters/elion_husk/elion_husk_shadow.png"
+    "neutral": "assets/images/characters/elion_husk/elion_husk_neutral.webp",
+    "smirk": "assets/images/characters/elion_husk/elion_husk_smirk.webp",
+    "angry": "assets/images/characters/elion_husk/elion_husk_angry.webp",
+    "shadow": "assets/images/characters/elion_husk/elion_husk_shadow.webp"
   },
   "animations": {
     "neutral": {

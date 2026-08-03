@@ -9,14 +9,14 @@
   ],
   "color": "#f08a45",
   "poses": {
-    "security": "assets/images/characters/ketchling/ketchling_security.png",
-    "cook": "assets/images/characters/ketchling/ketchling_cook.png",
-    "mechanic": "assets/images/characters/ketchling/ketchling_mechanic.png",
-    "bottler": "assets/images/characters/ketchling/ketchling_bottler.png",
-    "neutral": "assets/images/characters/ketchling/ketchling_security.png",
-    "happy": "assets/images/characters/ketchling/ketchling_cook.png",
-    "worried": "assets/images/characters/ketchling/ketchling_mechanic.png",
-    "determined": "assets/images/characters/ketchling/ketchling_bottler.png"
+    "security": "assets/images/characters/ketchling/ketchling_security.webp",
+    "cook": "assets/images/characters/ketchling/ketchling_cook.webp",
+    "mechanic": "assets/images/characters/ketchling/ketchling_mechanic.webp",
+    "bottler": "assets/images/characters/ketchling/ketchling_bottler.webp",
+    "neutral": "assets/images/characters/ketchling/ketchling_security.webp",
+    "happy": "assets/images/characters/ketchling/ketchling_cook.webp",
+    "worried": "assets/images/characters/ketchling/ketchling_mechanic.webp",
+    "determined": "assets/images/characters/ketchling/ketchling_bottler.webp"
   },
   "defaultPose": "security",
   "animations": {

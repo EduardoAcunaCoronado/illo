@@ -100,6 +100,24 @@ Formato recomendado:
   - El nivel 7 requiere más precisión.
 ```
 
+## 📚 Documentación
+
+Toda PR debe evaluar explícitamente el impacto documental; no basta con omitir
+los manuales cuando no se han tocado. La actualización debe viajar en la misma
+PR que el cambio funcional.
+
+- **Manual de usuario** en `DOCUMENTACION.md`: actualizar si cambia algo que el
+  jugador ve, controla o necesita saber (inicio, menús, reglas, guardado,
+  accesibilidad, contenido o solución de problemas).
+- **Manual de desarrollo** en `DOCUMENTACION.md`: actualizar si cambian
+  arquitectura, JSON/API, rutas, assets, herramientas, comandos, validación,
+  build, canon o procedimiento de trabajo.
+- `LEER_PRIMERO.md`: actualizar si cambia la forma de ejecutar, entrar o
+  localizar una función principal.
+
+Si un punto no aplica, la PR debe marcarlo y explicar brevemente por qué. La
+regla normativa completa está en `AGENTS.md`.
+
 ## 🚀 Publicar PR
 
 Antes de publicar, comprobar:
@@ -130,7 +148,7 @@ https://github.com/OWNER/REPO/pull/NUMERO
 
 ## Plantilla Final
 
-```md
+````md
 ## 🎯 Objetivos
 
 - 
@@ -148,10 +166,16 @@ Resumen:
 
 - 
 
+## 📚 Documentación
+
+- [ ] Manual de usuario: actualizado / no aplica — motivo:
+- [ ] Manual de desarrollo: actualizado / no aplica — motivo:
+- [ ] `LEER_PRIMERO.md`: actualizado / no aplica — motivo:
+
 ## 🚀 Publicar PR
 
 ```bash
 git push -u origin HEAD
 gh pr create --base master --head "$(git branch --show-current)" --title "TITULO_DE_LA_PR" --body-file /tmp/pr-body.md
 ```
-```
+````

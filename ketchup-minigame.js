@@ -37,11 +37,11 @@
       const enemyBulletSpeed = lerp(1.18, 0.82, powerRatio);
       const enemyAttackDelay = lerp(0.82, 1.42, powerRatio);
       const difficulty = powerRatio >= 0.72 ? 'SUAVE' : powerRatio >= 0.38 ? 'NORMAL' : 'INTENSA';
-      const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
-      const chiliIcon = cacheBust('assets/images/minigames/chapter2/ketchup/chili_v2.png');
-      const zipIcon = cacheBust('assets/images/characters/zip/ketchup/zip_1.png');
-      const zipAngryIcon = cacheBust('assets/images/characters/others/zip_angry.png');
-      const zipPhaseFrame = (index) => cacheBust(`assets/images/characters/zip/ketchup/zip_${index}.png`);
+      const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
+      const chiliIcon = cacheBust('assets/images/minigames/chapter2/ketchup/chili_v2.webp');
+      const zipIcon = cacheBust('assets/images/characters/zip/ketchup/zip_1.webp');
+      const zipAngryIcon = cacheBust('assets/images/characters/others/zip_angry.webp');
+      const zipPhaseFrame = (index) => cacheBust(`assets/images/characters/zip/ketchup/zip_${index}.webp`);
       const zipPhaseFrames = [
         zipPhaseFrame(1),
         zipPhaseFrame(2),
@@ -54,7 +54,7 @@
         zipPhaseFrame(5),
         zipPhaseFrame(1),
       ];
-      const zipFloatingFrame = (index) => cacheBust(`assets/images/characters/zip/ketchup/zip_flotando_${index}.png`);
+      const zipFloatingFrame = (index) => cacheBust(`assets/images/characters/zip/ketchup/zip_flotando_${index}.webp`);
       const zipFloatingFrames = [
         zipFloatingFrame(1),
         zipFloatingFrame(2),
@@ -62,7 +62,7 @@
         zipFloatingFrame(2),
         zipFloatingFrame(1),
       ];
-      const playerFrame = (index) => cacheBust(`assets/images/characters/samu/ketchup/${index}.png`);
+      const playerFrame = (index) => cacheBust(`assets/images/characters/samu/ketchup/${index}.webp`);
       const playerFrames = {
         idle: [playerFrame(1), playerFrame(3)],
         right: [playerFrame(1), playerFrame(2), playerFrame(3), playerFrame(4)],

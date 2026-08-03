@@ -1,147 +1,745 @@
-# 🎮 Visual Novel Engine - Documentación Completa
+# Project AI.RI: Transfurmados — Manuales canónicos
 
-Un motor de visual novel moderno basado en HTML5, CSS y JavaScript que permite crear historias interactivas mediante archivos JSON simples.
+Este documento es la fuente de verdad del proyecto y contiene dos manuales:
+uno para quien juega y otro para quien desarrolla. `LEER_PRIMERO.md` es sólo
+la portada y el acceso rápido. Las plantillas de `.github/` son excepciones
+operativas, no documentación paralela.
+
+> **Estado verificado: 2026-08-03.** La validación actual reconoce 7 capítulos,
+> 63 escenas, 908 líneas, 26 fichas de personaje y 1.477 referencias de assets.
+> La galería generada contiene 105 entradas, 155 poses y 130 poses con
+> parpadeo. Estas cifras son una fotografía
+> fechada; `npm run validate:content` es la fuente actual.
+
+## Navegación
+
+- [Manual de usuario](#manual-de-usuario)
+- [Manual de desarrollo](#manual-de-desarrollo)
+- [Mapa de cambios](#mapa-quiero-cambiar-x)
+- [Acciones narrativas](#resumen-de-acciones-narrativas)
+- [Minijuegos](#minijuegos-y-batallas)
+- [Assets y originales](#assets-runtime-originales-y-optimización)
+- [Herramientas gráficas](#herramientas-gráficas-locales)
+- [Validación y entrega](#validación-pruebas-y-entrega)
+- [Canon y continuidad](#canon-identidad-y-continuidad)
+- [Referencia detallada acumulada](#referencia-detallada-del-motor)
 
 ---
 
-## 📖 Tabla de Contenidos
+# Manual de usuario
 
-1. [Inicio Rápido](#inicio-rápido)
-2. [Características](#características)
-3. [Instalación](#instalación)
-4. [Estructura de Carpetas](#estructura-de-carpetas)
-5. [Cómo Crear Contenido](#cómo-crear-contenido)
-6. [Sistema de Diálogos](#sistema-de-diálogos)
-7. [Acciones](#acciones)
-8. [Sistema de Elecciones](#sistema-de-elecciones)
-9. [Sistema de Poses](#sistema-de-poses)
-10. [Características Avanzadas - Persona 5](#características-avanzadas---persona-5)
-11. [Personalización](#personalización)
-12. [Troubleshooting](#troubleshooting)
-13. [Funciones Avanzadas](#funciones-avanzadas)
-14. [Sistema de Reseteo](#sistema-de-reseteo)
-15. [Workflow de Pull Requests](#workflow-de-pull-requests)
-16. [App de Escritorio (Electron)](#app-de-escritorio-electron)
-17. [Publicar en itch.io](#publicar-en-itchio)
+Este manual explica la versión disponible hoy sin revelar acontecimientos de
+la trama. El juego es una novela visual con elecciones, navegación por escenas,
+galería, cinemáticas y varios tipos de minijuegos.
 
----
+## Requisitos para jugar
 
-## 🚀 Inicio Rápido
+La versión instalada de Windows no necesita Python ni Node.js. Para ejecutar el
+repositorio hacen falta una de estas dos opciones:
 
-### Paso 1: Abre el Proyecto
+- App de escritorio: Node.js y npm.
+- Navegador: Python 3 u otro servidor HTTP local y un navegador moderno.
 
-Como app de escritorio (recomendado):
+Se recomienda pantalla 16:9, ratón y teclado. El escenario se dibuja a 1280×720
+y se escala conservando proporción; en otras relaciones de aspecto pueden
+aparecer bandas negras. El juego avisa de música, sonido y luces intermitentes
+antes de comenzar.
 
-```bash
+## Cómo iniciar
+
+### Versión instalada
+
+Abre **Transfurmados** desde su acceso directo. La aplicación se inicia a
+pantalla completa salvo que se hubiese elegido el modo Ventana.
+
+### Desde el repositorio
+
+App de escritorio recomendada:
+
+```powershell
 npm install
 npm start
 ```
 
-O en el navegador, con un servidor local:
+Navegador:
 
-```bash
-# Windows
+```powershell
 python -m http.server 8000
-# Luego abre: http://localhost:8000
-
-# macOS/Linux
-python3 -m http.server 8000
 ```
 
-### Paso 2: Revisa los Ejemplos
+Abre <http://localhost:8000/>. También se puede ejecutar `start.bat`. No abras
+`index.html` mediante `file://`: el juego carga JSON, audio y vídeo por HTTP y
+esa vía produce pantallas vacías o capítulos que no aparecen.
 
-Abre `index.html` en tu navegador y haz clic en "Comenzar" para ver los capítulos de ejemplo.
+## Primer arranque
 
-### Paso 3: Crea Tu Primer Capítulo
+1. Ajusta el volumen del dispositivo.
+2. Pulsa **Entrar con sonido**. Ese gesto autoriza el audio en el navegador.
+3. Espera al opening o pulsa **Saltar opening**.
+4. El menú principal aparecerá al terminar.
 
-1. Copia `chapters/chapter1.json`
-2. Edita el contenido
-3. Carga en `game.js`
+Si el opening no puede reproducirse, el propio aviso permite saltarlo. Las
+cinemáticas dentro de la historia también se pueden omitir.
+
+Nota: si Música estaba exactamente al 0 %, **Entrar con sonido** la sitúa en
+torno al 70 % para que el arranque sea audible. Después puedes volver a bajarla
+desde Configuración.
+
+## Menú principal
+
+| Opción | Qué hace |
+| --- | --- |
+| **Comenzar** | Inicia una partida nueva desde el prólogo y limpia el estado narrativo anterior. |
+| **Capítulos** | Permite iniciar cualquiera de los siete capítulos disponibles con estado limpio. No carga una partida guardada. |
+| **Galería** | Abre arte, escenarios, vídeos y poses de personajes; dispone de filtros y protección de spoilers. |
+| **Configuración** | Ajusta sonido, vídeo de escritorio y ayudas opcionales. |
+| **Salir** | Cierra la app de escritorio. Un navegador no puede cerrar de forma fiable su propia pestaña. |
+| **♪** | Vuelve a reproducir el tema principal del menú. |
+
+## Controles generales
+
+| Entrada | Resultado |
+| --- | --- |
+| Clic o toque durante la escritura | Completa de inmediato la línea actual. |
+| Clic o toque con la línea completa | Avanza el diálogo. |
+| Mantener `Ctrl` | Acelera texto y líneas. No decide elecciones ni juega minijuegos. |
+| `Esc` | Abre o cierra Opciones durante la partida. En una cinemática, la salta. |
+| Clic, `Esc`, `Enter` o `Espacio` en una cinemática | Salta el vídeo. |
+| `F11` en Windows/Electron | Alterna pantalla completa. En macOS se usa `Ctrl+Cmd+F`. |
+
+Las elecciones se resuelven pulsando una opción. Un clic en botones, paneles,
+galería o minijuegos no avanza accidentalmente el diálogo que queda detrás.
+
+## Controles durante una escena
+
+En la parte superior aparecen cuando son aplicables:
+
+- **Opciones**: pausa, ajustes y regreso al menú principal.
+- **Escenas**: lista la escena actual y las ya visitadas del capítulo. Volver a
+  una escena recupera el estado que tenía al visitarla.
+- **Retroceder**: vuelve al comienzo de la escena anterior y restaura fondo,
+  personajes, música, inventario y estado narrativo de ese momento.
+
+Las cinemáticas ocultan temporalmente estos botones. Durante una elección o un
+minijuego se puede abrir **Escenas** u **Opciones**; saltar o salir cancela de
+forma segura la actividad en curso.
+
+Al final de cada capítulo puede aparecer **Siguiente capítulo** o **Menú
+principal**. Las decisiones tomadas durante una ruta pueden cambiar la escena o
+el capítulo siguiente.
+
+## Configuración y accesibilidad
+
+La configuración aparece en el menú principal y dentro de Opciones:
+
+- **Música**: volumen de pistas y audio musical.
+- **Efectos**: volumen de SFX, golpes, blips y sonidos de interfaz.
+- **Blips de texto**: activa o desactiva el sonido breve de cada letra.
+- **Pantalla completa / Ventana**: sólo en la app de escritorio.
+- **Ataque Kosai**: ayuda opcional que añade en batallas por turnos un golpe que
+  deja al objetivo a 0 PV. Es un truco deliberado, no la dificultad normal.
+
+No hay un silencio global independiente: para silenciar por completo hay que
+bajar Música y Efectos. En macOS la pantalla completa de Electron se controla
+desde el menú del sistema (`Ctrl+Cmd+F`).
+
+Estos ajustes sí persisten al cerrar la app. En escritorio se guardan en la
+carpeta de datos de Electron; en navegador dependen del almacenamiento local de
+ese origen. La opción de movimiento reducido del sistema operativo desactiva o
+estabiliza varias animaciones decorativas mediante CSS.
+
+## Galería
+
+La galería contiene seis filtros: Todo, Wallpapers, Ilustraciones, Personajes,
+Escenarios y Vídeos. Las obras marcadas como spoiler permanecen ocultas hasta
+confirmar el aviso.
+
+- Las flechas izquierda/derecha navegan por filtros y obras abiertas.
+- `Esc` cierra el visor o vuelve al menú.
+- Los personajes permiten escoger entre sus poses disponibles.
+- Cuando una pose tiene capas oculares válidas aparece **Ver parpadeo**.
+- Los wallpapers descargables muestran su botón de descarga.
+
+## Minijuegos activos y controles
+
+Cada minijuego enseña sus instrucciones antes de comenzar. Los controles
+principales actuales son:
+
+| Tipo | Controles |
+| --- | --- |
+| Exploración de Furry Maps | Ratón o toque para elegir ubicaciones; `Tab` y `Enter` permiten navegación por teclado. |
+| Persecución de gatos | Flechas o `WASD` para recorrer la cuadrícula sin que alcancen a Samu. |
+| Recolección de guindillas | Izquierda/derecha, `A`/`D` o ratón. Recoge guindillas y evita botellas. |
+| Bullet hell de Kingdom Ketchup | Flechas o `WASD` para moverse y `Espacio` para disparar guindillas. |
+| Conducción | Ratón, `WASD` o flechas para moverse; `P`, `Esc` o el botón visible pausan. |
+| Ritmo | Pulsa las teclas indicadas en pantalla o toca los carriles al cruzar la línea. |
+| Vuelo de Edu | Ratón o `W`/`S` para altura; `Espacio` o clic para impulsar; `P`/`Esc` pausan. |
+| Batallas por turnos | Ratón o toque para elegir habilidad, objetivo, objeto o cancelar. |
+| Canalización de runas | Mantén y suelta `A`, `S`, `D` y `F`, o usa los cuatro botones en pantalla, para equilibrar las barras. |
+| Créditos interactivos | Clic o toque en **Clic para saltar**. |
+
+Los juegos de conducción y vuelo tienen pausa propia. Si se pierde una prueba
+obligatoria aparece la opción de reintentar. Opciones y Escenas permiten
+abandonar una prueba sin dejar bloqueada la novela.
+
+La pausa general no se promete como congelación de cada temporizador interno:
+en conducción y vuelo usa preferentemente `P` o su botón de pausa.
+
+La compatibilidad táctil es parcial: Furry Maps, batallas, runas y varias UI
+aceptan toque, pero el laberinto de gatos y el bullet hell requieren actualmente
+teclado físico. No se considera todavía una versión móvil completa.
+
+## Progreso y guardado
+
+La versión actual **no dispone todavía de ranuras ni de continuación de partida
+entre sesiones**. Existe infraestructura interna de serialización, pero no está
+conectada al menú ni se ejecuta como guardado automático.
+
+- Cerrar o recargar puede perder la ruta en curso.
+- **Capítulos** sirve para retomar aproximadamente desde el comienzo de un
+  capítulo, siempre con estado limpio.
+- El historial de **Escenas** y **Retroceder** sólo existe durante el capítulo
+  activo y conserva hasta 60 entradas.
+- Los ajustes de sonido, ventana y ayudas sí se guardan.
+
+## Problemas habituales del jugador
+
+### La pantalla queda vacía o no aparecen capítulos
+
+No uses `file://`. Ejecuta `npm start`, `start.bat` o un servidor HTTP y recarga.
+
+### No se oye nada
+
+Pulsa **Entrar con sonido**, revisa los dos volúmenes de Configuración y el
+mezclador del sistema. Algunos navegadores requieren otro clic si bloquearon el
+autoplay.
+
+### Una cinemática no arranca
+
+Haz clic sobre ella para autorizar la reproducción o pulsa **Saltar opening**.
+En la historia, clic, `Esc`, `Enter` y `Espacio` permiten continuar.
+
+### El juego parece congelado
+
+Comprueba si hay una elección, instrucción o botón de reintento. Abre
+**Opciones** para volver al menú o **Escenas** para regresar a un punto visitado.
+
+### Los controles no responden en un minijuego
+
+Haz un clic dentro del escenario para devolverle el foco. Evita que el navegador
+capture las flechas y revisa las instrucciones concretas mostradas en pantalla.
+En el laberinto de gatos y el bullet hell usa un teclado físico.
+
+### La app se ve recortada
+
+Alterna pantalla completa con `F11`, selecciona Ventana o usa una resolución
+mínima de 640×360. El formato ideal es 16:9.
 
 ---
 
-## ✨ Características
+# Manual de desarrollo
 
-### Motor Base
+## Principios de trabajo
 
-- ✅ **Diálogos Animados** - Texto que se escribe carácter por carácter
-- ✅ **Sistema de Elecciones** - Ramificaciones de historia
-- ✅ **Personajes Dinámicos** - Aparecen y desaparecen con poses
-- ✅ **Cambio de Fondos** - Escenas con diferentes ambientes
-- ✅ **Efectos de Sonido** - Reproducción de audio
-- ✅ **Sistema de Guardado** - Partidas automáticas
-- ✅ **Variables de Juego** - Seguimiento de estado
+1. El contenido narrativo vive en JSON; el comportamiento general vive en el
+   motor. No modifiques `engine.js` para un simple cambio de texto o pose.
+2. `assets/` contiene runtime y salidas necesarias para herramientas.
+   `workbench/` conserva fuentes, originales y material retirado.
+3. Los manifiestos de galería, parpadeo y sprites limpios son datos generados o
+   mantenidos por sus herramientas; no se deben improvisar rutas paralelas.
+4. `DOCUMENTACION.md` es canónico. `memory/` aporta contexto, pero no puede
+   contradecir este manual.
+5. Un cambio no termina hasta validar contenido, assets y documentación.
 
-### Características Avanzadas (Persona 5 Edition)
+## Entorno y comandos
 
-- ✅ **Estética Persona 5** - Menús y diálogos estilo P5 Royal
-- ✅ **Saltar Texto** - Click durante typing completa línea
-- ✅ **Intro Cinematográfica** - Animación al inicio de capítulo
-- ✅ **Efectos Visuales** - Partículas, ondas, transiciones
-- ✅ **Personajes a Altura Completa** - Sprites 100vh (altura total de pantalla)
-- ✅ **Enfoque Dinámico** - Brillo amarillo animado en personaje que habla
+Requisitos recomendados:
 
-### General
+- Node.js y npm para Electron, validadores, Prettier y builds.
+- Python 3 con Pillow, NumPy y OpenCV para las herramientas de imagen.
+- FFmpeg/ffprobe para audio, vídeo y algunas miniaturas.
 
-- ✅ **Totalmente en JSON** - Sin necesidad de código
-- ✅ **Completamente Personalizable** - Estilos y lógica
-- ✅ **Ejemplos Incluidos** - Capítulos de demostración
+Preparación orientativa de las herramientas locales:
+
+```powershell
+python -m pip install pillow numpy opencv-python
+```
+
+FFmpeg y ffprobe deben estar disponibles en `PATH`. El proyecto aún no fija las
+dependencias Python en un `requirements` propio: si se incorpora uno, esta
+sección y `LEER_PRIMERO.md` deben actualizarse en el mismo cambio.
+
+```powershell
+npm install                 # dependencias
+npm start                   # Electron de desarrollo
+npm run validate:content    # JSON, relaciones y assets
+npm run audit:assets        # conversiones pendientes, sin escribir
+npm run optimize:assets     # conserva originales y optimiza runtime
+npm run check:js            # formato JS con Prettier
+npm run tools:eyes          # centro gráfico en localhost:8011
+npm run build:gallery       # regenera galería sin copiar promos externas
+npm run dist:dir            # build Windows sin instalador
+npm run dist                # instalador Windows
+```
+
+Para macOS existen `npm run dist:mac:dir` y `npm run dist:mac`. La firma y
+notarización requieren credenciales externas; se explican en la referencia.
+
+## Arquitectura y flujo de arranque
+
+| Ruta | Responsabilidad |
+| --- | --- |
+| `index.html` | DOM del escenario, menú, controles superiores, disclaimer y orden de scripts. |
+| `styles.css` | Interfaz general, responsive, diálogos, galería y estilos de minijuegos integrados. |
+| `game.js` | Menú, configuración, galería, selector de capítulos, bucle de juego, pausa y navegación. |
+| `engine.js` | Intérprete de acciones, render de escenas, estado, audio, vídeo, historial y minijuegos integrados. |
+| `juice.js` | Shake, flash, grade, viñeta, fundidos y camas WebAudio. |
+| `p5-effects.js` | Biblioteca visual heredada; el nombre del archivo es técnico y no define la identidad actual. |
+| `battle-minigame.js` / `battle-styles.css` | Combate por turnos y su UI. |
+| `ketchup-minigame.js` | Bullet hell contra Zip. |
+| `rune-channeling-minigame.js` | Canalización cooperativa de runas. |
+| `credits-minigame.js` | Créditos interactivos. |
+| `chapters/*.json` | Guion ejecutable: capítulos, escenas, líneas, elecciones y acciones. |
+| `characters/*.json` | Nombre visible, color, poses y animaciones de cada personaje. |
+| `assets/metadata/*.json` | Galería, capas oculares, offsets, ediciones y copias limpias. |
+| `electron/` | Ventana segura, servidor interno con Range, ajustes persistentes e IPC limitado. |
+| `scripts/` | Validación, galería, optimización y herramientas gráficas. |
+
+Orden de scripts, basado en los `window.*` globales: `p5-effects.js` → módulos
+de batalla/créditos/Ketchup/runas → `juice.js` → `engine.js` → `game.js`.
+`game.js` crea una instancia de
+`VisualNovelEngine`, descubre `chapter0`, `chapter1`, etc. hasta el primer hueco,
+carga personajes y llama a `nextLine()`. Cada línea ejecuta acciones, muestra
+texto o elecciones y espera input. No introduzcas un hueco en la numeración de
+capítulos: el descubrimiento se detiene ahí.
+
+Electron no usa `file://`: `static-server.js` sirve la raíz en un puerto local
+libre y soporta peticiones Range. `preload.js` sólo expone cerrar, guardar ajustes
+permitidos y escuchar cambios; Node permanece desactivado en el renderizador.
+
+## Estructura canónica
+
+```text
+chapters/                    guion chapter0.json ... chapter6.json
+characters/                  fichas JSON por clave interna
+assets/
+├── audio/{music,sfx}/       runtime sonoro
+├── images/                  fondos, CG, personajes, galería, minijuegos, UI
+├── video/                   cutscenes, menú y galería
+├── fonts/
+└── metadata/                manifiestos consumidos en runtime/herramientas
+workbench/
+├── sources/                 fuentes editables y storyboards
+├── originals/               copia exacta antes de optimizar
+├── archive/                 variantes antiguas o desconectadas
+└── optimization/            manifiesto SHA-256 de conversiones
+electron/                     aplicación de escritorio
+scripts/                      pipeline y herramientas locales
+memory/                       contexto auxiliar, no manual canónico
+```
+
+## Mapa: quiero cambiar X
+
+| Quiero… | Tocar primero | Después comprobar |
+| --- | --- | --- |
+| Corregir texto, speaker o ritmo de una escena | `chapters/chapterN.json` | `npm run validate:content` y escena completa. |
+| Añadir una escena o elección | El JSON del capítulo | Títulos únicos, destinos y estado al retroceder. |
+| Añadir un capítulo | `chapters/chapterN.json` con N consecutivo | Encadenado, selector y pantalla final. |
+| Cambiar una pose o nombre visible | `characters/<clave>.json` | Todas las referencias y galería. |
+| Añadir un sprite | `assets/images/characters/...` + ficha | Alfa, tamaño, copia limpia y parpadeo. |
+| Añadir parpadeo | Centro ocular, capas y metadatos | Preview, offsets, animación y fallback. |
+| Cambiar fondo o CG | `assets/images/backgrounds` o `cg` + acción del capítulo | Primer frame de escena, transición y galería. |
+| Cambiar música/SFX | `assets/audio` + acciones `playSound`/`stopSound` | ID, loop, fade y clasificación music/sfx. |
+| Añadir cinemática | `assets/video/cutscenes` + `playVideo` | Audio, salto, último frame y crossfade. |
+| Ajustar un minijuego existente | Parámetros de la acción en el capítulo | Victoria, derrota, reintento, pausa y aborto. |
+| Crear un minijuego | Módulo dedicado o `engine.js`, router `playMinigame` e `index.html` | Carga, CSS, input, cleanup y test aislado. |
+| Cambiar combate | `battle-minigame.js` y `battle-styles.css` | Estados, objetivos, objetos, Kosai y varias resoluciones. |
+| Cambiar menú/galería/configuración | `game.js`, `index.html`, `styles.css` | Teclado, foco, clic propagado y Electron. |
+| Persistir un ajuste nuevo | `game.js`, allowlist de `electron/main.js` y `preload.js` si aplica | Navegador y reinicio de Electron. |
+| Añadir arte a galería | Capítulo/ficha o catálogo curado en `build_gallery_manifest.py` | `npm run build:gallery` y spoilers. |
+| Limpiar u optimizar assets | Herramienta correspondiente; nunca sobrescribir fuente | Manifiesto, hashes, referencias y build. |
+| Cambiar empaquetado | `package.json` y `electron/` | `npm run dist:dir`, archivos incluidos y medios. |
+| Cambiar canon | Capítulos + sección canónica de este manual | Qué sabe cada personaje y continuidad global. |
+
+## Capítulos, escenas y elecciones
+
+Formato mínimo:
+
+```json
+{
+  "title": "Capítulo N: Título",
+  "scenes": [
+    {
+      "title": "Escena 1: Título único",
+      "lines": [
+        {
+          "actions": [
+            { "type": "setBackground", "value": "assets/images/backgrounds/chapterN/fondo.webp" },
+            { "type": "showCharacter", "character": "samu", "position": "left", "pose": "neutral" }
+          ],
+          "character": "Samu",
+          "text": "Texto visible."
+        },
+        {
+          "text": "Decide:",
+          "choices": [
+            { "text": "Primera opción", "nextScene": "Escena 2: Ruta A" },
+            { "text": "Segunda opción", "nextScene": "Escena 3: Ruta B" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+Reglas prácticas:
+
+- El `character` de la línea es el nombre visible; las acciones usan la clave
+  de `characters/<clave>.json` en minúsculas.
+- `position` admite `left`, `center` y `right`.
+- Cada escena debe declarar fondo y música al entrar si tiene que ser accesible
+  desde Escenas; no dependas visualmente de la escena anterior.
+- Los títulos de escena son IDs narrativos: `nextScene` y `goToScene` deben
+  coincidir exactamente.
+- `nextChapter` en una elección o `setNextChapter` define la ruta posterior.
+- Las elecciones también admiten condiciones e impactos de continuidad ya
+  descritos en la referencia: objetos, rescates, llamadas y umbrales de retraso.
+- `TEMPLATE_CHAPTER.json` es material legado y no es autoridad de esquema.
+  Para contenido nuevo copia una escena de un capítulo activo y contrástala con
+  el validador. Aunque el motor conserva compatibilidad con algunos destinos
+  numéricos y `nextLine`, el contenido nuevo debe usar títulos únicos en
+  `nextScene` o `nextChapter`, que es el contrato aceptado por el validador.
+
+## Personajes, poses y animaciones
+
+Ficha mínima:
+
+```json
+{
+  "name": "Nombre visible",
+  "color": "#7fd9ff",
+  "poses": {
+    "neutral": "assets/images/characters/clave/neutral.webp",
+    "happy": "assets/images/characters/clave/happy.webp"
+  },
+  "defaultPose": "neutral"
+}
+```
+
+`showCharacter` carga una ficha a demanda si aún no estaba precargada, por lo
+que añadir una ficha no obliga siempre a editar `loadAllCharacters()` en
+`game.js`. Añádela a la precarga sólo si debe estar disponible antes de su
+primera acción o se usa fuera del flujo normal.
+
+El campo `animations` describe los frames internos de una misma pose. Puede ser
+una lista o un objeto con `frames`, `delayRange` y `loop`. Las secuencias
+narrativas entre poses distintas se lanzan con `animateCharacter` y aceptan
+`frameMs`, `loop`, `pingPong` y `untilAdvance`.
+
+El runtime aplica en este orden las copias limpias de halo, intermedios de
+parpadeo y capas oculares. Si falta una capa válida, conserva el sprite completo
+como fallback; nunca debe deformar el cuerpo para simular un parpadeo.
+
+## Resumen de acciones narrativas
+
+| Familia | Acciones principales | Uso |
+| --- | --- | --- |
+| Escenario | `setBackground`, `clearBackground`, `showCG`, `hideCG`, `bgPan`, `fade` | Fondo, ilustración, cámara y transición. |
+| Personajes | `showCharacter`, `hideCharacter`, `removeCharacter`, `setPose` | Presencia, hueco y expresión. |
+| Animación | `animateCharacter`, `poseSequence`, `stopCharacterAnimation` | Acting entre poses. |
+| Glitch | `characterGlitch`, `characterFullGlitch`, `characterGlitchUntilAdvance` | Corrupción puntual o sostenida. |
+| Diálogo | `hideDialog`, `wait`, `waitForClick` | Ritmo y ausencia temporal de caja. |
+| Audio | `playSound`, `stopSound`, `stopAllSounds`, `pauseSound`, `resumeSound`, `setVolume` | Música/SFX con ID, loop y fades. |
+| Estado | `setVariable`, `giveItem`, `rescue`, `setDelay`, `addDelay` | Consecuencias y continuidad. |
+| Flujo | `goToScene`, `setNextChapter` | Ramificación interna y entre capítulos. |
+| Multimedia | `playVideo` / `cutscene` | Vídeo, crossfade, hold final y fondo de salida. |
+| Juego | `minigame` | Lanza una actividad por su clave `game`. |
+| Juice | `shake`, `flash`, `grade`, `vignette`, `sfx` | Impacto visual y audio sintetizado. |
+
+Los alias españoles e históricos existen por compatibilidad, pero el contenido
+nuevo debe usar un nombre canónico consistente. La referencia posterior detalla
+campos y ejemplos de cada acción.
+
+## Estado, continuidad y navegación
+
+- `gameState`: variables genéricas del capítulo; `reset()` las limpia.
+- `inventory`: objetos obtenidos; persiste entre capítulos de una partida.
+- `rescued`: orden de personajes rescatados; persiste.
+- `completedCalls`: llamadas completadas; persiste.
+- `storyPressure`: coste acumulado canónico entre capítulos.
+- `storyDelay`: alias sincronizado que utilizan acciones y condiciones antiguas.
+- `sceneHistory`: hasta 60 snapshots del capítulo actual para Escenas y
+  Retroceder; incluye escenario, audio, efectos y estado narrativo.
+
+`startNewGame()` y el selector de capítulos limpian la continuidad. El encadenado
+normal entre capítulos conserva inventario, rescates, llamadas y presión. No
+confundas la persistencia durante una sesión con guardado en disco: `saveGame()`
+existe como infraestructura sin llamadas activas ni interfaz de carga.
+
+## Audio y vídeo
+
+- Música: `assets/audio/music/<chapter|shared|menu|minigames>/`.
+- SFX: `assets/audio/sfx/`.
+- Cutscenes: `assets/video/cutscenes/`.
+- Menú y galería: `assets/video/menu/` y `assets/video/gallery/`.
+
+Usa IDs estables: `bg_music` o `music` se clasifican como música; el resto como
+SFX salvo que la ruta esté bajo `audio/music`. Reutilizar la misma ruta e ID
+evita reinicios entre escenas. Define `fadeIn`/`fadeOut` en milisegundos y
+detén pistas que no deban continuar.
+
+`playVideo` puede recibir `audioCrossfade`, `holdLastFrame`, `visualFadeOut` y
+`endBackground`. Si una escena continúa desde el último fotograma, exporta ese
+frame como fondo y decláralo en `endBackground` para evitar un corte visual.
+
+## Minijuegos y batallas
+
+Claves registradas por `playMinigame`:
+
+| Clave | Implementación | Estado actual |
+| --- | --- | --- |
+| `furrielvaExplore` | `engine.js` | Activo en capítulo 2. |
+| `chiliHarvest` / `guindillas` | `engine.js` | Activo; carga poder picante. |
+| `ketchupBoss` / `ketchup` | `ketchup-minigame.js` | Activo; dificultad según guindillas/objeto. |
+| `gatos` | `engine.js` | Activo. |
+| `chase` | `engine.js` | Activo en capítulo 3. |
+| `rhythm` | `engine.js` | Activo en capítulo 3. |
+| `eduvuelo` | `engine.js` | Activo en capítulo 3. |
+| `battle` | `battle-minigame.js` | Activo en capítulos 3–5. |
+| `runeChanneling` | `rune-channeling-minigame.js` | Activo en capítulo 4. |
+| `credits` / `creditos` | `credits-minigame.js` | Activo en capítulo 6. |
+| `ecchi`, `paloma`, `runa`, `vocalecho` | `engine.js` | Motores disponibles; no aparecen en el recorrido activo actual. |
+
+Para ajustar dificultad, cambia primero los parámetros de la acción JSON. El
+motor admite variantes `...ByDelay` que seleccionan valores según
+`storyDelay/storyPressure`. Sólo cambia JavaScript si la regla no puede
+expresarse con opciones existentes.
+
+Todo minijuego nuevo debe:
+
+1. Resolver una `Promise` al ganar/perder o ser cancelado.
+2. Registrar y retirar todos sus listeners, timers, RAF, audio y nodos DOM.
+3. Impedir que sus clics avancen el diálogo de fondo.
+4. Permitir reintento o definir claramente que el resultado no bloquea historia.
+5. Soportar aborto desde Opciones/Escenas.
+6. Mostrar controles antes de empezar y funcionar al menos con teclado/ratón.
+7. Exponer, si es módulo, una API `window.XMinigame.play(options)` que resuelva
+   una `Promise` y haga cleanup completo.
+8. Cargarse antes de `engine.js`, registrar su caso en `playMinigame` y en
+   `knownMinigames` de `scripts/validate_game_content.mjs`.
+9. Incluirse en `minijuegos_test.html` y pasar una prueba dentro del capítulo.
+
+## Galería y metadatos
+
+`scripts/build_gallery_manifest.py` deriva arte de los capítulos y fichas,
+añade entradas promocionales curadas, genera miniaturas y escribe
+`assets/metadata/gallery_manifest.json`. No edites a mano el manifiesto generado.
+
+```powershell
+npm run build:gallery
+```
+
+El modo npm usa `--no-copy`; las promociones ya deben existir en `assets/`. Para
+importar de nuevo el paquete externo, ejecuta el script con `--source <carpeta>`.
+Cada entrada curada debe tener ID único, categoría válida, alt descriptivo,
+decisión de spoiler y `downloadable` sólo cuando proceda.
+
+Fondos, CG y poses referenciados se derivan automáticamente. Para un wallpaper,
+concepto o vídeo curado, edita `PROMOTIONAL_FILES`/`PROMOTIONAL_ITEMS` en el
+generador y vuelve a construir; no modifiques directamente el JSON generado.
+
+## Assets runtime, originales y optimización
+
+Política de imagen:
+
+- Sprites y transparencias: WebP sin pérdida.
+- Fondos/CG opacos: WebP calidad 92.
+- PNG: sólo salidas de edición que realmente lo necesiten o archivos pequeños
+  no rentables de convertir.
+- Música larga: MP3 VBR q2 cuando la fuente sea WAV.
+- Vídeo seleccionado: H.264 CRF20, `yuv420p`, `faststart`.
+
+`scripts/optimize_runtime_assets.py` sólo convierte referencias explícitas y
+familias dinámicas controladas. Antes de sustituir mueve el original a
+`workbench/originals/runtime/assets/` y registra ruta, tamaño y SHA-256 en
+`workbench/optimization/asset_optimization_manifest.json`. No optimiza si el
+ahorro es inferior al 5 % y es reanudable tras una interrupción.
+
+La conversión de audio/vídeo usa una lista `MEDIA_JOBS` explícita: añadir un
+medio no lo optimiza automáticamente. Revísala cuando entre música o vídeo
+nuevo. Capas oculares, previews y copias de halo se excluyen deliberadamente
+porque son salidas de edición con requisitos propios.
+
+```powershell
+npm run audit:assets       # siempre primero
+npm run optimize:assets    # sólo si hay candidatos revisados
+npm run validate:content
+```
+
+`workbench/` se versiona completo para que fuentes, originales y archivo estén
+disponibles para todo el equipo. Sus binarios se guardan como archivos normales
+de Git: no añadas archivos de 100 MB o más y revisa el crecimiento del
+repositorio antes de incorporar material pesado. No muevas originales otra vez
+a `assets/` ni incluyas `workbench/` en Electron Builder.
+
+## Herramientas gráficas locales
+
+Inicia el centro con `ABRIR_EDITOR_OJOS.bat` o `npm run tools:eyes` y abre
+<http://localhost:8011/tools>.
+
+| Ruta | Herramienta | Salida principal |
+| --- | --- | --- |
+| `/` | Marcador de regiones oculares | Regiones manuales y recortes abiertos/intermedios/cerrados. |
+| `/preview` | Alineación de ojos | Offsets y escalas independientes de las tres capas; preview/GIF/APNG. |
+| `/clean-base` | Limpiador de pose base | Copia sin ojos, no destructiva. |
+| `/white-halo` | Editor de halos | Copia limpia preferida por juego y galería. |
+| `/tools` | Menú central | Acceso a todo el flujo servido en el puerto 8011. |
+
+Metadatos relacionados:
+
+- `blink_eye_regions_manual.json`: elipses marcadas.
+- `blink_eye_region_previews.json`: recortes disponibles.
+- `blink_eye_clean_offsets_manual.json`: alineación abierta/media/cerrada.
+- `blink_eye_pixel_edits.json`: ediciones de borrador, dedo y pincel.
+- `blink_eye_intermediates.json`: frame medio inyectado.
+- `sprite_white_halo_cleaned.json`: copia limpia preferente por pose.
+
+Scripts auxiliares:
+
+- `build_character_eye_layers.py`: servidor, previews y construcción de capas.
+- `build_blink_intermediates.py`: cola, registro y saneado de intermedios.
+- `compose_character_blink.py`: composición de prueba.
+- `compose_clean_eye_layers.py`: capas limpias y bases sin ojos.
+- `build_gallery_manifest.py`: galería y miniaturas.
+- `rebuild_intro_sala_trono_kk.py`, `render_menu_loop_4k.py` e
+  `interpolate_menu_loop_48fps.py`: medios concretos, no pipelines generales.
+
+El centro de control antiguo de puerto 8000 es legado; sus enlaces históricos
+no sustituyen este manual ni el menú `/tools`.
+
+## UI, estilos y accesibilidad
+
+- Cambios estructurales: `index.html`.
+- Flujo, foco y paneles: `game.js`.
+- Presentación: `styles.css`; combate: `battle-styles.css`.
+- Efectos de escena: `juice.js` y acciones JSON.
+
+Mantén el escenario base 1280×720 y prueba 16:9, ventana pequeña, pantalla
+completa y zoom del sistema. Todo modal debe tener foco inicial, cierre con Esc
+cuando proceda, navegación por teclado y bloqueo de clics hacia la novela. Respeta
+`prefers-reduced-motion` y no comuniques estado sólo mediante color.
+
+## Electron, empaquetado y distribución
+
+`electron/main.js` crea una sola instancia, gestiona F11/F12/recarga, abre
+enlaces externos y persiste una allowlist de ajustes. Si añades una preferencia
+que deba sobrevivir al reinicio, añade su clave a `SETTINGS_KEYS` y mantén el
+canal IPC limitado. `electron/static-server.js` debe conocer el MIME de cualquier
+formato nuevo y conservar soporte Range para audio/vídeo.
+
+`package.json > build.files` es una allowlist. Comprueba que incluye el nuevo
+runtime y excluye fuentes, legacy, personajes deprecados y `workbench/`.
+
+```powershell
+npm run dist:dir    # inspección rápida
+npm run dist        # NSIS Windows
+```
+
+No publiques un instalador sin recorrer opening, menú, un capítulo, audio,
+vídeo, galería, minijuego y cierre de aplicación en esa build.
+El contenido de `dist/` no se presume actual: regenera y prueba la distribución
+después de cualquier cambio que deba llegar al jugador.
+
+## Validación, pruebas y entrega
+
+Orden recomendado:
+
+```powershell
+npm run validate:content
+npm run audit:assets
+npm run check:js
+node --check engine.js
+node --check game.js
+```
+
+Después realiza la prueba manual proporcional al cambio. `validate:content`
+comprueba capítulos, personajes, speakers, acciones, posiciones, destinos,
+capitalización, galería, miniaturas, exclusiones sensibles y rutas literales.
+No detecta por sí solo equilibrio, timing, encuadre, mezcla ni rutas construidas
+completamente en tiempo de ejecución.
+
+No existe todavía una suite E2E que recorra el juego completo; la prueba manual
+proporcional al cambio es parte obligatoria de la entrega.
+
+Deuda conocida a 2026-08-03: `npm run check:js` señala formato Prettier previo
+en 11 archivos JavaScript. El comando sigue siendo útil para no ampliar la
+deuda, pero no debe afirmarse que pasa globalmente ni ejecutarse `--write` sobre
+todo el proyecto sin revisar el diff funcional resultante.
+
+Checklist antes de PR:
+
+- [ ] JSON y referencias validados.
+- [ ] Consola sin errores nuevos.
+- [ ] Ruta feliz y salida/cancelación probadas.
+- [ ] Ratón y teclado probados; foco y Esc correctos.
+- [ ] Audio/vídeo comprobados en servidor, no `file://`.
+- [ ] Assets en runtime o `workbench` según corresponda; originales protegidos.
+- [ ] Manual de usuario evaluado y actualizado, o motivo de no aplicación.
+- [ ] Manual de desarrollo evaluado y actualizado, o motivo de no aplicación.
+- [ ] `LEER_PRIMERO.md` evaluado si cambia el acceso o el flujo inicial.
+
+## Mantenimiento obligatorio de los manuales
+
+Todo cambio debe decidir si afecta a quien juega, a quien desarrolla o a ambos.
+La actualización documental viaja en el mismo cambio y sustituye información
+obsoleta en su sección canónica; no se añaden documentos por característica ni
+un diario cronológico duplicado. La regla normativa completa está en
+`AGENTS.md` y el recordatorio de entrega en `.github/PULL_REQUEST_TEMPLATE.md`.
+
+## Canon, identidad y continuidad
+
+Las reglas narrativas canónicas están en [Revisión integral de guion y canon](#revisión-integral-de-guion-y-canon-2026-08-01).
+Al modificar guion:
+
+- 3C es narradora y Nexo su auxiliar de continuidad; tienen voces propias.
+- Los nombres activos son 3C y Nexo, no sus equivalentes de desarrollo.
+- Elion Husk, AI.RI, el quinto creador, la realidad memética y las reglas de
+  transformación deben respetar la causalidad fijada en esa sección.
+- Registra qué sabe cada personaje antes de cada escena y no adelantes
+  revelaciones.
+- La comedia no elimina las consecuencias de una escena tensa ni copia la
+  personalidad o dinámica de obras ajenas.
+
+## Troubleshooting técnico rápido
+
+| Síntoma | Comprobación |
+| --- | --- |
+| 404 de capítulo/personaje | Nombre de archivo, clave, servidor HTTP y primer hueco de capítulos. |
+| Asset no aparece | Ruta/capitalización, WebP tras optimizar y `validate:content`. |
+| Fondo negro tras salto | La escena debe declarar fondo en línea 0; revisa fundidos y cleanup. |
+| Audio no cambia | ID reutilizado, clasificación music/sfx, fade o instancia detenida. |
+| Sprite viejo pese a cambiar ficha | Manifiesto `sprite_white_halo_cleaned.json` puede sustituir la pose. |
+| Ojos desplazados | Offsets independientes de abierto/medio/cerrado y edición guardada. |
+| Minijuego bloquea novela | Promise sin resolver, listener/timer vivo o aborto no implementado. |
+| Sprite animado desaparece tras el primer frame | El preload y el constructor dinámico deben usar la misma extensión; centraliza la ruta y comprueba todos los frames reales. |
+| Ajuste no persiste en Electron | Falta en `SETTINGS_KEYS` o no pasa por `saveSetting`. |
+| Build omite un archivo | Revisar `build.files`; `workbench` no se empaqueta. |
+| Galería desactualizada | Ejecutar `npm run build:gallery` y validar miniaturas/spoilers. |
 
 ---
 
-## 📦 Instalación
+# Referencia detallada del motor
 
-### Requisitos
-
-- Navegador moderno (Chrome, Firefox, Safari, Edge)
-- Un servidor local (Python, Node.js, etc.)
-
-### Archivos Necesarios
-
-El proyecto ya incluye todos los archivos necesarios:
-
-```
-proyecto/
-├── index.html
-├── engine.js
-├── game.js
-├── styles.css
-├── characters/
-├── chapters/
-└── assets/
-```
-
----
-
-## 📁 Estructura de Carpetas
-
-```
-proyecto-visual-novel/
-│
-├── 📄 index.html                 ← Archivo principal
-├── 📄 engine.js                  ← Motor (NO MODIFICAR)
-├── 📄 game.js                    ← Lógica del juego
-├── 📄 styles.css                 ← Estilos CSS
-│
-├── 📁 characters/                ← Definiciones de personajes
-│   ├── luna.json
-│   └── alex.json
-│
-├── 📁 chapters/                  ← Archivos de capítulos
-│   ├── chapter0.json
-│   ├── chapter1.json
-│   ├── chapter2-edu.json
-│   ├── chapter2-tony.json
-│   ├── chapter2-jose.json
-│   └── chapter3.json
-│
-├── 📁 assets/                    ← Recursos multimedia
-│   ├── backgrounds/              ← Fondos (1920x1080 PNG)
-│   ├── characters/               ← Sprites (300x600 PNG)
-│   └── sounds/                   ← Audio
-│
-└── 📁 DOCUMENTACION.md           ← Esta documentación
-```
+Las secciones siguientes contienen la API extensa, ejemplos, decisiones de
+implementación y el registro consolidado acumulado durante el desarrollo. El
+Manual de desarrollo anterior prevalece si una nota histórica usa rutas,
+nombres, cifras o comportamientos antiguos. Los ejemplos con personajes
+ficticios sirven para explicar el esquema y no describen el reparto vigente.
+En especial, cualquier mención antigua a autoguardado, ranuras, `Cargar`, rutas
+separadas del capítulo 3 o identidad “Persona 5” queda anulada por los manuales
+canónicos anteriores; los identificadores `p5-*` que subsisten son sólo nombres
+técnicos internos.
 
 ---
 
@@ -204,21 +802,18 @@ proyecto-visual-novel/
 }
 ```
 
-### 3. Cargar en game.js
+### 3. Validar y descubrir el contenido
 
-En `game.js`, modifica `startNewGame()`:
+No edites `startNewGame()` para cada personaje o capítulo. Los capítulos
+numéricos contiguos se descubren automáticamente y los personajes se cargan de
+forma perezosa al ejecutar su primera acción. Después de editar JSON:
 
-```javascript
-async function startNewGame() {
-  mainMenu.classList.add("hidden");
-  isGameRunning = true;
-
-  await engine.loadChapter("chapter1");
-  await engine.loadCharacter("luna");
-
-  await playGame();
-}
+```powershell
+npm run validate:content
 ```
+
+Sólo toca la precarga de `game.js` si una ficha debe existir antes de entrar en
+su flujo narrativo normal.
 
 ---
 
@@ -450,14 +1045,14 @@ gestos que no cambian la emoción narrativa:
 ```json
 {
   "poses": {
-    "neutral": "assets/images/characters/samu/Samu.png"
+    "neutral": "assets/images/characters/samu/Samu.webp"
   },
   "animations": {
     "neutral": {
       "frames": [
-        { "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.png", "duration": 65 },
-        { "src": "assets/images/characters/samu/animations/samu_neutral_blink_closed.png", "duration": 95 },
-        { "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.png", "duration": 65 }
+        { "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp", "duration": 65 },
+        { "src": "assets/images/characters/samu/animations/samu_neutral_blink_closed.webp", "duration": 95 },
+        { "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp", "duration": 65 }
       ],
       "delayRange": [1800, 4200],
       "loop": true
@@ -507,7 +1102,7 @@ Ejemplo con espera:
     { "type": "hideDialog" },
     {
       "type": "setBackground",
-      "value": "assets/images/backgrounds/chapter4/despertar_samu.png"
+      "value": "assets/images/backgrounds/chapter4/despertar_samu.webp"
     },
     { "type": "wait", "value": 2500 }
   ]
@@ -523,7 +1118,7 @@ Si quieres mantener la pantalla limpia hasta que el jugador haga click, usa
     { "type": "hideDialog" },
     {
       "type": "setBackground",
-      "value": "assets/images/backgrounds/chapter4/despertar_samu.png"
+      "value": "assets/images/backgrounds/chapter4/despertar_samu.webp"
     },
     { "type": "waitForClick" }
   ]
@@ -1032,25 +1627,27 @@ energía a `8/7/6`, eleva el coste del dash a `50/55/60` y acorta su duración a
 siendo una herramienta decisiva, pero ya no permite atravesar casi todos los
 patrones sin administrar la energía.
 
-Los assets del escenario siguen en `assets/images/minigames/chapter3/`:
-`aire_fondo_v2.png` y `cables_aire_sheet_v2.png`. Edu usa la revisión V3,
-construida a partir del modelo canónico de `assets/images/characters/edu/`: la hoja
-`edu_volando_sheet_v3.png` contiene ocho poses de vuelo y
-`edu_volando_dash_sheet_v3.png` contiene dos poses específicas de impulso.
-Dentro de `sprites/` están los ocho `edu_fly_v3_0.png`…
-`edu_fly_v3_7.png` y los dos `edu_fly_v3_dash_*.png`, todos normalizados sobre
-lienzos transparentes de `512×512`, con el torso anclado en el mismo punto,
-margen seguro y un único componente visual para impedir motas o partes fuera
-del sprite. El ciclo de vuelo recorre ocho alturas de ala y el dash alterna sus
-dos poses a mayor cadencia.
+Los assets runtime están en `assets/images/minigames/chapter3/`: el fondo es
+`aire_fondo_v2.webp` y, dentro de `sprites/`, viven los ocho
+`edu_fly_v3_0.webp`…`edu_fly_v3_7.webp` y los dos
+`edu_fly_v3_dash_*.webp`. Son lienzos transparentes de `512×512`, con el torso
+anclado en el mismo punto, margen seguro y un único componente visual para
+impedir motas o partes fuera del sprite. El ciclo de vuelo recorre ocho alturas
+de ala y el dash alterna sus dos poses a mayor cadencia.
+
+Las hojas editables `edu_volando_sheet_v3.png`,
+`edu_volando_dash_sheet_v3.png` y `cables_aire_sheet_v2.png` no forman parte del
+runtime: están protegidas bajo `workbench/sources/images/minigames/chapter3/`.
+Los PNG exactos anteriores a la optimización están en
+`workbench/originals/runtime/assets/images/minigames/chapter3/`.
 
 Los diez frames conservan exactamente los dos bigotes faciales del diseño
 canónico: ambos nacen del hocico y el visible termina junto a la
 mandíbula/garganta. Se eliminaron la cuña blanca previa y todos los falsos
 trazos que nacían detrás de la cabeza o formaban bucles hacia las alas. Las
 hojas fuente se reconstruyeron con la misma corrección. El resto de sprites
-activos son el cable continuo `aire_cable_v3.png`, `aire_foco_v2.png`,
-`aire_altavoz_v2.png` y `partitura_v2.png`. El cable de juego es un único
+activos son el cable continuo `aire_cable_v3.webp`, `aire_foco_v2.webp`,
+`aire_altavoz_v2.webp` y `partitura_v2.webp`. El cable de juego es un único
 dibujo continuo de anclaje, cuerpo trenzado y terminal electrificado: su ancho
 se calcula a partir de su altura y se invierte desde el suelo sin uniones ni
 cambios de escala internos.
@@ -1556,11 +2153,14 @@ Usa archivos de audio comunes:
 
 ---
 
-## 🎭 Características Avanzadas - Persona 5
+## 🎭 Sistema visual heredado (identificadores técnicos P5)
 
-### 1. Estética Persona 5 Royal
+### 1. Base visual y nombres CSS heredados
 
-El juego incluye un completo rediseño visual inspirado en Persona 5 Royal.
+Esta sección describe la base visual de una etapa anterior. Clases como
+`p5-style` y el nombre `p5-effects.js` se conservan para no romper el runtime,
+pero la identidad activa es propia de Project AI.RI y no debe imitar nombres,
+composición, personalidad ni dinámica de otras obras.
 
 #### Colores Principales
 
@@ -1604,7 +2204,7 @@ sustituye el escenario: se conservan la geometría, el oleaje del mar, el
 titileo de los neones, las siluetas móviles, la brisa dorada y todas las notas
 en sus posiciones originales.
 
-La reconstrucción 4K desde `assets/video/menu/menu_loop_old.mp4` es reproducible con
+La reconstrucción 4K desde `workbench/sources/video/menu/menu_loop_old.mp4` es reproducible con
 `scripts/render_menu_loop_4k.py` y `realesrgan-ncnn-vulkan`. La interpolación
 cíclica posterior se ejecuta con `scripts/interpolate_menu_loop_48fps.py` y la
 herramienta oficial `rife-ncnn-vulkan`, usando `rife-v4.6`, modo UHD y TTA
@@ -1634,12 +2234,13 @@ capítulo, se muestra un mensaje recuperable y **Volver** permite reintentarlo.
          │      VISUAL NOVEL          │
          │                            │
          │  [➙ COMENZAR           ]  │
-         │  [➙ CARGAR             ]  │
+         │  [➙ CAPÍTULOS          ]  │
+         │  [➙ GALERÍA            ]  │
          │  [➙ CONFIGURACIÓN      ]  │
          └────────────────────────────┘
 ```
 
-#### Cuadro de Diálogo (Persona 5 Royal Style)
+#### Cuadro de diálogo (clase técnica `p5-style`)
 
 ```
          ┌────────────────────────────┐
@@ -1742,15 +2343,14 @@ Cada capítulo debe tener un campo `title`:
 ```
 
 **Capítulo final (`isFinal`):**
-Un capítulo puede marcarse como el final del juego con `"isFinal": true`. Al
-terminarlo, el juego vuelve **directamente al menú principal** sin ofrecer la
-pantalla "¿Continuar? → Siguiente Capítulo". Los tres Capítulos 3 (rutas de Edu,
-Tony y José) lo usan para cerrar la partida correctamente en lugar de saltar de
-vuelta a un capítulo numérico anterior.
+Un capítulo puede marcarse como final con `"isFinal": true`. Tras confirmar su
+pantalla de fin, el juego vuelve al menú sin ofrecer un capítulo posterior. En
+el recorrido actual sólo `chapter6.json` usa esa marca; las rutas anteriores
+convergen dentro de la secuencia `chapter0`…`chapter6`.
 
 ```json
 {
-  "title": "Capítulo 3: El Precio de la Lealtad",
+  "title": "Capítulo 6: La última elección",
   "isFinal": true,
   "scenes": [...]
 }
@@ -1856,7 +2456,8 @@ continuidad; ePod no forma parte del canon activo.
 
 ### 6. Pantalla de Fin de Capítulo
 
-**Característica:** El último diálogo del capítulo se pausa, esperando tu confirmación. Luego aparece una pantalla cinematográfica con un botón "Continuar" antes de volver al menú.
+El último diálogo espera su clic normal y después aparece una pantalla
+cinematográfica con el título del capítulo y **Continuar**.
 
 ```
          ════════════════════════════
@@ -1867,24 +2468,18 @@ continuidad; ePod no forma parte del canon activo.
             [  CONTINUAR  ]
 ```
 
-**Timeline (Con Pausa):**
+**Flujo actual:**
 
-1. Llega al último diálogo del capítulo
-2. **El diálogo se PAUSA** (espera tu click)
-3. Haces click → aparece pantalla de fin con animaciones
-4. Título del capítulo se muestra
-5. Botón "Continuar" aparece
-6. Al hacer clic → vuelve al menú
-7. Se resetea todo el estado
+1. El jugador confirma la última línea.
+2. `showChapterEnd()` presenta **Fin del capítulo** y espera **Continuar**.
+3. El escenario visual y el cursor del capítulo se limpian.
+4. Si existe capítulo siguiente, se elige entre **Siguiente capítulo** y
+   **Menú principal**. Si `isFinal` es `true`, se vuelve al menú.
+5. Al encadenar capítulos se conservan inventario, rescates, llamadas y presión
+   de la sesión; **Comenzar** y **Capítulos** sí crean continuidad limpia.
 
-**Estados que se Resetean:**
-
-- ✅ Personajes (desaparecen)
-- ✅ Fondos (se limpian)
-- ✅ Variables de juego
-- ✅ Historial
-- ✅ Líneas y escenas
-- ✅ Tracking de capítulos
+Esto no equivale a guardar en disco. Cerrar o recargar elimina el punto de la
+historia aunque los ajustes de usuario sí persistan.
 
 **Requisito JSON:**
 El capítulo debe tener un campo `title`:
@@ -2032,9 +2627,9 @@ unos 60 px**.
 Para reutilizar la barra en otro panel se copian los cuatro selectores
 `::-webkit-scrollbar`, `-track`, `-thumb` y `-thumb:hover`.
 
-### Cambiar Colores Persona 5
+### Cambiar colores de las clases visuales heredadas
 
-Los colores principales del sistema Persona 5 son:
+Los colores principales conservados por las clases `p5-*` son:
 
 ```css
 :root {
@@ -2301,13 +2896,14 @@ Accede en DevTools:
 engine.gameState.luna_relationship; // 10
 ```
 
-### Guardado Automático
+### Estado de guardado actual
 
-El juego guarda automáticamente cada 10 líneas. Para acceder:
-
-1. Abre DevTools (F12)
-2. Ve a Application → localStorage
-3. Ve la clave `gameState`
+No hay autoguardado narrativo ni una clave `gameState` activa en
+`localStorage`. `saveGame()` existe como infraestructura sin llamadas y el
+botón **Capítulos** abre un selector con estado limpio. Sólo se conservan los
+ajustes de audio, pantalla y ayudas. Si se conecta el guardado en el futuro,
+habrá que definir versión/migración, punto seguro, restauración de audio y
+minijuegos, interfaz de carga y pruebas antes de anunciarlo al jugador.
 
 ### Múltiples Escenas
 
@@ -2329,9 +2925,12 @@ Para saltar a otra escena, usa `nextScene`:
 ```json
 {
   "text": "Ir al siguiente lugar",
-  "nextScene": 1 // Va a escena 2 (0-indexed)
+  "nextScene": "Escena 2"
 }
 ```
+
+Usa títulos únicos: es el formato que valida el contenido actual y mantiene los
+saltos legibles al reordenar escenas.
 
 ### Narrador Especial
 
@@ -2482,151 +3081,25 @@ async function startNewGame() {
 
 ---
 
-## 🔄 Sistema de Reseteo
+## 🔄 Reset y continuidad de sesión
 
-### ¿Qué se Resetea?
+`engine.reset()` limpia el escenario, audio, diálogo, cursores e historial
+visual para que no queden elementos de la ejecución anterior. `endGame()`
+captura antes los datos de continuidad y la ruta siguiente, muestra la pantalla
+de fin, hace el reset visual y decide entre encadenar capítulo o volver al menú.
 
-Cuando terminas un capítulo y vuelves al menú, el motor limpia completamente el estado:
+Hay tres casos distintos:
 
-**Visual:**
+| Entrada | Resultado |
+| --- | --- |
+| **Siguiente capítulo** | Conserva inventario, rescates, llamadas completadas y presión narrativa durante la sesión. |
+| **Comenzar** o **Capítulos** | Inicia con continuidad narrativa limpia. |
+| Cerrar o recargar | No existe restauración del punto narrativo; sólo persisten ajustes. |
 
-- ❌ Todos los personajes desaparecen
-- ❌ Fondo se limpia
-- ❌ Diálogos y elecciones se ocultan
-
-**Lógico:**
-
-- ❌ Variables del juego se borran (`gameState`)
-- ❌ Historial de elecciones se borra
-- ❌ Posición de línea/escena se resetea
-- ❌ Tracking de capítulos anterior se olvida
-
-**Comportamiento:**
-
-1. Muestra pantalla "Fin del Capítulo".
-2. Espera a que hagas clic en "Continuar".
-3. Llama a `engine.reset()`.
-4. Vuelve al menú principal.
-5. Deja el estado limpio para un nuevo capítulo.
-
-### Método reset() - Detalles Técnicos
-
-```javascript
-class VisualNovelEngine {
-reset() {
-    // Variables de progreso
-    this.currentScene = 0;        // Escena 1
-    this.currentLine = 0;         // Primera línea
-    this.gameState = {};          // Vaciar variables
-    this.history = [];            // Vaciar historial
-    this.lastChapterName = null;  // Olvidar capítulo anterior
-
-    // Limpiar UI
-    this.hideDialog();            // Ocultar cuadro de diálogo
-
-    // Limpiar personajes
-    document.getElementById('character-left').classList.remove('active');
-    document.getElementById('character-right').classList.remove('active');
-    document.getElementById('character-center').classList.remove('active');
-
-    // Limpiar fondo
-    document.getElementById('background').style.backgroundImage = '';
-
-    // Limpiar elecciones
-    document.getElementById('choices-container').innerHTML = '';
-}
-}
-```
-
-### Pantalla de Fin de Capítulo
-
-```
-ANTES (Automático):
-└─ Fin del capítulo → Vuelve al menú (sin transición)
-
-DESPUÉS (Mejorado):
-└─ Último diálogo PAUSADO → Espera click → Pantalla de fin → Click "Continuar" → Vuelve al menú
-```
-
-**Flujo Completo en playGame():**
-
-```javascript
-async function playGame() {
-  while (isGameRunning) {
-    const hasMoreContent = await engine.nextLine();
-
-    if (!hasMoreContent) {
-      // ← AQUÍ: El último diálogo está mostrado y espera click
-      if (engine.isWaitingForInput) {
-        await waitForClick(); // Espera confirmación del usuario
-      }
-      endGame(); // Luego aparece pantalla de fin
-      break;
-    }
-
-    if (!engine.isWaitingForInput) continue;
-    await waitForClick();
-  }
-}
-```
-
-**Función endGame():**
-
-```javascript
-async function endGame() {
-  // 1. Ocultar diálogo anterior
-  engine.hideDialog();
-
-  // 2. Mostrar pantalla de fin cinematográfica
-  const chapterTitle = engine.currentChapter?.title;
-  await engine.showChapterEnd(chapterTitle);
-
-  // 3. Resetear todo
-  engine.reset();
-
-  // 4. Mostrar menú
-  mainMenu.classList.remove("hidden");
-}
-```
-
-### Ejemplo Práctico
-
-**Capítulo 1 (No resetea variables):**
-
-```
-Línea 1: Hablas con Luna → relationship = 5
-Línea 2: Eliges opción → relationship = 10
-Fin del capítulo → showChapterEnd()
-Click "Continuar" → engine.reset()
-```
-
-**Capítulo 2 (Comienza limpio):**
-
-```
-Línea 1: Luna no recuerda nada (relationship = 0)
-Empieza de cero
-```
-
-### Por qué es Importante
-
-✅ **Evita Bugs:** Cada capítulo es independiente
-✅ **Limpio:** No se acumulan datos
-✅ **Predecible:** Siempre el mismo punto de partida
-✅ **Profesional:** Como los juegos reales
-✅ **Mejor UX:** Pantalla de transición visual
-
-### Para Preservar Estado Entre Capítulos
-
-Si QUIERES que las variables persistan entre capítulos, guarda en `localStorage`:
-
-```javascript
-// Al final del capítulo, en endGame():
-localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
-
-// Al empezar nuevo capítulo:
-const saved = localStorage.getItem("persistentState");
-if (saved) engine.gameState = JSON.parse(saved);
-```
+No añadas persistencia ad hoc escribiendo `engine.gameState` directamente en
+`localStorage`: el estado real incluye inventario, rescates, llamadas, presión,
+escena, visuales, audio y versiones de esquema. Un guardado futuro necesita una
+API versionada, migraciones y restauración transaccional de todos esos campos.
 
 ---
 
@@ -2634,34 +3107,33 @@ if (saved) engine.gameState = JSON.parse(saved);
 
 ### ¿Cómo Funciona?
 
-El juego soporta múltiples capítulos en secuencia. Cuando terminas un capítulo, el juego automáticamente detecta si existe el siguiente.
+El juego descubre capítulos numéricos contiguos y los encadena durante la misma
+sesión. El primer 404 detiene el descubrimiento, por lo que no puede haber
+huecos en la numeración.
 
 ```
-Chapter0 → Chapter1 → Chapter2 → (fin de juego)
-  ↓          ↓          ↓
- Intro     Principal   Conclusión
+chapter0 → chapter1 → chapter2 → chapter3 → chapter4 → chapter5 → chapter6
+ prólogo                                                 capítulo final
 ```
 
 ### Crear Nuevos Capítulos
 
 1. **Crea el archivo JSON:**
 
-```
-chapters/chapter3.json
-```
+`chapters/chapter7.json` sería el siguiente ID disponible.
 
 2. **Estructura básica:**
 
 ```json
 {
-  "title": "Capítulo 3: El Viaje",
+  "title": "Capítulo 7: Título",
   "scenes": [
     {
       "title": "Escena 1",
       "lines": [
         {
           "_line": 0,
-          "character": "Luna",
+          "character": "3C",
           "text": "Continuamos nuestra aventura..."
         }
       ]
@@ -2670,31 +3142,28 @@ chapters/chapter3.json
 }
 ```
 
-3. **El juego lo cargará automáticamente** cuando termine chapter2
+3. Ejecuta `npm run validate:content` y comprueba selector, capítulo anterior,
+   pantalla final y entrada directa desde **Capítulos**.
 
 ### Estructura de Archivos
 
 ```
 chapters/
-├── chapter0.json       ← Prólogo (opcional)
-├── chapter1.json       ← Capítulo 1: Decisiones
-├── chapter2-edu.json   ← Capítulo 2: Kingdom Ketchup (ruta de Edu)
-├── chapter2-tony.json  ← Capítulo 2: Ecchi Land (ruta de Tony)
-├── chapter2-jose.json  ← Capítulo 2: Ciudad Paloma (ruta de José)
-└── chapter3.json       ← Capítulo 3: El Precio de la Lealtad (desenlace)
-└── chapter99.json   ← Puedes tener muchos
+├── chapter0.json       ← Prólogo
+├── chapter1.json
+├── …
+└── chapter6.json       ← Final actual (`isFinal: true`)
 ```
 
 ### Flujo de Progresión
 
 ```
-1. Usuario hace clic en "Comenzar"
-2. Se carga chapter0 (prólogo)
-3. Al terminar → Se carga chapter1 (decisiones iniciales)
-4. En chapter1 elige al primer rescatado → Se abre la ruta chapter2-<personaje>
-5. Completa chapter2-edu, chapter2-tony o chapter2-jose según elección
-6. Al terminar chapter2 → Se carga chapter3 (desenlace final)
-7. Muestra "Fin del Juego" → Menú Principal
+1. **Comenzar** limpia continuidad y carga `chapter0`.
+2. Una acción `setNextChapter` puede fijar el siguiente destino; si no existe,
+   se usa el número consecutivo.
+3. Tras la pantalla de fin, **Siguiente capítulo** encadena ese destino o
+   **Menú principal** abandona la sesión.
+4. `chapter6` está marcado como final y regresa al menú tras su pantalla de fin.
 ```
 
 ### Pantalla de Continuación
@@ -2710,22 +3179,15 @@ Cuando terminas un capítulo, aparece:
 El jugador elige si desea:
 
 - **Siguiente Capítulo:** Carga automáticamente el próximo
-- **Menú Principal:** Vuelve al menú (puede recargar desde "Cargar")
+- **Menú Principal:** vuelve al menú. **Capítulos** no restaura decisiones ni
+  estado de la sesión abandonada.
 
 ### Persisten Variables Entre Capítulos
 
-**IMPORTANTE:** Por defecto, las variables se resetean entre capítulos. Si quieres que persistan:
-
-```javascript
-// En game.js, antes de playChapter():
-const persistedVariables = localStorage.getItem("persistentState");
-if (persistedVariables) {
-  engine.gameState = JSON.parse(persistedVariables);
-}
-
-// Después de endGame():
-localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
-```
+Durante **Siguiente capítulo** se conservan inventario, rescates, llamadas y
+presión narrativa. `gameState` y el escenario se reinician según el contrato de
+`reset()`. No hay persistencia narrativa entre procesos: no añadas una solución
+parcial en `localStorage`; consulta [Estado, continuidad y navegación](#estado-continuidad-y-navegación).
 
 ### Estructura de Capítulos Actual
 
@@ -2745,18 +3207,19 @@ localStorage.setItem("persistentState", JSON.stringify(engine.gameState));
 
 - Samu investiga Furrielva con Furry Maps y localiza la fábrica
 - Elige ruta entre las parodias ficticias El Jarrón, Noche o Mercaguasa
-- Los tres fondos conservan sus nombres de archivo heredados (`jamon.png`,
-  `dia.png` y `mercadona.png`), pero muestran marcas completamente ficticias.
+- Los tres fondos conservan raíces de nombre heredadas (`jamon`, `dia` y
+  `mercadona`), pero el runtime actual usa sus variantes 4K en WebP y muestra
+  marcas completamente ficticias.
   Comparten el acabado anime cinematográfico, la luz cálida de las 16:00 y la
-  dirección artística de `assets/cutscenes/chapter3/opening_samu_sources/storyboard/`.
+  dirección artística de `workbench/sources/cutscenes/chapter3/opening_samu/storyboard/`.
 - Batalla contra Micaela Michis (minigame gatos)
 - Micaela presenta la persecución y cierra la ruta con un mitin político absurdo
   a favor de los gatos: cajas de cartón por decreto, atún subvencionado,
   vivienda protegida en sofás y un Ministerio del Ovillo.
 - Los secundarios Micaela Michis y Neit usan retratos cartoon con contorno limpio,
   color plano y sombreado cel, alineados con el estilo de los protagonistas. Sus
-  recursos están en `assets/images/characters/others/micaela*.png` y
-  `assets/images/characters/others/neit.png`.
+  recursos están en `assets/images/characters/others/micaela*.webp` y
+  `assets/images/characters/others/neit.webp`.
 - Recolección cronometrada de guindillas y bullet hell contra Zip
 - Rescate de Edu y descubrimiento de una corrupción impuesta desde fuera
 
@@ -3252,8 +3715,8 @@ El recorte de verdad está en `assets/`: `cutscenes/` (421 MB) y `sounds/`
 
 #### Restauración 4K de la cinemática del concierto
 
-Los 24 planos de `assets/cutscenes/chapter3/opening_samu_sources/frames_generated/` tienen una restauración no
-destructiva en `assets/cutscenes/chapter3/opening_samu_sources/frames_4k/`. Todos conservan el nombre
+Los 24 planos de `workbench/sources/cutscenes/chapter3/opening_samu/frames_generated/` tienen una restauración no
+destructiva en `workbench/sources/cutscenes/chapter3/opening_samu/frames_4k/`. Todos conservan el nombre
 original y se entregan como PNG RGB de `3840×2160`.
 
 La restauración no consiste únicamente en ampliar píxeles: cada plano se
@@ -3265,17 +3728,18 @@ primeros planos de Seraphyna fijan su identidad en toda la secuencia. Los
 planos de público mantienen menos detalle en la distancia para conservar
 profundidad, y el frame final corrige además el texto legible `SERAPHYNA` y
 `ALL ACCESS`. En `frame_11_embobados.png`, Samu usa el patrón cromático
-canónico de `assets/images/characters/samu/Samu.png`: base topo, zonas gris crema,
+canónico de `assets/images/characters/samu/Samu.webp`: base topo, zonas gris crema,
 parches marrón oscuro, nariz naranja y gorguera blanca ribeteada en rojo. Los
 originales y la antigua ampliación `nuevos_frames_x2/` permanecen intactos.
 
 El montaje reconstruido se entrega en
-`assets/cutscenes/chapter3/opening_tony/opening_tony.mp4`. Es un H.264 de
+`assets/video/cutscenes/chapter3/opening_tony.mp4`. Es un H.264 de
 `3840×2160` a 30 FPS y 117,6 segundos que utiliza directamente los 24 planos
 restaurados, conserva el audio AAC del opening original y reproduce sus zooms,
 fundidos, fogonazos blancos y pausa negra final. Las variantes anteriores se
-conservan en la misma carpeta como `opening_tony_old.mp4` y
-`opening_tony_old_v2.mp4`; el archivo activo queda por debajo de 100 MB.
+conservan fuera de la build en
+`workbench/archive/cutscenes/chapter3/opening_tony/`; el archivo activo queda
+por debajo de 100 MB.
 
 ### Cómo funciona
 
@@ -3447,9 +3911,20 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   dibujan en HTML/CSS para conservar texto nítido. El fondo
   `mapa_furrielva_furry_maps_v2_4k.png` sitúa la Iglesia del Rocío en el centro,
   con plaza, comercios, callejón y Kingdom Ketchup alrededor.
-- La plaza de Furrielva usa `iglesia_furrielva_v2_4k.png`, una regeneración
+- La plaza de Furrielva usa `iglesia_furrielva_v2_4k.webp`, una regeneración
   3840x2160 del fondo original. Conserva iglesia, mercado, fuente y todos los
   grupos de animales, con rostros, anatomía, perspectiva y rótulos corregidos.
+- La ilustración aérea `furrielva_iglesia_vista_aerea_v1_4k.webp` ofrece una
+  vista 3/4 elevada de la iglesia, la plaza y sus palomas. La variante
+  `furrielva_iglesia_vista_aerea_v2_4k.webp` conserva el mismo máster 4K fuera
+  de dos máscaras locales y reemplaza únicamente los vitrales de la fachada:
+  el relieve superior muestra cinco apóstoles/reyes furros y el ventanal
+  central reúne a un ciervo regente, un zorro, un lince, un conejo y un lobo.
+  Las dos ilustraciones independientes, sus versiones con lado largo 3840, el
+  máster integrado y el proceso reproducible están en
+  `workbench/sources/images/backgrounds/chapter2/furrielva/`. V1 y v2 quedan
+  disponibles para una futura escena o incorporación a la galería, pero aún no
+  sustituyen el fondo narrativo actual.
 - Samu llega a la fachada, conoce al Ketchling de seguridad y descubre que Edu
   no responde. El tapón dorado pasa a ser una entrada explícita, no una
   casualidad del guion.
@@ -3464,12 +3939,12 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   CG precargados y fundidos a negro; los saltos de escena viven en líneas de
   acción separadas para no omitir diálogos ni solapar dos ilustraciones 4K.
 - Los pasillos Ketchup y Catsup usan
-  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png` (3840x2160). El fondo
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.webp` (3840x2160). El fondo
   conserva la composición simétrica y los tres rótulos, pero sustituye todos
   los envases con silueta de marca real por la botella ficticia canónica: cuerpo
   alto, tapón-corona dorado y etiqueta crema con corona y tomate.
 - La zona de estanterías y cajas de Neit usa
-  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png` (3840x2160). Las
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.webp` (3840x2160). Las
   botellas repiten ese mismo modelo canónico; las latas emplean únicamente el
   emblema ficticio de corona y tomate. Se conservan las guindillas necesarias
   para el diálogo y se sustituyen los rótulos deformados por «KINGDOM KETCHUP»,
@@ -3487,7 +3962,7 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   `scripts/rebuild_intro_sala_trono_kk.py` queda como reconstrucción alternativa
   y fuente editable, pero no genera el vídeo activo actual.
 - Al terminar la introducción, la escena fija utiliza
-  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png`,
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.webp`,
   una extracción PNG exacta del frame 239 de 240. El cambio se aplica con corte
   directo para conservar encuadre, iluminación y composición sin salto visual.
 - Los Ketchlings se presentan como trabajadores y ciudadanos con agencia:
@@ -3508,7 +3983,7 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   entiende por qué podría necesitarla, pero el objeto aporta 12 puntos extra de
   picante antes del bullet hell; el HUD identifica explícitamente la bonificación.
 - Cuando Zip desaparece, Edu reaparece con la pose cómica `picante`, basada en
-  `assets/images/characters/edu/edu_picante_wide_transparent.png`: conserva las
+  `assets/images/characters/edu/edu_picante_wide_transparent.webp`: conserva las
   lágrimas y el sudor, usa fondo alfa real y amplía excepcionalmente el lienzo
   para completar la llamarada hacia la izquierda. La clase CSS `pose-picante`
   ocupa el 70 % del escenario y ancla a Edu a la derecha; no aplicar esa anchura
@@ -3582,12 +4057,10 @@ glitch del retrato y el remate del teléfono compartan un único golpe sonoro.
 Toda la información de características está integrada en este documento.
 No existen archivos MD separados por característica.
 
-**Secciones principales:**
-
-- ✅ Características Avanzadas - Persona 5
-- ✅ Personalización de estilos P5
-- ✅ Troubleshooting actualizado
-- ✅ Ejemplos de uso
+**Secciones principales:** manuales canónicos, referencia del motor, sistema
+visual heredado, troubleshooting, herramientas gráficas, canon y ejemplos de
+uso. Los nombres `P5` que sigan apareciendo identifican clases/archivos internos,
+no la identidad pública ni una guía artística a copiar.
 
 ### Regreso al menú principal (2026-07-31)
 
@@ -3602,13 +4075,23 @@ su proporción y mostrando todos los planos completos, sin ampliarlos ni recorta
 
 ### Fondo del baño del capítulo 1 (2026-07-31)
 
-`assets/images/backgrounds/chapter1/bathroom.png` conserva el encuadre panorámico y la orientación
+`assets/images/backgrounds/chapter1/bathroom.webp` conserva el encuadre panorámico y la orientación
 del fondo jugable —lavabo a la izquierda, ducha al fondo y espejo a la derecha—,
 pero adopta el acabado anime, la luz cálida y la paleta de la cinemática
-`assets/cutscenes/chapter3/opening_samu_sources/storyboard/7.png`. El espejo izquierdo tiene un marco y un
+`workbench/sources/cutscenes/chapter3/opening_samu/storyboard/7.png`. El espejo izquierdo tiene un marco y un
 reflejo espacialmente coherentes, mientras que el espejo derecho tiene el marco
 completo y cerrado dentro del encuadre y representa el diseño vigente de
 `samu_surprised.png`.
+
+Como variante de producción se conserva
+`assets/images/backgrounds/chapter1/bathroom_sin_personajes_v1_4k.webp`: es una
+edición 4K (3840 × 2160) de otro encuadre del baño, sin el personaje situado a
+la derecha ni el personaje reflejado en el espejo. El espejo, la ducha, la
+pared de azulejos y la encimera se reconstruyeron para que el escenario quede
+vacío y espacialmente coherente. Esta variante **no está asignada todavía a
+ninguna escena**, por lo que no sustituye a `bathroom.webp`. La fuente editada,
+el máster PNG 4K y el prompt reproducible están en
+`workbench/sources/images/backgrounds/chapter1/bathroom/`.
 
 ### Organización canónica de assets y música del capítulo 2 (2026-08-01)
 
@@ -3620,28 +4103,70 @@ función. Las rutas antiguas `assets/sounds/`, `assets/backgrounds/`,
 ```text
 assets/
 ├── audio/
-│   ├── music/{chapter0..chapter6,menu,minigames,shared,legacy}/
+│   ├── music/{chapter0..chapter6,menu,minigames,shared}/
 │   └── sfx/
 ├── images/
-│   ├── backgrounds/{chapter0..chapter6,shared,legacy}/
+│   ├── backgrounds/{chapter0..chapter6,shared}/
 │   ├── cg/{chapter2,chapter3}/
 │   ├── characters/
 │   ├── minigames/{chapter2,chapter3,shared}/
 │   └── ui/
-├── cutscenes/{chapter2,chapter3}/
 ├── video/{cutscenes,menu}/
 ├── fonts/
 └── metadata/
 ```
 
-Los ficheros no conectados se conservan bajo `legacy/` para evitar perder
-material original, pero ninguna escena activa debe depender de ellos. Los
-recursos de Kingdom Ketchup que estaban en `generated/chapter2_v2` se integran
-en sus categorías definitivas y
+`assets/` contiene exclusivamente recursos que puede cargar el juego o alguna
+de sus herramientas. Las fuentes de producción, los originales protegidos y
+los recursos retirados viven fuera del paquete con esta estructura:
+
+```text
+workbench/
+├── sources/       # archivos de trabajo, storyboards y material editable
+├── originals/     # copia exacta anterior a cada optimización
+├── archive/       # versiones antiguas o no conectadas
+└── optimization/  # manifiesto reproducible de conversiones
+```
+
+Los recursos de Kingdom Ketchup que estaban en `generated/chapter2_v2` se
+integran en sus categorías definitivas y
 `assets/metadata/chapter2_v2_manifest.json` guarda el catálogo actualizado.
 
+### Optimización y conservación de originales (2026-08-03)
+
+El pipeline `scripts/optimize_runtime_assets.py` convierte solamente recursos
+activos y actualiza sus referencias. Los sprites y cualquier imagen con alfa se
+guardan como WebP sin pérdida; fondos y CG opacos usan WebP con calidad 92. El
+audio WAV apto para música se convierte a MP3 VBR q2, y los vídeos seleccionados
+se recodifican como H.264 CRF 20, `yuv420p` y `faststart`. Una imagen no se
+sustituye si el ahorro es inferior al 5 %, y los PNG de edición ocular se
+mantienen cuando la herramienta necesita ese formato.
+
+Antes de reemplazar un archivo, su versión exacta se mueve a
+`workbench/originals/runtime/assets/` conservando la misma jerarquía. El
+manifiesto `workbench/optimization/asset_optimization_manifest.json` registra
+rutas, dimensiones, modo, tamaños y SHA-256 de original y runtime, y permite
+reanudar el proceso con seguridad tras una interrupción. Para aplicar de nuevo
+las reglas:
+
+```powershell
+npm run audit:assets
+npm run optimize:assets
+```
+
+El primer comando es una auditoría sin escritura; el segundo conserva los
+originales y aplica las conversiones pendientes.
+
+La primera pasada optimizó 328 imágenes y 3 medios: ahorra 374,62 MiB en
+imágenes y 100,66 MiB en audio/vídeo, 475,28 MiB en total. Tras separar además
+fuentes y recursos retirados, `assets/` ocupa aproximadamente 820 MiB; el
+material recuperable permanece en `workbench/` y no entra en la aplicación
+empaquetada. La carpeta sí se versiona completa con Git normal, sin requerir Git
+LFS durante la instalación o el clonado. Sus binarios forman parte del historial
+ordinario, por lo que cada versión aumenta el tamaño descargado por el equipo.
+
 La antigua `huelva.mp3` se conserva como
-`assets/audio/music/legacy/huelva_original.mp3`, pero ya no se reproduce. El
+`workbench/archive/audio/music/legacy/huelva_original.mp3`, pero ya no se reproduce. El
 capítulo 2 utiliza estas variaciones:
 
 - Escena 1: `furrielva_despierta.mp3`.
@@ -3826,7 +4351,7 @@ Elion, la ilustración de Elion controlando a los brainrot y la presentación
 animada de Samu.
 
 La ilustración canónica de Elion vive en
-`assets/images/cg/shared/elion_controla_brainrot.png`; el guion y la galería
+`assets/images/cg/shared/elion_controla_brainrot.webp`; el guion y la galería
 apuntan al mismo original sin acoplar la historia a una carpeta de presentación.
 
 Las formas humanas de Samu, Edu, Tony y José proceden de sus hojas de diseño,
@@ -3848,16 +4373,26 @@ una decisión de sesión, no un desbloqueo persistente. El catálogo y sus 260 m
 regeneran con `scripts/build_gallery_manifest.py`; no se mantiene a mano una
 segunda lista en el código.
 
+El juego y la galería consultan además
+`assets/metadata/sprite_white_halo_cleaned.json`. Cuando una entrada
+`<personaje>.<pose>` contiene una copia limpia, esta sustituye al sprite declarado
+en `characters/*.json` tanto en `showCharacter`/`setPose` como en la ficha y el
+selector de poses de la galería. Si no existe una copia válida se conserva el
+sprite fuente como fallback. El manifiesto de personajes no se reescribe y, por
+tanto, continúa siendo la fuente canónica protegida. La galería utiliza las
+miniaturas limpias de 156×156 y 480×270 generadas al guardar para evitar cargar los
+PNG completos en la cuadrícula.
+
 #### Centro de herramientas local
 
 `http://localhost:8011/tools` reúne en un único menú todo el flujo ocular y las
 utilidades HTML del proyecto. Sus indicadores se actualizan desde las API locales:
 regiones confirmadas, capas limpias disponibles, offsets de alineación y bases sin
-ojos guardadas. Las tres herramientas oculares tienen un acceso permanente de
+ojos guardadas. Las herramientas de edición tienen un acceso permanente de
 vuelta al centro.
 
 El flujo recomendado aparece como `Marcar regiones → Alinear capas → Limpiar
-bases`. En una sección aparte se enlazan el juego, la prueba de minijuegos, el
+bases`, seguido del editor independiente `Eliminar halos blancos`. En una sección aparte se enlazan el juego, la prueba de minijuegos, el
 generador de assets, los placeholders, las propuestas de menú y el centro de
 control legado, todos servidos por el puerto 8000. `ABRIR_EDITOR_OJOS.bat` inicia
 el servidor ocular y abre directamente este centro; si el servidor ya estaba
@@ -3889,17 +4424,23 @@ suavizado 0, por lo que esta ampliación no altera su resultado hasta revisarlas
 
 Cada guardado de regiones genera además previews PNG transparentes en
 `assets/images/characters/eye_region_previews/<personaje>/<pose>/`. El recorte
-`eyes_original.png` y todos los `eyes_blink_XX.png` de una pose comparten el mismo
-rectángulo, relleno exterior, ancho y alto. Si un fotograma fuente tuviese otra
+`eyes_original.png`, el nuevo `eyes_half.png` y todos los `eyes_blink_XX.png` de
+una pose comparten el mismo rectángulo, relleno exterior, ancho y alto. Si un
+fotograma fuente tuviese otra
 resolución, se normaliza primero al lienzo de la pose base para conservar las
-coordenadas. El inspector muestra la resolución real y permite descargar el
-original y el fotograma de parpadeo seleccionado.
+coordenadas. El inspector permite alternar entre `Original`, `Intermedio` y
+`Parpadeo`, muestra la resolución real y permite descargar por separado los tres
+recortes transparentes.
 
 El índice `assets/metadata/blink_eye_region_previews.json` registra fuentes,
 dimensiones y coordenadas del recorte. Las previews de todas las regiones ya
 confirmadas se pueden reconstruir con
 `python scripts/build_character_eye_layers.py --build-previews`; la operación no
-modifica los sprites fuente.
+modifica los sprites fuente. Las máscaras se dibujan con supersampling y se reducen
+por cobertura de área (`BOX`), no con `LANCZOS`: así el antialias queda dentro del
+contorno y no genera una corona semitransparente fuera del corte. Tras combinar
+inclusiones y protecciones también se eliminan los residuos de alfa inferiores a
+8/255. Los PNG resultantes conservan RGB neutro bajo alfa cero.
 
 En Windows se puede iniciar de la misma forma haciendo doble clic en
 `ABRIR_EDITOR_OJOS.bat`; el lanzador abre el centro de herramientas en el navegador
@@ -3917,6 +4458,12 @@ la comparativa visual `scripts/eye_layer_preview.html`: a la izquierda reproduce
 el antiguo sprite completo y a la derecha compone el cuerpo fijo con la capa ocular.
 El botón `Regenerar y probar` ejecuta ese proceso desde la propia interfaz antes de
 abrir la preview, para que los últimos ajustes elípticos estén siempre incluidos.
+Los WebP derivados se escriben primero en un temporal único y se sustituyen de
+forma atómica, con reintentos breves en Windows; así la regeneración no falla si
+el navegador estaba terminando de leer la versión anterior. Antes de codificarlos
+se fuerza RGB negro neutro en todo píxel con alfa cero y se usa el modo WebP
+`exact`: esto evita que el codificador reconstruya color residual invisible que
+algunos visores defectuosos llegan a mostrar como franjas o bloques.
 La comparativa incluye un modo `Fijar parpadeo` para corregir el desplazamiento de
 la capa ocular por pose. El usuario puede introducir X/Y en píxeles, arrastrar la
 capa o usar las flechas (con `Mayús`, saltos de 5 px); los valores se guardan en
@@ -3924,29 +4471,40 @@ capa o usar las flechas (con `Mayús`, saltos de 5 px); los valores se guardan e
 fotogramas de parpadeo: la pose abierta conserva su alineación exacta.
 
 Para 3C y Airi existe además una salida ocular limpia, construida con
-`python scripts/compose_clean_eye_layers.py --all`. Genera 34 capas transparentes
-(`eyes_open.webp` y `eyes_closed.webp`) para las 17 poses manualmente marcadas en
+`python scripts/compose_clean_eye_layers.py --all`. Genera 51 capas transparentes
+(`eyes_open.webp`, `eyes_half.webp` y `eyes_closed.webp`) para las 17 poses
+manualmente marcadas en
 `assets/images/characters/eye_layers_clean/`, con su índice en
 `assets/metadata/blink_eye_layers_clean.json`. El proceso no redibuja, gira,
 reescala ni desplaza los ojos: conserva los píxeles y coordenadas exactos del
-sprite original y de su fotograma de parpadeo, y usa la diferencia entre ambos
-sólo para volver transparente la cara circundante. Las poses que nacen con los
+sprite original, del intermedio y del fotograma de parpadeo, y usa sus diferencias
+contra la base sólo para volver transparente la cara circundante. Las poses que nacen con los
 ojos cerrados (`airi_happy` y `airi_pray`) invierten correctamente las fuentes
 abierta y cerrada.
 
-`/preview` funciona como mesa de alineación doble. El lienzo izquierdo compone
-los ojos abiertos sobre la pose base y el derecho compone los ojos cerrados sobre
-esa misma base. Ambas capas se pueden arrastrar de forma independiente, ajustar
+`/preview` funciona como mesa de alineación triple. Los lienzos componen sobre la
+misma pose base los ojos abiertos, semicerrados y cerrados. Las tres capas se
+pueden arrastrar de forma independiente, ajustar
 con X/Y o mover con las flechas (`Mayús` avanza 5 px). Cada pose guarda por separado
-`open` y `closed` en `assets/metadata/blink_eye_clean_offsets_manual.json`. La
+`open`, `half` y `closed` en `assets/metadata/blink_eye_clean_offsets_manual.json`. La
 interfaz también permite ocultar temporalmente las bases, mostrar las regiones
-marcadas y restablecer un estado o ambos.
+marcadas y restablecer un estado o los tres.
+
+El autoguardado de alineación mantiene un temporizador independiente por pose: si
+se cambia rápidamente de personaje, la pose anterior termina de persistirse en vez
+de transferir accidentalmente su guardado a la nueva. Antes de seguir cualquier
+enlace interno (`Volver a marcar`, herramientas o limpiador), la mesa espera a que
+se guarden todas las alineaciones pendientes. Si falla la escritura, cancela la
+navegación; si hay pintura de píxeles sin guardar, pide confirmación. Al cerrar,
+recargar o abandonar la pestaña queda además activo el aviso nativo del navegador
+y `pagehide` intenta enviar los últimos offsets mediante `sendBeacon`.
 
 Cada panel dispone además de `Ancho %` y `Alto %` para estirar su capa ocular
-entre el 25% y el 300%, manteniendo anclado el centro de los ojos. Abierto y
-cerrado son independientes; la casilla `Vincular estirado` replica únicamente
-los cambios de escala al otro panel, sin mezclar sus X/Y. El esquema versión 2
-del mismo JSON conserva `openScale` y `closedScale`, mientras que los registros
+entre el 25% y el 300%, manteniendo anclado el centro de los ojos. Abierto,
+intermedio y cerrado son independientes; la casilla `Vincular estirado` replica
+únicamente los cambios de escala a los otros paneles, sin mezclar sus X/Y. El
+esquema versión 3 del mismo JSON conserva `openScale`, `halfScale` y `closedScale`,
+mientras que los registros
 antiguos sin escala se interpretan como 100% × 100%. Tanto la composición en
 pantalla como el GIF aplican estos valores.
 
@@ -3964,7 +4522,63 @@ automáticamente en el `x/y` registrado en
 offsets continúan siendo píxeles reales del sprite y se pueden compartir entre
 ambos modos. Cuando una pose tiene varios fotogramas de parpadeo, el selector de
 la barra `Compartir` permite revisar cada uno. El GIF ocular se genera con el
-origen visible y respeta sus offsets abierto/cerrado.
+origen visible y respeta los offsets y escalas independientes de abierto,
+intermedio y cerrado.
+
+El botón `Ver animación` abre una previsualización grande en bucle de la pose
+seleccionada. Compone la base con los ojos abiertos, semicerrados y cerrados usando
+el origen, fotograma, offsets y escalas que estén visibles en ese momento. El visor
+permite pausar o reanudar, reiniciar el ciclo y cambiar su velocidad a 0,5×, 1× o
+2×; además se actualiza si se retoca la alineación mientras permanece abierto y se
+cierra con su botón, con `Escape` o pulsando fuera del cuadro.
+
+Cada uno de los tres paneles de alineación tiene también un zoom visual independiente
+del 100% al 500%, con botones `−`/`+`, deslizador y `Ajustar`. Al ampliar, el encuadre
+se desplaza progresivamente hacia la región ocular para mantener los ojos visibles;
+el zoom no modifica ni guarda offsets o escalas de la capa. Con el lienzo enfocado se
+puede usar `+`, `−` y `0`, y `Ctrl`/`Cmd` más la rueda ajusta únicamente el panel bajo
+el puntero.
+
+El botón `✎` de cada panel abre además un editor de píxeles para esa capa ocular.
+Incluye un borrador circular que modifica únicamente el canal alfa, una herramienta
+`Dedo` que arrastra y mezcla el color vecino con fuerza regulable, un `Cuentagotas`
+que toma el RGB de la composición visible y un `Pincel` que sólo escribe en la capa
+ocular. El pincel ofrece puntas `Sólido`, `Translúcido` y `Suave`, selector de color
+y opacidad independiente para las dos variantes transparentes. Tras tomar una
+muestra, el cuentagotas selecciona automáticamente el pincel con ese color. El tamaño del
+pincel se expresa en píxeles reales de la capa. Un bloque de zoom destacado ofrece
+botones `−`/`+`, deslizador, porcentaje y `Ajustar`; la vista puede ampliarse entre 50%
+y 800% respecto al encaje automático, también mediante `+`/`−`/`0` o
+`Ctrl`/`Cmd`+rueda. La base se puede mostrar u ocultar sin
+formar parte del resultado. Cada trazo entra en un historial de deshacer/rehacer y
+`Recuperar capa fuente` restaura la imagen de origen.
+Al abrirse conserva el zoom del panel y compone el sprite completo con el mismo
+recorte, offset y estirado visibles en la mesa; los trazos se transforman de vuelta
+a coordenadas de la capa ocular antes de guardarse.
+
+La edición es no destructiva: los PNG resultantes viven en
+`assets/images/characters/eye_layer_edits/<origen>/<personaje>/<pose>/` y se
+indexan en `assets/metadata/blink_eye_pixel_edits.json`; nunca se sobrescriben los
+recortes ni las capas limpias originales. La mesa, el visor de animación y las
+exportaciones GIF/APNG usan automáticamente la copia editada cuando existe. Al
+guardar una capa, la reconstrucción necesaria para cargar su PNG conserva en memoria
+los offsets, escalas y fotograma elegidos; además, cada guardado de alineación actualiza
+la copia local del índice para que una reconstrucción posterior no restablezca los ojos.
+
+Las descargas completas componen esos cinco estados sobre el cuerpo de la pose y
+exportan el personaje entero con transparencia. `Sólo ojos` conserva como
+alternativa la capa ocular recortada. Todas las descargas respetan el
+origen seleccionado (`Recortes guardados` o `Capas limpias`) y la secuencia
+abierto/medio/cerrado/medio/abierto.
+
+`Animación HQ (APNG)` es la salida recomendada: genera un PNG animado sin pérdida
+con alfa RGBA y sin reducir cada fotograma a la paleta de 256 colores de GIF. Por
+eso mantiene el color, los degradados y los bordes transparentes de la preview y
+evita los artefactos que algunos decodificadores producen con WebP animado. El GIF
+completo y el GIF de sólo ojos permanecen como alternativas de compatibilidad.
+El damero de la herramienta es sólo el fondo CSS que identifica transparencia:
+fuera de ella, cada visor puede representar esos píxeles transparentes sobre negro,
+blanco u otro color.
 
 La barra `Ubicaciones` ofrece tres accesos contextuales: `Sprite base`, `Ojos
 utilizados` y `Guardado X/Y`. Los dos primeros cambian automáticamente con la pose
@@ -3974,12 +4588,21 @@ bloquean normalmente las rutas `file://`, los botones llaman a una API limitada 
 rutas conocidas del proyecto y abren la carpeta correspondiente en el Explorador
 de Windows. La ruta exacta se muestra también en la propia barra.
 
-Hasta que las bases sin ojos estén terminadas, ambas composiciones muestran aún
+Hasta que las bases sin ojos estén terminadas, las tres composiciones muestran aún
 los ojos originales debajo de la capa móvil; la propia interfaz lo advierte. El
-GIF de capa ocular usa las capas limpias, respeta los dos offsets independientes,
+GIF de capa ocular usa las capas limpias, respeta los tres ajustes independientes,
 se reproduce en bucle, se recorta al contenido transparente y limita su lado
 mayor a 960 px. La conexión definitiva al juego queda pendiente de sustituir las
 bases por sus versiones sin ojos.
+
+Los intermedios de las 130 poses activas se indexan en
+`assets/metadata/blink_eye_intermediates.json`. Hay 117 cierres y 13 aperturas
+inversas; estas últimas conservan como reposo el gesto cerrado de la pose y generan
+un entreabrir coherente. Tres poses reutilizan un intermedio existente y las 127
+restantes apuntan a 115 fuentes únicas en
+`assets/images/characters/eye_intermediate_sources/`, compartiendo el resultado
+cuando varias poses usan exactamente el mismo par de sprites. El generador y
+sanitizador reproducible es `scripts/build_blink_intermediates.py`.
 
 #### Limpiador manual de bases sin ojos
 
@@ -3999,15 +4622,143 @@ a una pose ya guardada se carga esa copia para continuar trabajando poco a poco;
 `Restaurar original` recupera todos los píxeles del archivo fuente. Cambiar de pose
 con ediciones pendientes solicita confirmación para evitar perder trabajo.
 
+#### Editor de halos blancos de sprites base
+
+`http://localhost:8011/white-halo` abre
+`scripts/sprite_white_halo_editor.html`, una herramienta independiente que enumera
+todas las poses base declaradas en `characters/*.json`, incluso si no tienen
+parpadeo. Su pincel no es un borrador general: dentro del círculo sólo reduce el
+alfa de píxeles blancos, grises neutros o halos ligeramente azulados. La tolerancia
+ampliada fija el umbral de luminosidad y neutralidad, mientras que tamaño y fuerza
+controlan el trazo; los píxeles de color y las líneas oscuras se ignoran. Con fuerza
+100%, todo píxel aceptado bajo el centro del pincel queda completamente transparente;
+el suavizado se reserva para el borde exterior del círculo.
+
+La vista ofrece zoom de 25% a 500% mediante el deslizador o `Ctrl + rueda`
+sobre el lienzo, encaje automático, fondos damero, negro,
+blanco y magenta para descubrir bordes, comparación momentánea con la base de
+trabajo, restauración completa y un historial completo de la sesión con
+`Ctrl+Z`/`Ctrl+Y`. No existe un máximo artificial de pasos: se conserva cada
+trazo y operación hasta cambiar de pose o de base de trabajo, momentos en los que
+comienza un historial nuevo. El lienzo ampliado puede desplazarse como en un editor
+gráfico manteniendo `Espacio` o `Alt` mientras se arrastra; el botón central del
+ratón ofrece el mismo acceso directo. Estos gestos interceptan el trazo para que
+nunca limpien, borren o restauren por accidente.
+`Base de trabajo` permite decidir de forma explícita qué imagen se considera el
+punto de partida de la sesión: el sprite fuente protegido, la última copia limpia
+registrada o un PNG/WebP/JPEG local con idéntica resolución. Si existe una copia
+limpia, se selecciona por defecto al abrir la pose. `Ver base`, `Restaurar base` y
+el origen homónimo del pincel restaurador utilizan esa elección. Cambiar de base o
+de pose solicita confirmación cuando hay cambios sin guardar. Una base local sólo
+vive en memoria hasta utilizar `Guardar copia`; en ningún caso se escribe sobre el
+sprite fuente.
+El botón `Quitar halo exterior` ejecuta una limpieza topológica de una sola vez:
+parte de toda la transparencia exterior e interior del sprite, elimina los restos
+de fondo que encuentra dentro del alcance configurado y se detiene al tocar una
+línea negra o casi negra. `Borde oscuro` determina qué luminosidad se considera
+contorno protector; `Solidez` exige además una opacidad mínima para que el trazo
+pueda actuar como barrera. Así, un residuo negro semitransparente se atraviesa y
+se elimina junto al halo claro, mientras que el contorno negro opaco se conserva.
+`Pelado` permite retirar entre cero y tres capas oscuras superficiales antes de
+activar esa barrera, eliminando la costura de un píxel producida por el antialias
+sin tener que borrar manualmente todo el perímetro. El valor inicial es `1`; debe
+usarse `0` en sprites cuyo contorno bueno sea excepcionalmente fino.
+`Cuentagotas tope` ofrece una alternativa a la detección por luminosidad: tras
+activarlo se pulsa un píxel del contorno que debe conservarse y ese RGB pasa a ser
+la barrera. `Margen color` protege variaciones cercanas del trazo y `Solidez`
+define el núcleo opaco de la barrera. A partir de ese núcleo, la herramienta
+protege también hasta cuatro píxeles conectados del mismo color, conservando el
+antialias de puntas y detalles aunque su alfa individual sea inferior. Una copia
+semitransparente exterior separada del núcleo por el halo claro no queda conectada
+y se elimina. El botón
+`Automático` descarta la muestra y vuelve a utilizar `Borde oscuro`; cambiar de
+pose también restablece el modo automático para no reutilizar accidentalmente un
+color perteneciente a otro sprite.
+`Alcance` limita cuántos píxeles puede penetrar la operación,
+evitando que una abertura accidental recorra el interior del personaje. La acción
+completa crea un único paso de historial, por lo que `Deshacer` o `Ctrl+Z` recuperan
+exactamente el lienzo anterior.
+El recorrido exterior usa conectividad de ocho direcciones. Además de arriba,
+abajo, izquierda y derecha, alcanza píxeles unidos diagonalmente, lo que elimina
+los últimos restos claros alojados en puntas, entrantes y ángulos cerrados sin
+saltar por encima del color de tope.
+Como remate independiente, `Quitar sólo halo claro` recorre desde la transparencia
+únicamente píxeles blancos o grises claros aceptados por `Tolerancia`, con la
+profundidad limitada por `Alcance`. No atraviesa negros ni colores, por lo que
+permite retirar líneas blancas residuales después de proteger el contorno sin
+volver a erosionar puntas o detalles. También constituye un único paso reversible.
+Cuando el resto visible ya no tiene un color concreto sino que aparece moteado
+sobre el damero, `Quitar residuo transparente` recorre únicamente píxeles exteriores
+cuyo alfa sea igual o inferior a `Alfa residual`, sin importar su RGB. Se detiene
+ante cualquier píxel más opaco y respeta `Alcance`; el valor inicial `48` elimina
+contaminación débil conservando el cuerpo del antialias, y puede aumentarse de
+forma gradual con `Deshacer` disponible para cada intento.
+
+`Suavizar borde` es el último remate para dientes de sierra. No desenfoca el RGB
+del sprite ni sus líneas interiores: localiza exclusivamente píxeles visibles que
+tocan transparencia, calcula una cobertura alfa ponderada de 3×3 y reconstruye el
+color de los nuevos píxeles semitransparentes a partir de vecinos visibles. El
+control `Suavizado` mezcla ese resultado con el borde actual; se recomienda empezar
+entre 35% y 50%, comprobar sobre magenta y utilizar `Deshacer` si el contorno queda
+demasiado blando. Cada aplicación constituye un solo paso reversible y varias
+aplicaciones acumulan el efecto.
+
+El pincel manual dispone de los modos `Limpiar`, `Borrar` y `Restaurar`. El primero mantiene
+la eliminación selectiva de blancos según `Tolerancia`; `Borrar` reduce el alfa de
+cualquier color dentro del círculo, con borde suavizado y la intensidad indicada
+por `Fuerza` (al 100% el centro queda completamente transparente); el tercero vuelve a pintar
+los píxeles fuente sólo dentro del trazo, con el mismo `Tamaño`, borde suavizado y
+`Fuerza`. La fuente predeterminada `Antes de la última limpieza` es una captura
+exacta del lienzo tomada antes de cada trazo limpiador, restauración completa o
+pasada global, por lo que permite rescatar localmente un detalle sin deshacer el
+resto del resultado. `Base de trabajo` permite recuperar elementos perdidos varias
+operaciones atrás desde la fuente, copia guardada o archivo local elegido, con la
+advertencia de que también puede reintroducir el halo presente en esa base. Un
+trazo restaurador no reemplaza su propia fuente y puede repetirse
+sobre varias zonas; cada trazo añade un paso independiente a Deshacer/Rehacer.
+Todos los controles del editor incorporan ayuda contextual en dos niveles. Al
+pasar el puntero o enfocar una opción aparece una descripción breve; el botón
+redondo `?` situado junto a ella muestra una explicación ampliada con riesgos,
+alcance y efecto sobre el archivo. Los avisos usan un tooltip propio accesible por
+teclado y se ocultan al desplazar o redimensionar la vista para no tapar el sprite.
+Debajo del aviso principal hay una guía rápida desplegable que convierte las
+operaciones en un flujo de cinco pasos: inspeccionar, marcar el límite, ejecutar
+la limpieza principal, rematar residuos y verificar antes de guardar. Incluye una
+leyenda de decisión que relaciona cada síntoma (`halo completo`, `línea blanca`,
+`borde moteado` o pérdida de detalle) con el botón y los valores iniciales adecuados.
+La barra superior sigue esa misma jerarquía y ya no mezcla controles por orden de
+incorporación: se divide en cuatro paneles numerados (`Pincel manual`, `Limpieza
+principal`, `Remates` y `Vista, historial y archivo`). En pantallas anchas se
+distribuyen en una cuadrícula de dos columnas; por debajo de 1400 px se apilan sin
+alterar el orden lógico ni separar cada acción de sus parámetros.
+`Guardar copia` nunca sobrescribe el sprite fuente: crea o actualiza un PNG RGBA en
+`assets/images/characters/sprite_halo_cleaned/<personaje>/<pose>/` y registra la
+ruta en `assets/metadata/sprite_white_halo_cleaned.json`. Al regresar a una pose
+guardada, el editor selecciona esa copia como base para continuar el retoque, pero
+el selector permite volver al fuente protegido en cualquier momento. Cada guardado
+crea también una miniatura de pose y otra de tarjeta; el juego y la galería
+priorizan automáticamente estas copias limpias sin modificar `characters/*.json`.
+
 ### Acting de personajes, transiciones y memoria de escenario
 
 `showCharacter` y `setPose` reemplazan el sprite de forma atómica: nunca crean
 una copia fantasma de la expresión anterior. Las fichas pueden declarar
 `animations` con varios sprites de una misma pose; esos fotogramas se precargan
-y se reproducen en secuencia sin solaparse. Hay 135 poses con parpadeo dibujado.
-Samu y Edu usan tres pasos (`abierto → medio → cerrado → medio → abierto`) en
-neutral y el resto alterna la pose base con un cierre u apertura ocular propio.
-No hay movimiento corporal asociado al parpadeo.
+y se reproducen en secuencia sin solaparse. Hay 135 poses con parpadeo declarado:
+130 pertenecen a los personajes activos y 5 al archivo legado de ePod, sustituido
+en el juego por Nexo. Todas las poses activas usan ahora cinco pasos
+(`abierto → medio → cerrado → medio → abierto`); en las 13 poses que reposan con
+los ojos cerrados la lectura se invierte (`cerrado → medio → abierto → medio →
+cerrado`). No hay movimiento corporal asociado al parpadeo.
+
+Las 17 poses de 3C y Airi que ya cuentan con recortes manuales usan además la
+composición ligera tanto en escena como en la galería: el sprite base aporta el
+reposo y los ojos iniciales; encima sólo se muestran los PNG `half`, `closed` y
+`half`, para terminar retirando la capa y revelar de nuevo el sprite base. La
+secuencia efectiva es `base → semicerrados → cerrados → semicerrados → base` y
+respeta el crop, X/Y y estirado guardados en la mesa de alineación, así como las
+copias retocadas en `blink_eye_pixel_edits.json`. Las poses aún no preparadas
+conservan automáticamente el sistema anterior de sprites completos.
 
 Las acciones `animateCharacter`, `characterAnimation` y `poseSequence` siguen
 sirviendo para encadenar **poses narrativas distintas**, hacer bucles hasta

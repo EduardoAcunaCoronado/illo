@@ -2,7 +2,7 @@
   "name": "Ballerina Capuchina",
   "color": "#d8a05c",
   "poses": {
-    "neutral": "assets/images/characters/ballerina_capuchina.png"
+    "neutral": "assets/images/characters/ballerina_capuchina.webp"
   },
   "animations": {
     "neutral": [{ "src": "assets/images/characters/ballerina_capuchina/animations/blinks/ballerina_neutral_blink_closed.webp", "duration": 95 }]

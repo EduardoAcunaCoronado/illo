@@ -17,7 +17,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             }
           ],
           "character": "3C",
@@ -435,7 +435,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             }
           ],
           "character": "Samu",
@@ -471,7 +471,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma.webp"
             }
           ]
         },
@@ -577,7 +577,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.png",
+              "value": "assets/images/backgrounds/chapter1/pisito.webp",
               "cut": true
             },
             {
@@ -759,7 +759,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.png"
+              "value": "assets/images/backgrounds/chapter1/pisito.webp"
             }
           ]
         },
@@ -820,7 +820,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter6/escenario.png"
+              "value": "assets/images/backgrounds/chapter6/escenario.webp"
             },
             {
               "type": "hideCharacter",
@@ -878,7 +878,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter6/escenario_con_foco.png"
+              "value": "assets/images/backgrounds/chapter6/escenario_con_foco.webp"
             },
             {
               "type": "showCharacter",
@@ -962,7 +962,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "showCharacter",
@@ -1042,7 +1042,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma.PNG"
+              "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma.webp"
             },
             {
               "type": "hideCharacter",
@@ -1155,7 +1155,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma_mano.png"
+              "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma_mano.webp"
             },
             {
               "type": "hideCharacter",
@@ -1184,7 +1184,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma_mano_corrupta.png"
+              "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma_mano_corrupta.webp"
             }
           ],
           "character": "3C",

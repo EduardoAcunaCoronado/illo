@@ -437,6 +437,22 @@ body.startup-pending #menu-video {
     opacity: 1;
 }
 
+.character-eye-layer {
+    position: absolute;
+    z-index: 3;
+    display: block;
+    max-width: none;
+    max-height: none;
+    object-fit: fill;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.character-eye-layer[hidden] {
+    display: none;
+}
+
 /* El retrato humano va separado del teléfono para que el glitch no deforme la
    carcasa ni los botones. La capa transparente tiene el mismo lienzo 924x1702
    que el móvil y replica su contain/bottom center, de modo que ambos coinciden
@@ -4673,6 +4689,22 @@ html.electron-app #menu-theme-btn { display: none; }
     object-fit: contain;
 }
 
+.gallery-eye-layer {
+    position: absolute;
+    z-index: 2;
+    display: block;
+    max-width: none;
+    max-height: none;
+    object-fit: fill;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.gallery-eye-layer[hidden] {
+    display: none;
+}
+
 .gallery-lightbox-copy {
     display: flex;
     min-height: 0;
@@ -6955,7 +6987,7 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 
 @keyframes samu-shake-off-soot {
-    0%   { translate: 0 0; rotate: 0deg; background-image: url('assets/images/characters/samu/samu_charred_whiteeyes.png'); }
+    0%   { translate: 0 0; rotate: 0deg; background-image: url('assets/images/characters/samu/samu_charred_whiteeyes.webp'); }
     8%   { translate: -14px 1px; rotate: -4deg; }
     16%  { translate: 15px -1px; rotate: 5deg; }
     24%  { translate: -16px 0; rotate: -6deg; }
@@ -6963,9 +6995,9 @@ html.electron-app #menu-theme-btn { display: none; }
     40%  { translate: -13px -1px; rotate: -5deg; }
     48%  { translate: 12px 0; rotate: 4deg; }
     56%  { translate: -8px 0; rotate: -3deg; }
-    64%  { translate: 7px 0; rotate: 2deg; background-image: url('assets/images/characters/samu/samu_charred_whiteeyes.png'); }
-    76%  { translate: -3px 0; rotate: -1deg; background-image: url('assets/images/characters/samu/samu_worried.png'); }
-    100% { translate: 0 0; rotate: 0deg; background-image: url('assets/images/characters/samu/samu_worried.png'); }
+    64%  { translate: 7px 0; rotate: 2deg; background-image: url('assets/images/characters/samu/samu_charred_whiteeyes.webp'); }
+    76%  { translate: -3px 0; rotate: -1deg; background-image: url('assets/images/characters/samu/samu_worried.webp'); }
+    100% { translate: 0 0; rotate: 0deg; background-image: url('assets/images/characters/samu/samu_worried.webp'); }
 }
 
 @keyframes samu-soot-particles {
@@ -6978,7 +7010,7 @@ html.electron-app #menu-theme-btn { display: none; }
 @media (prefers-reduced-motion: reduce) {
     .character.pose-charred_shake[data-character="samu"] {
         animation: none !important;
-        background-image: url('assets/images/characters/samu/samu_worried.png') !important;
+        background-image: url('assets/images/characters/samu/samu_worried.webp') !important;
     }
     .character.pose-charred_shake[data-character="samu"]::after { display: none; }
 }

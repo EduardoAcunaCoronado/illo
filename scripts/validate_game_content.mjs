@@ -413,6 +413,32 @@ if (fs.existsSync(galleryFile)) {
   }
 }
 
+const cleanSpriteFile = path.join(
+  root,
+  "assets",
+  "metadata",
+  "sprite_white_halo_cleaned.json",
+);
+if (fs.existsSync(cleanSpriteFile)) {
+  const cleanManifest = readJson(cleanSpriteFile);
+  if (cleanManifest) {
+    const sprites = cleanManifest.sprites || {};
+    walkAssets(sprites, "sprite_white_halo_cleaned.json");
+    for (const [id, entry] of Object.entries(sprites)) {
+      const separator = id.indexOf(".");
+      const characterKey = separator > 0 ? id.slice(0, separator) : "";
+      const pose = separator > 0 ? id.slice(separator + 1) : "";
+      const where = `sprite_white_halo_cleaned.json · ${id}`;
+      if (!characters.get(characterKey)?.poses?.[pose]) {
+        errors.push(`${where}: no corresponde a una pose declarada`);
+      }
+      if (typeof entry?.cleaned !== "string" || !entry.cleaned.trim()) {
+        errors.push(`${where}: falta la ruta cleaned`);
+      }
+    }
+  }
+}
+
 // Comprobar también rutas literales de las superficies ejecutables que no pasan
 // por los JSON de capítulos. Se omiten deliberadamente plantillas dinámicas.
 const literalAssetPattern = /assets[\\/][^"`)\s]+?\.(?:png|jpe?g|webp|gif|mp3|wav|ogg|m4a|aac|mp4|webm|json|woff2?|ttf|otf)/gi;
@@ -447,9 +473,9 @@ if (packageData) {
   const packagedFiles = new Set(packageData.build?.files || []);
   for (const exclusion of [
     "!assets/**/_source/**/*",
-    "!assets/images/characters/others/2b.png",
-    "!assets/images/characters/others/2b_happy.png",
-    "!assets/images/characters/others/epod.png",
+    "!assets/images/characters/others/2b.webp",
+    "!assets/images/characters/others/2b_happy.webp",
+    "!assets/images/characters/others/epod.webp",
     "!characters/epod.json",
   ]) {
     if (!packagedFiles.has(exclusion)) {

@@ -2,7 +2,7 @@
   "name": "Amalgama forma final",
   "color": "#2b003f",
   "poses": {
-    "neutral": "assets/images/characters/amalgama/amalgama_final.png"
+    "neutral": "assets/images/characters/amalgama/amalgama_final.webp"
   },
   "defaultPose": "neutral"
 }

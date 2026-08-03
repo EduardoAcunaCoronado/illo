@@ -53,7 +53,7 @@
     .section-head { display:flex; align-items:end; justify-content:space-between; gap:18px; margin:0 0 14px; }
     .section-head h2 { margin:0; font-size:18px; letter-spacing:-.02em; }
     .section-head p { margin:0; color:var(--muted); font-size:12px; }
-    .workflow { display:grid; grid-template-columns:repeat(3, 1fr); gap:16px; margin-bottom:38px; }
+    .workflow { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:38px; }
     .card {
       position:relative; display:flex; flex-direction:column; min-height:260px; padding:22px; overflow:hidden;
       border:1px solid var(--line); border-radius:20px; text-decoration:none;
@@ -76,6 +76,7 @@
     .mark { --accent:var(--gold); }
     .align { --accent:var(--cyan); }
     .clean { --accent:var(--pink); }
+    .halo { --accent:var(--purple); }
     .tools { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; }
     .small-card {
       display:flex; align-items:center; gap:14px; min-height:88px; padding:16px 17px; border:1px solid var(--line); border-radius:15px;
@@ -141,6 +142,12 @@
         <h3>Limpiar poses base</h3>
         <p>Borra los ojos originales con un pincel transparente, restaura detalles y guarda una copia separada del sprite.</p>
         <div class="card-foot"><div class="metric"><strong id="bases-card">Cargando…</strong><span>bases terminadas</span></div><span class="arrow">→</span></div>
+      </a>
+      <a class="card halo" href="/white-halo">
+        <div class="step"><span class="step-number">04</span><span class="live">Herramienta aparte</span></div>
+        <h3>Eliminar halos blancos</h3>
+        <p>Pinta sobre los bordes del sprite: sólo los píxeles blancos o casi blancos pierden opacidad. Los colores permanecen intactos.</p>
+        <div class="card-foot"><div class="metric"><strong>Todos</strong><span>los sprites base disponibles</span></div><span class="arrow">→</span></div>
       </a>
     </section>
 

@@ -2,8 +2,8 @@
   "name": "Andrés",
   "color": "#65d1ff",
   "poses": {
-    "neutral": "assets/images/characters/andres/andres.png",
-    "silueta": "assets/images/characters/andres/andres_silueta.png"
+    "neutral": "assets/images/characters/andres/andres.webp",
+    "silueta": "assets/images/characters/andres/andres_silueta.webp"
   },
   "animations": {
     "neutral": [{ "src": "assets/images/characters/andres/animations/blinks/andres_neutral_blink_closed.webp", "duration": 95 }]
