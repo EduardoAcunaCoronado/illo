@@ -3731,3 +3731,11 @@ Los archivos activos mantienen sus nombres, lienzo RGBA transparente y tamaño
 `lia_lince_v1.png` y `rulo_mapache_v1.png`. Al conservar rutas y dimensiones no
 ha sido necesario modificar `engine.js`; las tres escenas siguen usando el mismo
 encuadre, precarga y lógica de diálogo.
+
+### Sprites de carrera de Samu sin halo blanco (2026-08-03)
+
+Los nueve fotogramas de carrera y el atlas `todos.png` en
+`assets/images/characters/samu/run/` conservan su transparencia y sus poses, con
+el halo blanco semitransparente descontaminado y el canal alfa contraído un
+píxel. Así se elimina también la última línea clara exterior y los sprites se
+integran sobre fondos de cualquier color sin un perfil blanco.

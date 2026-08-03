@@ -813,3 +813,8 @@ RETRATOS CARTOON DE FURRY MAPS 2026-08-03
   vestuario y utilería, por lo que `engine.js` continúa usando las mismas rutas.
 - El montaje `furrielva_informantes_lineup_v1.png` no está referenciado por el
   juego; los tres retratos individuales son la fuente activa del minijuego.
+
+SPRITES DE CARRERA DE SAMU 2026-08-03
+- Los 9 frames y `todos.png` de `assets/images/characters/samu/run/` se limpiaron
+  del halo blanco semitransparente del borde y recibieron una contracción alfa de
+  1 px para eliminar la última línea clara, manteniendo tamaño y poses originales.

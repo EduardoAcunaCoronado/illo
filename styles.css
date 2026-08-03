@@ -798,6 +798,7 @@ body.startup-pending #menu-video {
 
 .p5-dialog-content {
     position: relative;
+    flex-grow: 1;
 }
 
 .p5-border-top {
@@ -1214,7 +1215,7 @@ body.startup-pending #menu-video {
 }
 
 .choices-container.p5-choices {
-    gap: 8px;
+    gap: 1rem;
 }
 
 .choice-btn {
@@ -2344,7 +2345,7 @@ body.startup-pending #menu-video {
 .furrielva-tour button:hover,
 .furrielva-confirm button:hover,
 .furrielva-location-choices button:hover,
-.furrielva-finish:hover { transform: translateY(-2px); filter: brightness(1.2); }
+.furrielva-finish:hover { transform: scale(1.05); filter: brightness(1.2); }
 
 .furrielva-card { z-index: 18; }
 .furrielva-card strong { color: #ff7575; letter-spacing: .08em; }
@@ -4492,7 +4493,7 @@ html.electron-app #menu-theme-btn { display: none; }
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.6);
     color: #ffd166;
-    transform: translateX(6px);
+    transform: scale(1.05);
     box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
 }
 
@@ -4576,7 +4577,8 @@ html.electron-app #menu-theme-btn { display: none; }
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.10);
     padding: 13px 26px;
     max-width: 78%;
-    margin-bottom: 16px;
+    margin: 0 0 1rem 1rem;
+    min-height: 10.25rem;
     font-family: 'Outfit', sans-serif;
 }
 
@@ -4642,7 +4644,7 @@ html.electron-app #menu-theme-btn { display: none; }
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.6);
     color: #ffd166;
-    transform: translateX(6px);
+    transform: scale(1.05);
     box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
     font-weight: 600;
 }
@@ -6138,7 +6140,7 @@ body.hud-hidden #game-container .ss-pause-btn {
    ============================================================ */
 .rewind-btn {
     position: absolute;
-    top: 14px;
+    top: 1rem;
     right: 16px;
     /* Por encima de los minijuegos (overlay 600, créditos 1500, combate 5000):
        los botones de arriba se ven también durante ellos. */
@@ -6162,7 +6164,7 @@ body.hud-hidden #game-container .ss-pause-btn {
 }
 .rewind-btn:hover {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: scale(1.05);
     box-shadow: 0 0 16px rgba(176, 79, 255, 0.55);
 }
 .rewind-btn:active { transform: translateY(1px); }
@@ -6180,7 +6182,7 @@ body.hud-hidden #game-container .ss-pause-btn {
    ============================================================ */
 .scenes-btn {
     position: absolute;
-    top: 14px;
+    top: 1rem;
     right: 148px; /* a la izquierda del de retroceder */
     z-index: 5200; /* ver .rewind-btn */
     display: flex;
@@ -6202,7 +6204,7 @@ body.hud-hidden #game-container .ss-pause-btn {
 }
 .scenes-btn:hover {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: scale(1.05);
     box-shadow: 0 0 16px rgba(79, 176, 255, 0.55);
 }
 .scenes-btn:active { transform: translateY(1px); }
@@ -6214,7 +6216,7 @@ body.hud-hidden #game-container .ss-pause-btn {
    contraria: aquellos van a la derecha y este a la izquierda. */
 .options-btn {
     position: absolute;
-    top: 14px;
+    top: 1rem;
     left: 16px;
     z-index: 5200; /* ver .rewind-btn */
     display: flex;
@@ -6236,7 +6238,7 @@ body.hud-hidden #game-container .ss-pause-btn {
 }
 .options-btn:hover {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: scale(1.05);
     box-shadow: 0 0 16px rgba(255, 209, 102, 0.55);
 }
 .options-btn:active { transform: translateY(1px); }
