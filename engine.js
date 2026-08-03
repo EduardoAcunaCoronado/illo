@@ -20,6 +20,9 @@ class VisualNovelEngine {
         this.audioInstances = {}; // Rastrear instancias de audio
         this.currentMusic = null; // Música de fondo actual
         this.sceneEndedByChoice = false; // Indica si la escena terminó por una elección
+        this.sceneHistory = []; // Escenas pisadas en el capítulo, para retroceder
+        this._lastSeenScene = null; // Última escena registrada en sceneHistory
+        this.sceneAdvances = 0; // Diálogos mostrados dentro de la escena actual
         this.completedCalls = []; // Rastrear las llamadas completadas
         this.nextChapter = null; // Capítulo a cargar (ruta ramificada elegida)
         this.rescued = []; // Personajes rescatados, en orden (persiste entre capítulos)
@@ -73,6 +76,7 @@ class VisualNovelEngine {
             // El historial de retroceso es por capítulo: no se vuelve al anterior
             this.sceneHistory = [];
             this._lastSeenScene = null;
+            this.sceneAdvances = 0;
             this.nextChapter = null; // Limpiar la ruta al cargar un capítulo nuevo
             this.storyDelay = 0; // Reiniciar el retraso acumulado en cada capítulo
 
@@ -497,6 +501,9 @@ class VisualNovelEngine {
         this.currentScene = sceneIndex;
         this.currentLine = 0;
         this.pendingSceneJump = true;
+        // Apilarla ya, no cuando se pinte: entre el salto y su primera línea el
+        // bucle puede quedarse esperando un clic (ver el bloque de RETROCEDER).
+        this.recordSceneEntry();
         // Al cambiar de escena, cualquier CG a pantalla se retira solo
         this.hideCG(250);
     }
@@ -6447,6 +6454,12 @@ class VisualNovelEngine {
             dialogText.replaceChildren();
             let renderedLength = 0;
             let letterIndex = 0;
+            // Hueco invisible con el texto que queda por escribir (ver renderPending)
+            const ghost = document.createElement('span');
+            ghost.className = 'dialog-ghost';
+            ghost.setAttribute('aria-hidden', 'true');
+            let pendingLetters = [];
+            let currentWord = null;
 
             const followCursorToAnchor = () => {
                 if (!speakerCursor || !speakerCursorSlot || !printAnchor.isConnected) return;
@@ -6499,6 +6512,32 @@ class VisualNovelEngine {
                 }, 280);
             };
 
+            const createLetter = (character, index) => {
+                const letter = document.createElement('span');
+                letter.className = 'dialog-letter';
+                const waveProgress = typingUnits.length > 1
+                    ? index / (typingUnits.length - 1)
+                    : 0;
+                const letterDelay = dialogEmotion === 'surprise'
+                    // Una sola ola recorre la frase completa. El desfase
+                    // antiguo reiniciaba el ciclo cada 14 caracteres y
+                    // dividía visualmente el diálogo en bloques.
+                    ? -(waveProgress * 0.95)
+                    : -((index % 14) * 0.035);
+                letter.style.setProperty('--letter-delay', `${letterDelay}s`);
+                if (dialogEmotion === 'scream') {
+                    const progress = typingUnits.length > 1
+                        ? index / (typingUnits.length - 1)
+                        : 1;
+                    // Crecimiento en curva: el inicio permanece pequeño y
+                    // el final explota hasta casi llenar la caja de diálogo.
+                    const fontSize = 12 + 56 * Math.pow(progress, 2.05);
+                    letter.style.setProperty('--scream-font-size', `${fontSize.toFixed(2)}px`);
+                }
+                letter.textContent = character;
+                return letter;
+            };
+
             const appendText = (parent, value) => {
                 if (!dialogEmotion) {
                     const last = parent.lastChild;
@@ -6508,41 +6547,83 @@ class VisualNovelEngine {
                 }
                 for (const character of splitText(value)) {
                     if (/^\s+$/u.test(character)) {
+                        // El espacio cierra la palabra: la siguiente letra abre
+                        // otro grupo que el navegador ya no puede partir.
+                        currentWord = null;
                         const last = parent.lastChild;
                         if (last && last.nodeType === 3) last.textContent += character;
                         else parent.append(document.createTextNode(character));
                     } else {
-                        const letter = document.createElement('span');
-                        letter.className = 'dialog-letter';
-                        const waveProgress = typingUnits.length > 1
-                            ? letterIndex / (typingUnits.length - 1)
-                            : 0;
-                        const letterDelay = dialogEmotion === 'surprise'
-                            // Una sola ola recorre la frase completa. El desfase
-                            // antiguo reiniciaba el ciclo cada 14 caracteres y
-                            // dividía visualmente el diálogo en bloques.
-                            ? -(waveProgress * 0.95)
-                            : -((letterIndex % 14) * 0.035);
-                        letter.style.setProperty('--letter-delay', `${letterDelay}s`);
-                        if (dialogEmotion === 'scream') {
-                            const progress = typingUnits.length > 1
-                                ? letterIndex / (typingUnits.length - 1)
-                                : 1;
-                            // Crecimiento en curva: el inicio permanece pequeño y
-                            // el final explota hasta casi llenar la caja de diálogo.
-                            const fontSize = 12 + 56 * Math.pow(progress, 2.05);
-                            letter.style.setProperty('--scream-font-size', `${fontSize.toFixed(2)}px`);
+                        if (!currentWord || currentWord.parentNode !== parent) {
+                            currentWord = document.createElement('span');
+                            currentWord.className = 'dialog-word';
+                            parent.append(currentWord);
                         }
-                        letter.textContent = character;
-                        parent.append(letter);
+                        currentWord.append(createLetter(character, letterIndex));
                     }
                     letterIndex++;
                 }
                 return parent;
             };
 
+            // Lo que todavía no se ha escrito se dibuja igual, pero invisible, para
+            // que el navegador reparta las líneas con la frase COMPLETA desde el
+            // primer carácter. Sin esto una palabra empieza a escribirse al final
+            // de una línea y salta a la siguiente en cuanto deja de caber.
+            const clearPending = () => {
+                for (const letter of pendingLetters) letter.remove();
+                pendingLetters = [];
+                ghost.remove();
+            };
+
+            const renderPending = (length) => {
+                if (finished || length >= text.length) return;
+
+                if (!dialogEmotion) {
+                    ghost.textContent = text.slice(length);
+                    dialogText.append(ghost);
+                    return;
+                }
+
+                // Con letras animadas (inline-block) el hueco reservado tiene que
+                // tener la misma estructura para medir igual. Las letras que faltan
+                // de la palabra en curso se quedan dentro de SU palabra: en el
+                // fantasma, el salto de línea podría colarse en mitad de la palabra.
+                let index = letterIndex;
+                let inCurrentWord = Boolean(currentWord);
+                let ghostWord = null;
+                ghost.replaceChildren();
+                for (const character of splitText(text.slice(length))) {
+                    const isSpace = /^\s+$/u.test(character);
+                    if (inCurrentWord && !isSpace) {
+                        const letter = createLetter(character, index++);
+                        letter.classList.add('is-pending');
+                        currentWord.append(letter);
+                        pendingLetters.push(letter);
+                        continue;
+                    }
+                    inCurrentWord = false;
+                    if (isSpace) {
+                        ghostWord = null;
+                        ghost.append(document.createTextNode(character));
+                    } else {
+                        if (!ghostWord) {
+                            ghostWord = document.createElement('span');
+                            ghostWord.className = 'dialog-word';
+                            ghost.append(ghostWord);
+                        }
+                        ghostWord.append(createLetter(character, index));
+                    }
+                    index++;
+                }
+                if (ghost.hasChildNodes()) dialogText.append(ghost);
+                // El cursor escribe donde acaba lo visible, no donde acaba el hueco.
+                if (pendingLetters.length) pendingLetters[0].before(printAnchor);
+            };
+
             const appendUntil = (length) => {
                 printAnchor.remove();
+                clearPending();
                 let cursor = renderedLength;
                 let cursorParent = dialogText;
                 while (cursor < length) {
@@ -6569,6 +6650,9 @@ class VisualNovelEngine {
                 renderedLength = length;
                 if (!finished && length > 0) {
                     cursorParent.append(printAnchor);
+                }
+                renderPending(length);
+                if (!finished && length > 0) {
                     followCursorToAnchor();
                 }
             };
@@ -6803,6 +6887,11 @@ class VisualNovelEngine {
 
         // Mostrar diálogo si existe (con posible variante por consecuencia)
         if (line.text) {
+            // Cuántos diálogos llevamos vistos DENTRO de esta escena. Es lo que
+            // distingue "acabo de entrar" (1) de "ya he avanzado por aquí" (>1),
+            // y con eso decide retroceder si vuelve al principio de esta escena
+            // o sale a la anterior. Se pone a cero al entrar en cada escena.
+            this.sceneAdvances++;
             await this.displayDialog(this.resolveConsequenceLine(line));
         }
 
@@ -6883,6 +6972,12 @@ class VisualNovelEngine {
                 // Registrar la llamada solo si de verdad entramos en la escena de llamada
                 this.registerCall(this.getCurrentScene());
 
+                // Apilar la escena elegida AHORA (después de registrar la llamada,
+                // que forma parte del estado con el que se entra en ella). Así,
+                // mientras el jugador sigue viendo la pregunta, retroceder ya sabe
+                // que la escena de la decisión es la anterior y vuelve a ella.
+                this.recordSceneEntry();
+
                 return true;
             } else if (selectedChoice.nextLine !== undefined) {
                 this.currentLine = selectedChoice.nextLine;
@@ -6907,6 +7002,11 @@ class VisualNovelEngine {
             if (this.currentScene >= this.currentChapter.scenes.length) {
                 return false; // Fin del capítulo
             }
+
+            // La última línea de la escena sigue en pantalla esperando el clic,
+            // pero ya estamos en la siguiente: apilarla ahora para que retroceder
+            // vuelva al principio de la escena que se acaba de leer.
+            this.recordSceneEntry();
         }
 
         return true;
@@ -6936,22 +7036,47 @@ class VisualNovelEngine {
     }
 
     // ============================================================
-    // RETROCEDER a la escena anterior (pedido en la demo del 25-jul-2026)
+    // RETROCEDER (pedido en la demo del 25-jul-2026)
     // ------------------------------------------------------------
-    // La escena es la unidad narrativa, así que se retrocede al PRINCIPIO de la
-    // escena anterior y se la deja volver a ejecutarse entera: sus acciones
-    // vuelven a poner el fondo, los personajes, la música y los efectos. Por eso
-    // hay que limpiar antes el escenario (si no, se quedan encima los restos de
-    // la escena de la que venimos) y devolver el progreso al estado que tenía al
-    // entrar en aquella escena (si no, cosas como "rescatado" o el inventario se
-    // contarían dos veces al repetirla).
+    // La escena es la unidad narrativa, así que siempre se retrocede al PRINCIPIO
+    // de una escena y se la deja volver a ejecutarse entera: sus acciones vuelven
+    // a poner el fondo, los personajes, la música y los efectos. Por eso hay que
+    // limpiar antes el escenario (si no, se quedan encima los restos de la escena
+    // de la que venimos) y devolver el progreso al estado que tenía al entrar en
+    // aquella escena (si no, cosas como "rescatado" o el inventario se contarían
+    // dos veces al repetirla).
+    //
+    // A QUÉ ESCENA SE VUELVE (dos casos, pedido el 3-ago-2026):
+    //   - Si ya se ha avanzado algún diálogo dentro de la escena actual, se
+    //     vuelve al principio de ESTA escena. Es lo que espera quien se ha
+    //     pasado de clic: repetir lo que se acaba de leer, no salir de la escena.
+    //   - Si estamos recién entrados (en su primer diálogo), se sale a la escena
+    //     ANTERIOR, la que dejamos justo antes de esta.
+    //
+    // El "de dónde vengo" es la pila `sceneHistory`: cada vez que se pisa una
+    // escena nueva se apila su índice junto a la foto del progreso. Retroceder
+    // desapila la escena actual y se queda en la de debajo, que SIGUE en la pila
+    // con su foto original; así el siguiente retroceso baja otro escalón en vez
+    // de caer siempre a la primera escena del capítulo.
+    //
+    // La escena se apila EN EL MISMO MOMENTO en que se cambia de escena (elección,
+    // goToScene o final de escena), no cuando se pinta su primera línea. Entre las
+    // dos cosas hay una espera: al elegir una opción o al leer la última línea de
+    // una escena, `currentScene` ya apunta a la escena nueva pero el bucle sigue
+    // parado esperando el clic del jugador. Si en ese hueco se apilaba tarde, el
+    // historial acababa en la escena ANTERIOR y retroceder se volvía loco: creía
+    // estar "avanzado" en la escena nueva (los diálogos contados eran los de la
+    // vieja) y reiniciaba una escena que aún no se había visto, o desapilaba la
+    // entrada equivocada y caía en la primera escena del capítulo.
     // ============================================================
 
-    // Foto del progreso al entrar en una escena. Se llama desde nextLine().
+    // Foto del progreso al entrar en una escena. Se llama en cada cambio de
+    // escena y también al principio de nextLine() (por si algo se cuela).
     recordSceneEntry() {
         if (!this.currentChapter) return;
         if (this._lastSeenScene === this.currentScene) return;
         this._lastSeenScene = this.currentScene;
+        this.sceneAdvances = 0; // escena nueva: aún no se ha avanzado nada en ella
         this.sceneHistory = this.sceneHistory || [];
         this.sceneHistory.push({
             chapter: this.lastChapterName,
@@ -6967,9 +7092,14 @@ class VisualNovelEngine {
         if (this.sceneHistory.length > 60) this.sceneHistory.shift();
     }
 
-    // ¿Hay algo a lo que volver? (el botón se oculta si no)
+    // ¿Hay algo a lo que volver? (el botón se oculta si no). Hay dos motivos:
+    // queda alguna escena por debajo en la pila, o se ha avanzado dentro de la
+    // escena actual y se puede volver a su principio (esto último vale también
+    // en la primera escena del capítulo, donde antes el botón no aparecía).
     canRewind() {
-        return !!(this.currentChapter && this.sceneHistory && this.sceneHistory.length > 1);
+        if (!this.currentChapter) return false;
+        const hist = this.sceneHistory || [];
+        return hist.length > 1 || (hist.length === 1 && this.sceneAdvances > 1);
     }
 
     // Deja el escenario en blanco sin tocar el progreso de la partida.
@@ -7030,33 +7160,63 @@ class VisualNovelEngine {
         if (choices) { choices.classList.remove('active'); choices.innerHTML = ''; }
     }
 
-    // Vuelve al principio de la escena anterior dejándolo todo como estaba.
+    // Devuelve el progreso a la foto guardada al entrar en una escena.
+    restoreSceneSnapshot(foto) {
+        if (!foto) return;
+        this.gameState = JSON.parse(JSON.stringify(foto.gameState || {}));
+        this.rescued = [...foto.rescued];
+        this.completedCalls = [...foto.completedCalls];
+        this.inventory = [...foto.inventory];
+        this.storyDelay = foto.storyDelay;
+        this.nextChapter = foto.nextChapter;
+    }
+
+    // Deja el motor listo para reproducir una escena desde su primera línea.
+    // La escena ya está en `sceneHistory` con su foto de progreso, así que se
+    // marca como "ya vista" para que recordSceneEntry NO vuelva a apilarla: si
+    // se apilara otra vez, cada retroceso comería dos escalones del historial.
+    replayScene(indiceEscena) {
+        this.clearStage();
+        this.currentScene = indiceEscena;
+        this.currentLine = 0;
+        this.sceneAdvances = 0;
+        this.sceneEndedByChoice = false;
+        this.pendingSceneJump = false;
+        this._lastSeenScene = indiceEscena;
+        this.updateDebugPanel();
+    }
+
+    // Retrocede al principio de la escena actual o de la anterior, según se haya
+    // avanzado ya por esta escena o no (ver el bloque de arriba).
     rewindToPreviousScene() {
         if (!this.canRewind()) return false;
 
-        this.sceneHistory.pop();                       // la escena en la que estamos
-        const destino = this.sceneHistory[this.sceneHistory.length - 1];
-        if (!destino) return false;
+        const hist = this.sceneHistory;
+        const actual = hist[hist.length - 1];
+        const esLaActual = !!actual && actual.scene === this.currentScene;
 
-        this.gameState = JSON.parse(JSON.stringify(destino.gameState || {}));
-        this.rescued = [...destino.rescued];
-        this.completedCalls = [...destino.completedCalls];
-        this.inventory = [...destino.inventory];
-        this.storyDelay = destino.storyDelay;
-        this.nextChapter = destino.nextChapter;
+        // Caso 1: ya hemos leído más de un diálogo aquí -> al principio de ESTA
+        // escena. El historial no se toca: seguimos en la misma escena.
+        // Se exige que la cima del historial sea esta escena: si no lo es, los
+        // diálogos contados son los de la escena anterior y "reiniciar" acabaría
+        // repitiendo una escena que el jugador todavía no ha visto.
+        if (esLaActual && this.sceneAdvances > 1) {
+            this.restoreSceneSnapshot(actual);
+            this.replayScene(this.currentScene);
+            return true;
+        }
 
-        this.clearStage();
+        // Caso 2: salir a la escena anterior. Se desapila la actual y nos
+        // quedamos en la de debajo, que permanece en el historial.
+        if (esLaActual) hist.pop();
+        const destino = hist[hist.length - 1];
+        if (!destino) {
+            if (esLaActual) hist.push(actual); // deshacer: no había a dónde ir
+            return false;
+        }
 
-        this.currentScene = destino.scene;
-        this.currentLine = 0;
-        this.sceneEndedByChoice = false;
-        this.pendingSceneJump = false;
-        // Volver a marcarla como "no vista" para que recordSceneEntry la
-        // registre otra vez al reproducirla.
-        this._lastSeenScene = null;
-        this.sceneHistory.pop();
-
-        this.updateDebugPanel();
+        this.restoreSceneSnapshot(destino);
+        this.replayScene(destino.scene);
         return true;
     }
 
@@ -7100,27 +7260,27 @@ class VisualNovelEngine {
         }
 
         const hist = this.sceneHistory || [];
+        let visitada = false;
         for (let k = hist.length - 1; k >= 0; k--) {
             if (hist[k].scene !== i) continue;
-            const d = hist[k];
-            this.gameState = JSON.parse(JSON.stringify(d.gameState || {}));
-            this.rescued = [...d.rescued];
-            this.completedCalls = [...d.completedCalls];
-            this.inventory = [...d.inventory];
-            this.storyDelay = d.storyDelay;
-            this.nextChapter = d.nextChapter;
-            // Se recorta el historial hasta ahí: la escena se vuelve a registrar
-            // sola al entrar, y así retroceder sigue teniendo sentido después.
-            this.sceneHistory = hist.slice(0, k);
+            this.restoreSceneSnapshot(hist[k]);
+            // Se recorta el historial hasta esa visita (incluida): a partir de
+            // ahí, retroceder vuelve a las escenas por las que se pasó antes.
+            this.sceneHistory = hist.slice(0, k + 1);
+            visitada = true;
             break;
         }
 
         this.clearStage();
         this.currentScene = i;
         this.currentLine = 0;
+        this.sceneAdvances = 0;
         this.sceneEndedByChoice = false;
         this.pendingSceneJump = false;
-        this._lastSeenScene = null;
+        // Si ya estaba en el historial se conserva su entrada, y por eso se marca
+        // como vista (apilarla otra vez duplicaría el escalón); si es una escena
+        // nueva, se deja que se registre sola al entrar.
+        this._lastSeenScene = visitada ? i : null;
         this.updateDebugPanel();
         return true;
     }
@@ -7132,6 +7292,7 @@ class VisualNovelEngine {
         this.history = [];
         this.sceneHistory = [];
         this._lastSeenScene = null;
+        this.sceneAdvances = 0;
         this.lastChapterName = null;
         this.speakingCharacter = null;
         this.speakingPosition = null;

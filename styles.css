@@ -992,11 +992,13 @@ body.startup-pending #menu-video {
     50% { translate: 0 -3px; filter: drop-shadow(0 0 8px var(--speaker-color)); }
 }
 
+/* Marca invisible donde el texto se está escribiendo (el cursor la sigue).
+   Va en `inline`, NO en `inline-block`: una caja inline-block sería un punto
+   donde el navegador puede cortar la línea, y al quedar entre lo ya escrito y
+   el hueco reservado partiría en dos la palabra en curso. */
 .dialog-print-anchor {
-    display: inline-block;
+    display: inline;
     width: 0;
-    height: 1em;
-    vertical-align: text-bottom;
     pointer-events: none;
 }
 
@@ -1006,6 +1008,27 @@ body.startup-pending #menu-video {
     display: inline-block;
     white-space: pre;
     transform-origin: 50% 75%;
+}
+
+/* Las letras animadas son cajas inline-block y el navegador puede partir la
+   línea entre dos de ellas: agrupar cada palabra evita que una palabra quede
+   cortada por la mitad al saltar de línea. */
+.dialog-word {
+    white-space: nowrap;
+}
+
+/* El texto que aún no se ha escrito ocupa su sitio pero no se ve: así los
+   saltos de línea se calculan con la frase completa y ninguna palabra empieza
+   en una línea para saltar a la siguiente a mitad de escritura. */
+.dialog-ghost,
+.dialog-letter.is-pending {
+    visibility: hidden;
+}
+
+/* Más específico que las reglas de emoción de abajo: lo invisible no anima. */
+.dialog-text .dialog-ghost .dialog-letter,
+.dialog-text .dialog-letter.is-pending {
+    animation: none;
 }
 
 .dialog-text[class*="dialog-emotion-"] {

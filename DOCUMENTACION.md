@@ -3775,3 +3775,45 @@ Los nueve fotogramas de carrera y el atlas `todos.png` en
 el halo blanco semitransparente descontaminado y el canal alfa contraído un
 píxel. Así se elimina también la última línea clara exterior y los sprites se
 integran sobre fondos de cualquier color sin un perfil blanco.
+
+### Retroceder: a esta escena o a la anterior (2026-08-03)
+
+El botón **Retroceder** siempre lleva al **principio de una escena**, y ahora
+elige cuál según lo avanzado que se esté dentro de la escena actual:
+
+- **Ya se ha avanzado algún diálogo aquí** → vuelve al principio de **esta misma
+  escena**. Es el caso de quien se pasa de clic: repite lo que acaba de leer sin
+  salirse de la escena.
+- **Recién entrados** (aún en el primer diálogo de la escena) → sale a la
+  **escena anterior**, la que se dejó justo antes.
+
+Si la escena actual vino de una **elección**, salir de ella lleva a la escena
+donde se tomó la decisión, y allí la pregunta se vuelve a plantear.
+
+El contador `engine.sceneAdvances` cuenta los diálogos mostrados dentro de la
+escena en curso; se pone a cero en cada entrada de escena y es lo que distingue
+los dos casos. Por eso el botón aparece también en la primera escena del
+capítulo en cuanto se ha avanzado un diálogo: hay algo a lo que volver.
+
+El "de dónde vengo" es la pila `engine.sceneHistory`, donde cada escena pisada
+apila su índice junto a la foto del progreso (`gameState`, `rescued`,
+`completedCalls`, `inventory`, `storyDelay`, `nextChapter`). Al retroceder se
+**desapila solo la escena actual** y se reproduce la de debajo, que permanece en
+la pila con su foto original. Antes se desapilaban las dos y se confiaba en que
+la escena destino se volviera a registrar sola al reproducirse: cada retroceso
+comía dos escalones. El menú de **Escenas** sigue la misma regla: al saltar a una
+escena ya visitada, el historial se recorta hasta esa visita incluida.
+
+**La escena se apila en el momento del cambio de escena**, no cuando se pinta su
+primera línea: `recordSceneEntry()` se llama desde `jumpToScene()` (acción
+`goToScene`), desde la rama de elección de `nextLine()` (después de
+`registerCall`, que forma parte del estado de entrada) y al pasar de escena por
+agotarse sus líneas. Entre el cambio y la primera línea de la escena nueva hay
+una espera real: al elegir una opción, o al leer la última línea de una escena,
+`currentScene` ya apunta a la siguiente mientras el bucle sigue parado esperando
+el clic del jugador. Apilando tarde, en ese hueco el historial acababa en la
+escena anterior y retroceder hacía cualquier cosa: reiniciaba una escena que
+todavía no se había visto (los diálogos contados eran los de la escena vieja) o
+desapilaba la entrada equivocada y caía en la primera escena del capítulo. Por
+seguridad, el caso "volver al principio de esta escena" exige además que la cima
+del historial sea la escena actual.
