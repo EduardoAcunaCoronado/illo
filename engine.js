@@ -661,7 +661,13 @@ class VisualNovelEngine {
                         dialogue: [
                             { speaker: 'SAMU', text: '¿Hacia dónde van cuando salen de la plaza?' },
                             { speaker: 'TADEO TRUFA', text: 'Al anochecer toman la carretera industrial. Sin matrícula, sin empresa; sólo una corona encima de un tomate.' },
-                            { speaker: 'SAMU', text: 'Edu mencionó ketchup. Esa corona puede ser la primera pista de verdad.' }
+                            // La plaza tampoco tiene por qué ser la primera parada.
+                            {
+                                speaker: 'SAMU',
+                                text: ({ clues }) => clues <= 1
+                                    ? 'Edu mencionó ketchup. Esa corona puede ser la primera pista de verdad.'
+                                    : `Edu mencionó ketchup. Esa corona encaja con ${clues === 2 ? 'la pista que ya llevo' : 'todo lo que ya llevo apuntado'}.`
+                            }
                         ],
                         lore: 'Los camiones rojos sin matrícula siguen la carretera industrial y llevan una corona sobre un tomate.'
                     },
