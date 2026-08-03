@@ -1151,13 +1151,13 @@ function setupStartupSequence() {
   if (!startupOverlay || !startupOpeningVideo || !startupEnterBtn) {
     document.body.classList.remove("startup-pending");
     setMainMenuVisible(true);
+    showMenuMedia(false);
     return;
   }
 
-  const menuVideo = menuVideoEl();
-  if (menuVideo) {
-    try { menuVideo.pause(); } catch (error) {}
-  }
+  menuVideoEls().forEach(video => {
+    try { video.pause(); } catch (error) {}
+  });
 
   fitStartupOpeningToViewport();
   window.addEventListener("resize", fitStartupOpeningToViewport);
@@ -1190,23 +1190,207 @@ const MENU_MUSIC_SRC = "assets/audio/music/menu/tema_menu.mp3"; // alternativa: 
 const MENU_AMBIENCE_SRC = "assets/audio/music/menu/ambiente_menu.mp3"; // audio base del vídeo, extraído
 const MENU_CHILL_SRC = "assets/audio/music/menu/menu_chill.mp3"; // instrumental chill que releva al tema
 const MENU_VIDEO_RATE = 0.5;   // velocidad del vídeo (1 = normal; más bajo = más lento)
+const MENU_VIDEO_CROSSFADE_MS = 1200; // solape real entre el final y el inicio del bucle
 const MENU_AMBIENCE_VOL = 0.12; // sonido de base (bajito, SIEMPRE a velocidad normal)
 const MENU_MUSIC_VOL = 0.5;     // tema principal
 const MENU_CHILL_VOL = 0.32;    // el chill va por debajo del tema, como música de sala
 let menuAudioUnlocked = false;
+let menuVideoActiveIndex = 0;
+let menuVideoCrossfading = false;
+let menuVideoFrame = 0;
+let menuVideoCrossfadeTimer = 0;
+let menuVideoStopTimer = 0;
+let menuVideoRunId = 0;
 const isDesktopApp = !!window.desktopApp;
 
-function menuVideoEl() {
-  return document.getElementById("menu-video");
+function menuVideoStackEl() {
+  return document.getElementById("menu-video-stack");
+}
+
+function menuVideoEls() {
+  return [
+    document.getElementById("menu-video"),
+    document.getElementById("menu-video-overlap"),
+  ].filter(Boolean);
 }
 
 // El vídeo va SIEMPRE mudo y ralentizado; su sonido de base se reproduce aparte
 // (ambiente_menu.mp3) para que no se estire ni cambie de tono al frenar el vídeo.
 function applyMenuVideoRate() {
-  const vid = menuVideoEl();
-  if (vid) vid.playbackRate = MENU_VIDEO_RATE;
+  menuVideoEls().forEach(video => {
+    video.muted = true;
+    video.playbackRate = MENU_VIDEO_RATE;
+  });
 }
 applyMenuVideoRate();
+
+function menuVideoVisible() {
+  const stack = menuVideoStackEl();
+  return !!stack &&
+    !stack.classList.contains("hidden") &&
+    !mainMenu.classList.contains("hidden");
+}
+
+function cancelMenuVideoScheduling() {
+  if (menuVideoFrame) cancelAnimationFrame(menuVideoFrame);
+  if (menuVideoCrossfadeTimer) clearTimeout(menuVideoCrossfadeTimer);
+  menuVideoFrame = 0;
+  menuVideoCrossfadeTimer = 0;
+  menuVideoCrossfading = false;
+}
+
+function normalizeMenuVideoLayers(videos = menuVideoEls()) {
+  videos.forEach((video, index) => {
+    video.classList.remove("is-active", "is-crossfade-in", "is-visible");
+    if (index === menuVideoActiveIndex) video.classList.add("is-active");
+  });
+}
+
+function finishMenuVideoCrossfade(outgoingIndex, incomingIndex, runId) {
+  const videos = menuVideoEls();
+  const outgoing = videos[outgoingIndex];
+  const incoming = videos[incomingIndex];
+  if (!outgoing || !incoming || !menuVideoCrossfading || runId !== menuVideoRunId) return;
+
+  try {
+    outgoing.pause();
+    outgoing.currentTime = 0;
+  } catch (error) {}
+  menuVideoActiveIndex = incomingIndex;
+  menuVideoCrossfading = false;
+  menuVideoCrossfadeTimer = 0;
+  normalizeMenuVideoLayers(videos);
+}
+
+async function crossfadeMenuVideo() {
+  const videos = menuVideoEls();
+  if (videos.length < 2 || menuVideoCrossfading || !menuVideoVisible()) return;
+
+  const runId = menuVideoRunId;
+  const outgoingIndex = menuVideoActiveIndex;
+  const incomingIndex = outgoingIndex === 0 ? 1 : 0;
+  const outgoing = videos[outgoingIndex];
+  const incoming = videos[incomingIndex];
+  menuVideoCrossfading = true;
+
+  try {
+    incoming.pause();
+    incoming.currentTime = 0;
+    incoming.muted = true;
+    incoming.playbackRate = MENU_VIDEO_RATE;
+    incoming.classList.remove("is-active", "is-visible");
+    incoming.classList.add("is-crossfade-in");
+    await incoming.play();
+  } catch (error) {
+    if (runId !== menuVideoRunId) {
+      try { incoming.pause(); } catch (pauseError) {}
+      return;
+    }
+    // Si la segunda superficie no puede arrancar, reiniciar la activa mantiene
+    // el menú operativo aunque se pierda el fundido en esa vuelta concreta.
+    menuVideoCrossfading = false;
+    normalizeMenuVideoLayers(videos);
+    try {
+      outgoing.currentTime = 0;
+      await outgoing.play();
+    } catch (playError) {}
+    return;
+  }
+
+  if (runId !== menuVideoRunId || !menuVideoVisible()) {
+    try { incoming.pause(); } catch (error) {}
+    if (runId === menuVideoRunId) {
+      menuVideoCrossfading = false;
+      normalizeMenuVideoLayers(videos);
+    }
+    return;
+  }
+
+  // Separar estado inicial y final en dos frames garantiza que Chromium cree
+  // la transición incluso si la segunda copia ya estaba decodificada en caché.
+  void incoming.offsetWidth;
+  requestAnimationFrame(() => {
+    if (runId !== menuVideoRunId || !menuVideoVisible()) {
+      try { incoming.pause(); } catch (error) {}
+      if (runId === menuVideoRunId) {
+        menuVideoCrossfading = false;
+        normalizeMenuVideoLayers(videos);
+      }
+      return;
+    }
+    incoming.classList.add("is-visible");
+    menuVideoCrossfadeTimer = setTimeout(
+      () => finishMenuVideoCrossfade(outgoingIndex, incomingIndex, runId),
+      MENU_VIDEO_CROSSFADE_MS + 40,
+    );
+  });
+}
+
+function monitorMenuVideoLoop() {
+  if (menuVideoFrame) cancelAnimationFrame(menuVideoFrame);
+
+  const tick = () => {
+    menuVideoFrame = 0;
+    if (!menuVideoVisible()) return;
+
+    const active = menuVideoEls()[menuVideoActiveIndex];
+    if (active && !menuVideoCrossfading && Number.isFinite(active.duration)) {
+      const rate = Math.max(0.01, active.playbackRate || MENU_VIDEO_RATE);
+      const remainingMs = Math.max(0, (active.duration - active.currentTime) / rate * 1000);
+      // El pequeño margen evita que el primer vídeo llegue a su frame final
+      // antes de que termine de cubrirlo la copia entrante.
+      if (remainingMs <= MENU_VIDEO_CROSSFADE_MS + 160) crossfadeMenuVideo();
+    }
+    menuVideoFrame = requestAnimationFrame(tick);
+  };
+
+  menuVideoFrame = requestAnimationFrame(tick);
+}
+
+function startMenuVideoLoop() {
+  const stack = menuVideoStackEl();
+  const videos = menuVideoEls();
+  if (!stack || videos.length === 0) return;
+
+  if (menuVideoStopTimer) clearTimeout(menuVideoStopTimer);
+  menuVideoStopTimer = 0;
+  cancelMenuVideoScheduling();
+  menuVideoRunId += 1;
+  stack.classList.remove("hidden");
+  stack.style.setProperty("--menu-video-crossfade", `${MENU_VIDEO_CROSSFADE_MS}ms`);
+  applyMenuVideoRate();
+  normalizeMenuVideoLayers(videos);
+
+  const active = videos[menuVideoActiveIndex];
+  const inactive = videos[menuVideoActiveIndex === 0 ? 1 : 0];
+  if (inactive) {
+    try {
+      inactive.pause();
+      inactive.currentTime = 0;
+    } catch (error) {}
+  }
+  if (active.ended || (Number.isFinite(active.duration) && active.currentTime >= active.duration - 0.05)) {
+    active.currentTime = 0;
+  }
+  active.play().catch(() => {});
+  monitorMenuVideoLoop();
+}
+
+function stopMenuVideoLoop() {
+  const stack = menuVideoStackEl();
+  const videos = menuVideoEls();
+  menuVideoRunId += 1;
+  cancelMenuVideoScheduling();
+  videos.forEach(video => {
+    try {
+      video.pause();
+      video.currentTime = 0;
+    } catch (error) {}
+  });
+  menuVideoActiveIndex = 0;
+  normalizeMenuVideoLayers(videos);
+  stack?.classList.add("hidden");
+}
 
 // DESACTIVADO (jul 2026): el ambiente de base ya no suena en el menú; la capa
 // musical queda en manos del tema (una vez) + menu_chill en bucle. Se conserva
@@ -1286,11 +1470,12 @@ function stopMenuMedia() {
   try { engine.stopSound("menu_chill", 700); } catch (err) {}
   const themeBtn = document.getElementById("menu-theme-btn");
   if (themeBtn) themeBtn.classList.remove("playing");
-  const vid = menuVideoEl();
-  if (vid && !vid.classList.contains("hidden")) {
-    setTimeout(() => {
-      vid.pause();
-      vid.classList.add("hidden");
+  const stack = menuVideoStackEl();
+  if (stack && !stack.classList.contains("hidden")) {
+    if (menuVideoStopTimer) clearTimeout(menuVideoStopTimer);
+    menuVideoStopTimer = setTimeout(() => {
+      menuVideoStopTimer = 0;
+      stopMenuVideoLoop();
     }, 700);
   }
 }
@@ -1298,12 +1483,7 @@ function stopMenuMedia() {
 // Volver a mostrar el menú con su vídeo y su ambiente (al regresar al menú).
 // El tema NO se relanza solo: para volver a oírlo está el botón ♪.
 function showMenuMedia(playChillOnReturn = true) {
-  const vid = menuVideoEl();
-  if (vid) {
-    vid.classList.remove("hidden");
-    applyMenuVideoRate();
-    vid.play().catch(() => {});
-  }
+  startMenuVideoLoop();
   if (menuAudioUnlocked && playChillOnReturn) {
     playMenuChill(); // al volver al menú, el chill acompaña (el tema no se relanza)
   }

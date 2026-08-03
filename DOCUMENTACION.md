@@ -1578,6 +1578,15 @@ sustituye el escenario: se conservan la geometría, el oleaje del mar, el
 titileo de los neones, las siluetas móviles, la brisa dorada y todas las notas
 en sus posiciones originales.
 
+El runtime no depende únicamente del salto nativo de `loop`: `index.html`
+mantiene dos reproductores mudos con la misma fuente y `game.js` alterna cuál
+está activo. A media velocidad, 1,36 segundos antes del final visible arranca la
+copia inactiva desde cero y la funde durante 1,2 segundos sobre el vídeo saliente.
+Este conserva su último tramo opaco debajo, por lo que no aparece el fondo fijo
+ni un frame negro durante la mezcla. Después se pausa y rebobina la copia antigua
+para reutilizarla en la vuelta siguiente. Al abandonar el menú se cancelan tanto
+el `requestAnimationFrame` de vigilancia como el temporizador del fundido.
+
 La reconstrucción 4K desde `assets/video/menu/menu_loop_old.mp4` es reproducible con
 `scripts/render_menu_loop_4k.py` y `realesrgan-ncnn-vulkan`. La interpolación
 cíclica posterior se ejecuta con `scripts/interpolate_menu_loop_48fps.py` y la

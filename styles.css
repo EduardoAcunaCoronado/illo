@@ -58,7 +58,7 @@ input, textarea {
    ARRANQUE: disclaimer interactivo -> opening de Samu -> menú
    ============================================================ */
 body.startup-pending #main-menu,
-body.startup-pending #menu-video {
+body.startup-pending #menu-video-stack {
     visibility: hidden;
 }
 
@@ -1345,15 +1345,45 @@ body.startup-pending #menu-video {
     background: linear-gradient(90deg, transparent, #ff1744, transparent);
 }
 
-/* Vídeo de fondo del menú principal (loop, escala con el escenario) */
+/* Los dos reproductores ocupan exactamente el mismo plano. El entrante se
+   funde sobre el último tramo del activo; este permanece opaco debajo para que
+   durante la mezcla nunca llegue a verse el fondo estático. */
+.menu-video-stack {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    --menu-video-crossfade: 1200ms;
+}
+
+.menu-video-stack.hidden { display: none; }
+
 .menu-video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+    will-change: opacity;
 }
-.menu-video.hidden { display: none; }
+
+.menu-video.is-active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.menu-video.is-crossfade-in {
+    opacity: 0;
+    z-index: 2;
+    transition: opacity var(--menu-video-crossfade) ease-in-out;
+}
+
+.menu-video.is-crossfade-in.is-visible { opacity: 1; }
 
 /* Botón ♪ del menú: vuelve a reproducir el tema (que solo suena una vez) */
 .menu-theme-btn {

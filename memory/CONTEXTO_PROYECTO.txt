@@ -454,7 +454,11 @@ PRESENTACIÓN
   scripts/interpolate_menu_loop_48fps.py (rife-ncnn-vulkan). menu_loop_old.mp4
   se conserva intacto como fuente de movimiento y referencia.
 - Menú “Neón de Medianoche” con vídeo en bucle a media velocidad, tema inicial,
-  relevo chill, botón musical y marca WildSoft.
+  relevo chill, botón musical y marca WildSoft. El bucle visual usa dos elementos
+  `<video>` con la misma fuente: 1,36 s antes del final visible inicia la copia
+  inactiva y la funde durante 1,2 s sobre la activa, que permanece opaca debajo.
+  Después intercambia y rebobina los reproductores. Al salir del menú cancela RAF,
+  temporizador y reproducción de ambas copias; el audio sigue siendo independiente.
 - Visual novel con fondos ilustrados, sprites grandes, caja de diálogo inferior,
   nombre coloreado, flecha de continuación, sonido por letra y pausas de puntuación.
 - Los supermercados de la ruta de Edu usan las marcas ficticias El Jarrón,
