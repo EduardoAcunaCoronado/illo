@@ -13,6 +13,10 @@ class VisualNovelEngine {
         this._finishTyping = null;
         this._setTypingPaused = null;
         this._lastDialogEmotionKey = null;
+        this._lineTextDurationOverride = null;
+        this._textSegmenter = typeof Intl.Segmenter === 'function'
+            ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+            : null;
         this.textSpeedPreset = 2;
         this.typingSpeed = 50;
         this.lastChapterName = null;
@@ -248,6 +252,14 @@ class VisualNovelEngine {
                 break;
             case 'wait':
                 await this.wait(action.ms != null ? action.ms : action.value);
+                break;
+            case 'setTextDuration':
+            case 'textDuration':
+                this.setLineTextDuration(
+                    action.duration != null ? action.duration
+                    : action.ms != null ? action.ms
+                    : action.value
+                );
                 break;
             case 'waitForClick':
             case 'waitClick':
@@ -6277,6 +6289,153 @@ class VisualNovelEngine {
         return effectiveEmotion;
     }
 
+    // La velocidad y la duración del typewriter se calculan en un único lugar.
+    // Así la partida, la vista previa de Configuración y las herramientas de
+    // autoría usan exactamente los mismos grafemas y pausas de puntuación.
+    splitTextGraphemes(value = '') {
+        const text = String(value || '');
+        return this._textSegmenter
+            ? Array.from(this._textSegmenter.segment(text), part => part.segment)
+            : Array.from(text);
+    }
+
+    getTextSpeedMultiplier(line = {}) {
+        return line.textSpeed === 'slow' ? 2.2
+             : line.textSpeed === 'fast' ? 0.45
+             : (typeof line.textSpeed === 'number' && Number.isFinite(line.textSpeed))
+             ? Math.max(0, line.textSpeed)
+             : 1;
+    }
+
+    getTextPunctuationPause(character) {
+        if (typeof window !== 'undefined' && window.Juice?.punctuationPause) {
+            return window.Juice.punctuationPause(character);
+        }
+        if ('.!?…'.includes(character)) return 240;
+        if (',;:—'.includes(character)) return 90;
+        return 0;
+    }
+
+    getTextCharacterDelay(character, line = {}, baseDelay = this.typingSpeed) {
+        const safeBase = Math.max(0, Number(baseDelay) || 0);
+        const speedMultiplier = this.getTextSpeedMultiplier(line);
+        return (
+            safeBase + this.getTextPunctuationPause(character) * (safeBase / 50)
+        ) * speedMultiplier;
+    }
+
+    getExplicitTextDuration(line = {}) {
+        if (line.textDuration === undefined || line.textDuration === null) return null;
+        const duration = Number(line.textDuration);
+        if (!Number.isFinite(duration) || duration < 0) {
+            console.warn('textDuration debe ser un número de milisegundos mayor o igual que 0');
+            return null;
+        }
+        return duration;
+    }
+
+    // Devuelve la estimación completa con el preset seleccionado actualmente.
+    // `visibleDurationMs` mide hasta que aparece el último grafema y `durationMs`
+    // incluye además la pausa final con la que el motor cierra una línea normal.
+    // Si hay textDuration, ambos valores coinciden exactamente con ese override.
+    calculateTextTiming(line = {}) {
+        const graphemes = this.splitTextGraphemes(line.text || '');
+        const exactDurationMs = this.getExplicitTextDuration(line);
+        const speedMultiplier = this.getTextSpeedMultiplier(line);
+
+        if (exactDurationMs !== null) {
+            if (graphemes.length === 0) {
+                return {
+                    graphemes,
+                    delaysAfter: [],
+                    initialDelayMs: exactDurationMs,
+                    visibleDurationMs: exactDurationMs,
+                    durationMs: exactDurationMs,
+                    exactDurationMs,
+                    speedMultiplier,
+                    typingSpeedMs: this.typingSpeed,
+                    isInstant: exactDurationMs === 0,
+                    finishOnLastCharacter: true
+                };
+            }
+
+            // El primer grafema aparece al iniciar, como en el typewriter normal.
+            // El tiempo exacto se reparte entre los huecos restantes conservando
+            // proporcionalmente el ritmo de comas, puntos y exclamaciones.
+            if (graphemes.length === 1) {
+                return {
+                    graphemes,
+                    delaysAfter: [0],
+                    initialDelayMs: exactDurationMs,
+                    visibleDurationMs: exactDurationMs,
+                    durationMs: exactDurationMs,
+                    exactDurationMs,
+                    speedMultiplier,
+                    typingSpeedMs: this.typingSpeed,
+                    isInstant: exactDurationMs === 0,
+                    finishOnLastCharacter: true
+                };
+            }
+
+            const rhythmWeights = graphemes
+                .slice(0, -1)
+                .map(character => 50 + this.getTextPunctuationPause(character));
+            const totalWeight = rhythmWeights.reduce((sum, weight) => sum + weight, 0);
+            const scale = totalWeight > 0 ? exactDurationMs / totalWeight : 0;
+            const delaysAfter = rhythmWeights.map(weight => weight * scale);
+            delaysAfter.push(0);
+            return {
+                graphemes,
+                delaysAfter,
+                initialDelayMs: 0,
+                visibleDurationMs: exactDurationMs,
+                durationMs: exactDurationMs,
+                exactDurationMs,
+                speedMultiplier,
+                typingSpeedMs: this.typingSpeed,
+                isInstant: exactDurationMs === 0,
+                finishOnLastCharacter: true
+            };
+        }
+
+        const delaysAfter = graphemes.map(character =>
+            this.getTextCharacterDelay(character, line)
+        );
+        const visibleDurationMs = delaysAfter
+            .slice(0, Math.max(0, delaysAfter.length - 1))
+            .reduce((sum, delay) => sum + delay, 0);
+        const durationMs = delaysAfter.reduce((sum, delay) => sum + delay, 0);
+        return {
+            graphemes,
+            delaysAfter,
+            initialDelayMs: 0,
+            visibleDurationMs,
+            durationMs,
+            exactDurationMs: null,
+            speedMultiplier,
+            typingSpeedMs: this.typingSpeed,
+            isInstant: this.typingSpeed <= 0 || speedMultiplier <= 0,
+            finishOnLastCharacter: false
+        };
+    }
+
+    calculateTextDuration(line = {}, untilVisible = false) {
+        const timing = this.calculateTextTiming(line);
+        return untilVisible ? timing.visibleDurationMs : timing.durationMs;
+    }
+
+    // Acción JSON: { "type": "setTextDuration", "value": 4000 }.
+    // Se reinicia al comenzar cada línea para que nunca se filtre a la siguiente.
+    setLineTextDuration(duration) {
+        const parsed = Number(duration);
+        this._lineTextDurationOverride = Number.isFinite(parsed) && parsed >= 0
+            ? parsed
+            : null;
+        if (this._lineTextDurationOverride === null) {
+            console.warn('setTextDuration requiere milisegundos mayores o iguales que 0');
+        }
+    }
+
     async displayDialog(line) {
         // Actualizar debug panel si está activo
         if (this.debugMode) {
@@ -6423,33 +6582,28 @@ class VisualNovelEngine {
 
         this.isWaitingForInput = false;
 
-        // Velocidad de texto por línea: "slow" (drama), "fast" (pánico) o un
-        // multiplicador numérico. Hereda el blip y las pausas de puntuación.
-        const speedMult = line.textSpeed === 'slow' ? 2.2
-                        : line.textSpeed === 'fast' ? 0.45
-                        : (typeof line.textSpeed === 'number' ? line.textSpeed : 1);
+        const text = line.text;
+        const textTiming = this.calculateTextTiming(line);
 
         return new Promise(resolve => {
             let charIndex = 0;
-            const text = line.text;
             let timeoutId = null;
             let finished = false;
             let cursorMoveFrame = null;
             let typingPaused = this.textPaused;
             let nextCharacterAt = 0;
-            let remainingDelay = 0;
+            let remainingDelay = textTiming.initialDelayMs;
+            let exactTimelineStartedAt = null;
+            let exactNextOffsetMs = 0;
+            let exactPausedDurationMs = 0;
+            let exactTimelinePausedAt = null;
             const printAnchor = document.createElement('span');
             printAnchor.className = 'dialog-print-anchor';
 
             // Escribir por grafemas evita partir emojis o caracteres compuestos.
-            const segmenter = typeof Intl.Segmenter === 'function'
-                ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
-                : null;
-            const splitText = (value) => segmenter
-                ? Array.from(segmenter.segment(value), part => part.segment)
-                : Array.from(value);
+            const splitText = (value) => this.splitTextGraphemes(value);
             let textOffset = 0;
-            const typingUnits = splitText(text).map(value => {
+            const typingUnits = textTiming.graphemes.map(value => {
                 textOffset += value.length;
                 return { value, end: textOffset };
             });
@@ -6707,8 +6861,19 @@ class VisualNovelEngine {
                 resolve();
             };
 
-            const scheduleTypeChar = (delay = 0) => {
-                remainingDelay = Math.max(0, Number(delay) || 0);
+            const scheduleTypeChar = (delay = 0, resumeExistingDeadline = false) => {
+                const requestedDelay = Math.max(0, Number(delay) || 0);
+                if (textTiming.exactDurationMs !== null) {
+                    const now = performance.now();
+                    if (exactTimelineStartedAt === null) exactTimelineStartedAt = now;
+                    if (!resumeExistingDeadline) exactNextOffsetMs += requestedDelay;
+                    const activeElapsed = now - exactTimelineStartedAt - exactPausedDurationMs;
+                    // Se agenda contra una marca absoluta para que el coste de
+                    // pintar cada letra no acumule deriva sobre textDuration.
+                    remainingDelay = Math.max(0, exactNextOffsetMs - activeElapsed);
+                } else {
+                    remainingDelay = requestedDelay;
+                }
                 if (typingPaused || finished) return;
                 nextCharacterAt = performance.now() + remainingDelay;
                 timeoutId = setTimeout(() => {
@@ -6724,6 +6889,9 @@ class VisualNovelEngine {
                 typingPaused = next;
 
                 if (typingPaused) {
+                    if (textTiming.exactDurationMs !== null && exactTimelineStartedAt !== null) {
+                        exactTimelinePausedAt = performance.now();
+                    }
                     if (timeoutId !== null) {
                         clearTimeout(timeoutId);
                         timeoutId = null;
@@ -6732,35 +6900,55 @@ class VisualNovelEngine {
                     return;
                 }
 
+                if (exactTimelinePausedAt !== null) {
+                    exactPausedDurationMs += performance.now() - exactTimelinePausedAt;
+                    exactTimelinePausedAt = null;
+                }
                 // Reanuda el mismo intervalo pendiente. Si el HUD se ocultó
                 // antes de empezar la línea, remainingDelay es 0 y arranca ya.
-                scheduleTypeChar(remainingDelay);
+                scheduleTypeChar(remainingDelay, exactTimelineStartedAt !== null);
             };
 
             const typeChar = () => {
                 if (typingPaused) return;
-                if (this.fastForward || this.typingSpeed <= 0) {
+                if (
+                    this.fastForward ||
+                    (textTiming.exactDurationMs === null && (
+                        this.typingSpeed <= 0 || this.getTextSpeedMultiplier(line) <= 0
+                    ))
+                ) {
                     finishTyping();
                     return;
                 }
 
+                if (textTiming.exactDurationMs !== null && exactTimelineStartedAt === null) {
+                    exactTimelineStartedAt = performance.now();
+                }
+
                 if (charIndex < typingUnits.length) {
-                    const unit = typingUnits[charIndex];
+                    const unitIndex = charIndex;
+                    const unit = typingUnits[unitIndex];
                     const ch = unit.value;
                     charIndex++;
                     appendUntil(unit.end);
-                    // Blip por letra (tono según el que habla) y pausa extra en la
-                    // puntuación para dar ritmo al texto.
-                    let delay = this.typingSpeed * speedMult;
+                    // El blip conserva el tono del hablante. El intervalo sale del
+                    // cálculo común, incluida la puntuación y el ajuste del usuario.
                     if (window.Juice) {
                         if (localStorage.getItem('illo_text_blip') !== '0') {
                             window.Juice.blip(ch, speakerName);
                         }
-                        // El ajuste global escala también las pausas expresivas;
-                        // de lo contrario Rápido apenas se notaría al puntuar.
-                        delay += window.Juice.punctuationPause(ch)
-                            * (this.typingSpeed / 50) * speedMult;
                     }
+
+                    // Una duración exacta termina al pintar el último grafema; una
+                    // línea normal conserva la pausa final histórica del motor.
+                    if (charIndex >= typingUnits.length && textTiming.finishOnLastCharacter) {
+                        finishTyping();
+                        return;
+                    }
+
+                    const delay = textTiming.exactDurationMs !== null
+                        ? (textTiming.delaysAfter[unitIndex] || 0)
+                        : this.getTextCharacterDelay(ch, line);
                     scheduleTypeChar(delay);
                 } else {
                     finishTyping();
@@ -6778,10 +6966,14 @@ class VisualNovelEngine {
             this._setTypingPaused = setTypingPaused;
             speakerCursor?.classList.add('is-typing');
 
-            if (this.fastForward) {
+            if (this.fastForward || textTiming.isInstant) {
                 finishTyping();
             } else if (!typingPaused) {
-                typeChar();
+                if (textTiming.initialDelayMs > 0) {
+                    scheduleTypeChar(textTiming.initialDelayMs);
+                } else {
+                    typeChar();
+                }
             }
         });
     }
@@ -6925,6 +7117,10 @@ class VisualNovelEngine {
         }
         if (!line) return false;
 
+        // Las acciones de una línea pueden fijar su duración, pero el valor no
+        // debe heredarse accidentalmente por el siguiente diálogo.
+        this._lineTextDurationOverride = null;
+
         // Resetear el flag de input esperando. Se re-seteará a true si la línea tiene diálogo
         this.isWaitingForInput = false;
 
@@ -6955,7 +7151,13 @@ class VisualNovelEngine {
             // y con eso decide retroceder si vuelve al principio de esta escena
             // o sale a la anterior. Se pone a cero al entrar en cada escena.
             this.sceneAdvances++;
-            await this.displayDialog(this.resolveConsequenceLine(line));
+            const resolvedLine = this.resolveConsequenceLine(line);
+            const durationOverride = resolvedLine.textDuration != null
+                ? resolvedLine.textDuration
+                : this._lineTextDurationOverride;
+            await this.displayDialog(durationOverride == null
+                ? resolvedLine
+                : Object.assign({}, resolvedLine, { textDuration: durationOverride }));
         }
 
         // Acciones que deben ocurrir justo cuando termina de escribirse el

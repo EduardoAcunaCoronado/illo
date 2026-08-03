@@ -693,29 +693,28 @@ function wireSettings(panel) {
   };
 
   const playTextPreview = () => {
-    const option = paintTextSpeed();
+    paintTextSpeed();
+    const timing = engine.calculateTextTiming({ text: previewText });
     const run = ++previewRun;
     if (previewTimer !== null) clearTimeout(previewTimer);
     textSpeedPreview.textContent = "";
 
-    if (option.delay === 0) {
+    if (timing.isInstant) {
       textSpeedPreview.textContent = previewText;
       return;
     }
 
-    const chars = Array.from(previewText);
+    const chars = timing.graphemes;
     let index = 0;
     const typeNext = () => {
       if (run !== previewRun || !textSpeedPreview.isConnected) return;
-      const character = chars[index++];
+      const unitIndex = index++;
+      const character = chars[unitIndex];
       textSpeedPreview.textContent += character;
       if (index >= chars.length) return;
-      const punctuation = ".!?…".includes(character)
-        ? 240
-        : ",;:—".includes(character) ? 90 : 0;
       previewTimer = setTimeout(
         typeNext,
-        option.delay + punctuation * (option.delay / 50),
+        timing.delaysAfter[unitIndex] || 0,
       );
     };
     typeNext();

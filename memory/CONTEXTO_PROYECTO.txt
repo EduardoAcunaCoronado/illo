@@ -842,6 +842,13 @@ VELOCIDAD GLOBAL DEL TEXTO 2026-08-03
   escenas siguen actuando como multiplicadores narrativos.
 - La vista previa bajo el slider se reescribe en vivo al cambiar de posición,
   incluso desde el menú de pausa. Instantáneo pinta la frase completa de una vez.
+- `engine.calculateTextTiming(line)` centraliza grafemas, puntuación, `textSpeed`
+  y el preset elegido; juego y preview consumen el mismo cálculo. Los presets
+  equivalen a 100/70/50/30/15/0 ms por grafema antes de la puntuación.
+- Una línea puede usar `"textDuration": 4000` o la acción previa
+  `{ "type": "setTextDuration", "value": 4000 }` para acabar exactamente en
+  cuatro segundos. El valor exacto gana al preset y a `textSpeed`, conserva el
+  ritmo relativo de la puntuación y se reinicia antes de la siguiente línea.
 
 RETRATOS CARTOON DE FURRY MAPS 2026-08-03
 - Tadeo Trufa, Lía Lince y Rulo Mapache usan ahora el acabado cartoon 2D del

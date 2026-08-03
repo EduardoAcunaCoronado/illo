@@ -586,6 +586,39 @@ CG entra con su fundido de 650 ms y se esperan 3 s antes de la narración.
 ]
 ```
 
+### textDuration / setTextDuration
+
+Permite indicar en milisegundos cuánto debe tardar una línea concreta en
+escribirse. La forma más directa es añadir `textDuration` a la propia línea:
+
+```json
+{
+  "character": "Samu",
+  "text": "Esta frase tardará exactamente cuatro segundos.",
+  "textDuration": 4000
+}
+```
+
+También puede declararse como acción previa de esa misma línea:
+
+```json
+{
+  "character": "Samu",
+  "text": "Esta frase también tardará cuatro segundos.",
+  "actions": [
+    { "type": "setTextDuration", "value": 4000 }
+  ]
+}
+```
+
+El alias `"type": "textDuration"` también es válido, y el valor se puede pasar
+como `value`, `duration` o `ms`. La propiedad de la línea tiene prioridad sobre
+la acción. Esta duración sustituye tanto la velocidad elegida por el usuario como
+el multiplicador narrativo `textSpeed`, conserva proporcionalmente el ritmo de
+la puntuación y hace aparecer el último grafema en el instante indicado. El clic,
+el avance rápido y la pausa al ocultar el HUD siguen funcionando normalmente.
+El override se borra al comenzar la siguiente línea.
+
 ### setVariable
 
 Establece variables en el estado del juego.
@@ -3811,8 +3844,29 @@ reloj pausado del juego.
 
 El ajuste modifica `engine.typingSpeed` y escala tanto el intervalo entre letras
 como las pausas de puntuación. Los multiplicadores narrativos `textSpeed` de cada
-línea siguen aplicándose sobre el valor global. **Instantáneo** completa la frase
-en una sola operación, sin recorrer letra por letra ni esperar puntuación.
+línea siguen aplicándose sobre el valor global. Para cada grafema, el intervalo
+general es:
+
+```text
+(milisegundos del preset + pausa de puntuación × preset / 50) × textSpeed
+```
+
+Los presets usan `100`, `70`, `50`, `30`, `15` y `0` ms respectivamente. Por
+tanto, cualquier duración calculada en **Normal** se puede estimar para el resto
+multiplicándola por `2`, `1,4`, `1`, `0,6`, `0,3` o `0`. **Instantáneo** completa
+la frase en una sola operación, sin recorrer letra por letra ni esperar
+puntuación.
+
+`engine.calculateTextTiming(line)` es la fuente común usada por el juego y por
+la vista previa. Devuelve, entre otros datos, `visibleDurationMs` (hasta que se ve
+el último grafema) y `durationMs` (incluida la pausa final de una línea normal).
+`engine.calculateTextDuration(line, untilVisible)` permite obtener directamente
+uno de esos dos valores usando la velocidad seleccionada en ese momento.
+
+Una línea puede fijar `textDuration` en milisegundos para ignorar el preset y
+durar exactamente lo indicado. También se admite en sus acciones previas como
+`{ "type": "setTextDuration", "value": 4000 }`; este override solo afecta a esa
+línea y la propiedad directa tiene prioridad.
 
 ### Retratos cartoon de la investigación de Furry Maps (2026-08-03)
 
