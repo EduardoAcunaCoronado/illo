@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter0/habitacion_neon.png"
+              "value": "assets/images/backgrounds/chapter0/habitacion_neon.webp"
             },
             {
               "type": "showCharacter",
@@ -26,53 +26,7 @@
             }
           ],
           "character": "3C",
-          "text": "¡Hola, buenas tardes!"
-        },
-        {
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "epod",
-              "position": "right",
-              "pose": "happy"
-            }
-          ],
-          "character": "ePod",
-          "text": "¡HOLA!",
-          "textAnimation": true,
-          "emotion": "joy"
-        },
-        {
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "3c",
-              "position": "left",
-              "pose": "happy"
-            },
-            {
-              "type": "removeCharacter",
-              "character": "epod"
-            }
-          ],
-          "character": "3C",
-          "text": "Prrrr"
-        },
-        {
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "3c",
-              "position": "left",
-              "pose": "neutral"
-            }
-          ],
-          "character": "3C",
-          "text": "Soy Capricorni 3.0, 3C para los amigos."
-        },
-        {
-          "character": "3C",
-          "text": "En el capítulo de hoy vamos a contar cómo se puede torcer un cumpleaños cuando menos te lo esperas..."
+          "text": "¡Hola, buenas tardes! Control de continuidad, registro cero. Hora local: las cuatro y bastante. Puntualidad del protagonista: desaparecida."
         },
         {
           "actions": [
@@ -80,7 +34,20 @@
               "type": "showCharacter",
               "character": "nexo",
               "position": "right",
-              "pose": "neutral"
+              "pose": "happy"
+            },
+            {
+              "type": "animateCharacter",
+              "character": "nexo",
+              "position": "right",
+              "poses": [
+                "happy",
+                "neutral",
+                "happy"
+              ],
+              "frameMs": 220,
+              "loop": true,
+              "untilAdvance": true
             },
             {
               "type": "pauseSound",
@@ -92,24 +59,88 @@
               "volume": 1.0,
               "loop": true,
               "id": "nexo",
-              "fadeIn": 1000
+              "fadeIn": 600
             }
           ],
           "character": "Nexo",
-          "text": "¡Bip-bip! ¡Hora de explorar con mamá 3C y papá ePod!"
+          "text": "¡Enlace establecido! Cuatro protagonistas detectados. Cinco historiales enlazados.",
+          "textAnimation": true,
+          "emotion": "joy"
         },
         {
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "animateCharacter",
               "character": "3c",
               "position": "left",
-              "pose": "neutral"
+              "poses": [
+                "neutral",
+                "surprised",
+                "neutral"
+              ],
+              "frameMs": 180,
+              "loop": false,
+              "untilAdvance": false
+            }
+          ],
+          "character": "3C",
+          "text": "¿Cinco?"
+        },
+        {
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "nexo",
+              "position": "right",
+              "pose": "surprised"
+            }
+          ],
+          "character": "Nexo",
+          "text": "El quinto está vacío. No hay nombre, no hay cara... pero los otros cuatro conservan recuerdos alrededor del hueco."
+        },
+        {
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "3c",
+              "position": "left",
+              "pose": "happy"
+            }
+          ],
+          "character": "3C",
+          "text": "Prrrr. Marca la anomalía y baja la voz. Los misterios también merecen una entrada digna. Soy Capricorni 3.0; 3C, si no me obligáis a levantar acta."
+        },
+        {
+          "actions": [
+            {
+              "type": "animateCharacter",
+              "character": "nexo",
+              "position": "right",
+              "poses": [
+                "neutral",
+                "happy",
+                "surprised"
+              ],
+              "frameMs": 240,
+              "loop": true,
+              "untilAdvance": true
+            }
+          ],
+          "character": "Nexo",
+          "text": "Función auxiliar: contrastar datos, detectar costuras y no decir todavía lo de los cuarenta años."
+        },
+        {
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "3c",
+              "position": "left",
+              "pose": "angry"
             },
             {
               "type": "stopSound",
               "id": "nexo",
-              "fadeOut": 1000
+              "fadeOut": 600
             },
             {
               "type": "resumeSound",
@@ -118,29 +149,36 @@
             {
               "type": "removeCharacter",
               "character": "nexo"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/disco-rayado.mp3",
-              "volume": 1.0
             }
           ],
           "character": "3C",
-          "text": "¡Shh, calla, niño! Que esta no es tu historia.",
+          "text": "Nexo. «No decirlo» incluye no anunciar que no vas a decirlo.",
           "textAnimation": true,
           "emotion": "anger"
         },
         {
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "setPose",
+              "character": "3c",
+              "position": "left",
+              "pose": "happy"
+            }
+          ],
+          "character": "3C",
+          "text": "En el capítulo de hoy comprobaremos cuánto puede torcerse un cumpleaños antes de que la realidad pida auxilio."
+        },
+        {
+          "actions": [
+            {
+              "type": "setPose",
               "character": "3c",
               "position": "left",
               "pose": "neutral"
             }
           ],
           "character": "3C",
-          "text": "Esta es la historia de Samu, un chico que se despertó un día y no volvió a ser el mismo..."
+          "text": "Abrimos expediente: Samu. Se acostó humano. Va a despertarse con mucho más pelo y bastantes menos respuestas."
         },
         {
           "actions": [

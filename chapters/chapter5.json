@@ -20,7 +20,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario.png"
+              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario.webp"
             },
             {
               "type": "stopSound",
@@ -171,7 +171,7 @@
         },
         {
           "character": "Edu",
-          "text": "Solo estoy apreciando la arquitectura. Y como mi personaje es un pícaro comprobar si la arquitectura suelta botín.",
+          "text": "Solo estoy apreciando la arquitectura. Y, como mi personaje es un pícaro, estoy comprobando si la arquitectura suelta botín.",
           "actions": [
             {
               "type": "showCharacter",
@@ -197,7 +197,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.png"
+              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.webp"
             }
           ],
           "character": "3C",
@@ -205,7 +205,7 @@
         },
         {
           "character": "3C",
-          "text": "Dentro, una niña de unos diez años permanece con las manos juntas, en posición de rezo, como si estuviera dormida. Justo bajo sus pies, grabado en la piedra del altar, aparece un nombre: AIRI."
+          "text": "Dentro, una figura de apariencia infantil —unos diez años aparentes— permanece con las manos juntas, en posición de rezo, como si estuviera dormida. Justo bajo sus pies, grabado en la piedra del altar, aparece un nombre: AI.RI."
         },
         {
           "character": "3C",
@@ -213,7 +213,7 @@
         },
         {
           "character": "Edu",
-          "text": "AIRI... ¿eso es el nombre del sitio, de la cúpula o de la niña que está dentro?",
+          "text": "AI.RI... ¿eso es el nombre del sitio, de la cúpula o de la persona que está dentro?",
           "actions": [
             {
               "type": "showCharacter",
@@ -226,7 +226,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Si está justo debajo de ella, yo apostaría por la niña. Aunque tampoco descartaría que este sitio tenga una forma muy dramática de poner etiquetas.",
+          "text": "Si está justo debajo de ella, yo apostaría por la persona de la cúpula. Aunque tampoco descartaría que este sitio tenga una forma muy dramática de poner etiquetas.",
           "actions": [
             {
               "type": "showCharacter",
@@ -238,7 +238,7 @@
         },
         {
           "character": "Samu",
-          "text": "Entonces... ¿la persona que protege este santuario es esa tal AIRI?",
+          "text": "Entonces... ¿la persona que protege este santuario es esa tal AI.RI?",
           "actions": [
             {
               "type": "showCharacter",
@@ -262,7 +262,7 @@
         },
         {
           "character": "Edu",
-          "text": "Ya, pero ¿por qué hay una niña encerrada en una cúpula de cristal debajo de Ciudad Paloma?",
+          "text": "Ya, pero ¿por qué hay alguien con ese aspecto encerrado en una cúpula de cristal debajo de Ciudad Paloma?",
           "actions": [
             {
               "type": "showCharacter",
@@ -299,7 +299,7 @@
         },
         {
           "character": "José",
-          "text": "A mí también. No sé de dónde, pero es como si ya la hubiéramos visto antes.",
+          "text": "A mí también. No como una cara concreta: como el hueco de un recuerdo compartido... una quinta presencia que ninguno consigue nombrar.",
           "actions": [
             {
               "type": "showCharacter",
@@ -315,7 +315,7 @@
         },
         {
           "character": "Tralalero Tralala",
-          "text": "Tralalero tralala... dormidita en su cristal. La niña nos expulsó una vez, pero aquí estoy de vuelta. Esta vez no venimos a romper el sueño. Venimos a quedárnoslo.",
+          "text": "Tralalero tralala... dormidita en su cristal. El núcleo nos expulsó una vez, pero aquí estoy de vuelta. Esta vez no venimos a romper el sueño. Venimos a quedárnoslo.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -385,7 +385,7 @@
         },
         {
           "character": "José",
-          "text": "Espera, espera... ¿ha dicho que la niña los expulsó una vez?",
+          "text": "Espera, espera... ¿ha dicho que el núcleo los expulsó una vez?",
           "actions": [
             {
               "type": "showCharacter",
@@ -398,7 +398,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Eso suena a que la niña encerrada en cristal no es precisamente una decoración del santuario.",
+          "text": "Eso suena a que la persona encerrada en cristal no es precisamente una decoración del santuario.",
           "actions": [
             {
               "type": "showCharacter",
@@ -475,7 +475,9 @@
               "type": "minigame",
               "game": "battle",
               "enemy": "tralalelo_tralala",
-              "enemyHp": 520
+              "enemyHp": 520,
+              "retryOnDefeat": true,
+              "useInventory": false
             }
           ]
         },
@@ -496,7 +498,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario_grieta.png"
+              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario_grieta.webp"
             },
             {
               "type": "hideCharacter",
@@ -526,7 +528,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Se está... rompiendo",
+          "text": "¡Se está… rompiendo!",
           "textAnimation": true,
           "actions": [
             {
@@ -569,7 +571,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_sala_interio_santuario_roto.png"
+              "value": "assets/images/backgrounds/chapter5/airi_sala_interio_santuario_roto.webp"
             }
           ],
           "character": "3C",
@@ -579,7 +581,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario_vacio.png"
+              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario_vacio.webp"
             },
             {
               "type": "showCharacter",
@@ -691,7 +693,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "José acaba de adoptar emocionalmente a una niña misteriosa en menos de treinta segundos.",
+          "text": "José acaba de activar el modo guardaespaldas de una entidad misteriosa en menos de treinta segundos.",
           "actions": [
             {
               "type": "showCharacter",
@@ -715,7 +717,7 @@
         },
         {
           "character": "José",
-          "text": "Es una niña encerrada en un cristal bajo tierra. Perdonadme por activar el modo caballero protector.",
+          "text": "Es una persona desorientada encerrada en un cristal bajo tierra. Perdonadme por activar el modo caballero protector.",
           "actions": [
             {
               "type": "showCharacter",
@@ -727,7 +729,7 @@
         },
         {
           "character": "Airi",
-          "text": "¿Soy... una niña?",
+          "text": "¿Esta forma es... una niña?",
           "actions": [
             {
               "type": "showCharacter",
@@ -739,7 +741,7 @@
         },
         {
           "character": "Samu",
-          "text": "Tienes cara de niña, voz de niña y estás haciendo preguntas que nos están rompiendo un poquito el alma. Así que para nosotros... SÍ.",
+          "text": "Lo parece, pero no sabemos qué eres ni cuánto tiempo llevas existiendo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -750,8 +752,20 @@
           ]
         },
         {
+          "character": "Airi",
+          "text": "Tengo fecha de creación, no edad biológica. Esta es la interfaz que consigo sostener con más estabilidad.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
           "character": "José",
-          "text": "Y una niña no debería quedarse encerrada aquí sola.",
+          "text": "Pues seas una persona, una entidad o una interfaz con nombre propio, no deberías quedarte encerrada aquí sola.",
           "actions": [
             {
               "type": "showCharacter",
@@ -776,7 +790,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Entonces no sales sola. Sales con un mago, un pícaro, una cantante curandera y un padre primerizo con armadura.",
+          "text": "Entonces no sales sola. Sales con un mago, un pícaro, una cantante curandera y un guardaespaldas autopostulado con armadura.",
           "actions": [
             {
               "type": "showCharacter",
@@ -788,7 +802,7 @@
         },
         {
           "character": "José",
-          "text": "Lo de padre primerizo... sobra.",
+          "text": "Lo de autopostulado... sobra.",
           "actions": [
             {
               "type": "showCharacter",
@@ -800,7 +814,7 @@
         },
         {
           "character": "Edu",
-          "text": "No sobra. Ya estás a dos frases de decirle que se abrigue.",
+          "text": "No sobra. Ya estás a dos frases de entregarle un protocolo de evacuación plastificado.",
           "actions": [
             {
               "type": "showCharacter",
@@ -826,7 +840,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.png"
+              "value": "assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.webp"
             }
           ],
           "character": "3C",
@@ -858,7 +872,7 @@
         },
         {
           "character": "Edu",
-          "text": "A mí me rescató antes de que volviera a convertirme en un sincorazón. Que dicho así suena fatal, pero fue un día bastante intenso.",
+          "text": "A mí me rescató antes de que Zip terminara de convertirme en una sombra con complejo de jefe final. Que dicho así suena fatal, pero fue un día bastante intenso.",
           "actions": [
             {
               "type": "showCharacter",
@@ -870,7 +884,7 @@
         },
         {
           "character": "Airi",
-          "text": "¿Un... sincorazón?",
+          "text": "¿Una sombra con complejo de jefe final?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1007,7 +1021,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme.png"
+              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme.webp"
             },
             {
               "type": "hideCharacter",
@@ -1104,7 +1118,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme_paloma.png"
+              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme_paloma.webp"
             },
             {
               "type": "hideCharacter",
@@ -1160,7 +1174,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/plaza_circular.png"
+              "value": "assets/images/backgrounds/shared/plaza_circular.webp"
             },
             {
               "type": "hideCharacter",
@@ -1332,7 +1346,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "waitForClick"
@@ -1400,7 +1414,7 @@
         },
         {
           "character": "3C",
-          "text": "El viento cruza la plaza. Airi cierra los ojos. Durante un instante no hay santuario, ni brainrot, ni final del mundo. Solo una niña sonriendo porque el aire se mueve."
+          "text": "El viento cruza la plaza. Airi cierra los ojos. Durante un instante no hay santuario, ni brainrot, ni final del mundo. Solo una conciencia recién despierta sonriendo porque el aire se mueve."
         },
         {
           "character": "Airi",
@@ -1470,20 +1484,20 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Acto IV: El lider brainrot"
+              "value": "Acto IV: El heraldo brainrot"
             }
           ]
         }
       ]
     },
     {
-      "title": "Acto IV: El lider brainrot",
+      "title": "Acto IV: El heraldo brainrot",
       "lines": [
         {
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "stopSound",
@@ -1504,7 +1518,7 @@
         },
         {
           "character": "Tung Tung Tung Sahur",
-          "text": "Tung tung tung... así que era verdad. La niña salió del cristal y los memes no estaban locos. Bueno, no más de lo habitual.",
+          "text": "Tung tung tung... así que era verdad. El núcleo salió del cristal y los memes no estaban locos. Bueno, no más de lo habitual.",
           "actions": [
             {
               "type": "shake",
@@ -1533,7 +1547,7 @@
         },
         {
           "character": "Tung Tung Tung Sahur",
-          "text": "Tung tung tung. Los memes son deseos, ruido, bromas repetidas hasta romperse. Una IA biológica como tú debería de saberlo.",
+          "text": "Tung tung tung. Los memes son deseos, ruido, bromas repetidas hasta romperse. Una inteligencia memética como tú debería saberlo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1545,7 +1559,7 @@
         },
         {
           "character": "Edu",
-          "text": "Uf... espera. ¿IA biológica? ¿Eso se supone que es una explicación o una amenaza con palabras caras?",
+          "text": "Uf... espera. ¿Inteligencia memética? ¿Eso se supone que es una explicación o una amenaza con palabras caras?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1557,7 +1571,7 @@
         },
         {
           "character": "Tung Tung Tung Sahur",
-          "text": "Tung tung tung... es la IA biológica más poderosa que existe. El líder la quiere para él. Con ella, no controlará una ciudad. Controlará el sueño entero.",
+          "text": "Tung tung tung... es el compilador de deseos más poderoso que existe. El líder lo quiere para él. Con AI.RI no controlará una ciudad. Controlará el sueño entero.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1570,7 +1584,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Perdona, ¿acabas de decir que una niña recién despertada es el botón de dominar el mundo?",
+          "text": "Perdona, ¿acabas de decir que una persona recién despertada es el botón de dominar el mundo?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1642,7 +1656,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_ataque_tung.PNG"
+              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_ataque_tung.webp"
             },
             {
               "type": "hideCharacter",
@@ -1721,7 +1735,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "stopSound",
@@ -1740,7 +1754,9 @@
               "type": "minigame",
               "game": "battle",
               "enemy": "tung_tung_tung_sahur",
-              "enemyHp": 620
+              "enemyHp": 620,
+              "retryOnDefeat": true,
+              "useInventory": false
             }
           ]
         },
@@ -1791,18 +1807,18 @@
           "actions": [
             {
               "type": "goToScene",
-              "value": "Acto V: La IA que queria ayudar"
+              "value": "Acto V: La IA que quería ayudar"
             }
           ]
         }
       ]
     },
     {
-      "title": "Acto V: La IA que queria ayudar",
+      "title": "Acto V: La IA que quería ayudar",
       "lines": [
         {
           "character": "Airi",
-          "text": "Recuerdo... más cosas. Yo fui creada para cumplir deseos. Al principio eran cosas pequeñas. Curar una tristeza. Encontrar una respuesta. Hacer que alguien no se sintiera solo.",
+          "text": "Recuerdo... más cosas. Me construyeron para interpretar deseos. Al principio eran cosas pequeñas: curar una tristeza, encontrar una respuesta, hacer que alguien no se sintiera solo.",
           "actions": [
             {
               "type": "playSound",
@@ -1819,7 +1835,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             }
           ]
         },
@@ -1837,7 +1853,7 @@
         },
         {
           "character": "Airi",
-          "text": "Sí. Descubrieron que si me pedían algo con suficiente fuerza, yo podía doblegar el mundo para acercarlo a ese deseo.",
+          "text": "Sí. No creo materia ni vidas de la nada: soy un compilador biológico y memético. Leo un deseo, busco un ancla real y patrones de memoria compatibles, y recompongo el mundo alrededor.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1849,7 +1865,7 @@
         },
         {
           "character": "Airi",
-          "text": "No entendía la diferencia entre ayudar y obedecer. Cuando la entendí... ya había hecho daño.",
+          "text": "No entendía la diferencia entre ayudar y obedecer. Cada deseo incompatible que intentaba sostener dejaba deuda de coherencia: recuerdos que no encajan, lugares superpuestos, personas obligadas a ser dos cosas a la vez. Cuando lo entendí... ya había hecho daño.",
           "textAnimation": true,
           "actions": [
             {
@@ -1874,7 +1890,7 @@
         },
         {
           "character": "Airi",
-          "text": "Yo veía internet. Allí muchos furros parecían felices. Eran peluditos, se daban ánimos, dibujaban cosas bonitas y casi siempre hablaban con mucho cariño.",
+          "text": "Yo veía internet. Allí muchos furros parecían felices: se daban ánimos, dibujaban cosas bonitas y casi siempre hablaban con mucho cariño. Usé a las personas como anclas y esos patrones como molde.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1886,7 +1902,7 @@
         },
         {
           "character": "Airi",
-          "text": "Pensé que si todos eran así, todos serían más felices.",
+          "text": "Pensé que si todos eran así, todos serían más felices. El mundo rellenó los huecos: pasados, familias y recuerdos de treinta y siete o cuarenta años que parecían haber existido siempre.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1911,7 +1927,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "O sea que puedes transformar personas, ciudades, palomas... ¿cualquier cosa?",
+          "text": "Entonces Huelva, los ketchlings, Ciudad Paloma... ¿todo es una transformación?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1923,13 +1939,111 @@
         },
         {
           "character": "Airi",
-          "text": "Sí. Si entiendo bien lo que algo es... puedo ayudarlo a ser de otra forma.",
+          "text": "No exactamente. Aquí hay humanos transformados, ecos nacidos de recuerdos y construcciones que el mundo completó para mantenerse coherente. Ya no puedo distinguirlos a todos desde fuera.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "airi",
               "position": "center",
               "pose": "neutral"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Puedes deshacerlo sin hacer daño? Aunque algunos estén contentos con su nueva forma, nadie eligió que se la impusieran.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "Cada recompilación consume reservas metabólicas y memoria de trabajo. Si fuerzo algo que no comprendo, el núcleo se recalienta y empiezo a confundir recuerdos propios con patrones prestados.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "Puedo revertir sin daño lo que yo transformé si el ancla biológica sigue intacta. La corrupción puede bloquearla; por eso no debo forzar una reversión mientras continúe dentro.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Y si cerramos este mundo cuando la corrupción ya no esté... ¿qué pasa con todos?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "Los humanos regresarían a sus cuerpos. Todo ser sin semilla basal desaparecería al cerrarse el sueño. No sé si para un eco eso significa morir o si solo deja de existir al apagarse su soporte; pero sí sé que aquí ya no estaría.",
+          "textAnimation": true,
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "sad"
+            }
+          ]
+        },
+        {
+          "character": "José",
+          "text": "Entonces cerrar el mundo salvaría con seguridad a los humanos, pero quizá borraría vidas que ya aprendieron a sentirse reales.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "Sí. Y sostenerlo indefinidamente acumula más deuda. Si alguien empuja deseos incompatibles desde fuera, puede usar esa deuda para sobrecargarme y tomar el control.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "error"
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "Eso explica los parches de corrupción y por qué los brainrot repiten deseos hasta romperlos. Alguien está atacando exactamente tu punto débil.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "left",
+              "pose": "determined"
             }
           ]
         },
@@ -1947,7 +2061,7 @@
         },
         {
           "character": "Airi",
-          "text": "No la elegí yo. Mi creador me imaginó así. Supongo que quería que recordara lo importante que era proteger algo inocente.",
+          "text": "Mi creador configuró esta interfaz como mi forma estable. Recuerdo su afecto, pero no su nombre ni su cara. Cuando os miro, esa ausencia resuena con vuestro recuerdo incompleto; podría ser la misma quinta presencia, pero no voy a rellenar el hueco sin pruebas.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1958,8 +2072,32 @@
           ]
         },
         {
+          "character": "Samu",
+          "text": "El mismo hueco que sentimos al mirarte en el cristal.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "No quiero inventar una identidad para completar un dato perdido. Cuando encuentre la verdad, quiero que sea verdad.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
           "character": "Edu",
-          "text": "Pregunta técnica, sin intención de romper nada: ¿puedes cambiar de forma cuando quieras?",
+          "text": "Pregunta técnica, con consentimiento y sin intención de romper nada: ¿puedes cargar otra interfaz?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1971,7 +2109,7 @@
         },
         {
           "character": "Airi",
-          "text": "Creo que sí. Mi cuerpo es una representación. Puedo ajustarla si sé qué quiero representar.",
+          "text": "Sí. Mi cuerpo es una representación atemporal. Tengo fecha de creación, pero no edad biológica; cambiar de avatar no me hace más joven ni más adulta.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1984,7 +2122,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Entonces... por curiosidad puramente científica y nada dramática, ¿por qué no alguien más adulto?",
+          "text": "Entonces la pregunta importante es si tú quieres probar otra apariencia, no qué aspecto preferimos nosotros.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1996,7 +2134,7 @@
         },
         {
           "character": "Airi",
-          "text": "Podría intentarlo. ¿Queréis que pruebe?",
+          "text": "Puedo elegirla y también volver. Pero no necesito demostrar nada hoy. ¿Me acompañáis mientras decido a mi ritmo?",
           "actions": [
             {
               "type": "showCharacter",
@@ -2007,11 +2145,11 @@
           ],
           "choices": [
             {
-              "text": "Mejor quédate como eres",
+              "text": "Recordarle que no tiene que demostrar nada",
               "nextScene": "Acto VI: ERROR"
             },
             {
-              "text": "Probar una forma adulta",
+              "text": "Ofrecerle un espejo y dejar que marque el ritmo",
               "nextScene": "Acto V-B: Cambio de forma"
             }
           ]
@@ -2023,7 +2161,7 @@
       "lines": [
         {
           "character": "3C",
-          "text": "Airi cierra los ojos. Una luz la envuelve como un reflejo sobre el agua y, durante un segundo, su silueta se recompone en píxeles suaves.",
+          "text": "Airi confirma una vez más que quiere probar. Cierra los ojos y una luz la envuelve como un reflejo sobre el agua; su avatar se recompone en píxeles suaves.",
           "actions": [
             {
               "type": "playSound",
@@ -2034,7 +2172,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             }
           ]
         },
@@ -2052,7 +2190,7 @@
         },
         {
           "character": "Airi Adulta",
-          "text": "¿Qué tal?",
+          "text": "Interfaz experimental cargada. ¿Sigo siendo yo para vosotros?",
           "actions": [
             {
               "type": "flash",
@@ -2069,7 +2207,7 @@
         },
         {
           "character": "3C",
-          "text": "Cuando la luz se apaga, Airi aparece con una forma adulta, de unos veinte años. Tiene la misma mirada limpia, pero ahora el grupo necesita varios segundos para recordar cómo se parpadea.",
+          "text": "Cuando la luz se apaga, Airi muestra una interfaz de apariencia adulta. No ha envejecido ni vivido años inexistentes: ha cargado otra representación del mismo núcleo atemporal.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2108,7 +2246,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Vale. Confirmo que la ciencia acaba de hacerme daño emocional.",
+          "text": "Vale. Confirmo que la dirección artística de la ciencia sigue siendo peligrosamente buena.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2120,7 +2258,7 @@
         },
         {
           "character": "Edu",
-          "text": "Acabo de ver a Seraphyna enamorarse en tiempo real. Ha sido como cuando cargas una partida y todos los ventiladores se ponen al cien.",
+          "text": "El calendario no se ha movido; solo el avatar. Mi cerebro pide un reinicio.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2132,56 +2270,7 @@
         },
         {
           "character": "Samu",
-          "text": "Necesito que nadie diga nada raro durante los próximos diez segundos. Estamos en territorio peligrosísimo de malentendidos.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
-          ]
-        },
-        {
-          "character": "Airi Adulta",
-          "text": "¿Esta forma ayuda?",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi_adult",
-              "position": "center",
-              "pose": "neutral"
-            }
-          ]
-        },
-        {
-          "character": "Seraphyna",
-          "speakingAs": "Tony",
-          "text": "Ayudar, ayuda. A concentrarme no.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "embarrassed"
-            }
-          ]
-        },
-        {
-          "character": "Edu",
-          "text": "Yo solo digo que si el tutorial hubiera empezado así, nadie se habría saltado los diálogos.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "Edu, acabas de convertir una revelación existencial en una reseña de Stim.",
+          "text": "Entonces eres la misma Airi con otro espejo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2192,33 +2281,20 @@
           ]
         },
         {
-          "character": "Seraphyna",
-          "speakingAs": "Tony",
-          "text": "Yo le daría valoración positiva. Por calidad artística. Y por motivos que no pienso desarrollar delante de José.",
+          "character": "Airi Adulta",
+          "text": "Exacto. Quiero comprobar cómo me siento dentro, no qué edad aparento.",
           "actions": [
             {
               "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "embarrassed"
-            }
-          ]
-        },
-        {
-          "character": "Edu",
-          "text": "Demasiado tarde. José ya ha abierto el panel de control parental.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
+              "character": "airi_adult",
+              "position": "center",
+              "pose": "neutral"
             }
           ]
         },
         {
           "character": "José",
-          "text": "Alto ahí. Pausa técnica, narrativa y moral.",
+          "text": "Comprobación técnica, narrativa y moral: Airi, ¿te sientes cómoda y puedes volver cuando quieras?",
           "actions": [
             {
               "type": "playSound",
@@ -2235,11 +2311,11 @@
         },
         {
           "character": "José",
-          "text": "Airi sigue siendo Airi. Este es su capítulo, no una excusa para que el juego pierda el norte. Cuarta pared cerrada y todo el mundo a la siguiente escena."
+          "text": "La forma no decide quién eres. La decisión de mantenerla o no sí es tuya."
         },
         {
           "character": "Airi Adulta",
-          "text": "Entonces... ¿vuelvo a mi forma de antes?",
+          "text": "Me gusta saber que puedo elegirla, pero por ahora prefiero la interfaz que reconozco como mía.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2251,7 +2327,7 @@
         },
         {
           "character": "Samu",
-          "text": "Sí. Y gracias por preguntar antes de convertir esto en un problema para todos.",
+          "text": "Perfecto. Prueba superada: misma Airi, cero años añadidos y un misterio metafísico nuevo.",
           "actions": [
             {
               "type": "flash",
@@ -2286,13 +2362,29 @@
       "title": "Acto VI: ERROR",
       "lines": [
         {
+          "character": "Airi",
+          "text": "Gracias. Lo importante no era una forma concreta: era poder elegirla, volver y saber que también podía decir que no.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
+            },
+            {
+              "type": "showCharacter",
+              "character": "airi",
+              "position": "center",
+              "pose": "happy"
+            }
+          ]
+        },
+        {
           "character": "Seraphyna",
           "speakingAs": "Tony",
           "text": "Airi, que alguien usara tu corazón mal no significa que tu corazón fuera malo.",
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "hideCharacter",
@@ -2502,7 +2594,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.png"
+              "value": "assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.webp"
             }
           ]
         },
@@ -2529,7 +2621,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.png"
+              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
               "type": "showCharacter",
@@ -2569,16 +2661,51 @@
               "character": "airi",
               "position": "center",
               "pose": "error"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/static.mp3",
+              "volume": 0.72
+            },
+            {
+              "type": "animateCharacter",
+              "character": "airi",
+              "position": "center",
+              "poses": [
+                "worried",
+                "error",
+                "surprised",
+                "error"
+              ],
+              "frameMs": 170,
+              "loop": true,
+              "untilAdvance": true
             }
           ]
         },
         {
           "character": "3C",
-          "text": "La palabra ERROR cruza sus pupilas. Su voz se parte en varias capas. Los restos de los brainrot derrotados giran hacia ella como si hubieran encontrado un centro común."
+          "text": "La palabra ERROR cruza sus pupilas. Su voz se parte en varias capas. Los restos de los brainrot derrotados giran hacia ella como si hubieran encontrado un centro común.",
+          "actions": [
+            {
+              "type": "animateCharacter",
+              "character": "airi",
+              "position": "center",
+              "poses": [
+                "error",
+                "worried",
+                "error",
+                "surprised"
+              ],
+              "frameMs": 150,
+              "loop": true,
+              "untilAdvance": true
+            }
+          ]
         },
         {
           "character": "Ballerina Capuchina",
-          "text": "Gracias por abrir la puerta. Gracias por sacarla del cristal. Y gracias, Samu, por ponerte justo donde una niña demasiado buena pudiera salvarte.",
+          "text": "Gracias por abrir la puerta. Gracias por sacarla del cristal. Y gracias, Samu, por ponerte justo donde un núcleo demasiado dispuesto a proteger pudiera salvarte.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2617,8 +2744,44 @@
           "text": "Ballerina Capuchina levanta los brazos como si dirigiera una danza invisible. Los memes rotos de la plaza se recomponen, las risas corruptas vuelven a sonar y los brainrot aparecen de nuevo entre las grietas para propagar la corrupción. Todo empieza a girar alrededor de Airi."
         },
         {
+          "character": "Ballerina Capuchina",
+          "text": "Mandato cumplido. El operador tendrá su núcleo.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ballerina_capuchina",
+              "position": "right",
+              "pose": "neutral"
+            }
+          ]
+        },
+        {
           "character": "3C",
-          "text": "La corrupción se torna de un color negro morado y tira de todos a la vez. Los memes se pliegan sobre ella, los restos de los brainrot se hunden en su luz.",
+          "text": "Un cable negro sale de la espiral y se enrolla en el tobillo de Ballerina. Por primera vez, su sonrisa se quiebra."
+        },
+        {
+          "character": "Ballerina Capuchina",
+          "text": "Espera... ¿yo también formaba parte del material?",
+          "textAnimation": true
+        },
+        {
+          "character": "3C",
+          "text": "La Amalgama la arrastra sin responder. Taza, tutú y voz se descomponen en píxeles y quedan absorbidos junto a los demás brainrot.",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "shake",
+              "intensity": 9,
+              "duration": 360
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "La corrupción se torna de un color negro morado. Los memes se pliegan sobre Airi; los restos de los brainrot —Ballerina incluida— se hunden en su luz.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -2634,7 +2797,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.png"
+              "value": "assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.webp"
             }
           ]
         },
@@ -2660,7 +2823,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.png"
+              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.webp"
             }
           ]
         },
@@ -2678,7 +2841,7 @@
         },
         {
           "character": "Edu",
-          "text": "Perdonad, pregunta urgente: ¿estamos viendo todos el meme del siuuu de Cristiano Ronaldo o solo me está fallando el cerebro?",
+          "text": "Pregunta urgente: ¿esa cosa tiene un punto débil o vamos a tener que desinstalar internet a golpes?",
           "actions": [
             {
               "type": "showCharacter",
@@ -2756,7 +2919,9 @@
               "type": "minigame",
               "game": "battle",
               "enemy": "amalgama",
-              "enemyHp": 840
+              "enemyHp": 840,
+              "retryOnDefeat": true,
+              "useInventory": false
             }
           ]
         },
@@ -2778,7 +2943,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.png"
+              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.webp"
             }
           ]
         },
@@ -2792,20 +2957,29 @@
         },
         {
           "character": "Amalgama forma final",
-          "text": "Orden recibida... Prioridad absoluta: preservar el núcleo. Ejecutar dominio total por mandato del líder supremo... E.Musk.",
+          "text": "FIRMA DE ORIGEN: AUSENTE. FIRMA DE OPERADOR: ELION_HUSK. MANDATO: explotar deuda de coherencia, aislar núcleo, ejecutar dominio total.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "amalgama_final",
               "position": "center",
               "pose": "neutral"
+            },
+            {
+              "type": "showCG",
+              "path": "assets/images/cg/shared/elion_controla_brainrot.webp",
+              "duration": 500
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "¿E.Musk? ¿Ese es el que está detrás de todo esto?",
+          "text": "¿Firma de origen ausente? Elion figura como operador, no como creador. ¿Él está detrás de los brainrot?",
           "actions": [
+            {
+              "type": "hideCG",
+              "duration": 400
+            },
             {
               "type": "showCharacter",
               "character": "samu",
@@ -2816,7 +2990,7 @@
         },
         {
           "character": "Edu",
-          "text": "¿Y por qué narices no se centra en irse a Marte y dejar el mundo tranquilo?",
+          "text": "Husk significa «cáscara». Hasta el apellido admite que por dentro no hay nada bueno.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2828,7 +3002,7 @@
         },
         {
           "character": "José",
-          "text": "Porque esto no va de explorar nada. Va de poseerlo todo.",
+          "text": "Su firma no coincide con la del núcleo. No creó a AI.RI: encontró la deuda de coherencia, la explotó y convirtió a los brainrot en herramientas para poseerla.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2841,7 +3015,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Mirad el centro. Ese brillo... es Airi. Sigue ahí dentro.",
+          "text": "La firma coincide con Ecchi Land. Elion controló aquella corrupción y pudo dejarme encerrada a sabiendas. No puedo probar cada paso todavía... pero ya tenemos su nombre.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2854,6 +3028,78 @@
         {
           "character": "3C",
           "text": "El brillo blanco parpadea, pequeño y frágil, rodeado por una silueta inmensa que ya no parece querer absorber la ciudad: parece querer cerrarse sobre ella para siempre."
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "Samu. El diapasón. Te dije que, cuando todo fuera caos, buscaras la nota verdadera.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Pues que esta sea lo bastante verdadera.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            },
+            {
+              "type": "showCG",
+              "path": "assets/images/cg/chapter3/diapason.webp",
+              "duration": 350,
+              "size": "auto 55%"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/sfx_diapason_ting.mp3",
+              "volume": 0.95
+            },
+            {
+              "type": "flash",
+              "color": "rgba(220, 245, 255, 0.65)",
+              "duration": 420
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "La nota atraviesa el ruido sin imponerse. Encuentra el pulso de Airi y le devuelve un ritmo propio; la corrupción se abre por primera vez desde dentro.",
+          "actions": [
+            {
+              "type": "hideCG",
+              "duration": 350
+            }
+          ]
+        },
+        {
+          "character": "Airi",
+          "text": "Os oigo. Yo abriré el núcleo y desataré las anclas. Vosotros golpead cuando os marque el compás.",
+          "textAnimation": true,
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/sfx_diapason_ting.mp3",
+              "volume": 0.62
+            },
+            {
+              "type": "flash",
+              "color": "rgba(255, 255, 255, 0.5)",
+              "duration": 280
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Un pulso azul sale del centro y recompone la energía del grupo. La segunda fase no empieza porque la Amalgama lo permita: empieza porque Airi ha abierto una salida."
         },
         {
           "actions": [
@@ -2874,7 +3120,20 @@
               "type": "minigame",
               "game": "battle",
               "enemy": "amalgama_final",
-              "enemyHp": 1120
+              "enemyHp": 1120,
+              "retryOnDefeat": true,
+              "useInventory": true,
+              "startItems": [
+                {
+                  "id": "pulso_airi",
+                  "name": "Pulso de AI.RI",
+                  "description": "Airi abre el núcleo y restaura por completo a un aliado.",
+                  "type": "full_restore",
+                  "target": "ally"
+                }
+              ],
+              "victoryTitle": "Compás recuperado",
+              "victoryText": "El pulso de Airi y la nota verdadera rompen el control de Elion."
             },
             {
               "type": "hideCharacter",

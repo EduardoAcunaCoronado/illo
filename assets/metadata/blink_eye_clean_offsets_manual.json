@@ -1,0 +1,343 @@
+{
+  "version": 3,
+  "offsets": {
+    "3c.happy": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        0,
+        0
+      ],
+      "closed": [
+        -13,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "airi.angry": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        4,
+        -1
+      ],
+      "closed": [
+        -2,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0137,
+        1.0
+      ],
+      "closedScale": [
+        1.0192,
+        1.0
+      ]
+    },
+    "airi.bua": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        6,
+        0
+      ],
+      "closed": [
+        -3,
+        -1
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0169,
+        1.0
+      ],
+      "closedScale": [
+        1.0255,
+        1.0
+      ]
+    },
+    "airi.determined": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        -3,
+        0
+      ],
+      "closed": [
+        -5,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0145,
+        1.0
+      ]
+    },
+    "airi.embarrassed": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        7,
+        1
+      ],
+      "closed": [
+        -3,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.019,
+        1.0
+      ],
+      "closedScale": [
+        1.0135,
+        1.0
+      ]
+    },
+    "airi.happy": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        0,
+        0
+      ],
+      "closed": [
+        -5,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0316,
+        1.0
+      ]
+    },
+    "airi.neutral": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        0,
+        0
+      ],
+      "closed": [
+        3,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0193,
+        1.0081
+      ],
+      "closedScale": [
+        1.0346,
+        1.0
+      ]
+    },
+    "airi.pray": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        6,
+        0
+      ],
+      "closed": [
+        3,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0304,
+        1.0
+      ],
+      "closedScale": [
+        1.0347,
+        1.0
+      ]
+    },
+    "airi.sad": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        7,
+        0
+      ],
+      "closed": [
+        -2,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0168,
+        1.0
+      ],
+      "closedScale": [
+        1.0254,
+        1.0
+      ]
+    },
+    "airi.surprised": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        5,
+        0
+      ],
+      "closed": [
+        -3,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0295,
+        1.0
+      ],
+      "closedScale": [
+        1.0387,
+        1.0
+      ]
+    },
+    "airi.thinking": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        -3,
+        0
+      ],
+      "closed": [
+        -2,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0069,
+        1.0
+      ],
+      "closedScale": [
+        1.0327,
+        1.0
+      ]
+    },
+    "airi.worried": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        1,
+        0
+      ],
+      "closed": [
+        -3,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0148,
+        1.0
+      ],
+      "closedScale": [
+        1.0148,
+        1.0
+      ]
+    },
+    "airi_adult.neutral": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        4,
+        -1
+      ],
+      "closed": [
+        2,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0195,
+        1.0302
+      ],
+      "closedScale": [
+        1.0219,
+        1.0
+      ]
+    }
+  }
+}

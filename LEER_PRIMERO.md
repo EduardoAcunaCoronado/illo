@@ -1,147 +1,91 @@
-# 🎮 Visual Novel Engine - Comienza Aquí
+# Project AI.RI: Transfurmados — Empieza aquí
 
-Bienvenido. Este es un motor completo de visual novel con documentación única en `DOCUMENTACION.md`.
+Este archivo es la portada del proyecto. Los dos manuales canónicos viven en
+[`DOCUMENTACION.md`](DOCUMENTACION.md):
 
-## 🚀 En 30 Segundos
+- [Manual de usuario](DOCUMENTACION.md#manual-de-usuario): instalación, menús,
+  controles, minijuegos, progreso y problemas habituales.
+- [Manual de desarrollo](DOCUMENTACION.md#manual-de-desarrollo): arquitectura,
+  formatos JSON, assets, herramientas, recetas de cambio, validación y build.
+- [Herramientas gráficas locales](DOCUMENTACION.md#herramientas-gráficas-locales):
+  marcado y alineación ocular, limpieza de bases y halos.
 
-Como app de escritorio (Electron):
+## Quiero jugar
 
-1. **Abre un terminal** en esta carpeta
-2. **Ejecuta:** `npm install` y luego `npm start`
-3. **Haz clic:** "Comenzar"
+Si tienes una versión instalada, abre **Transfurmados**, pulsa **Entrar con
+sonido** y sigue el opening hasta el menú principal. También puedes saltarlo.
 
-En el navegador:
+Desde el repositorio, la opción recomendada es la app de escritorio:
 
-1. **Ejecuta:** `python -m http.server 8000`
-2. **Abre:** http://localhost:8000
-3. **Haz clic:** "Comenzar"
-
-## 📚 Documentación
-
-**TODO está en: [DOCUMENTACION.md](DOCUMENTACION.md)**
-
-- Guía rápida
-- Cómo crear personajes
-- Cómo crear capítulos
-- Sistema de poses (emociones)
-- Todas las acciones disponibles
-- Troubleshooting
-- Funciones avanzadas
-
-## 📁 Estructura
-
-```
-proyecto/
-├── DOCUMENTACION.md        ← LEE ESTO
-├── index.html              ← Abre en navegador
-├── engine.js               ← Motor (NO TOQUES)
-├── game.js                 ← Carga los capítulos
-├── styles.css              ← Estilos
-├── electron/               ← App de escritorio (main.js + servidor interno)
-├── characters/             ← Define personajes aquí
-├── chapters/               ← Crea historias aquí
-└── assets/                 ← Imágenes y sonidos
+```powershell
+npm install
+npm start
 ```
 
-## ✨ Características Principales
+Alternativa en navegador:
 
-### Base
-- ✅ Diálogos con animación de escritura
-- ✅ Elecciones que ramifican la historia
-- ✅ Personajes con 5 poses emocionales
-- ✅ Fondos dinámicos
-- ✅ Sonidos y efectos
-- ✅ Guardado automático
-- ✅ **TODO en JSON** (sin programación)
-
-### Persona 5 Edition (Avanzadas)
-- ✨ Estética Persona 5 Royal (menús, diálogos, colores)
-- ⚡ Click para saltar/completar texto al instante
-- 🎬 Animación cinematográfica al inicio de capítulo
-- 🎨 Efectos visuales avanzados
-- 👥 Personajes más grandes y visibles (400x700px)
-- 🎭 Nuevo: Posición centro para personaje solo
-
-## 🎯 Primeros Pasos
-
-### 1. Ver los ejemplos
-Abre `index.html` y juega los 3 capítulos incluidos.
-
-### 2. Entender la estructura
-Lee `DOCUMENTACION.md` - está completo y organizado por temas.
-
-### 3. Crear tu primer capítulo
-Copia `chapters/chapter1.json`, edita y carga en `game.js`.
-
-### 4. Personalizar
-Edita `styles.css` para colores y `engine.js` para velocidad de texto.
-
-## 💡 Quick Reference
-
-**Mostrar personaje con emoción:**
-```json
-{
-  "type": "showCharacter",
-  "character": "luna",
-  "position": "left",
-  "pose": "happy"
-}
+```powershell
+python -m http.server 8000
 ```
 
-**Cambiar emoción:**
-```json
-{
-  "type": "setPose",
-  "character": "luna",
-  "position": "left",
-  "pose": "sad"
-}
+Después abre <http://localhost:8000/>. No abras `index.html` directamente con
+`file://`: los capítulos, personajes, audio y vídeo necesitan un servidor.
+
+Controles esenciales:
+
+- Clic o toque: completar el texto actual y avanzar.
+- Mantener `Ctrl`: avance rápido; las decisiones y minijuegos no se saltan.
+- `Esc` o **Opciones**: pausa y configuración.
+- **Escenas**: volver a escenas ya visitadas del capítulo.
+- **Retroceder**: regresar al comienzo de la escena anterior.
+- Una cinemática se puede saltar con clic, `Esc`, `Enter` o `Espacio`.
+
+Importante: la versión actual conserva los ajustes, pero todavía no guarda una
+partida para continuarla tras cerrar el juego. **Capítulos** inicia el capítulo
+elegido con estado limpio; no es una ranura de carga.
+
+## Quiero desarrollar
+
+Preparación y comprobación mínima:
+
+```powershell
+npm install
+npm run validate:content
+npm run audit:assets
+npm start
 ```
 
-**Crear elección:**
-```json
-{
-  "text": "Mi opción",
-  "nextLine": 5
-}
+Puntos de entrada:
+
+- Historia: `chapters/chapter0.json` a `chapters/chapter6.json`.
+- Personajes y poses: `characters/*.json`.
+- Runtime multimedia: `assets/`.
+- Fuentes, originales y archivo: `workbench/`.
+- Orquestación y menús: `game.js`.
+- Motor y acciones: `engine.js`.
+- Interfaz: `index.html`, `styles.css` y `battle-styles.css`.
+- App de escritorio: `electron/` y `package.json`.
+
+Para las herramientas oculares y de limpieza, ejecuta
+`ABRIR_EDITOR_OJOS.bat` o:
+
+```powershell
+npm run tools:eyes
 ```
 
-## 🔗 Navegación de Documentación
+Abre <http://localhost:8011/tools>.
 
-Todo está en **DOCUMENTACION.md**:
-- Sección 1: Inicio Rápido
-- Sección 2: Características
-- Sección 3-9: Sistema de contenido
-- Sección 10: Personalización
-- Sección 11: Troubleshooting
-- Sección 12: Funciones Avanzadas
+## Antes de entregar un cambio
 
-## 🆘 Problemas?
+```powershell
+npm run validate:content
+npm run audit:assets
+npm run check:js
+```
 
-1. Abre **DOCUMENTACION.md**
-2. Busca tu problema en **Troubleshooting**
-3. Sigue los pasos
+El chequeo de formato aún informa de deuda histórica en varios JavaScript;
+consulta el Manual de desarrollo antes de aplicar un formateo masivo.
 
-## 📊 Ejemplos Incluidos
-
-- **chapter0.json** - Prólogo (7 líneas)
-- **chapter1.json** - Encuentro con elecciones (16 líneas)
-- **chapter2.json** - Ramificaciones múltiples (13 líneas)
-- **luna.json** - Personaje con 5 poses
-- **alex.json** - Personaje con 5 poses
-
-## ✅ Checklist Rápido
-
-- [ ] Abrí `index.html` en navegador
-- [ ] Vi los 3 capítulos de ejemplo
-- [ ] Leí **DOCUMENTACION.md**
-- [ ] Creé mi primer personaje
-- [ ] Creé mi primer capítulo
-- [ ] Cargué en `game.js`
-- [ ] ¡Jugué mi historia!
-
----
-
-## 🚀 ¿Listo?
-
-→ **Abre [DOCUMENTACION.md](DOCUMENTACION.md) y comienza** 🎮
+Revisa además si el cambio obliga a actualizar el Manual de usuario, el Manual
+de desarrollo o ambos. Esta comprobación es parte de la definición de terminado
+y aparece también en `AGENTS.md` y en la plantilla de pull request.

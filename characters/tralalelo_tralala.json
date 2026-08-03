@@ -2,11 +2,21 @@
   "name": "Tralalero Tralala",
   "color": "#2f9fe8",
   "poses": {
-    "neutral": "assets/images/characters/tralalelo_tralala.png"
+    "neutral": "assets/images/characters/tralalelo_tralala.webp"
   },
   "defaultPose": "neutral",
   "aliases": [
     "Tralalelo Tralala",
     "Tralaleo Tralala"
-  ]
+  ],
+  "animations": {
+    "neutral": {
+      "frames": [
+        { "src": "assets/images/characters/eye_intermediate_sources/tralalelo_tralala/neutral/eyes_half_source.webp", "duration": 65 },
+        { "src": "assets/images/characters/animations/blinks/tralalelo_neutral_blink_closed.webp", "duration": 110 },
+        { "src": "assets/images/characters/eye_intermediate_sources/tralalelo_tralala/neutral/eyes_half_source.webp", "duration": 65 }
+      ],
+      "loop": true
+    }
+  }
 }

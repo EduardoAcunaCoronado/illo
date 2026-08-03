@@ -226,6 +226,7 @@ const gameContainer = document.getElementById("game-container");
 const mainMenu = document.getElementById("main-menu");
 const startBtn = document.getElementById("start-btn");
 const loadBtn = document.getElementById("load-btn");
+const galleryBtn = document.getElementById("gallery-btn");
 const dialogBox = document.getElementById("dialog-box");
 const gameArea = document.querySelector("#game-container > :not(#main-menu)");
 
@@ -243,6 +244,7 @@ function setMainMenuVisible(visible) {
 // Event listeners del menú
 startBtn.addEventListener("click", () => startNewGame());
 loadBtn.addEventListener("click", () => loadGame());
+galleryBtn?.addEventListener("click", () => showGalleryPanel());
 document.getElementById("settings-btn")?.addEventListener("click", () => showSettingsPanel());
 
 // "Salir" solo existe en la app de escritorio. El navegador no permite cerrar
@@ -327,6 +329,7 @@ function desbloquearBucle(sigueHaciendoFalta) {
     // Se agotó. Se DESCARTA la petición; si se dejara puesta, saltaría sola más
     // tarde, en mitad de otra cosa, borrando el escenario.
     sceneJumpRequested = null;
+    lineJumpRequested = null;
     rewindRequested = false;
     exitToMenuRequested = false;
   };
@@ -382,6 +385,7 @@ function updateOptionsButton() {
 // Igual que el de retroceder: el bucle está parado dentro de waitForClick(),
 // así que se apunta la escena pedida y se resuelve el clic pendiente a mano.
 let sceneJumpRequested = null;
+let lineJumpRequested = null;
 const scenesBtn = document.getElementById("scenes-btn");
 const scenesMenu = document.getElementById("scenes-menu");
 const scenesList = document.getElementById("scenes-list");
@@ -415,12 +419,15 @@ function abrirMenuEscenas() {
       "scenes-item" +
       (e.actual ? " actual" : "") +
       (e.visitada && !e.actual ? " visitada" : "");
+    li.setAttribute("role", "button");
+    li.tabIndex = 0;
+    if (e.actual) li.setAttribute("aria-current", "true");
     li.innerHTML =
       '<span class="scenes-num">' +
       (e.index + 1) +
       '</span><span class="scenes-title"></span>';
     li.querySelector(".scenes-title").textContent = e.title;
-    li.addEventListener("click", (ev) => {
+    const activarEscena = (ev) => {
       ev.preventDefault();
       ev.stopPropagation();
       cerrarMenuEscenas();
@@ -432,6 +439,10 @@ function abrirMenuEscenas() {
         engine.abortarEleccion();
       }
       desbloquearBucle(() => sceneJumpRequested !== null);
+    };
+    li.addEventListener("click", activarEscena);
+    li.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" || ev.key === " ") activarEscena(ev);
     });
     scenesList.appendChild(li);
   });
@@ -681,6 +692,942 @@ function showSettingsPanel() {
     selector.remove();
     mainMenu.classList.remove("hidden");
   });
+}
+
+// ===== Galería de arte =====
+// El catálogo se genera con scripts/build_gallery_manifest.py. Solo contiene
+// arte canónico o promocional: no expone hojas de sprites, fuentes de trabajo,
+// legacy ni los duplicados 4K cuando existe una salida ligera equivalente.
+const GALLERY_MANIFEST_SRC = "assets/metadata/gallery_manifest.json";
+let galleryManifestPromise = null;
+let gallerySpoilersRevealed = false;
+
+function galleryAssetUrl(path) {
+  return engine?.cacheBustAsset ? engine.cacheBustAsset(path) : path;
+}
+
+function loadGalleryManifest() {
+  if (galleryManifestPromise) return galleryManifestPromise;
+  galleryManifestPromise = fetch(
+    `${GALLERY_MANIFEST_SRC}?v=${Date.now()}`,
+    { cache: "no-store" },
+  )
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`No se pudo cargar la galería (${response.status})`);
+      }
+      return response.json();
+    })
+    .then((manifest) => {
+      if (!Array.isArray(manifest?.items) || !Array.isArray(manifest?.categories)) {
+        throw new Error("El manifiesto de la galería no tiene un formato válido");
+      }
+      return manifest;
+    })
+    .catch((error) => {
+      galleryManifestPromise = null;
+      throw error;
+    });
+  return galleryManifestPromise;
+}
+
+function attachGalleryLayerBlinks(manifest, layerManifest) {
+  for (const item of manifest.items || []) {
+    if (item.origin !== "character" || !item.characterKey) continue;
+    for (const pose of item.poses || []) {
+      const config = layerManifest?.poses?.[`${item.characterKey}.${pose.key}`];
+      if (config) pose.layerBlink = config;
+      else delete pose.layerBlink;
+    }
+  }
+  return manifest;
+}
+
+function attachGalleryCleanSprites(manifest, cleanManifest) {
+  const cleanSprites = cleanManifest?.sprites || {};
+  for (const item of manifest.items || []) {
+    if (item.origin !== "character" || !item.characterKey) continue;
+    let firstCleanPose = null;
+    for (const pose of item.poses || []) {
+      const clean = cleanSprites[`${item.characterKey}.${pose.key}`];
+      if (!clean?.cleaned) continue;
+      pose.src = clean.cleaned;
+      pose.thumbnail = clean.thumbnail || clean.cleaned;
+      if (!firstCleanPose) firstCleanPose = { pose, clean };
+    }
+    if (firstCleanPose && item.poses?.[0] === firstCleanPose.pose) {
+      item.src = firstCleanPose.clean.cleaned;
+      item.thumbnail = firstCleanPose.clean.galleryThumbnail ||
+        firstCleanPose.clean.thumbnail || firstCleanPose.clean.cleaned;
+    }
+  }
+  return manifest;
+}
+
+function galleryFocusableElements(scope) {
+  return [
+    ...scope.querySelectorAll(
+      'button:not([disabled]), a[href], video[controls], [tabindex]:not([tabindex="-1"])',
+    ),
+  ].filter((element) => !element.hidden && element.offsetParent !== null);
+}
+
+function focusGalleryElement(element) {
+  if (!element) return;
+  try {
+    element.focus({ preventScroll: true });
+  } catch (error) {
+    element.focus();
+  }
+  // #game-container es un escenario fijo, pero focus() puede desplazarlo de
+  // forma programática aunque tenga overflow:hidden. Eso recortaba la cabecera.
+  gameContainer.scrollTop = 0;
+}
+
+function trapGalleryFocus(event, scope) {
+  if (event.key !== "Tab") return;
+  const focusable = galleryFocusableElements(scope);
+  if (!focusable.length) {
+    event.preventDefault();
+    focusGalleryElement(scope);
+    return;
+  }
+  const first = focusable[0];
+  const last = focusable[focusable.length - 1];
+  if (event.shiftKey && document.activeElement === first) {
+    event.preventDefault();
+    focusGalleryElement(last);
+  } else if (!event.shiftKey && document.activeElement === last) {
+    event.preventDefault();
+    focusGalleryElement(first);
+  }
+}
+
+function closeGalleryPanel() {
+  const overlay = document.getElementById("gallery-panel");
+  if (!overlay) return;
+  overlay.querySelectorAll("video").forEach((video) => {
+    try {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+    } catch (error) {
+      // El nodo se va a retirar igualmente; algunos navegadores rechazan load().
+    }
+  });
+  overlay.remove();
+  gameContainer.scrollTop = 0;
+  setMainMenuVisible(true);
+  focusGalleryElement(galleryBtn);
+}
+
+function showGalleryLoadError(error) {
+  setMainMenuVisible(false);
+  const overlay = document.createElement("section");
+  overlay.id = "gallery-panel";
+  overlay.className = "chapter-selector gallery-selector";
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-labelledby", "gallery-error-title");
+  overlay.innerHTML = `
+    <div class="chapter-selector-panel gallery-error-panel">
+      <div class="gallery-kicker">Archivo de arte</div>
+      <h2 id="gallery-error-title" class="chapter-selector-title">Galería no disponible</h2>
+      <p class="gallery-error-message"></p>
+      <div class="gallery-error-actions">
+        <button type="button" class="gallery-action" data-gallery-retry>Reintentar</button>
+        <button type="button" class="chapter-selector-back" data-gallery-close>Volver</button>
+      </div>
+    </div>
+  `;
+  overlay.querySelector(".gallery-error-message").textContent =
+    error?.message || "No se ha podido leer el catálogo.";
+  overlay.querySelector("[data-gallery-close]").addEventListener("click", closeGalleryPanel);
+  overlay.querySelector("[data-gallery-retry]").addEventListener("click", () => {
+    overlay.remove();
+    setMainMenuVisible(true);
+    galleryManifestPromise = null;
+    showGalleryPanel();
+  });
+  overlay.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeGalleryPanel();
+    } else {
+      trapGalleryFocus(event, overlay);
+    }
+  });
+  gameContainer.appendChild(overlay);
+  focusGalleryElement(overlay.querySelector("[data-gallery-retry]"));
+}
+
+async function showGalleryPanel() {
+  if (
+    document.getElementById("gallery-panel") ||
+    galleryBtn?.dataset.loading === "true"
+  ) {
+    return;
+  }
+
+  if (galleryBtn) {
+    galleryBtn.dataset.loading = "true";
+    galleryBtn.disabled = true;
+    galleryBtn.setAttribute("aria-busy", "true");
+  }
+
+  try {
+    const [manifest, layerManifest, cleanManifest] = await Promise.all([
+      loadGalleryManifest(),
+      engine.loadLayerBlinkManifest(),
+      engine.loadWhiteHaloManifest(),
+    ]);
+    attachGalleryCleanSprites(manifest, cleanManifest);
+    attachGalleryLayerBlinks(manifest, layerManifest);
+    renderGalleryPanel(manifest);
+  } catch (error) {
+    console.error("No se ha podido abrir la galería:", error);
+    showGalleryLoadError(error);
+  } finally {
+    if (galleryBtn) {
+      galleryBtn.disabled = false;
+      galleryBtn.removeAttribute("aria-busy");
+      delete galleryBtn.dataset.loading;
+    }
+  }
+}
+
+function renderGalleryPanel(manifest) {
+  gameContainer.scrollTop = 0;
+  setMainMenuVisible(false);
+
+  const overlay = document.createElement("section");
+  overlay.id = "gallery-panel";
+  overlay.className = "chapter-selector gallery-selector";
+  overlay.tabIndex = -1;
+  overlay.setAttribute("role", "dialog");
+  overlay.setAttribute("aria-modal", "true");
+  overlay.setAttribute("aria-labelledby", "gallery-title");
+  overlay.innerHTML = `
+    <div class="chapter-selector-panel gallery-selector-panel">
+      <header class="gallery-header">
+        <div>
+          <div class="gallery-kicker">Archivo de arte</div>
+          <h2 id="gallery-title" class="gallery-title">Galería</h2>
+          <p class="gallery-subtitle"></p>
+        </div>
+        <div class="gallery-header-meta">
+          <span class="gallery-total"></span>
+          <button type="button" class="gallery-spoiler-toggle" aria-pressed="false"></button>
+        </div>
+      </header>
+      <div class="gallery-filters" role="tablist" aria-label="Categorías de la galería"></div>
+      <div class="gallery-grid" aria-live="polite"></div>
+      <footer class="gallery-footer">
+        <span class="gallery-visible-count" aria-live="polite"></span>
+        <span class="gallery-key-help">↔ navegar · Esc cerrar</span>
+        <button type="button" class="chapter-selector-back" data-gallery-close>Volver</button>
+      </footer>
+    </div>
+
+    <div class="gallery-lightbox" role="dialog" aria-modal="true"
+         aria-labelledby="gallery-lightbox-title" aria-hidden="true" hidden>
+      <button type="button" class="gallery-lightbox-close" aria-label="Cerrar imagen">×</button>
+      <button type="button" class="gallery-lightbox-nav gallery-lightbox-prev"
+              aria-label="Obra anterior">‹</button>
+      <article class="gallery-lightbox-card">
+        <div class="gallery-lightbox-media"></div>
+        <div class="gallery-lightbox-copy">
+          <div class="gallery-lightbox-meta"></div>
+          <h3 id="gallery-lightbox-title"></h3>
+          <p class="gallery-lightbox-description"></p>
+          <button type="button" class="gallery-blink-toggle" aria-pressed="false" hidden>
+            <span class="gallery-blink-icon" aria-hidden="true"></span>
+            <span class="gallery-blink-label">Ver parpadeo</span>
+          </button>
+          <section class="gallery-pose-panel" aria-labelledby="gallery-pose-title" hidden>
+            <div class="gallery-pose-header">
+              <h4 id="gallery-pose-title">Poses</h4>
+              <output class="gallery-pose-current"></output>
+            </div>
+            <div class="gallery-pose-picker" role="radiogroup"
+                 aria-label="Seleccionar pose del personaje"></div>
+          </section>
+          <div class="gallery-lightbox-actions"></div>
+        </div>
+      </article>
+      <button type="button" class="gallery-lightbox-nav gallery-lightbox-next"
+              aria-label="Obra siguiente">›</button>
+    </div>
+
+    <div class="gallery-spoiler-dialog" role="alertdialog" aria-modal="true"
+         aria-labelledby="gallery-spoiler-title" aria-describedby="gallery-spoiler-copy"
+         hidden>
+      <div class="gallery-spoiler-card">
+        <div class="gallery-spoiler-icon" aria-hidden="true">!</div>
+        <div>
+          <div class="gallery-kicker">Aviso de spoilers</div>
+          <h3 id="gallery-spoiler-title">Esta obra revela información importante</h3>
+          <p id="gallery-spoiler-copy"></p>
+        </div>
+        <div class="gallery-spoiler-actions">
+          <button type="button" class="chapter-selector-back" data-spoiler-cancel>Ahora no</button>
+          <button type="button" class="gallery-action" data-spoiler-confirm>Mostrar spoilers</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  gameContainer.appendChild(overlay);
+
+  const shell = overlay.querySelector(".gallery-selector-panel");
+  const filters = overlay.querySelector(".gallery-filters");
+  const grid = overlay.querySelector(".gallery-grid");
+  const total = overlay.querySelector(".gallery-total");
+  const visibleCount = overlay.querySelector(".gallery-visible-count");
+  const spoilerToggle = overlay.querySelector(".gallery-spoiler-toggle");
+  const lightbox = overlay.querySelector(".gallery-lightbox");
+  const lightboxMedia = overlay.querySelector(".gallery-lightbox-media");
+  const lightboxTitle = overlay.querySelector("#gallery-lightbox-title");
+  const lightboxDescription = overlay.querySelector(".gallery-lightbox-description");
+  const lightboxMeta = overlay.querySelector(".gallery-lightbox-meta");
+  const blinkToggle = overlay.querySelector(".gallery-blink-toggle");
+  const blinkToggleLabel = overlay.querySelector(".gallery-blink-label");
+  const posePanel = overlay.querySelector(".gallery-pose-panel");
+  const posePicker = overlay.querySelector(".gallery-pose-picker");
+  const poseCurrent = overlay.querySelector(".gallery-pose-current");
+  const lightboxActions = overlay.querySelector(".gallery-lightbox-actions");
+  const spoilerDialog = overlay.querySelector(".gallery-spoiler-dialog");
+  const spoilerCopy = overlay.querySelector("#gallery-spoiler-copy");
+  const categoryLabels = Object.fromEntries(
+    manifest.categories.map((category) => [category.id, category.label]),
+  );
+
+  const state = {
+    filter: "all",
+    filteredItems: [...manifest.items],
+    lightboxItem: null,
+    lightboxPoseIndex: 0,
+    blinkEnabled: false,
+    blinkTimer: null,
+    blinkRun: 0,
+    returnFocus: null,
+    spoilerReturnFocus: null,
+    spoilerConfirmAction: null,
+  };
+
+  overlay.querySelector(".gallery-subtitle").textContent =
+    manifest.description || "Arte, personajes y escenarios de Transfurmados.";
+  const poseTotal = Number(manifest.counts?.characterPoses) || 0;
+  total.textContent = poseTotal
+    ? `${manifest.items.length} entradas · ${poseTotal} poses`
+    : `${manifest.items.length} piezas`;
+
+  function updateSpoilerToggle() {
+    spoilerToggle.textContent = gallerySpoilersRevealed
+      ? "Ocultar spoilers"
+      : "Mostrar spoilers";
+    spoilerToggle.setAttribute("aria-pressed", String(gallerySpoilersRevealed));
+    spoilerToggle.classList.toggle("is-active", gallerySpoilersRevealed);
+  }
+
+  function currentNavigableItems() {
+    return state.filteredItems.filter(
+      (item) => gallerySpoilersRevealed || !item.spoiler,
+    );
+  }
+
+  function currentLightboxPose() {
+    const poses = state.lightboxItem?.poses;
+    return Array.isArray(poses) ? poses[state.lightboxPoseIndex] || null : null;
+  }
+
+  function galleryBlinkDelay(value, fallback = 2400) {
+    if (Array.isArray(value) && value.length) {
+      const min = Math.max(0, Number(value[0]) || 0);
+      const max = Math.max(min, Number(value[1]) || min);
+      return min + Math.random() * (max - min);
+    }
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+  }
+
+  function hideGalleryEyeLayer() {
+    const layer = lightboxMedia.querySelector(".gallery-eye-layer");
+    if (layer) {
+      layer.hidden = true;
+      layer.removeAttribute("src");
+    }
+  }
+
+  function showGalleryEyeLayer(pose, frame) {
+    const config = pose?.layerBlink;
+    const layer = lightboxMedia.querySelector(".gallery-eye-layer");
+    if (!config || !layer || !frame?.src) return;
+    const stateName = frame.state === "closed" ? "closed" : "half";
+    const offset = config.offsets?.[stateName] || [0, 0];
+    const stretch = config.offsets?.[`${stateName}Scale`] || [1, 1];
+    const crop = config.crop;
+    const canvas = config.canvas;
+    const width = lightboxMedia.clientWidth;
+    const height = lightboxMedia.clientHeight;
+    const contain = Math.min(width / canvas.width, height / canvas.height) || 1;
+    const imageLeft = (width - canvas.width * contain) / 2;
+    const imageTop = (height - canvas.height * contain) / 2;
+    const targetWidth = crop.width * stretch[0];
+    const targetHeight = crop.height * stretch[1];
+    const targetLeft = crop.x + crop.width / 2 + offset[0] - targetWidth / 2;
+    const targetTop = crop.y + crop.height / 2 + offset[1] - targetHeight / 2;
+    layer.style.left = `${imageLeft + targetLeft * contain}px`;
+    layer.style.top = `${imageTop + targetTop * contain}px`;
+    layer.style.width = `${targetWidth * contain}px`;
+    layer.style.height = `${targetHeight * contain}px`;
+    layer.src = galleryAssetUrl(frame.src);
+    layer.hidden = false;
+  }
+
+  function stopGalleryBlink(restoreBase = false) {
+    if (state.blinkTimer) clearTimeout(state.blinkTimer);
+    state.blinkTimer = null;
+    state.blinkRun += 1;
+    if (!restoreBase) return;
+    const pose = currentLightboxPose();
+    const image = lightboxMedia.querySelector(".gallery-lightbox-image");
+    hideGalleryEyeLayer();
+    if (pose?.src && image) image.src = galleryAssetUrl(pose.src);
+  }
+
+  function updateGalleryBlinkToggle(pose) {
+    const available = Boolean(
+      pose?.type !== "video" && (
+        Array.isArray(pose?.layerBlink?.frames) && pose.layerBlink.frames.length ||
+        Array.isArray(pose?.animation?.frames) && pose.animation.frames.length
+      ),
+    );
+    blinkToggle.hidden = !available;
+    blinkToggle.setAttribute("aria-pressed", String(available && state.blinkEnabled));
+    blinkToggle.classList.toggle("is-active", available && state.blinkEnabled);
+    blinkToggleLabel.textContent = state.blinkEnabled
+      ? "Detener parpadeo"
+      : "Ver parpadeo";
+  }
+
+  function startGalleryBlink(pose, immediate = true) {
+    const animation = pose?.animation || {};
+    const layered = Boolean(pose?.layerBlink);
+    const frames = layered ? pose.layerBlink.frames : (Array.isArray(animation?.frames) ? animation.frames : []);
+    const image = lightboxMedia.querySelector(".gallery-lightbox-image");
+    if (!state.blinkEnabled || !image || !frames.length) return;
+
+    stopGalleryBlink(false);
+    const run = state.blinkRun;
+    let frameIndex = 0;
+    const stillCurrent = () =>
+      state.blinkEnabled &&
+      state.blinkRun === run &&
+      image.isConnected &&
+      currentLightboxPose() === pose;
+
+    const scheduleBurst = (firstBurst = false) => {
+      if (!stillCurrent()) return;
+      const wait = firstBurst
+        ? 320
+        : galleryBlinkDelay(animation.delayRange, 2400);
+      state.blinkTimer = setTimeout(playFrame, wait);
+    };
+
+    const playFrame = () => {
+      if (!stillCurrent()) return;
+      const frame = frames[frameIndex];
+      if (layered) showGalleryEyeLayer(pose, frame);
+      else image.src = galleryAssetUrl(frame.src);
+      const duration = Math.max(40, Number(frame.duration) || 85);
+      frameIndex += 1;
+      if (frameIndex < frames.length) {
+        state.blinkTimer = setTimeout(playFrame, duration);
+        return;
+      }
+      state.blinkTimer = setTimeout(() => {
+        if (!stillCurrent()) return;
+        if (layered) hideGalleryEyeLayer();
+        else image.src = galleryAssetUrl(pose.src);
+        frameIndex = 0;
+        if (animation.loop === false) {
+          state.blinkEnabled = false;
+          updateGalleryBlinkToggle(pose);
+        } else {
+          scheduleBurst(false);
+        }
+      }, duration);
+    };
+
+    frames.forEach((frame) => {
+      const preload = new Image();
+      preload.src = galleryAssetUrl(frame.src);
+    });
+    scheduleBurst(immediate);
+  }
+
+  function releaseLightboxMedia() {
+    lightboxMedia.querySelectorAll("video").forEach((video) => {
+      try {
+        video.pause();
+        video.removeAttribute("src");
+        video.load();
+      } catch (error) {
+        // El nodo se retirará igualmente; algunos motores rechazan load().
+      }
+    });
+    lightboxMedia.replaceChildren();
+  }
+
+  function closeLightbox() {
+    if (lightbox.hidden) return;
+    const itemId = state.lightboxItem?.id;
+    state.blinkEnabled = false;
+    stopGalleryBlink(false);
+    releaseLightboxMedia();
+    lightbox.hidden = true;
+    lightbox.setAttribute("aria-hidden", "true");
+    shell.removeAttribute("inert");
+    state.lightboxItem = null;
+    const focusTarget = itemId
+      ? grid.querySelector(`[data-gallery-id="${CSS.escape(itemId)}"]`) || state.returnFocus
+      : state.returnFocus;
+    state.returnFocus = null;
+    focusGalleryElement(focusTarget);
+  }
+
+  function renderLightboxMedia(item, pose = null) {
+    stopGalleryBlink(false);
+    releaseLightboxMedia();
+    const mediaType = pose?.type || item.type;
+    const mediaSrc = pose?.src || item.src;
+    const mediaThumbnail = pose?.thumbnail || item.thumbnail;
+
+    if (mediaType === "video") {
+      const video = document.createElement("video");
+      video.className = "gallery-lightbox-video";
+      video.src = galleryAssetUrl(mediaSrc);
+      video.poster = galleryAssetUrl(mediaThumbnail);
+      video.controls = true;
+      video.loop = true;
+      video.muted = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.preload = "metadata";
+      lightboxMedia.appendChild(video);
+      video.play().catch(() => {
+        // Los controles quedan disponibles si el navegador bloquea autoplay.
+      });
+    } else {
+      const image = document.createElement("img");
+      image.className = "gallery-lightbox-image";
+      image.src = galleryAssetUrl(mediaSrc);
+      image.alt = pose?.alt || item.alt || item.title;
+      image.decoding = "async";
+      lightboxMedia.appendChild(image);
+      if (pose?.layerBlink) {
+        const eyeLayer = document.createElement("img");
+        eyeLayer.className = "gallery-eye-layer";
+        eyeLayer.alt = "";
+        eyeLayer.setAttribute("aria-hidden", "true");
+        eyeLayer.draggable = false;
+        eyeLayer.hidden = true;
+        lightboxMedia.appendChild(eyeLayer);
+      }
+    }
+
+    updateGalleryBlinkToggle(pose);
+    if (state.blinkEnabled && pose?.animation) startGalleryBlink(pose);
+  }
+
+  function selectLightboxPose(item, index, focusSelected = false) {
+    const poses = Array.isArray(item.poses) ? item.poses : [];
+    const pose = poses[index];
+    if (!pose) return;
+
+    state.lightboxPoseIndex = index;
+    renderLightboxMedia(item, pose);
+    poseCurrent.value = `${pose.label} · ${index + 1}/${poses.length}`;
+
+    posePicker.querySelectorAll(".gallery-pose-option").forEach((button, buttonIndex) => {
+      const buttonPose = poses[buttonIndex];
+      const selected = buttonIndex === index;
+      const hiddenSpoiler = buttonPose.spoiler && !gallerySpoilersRevealed;
+      button.classList.toggle("is-selected", selected);
+      button.classList.toggle("is-spoiler-hidden", hiddenSpoiler);
+      button.setAttribute("aria-checked", String(selected));
+      button.tabIndex = selected ? 0 : -1;
+      button.setAttribute(
+        "aria-label",
+        hiddenSpoiler
+          ? "Pose con spoilers. Pulsa para mostrar el aviso."
+          : `${buttonPose.label}, pose ${buttonIndex + 1} de ${poses.length}`,
+      );
+      const thumbnail = button.querySelector("img");
+      if (thumbnail) thumbnail.alt = hiddenSpoiler ? "" : buttonPose.alt || buttonPose.label;
+    });
+
+    if (focusSelected) {
+      focusGalleryElement(
+        posePicker.querySelector(`.gallery-pose-option[data-pose-index="${index}"]`),
+      );
+    }
+  }
+
+  function renderPosePicker(item) {
+    posePicker.replaceChildren();
+    const poses = Array.isArray(item.poses) ? item.poses : [];
+    posePanel.hidden = poses.length < 2;
+    if (poses.length < 2) {
+      poseCurrent.value = "";
+      if (poses.length === 1) selectLightboxPose(item, 0);
+      return;
+    }
+
+    poses.forEach((pose, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "gallery-pose-option";
+      button.dataset.poseIndex = String(index);
+      button.setAttribute("role", "radio");
+
+      const thumbnail = document.createElement("img");
+      thumbnail.src = galleryAssetUrl(pose.thumbnail || pose.src);
+      thumbnail.loading = "lazy";
+      thumbnail.decoding = "async";
+
+      const label = document.createElement("span");
+      label.textContent = pose.label;
+      button.append(thumbnail, label);
+      button.addEventListener("click", () => {
+        if (pose.spoiler && !gallerySpoilersRevealed) {
+          requestSpoilerReveal(pose, () => selectLightboxPose(item, index, true));
+        } else {
+          selectLightboxPose(item, index);
+        }
+      });
+      posePicker.appendChild(button);
+    });
+    selectLightboxPose(item, 0);
+  }
+
+  function renderLightboxItem(item) {
+    state.lightboxItem = item;
+    state.lightboxPoseIndex = 0;
+    renderLightboxMedia(item);
+
+    lightboxTitle.textContent = item.title;
+    lightboxDescription.textContent = item.description || "";
+    lightboxMeta.replaceChildren();
+
+    const category = document.createElement("span");
+    category.textContent = categoryLabels[item.category] || item.category;
+    lightboxMeta.appendChild(category);
+
+    if (Number.isInteger(item.chapter)) {
+      const chapter = document.createElement("span");
+      chapter.textContent = item.chapter === 0 ? "Prólogo" : `Capítulo ${item.chapter}`;
+      lightboxMeta.appendChild(chapter);
+    }
+    if (Array.isArray(item.poses) && item.poses.length > 1) {
+      const poseCount = document.createElement("span");
+      poseCount.textContent = `${item.poses.length} poses`;
+      lightboxMeta.appendChild(poseCount);
+    }
+    if (item.spoiler) {
+      const spoiler = document.createElement("span");
+      spoiler.className = "is-spoiler";
+      spoiler.textContent = "Spoiler";
+      lightboxMeta.appendChild(spoiler);
+    }
+
+    lightboxActions.replaceChildren();
+    if (item.downloadable && item.type === "image") {
+      const download = document.createElement("a");
+      download.className = "gallery-download";
+      download.href = galleryAssetUrl(item.src);
+      download.download = item.src.split("/").pop();
+      download.textContent = "Descargar wallpaper";
+      lightboxActions.appendChild(download);
+    }
+
+    renderPosePicker(item);
+
+    const navigable = currentNavigableItems();
+    const multiple = navigable.length > 1;
+    overlay.querySelector(".gallery-lightbox-prev").disabled = !multiple;
+    overlay.querySelector(".gallery-lightbox-next").disabled = !multiple;
+  }
+
+  function openLightbox(item) {
+    state.returnFocus =
+      grid.querySelector(`[data-gallery-id="${CSS.escape(item.id)}"]`) ||
+      document.activeElement;
+    shell.setAttribute("inert", "");
+    lightbox.hidden = false;
+    lightbox.setAttribute("aria-hidden", "false");
+    renderLightboxItem(item);
+    focusGalleryElement(overlay.querySelector(".gallery-lightbox-close"));
+  }
+
+  function navigateLightbox(direction) {
+    if (!state.lightboxItem || lightbox.hidden) return;
+    const navigable = currentNavigableItems();
+    if (navigable.length < 2) return;
+    const current = navigable.findIndex((item) => item.id === state.lightboxItem.id);
+    const next = (current + direction + navigable.length) % navigable.length;
+    renderLightboxItem(navigable[next]);
+  }
+
+  function closeSpoilerWarning(confirmed) {
+    if (spoilerDialog.hidden) return;
+    const action = state.spoilerConfirmAction;
+    const focusTarget = state.spoilerReturnFocus;
+    state.spoilerConfirmAction = null;
+    state.spoilerReturnFocus = null;
+    spoilerDialog.hidden = true;
+    lightbox.removeAttribute("inert");
+    if (lightbox.hidden) shell.removeAttribute("inert");
+    else shell.setAttribute("inert", "");
+
+    if (confirmed) {
+      gallerySpoilersRevealed = true;
+      updateSpoilerToggle();
+      renderGrid(false);
+      if (action) action();
+      else focusGalleryElement(focusTarget);
+    } else {
+      focusGalleryElement(focusTarget);
+    }
+  }
+
+  function requestSpoilerReveal(item, action) {
+    state.spoilerReturnFocus = document.activeElement;
+    state.spoilerConfirmAction = action || null;
+    spoilerCopy.textContent =
+      item?.spoilerReason ||
+      "La galería contiene el aspecto de Elion y escenas de la recta final. Todo está disponible, pero puede adelantarte revelaciones.";
+    shell.setAttribute("inert", "");
+    if (!lightbox.hidden) lightbox.setAttribute("inert", "");
+    spoilerDialog.hidden = false;
+    focusGalleryElement(spoilerDialog.querySelector("[data-spoiler-confirm]"));
+  }
+
+  function createGalleryCard(item) {
+    const hiddenSpoiler = item.spoiler && !gallerySpoilersRevealed;
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "gallery-card";
+    card.dataset.galleryId = item.id;
+    if (item.fit === "contain") card.classList.add("gallery-card--contain");
+    if (hiddenSpoiler) card.classList.add("is-spoiler-hidden");
+    card.setAttribute(
+      "aria-label",
+      hiddenSpoiler ? "Contenido con spoilers. Pulsa para mostrar el aviso." : item.title,
+    );
+
+    const art = document.createElement("span");
+    art.className = "gallery-card-art";
+    const image = document.createElement("img");
+    image.src = galleryAssetUrl(item.thumbnail);
+    image.alt = hiddenSpoiler ? "" : item.alt || item.title;
+    image.loading = "lazy";
+    image.decoding = "async";
+    art.appendChild(image);
+
+    if (item.type === "video") {
+      const play = document.createElement("span");
+      play.className = "gallery-card-play";
+      play.setAttribute("aria-hidden", "true");
+      play.textContent = "▶";
+      art.appendChild(play);
+    }
+    if (item.spoiler) {
+      const badge = document.createElement("span");
+      badge.className = "gallery-card-spoiler";
+      badge.textContent = "Spoiler";
+      art.appendChild(badge);
+    }
+
+    const copy = document.createElement("span");
+    copy.className = "gallery-card-copy";
+    const eyebrow = document.createElement("span");
+    eyebrow.className = "gallery-card-category";
+    const poseCount = Array.isArray(item.poses) ? item.poses.length : 0;
+    eyebrow.textContent = poseCount > 1
+      ? `${categoryLabels[item.category] || item.category} · ${poseCount} poses`
+      : categoryLabels[item.category] || item.category;
+    const title = document.createElement("strong");
+    title.textContent = hiddenSpoiler ? "Contenido con spoilers" : item.title;
+    const description = document.createElement("span");
+    description.className = "gallery-card-description";
+    description.textContent = hiddenSpoiler
+      ? "Pulsa para decidir si quieres mostrarlo."
+      : item.description || "";
+    copy.append(eyebrow, title, description);
+    card.append(art, copy);
+
+    card.addEventListener("click", () => {
+      if (item.spoiler && !gallerySpoilersRevealed) {
+        requestSpoilerReveal(item, () => openLightbox(item));
+      } else {
+        openLightbox(item);
+      }
+    });
+    return card;
+  }
+
+  function renderGrid(resetScroll = true) {
+    state.filteredItems =
+      state.filter === "all"
+        ? [...manifest.items]
+        : manifest.items.filter((item) => item.category === state.filter);
+    grid.replaceChildren();
+    const fragment = document.createDocumentFragment();
+    state.filteredItems.forEach((item) => fragment.appendChild(createGalleryCard(item)));
+    grid.appendChild(fragment);
+    visibleCount.textContent = `${state.filteredItems.length} ${
+      state.filteredItems.length === 1 ? "pieza" : "piezas"
+    }`;
+    if (resetScroll) grid.scrollTop = 0;
+  }
+
+  manifest.categories.forEach((category, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "gallery-filter";
+    button.dataset.galleryFilter = category.id;
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-selected", String(index === 0));
+    const count =
+      category.id === "all"
+        ? manifest.items.length
+        : manifest.items.filter((item) => item.category === category.id).length;
+    button.textContent = `${category.label} ${count}`;
+    button.addEventListener("click", () => {
+      state.filter = category.id;
+      filters.querySelectorAll(".gallery-filter").forEach((filterButton) => {
+        const selected = filterButton === button;
+        filterButton.classList.toggle("is-active", selected);
+        filterButton.setAttribute("aria-selected", String(selected));
+      });
+      renderGrid();
+    });
+    if (index === 0) button.classList.add("is-active");
+    filters.appendChild(button);
+  });
+
+  filters.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+    const buttons = [...filters.querySelectorAll(".gallery-filter")];
+    const current = buttons.indexOf(document.activeElement);
+    if (current < 0) return;
+    event.preventDefault();
+    let next = current;
+    if (event.key === "ArrowLeft") next = (current - 1 + buttons.length) % buttons.length;
+    if (event.key === "ArrowRight") next = (current + 1) % buttons.length;
+    if (event.key === "Home") next = 0;
+    if (event.key === "End") next = buttons.length - 1;
+    focusGalleryElement(buttons[next]);
+    buttons[next].click();
+  });
+
+  spoilerToggle.addEventListener("click", () => {
+    if (gallerySpoilersRevealed) {
+      gallerySpoilersRevealed = false;
+      updateSpoilerToggle();
+      renderGrid(false);
+      return;
+    }
+    requestSpoilerReveal(null, null);
+  });
+
+  overlay.querySelector("[data-spoiler-cancel]").addEventListener("click", () => {
+    closeSpoilerWarning(false);
+  });
+  overlay.querySelector("[data-spoiler-confirm]").addEventListener("click", () => {
+    closeSpoilerWarning(true);
+  });
+  overlay.querySelector("[data-gallery-close]").addEventListener("click", closeGalleryPanel);
+  overlay.querySelector(".gallery-lightbox-close").addEventListener("click", closeLightbox);
+  overlay.querySelector(".gallery-lightbox-prev").addEventListener("click", () => {
+    navigateLightbox(-1);
+  });
+  overlay.querySelector(".gallery-lightbox-next").addEventListener("click", () => {
+    navigateLightbox(1);
+  });
+  blinkToggle.addEventListener("click", () => {
+    const pose = currentLightboxPose();
+    if (!pose?.animation && !pose?.layerBlink) return;
+    state.blinkEnabled = !state.blinkEnabled;
+    updateGalleryBlinkToggle(pose);
+    if (state.blinkEnabled) startGalleryBlink(pose, true);
+    else stopGalleryBlink(true);
+  });
+  posePicker.addEventListener("keydown", (event) => {
+    if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"].includes(event.key)) {
+      return;
+    }
+    const buttons = [...posePicker.querySelectorAll(".gallery-pose-option")];
+    const current = buttons.indexOf(document.activeElement);
+    if (current < 0 || buttons.length < 2) return;
+    event.preventDefault();
+    event.stopPropagation();
+    let next = current;
+    if (["ArrowLeft", "ArrowUp"].includes(event.key)) {
+      next = (current - 1 + buttons.length) % buttons.length;
+    }
+    if (["ArrowRight", "ArrowDown"].includes(event.key)) {
+      next = (current + 1) % buttons.length;
+    }
+    if (event.key === "Home") next = 0;
+    if (event.key === "End") next = buttons.length - 1;
+    buttons[next].click();
+    if (!buttons[next].classList.contains("is-spoiler-hidden")) {
+      focusGalleryElement(buttons[next]);
+    }
+  });
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) closeLightbox();
+  });
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) closeGalleryPanel();
+  });
+
+  overlay.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      if (!spoilerDialog.hidden) {
+        closeSpoilerWarning(false);
+      } else if (!lightbox.hidden) {
+        closeLightbox();
+      } else {
+        closeGalleryPanel();
+      }
+      return;
+    }
+    if (!lightbox.hidden && event.key === "ArrowLeft") {
+      event.preventDefault();
+      navigateLightbox(-1);
+      return;
+    }
+    if (!lightbox.hidden && event.key === "ArrowRight") {
+      event.preventDefault();
+      navigateLightbox(1);
+      return;
+    }
+    const scope = !spoilerDialog.hidden
+      ? spoilerDialog
+      : !lightbox.hidden
+        ? lightbox
+        : overlay;
+    trapGalleryFocus(event, scope);
+  });
+
+  updateSpoilerToggle();
+  renderGrid();
+  focusGalleryElement(filters.querySelector(".gallery-filter"));
 }
 
 // ===== Menú de pausa (Esc o el botón de arriba a la izquierda) =====
@@ -1165,10 +2112,9 @@ function ensureAvailableChapters() {
 async function loadAvailableChapters() {
   AVAILABLE_CHAPTERS = [];
   // Los capítulos son CONSECUTIVOS (chapter0, chapter1, ...). Sondeamos en orden
-  // y paramos en el primero que no exista, en vez de pedir hasta chapter99: eso
-  // generaba ~94 peticiones 404 y llenaba la consola en cada carga. Ahora solo
-  // hay 1 fallo (el centinela que detecta "no hay más capítulos"). El tope de
-  // 100 queda como salvaguarda por si algún día hubiera muchos.
+  // y paramos al encontrar `isFinal: true`. El primer 404 queda como respaldo
+  // para catálogos antiguos sin esa marca, en vez de pedir hasta chapter99. El
+  // tope de 100 queda como salvaguarda por si algún día hubiera muchos.
   for (let i = 0; i < 100; i++) {
     const chapterId = `chapter${i}`;
     try {
@@ -1182,6 +2128,7 @@ async function loadAvailableChapters() {
       const chapter = await response.json();
       const title = chapter.title || `Capítulo ${i}`;
       AVAILABLE_CHAPTERS.push({ id: chapterId, title });
+      if (chapter.isFinal === true) break;
     } catch (error) {
       break; // error de red -> dejar de sondear
     }
@@ -1196,8 +2143,8 @@ async function loadAllCharacters() {
   const characters = [
     "edu",
     "zip",
-    "epod",
     "nexo",
+    "elion_husk",
     "samu",
     "iphone5",
     "micaela",
@@ -1237,6 +2184,8 @@ async function startNewGame() {
   engine.rescued = [];
   engine.completedCalls = [];
   engine.inventory = [];
+  engine.storyDelay = 0;
+  engine.storyPressure = 0;
 
   // Cargar todos los personajes disponibles
   await loadAllCharacters();
@@ -1253,7 +2202,7 @@ function releaseChapterTransition(transitionCurtain) {
 }
 
 async function playChapter(chapterIdentifier, transitionCurtain = null) {
-  // Permitir tanto número (chapter0, chapter1...) como nombre directo (chapter2-edu)
+  // Permitir tanto número (chapter0, chapter1...) como identificador directo.
   const chapterName =
     typeof chapterIdentifier === "number"
       ? `chapter${chapterIdentifier}`
@@ -1317,6 +2266,16 @@ async function playGame() {
       continue;
     }
 
+    // Salto de línea exclusivo del panel de depuración. Se atiende dentro
+    // del bucle existente, nunca arrancando un segundo playGame en paralelo.
+    if (lineJumpRequested !== null) {
+      const destino = lineJumpRequested;
+      lineJumpRequested = null;
+      engine.clearStage();
+      engine.goToLine(destino);
+      continue;
+    }
+
     const hasMoreContent = await engine.nextLine();
 
     if (!hasMoreContent) {
@@ -1371,6 +2330,7 @@ function volverAlMenuPrincipal() {
   isGameRunning = false;
   rewindRequested = false;
   sceneJumpRequested = null;
+  lineJumpRequested = null;
   exitToMenuRequested = false;
   stopRewindWatcher();
   cerrarMenuPausa();
@@ -1388,11 +2348,12 @@ async function endGame() {
   engine.setFastForward(false);
   rewindRequested = false;
   sceneJumpRequested = null;
+  lineJumpRequested = null;
   stopRewindWatcher();
   engine.hideDialog();
 
-  // Capturar la ruta ramificada elegida y si el capítulo es final (los
-  // capítulos 3 marcan "isFinal": true), antes de resetear el estado
+  // Capturar la ruta ramificada elegida y si el capítulo es final
+  // (`chapter6` en el recorrido actual), antes de resetear el estado.
   const branchChapter = engine.nextChapter;
   const isFinalChapter = engine.currentChapter?.isFinal === true;
 
@@ -1573,6 +2534,9 @@ async function startChapterFromSelector(chapterId) {
   engine.lastChapterName = null;
   engine.rescued = [];
   engine.completedCalls = [];
+  engine.inventory = [];
+  engine.storyDelay = 0;
+  engine.storyPressure = 0;
 
   isGameRunning = true;
 
@@ -1619,12 +2583,13 @@ function initDebugMode() {
     const input = document.getElementById("debug-line-input");
     const lineNumber = parseInt(input.value, 10);
     if (!isNaN(lineNumber)) {
-      if (engine.goToLine(lineNumber)) {
-        // Hacer que se muestre la línea
-        playGame();
-      } else {
+      const scene = engine.currentChapter?.scenes?.[engine.currentScene];
+      if (!scene || lineNumber < 0 || lineNumber >= scene.lines.length) {
         alert("Número de línea inválido");
+        return;
       }
+      lineJumpRequested = lineNumber;
+      desbloquearBucle(() => lineJumpRequested !== null);
     }
   });
 

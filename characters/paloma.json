@@ -2,8 +2,18 @@
   "name": "Paloma",
   "color": "#8fa6c4",
   "poses": {
-    "neutral": "assets/images/characters/others/paloma.png",
-    "churrera": "assets/images/characters/others/paloma_churrera.png"
+    "neutral": "assets/images/characters/others/paloma.webp",
+    "churrera": "assets/images/characters/others/paloma_churrera.webp"
   },
-  "defaultPose": "churrera"
+  "defaultPose": "churrera",
+  "animations": {
+    "neutral": {
+      "frames": [{ "src": "assets/images/characters/others/animations/blinks/paloma_neutral_blink_closed.webp", "duration": 110 }],
+      "loop": true
+    },
+    "churrera": {
+      "frames": [{ "src": "assets/images/characters/others/animations/blinks/paloma_churrera_blink_closed.webp", "duration": 110 }],
+      "loop": true
+    }
+  }
 }

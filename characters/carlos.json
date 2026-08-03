@@ -2,8 +2,19 @@
   "name": "Carlos",
   "color": "#f0c84b",
   "poses": {
-    "neutral": "assets/images/characters/carlos/carlos.png",
-    "silueta": "assets/images/characters/carlos/carlos_silueta.png"
+    "neutral": "assets/images/characters/carlos/carlos.webp",
+    "silueta": "assets/images/characters/carlos/carlos_silueta.webp"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "animations": {
+    "neutral": {
+      "frames": [
+        {
+          "src": "assets/images/characters/carlos/animations/blinks/carlos_neutral_blink_closed.webp",
+          "duration": 110
+        }
+      ],
+      "loop": true
+    }
+  }
 }

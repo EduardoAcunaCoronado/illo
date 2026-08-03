@@ -2,19 +2,31 @@
   "name": "Santi",
   "color": "#b0a08a",
   "poses": {
-    "neutral": "assets/images/characters/santi/santi.png",
-    "conduciendo": "assets/images/characters/santi/santi_conduciendo.png",
-    "saludando": "assets/images/characters/santi/santi_saludando.png",
-    "preocupado": "assets/images/characters/santi/santi_preocupado.png",
-    "mesa": "assets/images/characters/santi/santi_mesa.png",
-    "herido": "assets/images/characters/santi/santi_herido.png",
-    "riendo": "assets/images/characters/santi/santi_riendo.png",
-    "despedida": "assets/images/characters/santi/santi_despedida.png",
+    "neutral": "assets/images/characters/santi/santi.webp",
+    "conduciendo": "assets/images/characters/santi/santi_conduciendo.webp",
+    "saludando": "assets/images/characters/santi/santi_saludando.webp",
+    "preocupado": "assets/images/characters/santi/santi_preocupado.webp",
+    "mesa": "assets/images/characters/santi/santi_mesa.webp",
+    "herido": "assets/images/characters/santi/santi_herido.webp",
+    "riendo": "assets/images/characters/santi/santi_riendo.webp",
+    "despedida": "assets/images/characters/santi/santi_despedida.webp",
     "silueta": "assets/images/characters/santi/santi_silueta.png",
-    "estornudo_1": "assets/images/characters/santi/santi_est_0.png",
-    "estornudo_2": "assets/images/characters/santi/santi_est_1.png",
-    "estornudo_3": "assets/images/characters/santi/santi_est_2.png",
-    "estornudo_4": "assets/images/characters/santi/santi_est_3.png"
+    "estornudo_1": "assets/images/characters/santi/santi_est_0.webp",
+    "estornudo_2": "assets/images/characters/santi/santi_est_1.webp",
+    "estornudo_3": "assets/images/characters/santi/santi_est_2.webp",
+    "estornudo_4": "assets/images/characters/santi/santi_est_3.webp"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "animations": {
+    "neutral": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_neutral_blink_closed.webp", "duration": 110 }], "loop": true },
+    "conduciendo": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_conduciendo_blink_closed.webp", "duration": 110 }], "loop": true },
+    "saludando": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_saludando_blink_closed.webp", "duration": 110 }], "loop": true },
+    "preocupado": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_preocupado_blink_closed.webp", "duration": 110 }], "loop": true },
+    "mesa": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_mesa_blink_closed.webp", "duration": 110 }], "loop": true },
+    "herido": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_herido_blink_closed.webp", "duration": 110 }], "loop": true },
+    "riendo": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_riendo_blink_open.webp", "duration": 110 }], "loop": true },
+    "despedida": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_despedida_blink_closed.webp", "duration": 110 }], "loop": true },
+    "estornudo_1": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_estornudo_1_blink_closed.webp", "duration": 110 }], "loop": true },
+    "estornudo_4": { "frames": [{ "src": "assets/images/characters/santi/animations/blinks/santi_estornudo_4_blink_closed.webp", "duration": 110 }], "loop": true }
+  }
 }

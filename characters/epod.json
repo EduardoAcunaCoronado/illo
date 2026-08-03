@@ -2,11 +2,18 @@
   "name": "ePod",
   "color": "#188d91",
   "poses": {
-    "neutral": "assets/images/characters/others/epod.png",
-    "happy": "assets/images/characters/others/epod.png",
-    "sad": "assets/images/characters/others/epod.png",
-    "angry": "assets/images/characters/others/epod.png",
-    "surprised": "assets/images/characters/others/epod.png"
+    "neutral": "assets/images/characters/others/epod.webp",
+    "happy": "assets/images/characters/others/epod.webp",
+    "sad": "assets/images/characters/others/epod.webp",
+    "angry": "assets/images/characters/others/epod.webp",
+    "surprised": "assets/images/characters/others/epod.webp"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "animations": {
+    "neutral": { "frames": [{ "src": "assets/images/characters/others/animations/blinks/epod_neutral_blink_closed.webp", "duration": 110 }], "loop": true },
+    "happy": { "frames": [{ "src": "assets/images/characters/others/animations/blinks/epod_neutral_blink_closed.webp", "duration": 110 }], "loop": true },
+    "sad": { "frames": [{ "src": "assets/images/characters/others/animations/blinks/epod_neutral_blink_closed.webp", "duration": 110 }], "loop": true },
+    "angry": { "frames": [{ "src": "assets/images/characters/others/animations/blinks/epod_neutral_blink_closed.webp", "duration": 110 }], "loop": true },
+    "surprised": { "frames": [{ "src": "assets/images/characters/others/animations/blinks/epod_neutral_blink_closed.webp", "duration": 110 }], "loop": true }
+  }
 }

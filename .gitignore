@@ -1,3 +1,16 @@
 /node_modules
 /.idea
 /dist
+
+# Artefactos locales de Python y del sistema operativo
+__pycache__/
+*.py[cod]
+.DS_Store
+Thumbs.db
+
+# Temporales producidos por los editores de assets
+*.tmp
+*.temp
+
+# `workbench/` se versiona deliberadamente, incluidos sus binarios como archivos normales.
+# No añadir aquí una exclusión para esa carpeta.

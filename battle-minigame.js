@@ -20,8 +20,8 @@
     id: "diapason_de_plata",
     name: "Diapasón de plata",
     description:
-      "El diapasón de Seraphyna. Golpéalo y escucha: la nota limpia devuelve al grupo la mitad de su HP y PM, y levanta a quien haya caído.",
-    type: "revive_three",
+      "La nota verdadera atraviesa la Amalgama, revela el núcleo de Airi y permite que ella responda desde dentro. También reanima y cura al grupo.",
+    type: "diapason_resonance",
     target: "auto",
   };
 
@@ -300,8 +300,8 @@
       id: "marea_fans",
       name: "Marea de Fans Coléricos",
       role: "Horda glitcheada",
-      image: "assets/images/characters/marea_fans_battle_1.png",
-      background: "assets/images/backgrounds/chapter3/fans_desmadrandose.png",
+      image: "assets/images/characters/marea_fans_battle_1.webp",
+      background: "assets/images/backgrounds/chapter3/fans_desmadrandose.webp",
       hp: 9999,
       pm: 999,
       speed: 14,
@@ -356,8 +356,8 @@
       id: "ballerina_capuchina",
       name: "Ballerina Capuchina",
       role: "Jefa Brainrot",
-      image: "assets/images/characters/ballerina_capuchina_battle_1.png",
-      background: "assets/images/backgrounds/chapter4/plaza_circular_agujero.png",
+      image: "assets/images/characters/ballerina_capuchina_battle_1.webp",
+      background: "assets/images/backgrounds/chapter4/plaza_circular_agujero.webp",
       hp: 420,
       pm: 80,
       speed: 14,
@@ -418,8 +418,8 @@
       id: "tralalelo_tralala",
       name: "Tralalero Tralala",
       role: "Jefe Brainrot",
-      image: "assets/images/characters/tralalelo_tralala_battle_1.png",
-      background: "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.png",
+      image: "assets/images/characters/tralalelo_tralala_battle_1.webp",
+      background: "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.webp",
       hp: 520,
       pm: 90,
       speed: 15,
@@ -481,8 +481,8 @@
       id: "tung_tung_tung_sahur",
       name: "Tung Tung Tung Sahur",
       role: "Lider Brainrot",
-      image: "assets/images/characters/tung_tung_tung_sahur_battle_1.png",
-      background: "assets/images/backgrounds/shared/fuente_ciudad_paloma.png",
+      image: "assets/images/characters/tung_tung_tung_sahur_battle_1.webp",
+      background: "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp",
       hp: 620,
       pm: 110,
       speed: 12,
@@ -542,8 +542,8 @@
       id: "amalgama",
       name: "Amalgama",
       role: "Horror Brainrot",
-      image: "assets/images/characters/amalgama/amalgama_base.png",
-      background: "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.png",
+      image: "assets/images/characters/amalgama/amalgama_base.webp",
+      background: "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.webp",
       hp: 840,
       pm: 140,
       speed: 8,
@@ -602,8 +602,8 @@
       id: "amalgama_final",
       name: "Amalgama forma final",
       role: "Nucleo final",
-      image: "assets/images/characters/amalgama/amalgama_final.png",
-      background: "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.png",
+      image: "assets/images/characters/amalgama/amalgama_final.webp",
+      background: "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.webp",
       hp: 1120,
       pm: 260,
       speed: 11,
@@ -744,6 +744,8 @@
         ? options.startItems.map((item) => ({ ...item }))
         : [];
       this.enemyItemStolen = false;
+      this.airiResonance = false;
+      this.airiResonanceTurns = 0;
       this.messageToken = 0;
       this.resolve = null;
     }
@@ -1889,6 +1891,47 @@
     }
 
     applyItem(item, target) {
+      if (item.type === "diapason_resonance") {
+        const fallen = this.allies
+          .filter((ally) => ally.currentHp <= 0)
+          .slice(0, 3);
+        const standing = this.allies.filter((ally) => ally.currentHp > 0);
+
+        fallen.forEach((ally) => {
+          ally.currentHp = Math.max(1, Math.ceil(ally.maxHp * 0.4));
+          ally.currentPm = Math.ceil(ally.maxPm * 0.4);
+          this.resetRevivedFighterTurn(ally);
+        });
+        standing.forEach((ally) => {
+          this.restoreHp(ally, Math.ceil(ally.maxHp * 0.3));
+          this.restorePm(ally, Math.ceil(ally.maxPm * 0.3));
+        });
+
+        const canReachAiri = ["amalgama", "amalgama_final"].includes(
+          this.enemy.id,
+        );
+        if (canReachAiri) {
+          this.airiResonance = true;
+          this.airiResonanceTurns = 0;
+          this.enemy.defense = Math.max(0, this.enemy.defense - 7);
+          this.enemy.evasion = 0;
+          const enemyEl = this.overlay?.querySelector(".battle-enemy");
+          enemyEl?.classList.add("is-airi-resonant");
+          this.playBattleSound("assets/audio/sfx/sfx_diapason_ting.mp3", 0.95);
+          return {
+            text:
+              "La nota comprime el ruido. El núcleo azul queda expuesto y Airi responde desde dentro: abrirá una brecha cada dos turnos enemigos.",
+            consumed: true,
+          };
+        }
+
+        return {
+          text:
+            "La nota limpia levanta al grupo, pero aquí no encuentra ningún núcleo al que responder.",
+          consumed: true,
+        };
+      }
+
       if (item.type === "revive_three") {
         const fallen = this.allies
           .filter((ally) => ally.currentHp <= 0)
@@ -2144,6 +2187,39 @@
           this.surviveWon = true;
         }
       }
+
+      this.applyAiriResonancePulse(actor);
+    }
+
+    applyAiriResonancePulse(actor) {
+      if (!this.airiResonance || actor.team !== "enemy") return;
+      if (!["amalgama", "amalgama_final"].includes(this.enemy.id)) return;
+      this.airiResonanceTurns += 1;
+      if (this.airiResonanceTurns % 2 !== 0) return;
+
+      const damage = Math.max(1, Math.ceil(this.enemy.maxHp * 0.045));
+      this.enemy.currentHp = Math.max(0, this.enemy.currentHp - damage);
+      let recovered = 0;
+      for (const ally of this.allies) {
+        if (ally.currentHp <= 0) continue;
+        recovered += this.restoreHp(ally, Math.ceil(ally.maxHp * 0.06));
+      }
+
+      const enemyEl = this.overlay?.querySelector(".battle-enemy");
+      enemyEl?.classList.remove("airi-resonance-pulse");
+      void enemyEl?.offsetWidth;
+      enemyEl?.classList.add("airi-resonance-pulse");
+      setTimeout(() => enemyEl?.classList.remove("airi-resonance-pulse"), 760);
+      this.playBattleSound("assets/audio/sfx/sfx_diapason_ting.mp3", 0.7);
+      this.message(
+        `Airi abre una brecha desde dentro: ${damage} de daño al núcleo y ${recovered} HP devueltos al grupo.`,
+      );
+    }
+
+    playBattleSound(path, volume = 0.75) {
+      const audio = new Audio(path);
+      audio.volume = clamp(volume, 0, 1);
+      audio.play().catch(() => {});
     }
 
     // ---- UI del modo supervivencia (contador + burbujas de urgencia) ----

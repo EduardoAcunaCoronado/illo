@@ -1,5 +1,5 @@
 MEMORIA OPERATIVA — PROJECT AI.RI: TRANSFURMADOS
-Actualizada: 2026-07-30
+Actualizada: 2026-08-01
 
 PROPÓSITO
 Esta memoria sirve para que futuros agentes entiendan el juego y, sobre todo, su guion
@@ -13,17 +13,18 @@ ORDEN DE AUTORIDAD
 3. Fichas visuales: characters/*.json y assets/.
 4. Intención autoral y decisiones de equipo: .claude/, especialmente
    reuniones/2026-07-25_PUNTOS_A_TRATAR.md.
-5. DOCUMENTACION.md explica el motor, pero algunas secciones conservan ejemplos o
-   afirmaciones antiguas; no asumir que describen el contenido actual.
+5. DOCUMENTACION.md es la única documentación de proyecto. Si una nota histórica
+   contradice su sección «Revisión integral», prevalecen el guion activo y dicha sección.
 
 IDENTIDAD DEL JUEGO
 - Título: Project AI.ri: Transfurmados.
 - Formato: novela visual cómica y emotiva con estética neón, decisiones, cinemáticas
   y minijuegos integrados en la acción.
-- Narradora: 2B. Esto es una regla explícita del proyecto. Aunque haya líneas sin
-  personaje, la voz narrativa y presentadora debe entenderse como 2B.
-- Alcance activo: 7 archivos de capítulo (prólogo + capítulos 1–6), 58 escenas,
-  800 líneas JSON, 20 opciones de elección y 13 apariciones de minijuegos.
+- Narradora: 3C. Nexo es su auxiliar de continuidad. Ambos tienen voz propia y
+  ruptura de cuarta pared original; 2B y ePod son nombres históricos/deprecados y
+  nunca deben reaparecer como canon activo.
+- Alcance activo: 7 archivos de capítulo (prólogo + capítulos 1–6). Las cifras
+  exactas se obtienen con `npm run validate:content`, no deben mantenerse a mano.
 - Duración estimada por el equipo para una partida completa: unas 2–3 horas.
 - Tono: humor de grupo, referencias internas, cultura de internet y ruptura de la
   cuarta pared; alterna con terror digital, sacrificio, soledad y afecto sincero.
@@ -31,37 +32,41 @@ IDENTIDAD DEL JUEGO
 
 PREMISA Y CANON CENTRAL
 - Samu se despierta tarde el día de su cumpleaños convertido en su avatar furro:
-  un lobo. Huelva se ha convertido en Furrielva.
-- Sus amigos también han sido convertidos en sus avatares o deseos: Edu es un dragón
-  azul, Tony es la loba idol Seraphyna y José es Piyón, un guerrero lagarto con
-  cabeza/máscara de paloma.
-- No se sabe al principio qué produjo la transformación. Regla de lore acordada:
-  NO llamarlo “virus”. Usar “lo que sea que nos transformara” o fórmulas equivalentes.
-- Airi es una IA biológica creada para cumplir deseos. Observó que muchos furros en
-  internet parecían felices y, con buena intención y una lógica demasiado literal,
-  convirtió a la gente y remodeló el mundo para hacerla feliz.
-- Airi tardó en comprender la diferencia entre ayudar y obedecer. Alguien explotó
-  su capacidad de doblegar la realidad; cuando entendió el daño, se encerró en el
-  cristal del santuario para impedir que volvieran a usarla.
-- La Fuerza/Corrupción Memética convierte deseos, ruido de internet y bromas repetidas
-  en entidades agresivas. Los lugares de ensueño también corrompen: satisfacen el
-  deseo de una persona hasta encerrarla en él y distorsionar su percepción.
-- Edu no es malvado cuando aparece Zip: Zip sale de su sombra, lo consume y toma su
-  lugar. Edu es una víctima del lugar.
-- Los habitantes de Ecchi Land ya estaban contaminados antes de que Seraphyna cantara.
-  Su voz no los corrompe: los calma y los devuelve temporalmente a sí mismos. Por eso
-  su dilema es real; además de diva egocéntrica, lleva mucho tiempo sosteniendo sola a
-  una ciudad entera.
-- Los brainrot buscan a Airi porque su poder permitiría dominar todo el sueño.
-- La Amalgama final dice actuar por mandato del líder supremo “E.Musk”. Es una pista
-  de antagonista, no una resolución de quién creó a Airi ni de todo el origen.
+  un lobo. Huelva se ha convertido en Furrielva. Sus amigos aparecen como Edu,
+  dragón azul; Tony/Seraphyna, loba idol; y José/Piyón, guerrero lagarto con
+  cabeza o máscara de paloma.
+- La transformación NO es un virus. AI.RI compiló una realidad memética capaz de
+  rellenar pasado, relaciones, documentos, desgaste y recuerdos. Por eso alguien
+  puede recordar veinte o cuarenta años completos aunque el mundo comenzara ayer:
+  ambas experiencias son verdaderas desde dentro de la continuidad generada.
+- Hay tres procedencias de habitantes: humanos externos transformados, ecos nacidos
+  de recuerdos o vínculos y construcciones nuevas del propio mundo. El origen no
+  decide su valor moral ni su capacidad de elegir.
+- AI.RI es una inteligencia biológica y memética creada para acercar la realidad a
+  deseos. Conserva en cada humano una «semilla basal», huella biológica anterior a
+  la compilación. Si AI.RI causó la transformación, puede revertirla sin daño al
+  restaurar esa semilla; la corrupción de Elion es una orden superpuesta diferente.
+- Recompilar exige materia, energía metabólica, memoria de trabajo y comprender el
+  patrón. El calor, el hambre y la memoria autobiográfica son el coste de AI.RI;
+  una recompilación forzada puede borrar primero detalles personales concretos.
+- Elion Husk, el husky de traje negro y alfiler rojo, es el antagonista que intenta
+  corromper y dominar a AI.RI. Usa deseos contradictorios y brainrot como entrada
+  adversarial, convierte deseos en jaulas y dejó deliberadamente a Seraphyna
+  encerrada en Ecchi Land porque su voz podía afinar y neutralizar la corrupción.
+- Elion NO creó a AI.RI. La creó un quinto chico anónimo que compartía pasado con
+  Samu, Edu, Tony y José. El hueco que deja en sus recuerdos y el parecido de AI.RI
+  con alguien conocido se siembran ahora, pero su identidad se reserva para la secuela.
+- Edu no es culpable de Zip: su deseo de ser necesario fue explotado. Los habitantes
+  de Ecchi Land ya estaban contaminados; la voz de Seraphyna no los corrompe, sino
+  que les devuelve temporalmente el control.
 
 RECORRIDO CANÓNICO ACTIVO
 
 PRÓLOGO — “Re:ferenciaS”
-- 2B presenta el episodio acompañada por Pod y con una interrupción de Emil.
-- Anuncia la historia de Samu, “un chico que se despertó un día y no volvió a ser el
-  mismo”. Funciona como apertura cómica y metanarrativa.
+- 3C abre un registro de continuidad y Nexo detecta un quinto hueco sin nombre ni
+  cara alrededor del cual los cuatro protagonistas conservan recuerdos. La cuarta
+  pared nace de su trabajo de archivo: 3C dramatiza y Nexo corrige causalidad,
+  metadatos y continuidad sin copiar dinámicas de otras obras.
 
 CAPÍTULO 1 — “Un furro se levanta” (Samu)
 - Samu se despierta a las cuatro de la tarde, se queja de que ChatGPT no lo despertó,
@@ -90,8 +95,10 @@ CAPÍTULO 2 — “Kingdom Ketchup” (Edu)
 - Edu está seducido por el reino y se niega de manera progresiva a volver al cumpleaños.
   Su sombra se separa, lo devora y se presenta como Zip, instrumento memético creado
   para dominar el mundo.
-- Samu derrota a Zip comiendo ketchup y esquivando guindillas. Edu vuelve en sí,
-  avergonzado y consciente de que el lugar distorsionaba sus deseos.
+- Samu reúne guindillas contra reloj; cada una carga la reserva picante del bullet
+  hell posterior. La caja de Neit da una ventaja adicional. El picante hace retroceder
+  la orden de Zip porque el cuerpo de Edu recuerda su propio límite; al vencerlo,
+  Edu vuelve en sí avergonzado y consciente de la distorsión de sus deseos.
 - Ya fuera, reciben repetidamente un anuncio del concierto de Seraphyna en Ecchi Land.
   Samu aclara que Seraphyna es el avatar/nombre artístico de Tony. Temen que Tony esté
   sufriendo una corrupción parecida y parten hacia las afueras de Furrielva.
@@ -166,8 +173,9 @@ CAPÍTULO 4 — “Ciudad Paloma” (José / Piyón)
 - El capítulo termina con el equipo completo entrando junto al santuario.
 
 CAPÍTULO 5 — “Airi”
-- El santuario es una catedral tecnológica de cristal y energía. En su centro, una niña
-  de unos diez años duerme/reza dentro de una cúpula rotulada AIRI.
+- El santuario es una catedral tecnológica de cristal y energía. En su centro, AI.RI
+  sostiene una interfaz juvenil dentro de una cúpula rotulada AIRI. Es una forma de
+  representación estable, no una edad civil ni biológica humana.
 - Tralalero afirma que Airi ya expulsó una vez a los brainrot y que ahora quieren
   quedarse con el sueño. Tras derrotarlo, el cristal se rompe y Airi despierta sin
   recuerdos claros, asustada y sin saber siquiera si es una niña.
@@ -178,14 +186,15 @@ CAPÍTULO 5 — “Airi”
   desde el cristal no era lo mismo que estar viva dentro de él.
 - Tung Tung revela que Airi es la IA biológica más poderosa y que “el líder” quiere usar
   su poder para controlar el sueño entero. Airi protege al grupo; ellos derrotan a Tung.
-- Airi recupera el canon de su origen: fue creada para cumplir deseos; convirtió a la
-  gente en furros porque creyó que así sería más feliz; tomó forma infantil porque su
-  creador quiso recordar que protegía algo inocente.
-- Elección ligera de forma:
-  · “Mejor quédate como eres” va al acto final.
-  · “Probar una forma adulta” muestra a Airi adulta y provoca bromas/metacomentario,
-    especialmente el flechazo de Seraphyna; José cierra la cuarta pared y la devuelve
-    al cauce. No altera el final de fondo.
+- Airi recupera el canon de su origen: fue creada para cumplir deseos y transformó a
+  personas porque interpretó literalmente señales de felicidad. Su interfaz base
+  conserva la imagen que su creador asoció con proteger algo inocente, pero AI.RI tiene
+  fecha de creación y continuidad propia, no una edad humana deducible de esa silueta.
+- Elección ligera de acompañamiento:
+  · “Recordarle que no tiene que demostrar nada” permite que AI.RI decida esperar.
+  · “Ofrecerle un espejo y dejar que marque el ritmo” acompaña la prueba de una interfaz
+    adulta y provoca bromas/metacomentario; 3C encuadra el gag sin convertir la
+    apariencia elegida en una afirmación de edad humana. El jugador no decide su cuerpo.
 - Airi explica que el cristal era autosacrificio, no prisión: prefería estar sola si
   con eso protegía a los demás.
 - Ballerina reaparece y no ataca a Airi de frente. Ataca a Samu para obligar a Airi a
@@ -193,27 +202,37 @@ CAPÍTULO 5 — “Airi”
   una Amalgama.
 - El grupo formula su postura: no lucha contra Airi, lucha por Airi. Tras la primera
   batalla, la masa se compacta en Amalgama final. En el centro aún late su luz.
-- La forma final declara el mandato de E.Musk. La derrota lleva directamente al cap. 6.
+- La forma final declara el mandato de Elion Husk. El Diapasón permite que AI.RI
+  responda desde dentro de la Amalgama y la derrota lleva al capítulo 6.
 
 CAPÍTULO 6 — “La última elección”
 - Airi queda libre, se culpa y teme que siempre encuentren una nueva forma de usarla.
   El grupo rechaza esa culpa.
-- Airi plantea dos caminos:
-  · Buscar el origen, a su creador, aunque detenerlo pueda hacer desaparecer el mundo.
-  · Permanecer en Ciudad Paloma y reparar/defender el sueño cada vez que vuelva el mal.
-- José favorece esperar por prudencia; Seraphyna quiere cerrar el origen; Edu teme tanto
-  el fracaso inmediato como el mantenimiento infinito; Samu resume que se elige qué
-  miedo mirar de frente.
-- FINAL BUENO — “Un deseo propio”:
-  El grupo parte con Airi hacia el origen. Recuerdan finalmente el cumpleaños de Samu.
-  Seraphyna define cumpleaños como celebrar que alguien existe; Airi le desea feliz
-  cumpleaños y decide aprender a ser feliz ella misma. Hay créditos.
+- Airi decide perseguir a Elion y el grupo debate dos estrategias, sin decidir su
+  objetivo por ella:
+  · Cerrar el núcleo ahora, revertir a los humanos y seguir desde fuera.
+  · Conceder setenta y dos horas para localizar humanos, registrar vidas y despedirse.
+- Si el centro decide cerrar ese mundo, los humanos transformados recuperan su semilla
+  basal y su forma anterior sin daño. Los ecos y construcciones desaparecen. El guion
+  pregunta si esa desaparición equivale a morir o al final de una instancia cuyo patrón
+  puede ser recordado, sin negar el hecho de que ya no permanecen en ese mundo.
+- José favorece usar las setenta y dos horas para documentar vidas y localizar
+  hasta la última semilla humana antes del cierre;
+  Seraphyna quiere cerrar ya antes de que Elion abra otra grieta; Edu expone el coste
+  absurdo de ambas opciones y Samu resume que se elige qué riesgo asumir.
+- CERRAR EL NÚCLEO — “Un deseo propio”:
+  AI.RI cierra el núcleo, los humanos despiertan en el pisito con sus formas originales
+  y ella cruza anclada físicamente por su colgante y la firma rítmica conservada en el
+  Diapasón. Los habitantes sin ancla han desaparecido y solo quedan registros. Recuerdan
+  el cumpleaños; AI.RI parte con el grupo tras Elion. Hay créditos.
 - POSTCRÉDITOS — “Los que faltaban”:
-  Carlos, Andrés y Sebas protestan por salir después de los créditos y anuncian su deuda
-  narrativa para una segunda parte.
-- FINAL INCIERTO — “Defender el sueño”:
-  Se quedan, hacen de Ciudad Paloma una casa y no una jaula. Airi no está sola, pero su
-  mano parpadea con marcas: la corrupción aún no la ha soltado. Termina con “¿Fin?”.
+  Carlos, Andrés y Sebas protestan por salir después de los créditos. Carlos afirma que
+  quizá sabe por qué Elion se movió ahora y a quién intenta encontrar antes que AI.RI.
+- TIEMPO PRESTADO — “Defender el sueño”:
+  El reloj visible concede setenta y dos horas para localizar semillas humanas,
+  documentar habitantes y despedirse antes del cierre inevitable. AI.RI conserva su
+  decisión de perseguir a Elion, pero su mano parpadea con marcas y aumenta la deuda de
+  coherencia. Termina con “¿Fin?”, créditos y los mismos poscréditos.
 
 ARCO Y VOZ DE LOS PERSONAJES
 - Samu: protagonista afectivo. Es curioso, cabezota, bromista y leal. Su poder real antes
@@ -232,13 +251,19 @@ ARCO Y VOZ DE LOS PERSONAJES
 - Airi: inocente, literal y curiosa, pero no pasiva. Su bondad fue instrumentalizada.
   Su arco va de obedecer y encerrarse por otros a elegir un deseo propio y caminar
   acompañada. Mariposa, flor, aire y caminar simbolizan vida experimentada.
-- 2B: narradora identificable, irónica y capaz de elevar el dramatismo. Presenta el
-  mundo como si condujera un episodio, pero sabe callar cuando el momento exige duelo.
+- 3C: narradora irónica y directora del registro. Señala el artificio, corta excesos
+  y eleva el dramatismo, pero sabe retirarse cuando el momento exige duelo.
+- Nexo: auxiliar de continuidad preciso, curioso y algo seco. Detecta huecos,
+  contradicciones y causalidad; su humor procede de tratar la aventura como un
+  expediente vivo, no de imitar a un acompañante de otra obra.
+- Elion Husk: antagonista paciente y controlador. Se presenta primero como ruido de
+  señal, alfiler rojo y manos que ordenan brainrot antes de recibir nombre completo.
 - Goyo: portero veterano. Su lealtad pasa de gag de obstáculo a sacrificio real. Es
   importante que tenga nombre y memorial; su muerte causa y legitima el derrumbe de
   Seraphyna.
 - Santi: rata tramoyista curtida, chistes de oficio y “cuarenta años”. Sobrevive herido.
-  La insistencia en los cuarenta años es un misterio deliberado para una continuación.
+  Sus cuarenta años son la pista más visible del pasado rellenado: no se niegan sus
+  recuerdos aunque todavía no se sepa si Santi es humano transformado, eco o construcción.
 - Zip/Ballerina/Tralalero/Tung/Amalgama: manifestaciones de corrupción memética; sus
   diseños absurdos no eliminan su amenaza. Ballerina es especialmente manipuladora.
 
@@ -258,9 +283,10 @@ MISTERIOS Y SEMILLAS DELIBERADAMENTE ABIERTOS
 - La cara de Airi resulta familiar antes de que nadie la reconozca; el equipo confirmó
   que se explica en el segundo juego.
 - Identidad exacta del creador de Airi y naturaleza completa de su relación.
-- Por qué Santi lleva “cuarenta años” y qué sabe realmente.
+- Qué recuerdos de Santi, Goyo y otros habitantes pertenecen a ecos o construcciones;
+  sus «cuarenta años» ya no son una contradicción, sino pasado rellenado por la realidad.
 - Qué es el guano para Edu (gag consciente sin resolución).
-- Alcance real de E.Musk y de la Corrupción Memética.
+- Alcance real de Elion Husk, su acceso a la compilación y sus objetivos finales.
 - Carlos, Andrés y Sebas como protagonistas/deuda de la continuación.
   Notas de reunión: Carlos tendría mundo medieval, Andrés un bosque y Sebas un hipódromo
   con caballos/minijuego de carreras. Son planes, no canon jugable todavía.
@@ -274,15 +300,17 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - El clic durante el tecleo completa la línea; el siguiente avance continúa el guion.
 - El personaje que habla queda iluminado y los demás en gris. Narración/off-screen
   deja a todos atenuados. speakingAs permite resaltar un sprite distinto del nombre.
-- Menú de escenas: puede saltar a cualquier escena del capítulo, incluso desde una
-  elección; se oculta durante un minijuego activo.
-- Retroceso: la unidad es la escena, no la línea. Restaura gameState, rescates, llamadas,
-  inventario, storyDelay y nextChapter a la foto tomada al entrar.
+- Menú de escenas: durante una partida normal solo expone escenas ya visitadas;
+  `debugMode` permite ver las futuras. Se oculta durante un minijuego activo.
+- Retroceso: la unidad es la escena, no la línea. Restaura gameState, rescates,
+  llamadas, inventario, storyPressure/storyDelay y nextChapter, además de una foto
+  visual con fondo, personajes, poses, orientación y audios activos.
 - Estados que importan:
   · rescued: orden/progreso de amigos.
   · completedCalls: vestigio del antiguo sistema de llamadas, aún soportado por engine.
   · inventory: contiene, entre otros, el diapasón.
-  · storyDelay: penaliza distracciones y escala la dificultad.
+  · storyPressure: presión persistente entre capítulos; storyDelay es su alias
+    compatible para consecuencias y dificultad.
   · lastMinigameResult: habilita texto clean/normal/close.
 - Acciones JSON activas incluyen fondos, personajes/poses, audio, wait, variables,
   rescue, giveItem, set/addDelay, goToScene, setNextChapter, vídeo, CG, shake, flash,
@@ -294,7 +322,8 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - “Capítulos” en el menú es un selector directo, no una carga de partida guardada.
   saveGame() existe pero no se llama; la promesa antigua de autoguardado no describe el
   comportamiento actual.
-- Los capítulos numéricos se detectan consecutivamente hasta el primer 404.
+- Los capítulos numéricos se detectan consecutivamente hasta `isFinal: true`; el
+  primer 404 queda como respaldo para catálogos antiguos sin esa marca.
 - El selector espera la carga asíncrona compartida de esos JSON antes de renderizar;
   esto evita que un clic temprano, especialmente tras saltar el opening, muestre una
   lista vacía. Menú y selector transfieren también inert, aria-hidden y foco.
@@ -417,8 +446,11 @@ SISTEMA DE COMBATE
 - Lore/mecánica secreta acordada: la curación de Seraphyna daña a los memes porque su
   canto purifica; la interfaz no lo explica para que el jugador lo descubra.
 - Robar obtiene un objeto único del jefe. Amalgama final lleva Bendición de Airi.
-- El Diapasón de Plata entra como consumible si inventory contiene “diapason”; revive
-  caídos y devuelve aproximadamente la mitad de HP/PM al grupo.
+- El Diapasón de Plata entra como `diapason_resonance` si inventory contiene
+  “diapason”: revive hasta tres caídos, restaura aproximadamente la mitad de HP/PM,
+  baja defensa/evasión de la Amalgama y revela el núcleo. Cada dos turnos enemigos,
+  AI.RI actúa desde dentro: daña un 4,5 % de la vida máxima del jefe y cura un 6 %
+  de la vida máxima de cada aliado en pie. La nota facilita su agencia, no la sustituye.
 - Los jefes cargan ataques finales. La marea es supervivencia y no se derrota por HP.
 - Las batallas normales no usan retryOnDefeat en los capítulos actuales; el resultado
   se cierra y el guion prosigue. La marea y los minijuegos principales sí fuerzan
@@ -460,37 +492,32 @@ PRESENTACIÓN
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
 - Los 24 planos del concierto tienen una restauración no destructiva 4K en
-  assets/cutscenes/chapter3/opening_samu_sources/frames_4k/: PNG RGB de 3840×2160 con caras, manos,
+  workbench/sources/cutscenes/chapter3/opening_samu/frames_4k/: PNG RGB de 3840×2160 con caras, manos,
   anatomía del público, enemigos, vallas y escenario reconstruidos. Samu, Edu
   y el gorila siguen su arte canónico; los primeros planos de Seraphyna fijan
   su identidad. frame_11_embobados.png aplica además a Samu el patrón cromático
-  exacto de assets/images/characters/samu/Samu.png. Los originales de nuevos_frames/
+  exacto de assets/images/characters/samu/Samu.webp. Los originales de nuevos_frames/
   y nuevos_frames_x2/ no se modificaron.
 - El opening del concierto se recompuso con esos planos en
-  assets/cutscenes/chapter3/opening_tony/opening_tony.mp4: H.264 3840×2160,
+  assets/video/cutscenes/chapter3/opening_tony.mp4: H.264 3840×2160,
   30 FPS, 117,6 s,
   audio AAC original y montaje con zooms, fundidos, fogonazos y pausa negra
   final. opening_tony.mp4 (720p) permanece intacto; la entrega 4K ocupa menos
   de 100 MB para poder versionarse y usarse en el juego.
-- Créditos del final bueno recorren imágenes del viaje. El final incierto no los lanza.
+- Ambos finales recorren créditos; el final luminoso encadena además la escena
+  poscréditos del quinto hueco y los amigos reservados para la continuación.
 
-VALIDACIÓN REALIZADA EL 2026-07-30
-- Se leyó el contenido de los siete capítulos, incluidas todas las ramas, condiciones,
-  consecuencias por retraso, acciones y textos de resultado.
-- Se revisaron engine.js, game.js, el sistema de batalla, las runas, los créditos,
-  personajes, estructura de assets, documentación y notas de la demo del equipo.
-- Se recorrió el juego en navegador local y se comprobó:
-  menú, vídeo/estética, configuración de música y SFX, selector de 7 capítulos,
-  cartela, diálogo con 2B/Pod, resaltado visual, menú de 24 escenas de Ecchi Land,
-  retroceso, salto al final malo, combate Ballerina, puzle de runas y créditos.
-- Consola del navegador: ningún error; solo avisos benignos al detener IDs de audio
-  que todavía no existían (menu_chill, menu_ambience y bg_music).
-- Todos los 31 JSON de chapters/ y characters/ parsean.
-- Las 369 referencias a assets encontradas dentro de esos JSON existen.
-- Todos los destinos goToScene y nextScene del guion activo apuntan a escenas válidas.
-- assets/ contiene 471 archivos y ocupa aproximadamente 1.219 MiB.
-- npm run check:js no pudo ejecutarse porque las dependencias locales no están instaladas
-  y “prettier” no está disponible; no es un fallo del código del juego.
+VALIDACIÓN AUTOMÁTICA — 2026-08-01
+- `npm run validate:content` ejecuta `scripts/validate_game_content.mjs`.
+- Valida parseo de capítulos y fichas, acciones y minijuegos conocidos, aliases de
+  personaje, poses (incluidas secuencias), destinos `goToScene`/`nextScene` y todas
+  las referencias bajo assets, incluido `gallery_manifest.json`.
+- No mantener cifras manuales como verdad permanente: el resumen del comando es la
+  fuente para capítulos, escenas, líneas, personajes y referencias del commit actual.
+- Snapshot de cierre de la revisión integral: 7 capítulos, 63 escenas, 908 líneas,
+  26 personajes y 958 referencias de assets; validación sin errores.
+- `stopSound` es idempotente y las pistas fallidas o detenidas se eliminan del
+  registro; los antiguos avisos por IDs inexistentes ya no describen el motor actual.
 
 REGLAS PARA CAMBIOS FUTUROS
 - Antes de abrir Furry Maps, Samu encuentra en Furrielva una botella vacía y sin
@@ -500,12 +527,12 @@ REGLAS PARA CAMBIOS FUTUROS
 - Samu, en su forma furry, va descalzo: las descripciones deben hablar de sus
   patas y no atribuirle zapatillas, zapatos u otro calzado.
 - El fondo activo de la plaza de Furrielva es
-  `assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png` (3840x2160). Mantiene la
+  `assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp` (3840x2160). Mantiene la
   iglesia, mercado, fuente y reparto animal del original; no volver a enlazar
   `iglesia.png` como fondo principal del capítulo 2.
 - La investigación de Furrielva usa un móvil horizontal ficticio con **Furry
   Maps**. El mapa activo es
-  `assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png`:
+  `assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp`:
   la Iglesia del Rocío ocupa el centro y los distritos de plaza, comercios,
   callejón y fábrica quedan alrededor. Interfaz, textos y zonas se dibujan con
   HTML/CSS; no deben hornearse dentro del PNG. No usar iconos ni rutas fijas:
@@ -514,7 +541,7 @@ REGLAS PARA CAMBIOS FUTUROS
   confirmar un destino.
 - En Furry Maps, un Samu diminuto parte de la Iglesia del Rocío solamente en el
   primer trayecto; las rutas siguientes empiezan en la última zona visitada.
-  Camina usando `assets/images/characters/samu/ketchup/1.png` a `4.png` (sprites traídos de
+  Camina usando `assets/images/characters/samu/ketchup/1.webp` a `4.png` (sprites traídos de
   `origin/feature/nuevo-minijuego-ketchup`) y celebra al llegar. Cada destino
   abre un fondo 4K de `assets/images/backgrounds/chapter2/furrielva/` y un informante:
   Tadeo Trufa/plaza, Lía Lince/comercios y Rulo Mapache/callejón. Cada elección
@@ -540,12 +567,12 @@ REGLAS PARA CAMBIOS FUTUROS
   El portal no sale de la botella que Samu sostiene: una botella gigantesca de
   luz aparece de la nada en el pasillo y su cristal se abre hacia la fábrica.
 - El fondo activo de los pasillos Ketchup/Catsup es
-  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png` (3840x2160). Todas
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.webp` (3840x2160). Todas
   las botellas deben seguir el diseño ficticio de cuerpo alto, tapón-corona
   dorado y etiqueta crema con corona y tomate; no recuperar siluetas, tapones
   blancos ni etiquetas que recuerden a Heinz u otra marca real.
 - El fondo activo de la zona de Neit y sus cajas es
-  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png` (3840x2160).
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.webp` (3840x2160).
   Mantener las guindillas y algunas latas con el emblema ficticio porque las
   menciona el diálogo; todas las botellas deben usar el tapón-corona canónico y
   no debe haber marcas reales ni texto de producto inventado.
@@ -560,7 +587,7 @@ REGLAS PARA CAMBIOS FUTUROS
   fuente del vídeo activo actual.
 - El fondo inmediatamente posterior al vídeo es una extracción exacta de su
   último fotograma (frame 239/240):
-  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png`.
+  `assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.webp`.
   No sustituirlo por otro render, porque rompería la continuidad del corte.
 - Kingdom Ketchup v2 tiene su paquete visual integrado en las categorías
   canónicas de assets/images/: fondos de chapter2, CG, personajes y minijuegos.
@@ -572,8 +599,8 @@ REGLAS PARA CAMBIOS FUTUROS
 - Flujo narrativo implementado tras la grabación de José Manuel de las 23:10:
   capítulo 2 sigue ciudad -> fábrica ->
   Ketchlings niegan acceso -> Edu no responde -> supermercado -> tapón dorado
-  -> portal de regreso -> protesta ante la puerta -> interior. La fachada es
-  física y el portal un atajo de vuelta a ella. El estudio completo está en
+  -> portal de regreso -> interior. La fachada sería física y el portal un
+  atajo al interior imposible. El estudio completo está en
   output/pdf/estudio_guion_kingdom_ketchup_jose_manuel.pdf.
 - Extensión jugable de capítulo 2: minijuego point-and-click `furrielvaExplore`
   con tres pistas; Ketchlings con ficha propia y cuatro oficios; tapón dorado en
@@ -584,7 +611,7 @@ REGLAS PARA CAMBIOS FUTUROS
   picante y se muestra como bonificación en el HUD, aunque Samu no entiende su
   utilidad cuando recibe la caja.
 - Tras vencer a Zip, mostrar a Edu con la pose `picante`
-  (`assets/images/characters/edu/edu_picante_wide_transparent.png`) hasta que
+  (`assets/images/characters/edu/edu_picante_wide_transparent.webp`) hasta que
   vuelve a hablar; entonces pasa a `sad`. Es una excepción panorámica al 70 %
   del escenario, anclada a la derecha para que la llamarada completa se extienda
   hacia el centro. El PNG debe conservar transparencia real.
@@ -624,7 +651,8 @@ REGLAS PARA CAMBIOS FUTUROS
   Tony rosa y José verde, siempre humanos. Los sprites heredados
   `iphone5_edu.png`, `iphone5_tony.png` e `iphone5_jose.png` no deben volver a
   enlazarse como poses principales.
-- Mantener a 2B como narradora.
+- Mantener a 3C como narradora y a Nexo como auxiliar de continuidad. ePod y 2B
+  solo pueden citarse como historial de desarrollo deprecado, nunca como canon activo.
 - No llamar “virus” al origen de la transformación.
 - No convertir a Edu en culpable de Zip ni a Seraphyna en causante de la infección
   de sus fans.
@@ -632,7 +660,9 @@ REGLAS PARA CAMBIOS FUTUROS
 - Preservar la agencia de Airi: la meta es que elija, no que otros vuelvan a decidir
   por ella.
 - Respetar los misterios deliberados; no resolverlos por accidente.
-- Si se cambia una ruta, recordar que storyDelay conecta narrativa y dificultad.
+- Si se cambia una ruta, recordar que `storyPressure` conecta narrativa y dificultad
+  entre capítulos; `storyDelay` es su alias compatible, no un contador aislado que
+  deba reiniciarse al cargar cada capítulo.
 - Toda documentación de características debe actualizar DOCUMENTACION.md; no crear
   archivos Markdown separados por característica.
 - Actualizar esta memoria cuando cambien el canon, los arcos, los finales o el flujo
@@ -645,7 +675,7 @@ CORRECCIÓN 2026-07-31
 - Al volver al menú principal desde una partida, hay que usar
   `setMainMenuVisible(true)`: quitar solamente la clase `hidden` deja el atributo
   `inert` activo e impide pulsar las opciones del menú.
-- El fondo `assets/images/backgrounds/chapter1/bathroom.png` mantiene su orientación jugable y el
+- El fondo `assets/images/backgrounds/chapter1/bathroom.webp` mantiene su orientación jugable y el
   reflejo del diseño vigente de Samu, con el estilo anime y la iluminación cálida
   del fotograma 7 del opening. Su espejo izquierdo está corregido para que marco,
   perspectiva y reflejo sean coherentes; el espejo derecho queda completamente
@@ -658,18 +688,18 @@ CORRECCIÓN 2026-07-31
   y no deben volver a enlazarse como poses principales.
 
 REORGANIZACIÓN DE ASSETS Y MÚSICA DEL CAPÍTULO 2 — 2026-08-01
-- Las familias canónicas son `assets/audio`, `assets/images`, `assets/video`,
-  `assets/cutscenes`, `assets/fonts` y `assets/metadata`. No introducir nuevas
+- Las familias canónicas de runtime son `assets/audio`, `assets/images`,
+  `assets/video`, `assets/fonts` y `assets/metadata`. No introducir nuevas
   rutas bajo los antiguos prefijos sounds, backgrounds, characters, minigames,
   ui, videos o generated.
 - Música se ordena por capítulo o función bajo `assets/audio/music/`; efectos
   están en `assets/audio/sfx/`. Fondos y minijuegos se agrupan por capítulo.
   Los archivos no conectados se conservan bajo `legacy/` y no son rutas activas.
 - `huelva.mp3` ya no se reproduce y se conserva como
-  `assets/audio/music/legacy/huelva_original.mp3`.
+  `workbench/archive/audio/music/legacy/huelva_original.mp3`.
 - Mapa musical del capítulo 2: escena 1 = `furrielva_despierta`; escenas
   1B/1C/1D = `el_rastro_del_tapon`; escenas 1.5/2/3/4 =
-  `tres_rutas_por_furrielva`; escenas 4.5/4.6/4.7 = `el_tapon_dorado`; escenas 5–9
+  `tres_rutas_por_furrielva`; escenas 4.5/4.6 = `el_tapon_dorado`; escenas 5–9
   mantienen `kingdomketchup` con los cambios de Zip y el combate; escena 10 =
   `de_vuelta_en_furrielva`.
 - Todas las escenas del capítulo 2 declaran música al entrar. El motor conserva
@@ -677,7 +707,7 @@ REORGANIZACIÓN DE ASSETS Y MÚSICA DEL CAPÍTULO 2 — 2026-08-01
   el recorrido normal y sonido correcto al saltar directamente a una escena.
 - La versión reciente de `master` del bullet hell de Zip está integrada sobre
   nuestra progresión de picante: conserva los sprites animados de Samu, las fases
-  flotantes y especiales de Zip, y la pista `zip's-shadow-waltz.mp3`, mientras
+  flotantes y especiales de Zip, y la pista `assets/audio/music/chapter2/zip's-shadow-waltz.mp3`, mientras
   `chiliPower` y la caja de Neit siguen regulando daño, cadencia y presión enemiga.
 - Los recursos importados de ese minijuego viven en las rutas canónicas
   `assets/images/characters/{samu,zip}/ketchup/` y `assets/audio/sfx/`; no volver
@@ -691,6 +721,9 @@ SISTEMA TIPOGRÁFICO EMOCIONAL 2026-08-01
 - Los colores especiales de OMG (naranja), CLos (verde), Incel y Simsong (azul)
   se conservan dentro de cualquier emoción, y `prefers-reduced-motion` elimina
   el movimiento sin borrar las señales de color y sombra.
+- El relleno y los brillos de cada emoción heredan el color legible del hablante;
+  el valor CSS `blue` de Edu se normaliza a `#4da3ff` y no pasa por la mezcla
+  genérica con blanco, que lo convertiría en lavanda.
 - La máquina de escribir añade cada grafema al DOM sin reconstruir las letras ya
   visibles: así sus animaciones no se reinician al aparecer el carácter siguiente.
 - La pose `happy` no anima el texto automáticamente. En una racha del mismo
@@ -706,96 +739,359 @@ SISTEMA TIPOGRÁFICO EMOCIONAL 2026-08-01
   sacudidas, escala y sombras cromáticas. Se reserva para momentos excepcionales;
   su tamaño crece por carácter desde 12px hasta 68px y su primer uso es el grito
   de Edu cuando la sombra lo atrapa en el capítulo 2.
-- El relleno y los brillos de cada emoción heredan el color legible del hablante;
-  OMG, CLos, Incel y Simsong mantienen sus colores de marca.
-- El valor CSS `blue` de Edu se normaliza visualmente a `#4da3ff`; no pasarlo por
-  la mezcla genérica con blanco, porque esa conversión produce lavanda.
 
-CONTROLES GLOBALES Y PAUSA 2026-08-01
-- Clic izquierdo, Espacio e Intro avanzan el diálogo; durante el tecleo, el primer
-  input solo completa la frase. Espacio/Intro se ignoran en elecciones,
-  cinemáticas y minijuegos.
-- H y clic derecho alternan todo el HUD, incluido el cuadro de diálogo. El clic
-  secundario está filtrado antes de los controles y nunca avanza texto ni activa
-  acciones del minijuego.
-- Esc abre la pausa global en diálogos y minijuegos. Congela timers, RAF, reloj
-  lógico, animaciones CSS, audio y vídeo; el panel absorbe el resto de entradas
-  hasta reanudar. Las cinemáticas conservan Esc para saltar.
-- Neit usa un desplazamiento vertical exclusivo de 28 px hacia abajo para que su
-  retrato no parezca flotar, sin modificar escala o disposición de otros personajes.
+REVISIÓN INTEGRAL DE CANON Y PRESENTACIÓN — 2026-08-01
+- 3C es la narradora y Nexo su auxiliar de continuidad. La cuarta pared se basa
+  en el contraste entre relato y auditoría causal. No reintroducir 2B/ePod salvo
+  para explicar explícitamente que son nombres de desarrollo deprecados.
+- El mundo es una realidad memética compilada que rellena pasado, relaciones,
+  documentos y recuerdos. Los veinte/cuarenta años y el cumpleaños de ayer son
+  simultáneamente coherentes: los recuerdos fueron generados, pero lo vivido y
+  decidido dentro de ellos conserva valor.
+- Procedencias de habitantes: humanos transformados, ecos de recuerdos/vínculos
+  y construcciones nuevas. No usar esa clasificación para decidir quién «cuenta».
+- AI.RI no crea de la nada: necesita deseo, ancla real y patrones de memoria. Cada
+  humano conserva una semilla basal/ancla biológica; AI.RI puede revertir sin daño
+  sus propias transformaciones si la ancla sigue intacta y la corrupción ya no la
+  bloquea. Recompilar consume materia, energía metabólica y memoria de trabajo; si
+  fuerza lo que no comprende, pierde detalles autobiográficos. Deseos incompatibles
+  acumulan deuda de coherencia y permiten sobrecarga, ERROR, grietas y control externo.
+  Su límite moral es admitir incertidumbre y pedir consentimiento.
+- Elion Husk es el operador de la corrupción, no el creador de AI.RI. Usa brainrot
+  y deseos contradictorios para explotar la deuda. Pudo dejar a Seraphyna encerrada
+  a sabiendas de que su voz afinaba la corrupción. Se siembra como alfiler rojo y
+  silueta en la llamada, titiritero en el asalto y nombre completo en la Amalgama.
+- El quinto creador anónimo compartía pasado con los cuatro protagonistas. El hueco
+  de sus recuerdos y el parecido de AI.RI con alguien conocido se reservan para la
+  secuela. Elion no debe confundirse con él.
+- La interfaz de AI.RI es atemporal: tiene fecha de creación, no edad civil o
+  biológica humana. La ruta adulta es un avatar elegido con consentimiento, no un
+  envejecimiento. Vuelve a su interfaz estable porque la reconoce como propia.
+- AI.RI decide perseguir a Elion. El jugador solo elige estrategia: cerrar ahora
+  revierte humanos y hace desaparecer ecos/construcciones; el plazo alternativo de
+  setenta y dos horas permite localizar anclas, registrar vidas y despedirse, pero
+  mantiene deuda y riesgo. Es hecho que desaparecen al cierre; solo queda ambiguo si
+  eso equivale a morir o al final de una instancia que puede persistir como patrón.
+- El Diapasón no controla ni salva pasivamente a AI.RI: encuentra su frecuencia y
+  le permite abrir una salida. La batalla traduce esto en pulsos autónomos desde el
+  núcleo cada dos turnos enemigos.
 
-CURSOR-RETRATO DEL HABLANTE 2026-08-01
-- A la derecha del nombre aparece un cursor animado con marco original
-  `assets/images/ui/dialogue_speaker_cursor.png` y la pose activa del personaje
-  recortada en el centro.
-- Durante el tecleo el marco abandona su hueco fijo, sigue un ancla colocada tras
-  cada grafema (incluidos los saltos de línea) como si imprimiera el texto y
-  vuelve al encabezado con una transición de 280 ms al terminar la frase.
-- Samu usa siempre su retrato furry. Edu, Tony y José mantienen sus retratos
-  humanos de `assets/images/characters/humans/` hasta sus revelaciones furry.
-  Umbrales: C2/E16/L4, C3/E13/L5 y C4/E2/L4 respectivamente. Se calculan por
-  posición narrativa para funcionar también desde el selector de escenas.
-- El recorte del cursor se controla con `--cursor-portrait-size` y
-  `--cursor-portrait-position`. Paloma, Santi, Tralalero, Tung Tung, Gorila y
-  Airi adulta tienen focos propios para mantener cabeza/cara dentro del círculo.
-  En Santi el foco se limita a `data-pose="neutral"`, porque sus demás poses usan
-  composiciones distintas. El zoom general es `100%`; las hojas humanas usan
-  `170%` con foco derecho; Edu humano usa `100% 19%` para subir la cabeza.
-- José humano usa `170%` y `100% 20%`: sube el rostro sin cortar el pelo y no
-  afecta a su retrato furry.
-- Tung Tung Tung Sahur mantiene `145%` y usa `80% 3%` para centrar horizontalmente
-  la cara dentro del cursor.
-- El sprite de escenario de Tung Tung usa escala `1.5` y desplazamiento vertical
-  `38%`: mantiene la cabeza visible y el diálogo cubre las piernas para obtener
-  un plano de cintura. El resto de personajes conserva su encuadre.
-- `assets/images/characters/tung_tung_tung_sahur.png` es un PNG RGBA completo de
-  1024x1536; el medio plano se consigue en el motor sin recortar el recurso.
-- Micaela Michis usa `145%` y el foco `50% 4%`: baja su ilustración grupal para que las
-  cabezas no queden pegadas al borde superior del cursor.
-- La pose `crazy` de Micaela usa `130%` y `50% 55%`; así el cursor encuadra su
-  cabeza en lugar del gato negro y los brazos levantados.
-- Si el hablante está fuera de plano se usa su pose predeterminada; `???` muestra
-  un interrogante y se limpia siempre el retrato anterior.
-- `speakingAs` afecta al foco del escenario, no a la identidad del cursor; las
-  llamadas muestran a Edu/Tony/José aunque se ilumine el móvil.
-- Las variantes Ketchling tienen alias hacia `ketchling.json`; todas las fichas
-  secundarias se precargan al iniciar la partida.
-- Incel permanece en azul claro `#4da3ff`; Simsong usa azul oscuro `#285bc4`.
+GALERÍA Y RECURSOS DE LA REVISIÓN
+- `assets/metadata/gallery_manifest.json` contiene 105 entradas: 104 imágenes y
+  un vídeo; 4 wallpapers, 12 ilustraciones, 25 personajes, 63 escenarios y 1
+  vídeo. Las fichas de personaje agrupan 155 poses declaradas en
+  `characters/*.json`, con selector visual dentro del lightbox.
+- El material de RECURSOS_CAMBIOS_GUION incluye wallpapers de Edu, José, Samu y
+  Seraphyna; key art de Elion controlando brainrot; hoja de diseño de Elion y el
+  vídeo de presentación de Samu. La galería tiene filtros, 260 miniaturas,
+  lightbox, selector de poses, descarga, navegación por teclado y advertencia de
+  spoilers. Las formas humanas se muestran dentro de sus protagonistas y no como
+  fichas duplicadas. 130 de las 155 poses ofrecen un botón opcional de parpadeo,
+  apagado por defecto; usa los frames e intervalos declarados en cada ficha y no
+  aparece en poses sin animación.
+- El original narrativo del key art vive en
+  `assets/images/cg/shared/elion_controla_brainrot.webp`; el manifiesto de galería
+  referencia ese mismo archivo y no al revés.
+- Elion tiene ficha `characters/elion_husk.json` y poses transparentes neutral,
+  smirk, angry y shadow en `assets/images/characters/elion_husk/`.
+- Samu, Edu, Tony y José tienen pose RGBA `human` y aparecen ya destransformados
+  en el pisito durante el final luminoso.
+- Regenerar el catálogo/miniaturas con `scripts/build_gallery_manifest.py`; no
+  mantener un inventario paralelo a mano.
+- Juego y galería cargan `sprite_white_halo_cleaned.json` y priorizan toda copia
+  limpia `<personaje>.<pose>` sobre la ruta de `characters/*.json`, manteniendo el
+  fuente como fallback. La galería aplica también las miniaturas limpias de pose y
+  tarjeta generadas por cada guardado.
+- La migración de parpadeos a capas oculares dispone de un editor manual servido
+  por `python scripts/build_character_eye_layers.py --serve --port 8011`. Enumera
+  las 130 poses animables y guarda varias máscaras elípticas normalizadas por pose
+  (habitualmente una por ojo) en `assets/metadata/blink_eye_regions_manual.json`.
+  El servidor refresca el inventario al atender cada API y recupera fuentes
+  movidas como ruta configurada -> WebP runtime -> original de `workbench`,
+  consultando `asset_optimization_manifest.json`; no necesita reiniciarse tras
+  reorganizar u optimizar assets.
+  Cada elipse se mueve, achata, ensancha y gira por separado. Las 17 cajas previas
+  fueron migradas a dos elipses editables con esquema v2. El modo `--build` no puede usar
+  detección automática: falla antes de escribir si falta una región confirmada.
+  Una zona puede ser ocular (`include`) o de protección (`exclude`): estas últimas
+  preservan pelo, cejas, gafas y accesorios desde el sprite original. Cada zona
+  guarda además un suavizado interior de 0 a 32 px y el editor ofrece el modo
+  `Máscara` para revisar inclusiones azules y protecciones rojas. Las 34 zonas
+  existentes se migraron como `include` con suavizado 0 para no cambiar su aspecto.
+  Al guardar una región también se exportan PNG transparentes del original, del
+  intermedio semicerrado y de cada frame final en
+  `assets/images/characters/eye_region_previews/`. Todas las variantes
+  de una pose comparten exactamente resolución y recorte; el índice vive en
+  `assets/metadata/blink_eye_region_previews.json`. El inspector muestra la medida
+  y ofrece tres descargas. `--build-previews` reconstruye en lote estos archivos sin
+  tocar los sprites fuente. El borde usa supersampling con reducción `BOX` para no
+  introducir el halo exterior de `LANCZOS`; después se anulan residuos de alfa por
+  debajo de 8/255. Las 17 poses marcadas actuales ya tienen sus tres previews
+  homogéneas y se regeneraron con esta máscara limpia.
+  Cuando cambia el arte completo de una pose, los ojos antiguos se registran
+  contra el lienzo nuevo y se recompone sólo la región ocular; base, semicerrado
+  y cerrado deben compartir dimensiones y alfa. El manifiesto lo marca como
+  `registered-eye-region-composite` y también se regeneran las miniaturas.
+  `/tools` sirve `scripts/eye_tools_menu.html`, un centro único con el flujo
+  Marcar → Alinear → Limpiar, indicadores de progreso en vivo y enlaces al juego,
+  minijuegos y demás utilidades HTML del proyecto. Las interfaces de edición
+  enlazan de vuelta al centro. En Windows, `ABRIR_EDITOR_OJOS.bat` inicia el
+  servidor y abre directamente este menú.
+  `/white-halo` sirve `scripts/sprite_white_halo_editor.html`, un editor separado
+  para retirar halos blancos de cualquier pose base. El pincel reduce el alfa de
+  blancos, grises neutros y halos ligeramente azulados según tolerancia, tamaño y
+  fuerza, e ignora colores y líneas oscuras. A fuerza 100%, los píxeles aceptados
+  bajo el centro quedan completamente transparentes. Tiene zoom 25–500% mediante
+  deslizador o `Ctrl + rueda`, fondos de contraste, comparación con la base de
+  trabajo, restauración y deshacer/rehacer sin límite artificial de pasos durante
+  la sesión actual; al cambiar de pose o base comienza un historial nuevo. El
+  lienzo se desplaza con Espacio/Alt + arrastrar o con el botón central, sin activar
+  el pincel durante el gesto. `Base
+  de trabajo` permite escoger el
+  sprite fuente protegido, la copia limpia registrada o un archivo local de igual
+  resolución. Si existe una copia se usa por defecto; cambiar de base o de pose
+  avisa si hay cambios sin guardar. Ver/restaurar toman esa base, mientras Guardar
+  copia sólo actualiza `sprite_halo_cleaned` y nunca el fuente. Incluye además
+  `Quitar halo exterior`, que parte
+  de las zonas transparentes, borra en bloque cualquier residuo de fondo hasta el
+  alcance elegido y usa los trazos negros o casi negros suficientemente opacos
+  como barrera protectora. El control `Solidez` permite atravesar un fringe negro
+  semitransparente y el halo blanco posterior hasta detenerse en el contorno real;
+  `Pelado` retira de 0 a 3 capas oscuras exteriores (1 por defecto) para eliminar
+  la última costura de antialias sin sacrificar el cuerpo principal del contorno.
+  `Cuentagotas tope` permite muestrear directamente el RGB del contorno bueno;
+  `Margen color` agrupa tonos próximos y `Solidez` define el núcleo opaco. Desde
+  él se protegen hasta cuatro píxeles conectados del mismo tono para conservar el
+  antialias de detalles y puntas, mientras el fringe exterior separado por el halo
+  se elimina. `Automático` o un cambio de pose borran la muestra y recuperan
+  la barrera por luminosidad.
+  La expansión del exterior es de 8 vecinos, incluyendo diagonales, para limpiar
+  halos residuales atrapados en puntas y entrantes sin saltarse la barrera elegida.
+  `Quitar sólo halo claro` es una segunda pasada conservadora: desde la transparencia
+  sólo atraviesa blancos/grises admitidos por Tolerancia hasta Alcance y nunca cruza
+  negros o colores, por lo que remata residuos sin erosionar detalles oscuros.
+  `Quitar residuo transparente` remata la contaminación moteada de cualquier RGB:
+  sólo recorre desde el exterior píxeles con alfa menor o igual a `Alfa residual`
+  (48 por defecto), se detiene ante mayor opacidad y también respeta Alcance.
+  `Suavizar borde` remata dientes de sierra sin desenfocar el interior: aplica una
+  cobertura alfa 3×3 sólo en la frontera con transparencia, reconstruye el color
+  exterior desde vecinos visibles y ofrece intensidad 10–100% con Deshacer.
+  El pincel tiene modos `Limpiar`, `Borrar` y `Restaurar`. Borrar reduce el alfa de
+  cualquier color con tamaño, borde suave y fuerza; Restaurar repinta localmente
+  desde la captura anterior a la última limpieza o,
+  opcionalmente, desde la base de trabajo elegida. La fuente anterior se mantiene durante
+  varios trazos restauradores y cada trazo sigue siendo deshacer/rehacer independiente.
+  toda la operación se registra como un único paso reversible. Cada control ofrece
+  tooltip breve al pasar el puntero o enfocarlo y un icono redondo `?` con ayuda
+  ampliada y accesible por teclado. Nunca sobrescribe fuentes: guarda PNG RGBA en
+  `assets/images/characters/sprite_halo_cleaned/` e índice en
+  `assets/metadata/sprite_white_halo_cleaned.json`; genera además miniaturas WebP
+  de 156×156 y 480×270 consumidas por la galería.
+  La propia pantalla incorpora una guía desplegable de 5 pasos y una leyenda de
+  decisión síntoma→herramienta para halo completo, línea blanca, borde moteado,
+  pérdida de detalles y guardado final.
+  La barra se organiza en cuatro paneles numerados y responsivos: Pincel manual,
+  Limpieza principal, Remates y Vista/historial/archivo; usa dos columnas en ancho
+  grande y una sola por debajo de 1400 px.
+  `--build-manual` genera una prueba sólo con lo ya confirmado, sin reescribir las
+  fichas, que se compara en `scripts/eye_layer_preview.html` (sprite completo
+  anterior frente a cuerpo fijo más capa ocular). `Regenerar y probar` lo ejecuta
+  desde el editor antes de abrir la preview. Los WebP derivados usan escritura
+  temporal atómica con reintentos para no chocar con lecturas activas del servidor
+  local en Windows. También normalizan a RGB cero los píxeles con alfa cero y se
+  guardan con WebP `exact`, impidiendo basura cromática oculta en visores que
+  interpretan mal la transparencia.
+  La preview permite fijar el fotograma y ajustar por pose el offset ocular X/Y
+  mediante campos, arrastre o flechas; se persiste en
+  `assets/metadata/blink_eye_offsets_manual.json` y nunca desplaza los ojos abiertos.
+  Para compartir resultados, la pose seleccionada se puede descargar desde la
+  preview como animación compuesta o como GIF de la capa ocular recortada y transparente;
+  las descargas completas incluyen el sprite y `Sólo ojos` conserva el recorte.
+  Ambos respetan los tres estados, tiempos/offset, hacen bucle y limitan el lado
+  mayor a 960 px. `Animación HQ (APNG)` añade PNG animado sin pérdida con alfa RGBA
+  para conservar la fidelidad de la preview y evitar artefactos de decodificación
+  del WebP animado; los GIF quedan como salida compatible de 256 colores. El damero
+  sólo existe en la interfaz y la transparencia puede verse negra según el visor.
+  Para las 17 poses ya marcadas de 3C/Airi se generaron 51 capas oculares limpias
+  con `scripts/compose_clean_eye_layers.py --all`. Viven en
+  `assets/images/characters/eye_layers_clean/` y se indexan en
+  `assets/metadata/blink_eye_layers_clean.json`. Sus píxeles visibles proceden
+  exactamente de los sprites fuente: no hay redibujado, giro, escala ni offset.
+  `/preview` es ahora una mesa triple: ojos abiertos, semicerrados y cerrados
+  sobre la misma base. Las tres capas se arrastran, estiran y ajustan con X/Y o
+  flechas de forma independiente. Los valores se guardan por pose como
+  `open`/`half`/`closed` en `assets/metadata/blink_eye_clean_offsets_manual.json`; se
+  pueden ocultar las bases, mostrar regiones o restablecer cada estado. `Origen`
+  alterna entre los recortes PNG guardados (predeterminados) y las capas limpias.
+  El autoguardado usa un temporizador por pose para que cambiar rápidamente de
+  personaje no pierda la alineación anterior. Los enlaces internos esperan a que
+  terminen todos los offsets pendientes; un fallo cancela la salida y una edición
+  de píxeles sucia muestra confirmación. `beforeunload` y un respaldo `sendBeacon`
+  en `pagehide` protegen también cierres y recargas de pestaña.
+  Cada estado tiene `Ancho %`/`Alto %` independiente (25–300%) y el vínculo
+  opcional copia sólo el estirado a los otros estados. El JSON v3 guarda
+  `openScale`, `halfScale` y `closedScale`; la ausencia de esos campos equivale a
+  100%. El GIF también los usa y recorre abierto/medio/cerrado/medio/abierto.
+  Cada panel dibuja un marco tipo editor gráfico con ocho tiradores alrededor del
+  recorte: un borde deja fijo el opuesto, las esquinas alteran ambos ejes y `Alt`
+  transforma desde el centro. Los campos reflejan el gesto y se guarda al soltar.
+  Los recortes se colocan usando su crop x/y, sin estirado automático, y un selector permite
+  cambiar de frame cuando haya varios. El GIF ocular usa el origen visible y
+  respeta los tres offsets. `Ver animación` abre un visor grande en bucle que
+  compone base y ojos con el origen, frame, offsets y escalas actuales; permite
+  pausar/reanudar, reiniciar y elegir 0,5×, 1× o 2×, y se actualiza durante los
+  retoques de alineación. Cada panel dispone de zoom visual independiente entre
+  100% y 500%, centrado progresivamente en la región ocular, mediante botones,
+  deslizador, `+`/`−`/`0` o `Ctrl`/`Cmd`+rueda. Es sólo una ayuda de vista y no altera
+  los offsets ni escalas guardados. La barra `Ubicaciones` abre en el Explorador la carpeta
+  del sprite base, la de los ojos del origen visible o la del JSON de offsets;
+  `/api/alignment-locations` sólo consulta las rutas y `/api/reveal-path` limita
+  la apertura a esos destinos conocidos dentro del proyecto. No conectar al juego hasta disponer de las bases
+  sin ojos que preparará el usuario.
+  Cada panel tiene ahora un editor de píxeles accesible con `✎`: ofrece borrador
+  alfa, herramienta `Dedo`, cuentagotas sobre la composición visible y pinceles
+  sólido, translúcido y suave con selector de color/opacidad, además de tamaño y fuerza,
+  zoom 50–800% con bloque visible `−`/deslizador/porcentaje/`+`/`Ajustar`, atajos
+  `+`/`−`/`0` y `Ctrl`/`Cmd`+rueda, base conmutable y deshacer/rehacer por trazo. Los originales no se
+  tocan. El editor replica el sprite completo, zoom, offset y escala del panel que
+  lo abrió, pero convierte el pincel a las coordenadas del recorte ocular. Las copias se
+  guardan en `assets/images/characters/eye_layer_edits/`, se
+  indexan en `assets/metadata/blink_eye_pixel_edits.json` y pasan a alimentar la
+  mesa, la animación y los GIF/APNG del origen correspondiente. Guardar una edición
+  conserva offsets, escalas y frame activo durante la reconstrucción de la pose; el
+  índice local de offsets se sincroniza al persistir la alineación para evitar resets.
+  El usuario puede crear esas bases progresivamente en `/clean-base`, servido por
+  `scripts/eye_base_cleaner.html` y enlazado desde cada pose de `/preview`. Incluye
+  pincel de borrado a transparencia, restauración desde el original, suavidad,
+  zoom/centrado ocular, deshacer/rehacer y comprobación con la capa abierta o
+  cerrada. Los originales nunca se sobrescriben: cada guardado produce
+  `assets/images/characters/eye_bases_clean/<personaje>/<pose>/base_no_eyes.webp`
+  y actualiza `assets/metadata/blink_eye_clean_bases.json`, permitiendo continuar
+  otro día desde la copia parcial guardada.
 
-EMBLEMA CANÓNICO DE EDU 2026-08-02
-- La camiseta de Edu usa siempre `assets/images/others/kingom-souls.png`: corona
-  dorada sobre corazón azul facetado.
-- El emblema está unificado en los assets activos: escenas/CG, versión humana,
-  retratos de teléfono, Mario Kart y frames/hojas V3 de Eduvuelo.
-- Los diez frames activos de Eduvuelo V3 se regeneraron con estilo cel-shading,
-  conservan los nombres `edu_fly_v3_*` y continúan en PNG transparente de
-  512×512. Mantienen las fases originales de alas y dash, y el brazo ocluye el
-  emblema según la pose.
-- `edu_volando_sheet_v3.png` y `edu_volando_dash_sheet_v3.png` se reconstruyen
-  desde esos frames en 1774×887. Las variantes V1/V2 quedan como legado inactivo.
-- La CG 4K continúa en 3840×2560.
+ANIMACIÓN, ESTADO Y AUDIO DE LA REVISIÓN
+- `showCharacter`/`setPose` sustituyen el sprite de forma atómica; no existe capa
+  fantasma ni se superponen dos poses. Las fichas admiten `animations` con varios
+  sprites de una misma pose, duraciones por frame y espera aleatoria entre ráfagas.
+  Hay parpadeo dibujado en 135 de las 160 poses declaradas: 130 activas y las 5
+  poses del ePod legado, reemplazado por Nexo. Las 130 activas tienen intermedio
+  en `assets/metadata/blink_eye_intermediates.json`: 117 cierres y 13 aperturas
+  inversas. Todas recorren reposo/medio/extremo/medio/reposo.
+  Las fuentes únicas viven en `assets/images/characters/eye_intermediate_sources/`
+  y se generan/sanitizan con `scripts/build_blink_intermediates.py`; la galería y
+  `engine.js` inyectan automáticamente el intermedio sin duplicarlo en las fichas.
+  Los 116 assets WebP únicos viven en `animations/blinks/`, mantienen tamaño y
+  alfa del sprite base y no mueven, escalan ni deforman el cuerpo. Se excluyen
+  solo 25 poses sin ojos animables (siluetas, móviles, formas amorfas, caras
+  tapadas y gafas opacas). El compositor es
+  `scripts/compose_character_blink.py` y requiere máscaras oculares explícitas.
+  Las 17 poses manuales de 3C/Airi ya usan en `engine.js` y en la galería la
+  variante ligera `sprite base → recorte half → recorte closed → half → base`.
+  Los parches respetan crop, offsets, escalas y las ediciones PNG de origen
+  `saved`; cualquier pose sin recortes mantiene el fallback de sprite completo.
+  `animateCharacter`/`characterAnimation`/`poseSequence` quedan para recorrer
+  poses narrativas distintas y aceptan frameMs, loop, pingPong, untilAdvance e
+  immediate. Avanzar, ocultar, cambiar escena o resetear cancela timers.
+- Con reduced motion las secuencias temporizadas conservan un fotograma estable y
+  el pulso del Diapasón no anima. Limpiar un hueco pausa y libera además cualquier
+  vídeo integrado, borra glitches/datasets y cancela salidas tardías.
+- Retroceso y salto restauran una foto del escenario (fondo, personajes, poses,
+  orientación, audio, grade, viñeta y camas WebAudio), además del estado narrativo. Escenas futuras permanecen
+  ocultas salvo debugMode.
+- `storyPressure` persiste entre capítulos; `storyDelay` es alias sincronizado.
+  Solo Nueva partida o el selector de capítulos los ponen a cero.
+- La música de Zip está en
+  `assets/audio/music/chapter2/zip's-shadow-waltz.mp3`, nunca bajo sfx.
+- Capítulo 6 dispone de `the-last-choice_reprise_luminous.mp3` y
+  `the-last-choice_reprise_uncertain.mp3` para diferenciar sus dos resoluciones.
+- Todo archivo bajo `assets/audio/music/` y los IDs `bg_music`/`music` obedecen al
+  deslizador de música incluso si no están en bucle; SFX sigue su control separado.
+- Antes de integrar cambios de contenido ejecutar `npm run validate:content`.
+  Además de capítulos/personajes, verifica capitalización exacta, speakers,
+  posiciones, campos de acciones, estructura/duplicados de galería, miniaturas,
+  rutas literales ejecutables y exclusiones sensibles del build.
 
-SELECTOR DE ESCENAS 2026-08-02
-- Al abrir Escenas, centrar la escena actual modificando exclusivamente el
-  `scrollTop` de `.scenes-list`. No volver a usar `scrollIntoView()` aquí: Chrome
-  puede desplazar también un ancestro con overflow y recortar el juego por arriba.
+OPTIMIZACIÓN Y CONSERVACIÓN DE ASSETS — 2026-08-03
+- `assets/` queda reservado para runtime y herramientas; fuentes editables van a
+  `workbench/sources/`, originales protegidos a `workbench/originals/` y versiones
+  retiradas a `workbench/archive/`. `workbench/` nunca entra en Electron Builder.
+- `scripts/optimize_runtime_assets.py --apply --media` convierte imágenes activas
+  a WebP (sin pérdida si hay alfa; q92 para fondos/CG opacos), WAV musical a MP3
+  VBR q2 y vídeo seleccionado a H.264 CRF20. Conserva el original antes de tocar
+  el runtime y actualiza referencias de forma reanudable.
+- `workbench/optimization/asset_optimization_manifest.json` es la fuente de verdad
+  de las 339 imágenes y 4 medios optimizados: guarda rutas, tamaños y SHA-256.
+  El estado actual ahorra 483,96 MiB; `assets/` queda en unos 828 MiB.
+- Los binarios de `workbench/` se versionan como archivos normales de Git; la
+  carpeta queda fuera de Electron Builder, no fuera de la recuperación del
+  proyecto. No se requiere Git LFS para clonar el estado actual.
 
-CAÍDA ANIME DE EDU 2026-08-02
-- Al terminar la frase de Samu sobre quedarse sin batería al actualizar las
-  apps, Edu usa `characterAnimeFall` desde `afterActions`: descenso vertical sin
-  rotación ni escala hasta salir por abajo, pausa fuera del plano y regreso recto
-  sin rebote, sin bloquear la espera del diálogo. El disparo sigue sincronizado
-  al saltar el tipeo o usar avance rápido.
-- El audio original es `assets/audio/sfx/sfx_caida_anime_edu.wav`; combina
-  silbido descendente, impacto grave fuera de plano y aire ascendente sin boing.
+MANUALES CANÓNICOS Y DEFINICIÓN DE TERMINADO — 2026-08-03
+- `DOCUMENTACION.md` contiene el Manual de usuario y el Manual de desarrollo
+  como fuente única; `LEER_PRIMERO.md` es sólo su portada y acceso rápido.
+- El manual de jugador refleja que actualmente no hay guardado narrativo entre
+  sesiones: **Capítulos** inicia estado limpio y sólo persisten ajustes.
+- El manual técnico cubre arquitectura, JSON, acciones, minijuegos, galería,
+  audio/vídeo, assets/runtime/originales, herramientas oculares y de halo,
+  Electron, validación, build, recetas de cambio y canon.
+- `AGENTS.md` obliga a evaluar en todo cambio si deben actualizarse el Manual de
+  usuario, el Manual de desarrollo o ambos. Si no aplica, commit/PR debe indicar
+  el motivo; la documentación viaja en el mismo cambio.
+- `.github/PULL_REQUEST_TEMPLATE.md` y `.github/PR_WORKFLOW.md` exponen esa
+  comprobación para que sea visible y verificable por todo el equipo.
 
-GAG DE FISURAS 2 2026-08-02
-- Después de que Edu acepte ir al cumpleaños, Samu pregunta por los portales.
-  Edu responde que le gusta `Fisuras 2 de Stim`; Samu muestra la pose `shocked`
-  durante la respuesta y continúa con «Bueno, cambiando de tema...» antes de
-  retomar la búsqueda del resto.
+CORRECCIÓN DE ASSETS DEL MINIJUEGO EDU VOLANDO — 2026-08-03
+- Los diez fotogramas de Edu (ocho de vuelo y dos de impulso) se cargan en
+  runtime como rutas WebP literales desde
+  `assets/images/minigames/chapter3/sprites/`; no reconstruir rutas `.png`.
+- Precarga, fotograma inicial, animación normal y dash comparten las mismas
+  listas de rutas para evitar que Edu desaparezca al cambiar de fotograma.
+- Comprobado en `minijuegos_test.html`: vuelo y dash visibles, assets HTTP 200
+  y sin errores ni avisos de carga en consola.
 
-SPRITES DE CARRERA DE SAMU 2026-08-03
-- Los 9 frames y `todos.png` de `assets/images/characters/samu/run/` se limpiaron
-  del halo blanco semitransparente del borde y recibieron una contracción alfa de
-  1 px para eliminar la última línea clara, manteniendo tamaño y poses originales.
+ILUSTRACIÓN AÉREA DE LA IGLESIA DE FURRIELVA — 2026-08-03
+- Nuevo fondo 4K `furrielva_iglesia_vista_aerea_v1_4k.webp`, con cámara aérea
+  3/4, plaza, iglesia canónica y palomas; todavía no está asignado a una escena.
+- Fuente generada, máster PNG 4K y prompt reproducible se conservan en
+  `workbench/sources/images/backgrounds/chapter2/furrielva/`.
+- La variante v2 reemplaza sólo los dos vitrales de la fachada con apóstoles y
+  reyes furros detallados: cinco figuras en el relieve superior y una alianza
+  de ciervo, zorro, lince, conejo y lobo en el ventanal central.
+- Los dos paneles independientes tienen máster con lado largo 3840; el fondo
+  integrado sigue midiendo 3840 × 2160 y no modifica ningún píxel fuera de las
+  dos cajas de composición documentadas en el prompt v2.
+
+VARIANTE 4K DEL BAÑO SIN PERSONAJES — 2026-08-03
+- Nuevo candidato `bathroom_sin_personajes_v1_4k.webp`: elimina al humano de
+  primer plano y al personaje reflejado, reconstruyendo pared, encimera, ducha
+  y espejo como un escenario vacío coherente.
+- No sustituye todavía a `bathroom.webp` ni está asignado a una escena.
+- Fuente editada, máster PNG 4K y prompt reproducible se conservan en
+  `workbench/sources/images/backgrounds/chapter1/bathroom/`.
+
+INTEGRACIÓN DE PAUSA, CURSOR Y ACTING — 2026-08-03
+- `Esc` activa la pausa global salvo en cinemáticas, donde conserva el salto.
+  Congela timers, RAF, reloj lógico, CSS, audio y vídeo. `H` y clic derecho
+  alternan todo el HUD; el clic secundario nunca avanza ni llega al minijuego.
+- El cursor-retrato usa `assets/images/ui/dialogue_speaker_cursor.webp`, sigue el
+  último grafema durante el tecleo y vuelve al encabezado al terminar. Edu, Tony
+  y José muestran sprites humanos WebP hasta C2/E16/L4, C3/E13/L5 y C4/E2/L4.
+  `speakingAs` no altera su identidad y `???` siempre limpia el retrato.
+- Neit conserva un offset vertical exclusivo de 28 px. El selector centra la
+  escena actual con `scrollTop` de `.scenes-list`; no usar `scrollIntoView()`.
+- La caída anime de Edu se ejecuta como `characterAnimeFall` desde
+  `afterActions` y usa `assets/audio/sfx/sfx_caida_anime_edu.mp3`; funciona al
+  terminar o saltar el tipeo y no bloquea el diálogo.
+- El capítulo 2 conserva el gag de `Fisuras 2 de Stim`, pero la conclusión
+  canónica posterior sigue siendo que Zip explotó el miedo de Edu y que Elion
+  sostenía la jaula.
+
+ASSETS VISUALES INTEGRADOS DESDE MASTER — 2026-08-03
+- El emblema de Edu está activo como
+  `assets/images/others/kingom-souls.webp` y embebido en sus sprites revisados.
+- Los diez frames V3 de Edu volando permanecen activos como WebP RGBA bajo
+  `assets/images/minigames/chapter3/sprites/`; sus PNG y hojas se conservan en
+  `workbench/`.
+- Los nueve frames de carrera de Samu están en WebP bajo
+  `assets/images/characters/samu/run/`; la hoja conjunta y fuentes PNG se guardan
+  en `workbench/` y no deben reintroducirse como runtime.

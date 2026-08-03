@@ -1,0 +1,36 @@
+BAÑO SIN PERSONAJES — FUENTE Y PROCESO REPRODUCIBLE
+Fecha: 2026-08-03
+
+Imagen de referencia
+--------------------
+bathroom_sin_personajes_v1_source.png procede de una edición de
+C:/Users/tony_/Downloads/bathroom.png.
+
+Prompt de edición
+-----------------
+Remove both characters completely: the human standing on the right side and
+the anthropomorphic wolf reflected in the mirror. Reconstruct every hidden
+part of the bathroom so the scene looks naturally empty. Continue the beige
+subway-tile wall, grout lines, vanity counter and lighting behind the human.
+Inside the mirror, preserve the same frame, window, tiled shower, glass panel,
+shower head and perspective, but show only the empty bathroom reflection.
+Keep the sink, faucet, toiletries, towels, lamps, composition, warm cinematic
+lighting and polished anime-background style unchanged. No people, no
+characters, no silhouettes, no reflections of characters, no text changes,
+no extra objects and no ghosting.
+
+Procesado final
+---------------
+1. Edición precisa mediante ImageGen usando la imagen original como referencia.
+2. Resultado fuente generado: 1678 × 937 px.
+3. Reescalado con RealESRGAN NCNN Vulkan, modelo realesrgan-x4plus, TTA
+   activado y teselas de 256 px.
+4. Recorte mínimo a 16:9 y remuestreo Lanczos a 3840 × 2160 px.
+5. Máster sin pérdida: bathroom_sin_personajes_v1_4k.png.
+6. Runtime optimizado: assets/images/backgrounds/chapter1/
+   bathroom_sin_personajes_v1_4k.webp (WebP calidad 95).
+
+Estado de integración
+---------------------
+El runtime se conserva como candidato y no sustituye automáticamente a
+assets/images/backgrounds/chapter1/bathroom.webp, cuya composición es distinta.

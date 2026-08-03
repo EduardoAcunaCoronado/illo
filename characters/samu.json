@@ -2,23 +2,165 @@
   "name": "Samu",
   "color": "red",
   "poses": {
-    "neutral": "assets/images/characters/samu/Samu.png",
-    "happy": "assets/images/characters/samu/samu_happy.png",
-    "sad": "assets/images/characters/samu/samu_sad.png",
-    "angry": "assets/images/characters/samu/samu_angry.png",
-    "surprised": "assets/images/characters/samu/samu_surprised.png",
-    "alarmed": "assets/images/characters/samu/samu_alarmed.png",
-    "bua": "assets/images/characters/samu/samu_bua.png",
-    "clapping": "assets/images/characters/samu/samu_clapping.png",
-    "determined": "assets/images/characters/samu/samu_determined.png",
-    "embarrassed": "assets/images/characters/samu/samu_embarrassed.png",
-    "shocked": "assets/images/characters/samu/samu_shocked.png",
-    "thinking": "assets/images/characters/samu/samu_thinking.png",
-    "worried": "assets/images/characters/samu/samu_worried.png",
-    "valla": "assets/images/characters/samu/samu_valla.png",
-    "curious": "assets/images/characters/samu/samu_curious.png",
-    "charred_blink": "assets/images/characters/samu/samu_charred_closed.png",
-    "charred_shake": "assets/images/characters/samu/samu_charred_whiteeyes.png"
+    "neutral": "assets/images/characters/samu/Samu.webp",
+    "happy": "assets/images/characters/samu/samu_happy.webp",
+    "sad": "assets/images/characters/samu/samu_sad.webp",
+    "angry": "assets/images/characters/samu/samu_angry.webp",
+    "surprised": "assets/images/characters/samu/samu_surprised.webp",
+    "alarmed": "assets/images/characters/samu/samu_alarmed.webp",
+    "bua": "assets/images/characters/samu/samu_bua.webp",
+    "clapping": "assets/images/characters/samu/samu_clapping.webp",
+    "determined": "assets/images/characters/samu/samu_determined.webp",
+    "embarrassed": "assets/images/characters/samu/samu_embarrassed.webp",
+    "shocked": "assets/images/characters/samu/samu_shocked.webp",
+    "thinking": "assets/images/characters/samu/samu_thinking.webp",
+    "worried": "assets/images/characters/samu/samu_worried.webp",
+    "valla": "assets/images/characters/samu/samu_valla.webp",
+    "curious": "assets/images/characters/samu/samu_curious.webp",
+    "charred_blink": "assets/images/characters/samu/samu_charred_whiteeyes.webp",
+    "charred_shake": "assets/images/characters/samu/samu_charred_whiteeyes.webp",
+    "human": "assets/images/characters/humans/samu_humano_sprite.webp"
+  },
+  "animations": {
+    "neutral": {
+      "frames": [
+        {
+          "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
+          "duration": 65
+        },
+        {
+          "src": "assets/images/characters/samu/animations/samu_neutral_blink_closed.webp",
+          "duration": 95
+        },
+        {
+          "src": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
+          "duration": 65
+        }
+      ],
+      "delayRange": [
+        1800,
+        4200
+      ],
+      "loop": true
+    },
+    "happy": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_happy_blink_open.webp",
+        "duration": 90
+      }
+    ],
+    "sad": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_sad_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "angry": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_angry_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "surprised": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_surprised_blink_closed.webp",
+        "duration": 90
+      }
+    ],
+    "alarmed": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_alarmed_blink_closed.webp",
+        "duration": 90
+      }
+    ],
+    "bua": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_bua_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "clapping": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_clapping_blink_open.webp",
+        "duration": 90
+      }
+    ],
+    "determined": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_determined_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "embarrassed": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_embarrassed_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "shocked": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_shocked_blink_closed.webp",
+        "duration": 85
+      }
+    ],
+    "thinking": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_thinking_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "valla": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_valla_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "curious": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_curious_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "human": [
+      {
+        "src": "assets/images/characters/samu/animations/blinks/samu_human_blink_closed.webp",
+        "duration": 95
+      }
+    ],
+    "worried": {
+      "frames": [
+        {
+          "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+          "duration": 65
+        },
+        {
+          "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp",
+          "duration": 95
+        },
+        {
+          "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+          "duration": 65
+        }
+      ],
+      "delayRange": [
+        1800,
+        4200
+      ],
+      "loop": true
+    },
+    "charred_blink": {
+      "frames": [
+        {
+          "src": "assets/images/characters/samu/samu_charred_closed.webp",
+          "duration": 115
+        }
+      ],
+      "delayRange": [
+        650,
+        1300
+      ],
+      "loop": true
+    }
   },
   "defaultPose": "neutral"
 }

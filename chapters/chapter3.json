@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/calle_espera.png",
+              "value": "assets/images/backgrounds/chapter3/calle_espera.webp",
               "cut": true
             },
             {
@@ -102,7 +102,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/calle_coche.png",
+              "value": "assets/images/backgrounds/chapter3/calle_coche.webp",
               "cut": true
             },
             {
@@ -170,6 +170,49 @@
           "text": "Santi. Bueno, «Kiikiaskel» pone en la nómina, no preguntéis. Cuarenta años de focos y cables a la espalda, y todavía vivo. Venga, arriba, que llego tarde a mi propio trabajo."
         },
         {
+          "character": "Samu",
+          "text": "(a Edu, bajito) ¿Cuarenta años? Ayer esta salida llevaba a Huelva.",
+          "actions": [
+            {
+              "type": "animateCharacter",
+              "character": "samu",
+              "position": "left",
+              "poses": [
+                "surprised",
+                "curious",
+                "thinking"
+              ],
+              "frameMs": 230,
+              "loop": false,
+              "untilAdvance": false
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Apúntalo en la lista de imposibles. Después de «soy dragón» y antes de «una rata desconocida nos ofrece transporte gratis».",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Santi",
+          "text": "Os oigo. Y mi historial laboral también. Si vais a discutirle la edad al mundo, hacedlo dentro, que voy tarde.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "santi",
+              "position": "center",
+              "pose": "riendo"
+            }
+          ]
+        },
+        {
           "actions": [
             {
               "type": "playSound",
@@ -200,7 +243,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp"
             },
             {
               "type": "stopSound",
@@ -315,6 +358,37 @@
           "text": "Os lo aviso: ese sitio no es normal. La gente entra por la Seraphyna y... no vuelve a salir igual. Yo entro, hago mi curro y me largo. No miréis mucho al escenario, hacedme caso."
         },
         {
+          "character": "Santi",
+          "text": "Y los amplificadores tampoco son normales. Llegaron sin pedido: cajas negras, un emblema rojo y una etiqueta que ponía «HUSK LIVE». Desde que los enchufé, la voz de la jefa calma a la gente y el silencio la empeora.",
+          "actions": [
+            {
+              "type": "animateCharacter",
+              "character": "santi",
+              "position": "left",
+              "poses": [
+                "conduciendo",
+                "preocupado",
+                "conduciendo"
+              ],
+              "frameMs": 260,
+              "loop": false,
+              "untilAdvance": false
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Eso no suena a equipo de sonido. Suena a correa.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
           "actions": [
             {
               "type": "showCharacter",
@@ -383,7 +457,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png",
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp",
               "cut": true
             },
             {
@@ -498,7 +572,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp"
             },
             {
               "type": "showCharacter",
@@ -517,7 +591,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp"
             },
             {
               "type": "showCharacter",
@@ -536,7 +610,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png"
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp"
             },
             {
               "type": "showCharacter",
@@ -550,6 +624,66 @@
           "showIf": {
             "result": "close"
           }
+        },
+        {
+          "character": "3C",
+          "text": "El retrovisor chisporrotea y se bloquea en una transmisión robada: el husky de traje negro de la llamada, las manos abiertas y el alfiler rojo encendido. Detrás de él, los brainrot se ordenan como piezas obedientes.",
+          "actions": [
+            {
+              "type": "showCG",
+              "path": "assets/images/cg/shared/elion_controla_brainrot.webp",
+              "duration": 180
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/sfx_estatica.mp3",
+              "volume": 0.65,
+              "loop": false
+            },
+            {
+              "type": "flash",
+              "color": "rgba(160,20,35,0.30)",
+              "duration": 240
+            },
+            {
+              "type": "shake",
+              "intensity": 3,
+              "duration": 300
+            }
+          ],
+          "textSpeed": "slow"
+        },
+        {
+          "character": "Samu",
+          "text": "¡Es el de la llamada! No era la cobertura: estaba mirando a través de ella.",
+          "actions": [
+            {
+              "type": "hideCG",
+              "duration": 180
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "center",
+              "pose": "alarmed"
+            }
+          ]
+        },
+        {
+          "character": "Santi",
+          "text": "Pues ese señor no figura en mi nómina. Y mira que la nómina ha tenido cuarenta años para actualizarse.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "santi",
+              "position": "left",
+              "pose": "preocupado"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Nexo archiva el fotograma bajo «identidad pendiente». Por una vez, no intenta completar el nombre en voz alta."
         },
         {
           "actions": [
@@ -576,7 +710,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/coche_interior.png",
+              "value": "assets/images/backgrounds/chapter3/coche_interior.webp",
               "cut": true
             },
             {
@@ -602,7 +736,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/skyline_eechi_land.png",
+              "value": "assets/images/backgrounds/chapter3/skyline_eechi_land.webp",
               "cut": true
             },
             {
@@ -682,7 +816,7 @@
             }
           ],
           "character": "Edu",
-          "text": "Esa cara de las pantallas... Samu, dime que no soy yo. Esa loba de plata. ¿No te recuerda a...?",
+          "text": "Esa cara de las pantallas... Es el avatar de Tony. Samu, dime que no ha salido de sus directos para quedarse con una ciudad entera.",
           "textSpeed": "slow"
         },
         {
@@ -695,7 +829,7 @@
             }
           ],
           "character": "Samu",
-          "text": "Ni lo digas. Vamos dentro. Necesito ver a esa «Seraphyna» de cerca."
+          "text": "Seraphyna siempre fue su nombre artístico. Lo que no era era un cuerpo de dos metros en cada pantalla. Vamos dentro."
         },
         {
           "actions": [
@@ -723,7 +857,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png"
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp"
             },
             {
               "type": "playSound",
@@ -797,6 +931,49 @@
           "text": "Y bajad la voz, que la jefa calienta a esta hora. Veinte años oyéndola ensayar desde esta puerta y todavía se me olvida respirar. ...Eso no lo repitáis."
         },
         {
+          "character": "Samu",
+          "text": "Veinte años. Otra vez. Ecchi Land no estaba aquí ayer.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "thinking"
+            }
+          ]
+        },
+        {
+          "character": "Gorila",
+          "text": "Para ti, a lo mejor. Yo recuerdo cada ensayo, cada turno y cada bocadillo malo de esos veinte años. Si vas a decirme qué recuerdo es falso, trae algo mejor que un calendario.",
+          "actions": [
+            {
+              "type": "animateCharacter",
+              "character": "gorila",
+              "position": "center",
+              "poses": [
+                "neutral",
+                "sospecha",
+                "neutral"
+              ],
+              "frameMs": 270,
+              "loop": false,
+              "untilAdvance": false
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Vale. Este mundo tiene más pasado que edad. Queda oficialmente apuntado.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
           "actions": [
             {
               "type": "goToScene",
@@ -820,7 +997,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png"
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp"
             },
             {
               "type": "playSound",
@@ -897,7 +1074,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -930,7 +1107,7 @@
           "text": "Prueba una cosa:",
           "choices": [
             {
-              "text": "Enseñarle una foto antigua de los tres con Tony antes de todo esto.",
+              "text": "Enseñarle una foto antigua con Tony antes de todo esto.",
               "nextScene": "Escena 6a2: La foto"
             },
             {
@@ -948,7 +1125,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -972,12 +1149,36 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/foto_trio.png",
+              "path": "assets/images/cg/chapter3/foto_trio.webp",
               "duration": 600
             }
           ],
           "character": "3C",
-          "text": "En la pantalla: tres humanos apretujados en un sofá, gritándole a un kart. Huele a naranjada y a viernes eterno hasta desde aquí."
+          "text": "En la pantalla: tres humanos apretujados en un sofá, gritándole a un kart. Huele a naranjada y a viernes eterno hasta desde aquí. La ficha del archivo, sin embargo, insiste en que hay cuatro personas vinculadas. El campo «autor» está vacío."
+        },
+        {
+          "character": "Samu",
+          "text": "Espera. ¿Quién hizo la foto?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "curious"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "No... no me acuerdo. Pero sé que había alguien al otro lado del móvil. Qué raro: no puedo verle la cara y aun así lo echo de menos.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
         },
         {
           "character": "Gorila",
@@ -1062,7 +1263,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1105,7 +1306,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1144,7 +1345,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1187,7 +1388,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1227,7 +1428,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png"
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp"
             },
             {
               "type": "showCharacter",
@@ -1271,7 +1472,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/callejon_trasero.png"
+              "value": "assets/images/backgrounds/chapter3/callejon_trasero.webp"
             },
             {
               "type": "hideCharacter",
@@ -1320,7 +1521,11 @@
             }
           ],
           "character": "3C",
-          "text": "...Quizás con otro tono con el segurata las cosas habrían ido distinto.",
+          "text": "Resultado operativo: desastroso. Nexo, rebobina hasta antes de que Samu amenazara a un gorila de dos metros."
+        },
+        {
+          "character": "Nexo",
+          "text": "Punto seguro localizado. Y, para que conste en acta, yo voté por no amenazarlo.",
           "choices": [
             {
               "text": "Reintentar desde la puerta",
@@ -1337,7 +1542,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/multitud_entrada.png",
+              "value": "assets/images/backgrounds/chapter3/multitud_entrada.webp",
               "cut": true
             },
             {
@@ -1387,7 +1592,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
+              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.webp",
               "cut": true
             },
             {
@@ -1478,7 +1683,7 @@
             }
           ],
           "character": "Samu",
-          "text": "...¿T-Tony? ¿Eres tú? Pero tú eres... eres un TÍO. ¡Y esto... esto es Seraphyna!",
+          "text": "...¿T-Tony? Sabía que Seraphyna era tu avatar. ¡No sabía que el mundo podía ponértela encima como un cuerpo!",
           "textAnimation": true
         },
         {
@@ -1517,7 +1722,7 @@
             }
           ],
           "character": "Edu",
-          "text": "Tony, escúchanos. Todo esto está mal. La gente que entra aquí se corrompe, se transforma. Kingdom Ketchup casi me traga a mí. Esto es lo mismo pero con purpurina."
+          "text": "Tony, escúchanos. La gente de aquí ya tenía otros cuerpos; el glitch es otra cosa. Les borra quiénes son. Kingdom Ketchup intentó hacerme eso a mí. Esto es la misma jaula, pero con purpurina."
         },
         {
           "character": "Seraphyna",
@@ -1542,7 +1747,23 @@
         },
         {
           "character": "Seraphyna",
-          "text": "(bajito, casi para ella) Además, aunque quisiera... no podría irme."
+          "speakingAs": "tony",
+          "text": "(bajito, casi para ella) Además, aunque quisiera... cada vez que cruzo la salida, el medidor cae y ellos empiezan a romperse. Las pantallas me enseñan cuántos. Alguien diseñó esto para que quedarme pareciera decisión mía.",
+          "actions": [
+            {
+              "type": "animateCharacter",
+              "character": "tony",
+              "position": "center",
+              "poses": [
+                "angry",
+                "worried",
+                "thinking"
+              ],
+              "frameMs": 290,
+              "loop": false,
+              "untilAdvance": false
+            }
+          ]
         },
         {
           "character": "Samu",
@@ -1597,7 +1818,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
+              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.webp",
               "cut": true
             },
             {
@@ -1626,7 +1847,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/fans_desmadrandose.png",
+              "value": "assets/images/backgrounds/chapter3/fans_desmadrandose.webp",
               "cut": true
             },
             {
@@ -1700,7 +1921,7 @@
           ],
           "character": "Seraphyna",
           "speakingAs": "tony",
-          "text": "...No. Sin la música se descontrolan. Solo mi voz los mantiene serenos. Tengo que cantar YA o esto se convierte en una carnicería. ¡Santi! ¡EL EQUIPO!",
+          "text": "...No. Sin la música se descontrolan. Mi voz no les cambia el cuerpo: les devuelve el control durante un rato. Tengo que cantar YA o esto se convierte en una carnicería. ¡Santi! ¡EL EQUIPO!",
           "textAnimation": true,
           "emotion": "fear"
         },
@@ -1730,7 +1951,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/backstage_mesa.png"
+              "value": "assets/images/backgrounds/chapter3/backstage_mesa.webp"
             },
             {
               "type": "hideCharacter",
@@ -1791,7 +2012,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png",
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp",
               "cut": true
             },
             {
@@ -1874,7 +2095,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png",
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp",
               "cut": true
             },
             {
@@ -1969,7 +2190,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png"
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp"
             },
             {
               "type": "showCharacter",
@@ -1988,7 +2209,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png"
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp"
             },
             {
               "type": "showCharacter",
@@ -2007,7 +2228,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png"
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp"
             },
             {
               "type": "showCharacter",
@@ -2041,7 +2262,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.png",
+              "value": "assets/images/backgrounds/chapter3/foco_cae_santi.webp",
               "cut": true
             },
             {
@@ -2298,7 +2519,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.png"
+              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.webp"
             },
             {
               "type": "hideCharacter",
@@ -2741,7 +2962,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.png",
+              "value": "assets/images/backgrounds/chapter3/pasillo_backstage.webp",
               "cut": true
             },
             {
@@ -2793,7 +3014,7 @@
           "actions": [
             {
               "type": "playVideo",
-              "path": "assets/cutscenes/chapter3/opening_tony/opening_tony.mp4"
+              "path": "assets/video/cutscenes/chapter3/opening_tony.mp4"
             }
           ],
           "character": "",
@@ -2818,7 +3039,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/fans_calmandose.png",
+              "value": "assets/images/backgrounds/chapter3/fans_calmandose.webp",
               "cut": true
             },
             {
@@ -2846,7 +3067,7 @@
             }
           ],
           "character": "3C",
-          "text": "Y entonces la voz hace lo que las vallas, los porteros y el miedo no pudieron: los DEVUELVE. Uno a uno, el glitch se apaga como quien despierta de una pesadilla.",
+          "text": "Y entonces la voz hace lo que las vallas, los porteros y el miedo no pudieron: los devuelve A SÍ MISMOS. Sus cuerpos no cambian, pero uno a uno vuelven a habitarlos mientras el glitch se apaga como una pesadilla.",
           "textSpeed": "slow"
         },
         {
@@ -2904,7 +3125,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/cg/chapter3/goyo_caido.png",
+              "value": "assets/images/cg/chapter3/goyo_caido.webp",
               "fadeMs": 900
             }
           ],
@@ -2955,7 +3176,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/fans_calmandose.png",
+              "value": "assets/images/backgrounds/chapter3/fans_calmandose.webp",
               "fadeMs": 600
             },
             {
@@ -2999,6 +3220,17 @@
           "text": "Goyo. Se llamaba Goyo. Decía que tu voz era lo único que le quitaba el dolor de espalda. No se perdió un ensayo en veinte años... desde el otro lao de la puerta."
         },
         {
+          "character": "Seraphyna",
+          "speakingAs": "tony",
+          "text": "¿Goyo vino de fuera y fue transformado? ¿O nació con esta ciudad y con esos veinte años ya dentro?",
+          "textSpeed": "slow"
+        },
+        {
+          "character": "Santi",
+          "text": "No lo sé. Tampoco sé qué era yo antes de mis cuarenta años de recuerdos. Sí sé quién fue él. Goyo sostuvo esa puerta. Eso es real.",
+          "textSpeed": "slow"
+        },
+        {
           "actions": [
             {
               "type": "showCharacter",
@@ -3040,7 +3272,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.png",
+              "value": "assets/images/backgrounds/chapter3/camerino_seraphyna.webp",
               "cut": true
             },
             {
@@ -3095,7 +3327,7 @@
             }
           ],
           "character": "Samu",
-          "text": "Tony... vente con nosotros. Deja este sitio. Esto no eres tú."
+          "text": "Tony... Seraphyna también eres tú. Lo que no eres es esta jaula. Vente con nosotros."
         },
         {
           "actions": [
@@ -3108,7 +3340,7 @@
           ],
           "character": "Seraphyna",
           "speakingAs": "tony",
-          "text": "(la voz le tiembla, se le rompe el papel de diva) No lo entendéis... Ahí fuera soy IMPORTANTE. Aquí soy alguien. Si me voy... vuelvo a ser nada. Otra vez solo. Otra vez la sombra que nadie mira.",
+          "text": "(la voz le tiembla, se le rompe el papel de diva) No lo entendéis... Aquí, sobre ese escenario, soy IMPORTANTE. Si salgo de Ecchi Land... vuelvo a ser nada. Otra vez solo. Otra vez la sombra que nadie mira.",
           "textSpeed": "slow"
         },
         {
@@ -3119,19 +3351,40 @@
         },
         {
           "character": "Seraphyna",
-          "text": "...Y hay algo que no os he contado. Ya estaban rotos cuando llegué. Todos. Los memes se les habían metido dentro mucho antes de que yo cantara una sola nota."
+          "speakingAs": "tony",
+          "text": "...Y hay algo que no os he contado. Ya estaban rotos cuando llegué. Todos. Pero el escenario y los amplificadores me estaban esperando, calibrados exactamente a mi voz antes de que ni yo supiera lo que podía hacer."
         },
         {
           "character": "Seraphyna",
-          "text": "La primera noche que canté... les cambió la cara. Volvieron. Durante una hora fueron personas otra vez."
+          "speakingAs": "tony",
+          "text": "La primera noche, las pantallas se encendieron solas. Salió el husky de traje, el del alfiler rojo. No dio un nombre. Solo dijo: «Nodo estable. Que no pare el espectáculo»."
         },
         {
           "character": "Seraphyna",
-          "text": "Y a la mañana siguiente estaban igual de rotos. Así que canté al día siguiente. Y al otro. Y llevo así desde entonces."
+          "speakingAs": "tony",
+          "text": "Canté y el glitch retrocedió. No los convertí en otra cosa: durante una hora cada uno recordó quién era. A la mañana siguiente la señal negra volvió. Así que canté otra vez. Y otra."
         },
         {
           "character": "Seraphyna",
-          "text": "Por eso no me voy, Samu. No es solo el ego. Es que si yo paro... ellos se apagan."
+          "speakingAs": "tony",
+          "text": "Cada vez que intentaba marcharme, la señal apretaba más y las pantallas me enseñaban el desastre. Llevo veinte años creyendo que esta jaula era responsabilidad mía."
+        },
+        {
+          "character": "Edu",
+          "text": "HUSK LIVE. El mismo trajeado que miró por mi llamada y parecía dirigir a los brainrot de la carretera. Todo apunta a que te convirtió en el parche de una herida que él mantiene abierta.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "tony",
+          "text": "Por eso no me voy sin dejarles una salida, Samu. No es solo el ego. Si paro sin más... ellos se apagan."
         },
         {
           "character": "Samu",
@@ -3174,13 +3427,13 @@
             }
           ],
           "character": "Samu",
-          "text": "Escúchame bien, tío. Nunca has estado solo. Ni lo vas a estar. Podrás tener a miles gritando tu nombre... pero a ti, al de verdad, al que me reventaba al Mario Kart, te tenemos a nosotros. Siempre."
+          "text": "Escúchame bien, tío. Nunca has estado solo. Ni lo vas a estar. Podrás tener a miles gritando tu nombre... pero a ti —con purpurina, sin purpurina y haciendo trampas al Mario Kart— te tenemos nosotros. Siempre."
         },
         {
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/foto_trio.png",
+              "path": "assets/images/cg/chapter3/foto_trio.webp",
               "duration": 700
             }
           ],
@@ -3208,7 +3461,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/abrazo_trio.png",
+              "path": "assets/images/cg/chapter3/abrazo_trio.webp",
               "duration": 900
             }
           ],
@@ -3225,6 +3478,36 @@
           "text": "Si lo paramos, no vas a tener que sostener tú sola a una ciudad entera cada noche. Nadie debería."
         },
         {
+          "character": "Seraphyna",
+          "speakingAs": "tony",
+          "text": "Puedo grabar una nota raíz sin letra, sin aplausos y sin ningún deseo que retorcer. En bucle mantendrá el glitch bajo durante unas setenta y dos horas. No es una cura, pero es tiempo."
+        },
+        {
+          "character": "Santi",
+          "text": "Yo me quedo a vigilar la mesa y evacuar a quien empeore. Setenta y dos horas si nadie actualiza el sistema; setenta y una si el ampli decide jubilarse.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "santi",
+              "position": "right",
+              "pose": "herido",
+              "enter": "fade"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Entonces tenemos tres días para encontrar la raíz y cortar la señal del trajeado. Eso sí es un plan.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined"
+            }
+          ]
+        },
+        {
           "actions": [
             {
               "type": "rescue",
@@ -3233,7 +3516,7 @@
           ],
           "character": "Seraphyna",
           "speakingAs": "tony",
-          "text": "...Vale. Vale. Me habéis salvado, pedazo de peludos llorones. Sacadme de aquí. Pero conste que el nombre artístico me lo quedo."
+          "text": "...Vale. Vale. Me habéis salvado, pedazo de peludos llorones. Vamos a arrancar esto de raíz. Pero conste que el nombre artístico me lo quedo."
         },
         {
           "actions": [
@@ -3270,7 +3553,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter3/diapason.png",
+              "path": "assets/images/cg/chapter3/diapason.webp",
               "duration": 500,
               "size": "auto 55%",
               "position": "center"
@@ -3278,7 +3561,7 @@
           ],
           "character": "Seraphyna",
           "speakingAs": "tony",
-          "text": "Espera. —Se quita algo del cuello y se lo pone a Samu en la pata—. Mi diapasón de plata. De mi otra vida. Cuando todo suene a caos... golpéalo y escucha. Siempre dice la verdad."
+          "text": "Espera. —Se quita algo del cuello y se lo pone a Samu en la pata—. Mi diapasón de plata, de mi otra vida. No recuerdo quién me lo dio: al intentarlo aparece el mismo hueco que en esa foto. Pero su nota nunca cambia, aunque el mundo sí. Cuando todo suene a caos, golpéalo y escucha."
         },
         {
           "actions": [
@@ -3332,7 +3615,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter3/skyline_amanecer.png",
+              "value": "assets/images/backgrounds/chapter3/skyline_amanecer.webp",
               "cut": true
             },
             {
@@ -3369,26 +3652,63 @@
               "type": "vignette",
               "value": 0.15,
               "duration": 1200
+            },
+            {
+              "type": "showCG",
+              "path": "assets/images/cg/chapter3/tres_escenario.webp",
+              "duration": 900
             }
           ],
           "character": "3C",
-          "text": "Los tres abandonan Ecchi Land bajo un amanecer recién estrenado. La ciudad de neón bosteza, y por primera vez en mucho tiempo, nadie corea ningún nombre."
+          "text": "Antes de abandonar Ecchi Land, los tres se sientan un momento en el borde del escenario. Afuera amanece; dentro, por primera vez en mucho tiempo, nadie corea ningún nombre."
+        },
+        {
+          "actions": [
+            {
+              "type": "hideCG",
+              "duration": 700
+            }
+          ],
+          "character": "3C",
+          "text": "En el reloj de Samu ha pasado una noche. En las cicatrices de Santi, el duelo de Seraphyna y los archivos de la ciudad, han pasado décadas. Nexo registra ambas fechas y, prudentemente, no declara ninguna falsa."
         },
         {
           "character": "Seraphyna",
-          "text": "(mirando atrás una última vez) Se va a ir todo a la mierda, ¿sabes? En cuanto se les pase la resaca de la última canción, esto se vuelve a pudrir."
+          "text": "(mirando atrás una última vez) La nota raíz ya está en bucle. Nos compra unas setenta y dos horas antes de que la señal vuelva a apretar."
         },
         {
           "character": "Samu",
-          "text": "Ya. Como Furrielva. Como Kingdom Ketchup. Como todo."
+          "text": "Tres días para encontrar al del traje y cortar esto desde la raíz. Sin presión."
         },
         {
           "character": "Seraphyna",
-          "text": "...Pues que se pudra bonito. Esta noche los he tenido despiertos a todos. Eso ya no me lo quita nadie."
+          "text": "No sé si podremos curarlos, ni qué eran antes de aparecer aquí. Pero no pienso dejarlos pudrirse para conservar un escenario."
         },
         {
           "character": "Seraphyna",
           "text": "Andando, anda. Que como me dé el sol de lleno con la cara que llevo, me deshago aquí mismo."
+        },
+        {
+          "character": "Samu",
+          "text": "Por cierto: técnicamente mi cumpleaños fue ayer."
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "tony",
+          "text": "Técnicamente acabamos de meter veinte años en una noche. Reclama prórroga. Como diva y víctima del calendario, la apruebo."
+        },
+        {
+          "character": "Edu",
+          "text": "Yo la firmo. Pero primero José; luego tarta y una celebración sin jefes finales. Intentaremos.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "happy",
+              "enter": "fade"
+            }
+          ]
         },
         {
           "actions": [
@@ -3408,11 +3728,6 @@
               "type": "hideCharacter",
               "position": "right",
               "exit": "fade"
-            },
-            {
-              "type": "showCG",
-              "path": "assets/images/cg/chapter3/tres_escenario.png",
-              "duration": 900
             },
             {
               "type": "vignette",
@@ -3459,7 +3774,7 @@
             }
           ],
           "character": "José",
-          "text": "(por el móvil, con interferencias) ¿Chicos? ¡Menos mal! Necesito al grupo, aquí en Ciudad Paloma está pasando algo muy raro... y creo que sé por qué. No hay tiempo de explicaros. Seguid el camino de baldosas amarillas. ¡Corred!"
+          "text": "(por el móvil, con interferencias) ¿Chicos? ¡Menos mal! Necesito al grupo, aquí en Ciudad Paloma está pasando algo muy raro... y creo que sé qué están buscando. No hay tiempo de explicaros. Seguid el camino de baldosas amarillas. ¡Corred!"
         },
         {
           "actions": [
@@ -3484,13 +3799,7 @@
             }
           ],
           "character": "Samu",
-          "text": "Es José. Está en Ciudad Paloma y suena asustado. Se acabó el descanso. Vamos los tres.",
-          "choices": [
-            {
-              "text": "Seguir el camino de baldosas amarillas (Ciudad Paloma)",
-              "nextChapter": "chapter4"
-            }
-          ]
+          "text": "Es José. Está en Ciudad Paloma y suena asustado. Se acabó el descanso. Vamos los tres."
         },
         {
           "actions": [
@@ -3515,7 +3824,13 @@
             }
           ],
           "character": "Seraphyna",
-          "text": "Pues andando otra vez. Y que conste que voy por José, no por las baldosas."
+          "text": "Pues andando otra vez. Y que conste que voy por José, no por las baldosas.",
+          "choices": [
+            {
+              "text": "Seguir el camino de baldosas amarillas (Ciudad Paloma)",
+              "nextChapter": "chapter4"
+            }
+          ]
         }
       ]
     }

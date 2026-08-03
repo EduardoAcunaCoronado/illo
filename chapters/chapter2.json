@@ -8,7 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp"
             },
             {
               "type": "playSound",
@@ -36,7 +36,7 @@
         },
         {
           "character": "3C",
-          "text": "Las calles están llenas de furros de todo tipo. Caminan tranquilamente, charlando entre ellos, pasándola bien. Solo furros viviendo en paz y armonía."
+          "text": "Las calles están llenas de furros de todo tipo. Caminan tranquilamente, charlando entre ellos, pasándolo bien. Solo furros viviendo en paz y armonía."
         },
         {
           "character": "Samu",
@@ -64,7 +64,30 @@
         },
         {
           "character": "3C",
-          "text": "Una botella vacía rueda entre la gente hasta detenerse junto a una de las patas de Samu. No tiene tapón. En la etiqueta, bajo un tomate coronado, todavía se distingue un nombre: Kingdom Ketchup."
+          "text": "Sobre una fachada recién aparecida cuelga un cartel amarillento: «XXXVII Fiesta Fundacional de Furrielva». Tiene polvo en los bordes, firmas antiguas y treinta y siete años que no caben desde ayer."
+        },
+        {
+          "character": "Samu",
+          "text": "Un momento... Ayer eso era una gestoría. ¿Cómo puede tener una fiesta número treinta y siete?",
+          "actions": [
+            {
+              "type": "animateCharacter",
+              "character": "samu",
+              "position": "left",
+              "poses": [
+                "happy",
+                "curious",
+                "thinking"
+              ],
+              "frameMs": 240,
+              "loop": false,
+              "untilAdvance": false
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Una botella vacía rueda entre la gente hasta detenerse junto a una de las patas de Samu. No tiene tapón. En la etiqueta, bajo un tomate coronado y un pequeño emblema rojo de cuatro puntas, todavía se distingue un nombre: Kingdom Ketchup."
         },
         {
           "character": "Samu",
@@ -87,7 +110,11 @@
               "character": "samu",
               "position": "left",
               "pose": "determined"
-            },
+            }
+          ]
+        },
+        {
+          "actions": [
             {
               "type": "goToScene",
               "value": "Escena 1B: Investigar Furrielva"
@@ -114,11 +141,15 @@
             {
               "type": "hideCharacter",
               "character": "samu"
-            },
+            }
+          ]
+        },
+        {
+          "actions": [
             {
               "type": "minigame",
               "game": "furrielvaExplore",
-              "background": "assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png"
+              "background": "assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp"
             },
             {
               "type": "goToScene",
@@ -144,7 +175,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.webp"
             },
             {
               "type": "showCharacter",
@@ -207,7 +238,7 @@
       "lines": [
         {
           "character": "3C",
-          "text": "Samu llama una vez. Luego otra. Al tercer intento solo recibe un chasquido digital, como un archivo que no termina de abrirse.",
+          "text": "Samu llama una vez. Luego otra. La vieja foto de contacto de Edu —humano y tomada antes de cruzar— ocupa la pantalla; no es vídeo en directo. Al tercer intento solo recibe un chasquido digital, como un archivo que no termina de abrirse.",
           "actions": [
             {
               "type": "playSound",
@@ -308,14 +339,18 @@
           "actions": [
             {
               "type": "hideCharacter",
-              "character": "iphone5"
+              "character": "ketchling"
             },
             {
               "type": "showCharacter",
               "character": "samu",
               "position": "left",
               "pose": "determined"
-            },
+            }
+          ]
+        },
+        {
+          "actions": [
             {
               "type": "goToScene",
               "value": "Escena 1.5: En la calle"
@@ -333,7 +368,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp",
               "cut": true
             },
             {
@@ -381,7 +416,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.webp"
             },
             {
               "type": "hideCharacter",
@@ -602,7 +637,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/dia_4k_v2.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/dia_4k_v2.webp"
             },
             {
               "type": "hideCharacter",
@@ -662,7 +697,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/mercadona_4k_v2.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/mercadona_4k_v2.webp"
             },
             {
               "type": "hideCharacter",
@@ -729,7 +764,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png",
+              "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.webp",
               "duration": 650
             }
           ]
@@ -740,11 +775,11 @@
         },
         {
           "character": "3C",
-          "text": "Entonces mira el expositor completo. Todas las botellas llevan exactamente el mismo tapón."
+          "text": "Samu celebra tan fuerte que no se fija en el resto del expositor."
         },
         {
           "character": "Samu",
-          "text": "...Claro. Exclusividad industrial. Bueno, al menos ya tengo la entrada."
+          "text": "Bueno, al menos ya tengo la entrada."
         },
         {
           "actions": [
@@ -781,7 +816,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.png",
+              "path": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.webp",
               "duration": 0
             },
             {
@@ -835,7 +870,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.webp",
               "cut": true
             },
             {
@@ -929,7 +964,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.webp"
             },
             {
               "type": "hideCharacter",
@@ -958,7 +993,7 @@
             },
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.png",
+              "path": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.webp",
               "duration": 0
             },
             {
@@ -1003,6 +1038,60 @@
           "character": "Ketchling mecánico",
           "speakingAs": "ketchling",
           "text": "El Gran Maestro nos dio un hogar cuando solo éramos una idea. Últimamente habla como si marcharse fuera abandonarnos."
+        },
+        {
+          "character": "Samu",
+          "text": "¿Una idea de Edu? Pero si llegó aquí ayer. ¿Cuánto tiempo lleváis vosotros en la fábrica?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "curious"
+            }
+          ]
+        },
+        {
+          "character": "Ketchling mecánico",
+          "speakingAs": "ketchling",
+          "text": "Ayer. Doce años. Las dos respuestas figuran en el libro de turnos. También tenemos fotos de cuando éramos crías y una caldera con veinte inviernos de óxido.",
+          "actions": [
+            {
+              "type": "animateCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "poses": [
+                "mechanic",
+                "worried",
+                "mechanic"
+              ],
+              "frameMs": 260,
+              "loop": false,
+              "untilAdvance": false
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Y recordáis haber vivido esos años... o aparecisteis recordándolos?"
+        },
+        {
+          "character": "Ketchling embotellador",
+          "speakingAs": "ketchling",
+          "text": "No lo sabemos. Sí sabemos cocinar, discutir, cansarnos y querer al Gran Maestro. Si eso no cuenta como ser reales, el convenio necesita una revisión.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "ketchling",
+              "position": "right",
+              "pose": "bottler"
+            }
+          ]
+        },
+        {
+          "character": "Ketchling mecánico",
+          "speakingAs": "ketchling",
+          "text": "El Gran Maestro vino de fuera y cambió al cruzar. Nosotros empezamos aquí. Puede que seamos construcciones nuevas, pero nuestras decisiones no vienen prefabricadas."
         },
         {
           "character": "Ketchling embotellador",
@@ -1054,7 +1143,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.webp",
               "cut": true
             },
             {
@@ -1097,7 +1186,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.webp",
               "cut": true
             },
             {
@@ -1149,7 +1238,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.webp"
             },
             {
               "type": "hideCharacter",
@@ -1226,7 +1315,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.webp",
               "cut": true
             },
             {
@@ -1323,7 +1412,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.webp",
               "cut": true
             },
             {
@@ -1339,7 +1428,7 @@
               "audioCrossfade": 1800,
               "holdLastFrame": 300,
               "visualFadeOut": 600,
-              "endBackground": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png"
+              "endBackground": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.webp"
             }
           ]
         },
@@ -1347,7 +1436,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.webp",
               "cut": true
             },
             {
@@ -1421,7 +1510,7 @@
         },
         {
           "character": "Samu",
-          "text": "Oye, Edu... una cosa que me ha dejado loco. He visto a Neit por ahí fuera y me ha parecido ver que... ¿estás vendiendo guindillas aquí?",
+          "text": "Oye, Edu... una cosa que me ha dejado loco. He visto a Neit en uno de los pasillos con una caja. ¿De verdad estás vendiendo guindillas en una fábrica de ketchup?",
           "actions": [
             {
               "type": "showCharacter",
@@ -1433,7 +1522,7 @@
         },
         {
           "character": "Edu",
-          "text": "¿¡Cómo que por qué vendo guindillas!? ¡Son un producto premium, Samu! ¡Tienen el picante perfecto para cualquier salsa! ¡No me vengas con esas preguntas ahora!",
+          "text": "¡Claro que vendo guindillas! ¡Son un producto premium, Samu! ¡Tienen el picante perfecto para cualquier salsa! ¡No me vengas con esas preguntas ahora!",
           "actions": [
             {
               "type": "showCharacter",
@@ -1581,7 +1670,7 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/zip_sombra_1.png",
+              "path": "assets/images/cg/chapter2/zip_sombra_1.webp",
               "duration": 700
             },
             {
@@ -1611,17 +1700,17 @@
           "actions": [
             {
               "type": "showCG",
-              "path": "assets/images/cg/chapter2/zip_sombra_2.png",
+              "path": "assets/images/cg/chapter2/zip_sombra_2.webp",
               "duration": 700
             }
           ],
           "character": "3C",
-          "text": "La sombra se lo traga desde los pies. Cuando vuelve a haber alguien de pie en la sala del trono, ya no es Edu: es lo que este sitio llevaba semanas dibujando dentro de él.",
+          "text": "La sombra se lo traga desde los pies. Cuando vuelve a haber alguien de pie en la sala del trono, ya no es Edu: es lo que este lugar recuerda llevar semanas dibujando dentro de él. Samu sabe que ayer no existía. Las dos cosas son ciertas, y eso es lo peor.",
           "textSpeed": "slow"
         },
         {
           "character": "Zip",
-          "text": "JAJAJA... al fin. La Fuerza Memética me libera. Soy Zip.",
+          "text": "JAJAJA... al fin cede la costura. La orden entra, los límites se rompen... y yo quedo libre. Soy Zip.",
           "actions": [
             {
               "type": "hideCG",
@@ -1649,15 +1738,49 @@
         },
         {
           "character": "Zip",
-          "text": "Escúchame bien, Samu. La humanidad es débil, caótica, sucia. Necesita un orden, una dirección. Los memes dominarán el mundo, y todos vosotros, furros, humanos... todos serviréis a una única voluntad."
+          "text": "Escúchame bien, Samu. La humanidad es débil, caótica, sucia. Necesita un orden, una dirección. Furros, humanos, ecos, criaturas recién soñadas... todos serviréis a una única voluntad. A un único dueño."
         },
         {
           "character": "Zip",
-          "text": "Kingdom Ketchup nació del deseo de Edu de construir un lugar donde todos lo necesitaran. Yo no lo creé: comprimí ese deseo, borré sus límites y lo convertí en una jaula."
+          "text": "Kingdom Ketchup nació del deseo de Edu de construir un lugar donde todos lo necesitaran. Alguien más le dio materia. Yo no lo creé: quien me envió encontró la grieta; yo comprimí el deseo, borré sus límites y lo convertí en una jaula."
         },
         {
           "character": "Zip",
-          "text": "No hay escape. No hay salvación. La Corrupción Memética está en todas partes, y yo soy su instrumento en Kingdom Ketchup. ¡Vamos, Samu, únete a nosotros o perecerás!"
+          "text": "La corrupción no nació aquí. Entra desde fuera, busca las costuras y ya ha encontrado otras puertas. Yo soy su instrumento en Kingdom Ketchup. ¡Únete o perece!"
+        },
+        {
+          "character": "3C",
+          "text": "La imagen de Zip se parte en tres. Durante el fallo, sobre su pecho parpadea el mismo emblema rojo de cuatro puntas que Samu vio en la botella; detrás, apenas un fotograma, sonríe el husky de traje de la llamada.",
+          "actions": [
+            {
+              "type": "characterGlitch",
+              "character": "zip",
+              "position": "right",
+              "duration": 700
+            },
+            {
+              "type": "flash",
+              "color": "rgba(180, 20, 35, 0.20)",
+              "duration": 180
+            }
+          ],
+          "textSpeed": "slow"
+        },
+        {
+          "character": "Samu",
+          "text": "Ese símbolo... estaba en la llamada y en la botella. ¿Quién te manda?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Zip",
+          "text": "Los nombres son para los iguales. Tú solo necesitas aprender a obedecer."
         },
         {
           "character": "Samu",
@@ -1691,7 +1814,7 @@
         {
           "character": "Ketchling cocinero",
           "speakingAs": "ketchling",
-          "text": "¡Zip no soporta el picante! Reúne todas las guindillas que puedas antes de atacarlo. Cuantas más tengas, más fuerte será cada disparo y menos podrá presionarte.",
+          "text": "Cuando el Gran Maestro probó el primer lote picante, la sombra retrocedió un segundo. No sé por qué, pero su cuerpo recordó dónde terminaba él y empezaba la orden. Reúne todas las guindillas que puedas: cuantas más tengas, más fuerte será cada disparo y menos podrá presionarte.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1701,7 +1824,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp"
             }
           ]
         },
@@ -1742,7 +1865,7 @@
             },
             {
               "type": "playSound",
-              "path": "assets/audio/sfx/zip's-shadow-waltz.mp3",
+              "path": "assets/audio/music/chapter2/zip's-shadow-waltz.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -1772,7 +1895,7 @@
         },
         {
           "character": "3C",
-          "text": "El último disparo de guindilla atraviesa a Zip. El picante rompe la corrupción desde dentro y la forma oscura se descomprime hasta desaparecer. Edu cae, libre y vivo.",
+          "text": "El último disparo de guindilla atraviesa la capa negra. El picante obliga al cuerpo a rechazar la orden ajena y Zip se descomprime hasta desaparecer. Debajo sigue un dragón azul: transformado, intacto y otra vez dueño de sí.",
           "actions": [
             {
               "type": "rescue",
@@ -1780,7 +1903,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.webp"
             },
             {
               "type": "hideCharacter",
@@ -1840,7 +1963,7 @@
         },
         {
           "character": "Edu",
-          "text": "Ugh... ¿qué pasó? Samu, lo siento. Creí que si todos me necesitaban aquí, marcharme significaba fallarles. Zip convirtió ese miedo en una orden.",
+          "text": "Ugh... Lo recuerdo todo. Ojalá no. El miedo era mío: creí que si todos me necesitaban, marcharme significaba fallarles. Pero la orden no era mía. Había alguien detrás de Zip apretando cada vez que pensaba en irme.",
           "textAnimation": true,
           "actions": [
             {
@@ -1908,13 +2031,20 @@
         },
         {
           "character": "Samu",
-          "text": "Bueno, cambiando de tema... Creo que Kingdom Ketchup solo es una manifestación de tus deseos más oscuros. Tenemos que salir de aquí y buscar al resto.",
+          "text": "Bueno, cambiando de tema... Zip no inventó lo que sentías: lo usó para encerrarte. Y todo apunta a que el del traje estaba sujetando la llave. Tenemos que encontrar a los demás antes de que abra otra jaula.",
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "animateCharacter",
               "character": "samu",
               "position": "left",
-              "pose": "thinking"
+              "poses": [
+                "thinking",
+                "worried",
+                "determined"
+              ],
+              "frameMs": 260,
+              "loop": false,
+              "untilAdvance": false
             }
           ]
         },
@@ -1932,7 +2062,7 @@
         },
         {
           "character": "3C",
-          "text": "El reino rojo queda atrás. Edu camina despacio, todavía mareado, mirándose las manos como si no terminara de fiarse de ellas."
+          "text": "El reino rojo queda atrás. Edu camina despacio, todavía mareado, mirándose las manos escamosas. Zip se ha ido; el cuerpo de dragón permanece. No eran la misma transformación."
         },
         {
           "actions": [
@@ -1964,7 +2094,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png"
+              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp"
             },
             {
               "type": "hideCharacter",
@@ -1981,6 +2111,10 @@
             {
               "type": "hideCharacter",
               "character": "zip"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "ketchling"
             }
           ],
           "character": "3C",
@@ -2016,7 +2150,7 @@
         },
         {
           "character": "3C",
-          "text": "La pantalla muestra el anuncio: «CONCIERTO EXCLUSIVO — Seraphyna en ECCHI LAND. Calle Hentai, nº 69. A las afueras de Furrielva: coge la autovía y sal por el 69. Una noche que no olvidarás.»",
+          "text": "La pantalla muestra el anuncio: «CONCIERTO EXCLUSIVO — Seraphyna en ECCHI LAND. Calle Hentai, nº 69. A las afueras de Furrielva: coge la autovía y sal por el 69. Una noche que no olvidarás.» En el pie, una mariposa azul parpadea donde no debería haber ningún logotipo.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2052,7 +2186,7 @@
         },
         {
           "character": "Samu",
-          "text": "Espera, espera... Zip me comentó que Kingdom Ketchup fue creado para corromperte... Y Seraphyna... Ecchi Land... Eso suena muy Tony, seguro que es un lugar creado para corromperle a él. Debemos ir a ver si está bien.",
+          "text": "Zip dijo que NO creó Kingdom Ketchup: retorció un deseo que ya estaba allí. Si Ecchi Land ha nacido de algo de Tony, quizá la misma voluntad esté intentando convertirlo en otra jaula. Es una sospecha, pero no pienso dejarla pasar.",
           "actions": [
             {
               "type": "showCharacter",
@@ -2097,7 +2231,7 @@
               "character": "edu",
               "position": "right",
               "duration": 1800,
-              "sound": "assets/audio/sfx/sfx_caida_anime_edu.wav",
+              "sound": "assets/audio/sfx/sfx_caida_anime_edu.mp3",
               "volume": 0.82
             }
           ]
@@ -2159,22 +2293,23 @@
           "text": "...No lo sé. Yo estaba convencidísimo de estar en el mejor sitio del mundo, y ya has visto cómo acabé. Vamos a verlo. Aunque sea para preguntárselo a la cara.",
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "animateCharacter",
               "character": "edu",
               "position": "right",
-              "pose": "thinking"
-            },
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "determined"
+              "poses": [
+                "thinking",
+                "worried",
+                "determined"
+              ],
+              "frameMs": 270,
+              "loop": false,
+              "untilAdvance": false
             }
           ]
         },
         {
           "character": "3C",
-          "text": "Y con más preguntas que respuestas, los dos echan a andar hacia la autovía.",
+          "text": "Y con más preguntas que respuestas, los dos echan a andar hacia la autovía. El sol termina de caer sobre una ciudad que asegura llevar décadas ahí y que Samu vio nacer esa misma tarde.",
           "actions": [
             {
               "type": "hideCharacter",

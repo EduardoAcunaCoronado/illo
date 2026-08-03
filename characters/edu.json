@@ -2,27 +2,80 @@
   "name": "Edu",
   "color": "blue",
   "poses": {
-    "neutral": "assets/images/characters/edu/Edu.png",
-    "happy": "assets/images/characters/edu/edu_happy.png",
-    "sad": "assets/images/characters/edu/edu_sad.png",
-    "angry": "assets/images/characters/edu/edu_angry.png",
-    "surprised": "assets/images/characters/edu/edu_surprised.png",
-    "alarmed": "assets/images/characters/edu/edu_shocked.png",
-    "determined": "assets/images/characters/edu/edu_determined.png",
-    "embarrassed": "assets/images/characters/edu/edu_embarrassed.png",
-    "epic": "assets/images/characters/edu/edu_epic.png",
-    "facepalm": "assets/images/characters/edu/edu_facepalm.png",
-    "shocked": "assets/images/characters/edu/edu_shocked.png",
-    "thinking": "assets/images/characters/edu/edu_thinking.png",
-    "worried": "assets/images/characters/edu/edu_worried.png",
-    "bua": "assets/images/characters/edu/edu_bua.png",
-    "clapping": "assets/images/characters/edu/edu_clapping.png",
-    "riku": "assets/images/characters/edu/edu_riku.png",
-    "picado": "assets/images/characters/edu/edu_picado.png",
-    "picante": "assets/images/characters/edu/edu_picante_wide_transparent.png",
-    "zip_happy": "assets/images/characters/edu/chapter2/edu_zip_happy.png",
-    "zip_surprised": "assets/images/characters/edu/chapter2/edu_zip_surprised.png",
-    "zip_worried": "assets/images/characters/edu/chapter2/edu_zip_worried.png"
+    "neutral": "assets/images/characters/edu/Edu.webp",
+    "happy": "assets/images/characters/edu/edu_happy.webp",
+    "sad": "assets/images/characters/edu/edu_sad.webp",
+    "angry": "assets/images/characters/edu/edu_angry.webp",
+    "surprised": "assets/images/characters/edu/edu_surprised.webp",
+    "alarmed": "assets/images/characters/edu/edu_shocked.webp",
+    "determined": "assets/images/characters/edu/edu_determined.webp",
+    "embarrassed": "assets/images/characters/edu/edu_embarrassed.webp",
+    "epic": "assets/images/characters/edu/edu_epic.webp",
+    "facepalm": "assets/images/characters/edu/edu_facepalm.webp",
+    "shocked": "assets/images/characters/edu/edu_shocked.webp",
+    "thinking": "assets/images/characters/edu/edu_thinking.webp",
+    "worried": "assets/images/characters/edu/edu_worried.webp",
+    "bua": "assets/images/characters/edu/edu_bua.webp",
+    "clapping": "assets/images/characters/edu/edu_clapping.webp",
+    "riku": "assets/images/characters/edu/edu_riku.webp",
+    "picado": "assets/images/characters/edu/edu_picado.webp",
+    "picante": "assets/images/characters/edu/edu_picante_wide_transparent.webp",
+    "zip_happy": "assets/images/characters/edu/chapter2/edu_zip_happy.webp",
+    "zip_surprised": "assets/images/characters/edu/chapter2/edu_zip_surprised.webp",
+    "zip_worried": "assets/images/characters/edu/chapter2/edu_zip_worried.webp",
+    "human": "assets/images/characters/humans/edu_humano_sprite.webp"
+  },
+  "animations": {
+    "neutral": {
+      "frames": [
+        {
+          "src": "assets/images/characters/edu/animations/edu_neutral_blink_half.webp",
+          "duration": 65
+        },
+        {
+          "src": "assets/images/characters/edu/animations/edu_neutral_blink_closed.webp",
+          "duration": 95
+        },
+        {
+          "src": "assets/images/characters/edu/animations/edu_neutral_blink_half.webp",
+          "duration": 65
+        }
+      ],
+      "delayRange": [
+        2100,
+        4600
+      ],
+      "loop": true
+    },
+    "happy": [{ "src": "assets/images/characters/edu/animations/blinks/edu_happy_blink_closed.webp", "duration": 95 }],
+    "sad": [{ "src": "assets/images/characters/edu/animations/blinks/edu_sad_blink_closed.webp", "duration": 95 }],
+    "angry": [{ "src": "assets/images/characters/edu/animations/blinks/edu_angry_blink_closed.webp", "duration": 95 }],
+    "surprised": [{ "src": "assets/images/characters/edu/animations/blinks/edu_surprised_blink_closed.webp", "duration": 90 }],
+    "alarmed": [{ "src": "assets/images/characters/edu/animations/blinks/edu_alarmed_blink_closed.webp", "duration": 90 }],
+    "determined": [{ "src": "assets/images/characters/edu/animations/blinks/edu_determined_blink_closed.webp", "duration": 95 }],
+    "embarrassed": [{ "src": "assets/images/characters/edu/animations/blinks/edu_embarrassed_blink_closed.webp", "duration": 95 }],
+    "epic": [{ "src": "assets/images/characters/edu/animations/blinks/edu_epic_blink_closed.webp", "duration": 95 }],
+    "facepalm": [{ "src": "assets/images/characters/edu/animations/blinks/edu_facepalm_blink_open.webp", "duration": 90 }],
+    "shocked": [{ "src": "assets/images/characters/edu/animations/blinks/edu_alarmed_blink_closed.webp", "duration": 90 }],
+    "thinking": [{ "src": "assets/images/characters/edu/animations/blinks/edu_thinking_blink_closed.webp", "duration": 95 }],
+    "worried": [
+      { "src": "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp", "duration": 65 },
+      { "src": "assets/images/characters/edu/animations/blinks/edu_worried_blink_closed.webp", "duration": 95 },
+      { "src": "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp", "duration": 65 }
+    ],
+    "bua": [{ "src": "assets/images/characters/edu/animations/blinks/edu_bua_blink_closed.webp", "duration": 95 }],
+    "clapping": [{ "src": "assets/images/characters/edu/animations/blinks/edu_clapping_blink_closed.webp", "duration": 90 }],
+    "riku": [{ "src": "assets/images/characters/edu/animations/blinks/edu_riku_blink_closed.webp", "duration": 95 }],
+    "picado": [{ "src": "assets/images/characters/edu/animations/blinks/edu_picado_blink_closed.webp", "duration": 85 }],
+    "picante": [
+      { "src": "assets/images/characters/eye_intermediate_sources/edu/picante/eyes_half_source.webp", "duration": 65 },
+      { "src": "assets/images/characters/edu/animations/blinks/edu_picante_blink_closed.webp", "duration": 85 },
+      { "src": "assets/images/characters/eye_intermediate_sources/edu/picante/eyes_half_source.webp", "duration": 65 }
+    ],
+    "zip_happy": [{ "src": "assets/images/characters/edu/animations/blinks/edu_zip_happy_blink_closed.webp", "duration": 95 }],
+    "zip_surprised": [{ "src": "assets/images/characters/edu/animations/blinks/edu_zip_surprised_blink_closed.webp", "duration": 90 }],
+    "zip_worried": [{ "src": "assets/images/characters/edu/animations/blinks/edu_zip_worried_blink_closed.webp", "duration": 95 }],
+    "human": [{ "src": "assets/images/characters/edu/animations/blinks/edu_human_blink_closed.webp", "duration": 95 }]
   },
   "defaultPose": "happy"
 }

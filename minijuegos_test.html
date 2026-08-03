@@ -6,7 +6,7 @@
     <title>Prueba de minijuegos — Project AI.ri: Transfurmados</title>
     <link rel="stylesheet" id="css-principal">
     <script>document.getElementById("css-principal").href = "styles.css?v=" + Date.now();</script>
-    <link rel="stylesheet" href="battle-styles.css?v=20260725-1">
+    <link rel="stylesheet" href="battle-styles.css?v=20260801-2">
     <style>
         body { background: #05010f; }
         #test-panel {
@@ -442,7 +442,7 @@
             await engine.playChiliHarvestMinigame({ ...opts, powerGoal: 16, maxSpicePower: 28, boxBonus: 12 });
             document.getElementById('chili-speed-val').textContent = engine.gameState.chiliPower + ' puntos';
             stopMusic();
-            startMusic("assets/audio/sfx/zip's-shadow-waltz.mp3");
+            startMusic("assets/audio/music/chapter2/zip's-shadow-waltz.mp3");
             await engine.playKetchupBossMinigame({ enemyHp: 360, maxHits: opts.maxHits, maxSpicePower: 28 });
             stopMusic();
             resultEl.textContent = '✅ ¡Zip derrotado con ' + engine.gameState.chiliPower + ' puntos de picante!';
@@ -498,7 +498,7 @@
             resultEl.textContent = '';
             panel.classList.add('hidden');
             await engine.playFurrielvaExploreMinigame({
-                background: 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png'
+                background: 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp'
             });
             resultEl.textContent = '✅ Ruta a Kingdom Ketchup localizada.';
             panel.classList.remove('hidden');

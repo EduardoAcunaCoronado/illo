@@ -2,18 +2,31 @@
   "name": "Airi",
   "color": "#9fdcff",
   "poses": {
-    "neutral": "assets/images/characters/airi/airi.png",
-    "happy": "assets/images/characters/airi/airi_happy.png",
-    "sad": "assets/images/characters/airi/airi_sad.png",
-    "angry": "assets/images/characters/airi/airi_angry.png",
-    "surprised": "assets/images/characters/airi/airi_surprised.png",
-    "determined": "assets/images/characters/airi/airi_determined.png",
-    "embarrassed": "assets/images/characters/airi/airi_embarrased.png",
-    "thinking": "assets/images/characters/airi/airi_thinking.png",
-    "bua": "assets/images/characters/airi/airi_bua.png",
-    "pray": "assets/images/characters/airi/airi_pray.png",
-    "worried": "assets/images/characters/airi/airi_worried.png",
-    "error": "assets/images/characters/airi/airi_error.png"
+    "neutral": "assets/images/characters/airi/airi.webp",
+    "happy": "assets/images/characters/airi/airi_happy.webp",
+    "sad": "assets/images/characters/airi/airi_sad.webp",
+    "angry": "assets/images/characters/airi/airi_angry.webp",
+    "surprised": "assets/images/characters/airi/airi_surprised.webp",
+    "determined": "assets/images/characters/airi/airi_determined.webp",
+    "embarrassed": "assets/images/characters/airi/airi_embarrased.webp",
+    "thinking": "assets/images/characters/airi/airi_thinking.webp",
+    "bua": "assets/images/characters/airi/airi_bua.webp",
+    "pray": "assets/images/characters/airi/airi_pray.webp",
+    "worried": "assets/images/characters/airi/airi_worried.webp",
+    "error": "assets/images/characters/airi/airi_error.webp"
+  },
+  "animations": {
+    "neutral": [{ "src": "assets/images/characters/airi/animations/blinks/airi_neutral_blink_closed.webp", "duration": 95 }],
+    "happy": [{ "src": "assets/images/characters/airi/animations/blinks/airi_happy_blink_open.webp", "duration": 90 }],
+    "sad": [{ "src": "assets/images/characters/airi/animations/blinks/airi_sad_blink_closed.webp", "duration": 95 }],
+    "angry": [{ "src": "assets/images/characters/airi/animations/blinks/airi_angry_blink_closed.webp", "duration": 95 }],
+    "surprised": [{ "src": "assets/images/characters/airi/animations/blinks/airi_surprised_blink_closed.webp", "duration": 90 }],
+    "determined": [{ "src": "assets/images/characters/airi/animations/blinks/airi_determined_blink_closed.webp", "duration": 95 }],
+    "embarrassed": [{ "src": "assets/images/characters/airi/animations/blinks/airi_embarrassed_blink_closed.webp", "duration": 95 }],
+    "thinking": [{ "src": "assets/images/characters/airi/animations/blinks/airi_thinking_blink_closed.webp", "duration": 95 }],
+    "bua": [{ "src": "assets/images/characters/airi/animations/blinks/airi_bua_blink_closed.webp", "duration": 95 }],
+    "pray": [{ "src": "assets/images/characters/airi/animations/blinks/airi_pray_blink_open.webp", "duration": 90 }],
+    "worried": [{ "src": "assets/images/characters/airi/animations/blinks/airi_worried_blink_closed.webp", "duration": 95 }]
   },
   "defaultPose": "neutral"
 }

@@ -1,0 +1,64 @@
+FURRIELVA — APÓSTOLES/REYES FURROS E INTEGRACIÓN 4K
+Fecha: 2026-08-03
+
+Base protegida
+---------------
+furrielva_iglesia_vista_aerea_v1_4k.png (3840 × 2160). La versión v1 no se
+sobrescribe; v2 sólo cambia el interior de los dos paneles de la fachada.
+
+Relieve superior
+----------------
+Regenerar el recorte horizontal como cinco apóstoles/reyes antropomorfos
+claramente reconocibles: zorro anciano con bastón, coneja con manto, león
+central, lobo con libro y cierva con astas y pata alzada. Deben conservarse el
+encuadre oblicuo, el gablete y la perspectiva del recorte original. Dibujar
+hocicos, orejas, pelaje, patas, coronas/aureolas, joyas y túnicas medievales con
+contorno oscuro legible, paleta ocre, ámbar, terracota, azul pizarra y oro
+envejecido. Evitar máscaras abstractas, caras humanas, figuras extra, texto,
+fotorrealismo y cambios en la arquitectura.
+
+Salida generativa:
+detail_patches/furrielva_iglesia_relieve_superior_v2.png
+Máster ampliado:
+detail_patches/furrielva_iglesia_relieve_superior_v2_4k.png (3840 × 2828)
+
+Vitral central
+--------------
+Regenerar el recorte vertical como cinco apóstoles/reyes furros en alianza:
+ciervo regente central con astas, corona y aureola; zorro superior izquierdo;
+lince superior derecho; conejo inferior izquierdo y lobo inferior derecho.
+Las cinco patas se reúnen en el centro. Conservar el arco, la perspectiva, el
+marco y el alféizar originales. Usar anatomía furry inequívoca, regalia
+medieval, vitrales segmentados y contornos limpios; evitar caras humanas,
+abstracciones, figuras extra, texto y cambios arquitectónicos.
+
+Salida generativa:
+detail_patches/furrielva_iglesia_vitral_central_v2.png
+Máster ampliado:
+detail_patches/furrielva_iglesia_vitral_central_v2_4k.png (2982 × 3840)
+
+Integración no destructiva
+--------------------------
+- Relieve: recorte fuente (200,205)–(1315,985), caja destino
+  (1781,531)–(1951,638), máscara interior del gablete, en coordenadas 4K,
+  [(1781,637),(1781,577),(1860,531),(1950,544),(1950,608)].
+- Vitral: recorte fuente (80,35)–(920,1300), caja destino
+  (1792,684)–(1951,937), máscara interior del arco, en coordenadas 4K,
+  [(1798,923),(1798,730),(1807,718),(1821,706),(1839,697),(1857,690),
+   (1874,687),(1891,691),(1908,699),(1925,710),(1940,723),(1948,736),
+   (1948,922),(1924,916),(1898,927),(1865,936),(1836,930),(1812,915)].
+- Reducción Lanczos, borde de máscara gaussiano de 0,48/0,52 px y adaptación
+  LAB parcial al color del máster (42 % y 44 %, respectivamente).
+- Los paneles independientes se amplían con RealESRGAN x4plus, TTA y teselas
+  de 256 px antes de reducirlos a lado largo 3840.
+- Auditoría: 48.997 píxeles modificados (0,591 % del lienzo), todos dentro de
+  las dos cajas anteriores. Fuera de los interiores de ambos paneles, la v2
+  es idéntica píxel a píxel a la v1; plaza, edificios, aves, cornisas, arco,
+  jambas y alféizares permanecen intactos.
+
+Salidas
+-------
+- Máster: furrielva_iglesia_vista_aerea_v2_4k.png (3840 × 2160).
+- Runtime: assets/images/backgrounds/chapter2/furrielva/
+  furrielva_iglesia_vista_aerea_v2_4k.webp.
+- Estado: candidato no asignado todavía a una escena ni a la galería.

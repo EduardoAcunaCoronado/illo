@@ -1,0 +1,879 @@
+{
+  "version": 1,
+  "poses": {
+    "3c.angry": {
+      "sourceBase": "assets/images/characters/others/3c.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/3c/angry/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/3c/angry/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/3c/angry/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/3c/angry/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.397851,
+          "cy": 0.312084,
+          "rx": 0.048879,
+          "ry": 0.024739,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.528391,
+          "cy": 0.286394,
+          "rx": 0.055672,
+          "ry": 0.033753,
+          "rotation": -28.501,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 259,
+      "height": 131,
+      "crop": {
+        "x": 347,
+        "y": 304,
+        "width": 259,
+        "height": 131
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "updatedAt": "2026-08-03T01:16:28.497600+00:00"
+    },
+    "3c.happy": {
+      "sourceBase": "assets/images/characters/others/3c_happy.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/3c_happy_blink_closed_v2.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/3c/happy/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/3c/happy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/3c/happy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/3c/happy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/3c/happy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.415452,
+          "cy": 0.31351,
+          "rx": 0.046516,
+          "ry": 0.021408,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 4.0
+        },
+        {
+          "cx": 0.54944,
+          "cy": 0.28116,
+          "rx": 0.058217,
+          "ry": 0.029972,
+          "rotation": -18.956,
+          "mode": "include",
+          "feather": 4.0
+        }
+      ],
+      "width": 291,
+      "height": 142,
+      "crop": {
+        "x": 406,
+        "y": 335,
+        "width": 291,
+        "height": 142
+      },
+      "sourceCanvas": {
+        "width": 1131,
+        "height": 1391
+      },
+      "updatedAt": "2026-08-03T01:16:28.694574+00:00"
+    },
+    "3c.neutral": {
+      "sourceBase": "assets/images/characters/others/3c.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/3c/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/3c/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/3c/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/3c/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.396,
+          "cy": 0.316,
+          "rx": 0.04,
+          "ry": 0.028,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.530195,
+          "cy": 0.286728,
+          "rx": 0.052027,
+          "ry": 0.029271,
+          "rotation": -34.943,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 248,
+      "height": 136,
+      "crop": {
+        "x": 354,
+        "y": 308,
+        "width": 248,
+        "height": 136
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "updatedAt": "2026-08-03T01:16:28.851863+00:00"
+    },
+    "3c.sad": {
+      "sourceBase": "assets/images/characters/others/3c.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/3c/sad/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/3c/sad/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/3c/sad/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/3c/sad/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.398359,
+          "cy": 0.313869,
+          "rx": 0.044119,
+          "ry": 0.028427,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.530055,
+          "cy": 0.285325,
+          "rx": 0.057167,
+          "ry": 0.034136,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 260,
+      "height": 136,
+      "crop": {
+        "x": 352,
+        "y": 306,
+        "width": 260,
+        "height": 136
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "updatedAt": "2026-08-03T01:16:29.012220+00:00"
+    },
+    "3c.surprised": {
+      "sourceBase": "assets/images/characters/others/3c.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/3c_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/3c/surprised/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/3c/surprised/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/3c/surprised/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/3c/surprised/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.40107,
+          "cy": 0.313026,
+          "rx": 0.043788,
+          "ry": 0.02789,
+          "rotation": 17.852,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.530451,
+          "cy": 0.286407,
+          "rx": 0.052483,
+          "ry": 0.031926,
+          "rotation": -32.501,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 248,
+      "height": 135,
+      "crop": {
+        "x": 356,
+        "y": 306,
+        "width": 248,
+        "height": 135
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "updatedAt": "2026-08-03T01:16:29.170875+00:00"
+    },
+    "airi.angry": {
+      "sourceBase": "assets/images/characters/airi/airi_angry.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_angry_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/angry/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/angry/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/angry/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/angry/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/angry/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.41,
+          "cy": 0.259,
+          "rx": 0.048,
+          "ry": 0.033,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.555,
+          "cy": 0.245,
+          "rx": 0.051,
+          "ry": 0.027,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 179,
+      "height": 86,
+      "crop": {
+        "x": 223,
+        "y": 181,
+        "width": 179,
+        "height": 86
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:26:16.626837+00:00"
+    },
+    "airi.bua": {
+      "sourceBase": "assets/images/characters/airi/airi_bua.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_bua_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/bua/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/bua/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/bua/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/bua/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/bua/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.405814,
+          "cy": 0.277356,
+          "rx": 0.046931,
+          "ry": 0.028069,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.543694,
+          "cy": 0.262132,
+          "rx": 0.057936,
+          "ry": 0.028069,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 174,
+      "height": 80,
+      "crop": {
+        "x": 223,
+        "y": 197,
+        "width": 174,
+        "height": 80
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:29.328678+00:00"
+    },
+    "airi.determined": {
+      "sourceBase": "assets/images/characters/airi/airi_determined.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_determined_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/determined/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/determined/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/determined/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/determined/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/determined/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.409051,
+          "cy": 0.253092,
+          "rx": 0.048873,
+          "ry": 0.024738,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.553405,
+          "cy": 0.236917,
+          "rx": 0.045636,
+          "ry": 0.02569,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 171,
+      "height": 76,
+      "crop": {
+        "x": 224,
+        "y": 177,
+        "width": 171,
+        "height": 76
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:29.401341+00:00"
+    },
+    "airi.embarrassed": {
+      "sourceBase": "assets/images/characters/airi/airi_embarrased.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_embarrassed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/embarrassed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/embarrassed/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/embarrassed/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/embarrassed/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/embarrassed/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.405814,
+          "cy": 0.256898,
+          "rx": 0.038516,
+          "ry": 0.027593,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.535926,
+          "cy": 0.234062,
+          "rx": 0.046931,
+          "ry": 0.027592,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 156,
+      "height": 86,
+      "crop": {
+        "x": 229,
+        "y": 173,
+        "width": 156,
+        "height": 86
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:29.481353+00:00"
+    },
+    "airi.happy": {
+      "sourceBase": "assets/images/characters/airi/airi_happy.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_happy_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/happy/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/happy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/happy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/happy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/happy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.421997,
+          "cy": 0.256898,
+          "rx": 0.041105,
+          "ry": 0.034253,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.559877,
+          "cy": 0.237869,
+          "rx": 0.0424,
+          "ry": 0.038059,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 160,
+      "height": 97,
+      "crop": {
+        "x": 238,
+        "y": 167,
+        "width": 160,
+        "height": 97
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:29.568209+00:00"
+    },
+    "airi.neutral": {
+      "sourceBase": "assets/images/characters/airi/airi.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.413257,
+          "cy": 0.253567,
+          "rx": 0.040782,
+          "ry": 0.030923,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.558259,
+          "cy": 0.241199,
+          "rx": 0.051139,
+          "ry": 0.02902,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 170,
+      "height": 81,
+      "crop": {
+        "x": 232,
+        "y": 178,
+        "width": 170,
+        "height": 81
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:29.652338+00:00"
+    },
+    "airi.pray": {
+      "sourceBase": "assets/images/characters/airi/airi_pray.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_pray_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/pray/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/pray/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/pray/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/pray/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/pray/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.395781,
+          "cy": 0.263083,
+          "rx": 0.044019,
+          "ry": 0.027117,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.534308,
+          "cy": 0.250713,
+          "rx": 0.042724,
+          "ry": 0.027116,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 162,
+      "height": 76,
+      "crop": {
+        "x": 219,
+        "y": 188,
+        "width": 162,
+        "height": 76
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:29.731269+00:00"
+    },
+    "airi.sad": {
+      "sourceBase": "assets/images/characters/airi/airi_sad.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_sad_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/sad/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/sad/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/sad/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/sad/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/sad/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.416172,
+          "cy": 0.257373,
+          "rx": 0.044341,
+          "ry": 0.028068,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.560525,
+          "cy": 0.238344,
+          "rx": 0.053026,
+          "ry": 0.026622,
+          "rotation": -8.837,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 173,
+      "height": 82,
+      "crop": {
+        "x": 232,
+        "y": 177,
+        "width": 173,
+        "height": 82
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:29.811523+00:00"
+    },
+    "airi.surprised": {
+      "sourceBase": "assets/images/characters/airi/airi_surprised.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_surprised_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/surprised/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/surprised/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/surprised/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/surprised/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/surprised/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.412287,
+          "cy": 0.25119,
+          "rx": 0.045637,
+          "ry": 0.03806,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.556641,
+          "cy": 0.237869,
+          "rx": 0.046931,
+          "ry": 0.041864,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 170,
+      "height": 99,
+      "crop": {
+        "x": 228,
+        "y": 164,
+        "width": 170,
+        "height": 99
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:29.902716+00:00"
+    },
+    "airi.thinking": {
+      "sourceBase": "assets/images/characters/airi/airi_thinking.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_thinking_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/thinking/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/thinking/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/thinking/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/thinking/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/thinking/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.410993,
+          "cy": 0.246432,
+          "rx": 0.04499,
+          "ry": 0.026641,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.546284,
+          "cy": 0.226451,
+          "rx": 0.048226,
+          "ry": 0.028544,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 165,
+      "height": 84,
+      "crop": {
+        "x": 228,
+        "y": 165,
+        "width": 165,
+        "height": 84
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:29.977354+00:00"
+    },
+    "airi.worried": {
+      "sourceBase": "assets/images/characters/airi/airi_worried.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi/animations/blinks/airi_worried_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi/worried/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi/worried/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi/worried/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi/worried/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi/worried/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.410993,
+          "cy": 0.25452,
+          "rx": 0.044989,
+          "ry": 0.033778,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.551463,
+          "cy": 0.239297,
+          "rx": 0.05211,
+          "ry": 0.031875,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 170,
+      "height": 88,
+      "crop": {
+        "x": 228,
+        "y": 174,
+        "width": 170,
+        "height": 88
+      },
+      "sourceCanvas": {
+        "width": 646,
+        "height": 879
+      },
+      "updatedAt": "2026-08-03T01:16:30.067263+00:00"
+    },
+    "airi_adult.neutral": {
+      "sourceBase": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.webp",
+      "sourceFrames": [
+        "assets/images/characters/airi_adult/animations/blinks/airi_adult_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/airi_adult/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/airi_adult/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/airi_adult/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/airi_adult/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/airi_adult/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.433429,
+          "cy": 0.205043,
+          "rx": 0.030102,
+          "ry": 0.024263,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.52605,
+          "cy": 0.18411,
+          "rx": 0.040521,
+          "ry": 0.023311,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 138,
+      "height": 78,
+      "crop": {
+        "x": 289,
+        "y": 136,
+        "width": 138,
+        "height": 78
+      },
+      "sourceCanvas": {
+        "width": 738,
+        "height": 898
+      },
+      "updatedAt": "2026-08-03T01:16:30.152132+00:00"
+    },
+    "andres.neutral": {
+      "sourceBase": "assets/images/characters/andres/andres.webp",
+      "sourceFrames": [
+        "assets/images/characters/andres/animations/blinks/andres_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/andres/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/andres/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/andres/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/andres/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/andres/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.423758,
+          "cy": 0.173493,
+          "rx": 0.035,
+          "ry": 0.02801,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 6.0
+        },
+        {
+          "cx": 0.562269,
+          "cy": 0.170576,
+          "rx": 0.041311,
+          "ry": 0.02801,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 6.0
+        }
+      ],
+      "width": 264,
+      "height": 106,
+      "crop": {
+        "x": 425,
+        "y": 188,
+        "width": 264,
+        "height": 106
+      },
+      "sourceCanvas": {
+        "width": 1122,
+        "height": 1402
+      },
+      "updatedAt": "2026-08-03T11:34:42.135886+00:00"
+    },
+    "ballerina_capuchina.neutral": {
+      "sourceBase": "assets/images/characters/ballerina_capuchina.webp",
+      "sourceFrames": [
+        "assets/images/characters/ballerina_capuchina/animations/blinks/ballerina_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/ballerina_capuchina/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/ballerina_capuchina/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/ballerina_capuchina/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/ballerina_capuchina/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/ballerina_capuchina/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.416505,
+          "cy": 0.426306,
+          "rx": 0.105589,
+          "ry": 0.042784,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 6.0
+        },
+        {
+          "cx": 0.635716,
+          "cy": 0.372826,
+          "rx": 0.105111,
+          "ry": 0.045248,
+          "rotation": -32.006,
+          "mode": "include",
+          "feather": 6.0
+        }
+      ],
+      "width": 349,
+      "height": 164,
+      "crop": {
+        "x": 238,
+        "y": 284,
+        "width": 349,
+        "height": 164
+      },
+      "sourceCanvas": {
+        "width": 793,
+        "height": 936
+      },
+      "updatedAt": "2026-08-03T11:37:03.458689+00:00"
+    }
+  }
+}

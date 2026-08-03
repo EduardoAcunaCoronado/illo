@@ -2,12 +2,15 @@
   "name": "Gorila",
   "color": "#6b6b6b",
   "poses": {
-    "neutral": "assets/images/characters/gorila/gorila.png",
-    "sospecha": "assets/images/characters/gorila/gorila_sospecha.png",
-    "contento": "assets/images/characters/gorila/gorila_contento.png",
-    "enfadado": "assets/images/characters/gorila/gorila_enfadado.png",
-    "caido": "assets/images/characters/gorila/gorila_caido.png",
-    "puerta": "assets/images/characters/gorila/gorila_puerta.png"
+    "neutral": "assets/images/characters/gorila/gorila.webp",
+    "sospecha": "assets/images/characters/gorila/gorila_sospecha.webp",
+    "contento": "assets/images/characters/gorila/gorila_contento.webp",
+    "enfadado": "assets/images/characters/gorila/gorila_enfadado.webp",
+    "caido": "assets/images/characters/gorila/gorila_caido.webp",
+    "puerta": "assets/images/characters/gorila/gorila_puerta.webp"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "animations": {
+    "sospecha": { "frames": [{ "src": "assets/images/characters/gorila/animations/blinks/gorila_sospecha_blink_closed.webp", "duration": 110 }], "loop": true }
+  }
 }

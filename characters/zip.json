@@ -2,8 +2,12 @@
   "name": "Zip",
   "color": "#FF6B9D",
   "poses": {
-    "neutral": "assets/images/characters/others/zip.png",
-    "angry": "assets/images/characters/others/zip_angry.png"
+    "neutral": "assets/images/characters/others/zip.webp",
+    "angry": "assets/images/characters/others/zip_angry.webp"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "animations": {
+    "neutral": { "frames": [{ "src": "assets/images/characters/others/animations/blinks/zip_neutral_blink_closed.webp", "duration": 110 }], "loop": true },
+    "angry": { "frames": [{ "src": "assets/images/characters/others/animations/blinks/zip_angry_blink_closed.webp", "duration": 110 }], "loop": true }
+  }
 }

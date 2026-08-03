@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Centro de herramientas — Project AI.ri</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg:#070612;
+      --panel:#100d22;
+      --panel-2:#17122e;
+      --line:#302750;
+      --text:#f7f4ff;
+      --muted:#a7a0c0;
+      --gold:#ffd166;
+      --cyan:#4de8c2;
+      --pink:#ff66b7;
+      --purple:#9a7bff;
+    }
+    * { box-sizing:border-box; }
+    html { min-height:100%; background:var(--bg); }
+    body {
+      min-height:100vh;
+      margin:0;
+      color:var(--text);
+      font:15px/1.5 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 15% -10%, rgba(154,123,255,.26), transparent 34rem),
+        radial-gradient(circle at 95% 5%, rgba(77,232,194,.12), transparent 30rem),
+        linear-gradient(145deg, #070612 0%, #0b0819 58%, #080713 100%);
+    }
+    a { color:inherit; }
+    .shell { width:min(1180px, calc(100% - 36px)); margin:0 auto; padding:42px 0 60px; }
+    .topbar { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:34px; }
+    .eyebrow { margin:0 0 7px; color:var(--cyan); font-size:11px; font-weight:900; letter-spacing:.18em; text-transform:uppercase; }
+    h1 { margin:0; font-size:clamp(30px, 5vw, 56px); line-height:1; letter-spacing:-.045em; }
+    .subtitle { max-width:680px; margin:15px 0 0; color:var(--muted); font-size:16px; }
+    .server-pill {
+      display:flex; align-items:center; gap:8px; flex:0 0 auto; margin-top:5px; padding:9px 13px;
+      border:1px solid rgba(77,232,194,.28); border-radius:999px; color:var(--cyan); background:rgba(77,232,194,.07);
+      font-size:11px; font-weight:850; letter-spacing:.08em; text-transform:uppercase;
+    }
+    .server-pill::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+    .summary {
+      display:grid; grid-template-columns:repeat(3, 1fr); gap:1px; overflow:hidden; margin-bottom:34px;
+      border:1px solid var(--line); border-radius:18px; background:var(--line);
+    }
+    .summary div { min-height:94px; padding:20px 22px; background:rgba(16,13,34,.95); }
+    .summary small { display:block; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; }
+    .summary strong { display:block; margin-top:5px; font-size:24px; letter-spacing:-.03em; }
+    .summary span { display:block; margin-top:2px; color:var(--muted); font-size:12px; }
+    .section-head { display:flex; align-items:end; justify-content:space-between; gap:18px; margin:0 0 14px; }
+    .section-head h2 { margin:0; font-size:18px; letter-spacing:-.02em; }
+    .section-head p { margin:0; color:var(--muted); font-size:12px; }
+    .workflow { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:38px; }
+    .card {
+      position:relative; display:flex; flex-direction:column; min-height:260px; padding:22px; overflow:hidden;
+      border:1px solid var(--line); border-radius:20px; text-decoration:none;
+      background:linear-gradient(155deg, rgba(23,18,46,.97), rgba(12,10,27,.96));
+      box-shadow:0 18px 50px rgba(0,0,0,.16); transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    }
+    .card::after { content:""; position:absolute; inset:auto -50px -70px auto; width:170px; height:170px; border-radius:50%; background:var(--accent); opacity:.08; filter:blur(1px); }
+    .card:hover { transform:translateY(-4px); border-color:color-mix(in srgb, var(--accent) 58%, var(--line)); box-shadow:0 24px 70px rgba(0,0,0,.28); }
+    .card:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+    .step { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .step-number { display:grid; place-items:center; width:34px; height:34px; border:1px solid color-mix(in srgb, var(--accent) 55%, transparent); border-radius:10px; color:var(--accent); font-size:13px; font-weight:950; background:color-mix(in srgb, var(--accent) 8%, transparent); }
+    .live { display:flex; align-items:center; gap:6px; color:var(--muted); font-size:10px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
+    .live::before { content:""; width:5px; height:5px; border-radius:50%; background:var(--accent); }
+    .card h3 { margin:24px 0 8px; font-size:23px; letter-spacing:-.03em; }
+    .card p { margin:0; color:var(--muted); font-size:13px; }
+    .card-foot { display:flex; align-items:end; justify-content:space-between; gap:12px; margin-top:auto; padding-top:24px; }
+    .metric strong { display:block; color:var(--accent); font-size:19px; }
+    .metric span { display:block; color:var(--muted); font-size:10px; }
+    .arrow { display:grid; place-items:center; width:34px; height:34px; border-radius:50%; background:color-mix(in srgb, var(--accent) 12%, transparent); color:var(--accent); font-size:18px; }
+    .mark { --accent:var(--gold); }
+    .align { --accent:var(--cyan); }
+    .clean { --accent:var(--pink); }
+    .halo { --accent:var(--purple); }
+    .tools { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; }
+    .small-card {
+      display:flex; align-items:center; gap:14px; min-height:88px; padding:16px 17px; border:1px solid var(--line); border-radius:15px;
+      background:rgba(16,13,34,.78); text-decoration:none; transition:border-color .16s ease, background .16s ease, transform .16s ease;
+    }
+    .small-card:hover { border-color:rgba(154,123,255,.7); background:rgba(23,18,46,.94); transform:translateY(-2px); }
+    .small-card:focus-visible { outline:3px solid var(--purple); outline-offset:2px; }
+    .icon { display:grid; place-items:center; flex:0 0 auto; width:42px; height:42px; border-radius:12px; color:var(--purple); background:rgba(154,123,255,.11); font-size:19px; font-weight:900; }
+    .small-card strong { display:block; font-size:13px; }
+    .small-card span { display:block; margin-top:2px; color:var(--muted); font-size:11px; }
+    .port { margin-left:auto; color:#726b8d; font:700 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .note { margin:32px 0 0; padding:15px 17px; border-left:3px solid var(--cyan); color:var(--muted); background:rgba(77,232,194,.05); font-size:12px; }
+    @media (max-width:900px) {
+      .workflow,.tools { grid-template-columns:1fr; }
+      .card { min-height:220px; }
+      .summary { grid-template-columns:1fr; }
+    }
+    @media (max-width:620px) {
+      .shell { width:min(100% - 24px, 1180px); padding-top:25px; }
+      .topbar { display:block; }
+      .server-pill { width:max-content; margin-top:18px; }
+      .section-head { display:block; }
+      .section-head p { margin-top:5px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar">
+      <div>
+        <p class="eyebrow">Project AI.ri · utilidad local</p>
+        <h1>Centro de herramientas</h1>
+        <p class="subtitle">Un único punto de entrada para preparar los parpadeos, comprobar el juego y abrir las utilidades de desarrollo.</p>
+      </div>
+      <div class="server-pill">Servidor ocular activo</div>
+    </div>
+
+    <section class="summary" aria-label="Resumen del trabajo ocular">
+      <div><small>Regiones marcadas</small><strong id="regions-summary">—</strong><span>poses listas para generar capas</span></div>
+      <div><small>Capas disponibles</small><strong id="layers-summary">—</strong><span>pares de ojos abiertos y cerrados</span></div>
+      <div><small>Bases limpias</small><strong id="bases-summary">—</strong><span>copias no destructivas sin ojos</span></div>
+    </section>
+
+    <div class="section-head">
+      <h2>Flujo de parpadeos</h2>
+      <p>Orden recomendado: marcar → alinear → limpiar</p>
+    </div>
+    <section class="workflow" aria-label="Herramientas de parpadeo">
+      <a class="card mark" href="/">
+        <div class="step"><span class="step-number">01</span><span class="live">Trabajo manual</span></div>
+        <h3>Marcar regiones oculares</h3>
+        <p>Selecciona cada ojo con elipses independientes, ajusta inclinación y protege pelo, gafas u otros detalles.</p>
+        <div class="card-foot"><div class="metric"><strong id="regions-card">Cargando…</strong><span>regiones guardadas</span></div><span class="arrow">→</span></div>
+      </a>
+      <a class="card align" href="/preview">
+        <div class="step"><span class="step-number">02</span><span class="live">Composición</span></div>
+        <h3>Alinear ojos por capas</h3>
+        <p>Arrastra por separado los ojos abiertos y cerrados sobre la pose base y exporta los GIF de comprobación.</p>
+        <div class="card-foot"><div class="metric"><strong id="layers-card">Cargando…</strong><span id="offsets-card">ajustes guardados</span></div><span class="arrow">→</span></div>
+      </a>
+      <a class="card clean" href="/clean-base">
+        <div class="step"><span class="step-number">03</span><span class="live">No destructivo</span></div>
+        <h3>Limpiar poses base</h3>
+        <p>Borra los ojos originales con un pincel transparente, restaura detalles y guarda una copia separada del sprite.</p>
+        <div class="card-foot"><div class="metric"><strong id="bases-card">Cargando…</strong><span>bases terminadas</span></div><span class="arrow">→</span></div>
+      </a>
+      <a class="card halo" href="/white-halo">
+        <div class="step"><span class="step-number">04</span><span class="live">Herramienta aparte</span></div>
+        <h3>Eliminar halos blancos</h3>
+        <p>Pinta sobre los bordes del sprite: sólo los píxeles blancos o casi blancos pierden opacidad. Los colores permanecen intactos.</p>
+        <div class="card-foot"><div class="metric"><strong>Todos</strong><span>los sprites base disponibles</span></div><span class="arrow">→</span></div>
+      </a>
+    </section>
+
+    <div class="section-head">
+      <h2>Juego y utilidades</h2>
+      <p>Se sirven desde el servidor normal del proyecto, en el puerto 8000</p>
+    </div>
+    <section class="tools" aria-label="Utilidades generales">
+      <a class="small-card" href="http://localhost:8000/"><span class="icon">▶</span><span><strong>Abrir el juego</strong><span>Ejecutar Project AI.ri desde el inicio</span></span><span class="port">:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/minijuegos_test.html"><span class="icon">◆</span><span><strong>Prueba de minijuegos</strong><span>Lanzar y revisar minijuegos por separado</span></span><span class="port">:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/generate-assets.html"><span class="icon">＋</span><span><strong>Generador de assets</strong><span>Utilidad general incluida en el proyecto</span></span><span class="port">:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/create_placeholders.html"><span class="icon">▧</span><span><strong>Crear placeholders</strong><span>Generar imágenes temporales de desarrollo</span></span><span class="port">:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/menu_propuestas.html"><span class="icon">☰</span><span><strong>Propuestas de menú</strong><span>Comparar las variantes visuales del menú</span></span><span class="port">:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/centro-control.html"><span class="icon">⌘</span><span><strong>Centro de control legado</strong><span>Accesos antiguos conservados en el proyecto</span></span><span class="port">:8000</span></a>
+    </section>
+
+    <p class="note"><strong>Los originales están protegidos.</strong> Las herramientas oculares guardan metadatos o copias nuevas; el limpiador no sobrescribe las poses base.</p>
+  </main>
+
+  <script>
+    const setText = (id, value) => { document.getElementById(id).textContent = value; };
+    const safeJson = async url => {
+      const response = await fetch(url, {cache:'no-store'});
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      return response.json();
+    };
+    const countEntries = value => value && typeof value === 'object' ? Object.keys(value).length : 0;
+
+    async function loadStatus() {
+      const [jobsResult, offsetsResult, basesResult, layersResult] = await Promise.allSettled([
+        safeJson('/api/jobs'),
+        safeJson('/api/clean-offsets'),
+        safeJson('/api/clean-bases'),
+        safeJson('/assets/metadata/blink_eye_layers_clean.json')
+      ]);
+
+      if (jobsResult.status === 'fulfilled') {
+        const {saved = 0, total = 0} = jobsResult.value;
+        setText('regions-summary', `${saved} / ${total}`);
+        setText('regions-card', `${saved} de ${total}`);
+      } else {
+        setText('regions-summary', 'No disponible');
+        setText('regions-card', 'Sin conexión');
+      }
+
+      const layers = layersResult.status === 'fulfilled'
+        ? (layersResult.value.poses || layersResult.value.layers || {})
+        : {};
+      const layerCount = Array.isArray(layers) ? layers.length : countEntries(layers);
+      setText('layers-summary', layerCount ? `${layerCount} poses` : 'Pendiente');
+      setText('layers-card', layerCount ? `${layerCount} poses` : 'Sin capas');
+
+      const offsetCount = offsetsResult.status === 'fulfilled' ? countEntries(offsetsResult.value.offsets) : 0;
+      setText('offsets-card', `${offsetCount} ${offsetCount === 1 ? 'ajuste guardado' : 'ajustes guardados'}`);
+
+      const baseCount = basesResult.status === 'fulfilled' ? countEntries(basesResult.value.poses) : 0;
+      setText('bases-summary', layerCount ? `${baseCount} / ${layerCount}` : `${baseCount}`);
+      setText('bases-card', layerCount ? `${baseCount} de ${layerCount}` : `${baseCount}`);
+    }
+    loadStatus();
+  </script>
+</body>
+</html>

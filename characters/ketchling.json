@@ -2,21 +2,31 @@
   "name": "Ketchling",
   "aliases": [
     "Ketchlings",
-    "Ketchling cocinero",
     "Ketchling de seguridad",
-    "Ketchling embotellador",
-    "Ketchling mecánico"
+    "Ketchling cocinero",
+    "Ketchling mecánico",
+    "Ketchling embotellador"
   ],
   "color": "#f08a45",
   "poses": {
-    "security": "assets/images/characters/ketchling/ketchling_security.png",
-    "cook": "assets/images/characters/ketchling/ketchling_cook.png",
-    "mechanic": "assets/images/characters/ketchling/ketchling_mechanic.png",
-    "bottler": "assets/images/characters/ketchling/ketchling_bottler.png",
-    "neutral": "assets/images/characters/ketchling/ketchling_security.png",
-    "happy": "assets/images/characters/ketchling/ketchling_cook.png",
-    "worried": "assets/images/characters/ketchling/ketchling_mechanic.png",
-    "determined": "assets/images/characters/ketchling/ketchling_bottler.png"
+    "security": "assets/images/characters/ketchling/ketchling_security.webp",
+    "cook": "assets/images/characters/ketchling/ketchling_cook.webp",
+    "mechanic": "assets/images/characters/ketchling/ketchling_mechanic.webp",
+    "bottler": "assets/images/characters/ketchling/ketchling_bottler.webp",
+    "neutral": "assets/images/characters/ketchling/ketchling_security.webp",
+    "happy": "assets/images/characters/ketchling/ketchling_cook.webp",
+    "worried": "assets/images/characters/ketchling/ketchling_mechanic.webp",
+    "determined": "assets/images/characters/ketchling/ketchling_bottler.webp"
   },
-  "defaultPose": "security"
+  "defaultPose": "security",
+  "animations": {
+    "security": { "frames": [{ "src": "assets/images/characters/ketchling/animations/blinks/ketchling_security_blink_closed.webp", "duration": 110 }], "loop": true },
+    "cook": { "frames": [{ "src": "assets/images/characters/ketchling/animations/blinks/ketchling_cook_blink_closed.webp", "duration": 110 }], "loop": true },
+    "mechanic": { "frames": [{ "src": "assets/images/characters/ketchling/animations/blinks/ketchling_mechanic_blink_closed.webp", "duration": 110 }], "loop": true },
+    "bottler": { "frames": [{ "src": "assets/images/characters/ketchling/animations/blinks/ketchling_bottler_blink_closed.webp", "duration": 110 }], "loop": true },
+    "neutral": { "frames": [{ "src": "assets/images/characters/ketchling/animations/blinks/ketchling_security_blink_closed.webp", "duration": 110 }], "loop": true },
+    "happy": { "frames": [{ "src": "assets/images/characters/ketchling/animations/blinks/ketchling_cook_blink_closed.webp", "duration": 110 }], "loop": true },
+    "worried": { "frames": [{ "src": "assets/images/characters/ketchling/animations/blinks/ketchling_mechanic_blink_closed.webp", "duration": 110 }], "loop": true },
+    "determined": { "frames": [{ "src": "assets/images/characters/ketchling/animations/blinks/ketchling_bottler_blink_closed.webp", "duration": 110 }], "loop": true }
+  }
 }

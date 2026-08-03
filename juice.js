@@ -22,6 +22,7 @@
     flashEl: null, vignetteEl: null,
     trauma: 0, shaking: false, maxPx: 0, decay: 3, last: 0,
     audio: null, lastBlip: 0,
+    gradeFilter: 'none', vignetteStrength: 0,
   };
 
   // Crea (una vez) los overlays dentro del escenario. Idempotente.
@@ -103,8 +104,19 @@
   function grade(filter, ms) {
     if (!ensure() || !state.bg) return;
     ms = (ms == null) ? 800 : ms;
+    state.gradeFilter = filter || 'none';
+    // El fondo usa dos capas durante los crossfades. Mantener el etalonaje en
+    // ambas evita que la imagen entrante aparezca durante unos fotogramas sin
+    // contraste/tinte y produzca un destello antes de asentarse en la capa A.
     state.bg.style.transition = 'opacity 0.8s ease, filter ' + ms + 'ms ease';
-    state.bg.style.filter = filter || 'none';
+    state.bg.style.filter = state.gradeFilter;
+    const secondaryBg = document.getElementById('background-b');
+    if (secondaryBg) {
+      // No tocar su transición de opacidad: durante un crossfade pertenece al
+      // motor y su duración puede ser distinta. El filtro entra instantáneo en
+      // B mientras A conserva la transición cromática.
+      secondaryBg.style.filter = state.gradeFilter;
+    }
   }
   function clearGrade(ms) { grade('none', ms); }
 
@@ -114,9 +126,10 @@
     if (!ensure()) return;
     strength = (strength == null) ? 0.6 : strength;
     ms = (ms == null) ? 600 : ms;
+    state.vignetteStrength = Math.max(0, Math.min(1, strength));
     const el = state.vignetteEl;
     el.style.transition = 'opacity ' + ms + 'ms ease';
-    el.style.opacity = String(Math.max(0, Math.min(1, strength)));
+    el.style.opacity = String(state.vignetteStrength);
   }
   function clearVignette(ms) { vignette(0, ms); }
 
@@ -237,11 +250,39 @@
     let inst = null;
     if (name === 'heartbeat') inst = startHeartbeat(opts);
     else if (name === 'rumble') inst = startRumble(opts);
-    if (inst) sfxState[name] = inst;
+    if (inst) {
+      inst._snapshotOptions = Object.assign({}, opts || {});
+      sfxState[name] = inst;
+    }
   }
 
   function stopAllSfx() {
     for (const k of Object.keys(sfxState)) { sfxState[k].stop(); delete sfxState[k]; }
+  }
+
+  // Estado sostenido de dirección de escena para Retroceder/Escenas. Flash y
+  // shake son golpes transitorios; sí se restauran mood y camas sintetizadas.
+  function snapshot() {
+    ensure();
+    return {
+      grade: state.gradeFilter,
+      vignette: state.vignetteStrength,
+      sfx: Object.keys(sfxState).map(function (name) {
+        return {
+          name: name,
+          options: Object.assign({}, sfxState[name]._snapshotOptions || {}),
+        };
+      }),
+    };
+  }
+
+  function restore(saved) {
+    if (!saved) return;
+    grade(saved.grade || 'none', 0);
+    vignette(saved.vignette == null ? 0 : saved.vignette, 0);
+    (saved.sfx || []).forEach(function (entry) {
+      if (entry && entry.name) sfx(entry.name, true, entry.options || {});
+    });
   }
 
   // Limpia todos los efectos (al reiniciar / cambiar de capítulo).
@@ -259,7 +300,8 @@
 
   window.Juice = {
     init: ensure, flash, shake, grade, clearGrade, vignette, clearVignette,
-    blip, punctuationPause, reset, sfx, stopAllSfx,
+    blip, punctuationPause, reset, sfx, stopAllSfx, snapshot, restore,
+    currentGrade: function () { return state.gradeFilter || 'none'; },
     isReduced: function () { return REDUCED; },
   };
 

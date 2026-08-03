@@ -2,8 +2,11 @@
   "name": "Sebas",
   "color": "#9aa0a6",
   "poses": {
-    "neutral": "assets/images/characters/sebas/sebas.png",
-    "silueta": "assets/images/characters/sebas/sebas_silueta.png"
+    "neutral": "assets/images/characters/sebas/sebas.webp",
+    "silueta": "assets/images/characters/sebas/sebas_silueta.webp"
   },
-  "defaultPose": "neutral"
+  "defaultPose": "neutral",
+  "animations": {
+    "neutral": { "frames": [{ "src": "assets/images/characters/sebas/animations/blinks/sebas_neutral_blink_closed.webp", "duration": 110 }], "loop": true }
+  }
 }

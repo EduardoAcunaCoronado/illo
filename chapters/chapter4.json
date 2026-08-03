@@ -8,11 +8,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/camino_a_ciudad_paloma.png"
-            },
-            {
-              "type": "rescue",
-              "character": "jose"
+              "value": "assets/images/backgrounds/chapter4/camino_a_ciudad_paloma.webp"
             },
             {
               "type": "playSound",
@@ -215,7 +211,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.webp"
             },
             {
               "type": "stopSound",
@@ -341,7 +337,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/entrada_epica_jose.png"
+              "value": "assets/images/backgrounds/chapter4/entrada_epica_jose.webp"
             }
           ],
           "character": "3C",
@@ -390,7 +386,11 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png"
+              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.webp"
+            },
+            {
+              "type": "rescue",
+              "character": "jose"
             },
             {
               "type": "showCharacter",
@@ -576,7 +576,7 @@
         },
         {
           "character": "José",
-          "text": "Porque eres el único dragón azul con una camiseta de Kingom Souls.",
+          "text": "Porque eres el único dragón azul con una camiseta de Kingdom Souls.",
           "actions": [
             {
               "type": "showCharacter",
@@ -641,7 +641,7 @@
         },
         {
           "character": "Samu",
-          "text": "¿¡DESDE CUANDO TENÍAS UN PERSONAJE DE ROL!?",
+          "text": "¿¡DESDE CUÁNDO TENÍAS UN PERSONAJE DE ROL!?",
           "textAnimation": true,
           "actions": [
             {
@@ -821,7 +821,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.png",
+              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.webp",
               "cut": true
             },
             {
@@ -1025,7 +1025,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/plaza_circular.png"
+              "value": "assets/images/backgrounds/shared/plaza_circular.webp"
             },
             {
               "type": "hideCharacter",
@@ -1077,7 +1077,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_samu.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_samu.webp"
             },
             {
               "type": "waitForClick"
@@ -1134,7 +1134,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_edu.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_edu.webp"
             },
             {
               "type": "waitForClick"
@@ -1204,7 +1204,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_tony.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_tony.webp"
             },
             {
               "type": "waitForClick"
@@ -1214,7 +1214,7 @@
         {
           "character": "Seraphyna",
           "speakingAs": "Tony",
-          "text": "Lo de cantante si pero... ¿Maga Blanca?",
+          "text": "Lo de cantante sí, pero... ¿Maga Blanca?",
           "textAnimation": true,
           "actions": [
             {
@@ -1312,7 +1312,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_jose.png"
+              "value": "assets/images/backgrounds/chapter4/despertar_jose.webp"
             },
             {
               "type": "waitForClick"
@@ -1392,7 +1392,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_circular_glitch.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_circular_glitch.webp"
             }
           ]
         },
@@ -1435,7 +1435,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/cielo_glitch_brainrot.png"
+              "value": "assets/images/backgrounds/chapter4/cielo_glitch_brainrot.webp"
             }
           ]
         },
@@ -1454,7 +1454,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque.webp"
             },
             {
               "type": "showCharacter",
@@ -1503,7 +1503,7 @@
         },
         {
           "character": "3C",
-          "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez desde que llegaron a aquel mundo, sus avatares responden como si siempre hubieran sabido luchar juntos.",
+          "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez, los cuatro coordinan sus avatares como si siempre hubieran sabido luchar juntos.",
           "actions": [
             {
               "type": "hideDialog"
@@ -1522,7 +1522,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.webp"
             }
           ]
         },
@@ -1593,7 +1593,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_circular_brainrot_ataque.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_circular_brainrot_ataque.webp"
             }
           ]
         },
@@ -1715,7 +1715,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_circular_agujero.png"
+              "value": "assets/images/backgrounds/chapter4/plaza_circular_agujero.webp"
             },
             {
               "type": "playSound",
@@ -1727,7 +1727,7 @@
         {
           "character": "Ballerina Capuchina",
           "speakingAs": "ballerina_capuchina",
-          "text": "Id, mis queridos desastres virales. Yo bailaré con ellos hasta que no quede nadie en pie.",
+          "text": "Id, mis queridos desastres virales. La orden externa exige que el camino quede abierto; yo bailaré con ellos hasta que sea demasiado tarde.",
           "actions": [
             {
               "type": "showCharacter",
@@ -1772,7 +1772,13 @@
               "type": "minigame",
               "game": "battle",
               "enemy": "ballerina_capuchina",
-              "enemyHp": 420
+              "enemyHp": 9999,
+              "surviveTurns": 4,
+              "retryOnDefeat": true,
+              "useInventory": false,
+              "victoryTitle": "Habéis roto el compás",
+              "victoryText": "Ballerina abandona la danza, pero su objetivo ya está cumplido.",
+              "defeatText": "El baile os atrapa antes de que podáis seguirla. Volved a romper su ritmo."
             }
           ]
         },
@@ -1795,7 +1801,7 @@
         },
         {
           "character": "3C",
-          "text": "Ballerina Capuchina suelta una carcajada aguda, gira sobre una pierna y se deshace en una espiral de vapor de café, píxeles negros y purpurina dorada.",
+          "text": "Ballerina Capuchina suelta una carcajada aguda. Durante un fotograma, hilos negros parecen tirar de sus muñecas desde algún lugar fuera del mundo; luego gira sobre una pierna y se deshace en vapor de café, píxeles y purpurina.",
           "actions": [
             {
               "type": "hideCharacter",
@@ -1829,6 +1835,44 @@
               "loop": true,
               "id": "bg_music",
               "fadeIn": 1000
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "No como si nada. Ese tirón tenía la misma firma que la corrupción de Ecchi Land. Alguien está moviendo a los brainrot desde fuera... y quizá supiera perfectamente dónde me dejó encerrada.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "José",
+          "text": "¿Crees que tu prisión fue deliberada?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "jose",
+              "position": "right",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Seraphyna",
+          "speakingAs": "Tony",
+          "text": "Creo que ya no podemos llamarlo casualidad. Pero todavía no sé quién sostiene los hilos.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "right",
+              "pose": "determined"
             }
           ]
         },
@@ -1904,7 +1948,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario.png"
+              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario.webp"
             },
             {
               "type": "stopSound",
@@ -2185,7 +2229,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.png"
+              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.webp"
             },
             {
               "type": "playSound",
@@ -2233,7 +2277,7 @@
         },
         {
           "character": "Samu",
-          "text": "Te rescaté cuando estabas a punto de convertirte otra vez en un sincorazón. Eso ya cuenta como aventura bastante seria.",
+          "text": "Te rescaté antes de que Zip terminara de convertirte en una sombra con complejo de jefe final. Eso ya cuenta como aventura bastante seria.",
           "actions": [
             {
               "type": "showCharacter",

@@ -9,51 +9,51 @@
     "branding": "Emblema grafico de corona y tomate; sin marcas reales ni texto generado."
   },
   "backgrounds": {
-    "furrielvaJamon4k": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.png",
-    "furrielvaDia4k": "assets/images/backgrounds/chapter2/furrielva/dia_4k_v2.png",
-    "furrielvaMercaguasa4k": "assets/images/backgrounds/chapter2/furrielva/mercadona_4k_v2.png",
-    "factoryExterior": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.png",
-    "productionFloor": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.png",
-    "productionFloorCorrupted": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png",
-    "throneRoomVideoFinal": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.png"
+    "furrielvaJamon4k": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.webp",
+    "furrielvaDia4k": "assets/images/backgrounds/chapter2/furrielva/dia_4k_v2.webp",
+    "furrielvaMercaguasa4k": "assets/images/backgrounds/chapter2/furrielva/mercadona_4k_v2.webp",
+    "factoryExterior": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_exterior_v2_4k.webp",
+    "productionFloor": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.webp",
+    "productionFloorCorrupted": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp",
+    "throneRoomVideoFinal": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono_video_final_4k.webp"
   },
   "cg": {
-    "eduZipPhoto": "assets/images/cg/chapter2/samu_edu_zip_photo_4k.png",
-    "goldenCapReveal": "assets/images/cg/chapter2/golden_cap_reveal_4k.png",
-    "portalActivation": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.png",
-    "ketchlingWelcome": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.png"
+    "eduZipPhoto": "assets/images/cg/chapter2/samu_edu_zip_photo_4k.webp",
+    "goldenCapReveal": "assets/images/cg/chapter2/golden_cap_reveal_4k.webp",
+    "portalActivation": "assets/images/cg/chapter2/golden_cap_portal_activation_4k.webp",
+    "ketchlingWelcome": "assets/images/cg/chapter2/ketchlings_factory_welcome_4k.webp"
   },
   "characters": {
-    "eduZipHappy": "assets/images/characters/edu/chapter2/edu_zip_happy.png",
-    "eduZipSurprised": "assets/images/characters/edu/chapter2/edu_zip_surprised.png",
-    "eduZipWorried": "assets/images/characters/edu/chapter2/edu_zip_worried.png",
-    "eduSpicy": "assets/images/characters/edu/edu_picante_wide_transparent.png",
-    "samuCharredClosed": "assets/images/characters/samu/samu_charred_closed.png",
-    "samuCharredWhiteEyes": "assets/images/characters/samu/samu_charred_whiteeyes.png",
-    "ketchlingSecurity": "assets/images/characters/ketchling/ketchling_security.png",
-    "ketchlingCook": "assets/images/characters/ketchling/ketchling_cook.png",
-    "ketchlingMechanic": "assets/images/characters/ketchling/ketchling_mechanic.png",
-    "ketchlingBottler": "assets/images/characters/ketchling/ketchling_bottler.png",
-    "zipBoss": "assets/images/characters/zip/ketchup/zip.png",
+    "eduZipHappy": "assets/images/characters/edu/chapter2/edu_zip_happy.webp",
+    "eduZipSurprised": "assets/images/characters/edu/chapter2/edu_zip_surprised.webp",
+    "eduZipWorried": "assets/images/characters/edu/chapter2/edu_zip_worried.webp",
+    "eduSpicy": "assets/images/characters/edu/edu_picante_wide_transparent.webp",
+    "samuCharredClosed": "assets/images/characters/samu/samu_charred_closed.webp",
+    "samuCharredWhiteEyes": "assets/images/characters/samu/samu_charred_whiteeyes.webp",
+    "ketchlingSecurity": "assets/images/characters/ketchling/ketchling_security.webp",
+    "ketchlingCook": "assets/images/characters/ketchling/ketchling_cook.webp",
+    "ketchlingMechanic": "assets/images/characters/ketchling/ketchling_mechanic.webp",
+    "ketchlingBottler": "assets/images/characters/ketchling/ketchling_bottler.webp",
+    "zipBoss": "assets/images/characters/zip/ketchup/zip.webp",
     "zipBattleFrames": [
-      "assets/images/characters/zip/ketchup/zip_1.png",
-      "assets/images/characters/zip/ketchup/zip_2.png",
-      "assets/images/characters/zip/ketchup/zip_3.png",
-      "assets/images/characters/zip/ketchup/zip_4.png",
-      "assets/images/characters/zip/ketchup/zip_5.png"
+      "assets/images/characters/zip/ketchup/zip_1.webp",
+      "assets/images/characters/zip/ketchup/zip_2.webp",
+      "assets/images/characters/zip/ketchup/zip_3.webp",
+      "assets/images/characters/zip/ketchup/zip_4.webp",
+      "assets/images/characters/zip/ketchup/zip_5.webp"
     ],
     "zipFloatingFrames": [
-      "assets/images/characters/zip/ketchup/zip_flotando_1.png",
-      "assets/images/characters/zip/ketchup/zip_flotando_2.png",
-      "assets/images/characters/zip/ketchup/zip_flotando_3.png"
+      "assets/images/characters/zip/ketchup/zip_flotando_1.webp",
+      "assets/images/characters/zip/ketchup/zip_flotando_2.webp",
+      "assets/images/characters/zip/ketchup/zip_flotando_3.webp"
     ]
   },
   "minigame": {
-    "goldBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png",
-    "corruptedBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png",
-    "goldenCap": "assets/images/minigames/chapter2/ketchup/golden_cap.png",
-    "chili": "assets/images/minigames/chapter2/ketchup/chili_v2.png",
-    "zipMusic": "assets/audio/sfx/zip's-shadow-waltz.mp3"
+    "goldBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp",
+    "corruptedBottle": "assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp",
+    "goldenCap": "assets/images/minigames/chapter2/ketchup/golden_cap.webp",
+    "chili": "assets/images/minigames/chapter2/ketchup/chili_v2.webp",
+    "zipMusic": "assets/audio/music/chapter2/zip's-shadow-waltz.mp3"
   },
   "notes": [
     "Los PNG de personajes y minijuego tienen transparencia.",
