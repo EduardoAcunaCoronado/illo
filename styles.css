@@ -1214,7 +1214,7 @@ body.startup-pending #menu-video {
 }
 
 .choices-container.p5-choices {
-    gap: 8px;
+    gap: 1rem;
 }
 
 .choice-btn {
@@ -4492,7 +4492,7 @@ html.electron-app #menu-theme-btn { display: none; }
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.6);
     color: #ffd166;
-    transform: translateX(6px);
+    transform: scale(1.05);
     box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
 }
 
@@ -4642,7 +4642,7 @@ html.electron-app #menu-theme-btn { display: none; }
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.6);
     color: #ffd166;
-    transform: translateX(6px);
+    transform: scale(1.05);
     box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
     font-weight: 600;
 }
@@ -6129,7 +6129,7 @@ body.hud-hidden #game-container .ss-pause-btn {
 }
 .rewind-btn:hover {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: scale(1.05);
     box-shadow: 0 0 16px rgba(176, 79, 255, 0.55);
 }
 .rewind-btn:active { transform: translateY(1px); }
@@ -6169,7 +6169,7 @@ body.hud-hidden #game-container .ss-pause-btn {
 }
 .scenes-btn:hover {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: scale(1.05);
     box-shadow: 0 0 16px rgba(79, 176, 255, 0.55);
 }
 .scenes-btn:active { transform: translateY(1px); }
@@ -6203,7 +6203,7 @@ body.hud-hidden #game-container .ss-pause-btn {
 }
 .options-btn:hover {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: scale(1.05);
     box-shadow: 0 0 16px rgba(255, 209, 102, 0.55);
 }
 .options-btn:active { transform: translateY(1px); }
