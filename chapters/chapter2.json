@@ -732,9 +732,16 @@
               "item": "tapon_dorado"
             },
             {
+              "type": "hideDialog"
+            },
+            {
               "type": "showCG",
               "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png",
               "duration": 650
+            },
+            {
+              "type": "wait",
+              "value": 3000
             }
           ]
         },

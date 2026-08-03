@@ -573,6 +573,19 @@ Pausa la ejecución.
 
 El valor está en milisegundos (1000 = 1 segundo).
 
+Combinado con `hideDialog` sirve para dejar una imagen sola en pantalla unos
+segundos antes de que entre el texto. Así aparece la caja de botellas de kétchup
+en la **Escena 4.5: El tapón dorado** del capítulo 2: se oculta el bocadillo, el
+CG entra con su fundido de 650 ms y se esperan 3 s antes de la narración.
+
+```json
+"actions": [
+  { "type": "hideDialog" },
+  { "type": "showCG", "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png", "duration": 650 },
+  { "type": "wait", "value": 3000 }
+]
+```
+
 ### setVariable
 
 Establece variables en el estado del juego.
