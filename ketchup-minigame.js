@@ -1,5 +1,7 @@
 (function () {
-  const ASSET_VERSION = '20260801-ketchup-7';
+  const ASSET_VERSION = '20260803-ketchup-8';
+  const REGULAR_KETCHUP_DAMAGE = 1;
+  const CORRUPT_KETCHUP_DAMAGE = 2;
   const cacheBust = (path) => `${path}?v=${ASSET_VERSION}`;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const lerp = (from, to, amount) => from + (to - from) * amount;
@@ -38,6 +40,7 @@
       const enemyAttackDelay = lerp(0.82, 1.42, powerRatio);
       const difficulty = powerRatio >= 0.72 ? 'SUAVE' : powerRatio >= 0.38 ? 'NORMAL' : 'INTENSA';
       const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
+      const corruptKetchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png');
       const chiliIcon = cacheBust('assets/images/minigames/chapter2/ketchup/chili_v2.png');
       const zipIcon = cacheBust('assets/images/characters/zip/ketchup/zip_1.png');
       const zipAngryIcon = cacheBust('assets/images/characters/others/zip_angry.png');
@@ -76,6 +79,7 @@
       const musicTrack = this.options.music;
       const assetsToPreload = [
         ketchupIcon,
+        corruptKetchupIcon,
         chiliIcon,
         zipIcon,
         zipAngryIcon,
@@ -121,7 +125,7 @@
           </div>
           <div class="ketchup-player-hud">
             <span class="ketchup-player-lives"></span>
-            <span class="ketchup-player-help">Mueve con ← ↑ ↓ → o WASD · Espacio dispara <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla"></span>
+            <span class="ketchup-player-help">Mueve con ← ↑ ↓ → o WASD · Espacio dispara <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla"> · El kétchup negro quita 2 vidas</span>
           </div>
         `;
         document.getElementById('game-container').appendChild(overlay);
@@ -289,8 +293,15 @@
           });
         };
 
-        const fireEnemyBullet = (x, y, vx, vy, size = 34) => {
-          const el = makeSprite('ketchup-enemy-shot', ketchupIcon, x, y, size);
+        const fireEnemyBullet = (x, y, vx, vy, size = 34, options = {}) => {
+          const corrupt = options.corrupt === true;
+          const el = makeSprite(
+            `ketchup-enemy-shot${corrupt ? ' is-corrupt' : ''}`,
+            corrupt ? corruptKetchupIcon : ketchupIcon,
+            x,
+            y,
+            size,
+          );
           enemyBullets.push({
             el,
             x,
@@ -298,6 +309,7 @@
             vx: vx * enemyBulletSpeed,
             vy: vy * enemyBulletSpeed,
             size,
+            damage: corrupt ? CORRUPT_KETCHUP_DAMAGE : REGULAR_KETCHUP_DAMAGE,
           });
         };
 
@@ -306,7 +318,14 @@
           const centerY = enemyY + 0.08;
           for (let i = 0; i < 24; i++) {
             const angle = (Math.PI * 2 * i) / 24;
-            fireEnemyBullet(centerX, centerY, Math.cos(angle) * 0.34, Math.sin(angle) * 0.34, 28);
+            fireEnemyBullet(
+              centerX,
+              centerY,
+              Math.cos(angle) * 0.34,
+              Math.sin(angle) * 0.34,
+              28,
+              { corrupt: true },
+            );
           }
           [
             { vx: 0, vy: 0.48 },
@@ -595,7 +614,7 @@
               Math.abs(bullet.x - playerX) < playerHitW * 0.5 &&
               Math.abs(bullet.y - playerY) < playerHitH * 0.5;
             if (hitPlayer) {
-              playerLives--;
+              playerLives = Math.max(0, playerLives - bullet.damage);
               playerInvuln = 0.85;
               player.classList.add('is-hit');
               setTimeout(() => player.classList.remove('is-hit'), 220);

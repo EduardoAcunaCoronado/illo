@@ -1222,7 +1222,7 @@ class VisualNovelEngine {
                     <div class="mg-player" id="mg-player"><img src="${playerIcon}" alt="Samu" draggable="false"></div>
                     <div class="mg-phase-banner is-showing">¡Reúne picante para debilitar a Zip!</div>
                 </div>
-                <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge guindillas; las botellas te hacen perder una.</div>
+                <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge guindillas; el kétchup normal resta 1 y el negro resta 2.</div>
             `;
             document.getElementById('game-container').appendChild(overlay);
 
@@ -1297,6 +1297,7 @@ class VisualNovelEngine {
                     y: -0.1,
                     speed: (0.28 + Math.random() * 0.22) * speedMult,
                     good,
+                    type,
                 });
             };
 
@@ -1353,7 +1354,8 @@ class VisualNovelEngine {
                             player.classList.add('chili-caught');
                             setTimeout(() => player.classList.remove('chili-caught'), 120);
                         } else {
-                            score = Math.max(0, score - 1);
+                            const penalty = item.type === 'corrupt' ? 2 : 1;
+                            score = Math.max(0, score - penalty);
                             field.classList.add('mg-hit');
                             setTimeout(() => field.classList.remove('mg-hit'), 200);
                         }
@@ -1626,7 +1628,8 @@ class VisualNovelEngine {
                             if (score >= phase2Goal) setPhase(3);
                             else if (score >= phase1Goal) setPhase(2);
                         } else {
-                            lives--;
+                            const damage = it.type === 'corrupt' ? 2 : 1;
+                            lives = Math.max(0, lives - damage);
                             livesEl.textContent = `❤️ ${Math.max(0, lives)}`;
                             field.classList.add('mg-hit');
                             setTimeout(() => field.classList.remove('mg-hit'), 200);

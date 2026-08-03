@@ -606,6 +606,11 @@ REGLAS PARA CAMBIOS FUTUROS
   avanzar el texto; `charred_shake` sacude el hollín una sola vez, añade motas
   CSS y termina visualmente en `samu_worried.png` mientras Samu protesta.
 - Edu queda rescatado después de derrotar a Zip, no al entrar en el capítulo.
+- En el bullet hell de Zip, el kétchup normal resta 1 vida y el kétchup negro
+  del anillo especial resta exactamente 2; la vida nunca baja de 0 y el HUD se
+  actualiza en el mismo impacto. El recolector legado conserva la misma regla.
+- En `chiliHarvest`, el primer minijuego, una botella normal resta 1 punto de
+  poder de guindilla y una botella negra corrupta resta 2, sin bajar de 0.
   Zip no crea Kingdom Ketchup: corrompe y comprime el deseo previo de Edu de ser
   necesario. Los Ketchlings confirman que pueden cuidar la fábrica sin retenerlo.
 - Antes de encontrar a Edu transformado, Samu solo ve su retrato humano en el

@@ -3460,13 +3460,17 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   de ser necesario; Zip comprime ese deseo, elimina sus límites y lo convierte
   en una jaula.
 - La batalla de Zip tiene dos partes enlazadas. En `chiliHarvest`, Samu dispone
-  de 22 segundos para recoger guindillas; las botellas limpias o corruptas le
-  restan una, pero la ronda nunca bloquea la historia. La puntuación se guarda
+  de 22 segundos para recoger guindillas; las botellas normales restan un punto
+  de poder picante y las botellas negras corruptas restan dos, siempre con un
+  mínimo de cero. La ronda nunca bloquea la historia y la puntuación se guarda
   como `gameState.chiliPower`.
 - `ketchupBoss` integra el bullet hell de José Manuel desde `master`: Samu se
   mueve en dos ejes, dispara guindillas y esquiva los patrones de ketchup de
   Zip. Más poder picante aumenta el daño y la cadencia de Samu, y reduce tanto
   la velocidad como la frecuencia de los ataques enemigos.
+- Los proyectiles normales de Zip restan una vida. El anillo de kétchup negro
+  del ataque especial usa la botella corrupta, resta exactamente dos vidas por
+  impacto y limita el resultado a cero antes de refrescar los corazones del HUD.
 - Escuchar la recomendación de Neit entrega `caja_guindillas`. Samu todavía no
   entiende por qué podría necesitarla, pero el objeto aporta 12 puntos extra de
   picante antes del bullet hell; el HUD identifica explícitamente la bonificación.

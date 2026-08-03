@@ -479,7 +479,7 @@ body.startup-pending #menu-video {
     top: 43%;
     left: 33%;
     width: 34%;
-    height: 40%;
+    height: 41%;
     border-radius: 2px;
 }
 
@@ -3047,6 +3047,10 @@ body.startup-pending #menu-video {
 .ketchup-enemy-shot {
     z-index: 7;
     filter: drop-shadow(0 0 8px rgba(255, 204, 0, .65));
+}
+
+.ketchup-enemy-shot.is-corrupt {
+    filter: drop-shadow(0 0 10px rgba(255, 54, 54, .82));
 }
 
 .mg-shot img,
