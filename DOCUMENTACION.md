@@ -293,6 +293,9 @@ Valores disponibles: `fear`/`miedo`, `anger`/`agresividad`,
 `nervous`/`nervios`, `whisper`/`susurro` y `scream`/`grito` para momentos
 excepcionales y estridentes. En `scream`, las primeras letras son pequeñas y
 cada carácter crece progresivamente hasta que el final casi llena el bocadillo.
+El efecto `surprise` genera una única ola continua repartiendo el desfase entre
+la primera y la última letra de la frase, sin reiniciar el ciclo cada 14
+caracteres ni formar bloques separados.
 Usa `"textAnimation": false` para
 desactivar expresamente el efecto aunque la pose tenga una emoción reconocida;
 `"textAnimation": true` o `"auto"` activa la detección por pose. El campo

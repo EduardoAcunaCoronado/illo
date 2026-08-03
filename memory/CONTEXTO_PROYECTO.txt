@@ -708,6 +708,9 @@ SISTEMA TIPOGRÁFICO EMOCIONAL 2026-08-01
   de Edu cuando la sombra lo atrapa en el capítulo 2.
 - El relleno y los brillos de cada emoción heredan el color legible del hablante;
   OMG, CLos, Incel y Simsong mantienen sus colores de marca.
+- `surprise` conserva la ola por letras, pero reparte su fase sobre la longitud
+  completa de la frase. No usar el módulo de 14 caracteres: producía varios
+  bloques de onda independientes.
 - El valor CSS `blue` de Edu se normaliza visualmente a `#4da3ff`; no pasarlo por
   la mezcla genérica con blanco, porque esa conversión produce lavanda.
 

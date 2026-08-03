@@ -6503,7 +6503,16 @@ class VisualNovelEngine {
                     } else {
                         const letter = document.createElement('span');
                         letter.className = 'dialog-letter';
-                        letter.style.setProperty('--letter-delay', `${-(letterIndex % 14) * 0.035}s`);
+                        const waveProgress = typingUnits.length > 1
+                            ? letterIndex / (typingUnits.length - 1)
+                            : 0;
+                        const letterDelay = dialogEmotion === 'surprise'
+                            // Una sola ola recorre la frase completa. El desfase
+                            // antiguo reiniciaba el ciclo cada 14 caracteres y
+                            // dividía visualmente el diálogo en bloques.
+                            ? -(waveProgress * 0.95)
+                            : -((letterIndex % 14) * 0.035);
+                        letter.style.setProperty('--letter-delay', `${letterDelay}s`);
                         if (dialogEmotion === 'scream') {
                             const progress = typingUnits.length > 1
                                 ? letterIndex / (typingUnits.length - 1)

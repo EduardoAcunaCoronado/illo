@@ -1054,7 +1054,7 @@ body.startup-pending #menu-video {
     text-shadow: 0 0 9px color-mix(in srgb, var(--dialog-emotion-color, #66daff) 65%, transparent);
 }
 .dialog-emotion-surprise .dialog-letter {
-    animation: dialog-letter-surprise 0.9s cubic-bezier(.2, 1.2, .4, 1) infinite;
+    animation: dialog-letter-surprise 1.15s cubic-bezier(.2, 1.2, .4, 1) infinite;
     animation-delay: var(--letter-delay);
 }
 
@@ -1114,8 +1114,8 @@ body.startup-pending #menu-video {
     45% { transform: translateY(-2px) scale(1.025); }
 }
 @keyframes dialog-letter-surprise {
-    0%, 100% { transform: scale(1); }
-    35% { transform: scale(1.1) translateY(-1px); }
+    0%, 100% { transform: translateY(0) scale(1); }
+    35% { transform: translateY(-2px) scale(1.055); }
 }
 @keyframes dialog-letter-nervous {
     from { transform: translateX(-0.45px) rotate(-0.3deg); opacity: 0.82; }
