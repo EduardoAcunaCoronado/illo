@@ -4909,12 +4909,12 @@ html.electron-app #menu-theme-btn { display: none; }
     transform: translateX(-50%);
     transition: color 0.18s ease, text-shadow 0.18s ease;
 }
-.nm-text-speed-scale span:nth-child(1) { left: 0; transform: none; text-align: left; }
+.nm-text-speed-scale span:nth-child(1) { left: 0; }
 .nm-text-speed-scale span:nth-child(2) { left: 20%; }
 .nm-text-speed-scale span:nth-child(3) { left: 40%; }
 .nm-text-speed-scale span:nth-child(4) { left: 60%; }
 .nm-text-speed-scale span:nth-child(5) { left: 80%; }
-.nm-text-speed-scale span:nth-child(6) { left: 100%; transform: translateX(-100%); text-align: right; }
+.nm-text-speed-scale span:nth-child(6) { left: 100%; }
 .nm-text-speed-scale span::before {
     content: '';
     position: absolute;
@@ -4926,8 +4926,6 @@ html.electron-app #menu-theme-btn { display: none; }
     background: rgba(255, 255, 255, 0.28);
     transform: translateX(-50%);
 }
-.nm-text-speed-scale span:first-child::before { left: 0; transform: none; }
-.nm-text-speed-scale span:last-child::before { left: 100%; transform: translateX(-100%); }
 .nm-text-speed-scale span.is-active {
     color: #ffd166;
     text-shadow: 0 0 8px rgba(255, 209, 102, 0.4);
