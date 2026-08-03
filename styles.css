@@ -477,9 +477,9 @@ body.startup-pending #menu-video {
        background-size: contain dentro de la caja de personaje (42% x 88% de
        1280x720, imagen anclada abajo y centrada). */
     top: 43%;
-    left: 30%;
-    width: 40%;
-    height: 43%;
+    left: 33%;
+    width: 34%;
+    height: 40%;
     border-radius: 2px;
 }
 
