@@ -46,6 +46,7 @@ const SETTINGS_KEYS = new Set([
     'illo_vol_sfx',
     'illo_kosai',
     'illo_text_blip',
+    'illo_text_speed',
     'illo_window_mode',
 ]);
 

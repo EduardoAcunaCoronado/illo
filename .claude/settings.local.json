@@ -74,7 +74,8 @@
       "PowerShell($f=\"C:\\\\Users\\\\tony_\\\\.claude.json\"; if \\(Test-Path $f\\) { $i=Get-Item $f; \"EXISTE  size=$\\($i.Length\\)  mod=$\\($i.LastWriteTime\\)\"; $j=Get-Content $f -Raw | ConvertFrom-Json; \"--- top-level keys ---\"; $j.PSObject.Properties.Name; \"--- projects ---\"; $j.projects.PSObject.Properties.Name } else { \"NO EXISTE .claude.json\" })",
       "PowerShell($c = Get-Command claude -ErrorAction SilentlyContinue; if \\($c\\) { \"claude en PATH: $\\($c.Source\\)\" } else { \"claude NO esta en PATH\" })",
       "PowerShell(Get-ChildItem \"$env:APPDATA\\\\Claude\\\\local-agent-mode-sessions\" -Recurse -Force | Select-Object @{n='Tipo';e={if\\($_.PSIsContainer\\){'DIR'}else{'FILE'}}}, @{n='Rel';e={$_.FullName.Replace\\(\"$env:APPDATA\\\\Claude\\\\local-agent-mode-sessions\\\\\",''\\)}} | Format-Table -AutoSize -Wrap)",
-      "PowerShell(& \"C:\\\\Users\\\\tony_\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-tony--Downloads-illo\\\\c28450ef-2502-46f1-9245-76e7c0189309\\\\scratchpad\\\\rebuild-index.ps1\")"
+      "PowerShell(& \"C:\\\\Users\\\\tony_\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-tony--Downloads-illo\\\\c28450ef-2502-46f1-9245-76e7c0189309\\\\scratchpad\\\\rebuild-index.ps1\")",
+      "PowerShell(Select-String -Path \"C:\\\\Proyectos\\\\illo\\\\styles.css\" -Pattern \"chapter-selector-list::-webkit-scrollbar\" -Context 0,15 | ForEach-Object { $_.Line; $_.Context.PostContext } | Select-Object -First 20)"
     ]
   }
 }

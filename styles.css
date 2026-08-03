@@ -58,7 +58,7 @@ input, textarea {
    ARRANQUE: disclaimer interactivo -> opening de Samu -> menú
    ============================================================ */
 body.startup-pending #main-menu,
-body.startup-pending #menu-video {
+body.startup-pending #menu-video-stack {
     visibility: hidden;
 }
 
@@ -481,9 +481,9 @@ body.startup-pending #menu-video {
        background-size: contain dentro de la caja de personaje (42% x 88% de
        1280x720, imagen anclada abajo y centrada). */
     top: 43%;
-    left: 30%;
-    width: 40%;
-    height: 43%;
+    left: 33%;
+    width: 34%;
+    height: 41%;
     border-radius: 2px;
 }
 
@@ -1012,11 +1012,13 @@ body.startup-pending #menu-video {
     50% { translate: 0 -3px; filter: drop-shadow(0 0 8px var(--speaker-color)); }
 }
 
+/* Marca invisible donde el texto se está escribiendo (el cursor la sigue).
+   Va en `inline`, NO en `inline-block`: una caja inline-block sería un punto
+   donde el navegador puede cortar la línea, y al quedar entre lo ya escrito y
+   el hueco reservado partiría en dos la palabra en curso. */
 .dialog-print-anchor {
-    display: inline-block;
+    display: inline;
     width: 0;
-    height: 1em;
-    vertical-align: text-bottom;
     pointer-events: none;
 }
 
@@ -1026,6 +1028,27 @@ body.startup-pending #menu-video {
     display: inline-block;
     white-space: pre;
     transform-origin: 50% 75%;
+}
+
+/* Las letras animadas son cajas inline-block y el navegador puede partir la
+   línea entre dos de ellas: agrupar cada palabra evita que una palabra quede
+   cortada por la mitad al saltar de línea. */
+.dialog-word {
+    white-space: nowrap;
+}
+
+/* El texto que aún no se ha escrito ocupa su sitio pero no se ve: así los
+   saltos de línea se calculan con la frase completa y ninguna palabra empieza
+   en una línea para saltar a la siguiente a mitad de escritura. */
+.dialog-ghost,
+.dialog-letter.is-pending {
+    visibility: hidden;
+}
+
+/* Más específico que las reglas de emoción de abajo: lo invisible no anima. */
+.dialog-text .dialog-ghost .dialog-letter,
+.dialog-text .dialog-letter.is-pending {
+    animation: none;
 }
 
 .dialog-text[class*="dialog-emotion-"] {
@@ -1075,7 +1098,7 @@ body.startup-pending #menu-video {
     text-shadow: 0 0 9px color-mix(in srgb, var(--dialog-emotion-color, #66daff) 65%, transparent);
 }
 .dialog-emotion-surprise .dialog-letter {
-    animation: dialog-letter-surprise 0.9s cubic-bezier(.2, 1.2, .4, 1) infinite;
+    animation: dialog-letter-surprise 1.15s cubic-bezier(.2, 1.2, .4, 1) infinite;
     animation-delay: var(--letter-delay);
 }
 
@@ -1135,8 +1158,8 @@ body.startup-pending #menu-video {
     45% { transform: translateY(-2px) scale(1.025); }
 }
 @keyframes dialog-letter-surprise {
-    0%, 100% { transform: scale(1); }
-    35% { transform: scale(1.1) translateY(-1px); }
+    0%, 100% { transform: translateY(0) scale(1); }
+    35% { transform: translateY(-2px) scale(1.055); }
 }
 @keyframes dialog-letter-nervous {
     from { transform: translateX(-0.45px) rotate(-0.3deg); opacity: 0.82; }
@@ -1342,15 +1365,45 @@ body.startup-pending #menu-video {
     background: linear-gradient(90deg, transparent, #ff1744, transparent);
 }
 
-/* Vídeo de fondo del menú principal (loop, escala con el escenario) */
+/* Los dos reproductores ocupan exactamente el mismo plano. El entrante se
+   funde sobre el último tramo del activo; este permanece opaco debajo para que
+   durante la mezcla nunca llegue a verse el fondo estático. */
+.menu-video-stack {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    --menu-video-crossfade: 1200ms;
+}
+
+.menu-video-stack.hidden { display: none; }
+
 .menu-video {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0;
+    z-index: 0;
+    pointer-events: none;
+    will-change: opacity;
 }
-.menu-video.hidden { display: none; }
+
+.menu-video.is-active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.menu-video.is-crossfade-in {
+    opacity: 0;
+    z-index: 2;
+    transition: opacity var(--menu-video-crossfade) ease-in-out;
+}
+
+.menu-video.is-crossfade-in.is-visible { opacity: 1; }
 
 /* Botón ♪ del menú: vuelve a reproducir el tema (que solo suena una vez) */
 .menu-theme-btn {
@@ -2462,6 +2515,23 @@ body.startup-pending #menu-video {
 /* ============================================
    CUTSCENE / VÍDEO (opening de Tony, etc.)
    ============================================ */
+/* Se activa antes de insertar el vídeo: ningún elemento interactivo del HUD
+   puede asomar sobre el primer fotograma de la cinemática. */
+body.cutscene-active #options-btn,
+body.cutscene-active #rewind-btn,
+body.cutscene-active #scenes-btn,
+body.cutscene-active #scenes-menu,
+body.cutscene-active #pause-menu,
+body.cutscene-active #dialog-box,
+body.cutscene-active #choices-container,
+body.cutscene-active #game-container [class*="hud"],
+body.cutscene-active #game-container .minigame-instructions,
+body.cutscene-active #game-container .ss-pause-btn {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
 .cutscene-overlay {
     position: absolute;
     inset: 0;
@@ -3044,6 +3114,10 @@ body.startup-pending #menu-video {
 .ketchup-enemy-shot {
     z-index: 7;
     filter: drop-shadow(0 0 8px rgba(255, 204, 0, .65));
+}
+
+.ketchup-enemy-shot.is-corrupt {
+    filter: drop-shadow(0 0 10px rgba(255, 54, 54, .82));
 }
 
 .mg-shot img,
@@ -4448,30 +4522,30 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 
 .chapter-selector-list::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(79, 176, 255, 0.05);
     border-radius: 999px;
 }
 
 .chapter-selector-list::-webkit-scrollbar-thumb {
-    /* El borde transparente + background-clip adelgaza el pulgar dentro del
-       carril sin tener que estrecharlo (y deja aire a los lados). */
-    background: linear-gradient(180deg, rgba(255, 209, 102, 0.85), rgba(255, 145, 120, 0.75));
+    /* Gradiente vertical cyan (arriba) a magenta (abajo), en tono apagado */
+    background: linear-gradient(180deg, #3a94b8, #b83a75);
     background-clip: padding-box;
     border: 2px solid transparent;
     border-radius: 999px;
-    box-shadow: 0 0 12px rgba(255, 209, 102, 0.3);
+    box-shadow: 0 0 6px rgba(79, 208, 255, 0.22);
 }
 
 .chapter-selector-list::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, #ffd166, rgba(255, 160, 130, 0.9));
+    background: linear-gradient(180deg, #47a9cf, #cf4788);
     background-clip: padding-box;
+    box-shadow: 0 0 9px rgba(79, 208, 255, 0.3);
 }
 
 /* Firefox no entiende ::-webkit-scrollbar: se le da la versión estándar. */
 @supports not selector(::-webkit-scrollbar) {
     .chapter-selector-list {
         scrollbar-width: thin;
-        scrollbar-color: rgba(255, 209, 102, 0.8) rgba(255, 255, 255, 0.06);
+        scrollbar-color: #b83a75 rgba(79, 208, 255, 0.05);
     }
 }
 
@@ -5616,8 +5690,13 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 /* Panel de Configuración: filas de volumen (misma estética nm) */
 .nm-settings { display: flex; flex-direction: column; gap: 18px; margin-bottom: 26px; min-width: 340px; }
+/* Rejilla de tres columnas igual en todas las filas: rótulo a la izquierda,
+   control estirado en medio y valor (o casilla) a la derecha. El ancho del
+   rótulo es fijo para que "Blips de texto" quepa en una línea y todas las
+   filas arranquen en el mismo punto (cada fila es su propia rejilla). */
 .nm-setting-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 120px 1fr 52px;
     align-items: center;
     gap: 14px;
     font-family: 'Outfit', sans-serif;
@@ -5625,10 +5704,14 @@ html.electron-app #menu-theme-btn { display: none; }
     font-size: 15px;
     letter-spacing: 1px;
     color: #fff;
-    white-space: nowrap;
+    text-align: left;
 }
-.nm-setting-row input[type="range"] { flex: 1; accent-color: #ffd166; cursor: pointer; }
-.nm-setting-val { color: #ffd166; min-width: 44px; text-align: right; }
+.nm-setting-row input[type="range"] { width: 100%; accent-color: #ffd166; cursor: pointer; }
+.nm-setting-val { color: #ffd166; text-align: right; }
+/* La fila de casilla solo tiene dos elementos, así que la casilla se quedaría
+   al final de la columna del control. Se extiende hasta la tercera para que
+   cierre en el mismo borde derecho que los porcentajes. */
+.nm-setting-toggle .nm-setting-row input[type="checkbox"] { grid-column: 2 / span 2; }
 
 /* Ajuste de varias opciones (modo de ventana): rótulo arriba y los botones
    debajo, a lo ancho, porque "Pantalla completa" no cabe en una fila. */
@@ -5675,7 +5758,7 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 .nm-seg:focus-visible { outline: 2px solid #ffd166; outline-offset: 2px; }
 
-/* ---- Pestañas de Configuración (Vídeo / Sonido / Trucos) ---- */
+/* ---- Pestañas de Configuración (Juego / Vídeo / Sonido / Trucos) ---- */
 .nm-tabs {
     display: flex;
     gap: 8px;
@@ -5685,6 +5768,10 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 .nm-tab {
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     padding: 9px 14px;
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
@@ -5698,17 +5785,126 @@ html.electron-app #menu-theme-btn { display: none; }
     cursor: pointer;
     transition: all 0.2s ease;
 }
+.nm-tab-icon {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    object-fit: contain;
+    opacity: 0.68;
+    filter: saturate(0.72) brightness(0.88);
+    transform: scale(0.92);
+    transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+}
 .nm-tab:hover { color: rgba(255, 209, 102, 0.85); background: rgba(255, 209, 102, 0.07); }
+.nm-tab:hover .nm-tab-icon {
+    opacity: 0.9;
+    filter: saturate(1) brightness(1.05) drop-shadow(0 0 5px rgba(57, 216, 255, 0.5));
+    transform: scale(1);
+}
 .nm-tab.is-active {
     color: #ffd166;
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.5);
 }
-/* Alto mínimo para que el panel no dé un salto al cambiar de pestaña: la más
-   alta es Trucos (fila + explicación). */
-.nm-tab-panes { min-height: 96px; }
+.nm-tab.is-active .nm-tab-icon {
+    opacity: 1;
+    filter: saturate(1.08) brightness(1.08) drop-shadow(0 0 6px rgba(202, 74, 255, 0.65));
+    transform: scale(1.04);
+}
+/* Alto mínimo para que el panel no dé un salto al cambiar de pestaña. Juego
+   incluye la demostración del typewriter debajo del slider. */
+.nm-tab-panes { min-height: 172px; }
 .nm-tab-pane { display: none; flex-direction: column; gap: 18px; }
 .nm-tab-pane.is-active { display: flex; }
+
+/* Velocidad de texto: seis paradas discretas, leyenda completa y una muestra
+   que se vuelve a escribir en vivo cada vez que cambia el valor. */
+.nm-text-speed-row {
+    grid-template-columns: 1fr auto;
+    gap: 8px 14px;
+}
+.nm-text-speed-row > span:first-child { grid-column: 1; grid-row: 1; }
+.nm-text-speed-row input[type="range"] { grid-column: 1 / -1; grid-row: 2; }
+.nm-text-speed-value {
+    grid-column: 2;
+    grid-row: 1;
+    white-space: nowrap;
+    font-size: 13px;
+}
+.nm-text-speed-scale {
+    position: relative;
+    height: 28px;
+    /* El pulgar nativo no llega al borde exterior del input: su centro se
+       detiene a medio pulgar de cada extremo. La leyenda usa el mismo recorrido
+       útil para que cada círculo coincida con las seis posiciones reales. */
+    margin: -3px 7px 0;
+}
+.nm-text-speed-scale span {
+    position: absolute;
+    top: 0;
+    width: max-content;
+    padding-top: 9px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    line-height: 1.1;
+    color: rgba(255, 255, 255, 0.38);
+    text-align: center;
+    transform: translateX(-50%);
+    transition: color 0.18s ease, text-shadow 0.18s ease;
+}
+.nm-text-speed-scale span:nth-child(1) { left: 0; }
+.nm-text-speed-scale span:nth-child(2) { left: 20%; }
+.nm-text-speed-scale span:nth-child(3) { left: 40%; }
+.nm-text-speed-scale span:nth-child(4) { left: 60%; }
+.nm-text-speed-scale span:nth-child(5) { left: 80%; }
+.nm-text-speed-scale span:nth-child(6) { left: 100%; }
+.nm-text-speed-scale span::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.28);
+    transform: translateX(-50%);
+}
+.nm-text-speed-scale span.is-active {
+    color: #ffd166;
+    text-shadow: 0 0 8px rgba(255, 209, 102, 0.4);
+}
+.nm-text-speed-scale span.is-active::before {
+    background: #ffd166;
+    box-shadow: 0 0 8px rgba(255, 209, 102, 0.8);
+}
+.nm-text-speed-preview {
+    min-height: 56px;
+    padding: 10px 13px;
+    overflow: hidden;
+    background: linear-gradient(160deg, rgba(13, 11, 35, 0.82), rgba(28, 19, 57, 0.66));
+    border: 1px solid rgba(79, 208, 255, 0.22);
+    border-radius: 10px;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    text-align: left;
+}
+.nm-text-speed-preview-label {
+    display: block;
+    margin-bottom: 5px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: rgba(79, 208, 255, 0.7);
+}
+.opt-text-speed-preview {
+    min-height: 19px;
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.9);
+}
 
 /* ===== Menú de pausa (Esc / botón de opciones) =====
    Lleva scrim a pantalla completa, no solo la caja: durante la partida
@@ -7158,6 +7354,38 @@ body.hud-hidden #game-container .ss-pause-btn {
     margin: 0;
     padding: 8px;
     overflow-y: auto;
+}
+
+/* Barra de scroll: Selector de Escenas */
+.scenes-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.scenes-list::-webkit-scrollbar-track {
+    background: rgba(79, 176, 255, 0.05);
+    border-radius: 999px;
+}
+
+.scenes-list::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #3a94b8, #b83a75);
+    background-clip: padding-box;
+    border: 2px solid transparent;
+    border-radius: 999px;
+    box-shadow: 0 0 6px rgba(79, 208, 255, 0.22);
+}
+
+.scenes-list::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #47a9cf, #cf4788);
+    background-clip: padding-box;
+    box-shadow: 0 0 9px rgba(79, 208, 255, 0.3);
+}
+
+/* Firefox: versión estándar para scrollbar */
+@supports not selector(::-webkit-scrollbar) {
+    .scenes-list {
+        scrollbar-width: thin;
+        scrollbar-color: #b83a75 rgba(79, 208, 255, 0.05);
+    }
 }
 .scenes-item {
     display: flex;

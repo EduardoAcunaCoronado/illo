@@ -487,6 +487,36 @@ scenesMenu?.addEventListener("click", (e) => {
 // el combate; aquí solo se pinta la casilla.
 const KOSAI_SETTING_KEY = window.BattleMinigame?.KOSAI_SETTING_KEY || "illo_kosai";
 const BLIP_SETTING_KEY = "illo_text_blip";
+const TEXT_SPEED_SETTING_KEY = "illo_text_speed";
+const TEXT_SPEED_OPTIONS = [
+  { label: "Muy lento", delay: 100 },
+  { label: "Lento", delay: 70 },
+  { label: "Normal", delay: 50 },
+  { label: "Rápido", delay: 30 },
+  { label: "Muy rápido", delay: 15 },
+  { label: "Instantáneo", delay: 0 },
+];
+
+function storedTextSpeed() {
+  const stored = Number.parseInt(localStorage.getItem(TEXT_SPEED_SETTING_KEY), 10);
+  return Number.isInteger(stored) && stored >= 0 && stored < TEXT_SPEED_OPTIONS.length
+    ? stored
+    : 2;
+}
+
+function applyTextSpeed(index) {
+  const parsed = Number.parseInt(index, 10);
+  const normalized = Number.isInteger(parsed)
+    && parsed >= 0
+    && parsed < TEXT_SPEED_OPTIONS.length
+    ? parsed
+    : 2;
+  engine.textSpeedPreset = normalized;
+  engine.typingSpeed = TEXT_SPEED_OPTIONS[normalized].delay;
+  return normalized;
+}
+
+applyTextSpeed(storedTextSpeed());
 
 // En la app de escritorio el localStorage se pierde en cada arranque (el
 // servidor interno cambia de puerto, y con él de origen), así que el ajuste se
@@ -510,9 +540,9 @@ function windowModeActual() {
 // en el menú de pausa (Esc durante la partida). Se generan y se conectan aquí
 // una sola vez para que no se dupliquen ni se desincronicen.
 //
-// Van repartidos en pestañas (Vídeo, Sonido, Trucos). La de Vídeo se cae entera
-// en el navegador, así que la primera pestaña no es siempre la misma: la activa
-// se decide aquí, no en el HTML.
+// Van repartidos en pestañas (Juego, Vídeo, Sonido, Trucos). Juego siempre va
+// primero; Vídeo se cae entera en el navegador porque allí no hay modo de
+// ventana que configurar.
 function settingsMarkup() {
   const volOf = (k, def) => {
     const v = parseFloat(localStorage.getItem(k));
@@ -520,13 +550,36 @@ function settingsMarkup() {
   };
   const kosaiOn = localStorage.getItem(KOSAI_SETTING_KEY) === "1";
   const blipsOn = localStorage.getItem(BLIP_SETTING_KEY) !== "0";
+  const textSpeed = storedTextSpeed();
   const modo = windowModeActual();
 
-  const grupos = [];
+  const grupos = [{
+    id: "juego",
+    titulo: "Juego",
+    icono: "assets/images/ui/settings/game-neon.png",
+    contenido: `
+            <div class="nm-setting-block nm-text-speed-setting">
+                <label class="nm-setting-row nm-text-speed-row">
+                    <span>Velocidad de texto</span>
+                    <input type="range" class="opt-text-speed" min="0" max="5" step="1"
+                           value="${textSpeed}" aria-label="Velocidad de texto">
+                    <output class="nm-setting-val nm-text-speed-value"></output>
+                </label>
+                <div class="nm-text-speed-scale" aria-hidden="true">
+                    ${TEXT_SPEED_OPTIONS.map((option, index) =>
+                      `<span data-speed-step="${index}">${option.label}</span>`).join("")}
+                </div>
+                <div class="nm-text-speed-preview">
+                    <span class="nm-text-speed-preview-label">Vista previa</span>
+                    <p class="opt-text-speed-preview"></p>
+                </div>
+            </div>`,
+  }];
   if (hayOpcionesDeVideo) {
     grupos.push({
       id: "video",
-      titulo: "🖥️ Vídeo",
+      titulo: "Vídeo",
+      icono: "assets/images/ui/settings/video-neon.png",
       // Dos botones en vez de un <select>: la lista que despliega un select la
       // dibuja el sistema, sale clara sobre el panel oscuro y no hay CSS que la
       // alcance. Así además va a juego con las pestañas.
@@ -545,7 +598,8 @@ function settingsMarkup() {
   }
   grupos.push({
     id: "sonido",
-    titulo: "🔊 Sonido",
+    titulo: "Sonido",
+    icono: "assets/images/ui/settings/sound-neon.png",
     contenido: `
             <label class="nm-setting-row">Música
                 <input type="range" class="opt-vol-music" min="0" max="100" value="${volOf("illo_vol_music", 100)}">
@@ -564,7 +618,8 @@ function settingsMarkup() {
   });
   grupos.push({
     id: "trucos",
-    titulo: "⚔️ Trucos",
+    titulo: "Trucos",
+    icono: "assets/images/ui/settings/cheats-neon.png",
     contenido: `
             <div class="nm-setting-toggle">
                 <label class="nm-setting-row">Ataque Kosai
@@ -578,7 +633,10 @@ function settingsMarkup() {
     .map(
       (g, i) => `
             <button type="button" class="nm-tab${i === 0 ? " is-active" : ""}" role="tab"
-                    aria-selected="${i === 0}" aria-controls="nm-pane-${g.id}" data-tab="${g.id}">${g.titulo}</button>`,
+                    aria-selected="${i === 0}" aria-controls="nm-pane-${g.id}" data-tab="${g.id}">
+                <img class="nm-tab-icon" src="${g.icono}" alt="" aria-hidden="true">
+                <span>${g.titulo}</span>
+            </button>`,
     )
     .join("");
 
@@ -625,6 +683,61 @@ function wireSettings(panel) {
   };
   wire(".opt-vol-music", "illo_vol_music");
   wire(".opt-vol-sfx", "illo_vol_sfx");
+
+  const textSpeedSlider = panel.querySelector(".opt-text-speed");
+  const textSpeedValue = panel.querySelector(".nm-text-speed-value");
+  const textSpeedPreview = panel.querySelector(".opt-text-speed-preview");
+  const textSpeedSteps = [...panel.querySelectorAll("[data-speed-step]")];
+  const previewText = "Así aparecerá el texto durante la partida.";
+  let previewTimer = null;
+  let previewRun = 0;
+
+  const paintTextSpeed = () => {
+    const index = applyTextSpeed(textSpeedSlider.value);
+    const option = TEXT_SPEED_OPTIONS[index];
+    textSpeedValue.textContent = option.label;
+    textSpeedSlider.setAttribute("aria-valuetext", option.label);
+    textSpeedSteps.forEach((step) => {
+      step.classList.toggle("is-active", Number(step.dataset.speedStep) === index);
+    });
+    return option;
+  };
+
+  const playTextPreview = () => {
+    paintTextSpeed();
+    const timing = engine.calculateTextTiming({ text: previewText });
+    const run = ++previewRun;
+    if (previewTimer !== null) clearTimeout(previewTimer);
+    textSpeedPreview.textContent = "";
+
+    if (timing.isInstant) {
+      textSpeedPreview.textContent = previewText;
+      return;
+    }
+
+    const chars = timing.graphemes;
+    let index = 0;
+    const typeNext = () => {
+      if (run !== previewRun || !textSpeedPreview.isConnected) return;
+      const unitIndex = index++;
+      const character = chars[unitIndex];
+      textSpeedPreview.textContent += character;
+      if (index >= chars.length) return;
+      previewTimer = setTimeout(
+        typeNext,
+        timing.delaysAfter[unitIndex] || 0,
+      );
+    };
+    typeNext();
+  };
+
+  textSpeedSlider.addEventListener("input", () => {
+    playTextPreview();
+    saveSetting(TEXT_SPEED_SETTING_KEY, String(engine.textSpeedPreset));
+  });
+  // En el menú de pausa, wireSettings() se ejecuta justo antes de activar el
+  // reloj pausado. La microtarea hace que la demo use los timers vivos del panel.
+  queueMicrotask(playTextPreview);
 
   // Se puede tocar en mitad de un combate (menú de pausa): el golpe aparece o
   // desaparece de la lista de habilidades al momento, sin esperar al siguiente.
@@ -1641,6 +1754,16 @@ function menuPausaAbierto() {
   return !!document.getElementById("pause-menu");
 }
 
+// La pausa congela la partida, pero el menú de Opciones no debe cortar su
+// banda sonora. Se identifica por la carpeta de música para no dejar vivos
+// también efectos en bucle (motores, ambiente, etc.).
+function esPistaMusical(media) {
+  if (!media) return false;
+  const source = String(media._srcPath || media.currentSrc || media.src || "")
+    .replaceAll("\\", "/");
+  return /(?:^|\/)(?:audio|sounds)\/music\//i.test(source);
+}
+
 function setGamePaused(paused) {
   const shouldPause = !!paused;
   if (shouldPause === gamePauseClock.isPaused()) return;
@@ -1655,7 +1778,7 @@ function setGamePaused(paused) {
       ...Object.values(engine.audioInstances || {}),
     ]);
     candidates.forEach((media) => {
-      if (!media || media.paused || media.ended) return;
+      if (!media || media.paused || media.ended || esPistaMusical(media)) return;
       mediaPausedByGame.push(media);
       try { media.pause(); } catch (_) {}
     });
@@ -1733,6 +1856,10 @@ function abrirMenuPausa() {
 // botones de retroceder y de escenas. playGame() atiende la petición y sale.
 function salirAlMenuPrincipal() {
   if (!isGameRunning) return;
+  // Si se sale desde la pausa con el HUD oculto, hay que despertar primero el
+  // typewriter: el clic sintético que libera playGame también está bloqueado
+  // mientras `hud-hidden` siga activo.
+  mostrarHUD();
   exitToMenuRequested = true;
   desbloquearBucle(() => exitToMenuRequested);
 }
@@ -1748,11 +1875,44 @@ function bloquearInputDurantePausa(e) {
 }
 
 function alternarHUD() {
-  document.body.classList.toggle("hud-hidden");
+  const oculto = document.body.classList.toggle("hud-hidden");
+  // El motor conserva el grafema y la pausa de puntuación pendientes. También
+  // suelta el avance automático para que no termine la línea a escondidas.
+  engine.setTextPaused(oculto);
+}
+
+function hudOculto() {
+  return document.body.classList.contains("hud-hidden");
+}
+
+// Al terminar la partida el HUD vuelve siempre: dejarlo oculto arrastraría el
+// bloqueo de input al menú o al capítulo siguiente.
+function mostrarHUD() {
+  document.body.classList.remove("hud-hidden");
+  engine.setTextPaused(false);
+}
+
+// Con el HUD escondido no se ve el bocadillo, así que cualquier input solo
+// serviría para pasar líneas a ciegas: mientras esté oculto, la historia no
+// avanza. Se dejan pasar el menú de pausa y las elecciones (que siguen a la
+// vista) y los minijuegos, que llevan su propio ritmo y no son "avanzar".
+function inputBloqueadoPorHUD(target) {
+  if (!isGameRunning || !hudOculto() || cutsceneEnMarcha()) return false;
+  if (engine.hayMinijuegoAbierto?.()) return false;
+  if (target instanceof Element && target.closest("#pause-menu, #choices-container")) return false;
+  return true;
+}
+
+function bloquearInputConHUDOculto(e) {
+  // El botón secundario es justo el que devuelve el HUD: nunca se bloquea.
+  if (e.button === 2 || !inputBloqueadoPorHUD(e.target)) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
 }
 
 function puedeAvanzarDialogo() {
   if (!isGameRunning || gamePauseClock.isPaused() || cutsceneEnMarcha()) return false;
+  if (hudOculto()) return false;
   if (!dialogBox?.classList.contains("active")) return false;
   if (document.querySelector("#choices-container.active")) return false;
   if (engine.hayMinijuegoAbierto?.()) return false;
@@ -1788,13 +1948,21 @@ document.addEventListener("keydown", (e) => {
     return;
   }
 
-  if (!isGameRunning || e.repeat) return;
-  if (e.key.toLowerCase() === "h") {
+  if (!isGameRunning) return;
+  if (!e.repeat && e.key.toLowerCase() === "h") {
     e.preventDefault();
     e.stopImmediatePropagation();
     alternarHUD();
     return;
   }
+  // H es la única tecla que sigue viva con el HUD oculto (además de Esc, que ya
+  // se ha atendido arriba): ni Control acelera ni Espacio pasa de línea.
+  if (inputBloqueadoPorHUD(e.target)) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    return;
+  }
+  if (e.repeat) return;
   if ((e.key === " " || e.key === "Enter") && puedeAvanzarDialogo()) {
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -1804,7 +1972,11 @@ document.addEventListener("keydown", (e) => {
 
 document.addEventListener("keyup", bloquearInputDurantePausa, true);
 ["pointerdown", "pointerup", "mousedown", "mouseup", "click", "dblclick", "wheel", "touchstart", "touchend"]
-  .forEach((type) => document.addEventListener(type, bloquearInputDurantePausa, true));
+  .forEach((type) => {
+    document.addEventListener(type, bloquearInputDurantePausa, true);
+    document.addEventListener(type, bloquearInputConHUDOculto, true);
+  });
+document.addEventListener("keyup", bloquearInputConHUDOculto, true);
 
 // El clic secundario no debe activar disparos/impulsos antes de que llegue su
 // evento contextmenu: queda reservado por completo para alternar el HUD.
@@ -1925,13 +2097,13 @@ function setupStartupSequence() {
   if (!startupOverlay || !startupOpeningVideo || !startupEnterBtn) {
     document.body.classList.remove("startup-pending");
     setMainMenuVisible(true);
+    showMenuMedia(false);
     return;
   }
 
-  const menuVideo = menuVideoEl();
-  if (menuVideo) {
-    try { menuVideo.pause(); } catch (error) {}
-  }
+  menuVideoEls().forEach(video => {
+    try { video.pause(); } catch (error) {}
+  });
 
   fitStartupOpeningToViewport();
   window.addEventListener("resize", fitStartupOpeningToViewport);
@@ -1964,23 +2136,207 @@ const MENU_MUSIC_SRC = "assets/audio/music/menu/tema_menu.mp3"; // alternativa: 
 const MENU_AMBIENCE_SRC = "assets/audio/music/menu/ambiente_menu.mp3"; // audio base del vídeo, extraído
 const MENU_CHILL_SRC = "assets/audio/music/menu/menu_chill.mp3"; // instrumental chill que releva al tema
 const MENU_VIDEO_RATE = 0.5;   // velocidad del vídeo (1 = normal; más bajo = más lento)
+const MENU_VIDEO_CROSSFADE_MS = 1200; // solape real entre el final y el inicio del bucle
 const MENU_AMBIENCE_VOL = 0.12; // sonido de base (bajito, SIEMPRE a velocidad normal)
 const MENU_MUSIC_VOL = 0.5;     // tema principal
 const MENU_CHILL_VOL = 0.32;    // el chill va por debajo del tema, como música de sala
 let menuAudioUnlocked = false;
+let menuVideoActiveIndex = 0;
+let menuVideoCrossfading = false;
+let menuVideoFrame = 0;
+let menuVideoCrossfadeTimer = 0;
+let menuVideoStopTimer = 0;
+let menuVideoRunId = 0;
 const isDesktopApp = !!window.desktopApp;
 
-function menuVideoEl() {
-  return document.getElementById("menu-video");
+function menuVideoStackEl() {
+  return document.getElementById("menu-video-stack");
+}
+
+function menuVideoEls() {
+  return [
+    document.getElementById("menu-video"),
+    document.getElementById("menu-video-overlap"),
+  ].filter(Boolean);
 }
 
 // El vídeo va SIEMPRE mudo y ralentizado; su sonido de base se reproduce aparte
 // (ambiente_menu.mp3) para que no se estire ni cambie de tono al frenar el vídeo.
 function applyMenuVideoRate() {
-  const vid = menuVideoEl();
-  if (vid) vid.playbackRate = MENU_VIDEO_RATE;
+  menuVideoEls().forEach(video => {
+    video.muted = true;
+    video.playbackRate = MENU_VIDEO_RATE;
+  });
 }
 applyMenuVideoRate();
+
+function menuVideoVisible() {
+  const stack = menuVideoStackEl();
+  return !!stack &&
+    !stack.classList.contains("hidden") &&
+    !mainMenu.classList.contains("hidden");
+}
+
+function cancelMenuVideoScheduling() {
+  if (menuVideoFrame) cancelAnimationFrame(menuVideoFrame);
+  if (menuVideoCrossfadeTimer) clearTimeout(menuVideoCrossfadeTimer);
+  menuVideoFrame = 0;
+  menuVideoCrossfadeTimer = 0;
+  menuVideoCrossfading = false;
+}
+
+function normalizeMenuVideoLayers(videos = menuVideoEls()) {
+  videos.forEach((video, index) => {
+    video.classList.remove("is-active", "is-crossfade-in", "is-visible");
+    if (index === menuVideoActiveIndex) video.classList.add("is-active");
+  });
+}
+
+function finishMenuVideoCrossfade(outgoingIndex, incomingIndex, runId) {
+  const videos = menuVideoEls();
+  const outgoing = videos[outgoingIndex];
+  const incoming = videos[incomingIndex];
+  if (!outgoing || !incoming || !menuVideoCrossfading || runId !== menuVideoRunId) return;
+
+  try {
+    outgoing.pause();
+    outgoing.currentTime = 0;
+  } catch (error) {}
+  menuVideoActiveIndex = incomingIndex;
+  menuVideoCrossfading = false;
+  menuVideoCrossfadeTimer = 0;
+  normalizeMenuVideoLayers(videos);
+}
+
+async function crossfadeMenuVideo() {
+  const videos = menuVideoEls();
+  if (videos.length < 2 || menuVideoCrossfading || !menuVideoVisible()) return;
+
+  const runId = menuVideoRunId;
+  const outgoingIndex = menuVideoActiveIndex;
+  const incomingIndex = outgoingIndex === 0 ? 1 : 0;
+  const outgoing = videos[outgoingIndex];
+  const incoming = videos[incomingIndex];
+  menuVideoCrossfading = true;
+
+  try {
+    incoming.pause();
+    incoming.currentTime = 0;
+    incoming.muted = true;
+    incoming.playbackRate = MENU_VIDEO_RATE;
+    incoming.classList.remove("is-active", "is-visible");
+    incoming.classList.add("is-crossfade-in");
+    await incoming.play();
+  } catch (error) {
+    if (runId !== menuVideoRunId) {
+      try { incoming.pause(); } catch (pauseError) {}
+      return;
+    }
+    // Si la segunda superficie no puede arrancar, reiniciar la activa mantiene
+    // el menú operativo aunque se pierda el fundido en esa vuelta concreta.
+    menuVideoCrossfading = false;
+    normalizeMenuVideoLayers(videos);
+    try {
+      outgoing.currentTime = 0;
+      await outgoing.play();
+    } catch (playError) {}
+    return;
+  }
+
+  if (runId !== menuVideoRunId || !menuVideoVisible()) {
+    try { incoming.pause(); } catch (error) {}
+    if (runId === menuVideoRunId) {
+      menuVideoCrossfading = false;
+      normalizeMenuVideoLayers(videos);
+    }
+    return;
+  }
+
+  // Separar estado inicial y final en dos frames garantiza que Chromium cree
+  // la transición incluso si la segunda copia ya estaba decodificada en caché.
+  void incoming.offsetWidth;
+  requestAnimationFrame(() => {
+    if (runId !== menuVideoRunId || !menuVideoVisible()) {
+      try { incoming.pause(); } catch (error) {}
+      if (runId === menuVideoRunId) {
+        menuVideoCrossfading = false;
+        normalizeMenuVideoLayers(videos);
+      }
+      return;
+    }
+    incoming.classList.add("is-visible");
+    menuVideoCrossfadeTimer = setTimeout(
+      () => finishMenuVideoCrossfade(outgoingIndex, incomingIndex, runId),
+      MENU_VIDEO_CROSSFADE_MS + 40,
+    );
+  });
+}
+
+function monitorMenuVideoLoop() {
+  if (menuVideoFrame) cancelAnimationFrame(menuVideoFrame);
+
+  const tick = () => {
+    menuVideoFrame = 0;
+    if (!menuVideoVisible()) return;
+
+    const active = menuVideoEls()[menuVideoActiveIndex];
+    if (active && !menuVideoCrossfading && Number.isFinite(active.duration)) {
+      const rate = Math.max(0.01, active.playbackRate || MENU_VIDEO_RATE);
+      const remainingMs = Math.max(0, (active.duration - active.currentTime) / rate * 1000);
+      // El pequeño margen evita que el primer vídeo llegue a su frame final
+      // antes de que termine de cubrirlo la copia entrante.
+      if (remainingMs <= MENU_VIDEO_CROSSFADE_MS + 160) crossfadeMenuVideo();
+    }
+    menuVideoFrame = requestAnimationFrame(tick);
+  };
+
+  menuVideoFrame = requestAnimationFrame(tick);
+}
+
+function startMenuVideoLoop() {
+  const stack = menuVideoStackEl();
+  const videos = menuVideoEls();
+  if (!stack || videos.length === 0) return;
+
+  if (menuVideoStopTimer) clearTimeout(menuVideoStopTimer);
+  menuVideoStopTimer = 0;
+  cancelMenuVideoScheduling();
+  menuVideoRunId += 1;
+  stack.classList.remove("hidden");
+  stack.style.setProperty("--menu-video-crossfade", `${MENU_VIDEO_CROSSFADE_MS}ms`);
+  applyMenuVideoRate();
+  normalizeMenuVideoLayers(videos);
+
+  const active = videos[menuVideoActiveIndex];
+  const inactive = videos[menuVideoActiveIndex === 0 ? 1 : 0];
+  if (inactive) {
+    try {
+      inactive.pause();
+      inactive.currentTime = 0;
+    } catch (error) {}
+  }
+  if (active.ended || (Number.isFinite(active.duration) && active.currentTime >= active.duration - 0.05)) {
+    active.currentTime = 0;
+  }
+  active.play().catch(() => {});
+  monitorMenuVideoLoop();
+}
+
+function stopMenuVideoLoop() {
+  const stack = menuVideoStackEl();
+  const videos = menuVideoEls();
+  menuVideoRunId += 1;
+  cancelMenuVideoScheduling();
+  videos.forEach(video => {
+    try {
+      video.pause();
+      video.currentTime = 0;
+    } catch (error) {}
+  });
+  menuVideoActiveIndex = 0;
+  normalizeMenuVideoLayers(videos);
+  stack?.classList.add("hidden");
+}
 
 // DESACTIVADO (jul 2026): el ambiente de base ya no suena en el menú; la capa
 // musical queda en manos del tema (una vez) + menu_chill en bucle. Se conserva
@@ -2060,11 +2416,12 @@ function stopMenuMedia() {
   try { engine.stopSound("menu_chill", 700); } catch (err) {}
   const themeBtn = document.getElementById("menu-theme-btn");
   if (themeBtn) themeBtn.classList.remove("playing");
-  const vid = menuVideoEl();
-  if (vid && !vid.classList.contains("hidden")) {
-    setTimeout(() => {
-      vid.pause();
-      vid.classList.add("hidden");
+  const stack = menuVideoStackEl();
+  if (stack && !stack.classList.contains("hidden")) {
+    if (menuVideoStopTimer) clearTimeout(menuVideoStopTimer);
+    menuVideoStopTimer = setTimeout(() => {
+      menuVideoStopTimer = 0;
+      stopMenuVideoLoop();
     }, 700);
   }
 }
@@ -2072,12 +2429,7 @@ function stopMenuMedia() {
 // Volver a mostrar el menú con su vídeo y su ambiente (al regresar al menú).
 // El tema NO se relanza solo: para volver a oírlo está el botón ♪.
 function showMenuMedia(playChillOnReturn = true) {
-  const vid = menuVideoEl();
-  if (vid) {
-    vid.classList.remove("hidden");
-    applyMenuVideoRate();
-    vid.play().catch(() => {});
-  }
+  startMenuVideoLoop();
   if (menuAudioUnlocked && playChillOnReturn) {
     playMenuChill(); // al volver al menú, el chill acompaña (el tema no se relanza)
   }
@@ -2334,6 +2686,7 @@ function volverAlMenuPrincipal() {
   exitToMenuRequested = false;
   stopRewindWatcher();
   cerrarMenuPausa();
+  mostrarHUD();
   engine.hideDialog();
   engine.reset(); // también para la música y limpia fondo y personajes
   // No basta con quitar `hidden`: al iniciar una partida el menú también recibe
@@ -2350,6 +2703,7 @@ async function endGame() {
   sceneJumpRequested = null;
   lineJumpRequested = null;
   stopRewindWatcher();
+  mostrarHUD();
   engine.hideDialog();
 
   // Capturar la ruta ramificada elegida y si el capítulo es final

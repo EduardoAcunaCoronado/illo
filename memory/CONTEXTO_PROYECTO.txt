@@ -300,11 +300,16 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - El clic durante el tecleo completa la línea; el siguiente avance continúa el guion.
 - El personaje que habla queda iluminado y los demás en gris. Narración/off-screen
   deja a todos atenuados. speakingAs permite resaltar un sprite distinto del nombre.
-- Menú de escenas: durante una partida normal solo expone escenas ya visitadas;
-  `debugMode` permite ver las futuras. Se oculta durante un minijuego activo.
-- Retroceso: la unidad es la escena, no la línea. Restaura gameState, rescates,
-  llamadas, inventario, storyPressure/storyDelay y nextChapter, además de una foto
-  visual con fondo, personajes, poses, orientación y audios activos.
+- Menú de escenas: puede saltar a cualquier escena del capítulo, incluso desde una
+  elección; se oculta durante un minijuego activo.
+- Retroceso: la unidad es la escena, no la línea. Restaura gameState, rescates, llamadas,
+  inventario, storyDelay y nextChapter a la foto tomada al entrar. Si ya se avanzó algún
+  diálogo en la escena actual vuelve al principio de ESA escena; si se acaba de entrar,
+  sale a la anterior de la pila sceneHistory (se desapila solo la escena actual). Si la
+  escena vino de una elección, la anterior es la escena donde se decidió.
+  Cada escena se apila en el instante del cambio (goToScene, elección o fin de escena),
+  no al pintar su primera línea: entre ambas cosas el bucle espera un clic y el historial
+  se quedaba desfasado.
 - Estados que importan:
   · rescued: orden/progreso de amigos.
   · completedCalls: vestigio del antiguo sistema de llamadas, aún soportado por engine.
@@ -480,7 +485,11 @@ PRESENTACIÓN
   scripts/interpolate_menu_loop_48fps.py (rife-ncnn-vulkan). menu_loop_old.mp4
   se conserva intacto como fuente de movimiento y referencia.
 - Menú “Neón de Medianoche” con vídeo en bucle a media velocidad, tema inicial,
-  relevo chill, botón musical y marca WildSoft.
+  relevo chill, botón musical y marca WildSoft. El bucle visual usa dos elementos
+  `<video>` con la misma fuente: 1,36 s antes del final visible inicia la copia
+  inactiva y la funde durante 1,2 s sobre la activa, que permanece opaca debajo.
+  Después intercambia y rebobina los reproductores. Al salir del menú cancela RAF,
+  temporizador y reproducción de ambas copias; el audio sigue siendo independiente.
 - Visual novel con fondos ilustrados, sprites grandes, caja de diálogo inferior,
   nombre coloreado, flecha de continuación, sonido por letra y pausas de puntuación.
 - Los supermercados de la ruta de Edu usan las marcas ficticias El Jarrón,
@@ -609,7 +618,10 @@ REGLAS PARA CAMBIOS FUTUROS
   hell). La puntuación de guindillas regula la dificultad de la segunda parte.
   Elegir la recomendación de Neit entrega `caja_guindillas`, aporta 12 puntos de
   picante y se muestra como bonificación en el HUD, aunque Samu no entiende su
-  utilidad cuando recibe la caja.
+  utilidad cuando recibe la caja. La entrega muestra
+  `assets/images/cg/chapter2/caja_guindillas.png` mediante el mismo `showCG`
+  centrado al 55 % que el diapasón; la línea siguiente ejecuta `hideCG` antes de
+  la respuesta de Samu para que el objeto no quede persistente.
 - Tras vencer a Zip, mostrar a Edu con la pose `picante`
   (`assets/images/characters/edu/edu_picante_wide_transparent.webp`) hasta que
   vuelve a hablar; entonces pasa a `sad`. Es una excepción panorámica al 70 %
@@ -619,6 +631,12 @@ REGLAS PARA CAMBIOS FUTUROS
   audio y `kingdomketchup.mp3`, 300 ms reteniendo el último frame y 600 ms de
   fundido hacia `kingdom_ketchup_trono_video_final_4k.png`. `playVideo` admite
   `audioCrossfade`, `holdLastFrame`, `visualFadeOut` y `endBackground`.
+- Toda acción `playVideo` activa primero `body.cutscene-active` y limpia diálogo,
+  personajes (también vídeos y efectos pendientes), CG, fondos, elecciones y
+  efectos temporales con `clearStage({ preserveAudio: true, immediate: true })`.
+  El audio se conserva solo para el crossfade y la escena anterior no se restaura
+  al acabar: regresan únicamente el HUD persistente, `endBackground` y las acciones
+  posteriores del capítulo.
 - En «Uf, no sé», mostrar a Edu con `worried` a proporción normal y aplicar
   `characterGlitchUntilAdvance`. El glitch cromático por franjas se mantiene
   únicamente hasta avanzar el texto y nunca debe comprimir ni escalar el sprite.
@@ -627,6 +645,11 @@ REGLAS PARA CAMBIOS FUTUROS
   avanzar el texto; `charred_shake` sacude el hollín una sola vez, añade motas
   CSS y termina visualmente en `samu_worried.png` mientras Samu protesta.
 - Edu queda rescatado después de derrotar a Zip, no al entrar en el capítulo.
+- En el bullet hell de Zip, el kétchup normal resta 1 vida y el kétchup negro
+  del anillo especial resta exactamente 2; la vida nunca baja de 0 y el HUD se
+  actualiza en el mismo impacto. El recolector legado conserva la misma regla.
+- En `chiliHarvest`, el primer minijuego, una botella normal resta 1 punto de
+  poder de guindilla y una botella negra corrupta resta 2, sin bajar de 0.
   Zip no crea Kingdom Ketchup: corrompe y comprime el deseo previo de Edu de ser
   necesario. Los Ketchlings confirman que pueden cuidar la fábrica sin retenerlo.
 - Antes de encontrar a Edu transformado, Samu solo ve su retrato humano en el

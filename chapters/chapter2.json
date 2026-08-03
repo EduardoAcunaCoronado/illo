@@ -180,6 +180,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security",
               "enter": "right"
@@ -206,6 +207,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security"
             }
@@ -294,6 +296,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security"
             }
@@ -319,6 +322,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security"
             }
@@ -751,21 +755,39 @@
           "text": "Samu levanta la botella como quien acaba de encontrar un billete premiado: el tapón es inequívocamente dorado.",
           "actions": [
             {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter2/el_tapon_dorado.mp3",
-              "volume": 1,
-              "loop": true,
+              "type": "stopSound",
               "id": "bg_music",
-              "fadeIn": 500
+              "fadeOut": 500
             },
             {
               "type": "giveItem",
               "item": "tapon_dorado"
             },
             {
+              "type": "hideDialog"
+            },
+            {
               "type": "showCG",
               "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.webp",
               "duration": 650
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/sfx_fanfare.mp3",
+              "volume": 0.5,
+              "loop": false
+            },
+            {
+              "type": "wait",
+              "value": 5000
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/el_tapon_dorado.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music",
+              "fadeIn": 500
             }
           ]
         },
@@ -883,6 +905,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security",
               "enter": "right"
@@ -914,6 +937,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security"
             }
@@ -1029,6 +1053,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "mechanic"
             }
@@ -1037,7 +1062,7 @@
         {
           "character": "Ketchling mecánico",
           "speakingAs": "ketchling",
-          "text": "El Gran Maestro nos dio un hogar cuando solo éramos una idea. Últimamente habla como si marcharse fuera abandonarnos."
+          "text": "El Gran Maestro nos dio un hogar cuando solo éramos una idea. Últimamente habla como si marcharse significase abandonarnos."
         },
         {
           "character": "Samu",
@@ -1101,14 +1126,34 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "bottler"
             }
           ]
         },
+        
         {
           "character": "3C",
-          "text": "Dos pasillos conducen a la línea central. Uno dice «KETCHUP». El otro, «CATSUP»."
+          "text": "Dos pasillos conducen a la línea central. Uno dice «KETCHUP». El otro, «CATSUP».",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "character": "ketchling"
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_pasillos_v2_4k.png",
+              "cut": true
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter2/kingdomketchup.mp3",
+              "volume": 1,
+              "loop": true,
+              "id": "bg_music"
+            }
+          ]
         },
         {
           "character": "Samu",
@@ -1388,12 +1433,42 @@
             {
               "type": "giveItem",
               "item": "caja_guindillas"
+            },
+            {
+              "type": "showCG",
+              "path": "assets/images/cg/chapter2/caja_guindillas.png",
+              "duration": 500,
+              "size": "auto 55%",
+              "position": "center"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/sfx_fanfare.mp3",
+              "volume": 0.5,
+              "loop": false
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "¿Una caja de guindillas...? No entiendo para qué voy a querer esto ahora, pero vale. Me la quedo."
+          "text": "¿Una caja de guindillas...? No entiendo para qué voy a querer esto ahora, pero vale. Me la quedo.",
+          "actions": [
+            {
+              "type": "hideCG"
+            }
+          ]
+        },
+        {
+          "type": "hideCharacter",
+          "position": "left"
+        },
+        {
+          "type": "hideCharacter",
+          "position": "center"
+        },
+        {
+          "type": "hideCharacter",
+          "position": "right"
         },
         {
           "actions": [
@@ -1806,6 +1881,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "center",
               "pose": "security"
             }
@@ -1819,6 +1895,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "center",
               "pose": "cook"
             },
@@ -1982,6 +2059,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "center",
               "pose": "bottler"
             }
@@ -2003,6 +2081,10 @@
           "character": "Samu",
           "text": "Por cierto, ¿a qué viene el tema de los portales?",
           "actions": [
+            {
+              "type": "hideCharacter",
+              "character": "ketchling"
+            },
             {
               "type": "showCharacter",
               "character": "samu",

@@ -956,6 +956,9 @@ Valores disponibles: `fear`/`miedo`, `anger`/`agresividad`,
 `nervous`/`nervios`, `whisper`/`susurro` y `scream`/`grito` para momentos
 excepcionales y estridentes. En `scream`, las primeras letras son pequeñas y
 cada carácter crece progresivamente hasta que el final casi llena el bocadillo.
+El efecto `surprise` genera una única ola continua repartiendo el desfase entre
+la primera y la última letra de la frase, sin reiniciar el ciclo cada 14
+caracteres ni formar bloques separados.
 Usa `"textAnimation": false` para
 desactivar expresamente el efecto aunque la pose tenga una emoción reconocida;
 `"textAnimation": true` o `"auto"` activa la detección por pose. El campo
@@ -1032,6 +1035,40 @@ Parámetros:
 - `character`: Nombre del personaje (sin .json)
 - `position`: "left" o "right"
 - `pose`: "neutral", "happy", "sad", "angry", "surprised" (opcional)
+- `enter`: "right", "left", "bottom" o "fade" — animación de entrada (opcional)
+- `flipped`: `true` para voltear el sprite horizontalmente (opcional)
+- `offsetY`: desplazamiento vertical del sprite, en porcentaje de su propia
+  altura (opcional). Positivo = más abajo. Admite `"40%"` o `40`.
+- `scale`: tamaño del sprite sin tocar la imagen (opcional). `1` es el tamaño
+  normal; `1.18` un 18% más grande; `0.7` un 30% más pequeño.
+
+`offsetY` y `scale` son **del guión, no del personaje**: el tamaño y la altura
+se deciden en cada aparición, así que el mismo personaje puede salir enorme en
+una escena y normal en otra. En `engine.js` no hay ninguna tabla de escalas.
+
+```json
+{
+  "type": "showCharacter",
+  "character": "ketchling",
+  "offsetY": "40%",
+  "position": "right",
+  "pose": "security"
+}
+```
+
+Valores en uso en los capítulos:
+
+| Personaje                | `scale` | `offsetY` | Motivo                                          |
+| ------------------------ | ------- | --------- | ----------------------------------------------- |
+| `ketchling`              | —       | `"40%"`   | Miden 40 cm: solo asoma la cabeza sobre el texto |
+| `jose`                   | `1.18`  | —         | Más corpulento que el resto                      |
+| `airi`                   | `0.7`   | —         | Es una niña                                      |
+| `amalgama`               | `1.2`   | —         | Presencia imponente                              |
+| `amalgama_final`         | `1.2`   | —         | Presencia imponente                              |
+| `tung_tung_tung_sahur`   | `1.5`   | `"38%"`   | Al agrandarlo se sale por arriba; baja a plano de cintura |
+
+Si añades una aparición nueva de alguno de ellos, **copia también su `scale` y
+su `offsetY`**: sin esos campos saldría a tamaño normal y a ras de suelo.
 
 ### hideCharacter / removeCharacter / quitarPersonaje
 
@@ -1282,6 +1319,52 @@ Pausa la ejecución.
 
 El valor está en milisegundos (1000 = 1 segundo).
 
+Combinado con `hideDialog` sirve para dejar una imagen sola en pantalla unos
+segundos antes de que entre el texto. Así aparece la caja de botellas de kétchup
+en la **Escena 4.5: El tapón dorado** del capítulo 2: se oculta el bocadillo, el
+CG entra con su fundido de 650 ms y se esperan 3 s antes de la narración.
+
+```json
+"actions": [
+  { "type": "hideDialog" },
+  { "type": "showCG", "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png", "duration": 650 },
+  { "type": "wait", "value": 3000 }
+]
+```
+
+### textDuration / setTextDuration
+
+Permite indicar en milisegundos cuánto debe tardar una línea concreta en
+escribirse. La forma más directa es añadir `textDuration` a la propia línea:
+
+```json
+{
+  "character": "Samu",
+  "text": "Esta frase tardará exactamente cuatro segundos.",
+  "textDuration": 4000
+}
+```
+
+También puede declararse como acción previa de esa misma línea:
+
+```json
+{
+  "character": "Samu",
+  "text": "Esta frase también tardará cuatro segundos.",
+  "actions": [
+    { "type": "setTextDuration", "value": 4000 }
+  ]
+}
+```
+
+El alias `"type": "textDuration"` también es válido, y el valor se puede pasar
+como `value`, `duration` o `ms`. La propiedad de la línea tiene prioridad sobre
+la acción. Esta duración sustituye tanto la velocidad elegida por el usuario como
+el multiplicador narrativo `textSpeed`, conserva proporcionalmente el ritmo de
+la puntuación y hace aparecer el último grafema en el instante indicado. El clic,
+el avance rápido y la pausa al ocultar el HUD siguen funcionando normalmente.
+El override se borra al comenzar la siguiente línea.
+
 ### setVariable
 
 Establece variables en el estado del juego.
@@ -1424,6 +1507,13 @@ partida.
 
 La **cutscene** es la excepción: ahí los botones sí se esconden, porque es un
 vídeo que ya se salta con un clic o con Esc (`cutsceneEnMarcha()` en `game.js`).
+Antes de insertar el vídeo, `playVideo` activa `body.cutscene-active` y llama a
+`clearStage({ preserveAudio: true, immediate: true })`: desaparecen diálogo,
+sprites y vídeos de personajes, CG, fondos, elecciones y efectos temporales desde
+el primer fotograma. La música se conserva únicamente para que `playVideo` pueda
+pausarla y recuperarla con su crossfade. Al salir no se reconstruye la escena
+anterior; solo permanecen `endBackground` y los elementos creados por las acciones
+posteriores del capítulo.
 
 En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
 (5000) y de los créditos (1500); el menú de escenas a 5300 y el de pausa a 5400.
@@ -2276,7 +2366,16 @@ sustituye el escenario: se conservan la geometría, el oleaje del mar, el
 titileo de los neones, las siluetas móviles, la brisa dorada y todas las notas
 en sus posiciones originales.
 
-La reconstrucción 4K desde `workbench/sources/video/menu/menu_loop_old.mp4` es reproducible con
+El runtime no depende únicamente del salto nativo de `loop`: `index.html`
+mantiene dos reproductores mudos con la misma fuente y `game.js` alterna cuál
+está activo. A media velocidad, 1,36 segundos antes del final visible arranca la
+copia inactiva desde cero y la funde durante 1,2 segundos sobre el vídeo saliente.
+Este conserva su último tramo opaco debajo, por lo que no aparece el fondo fijo
+ni un frame negro durante la mezcla. Después se pausa y rebobina la copia antigua
+para reutilizarla en la vuelta siguiente. Al abandonar el menú se cancelan tanto
+el `requestAnimationFrame` de vigilancia como el temporizador del fundido.
+
+La reconstrucción 4K desde `assets/video/menu/menu_loop_old.mp4` es reproducible con
 `scripts/render_menu_loop_4k.py` y `realesrgan-ncnn-vulkan`. La interpolación
 cíclica posterior se ejecuta con `scripts/interpolate_menu_loop_48fps.py` y la
 herramienta oficial `rife-ncnn-vulkan`, usando `rife-v4.6`, modo UHD y TTA
@@ -2680,7 +2779,9 @@ El montaje:
 | `.chapter-selector-list`   | `overflow-y: auto; overflow-x: hidden; min-height: 0;` — la parte que se desplaza. `padding: 0 14px` separa los botones de la barra: al pasar el ratón el capítulo se desplaza 6 px a la derecha y se le echaba encima (queda en 8 px con hover) |
 | `.chapter-selector-back`   | `align-self: center` (en columna flex se estiraría a todo el ancho) |
 
-La barra es propia: pulgar dorado con degradado y carril tenue. Solo aparece
+La barra es propia: pulgar con degradado cyan→magenta en tono apagado
+(`#3a94b8`→`#b83a75`, halo suave) y carril tenue. Los mismos valores se usan en
+`.scenes-list`. Solo aparece
 cuando los capítulos no caben; con 7 no se veía, y **cada capítulo nuevo ocupa
 unos 60 px**.
 
@@ -4048,16 +4149,24 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   de ser necesario; Zip comprime ese deseo, elimina sus límites y lo convierte
   en una jaula.
 - La batalla de Zip tiene dos partes enlazadas. En `chiliHarvest`, Samu dispone
-  de 22 segundos para recoger guindillas; las botellas limpias o corruptas le
-  restan una, pero la ronda nunca bloquea la historia. La puntuación se guarda
+  de 22 segundos para recoger guindillas; las botellas normales restan un punto
+  de poder picante y las botellas negras corruptas restan dos, siempre con un
+  mínimo de cero. La ronda nunca bloquea la historia y la puntuación se guarda
   como `gameState.chiliPower`.
 - `ketchupBoss` integra el bullet hell de José Manuel desde `master`: Samu se
   mueve en dos ejes, dispara guindillas y esquiva los patrones de ketchup de
   Zip. Más poder picante aumenta el daño y la cadencia de Samu, y reduce tanto
   la velocidad como la frecuencia de los ataques enemigos.
+- Los proyectiles normales de Zip restan una vida. El anillo de kétchup negro
+  del ataque especial usa la botella corrupta, resta exactamente dos vidas por
+  impacto y limita el resultado a cero antes de refrescar los corazones del HUD.
 - Escuchar la recomendación de Neit entrega `caja_guindillas`. Samu todavía no
   entiende por qué podría necesitarla, pero el objeto aporta 12 puntos extra de
   picante antes del bullet hell; el HUD identifica explícitamente la bonificación.
+  Durante la entrega aparece `assets/images/cg/chapter2/caja_guindillas.png`, un
+  PNG RGBA del objeto centrado al 55 %, con el mismo fundido y comportamiento de
+  `showCG` que el diapasón de Seraphyna. La acción `hideCG` de la línea siguiente
+  lo retira antes de que Samu responda.
 - Cuando Zip desaparece, Edu reaparece con la pose cómica `picante`, basada en
   `assets/images/characters/edu/edu_picante_wide_transparent.webp`: conserva las
   lágrimas y el sudor, usa fondo alfa real y amplía excepcionalmente el lienzo
@@ -4308,6 +4417,30 @@ Los habitantes se agrupan por procedencia, no por dignidad:
 3. **Construcciones nuevas:** vidas completadas por la realidad para mantener su
    coherencia, como algunos Ketchlings y ciudadanos.
 
+- **Clic izquierdo**, **Espacio** o **Intro** completan la escritura en curso o
+  avanzan al diálogo siguiente. Espacio e Intro no actúan durante elecciones,
+  minijuegos ni cinemáticas.
+- **H** o **clic derecho** alternan todo el HUD: botones superiores,
+  indicadores e instrucciones de minijuegos y el cuadro de diálogo. El clic
+  derecho nunca completa ni avanza una línea. Mientras el HUD está oculto, el
+  typewriter conserva el grafema y el tiempo de puntuación pendientes, no emite
+  blips y no acepta inputs de avance; al mostrarlo continúa exactamente desde
+  ese punto. El avance automático con Control se desactiva al ocultarlo.
+- **Esc** abre una pausa global durante diálogos y minijuegos. Se congelan el
+  reloj lógico, `setTimeout`, `setInterval`, `requestAnimationFrame`, las
+  animaciones CSS, los vídeos, los efectos de audio y los contextos Web Audio
+  que estuvieran activos. La música continúa sonando mientras se ajustan las
+  opciones; al reanudar, los demás recursos continúan desde el mismo punto.
+- Mientras la pausa está abierta, los eventos de teclado, puntero, rueda y
+  toque quedan bloqueados antes de llegar a la partida; solo el panel de pausa
+  conserva interacción. En una cinemática, Esc mantiene su función de saltarla.
+- El retrato de **Neit** tiene un anclaje vertical propio de `28px` hacia abajo,
+  para que apoye visualmente sobre el escenario sin cambiar su escala.
+- Las animaciones emocionales heredan el color legible del personaje que habla.
+  Las marcas OMG, CLos, Incel y Simsong conservan sus colores corporativos dentro
+  de las frases animadas.
+- El nombre CSS `blue` se representa como `#4da3ff`: mantiene un azul saturado y
+  legible sobre el bocadillo oscuro, sin el aclarado lavanda anterior.
 La propia AI.RI admite que no siempre puede distinguirlos desde fuera. Esa
 incertidumbre impide tratar a ecos y construcciones como decorado prescindible.
 
@@ -4396,6 +4529,76 @@ la estrategia y el coste que el grupo acepta.
   construcciones desaparezcan cuando llegue a cero; conserva la deuda abierta y
   el riesgo de que Elion vuelva a aferrarse a AI.RI durante el plazo.
 
+### Iconos neón del menú de Configuración (2026-08-03)
+
+Las pestañas **Juego**, **Vídeo**, **Sonido** y **Trucos** no utilizan emojis del sistema.
+`settingsMarkup()` carga iconos PNG RGBA propios desde
+`assets/images/ui/settings/`: `game-neon.png`, `video-neon.png`,
+`sound-neon.png` y `cheats-neon.png`. Los cuatro recursos usan un lenguaje
+cyber-neón común en cian, violeta y oro, tienen lienzo transparente de `128×128`
+y se muestran a `28×28`. El mando de Juego coloca el joystick izquierdo arriba
+y la cruceta debajo.
+
+Los iconos son decorativos (`alt=""` y `aria-hidden="true"`), por lo que el nombre
+de texto de cada pestaña continúa siendo su etiqueta accesible. Los estados
+normal, hover y activo ajustan opacidad, saturación, escala y resplandor sin
+alterar la lógica compartida entre Configuración y el menú de pausa.
+
+### Velocidad global del texto (2026-08-03)
+
+**Juego** es siempre la primera pestaña de Configuración y del menú de Opciones.
+Incluye un slider discreto de seis posiciones: **Muy lento**, **Lento**,
+**Normal**, **Rápido**, **Muy rápido** e **Instantáneo**. La selección se guarda
+como `illo_text_speed`; Electron la incluye en su lista cerrada de ajustes para
+que sobreviva al cambio de puerto entre arranques.
+
+Debajo del slider, una caja de vista previa vuelve a escribir «Así aparecerá el
+texto durante la partida.» con la velocidad seleccionada en cada cambio. También
+funciona dentro de la pausa porque sus timers se crean después de activar el
+reloj pausado del juego.
+
+El ajuste modifica `engine.typingSpeed` y escala tanto el intervalo entre letras
+como las pausas de puntuación. Los multiplicadores narrativos `textSpeed` de cada
+línea siguen aplicándose sobre el valor global. Para cada grafema, el intervalo
+general es:
+
+```text
+(milisegundos del preset + pausa de puntuación × preset / 50) × textSpeed
+```
+
+Los presets usan `100`, `70`, `50`, `30`, `15` y `0` ms respectivamente. Por
+tanto, cualquier duración calculada en **Normal** se puede estimar para el resto
+multiplicándola por `2`, `1,4`, `1`, `0,6`, `0,3` o `0`. **Instantáneo** completa
+la frase en una sola operación, sin recorrer letra por letra ni esperar
+puntuación.
+
+`engine.calculateTextTiming(line)` es la fuente común usada por el juego y por
+la vista previa. Devuelve, entre otros datos, `visibleDurationMs` (hasta que se ve
+el último grafema) y `durationMs` (incluida la pausa final de una línea normal).
+`engine.calculateTextDuration(line, untilVisible)` permite obtener directamente
+uno de esos dos valores usando la velocidad seleccionada en ese momento.
+
+Una línea puede fijar `textDuration` en milisegundos para ignorar el preset y
+durar exactamente lo indicado. También se admite en sus acciones previas como
+`{ "type": "setTextDuration", "value": 4000 }`; este override solo afecta a esa
+línea y la propiedad directa tiene prioridad.
+
+### Retratos cartoon de la investigación de Furry Maps (2026-08-03)
+
+Los tres informantes activos del minijuego `furrielvaExplore` se han redibujado
+con el acabado cartoon 2D del resto del reparto: contorno negro limpio, formas de
+pelaje simplificadas, colores planos y cel-shading de dos tonos. Se conservan
+identidad, especie, expresión, vestuario, pose y utilería narrativa: el paquete
+de Tadeo Trufa, el lector y portapapeles de Lía Lince, y la llave, el plano y el
+cinturón de herramientas de Rulo Mapache.
+
+Los archivos activos mantienen sus nombres, lienzo RGBA transparente y tamaño
+`965×1630`: `assets/images/characters/furrielva/tadeo_trufa_v1.png`,
+`lia_lince_v1.png` y `rulo_mapache_v1.png`. Al conservar rutas y dimensiones no
+ha sido necesario modificar `engine.js`; las tres escenas siguen usando el mismo
+encuadre, precarga y lógica de diálogo.
+
+### Sprites de carrera de Samu sin halo blanco (2026-08-03)
 Ambas rutas recuperan el cumpleaños de Samu como afirmación de existencia. Sus
 nombres internos son `Cerrar el núcleo: Un deseo propio` y
 `Tiempo prestado: Defender el sueño`; ninguno se etiqueta como moralmente «bueno».
@@ -4906,3 +5109,45 @@ del instalador. El resumen impreso —capítulos,
 escenas, líneas, personajes y referencias— es la cifra fiable del estado actual.
 La ejecución de cierre de esta revisión terminó sin errores con **7 capítulos,
 63 escenas, 908 líneas, 26 personajes y 958 referencias de assets**.
+
+### Retroceder: a esta escena o a la anterior (2026-08-03)
+
+El botón **Retroceder** siempre lleva al **principio de una escena**, y ahora
+elige cuál según lo avanzado que se esté dentro de la escena actual:
+
+- **Ya se ha avanzado algún diálogo aquí** → vuelve al principio de **esta misma
+  escena**. Es el caso de quien se pasa de clic: repite lo que acaba de leer sin
+  salirse de la escena.
+- **Recién entrados** (aún en el primer diálogo de la escena) → sale a la
+  **escena anterior**, la que se dejó justo antes.
+
+Si la escena actual vino de una **elección**, salir de ella lleva a la escena
+donde se tomó la decisión, y allí la pregunta se vuelve a plantear.
+
+El contador `engine.sceneAdvances` cuenta los diálogos mostrados dentro de la
+escena en curso; se pone a cero en cada entrada de escena y es lo que distingue
+los dos casos. Por eso el botón aparece también en la primera escena del
+capítulo en cuanto se ha avanzado un diálogo: hay algo a lo que volver.
+
+El "de dónde vengo" es la pila `engine.sceneHistory`, donde cada escena pisada
+apila su índice junto a la foto del progreso (`gameState`, `rescued`,
+`completedCalls`, `inventory`, `storyDelay`, `nextChapter`). Al retroceder se
+**desapila solo la escena actual** y se reproduce la de debajo, que permanece en
+la pila con su foto original. Antes se desapilaban las dos y se confiaba en que
+la escena destino se volviera a registrar sola al reproducirse: cada retroceso
+comía dos escalones. El menú de **Escenas** sigue la misma regla: al saltar a una
+escena ya visitada, el historial se recorta hasta esa visita incluida.
+
+**La escena se apila en el momento del cambio de escena**, no cuando se pinta su
+primera línea: `recordSceneEntry()` se llama desde `jumpToScene()` (acción
+`goToScene`), desde la rama de elección de `nextLine()` (después de
+`registerCall`, que forma parte del estado de entrada) y al pasar de escena por
+agotarse sus líneas. Entre el cambio y la primera línea de la escena nueva hay
+una espera real: al elegir una opción, o al leer la última línea de una escena,
+`currentScene` ya apunta a la siguiente mientras el bucle sigue parado esperando
+el clic del jugador. Apilando tarde, en ese hueco el historial acababa en la
+escena anterior y retroceder hacía cualquier cosa: reiniciaba una escena que
+todavía no se había visto (los diálogos contados eran los de la escena vieja) o
+desapilaba la entrada equivocada y caía en la primera escena del capítulo. Por
+seguridad, el caso "volver al principio de esta escena" exige además que la cima
+del historial sea la escena actual.

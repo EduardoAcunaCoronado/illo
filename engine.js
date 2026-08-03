@@ -9,8 +9,15 @@ class VisualNovelEngine {
         this.history = [];
         this.isWaitingForInput = false;
         this.fastForward = false;
+        this.textPaused = false;
         this._finishTyping = null;
+        this._setTypingPaused = null;
         this._lastDialogEmotionKey = null;
+        this._lineTextDurationOverride = null;
+        this._textSegmenter = typeof Intl.Segmenter === 'function'
+            ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
+            : null;
+        this.textSpeedPreset = 2;
         this.typingSpeed = 50;
         this.lastChapterName = null;
         this.speakingCharacter = null;
@@ -22,6 +29,9 @@ class VisualNovelEngine {
         this.audioInstances = {}; // Rastrear instancias de audio
         this.currentMusic = null; // Música de fondo actual
         this.sceneEndedByChoice = false; // Indica si la escena terminó por una elección
+        this.sceneHistory = []; // Escenas pisadas en el capítulo, para retroceder
+        this._lastSeenScene = null; // Última escena registrada en sceneHistory
+        this.sceneAdvances = 0; // Diálogos mostrados dentro de la escena actual
         this.completedCalls = []; // Rastrear las llamadas completadas
         this.nextChapter = null; // Capítulo a cargar (ruta ramificada elegida)
         this.rescued = []; // Personajes rescatados, en orden (persiste entre capítulos)
@@ -64,10 +74,19 @@ class VisualNovelEngine {
     }
 
     setFastForward(active) {
-        this.fastForward = !!active;
+        this.fastForward = !!active && !this.textPaused;
         if (this.fastForward && this._finishTyping) {
             this._finishTyping();
         }
+    }
+
+    // Pausa exclusivamente el escritor de diálogo. Los minijuegos, vídeos y
+    // animaciones siguen su curso cuando el jugador oculta el HUD con H o clic
+    // derecho; al mostrarlo de nuevo, el texto continúa por el mismo grafema.
+    setTextPaused(paused) {
+        this.textPaused = !!paused;
+        if (this.textPaused) this.fastForward = false;
+        if (this._setTypingPaused) this._setTypingPaused(this.textPaused);
     }
 
     async loadChapter(chapterName) {
@@ -90,6 +109,7 @@ class VisualNovelEngine {
             // El historial de retroceso es por capítulo: no se vuelve al anterior
             this.sceneHistory = [];
             this._lastSeenScene = null;
+            this.sceneAdvances = 0;
             this.nextChapter = null; // Limpiar la ruta al cargar un capítulo nuevo
             // storyDelay se conserva como alias histórico, pero la fuente de
             // verdad entre capítulos es storyPressure. Al cargar una escena se
@@ -319,7 +339,7 @@ class VisualNovelEngine {
                 this.setBackground(action.value, action);
                 break;
             case 'showCharacter':
-                await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter);
+                await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter, action.offsetY, action.scale);
                 break;
             case 'hideCharacter':
             case 'removeCharacter':
@@ -395,6 +415,14 @@ class VisualNovelEngine {
                 break;
             case 'wait':
                 await this.wait(action.ms != null ? action.ms : action.value);
+                break;
+            case 'setTextDuration':
+            case 'textDuration':
+                this.setLineTextDuration(
+                    action.duration != null ? action.duration
+                    : action.ms != null ? action.ms
+                    : action.value
+                );
                 break;
             case 'waitForClick':
             case 'waitClick':
@@ -481,6 +509,12 @@ class VisualNovelEngine {
         const holdLastFrame = Math.max(0, Number(action.holdLastFrame) || 0);
         const visualFadeOut = Math.max(0, Number(action.visualFadeOut) || 0);
         const endBackground = action.endBackground || action.finalBackground || null;
+
+        // La cinemática siempre parte de un escenario limpio. El audio se conserva
+        // aquí para que el propio reproductor pueda pausarlo y recuperarlo con el
+        // crossfade configurado; los efectos sonoros temporales sí los retira Juice.
+        document.body.classList.add('cutscene-active');
+        this.clearStage({ preserveAudio: true, immediate: true });
 
         // No duplicar la música si currentMusic y bg_music apuntan al mismo Audio.
         const paused = [];
@@ -576,6 +610,7 @@ class VisualNovelEngine {
             };
 
             const cleanup = () => {
+                document.body.classList.remove('cutscene-active');
                 overlay.remove();
                 resolve();
             };
@@ -663,6 +698,9 @@ class VisualNovelEngine {
         this.currentScene = sceneIndex;
         this.currentLine = 0;
         this.pendingSceneJump = true;
+        // Apilarla ya, no cuando se pinte: entre el salto y su primera línea el
+        // bucle puede quedarse esperando un clic (ver el bloque de RETROCEDER).
+        this.recordSceneEntry();
         // Al cambiar de escena, cualquier CG a pantalla se retira solo
         this.hideCG(250);
     }
@@ -827,7 +865,13 @@ class VisualNovelEngine {
                         dialogue: [
                             { speaker: 'SAMU', text: '¿Hacia dónde van cuando salen de la plaza?' },
                             { speaker: 'TADEO TRUFA', text: 'Al anochecer toman la carretera industrial. Sin matrícula, sin empresa; sólo una corona encima de un tomate.' },
-                            { speaker: 'SAMU', text: 'Edu mencionó ketchup. Esa corona puede ser la primera pista de verdad.' }
+                            // La plaza tampoco tiene por qué ser la primera parada.
+                            {
+                                speaker: 'SAMU',
+                                text: ({ clues }) => clues <= 1
+                                    ? 'Edu mencionó ketchup. Esa corona puede ser la primera pista de verdad.'
+                                    : `Edu mencionó ketchup. Esa corona encaja con ${clues === 2 ? 'la pista que ya llevo' : 'todo lo que ya llevo apuntado'}.`
+                            }
                         ],
                         lore: 'Los camiones rojos sin matrícula siguen la carretera industrial y llevan una corona sobre un tomate.'
                     },
@@ -897,7 +941,14 @@ class VisualNovelEngine {
                         dialogue: [
                             { speaker: 'SAMU', text: '¿Puedes saber adónde llega por la presión?' },
                             { speaker: 'RULO MAPACHE', text: 'Sale bajo tierra y reaparece en el límite industrial, justo debajo del solar que el mapa deja en blanco.' },
-                            { speaker: 'SAMU', text: 'Tres pistas, el mismo lugar. Ya no parece una casualidad.' }
+                            // El callejón puede ser la primera, segunda o tercera zona visitada,
+                            // así que la frase se ajusta a las pistas reunidas hasta ese momento.
+                            {
+                                speaker: 'SAMU',
+                                text: ({ clues }) => clues <= 1
+                                    ? 'Primera pista y ya apunta a ese solar. A ver si las demás coinciden.'
+                                    : `${clues === 2 ? 'Dos pistas, el mismo lugar. Ya no parece una casualidad.' : 'Tres pistas, el mismo lugar. Demasiada casualidad.'} `
+                            }
                         ],
                         lore: 'La conducción reaparece bajo el solar vacío del límite industrial.'
                     },
@@ -1066,7 +1117,11 @@ class VisualNovelEngine {
                     const showCurrent = () => {
                         const line = lines[index];
                         setSpeaker(line.speaker);
-                        text.textContent = line.text;
+                        // Una línea puede ser texto fijo o una función que recibe el
+                        // número de pistas conseguidas contando la zona actual.
+                        text.textContent = typeof line.text === 'function'
+                            ? line.text({ clues: visited.size + 1, total: locations.length })
+                            : line.text;
                         choices.innerHTML = `<button type="button" data-continue>${index === lines.length - 1 ? 'Continuar' : 'Siguiente'}</button>`;
                         choices.querySelector('[data-continue]').addEventListener('click', () => {
                             index += 1;
@@ -1352,7 +1407,7 @@ class VisualNovelEngine {
                     <div class="mg-player" id="mg-player"><img src="${playerIcon}" alt="Samu" draggable="false"></div>
                     <div class="mg-phase-banner is-showing">¡Reúne picante para debilitar a Zip!</div>
                 </div>
-                <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge guindillas; las botellas te hacen perder una.</div>
+                <div class="minigame-instructions">Mueve con ← → / A D o el ratón. Recoge guindillas; el kétchup normal resta 1 y el negro resta 2.</div>
             `;
             document.getElementById('game-container').appendChild(overlay);
 
@@ -1427,6 +1482,7 @@ class VisualNovelEngine {
                     y: -0.1,
                     speed: (0.28 + Math.random() * 0.22) * speedMult,
                     good,
+                    type,
                 });
             };
 
@@ -1483,7 +1539,8 @@ class VisualNovelEngine {
                             player.classList.add('chili-caught');
                             setTimeout(() => player.classList.remove('chili-caught'), 120);
                         } else {
-                            score = Math.max(0, score - 1);
+                            const penalty = item.type === 'corrupt' ? 2 : 1;
+                            score = Math.max(0, score - penalty);
                             field.classList.add('mg-hit');
                             setTimeout(() => field.classList.remove('mg-hit'), 200);
                         }
@@ -1756,7 +1813,8 @@ class VisualNovelEngine {
                             if (score >= phase2Goal) setPhase(3);
                             else if (score >= phase1Goal) setPhase(2);
                         } else {
-                            lives--;
+                            const damage = it.type === 'corrupt' ? 2 : 1;
+                            lives = Math.max(0, lives - damage);
                             livesEl.textContent = `❤️ ${Math.max(0, lives)}`;
                             field.classList.add('mg-hit');
                             setTimeout(() => field.classList.remove('mg-hit'), 200);
@@ -5905,7 +5963,7 @@ class VisualNovelEngine {
         return this.currentLine >= reveal.line;
     }
 
-    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null) {
+    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null, offsetY = null, scale = null) {
         const characterKey = this.getCharacterKey(characterName);
         let character = this.characters[characterKey];
         if (!character) {
@@ -5951,10 +6009,10 @@ class VisualNovelEngine {
             const videoPath = character.poses && character.poses[`${pose}_video`];
             this.updateCharacterVideo(charElement, videoPath);
 
-            // Aplicar flip horizontal si está especificado (sin animación) y el
-            // escalado por personaje de los compañeros (p. ej. José un 18% más grande)
-            const characterScale = this.getCharacterScale(characterKey);
-            const characterVerticalOffset = this.getCharacterVerticalOffset(characterKey);
+            // Aplicar flip horizontal si está especificado (sin animación) junto
+            // al tamaño y la altura que pida el guión para esta aparición.
+            const characterScale = this.resolveScale(scale);
+            const characterVerticalOffset = this.resolveVerticalOffset(offsetY);
             charElement.style.transform = `${flipped ? 'scaleX(-1)' : 'scaleX(1)'} translateY(${characterVerticalOffset}) scale(${characterScale})`;
 
             // Entrada animada opcional ("right"/"left"/"bottom"/"fade"). Usa la
@@ -5983,27 +6041,21 @@ class VisualNovelEngine {
         this.layoutCharacters();
     }
 
-    // Escala visual por personaje (cambios de los compañeros): permite que un
-    // personaje concreto se dibuje más grande sin tocar su sprite.
-    getCharacterScale(characterKey) {
-        const characterScales = {
-            airi: 0.7,
-            tung_tung_tung_sahur: 1.5,
-            jose: 1.18,
-            amalgama: 1.2,
-            amalgama_final: 1.2
-        };
-        return characterScales[characterKey] || 1;
+    // El guión manda el encuadre de cada aparición: `offsetY` baja (o sube, en
+    // negativo) al personaje esa fracción de su propia altura, para escenas donde
+    // la estatura es parte de la narración (los Ketchlings miden cuarenta
+    // centímetros y solo asoman la cabeza sobre el cuadro de diálogo; Tung, con
+    // su 1.5 de escala, baja para no salirse por arriba). Admite "40%" o 40.
+    resolveVerticalOffset(offsetY) {
+        if (offsetY == null || offsetY === '') return '0%';
+        return typeof offsetY === 'number' ? `${offsetY}%` : String(offsetY);
     }
 
-    // Al ampliar un sprite vertical, el origen inferior empuja la cabeza fuera
-    // del escenario. Tung baja lo justo para conservar el rostro y convertir
-    // su aparición en un plano de cintura cubierto por el cuadro de diálogo.
-    getCharacterVerticalOffset(characterKey) {
-        const characterVerticalOffsets = {
-            tung_tung_tung_sahur: '38%'
-        };
-        return characterVerticalOffsets[characterKey] || '0%';
+    // `scale` en showCharacter dibuja al personaje más grande o más pequeño sin
+    // tocar su sprite (José un 18% más grande, Airi de niña un 30% más pequeña).
+    resolveScale(scale) {
+        const value = Number(scale);
+        return Number.isFinite(value) && value > 0 ? value : 1;
     }
 
     // Reparte a los personajes ACTIVOS en franjas horizontales iguales.
@@ -6020,7 +6072,7 @@ class VisualNovelEngine {
         });
         const N = active.length;
         if (N === 0) return;
-        const W = 42; // ancho fijo de cada personaje (%), igual que el CSS base
+        const W = 50; // ancho fijo de cada personaje (%), igual que el CSS base
         active.forEach((p, i) => {
             const el = document.getElementById(`character-${p}`);
             const cx = ((2 * i + 1) / (2 * N)) * 100; // centro de su franja (%)
@@ -6794,6 +6846,153 @@ class VisualNovelEngine {
         return effectiveEmotion;
     }
 
+    // La velocidad y la duración del typewriter se calculan en un único lugar.
+    // Así la partida, la vista previa de Configuración y las herramientas de
+    // autoría usan exactamente los mismos grafemas y pausas de puntuación.
+    splitTextGraphemes(value = '') {
+        const text = String(value || '');
+        return this._textSegmenter
+            ? Array.from(this._textSegmenter.segment(text), part => part.segment)
+            : Array.from(text);
+    }
+
+    getTextSpeedMultiplier(line = {}) {
+        return line.textSpeed === 'slow' ? 2.2
+             : line.textSpeed === 'fast' ? 0.45
+             : (typeof line.textSpeed === 'number' && Number.isFinite(line.textSpeed))
+             ? Math.max(0, line.textSpeed)
+             : 1;
+    }
+
+    getTextPunctuationPause(character) {
+        if (typeof window !== 'undefined' && window.Juice?.punctuationPause) {
+            return window.Juice.punctuationPause(character);
+        }
+        if ('.!?…'.includes(character)) return 240;
+        if (',;:—'.includes(character)) return 90;
+        return 0;
+    }
+
+    getTextCharacterDelay(character, line = {}, baseDelay = this.typingSpeed) {
+        const safeBase = Math.max(0, Number(baseDelay) || 0);
+        const speedMultiplier = this.getTextSpeedMultiplier(line);
+        return (
+            safeBase + this.getTextPunctuationPause(character) * (safeBase / 50)
+        ) * speedMultiplier;
+    }
+
+    getExplicitTextDuration(line = {}) {
+        if (line.textDuration === undefined || line.textDuration === null) return null;
+        const duration = Number(line.textDuration);
+        if (!Number.isFinite(duration) || duration < 0) {
+            console.warn('textDuration debe ser un número de milisegundos mayor o igual que 0');
+            return null;
+        }
+        return duration;
+    }
+
+    // Devuelve la estimación completa con el preset seleccionado actualmente.
+    // `visibleDurationMs` mide hasta que aparece el último grafema y `durationMs`
+    // incluye además la pausa final con la que el motor cierra una línea normal.
+    // Si hay textDuration, ambos valores coinciden exactamente con ese override.
+    calculateTextTiming(line = {}) {
+        const graphemes = this.splitTextGraphemes(line.text || '');
+        const exactDurationMs = this.getExplicitTextDuration(line);
+        const speedMultiplier = this.getTextSpeedMultiplier(line);
+
+        if (exactDurationMs !== null) {
+            if (graphemes.length === 0) {
+                return {
+                    graphemes,
+                    delaysAfter: [],
+                    initialDelayMs: exactDurationMs,
+                    visibleDurationMs: exactDurationMs,
+                    durationMs: exactDurationMs,
+                    exactDurationMs,
+                    speedMultiplier,
+                    typingSpeedMs: this.typingSpeed,
+                    isInstant: exactDurationMs === 0,
+                    finishOnLastCharacter: true
+                };
+            }
+
+            // El primer grafema aparece al iniciar, como en el typewriter normal.
+            // El tiempo exacto se reparte entre los huecos restantes conservando
+            // proporcionalmente el ritmo de comas, puntos y exclamaciones.
+            if (graphemes.length === 1) {
+                return {
+                    graphemes,
+                    delaysAfter: [0],
+                    initialDelayMs: exactDurationMs,
+                    visibleDurationMs: exactDurationMs,
+                    durationMs: exactDurationMs,
+                    exactDurationMs,
+                    speedMultiplier,
+                    typingSpeedMs: this.typingSpeed,
+                    isInstant: exactDurationMs === 0,
+                    finishOnLastCharacter: true
+                };
+            }
+
+            const rhythmWeights = graphemes
+                .slice(0, -1)
+                .map(character => 50 + this.getTextPunctuationPause(character));
+            const totalWeight = rhythmWeights.reduce((sum, weight) => sum + weight, 0);
+            const scale = totalWeight > 0 ? exactDurationMs / totalWeight : 0;
+            const delaysAfter = rhythmWeights.map(weight => weight * scale);
+            delaysAfter.push(0);
+            return {
+                graphemes,
+                delaysAfter,
+                initialDelayMs: 0,
+                visibleDurationMs: exactDurationMs,
+                durationMs: exactDurationMs,
+                exactDurationMs,
+                speedMultiplier,
+                typingSpeedMs: this.typingSpeed,
+                isInstant: exactDurationMs === 0,
+                finishOnLastCharacter: true
+            };
+        }
+
+        const delaysAfter = graphemes.map(character =>
+            this.getTextCharacterDelay(character, line)
+        );
+        const visibleDurationMs = delaysAfter
+            .slice(0, Math.max(0, delaysAfter.length - 1))
+            .reduce((sum, delay) => sum + delay, 0);
+        const durationMs = delaysAfter.reduce((sum, delay) => sum + delay, 0);
+        return {
+            graphemes,
+            delaysAfter,
+            initialDelayMs: 0,
+            visibleDurationMs,
+            durationMs,
+            exactDurationMs: null,
+            speedMultiplier,
+            typingSpeedMs: this.typingSpeed,
+            isInstant: this.typingSpeed <= 0 || speedMultiplier <= 0,
+            finishOnLastCharacter: false
+        };
+    }
+
+    calculateTextDuration(line = {}, untilVisible = false) {
+        const timing = this.calculateTextTiming(line);
+        return untilVisible ? timing.visibleDurationMs : timing.durationMs;
+    }
+
+    // Acción JSON: { "type": "setTextDuration", "value": 4000 }.
+    // Se reinicia al comenzar cada línea para que nunca se filtre a la siguiente.
+    setLineTextDuration(duration) {
+        const parsed = Number(duration);
+        this._lineTextDurationOverride = Number.isFinite(parsed) && parsed >= 0
+            ? parsed
+            : null;
+        if (this._lineTextDurationOverride === null) {
+            console.warn('setTextDuration requiere milisegundos mayores o iguales que 0');
+        }
+    }
+
     async displayDialog(line) {
         // Actualizar debug panel si está activo
         if (this.debugMode) {
@@ -6946,30 +7145,28 @@ class VisualNovelEngine {
 
         this.isWaitingForInput = false;
 
-        // Velocidad de texto por línea: "slow" (drama), "fast" (pánico) o un
-        // multiplicador numérico. Hereda el blip y las pausas de puntuación.
-        const speedMult = line.textSpeed === 'slow' ? 2.2
-                        : line.textSpeed === 'fast' ? 0.45
-                        : (typeof line.textSpeed === 'number' ? line.textSpeed : 1);
+        const text = line.text;
+        const textTiming = this.calculateTextTiming(line);
 
         return new Promise(resolve => {
             let charIndex = 0;
-            const text = line.text;
             let timeoutId = null;
             let finished = false;
             let cursorMoveFrame = null;
+            let typingPaused = this.textPaused;
+            let nextCharacterAt = 0;
+            let remainingDelay = textTiming.initialDelayMs;
+            let exactTimelineStartedAt = null;
+            let exactNextOffsetMs = 0;
+            let exactPausedDurationMs = 0;
+            let exactTimelinePausedAt = null;
             const printAnchor = document.createElement('span');
             printAnchor.className = 'dialog-print-anchor';
 
             // Escribir por grafemas evita partir emojis o caracteres compuestos.
-            const segmenter = typeof Intl.Segmenter === 'function'
-                ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
-                : null;
-            const splitText = (value) => segmenter
-                ? Array.from(segmenter.segment(value), part => part.segment)
-                : Array.from(value);
+            const splitText = (value) => this.splitTextGraphemes(value);
             let textOffset = 0;
-            const typingUnits = splitText(text).map(value => {
+            const typingUnits = textTiming.graphemes.map(value => {
                 textOffset += value.length;
                 return { value, end: textOffset };
             });
@@ -6999,6 +7196,12 @@ class VisualNovelEngine {
             dialogText.replaceChildren();
             let renderedLength = 0;
             let letterIndex = 0;
+            // Hueco invisible con el texto que queda por escribir (ver renderPending)
+            const ghost = document.createElement('span');
+            ghost.className = 'dialog-ghost';
+            ghost.setAttribute('aria-hidden', 'true');
+            let pendingLetters = [];
+            let currentWord = null;
 
             const followCursorToAnchor = () => {
                 if (!speakerCursor || !speakerCursorSlot || !printAnchor.isConnected) return;
@@ -7051,6 +7254,32 @@ class VisualNovelEngine {
                 }, 280);
             };
 
+            const createLetter = (character, index) => {
+                const letter = document.createElement('span');
+                letter.className = 'dialog-letter';
+                const waveProgress = typingUnits.length > 1
+                    ? index / (typingUnits.length - 1)
+                    : 0;
+                const letterDelay = dialogEmotion === 'surprise'
+                    // Una sola ola recorre la frase completa. El desfase
+                    // antiguo reiniciaba el ciclo cada 14 caracteres y
+                    // dividía visualmente el diálogo en bloques.
+                    ? -(waveProgress * 0.95)
+                    : -((index % 14) * 0.035);
+                letter.style.setProperty('--letter-delay', `${letterDelay}s`);
+                if (dialogEmotion === 'scream') {
+                    const progress = typingUnits.length > 1
+                        ? index / (typingUnits.length - 1)
+                        : 1;
+                    // Crecimiento en curva: el inicio permanece pequeño y
+                    // el final explota hasta casi llenar la caja de diálogo.
+                    const fontSize = 12 + 56 * Math.pow(progress, 2.05);
+                    letter.style.setProperty('--scream-font-size', `${fontSize.toFixed(2)}px`);
+                }
+                letter.textContent = character;
+                return letter;
+            };
+
             const appendText = (parent, value) => {
                 if (!dialogEmotion) {
                     const last = parent.lastChild;
@@ -7060,32 +7289,83 @@ class VisualNovelEngine {
                 }
                 for (const character of splitText(value)) {
                     if (/^\s+$/u.test(character)) {
+                        // El espacio cierra la palabra: la siguiente letra abre
+                        // otro grupo que el navegador ya no puede partir.
+                        currentWord = null;
                         const last = parent.lastChild;
                         if (last && last.nodeType === 3) last.textContent += character;
                         else parent.append(document.createTextNode(character));
                     } else {
-                        const letter = document.createElement('span');
-                        letter.className = 'dialog-letter';
-                        letter.style.setProperty('--letter-delay', `${-(letterIndex % 14) * 0.035}s`);
-                        if (dialogEmotion === 'scream') {
-                            const progress = typingUnits.length > 1
-                                ? letterIndex / (typingUnits.length - 1)
-                                : 1;
-                            // Crecimiento en curva: el inicio permanece pequeño y
-                            // el final explota hasta casi llenar la caja de diálogo.
-                            const fontSize = 12 + 56 * Math.pow(progress, 2.05);
-                            letter.style.setProperty('--scream-font-size', `${fontSize.toFixed(2)}px`);
+                        if (!currentWord || currentWord.parentNode !== parent) {
+                            currentWord = document.createElement('span');
+                            currentWord.className = 'dialog-word';
+                            parent.append(currentWord);
                         }
-                        letter.textContent = character;
-                        parent.append(letter);
+                        currentWord.append(createLetter(character, letterIndex));
                     }
                     letterIndex++;
                 }
                 return parent;
             };
 
+            // Lo que todavía no se ha escrito se dibuja igual, pero invisible, para
+            // que el navegador reparta las líneas con la frase COMPLETA desde el
+            // primer carácter. Sin esto una palabra empieza a escribirse al final
+            // de una línea y salta a la siguiente en cuanto deja de caber.
+            const clearPending = () => {
+                for (const letter of pendingLetters) letter.remove();
+                pendingLetters = [];
+                ghost.remove();
+            };
+
+            const renderPending = (length) => {
+                if (finished || length >= text.length) return;
+
+                if (!dialogEmotion) {
+                    ghost.textContent = text.slice(length);
+                    dialogText.append(ghost);
+                    return;
+                }
+
+                // Con letras animadas (inline-block) el hueco reservado tiene que
+                // tener la misma estructura para medir igual. Las letras que faltan
+                // de la palabra en curso se quedan dentro de SU palabra: en el
+                // fantasma, el salto de línea podría colarse en mitad de la palabra.
+                let index = letterIndex;
+                let inCurrentWord = Boolean(currentWord);
+                let ghostWord = null;
+                ghost.replaceChildren();
+                for (const character of splitText(text.slice(length))) {
+                    const isSpace = /^\s+$/u.test(character);
+                    if (inCurrentWord && !isSpace) {
+                        const letter = createLetter(character, index++);
+                        letter.classList.add('is-pending');
+                        currentWord.append(letter);
+                        pendingLetters.push(letter);
+                        continue;
+                    }
+                    inCurrentWord = false;
+                    if (isSpace) {
+                        ghostWord = null;
+                        ghost.append(document.createTextNode(character));
+                    } else {
+                        if (!ghostWord) {
+                            ghostWord = document.createElement('span');
+                            ghostWord.className = 'dialog-word';
+                            ghost.append(ghostWord);
+                        }
+                        ghostWord.append(createLetter(character, index));
+                    }
+                    index++;
+                }
+                if (ghost.hasChildNodes()) dialogText.append(ghost);
+                // El cursor escribe donde acaba lo visible, no donde acaba el hueco.
+                if (pendingLetters.length) pendingLetters[0].before(printAnchor);
+            };
+
             const appendUntil = (length) => {
                 printAnchor.remove();
+                clearPending();
                 let cursor = renderedLength;
                 let cursorParent = dialogText;
                 while (cursor < length) {
@@ -7112,12 +7392,15 @@ class VisualNovelEngine {
                 renderedLength = length;
                 if (!finished && length > 0) {
                     cursorParent.append(printAnchor);
+                }
+                renderPending(length);
+                if (!finished && length > 0) {
                     followCursorToAnchor();
                 }
             };
 
             const cleanup = () => {
-                if (timeoutId) clearTimeout(timeoutId);
+                if (timeoutId !== null) clearTimeout(timeoutId);
                 if (cursorMoveFrame) {
                     cancelAnimationFrame(cursorMoveFrame);
                     cursorMoveFrame = null;
@@ -7125,6 +7408,9 @@ class VisualNovelEngine {
                 document.removeEventListener('click', skipHandler);
                 if (this._finishTyping === finishTyping) {
                     this._finishTyping = null;
+                }
+                if (this._setTypingPaused === setTypingPaused) {
+                    this._setTypingPaused = null;
                 }
             };
 
@@ -7138,27 +7424,95 @@ class VisualNovelEngine {
                 resolve();
             };
 
+            const scheduleTypeChar = (delay = 0, resumeExistingDeadline = false) => {
+                const requestedDelay = Math.max(0, Number(delay) || 0);
+                if (textTiming.exactDurationMs !== null) {
+                    const now = performance.now();
+                    if (exactTimelineStartedAt === null) exactTimelineStartedAt = now;
+                    if (!resumeExistingDeadline) exactNextOffsetMs += requestedDelay;
+                    const activeElapsed = now - exactTimelineStartedAt - exactPausedDurationMs;
+                    // Se agenda contra una marca absoluta para que el coste de
+                    // pintar cada letra no acumule deriva sobre textDuration.
+                    remainingDelay = Math.max(0, exactNextOffsetMs - activeElapsed);
+                } else {
+                    remainingDelay = requestedDelay;
+                }
+                if (typingPaused || finished) return;
+                nextCharacterAt = performance.now() + remainingDelay;
+                timeoutId = setTimeout(() => {
+                    timeoutId = null;
+                    remainingDelay = 0;
+                    typeChar();
+                }, remainingDelay);
+            };
+
+            const setTypingPaused = (paused) => {
+                const next = !!paused;
+                if (next === typingPaused || finished) return;
+                typingPaused = next;
+
+                if (typingPaused) {
+                    if (textTiming.exactDurationMs !== null && exactTimelineStartedAt !== null) {
+                        exactTimelinePausedAt = performance.now();
+                    }
+                    if (timeoutId !== null) {
+                        clearTimeout(timeoutId);
+                        timeoutId = null;
+                        remainingDelay = Math.max(0, nextCharacterAt - performance.now());
+                    }
+                    return;
+                }
+
+                if (exactTimelinePausedAt !== null) {
+                    exactPausedDurationMs += performance.now() - exactTimelinePausedAt;
+                    exactTimelinePausedAt = null;
+                }
+                // Reanuda el mismo intervalo pendiente. Si el HUD se ocultó
+                // antes de empezar la línea, remainingDelay es 0 y arranca ya.
+                scheduleTypeChar(remainingDelay, exactTimelineStartedAt !== null);
+            };
+
             const typeChar = () => {
-                if (this.fastForward) {
+                if (typingPaused) return;
+                if (
+                    this.fastForward ||
+                    (textTiming.exactDurationMs === null && (
+                        this.typingSpeed <= 0 || this.getTextSpeedMultiplier(line) <= 0
+                    ))
+                ) {
                     finishTyping();
                     return;
                 }
 
+                if (textTiming.exactDurationMs !== null && exactTimelineStartedAt === null) {
+                    exactTimelineStartedAt = performance.now();
+                }
+
                 if (charIndex < typingUnits.length) {
-                    const unit = typingUnits[charIndex];
+                    const unitIndex = charIndex;
+                    const unit = typingUnits[unitIndex];
                     const ch = unit.value;
                     charIndex++;
                     appendUntil(unit.end);
-                    // Blip por letra (tono según el que habla) y pausa extra en la
-                    // puntuación para dar ritmo al texto.
-                    let delay = this.typingSpeed * speedMult;
+                    // El blip conserva el tono del hablante. El intervalo sale del
+                    // cálculo común, incluida la puntuación y el ajuste del usuario.
                     if (window.Juice) {
                         if (localStorage.getItem('illo_text_blip') !== '0') {
                             window.Juice.blip(ch, speakerName);
                         }
-                        delay += window.Juice.punctuationPause(ch);
                     }
-                    timeoutId = setTimeout(typeChar, delay);
+
+                    // Una duración exacta termina al pintar el último grafema; una
+                    // línea normal conserva la pausa final histórica del motor.
+                    if (charIndex >= typingUnits.length && textTiming.finishOnLastCharacter) {
+                        finishTyping();
+                        return;
+                    }
+
+                    const delay = textTiming.exactDurationMs !== null
+                        ? (textTiming.delaysAfter[unitIndex] || 0)
+                        : this.getTextCharacterDelay(ch, line);
+                    scheduleTypeChar(delay);
                 } else {
                     finishTyping();
                 }
@@ -7172,12 +7526,17 @@ class VisualNovelEngine {
 
             document.addEventListener('click', skipHandler);
             this._finishTyping = finishTyping;
+            this._setTypingPaused = setTypingPaused;
             speakerCursor?.classList.add('is-typing');
 
-            if (this.fastForward) {
+            if (this.fastForward || textTiming.isInstant) {
                 finishTyping();
-            } else {
-                typeChar();
+            } else if (!typingPaused) {
+                if (textTiming.initialDelayMs > 0) {
+                    scheduleTypeChar(textTiming.initialDelayMs);
+                } else {
+                    typeChar();
+                }
             }
         });
     }
@@ -7321,6 +7680,10 @@ class VisualNovelEngine {
         }
         if (!line) return false;
 
+        // Las acciones de una línea pueden fijar su duración, pero el valor no
+        // debe heredarse accidentalmente por el siguiente diálogo.
+        this._lineTextDurationOverride = null;
+
         // Resetear el flag de input esperando. Se re-seteará a true si la línea tiene diálogo
         this.isWaitingForInput = false;
 
@@ -7348,7 +7711,18 @@ class VisualNovelEngine {
 
         // Mostrar diálogo si existe (con posible variante por consecuencia)
         if (line.text) {
-            await this.displayDialog(this.resolveConsequenceLine(line));
+            // Cuántos diálogos llevamos vistos DENTRO de esta escena. Es lo que
+            // distingue "acabo de entrar" (1) de "ya he avanzado por aquí" (>1),
+            // y con eso decide retroceder si vuelve al principio de esta escena
+            // o sale a la anterior. Se pone a cero al entrar en cada escena.
+            this.sceneAdvances++;
+            const resolvedLine = this.resolveConsequenceLine(line);
+            const durationOverride = resolvedLine.textDuration != null
+                ? resolvedLine.textDuration
+                : this._lineTextDurationOverride;
+            await this.displayDialog(durationOverride == null
+                ? resolvedLine
+                : Object.assign({}, resolvedLine, { textDuration: durationOverride }));
         }
 
         // jumpToScene ya dejó currentScene/currentLine apuntando al destino. Si
@@ -7433,6 +7807,12 @@ class VisualNovelEngine {
                 // Registrar la llamada solo si de verdad entramos en la escena de llamada
                 this.registerCall(this.getCurrentScene());
 
+                // Apilar la escena elegida AHORA (después de registrar la llamada,
+                // que forma parte del estado con el que se entra en ella). Así,
+                // mientras el jugador sigue viendo la pregunta, retroceder ya sabe
+                // que la escena de la decisión es la anterior y vuelve a ella.
+                this.recordSceneEntry();
+
                 return true;
             } else if (selectedChoice.nextLine !== undefined) {
                 this.currentLine = selectedChoice.nextLine;
@@ -7457,6 +7837,11 @@ class VisualNovelEngine {
             if (this.currentScene >= this.currentChapter.scenes.length) {
                 return false; // Fin del capítulo
             }
+
+            // La última línea de la escena sigue en pantalla esperando el clic,
+            // pero ya estamos en la siguiente: apilarla ahora para que retroceder
+            // vuelva al principio de la escena que se acaba de leer.
+            this.recordSceneEntry();
         }
 
         return true;
@@ -7486,15 +7871,38 @@ class VisualNovelEngine {
     }
 
     // ============================================================
-    // RETROCEDER a la escena anterior (pedido en la demo del 25-jul-2026)
+    // RETROCEDER (pedido en la demo del 25-jul-2026)
     // ------------------------------------------------------------
-    // La escena es la unidad narrativa, así que se retrocede al PRINCIPIO de la
-    // escena anterior y se la deja volver a ejecutarse entera: sus acciones
-    // vuelven a poner el fondo, los personajes, la música y los efectos. Por eso
-    // hay que limpiar antes el escenario (si no, se quedan encima los restos de
-    // la escena de la que venimos) y devolver el progreso al estado que tenía al
-    // entrar en aquella escena (si no, cosas como "rescatado" o el inventario se
-    // contarían dos veces al repetirla).
+    // La escena es la unidad narrativa, así que siempre se retrocede al PRINCIPIO
+    // de una escena y se la deja volver a ejecutarse entera: sus acciones vuelven
+    // a poner el fondo, los personajes, la música y los efectos. Por eso hay que
+    // limpiar antes el escenario (si no, se quedan encima los restos de la escena
+    // de la que venimos) y devolver el progreso al estado que tenía al entrar en
+    // aquella escena (si no, cosas como "rescatado" o el inventario se contarían
+    // dos veces al repetirla).
+    //
+    // A QUÉ ESCENA SE VUELVE (dos casos, pedido el 3-ago-2026):
+    //   - Si ya se ha avanzado algún diálogo dentro de la escena actual, se
+    //     vuelve al principio de ESTA escena. Es lo que espera quien se ha
+    //     pasado de clic: repetir lo que se acaba de leer, no salir de la escena.
+    //   - Si estamos recién entrados (en su primer diálogo), se sale a la escena
+    //     ANTERIOR, la que dejamos justo antes de esta.
+    //
+    // El "de dónde vengo" es la pila `sceneHistory`: cada vez que se pisa una
+    // escena nueva se apila su índice junto a la foto del progreso. Retroceder
+    // desapila la escena actual y se queda en la de debajo, que SIGUE en la pila
+    // con su foto original; así el siguiente retroceso baja otro escalón en vez
+    // de caer siempre a la primera escena del capítulo.
+    //
+    // La escena se apila EN EL MISMO MOMENTO en que se cambia de escena (elección,
+    // goToScene o final de escena), no cuando se pinta su primera línea. Entre las
+    // dos cosas hay una espera: al elegir una opción o al leer la última línea de
+    // una escena, `currentScene` ya apunta a la escena nueva pero el bucle sigue
+    // parado esperando el clic del jugador. Si en ese hueco se apilaba tarde, el
+    // historial acababa en la escena ANTERIOR y retroceder se volvía loco: creía
+    // estar "avanzado" en la escena nueva (los diálogos contados eran los de la
+    // vieja) y reiniciaba una escena que aún no se había visto, o desapilaba la
+    // entrada equivocada y caía en la primera escena del capítulo.
     // ============================================================
 
     // Foto del progreso al entrar en una escena. Se llama desde nextLine().
@@ -7547,6 +7955,7 @@ class VisualNovelEngine {
         if (!this.currentChapter) return;
         if (this._lastSeenScene === this.currentScene) return;
         this._lastSeenScene = this.currentScene;
+        this.sceneAdvances = 0; // escena nueva: aún no se ha avanzado nada en ella
         this.sceneHistory = this.sceneHistory || [];
         this.sceneHistory.push({
             chapter: this.lastChapterName,
@@ -7564,20 +7973,52 @@ class VisualNovelEngine {
         if (this.sceneHistory.length > 60) this.sceneHistory.shift();
     }
 
-    // ¿Hay algo a lo que volver? (el botón se oculta si no)
+    // ¿Hay algo a lo que volver? (el botón se oculta si no). Hay dos motivos:
+    // queda alguna escena por debajo en la pila, o se ha avanzado dentro de la
+    // escena actual y se puede volver a su principio (esto último vale también
+    // en la primera escena del capítulo, donde antes el botón no aparecía).
     canRewind() {
-        return !!(this.currentChapter && this.sceneHistory && this.sceneHistory.length > 1);
+        if (!this.currentChapter) return false;
+        const hist = this.sceneHistory || [];
+        return hist.length > 1 || (hist.length === 1 && this.sceneAdvances > 1);
     }
 
     // Deja el escenario en blanco sin tocar el progreso de la partida.
-    clearStage() {
-        this.stopAllSounds();
+    // Las cinemáticas preservan el audio para que playVideo gestione su fundido.
+    clearStage(options = {}) {
+        const preserveAudio = options.preserveAudio === true;
+        const immediate = options.immediate === true;
+
+        if (!preserveAudio) this.stopAllSounds();
         this.hideDialog();
+        this.clearAdvanceBoundCharacterEffects();
 
         ['character-left', 'character-right', 'character-center'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
-                this.resetCharacterSlotElement(el, id.replace('character-', ''));
+                this.clearCharacterAnimeFall(el);
+                clearTimeout(el._contactGlitchTimer);
+                clearTimeout(el._fullSignalGlitchTimer);
+                el._contactGlitchTimer = null;
+                el._fullSignalGlitchTimer = null;
+                el.classList.remove(
+                    'active',
+                    'speaking',
+                    'char-exit-fade',
+                    'contact-glitch',
+                    'full-signal-glitch'
+                );
+                el.style.removeProperty('--contact-glitch-duration');
+                el.style.removeProperty('--full-glitch-duration');
+                el.style.backgroundImage = '';
+
+                const videoContainer = el.querySelector('.character-video-container');
+                if (videoContainer) {
+                    videoContainer.querySelectorAll('video').forEach(video => {
+                        try { video.pause(); } catch (e) {}
+                    });
+                    videoContainer.remove();
+                }
             }
         });
         for (const [position, entry] of this._characterPoseAnimations) {
@@ -7595,7 +8036,19 @@ class VisualNovelEngine {
         this.speakingPosition = null;
 
         if (window.Juice) window.Juice.reset();
-        this.hideCG?.();
+        this.hideCG?.(immediate ? 0 : undefined);
+        if (immediate) {
+            const cg = document.getElementById('cg-layer');
+            if (cg) {
+                cg.style.transition = 'none';
+                cg.style.opacity = '0';
+                cg.classList.remove('cg-visible');
+                cg.style.backgroundImage = '';
+                cg.style.backgroundSize = '';
+                cg.style.backgroundPosition = '';
+                cg.style.boxShadow = '';
+            }
+        }
 
         const bg = document.getElementById('background');
         if (bg) bg.style.backgroundImage = '';
@@ -7635,13 +8088,16 @@ class VisualNovelEngine {
         if (choices) { choices.classList.remove('active'); choices.innerHTML = ''; }
     }
 
-    // Vuelve al principio de la escena anterior dejándolo todo como estaba.
-    rewindToPreviousScene() {
-        if (!this.canRewind()) return false;
-
-        this.sceneHistory.pop();                       // la escena en la que estamos
-        const destino = this.sceneHistory[this.sceneHistory.length - 1];
-        if (!destino) return false;
+    // Devuelve el progreso a la foto guardada al entrar en una escena.
+    restoreSceneSnapshot(foto) {
+        if (!foto) return;
+        this.gameState = JSON.parse(JSON.stringify(foto.gameState || {}));
+        this.rescued = [...foto.rescued];
+        this.completedCalls = [...foto.completedCalls];
+        this.inventory = [...foto.inventory];
+        this.storyDelay = foto.storyDelay;
+        this.nextChapter = foto.nextChapter;
+    }
 
         this.gameState = JSON.parse(JSON.stringify(destino.gameState || {}));
         this.rescued = [...destino.rescued];
@@ -7658,14 +8114,44 @@ class VisualNovelEngine {
 
         this.currentScene = destino.scene;
         this.currentLine = 0;
+        this.sceneAdvances = 0;
         this.sceneEndedByChoice = false;
         this.pendingSceneJump = false;
-        // Volver a marcarla como "no vista" para que recordSceneEntry la
-        // registre otra vez al reproducirla.
-        this._lastSeenScene = null;
-        this.sceneHistory.pop();
-
+        this._lastSeenScene = indiceEscena;
         this.updateDebugPanel();
+    }
+
+    // Retrocede al principio de la escena actual o de la anterior, según se haya
+    // avanzado ya por esta escena o no (ver el bloque de arriba).
+    rewindToPreviousScene() {
+        if (!this.canRewind()) return false;
+
+        const hist = this.sceneHistory;
+        const actual = hist[hist.length - 1];
+        const esLaActual = !!actual && actual.scene === this.currentScene;
+
+        // Caso 1: ya hemos leído más de un diálogo aquí -> al principio de ESTA
+        // escena. El historial no se toca: seguimos en la misma escena.
+        // Se exige que la cima del historial sea esta escena: si no lo es, los
+        // diálogos contados son los de la escena anterior y "reiniciar" acabaría
+        // repitiendo una escena que el jugador todavía no ha visto.
+        if (esLaActual && this.sceneAdvances > 1) {
+            this.restoreSceneSnapshot(actual);
+            this.replayScene(this.currentScene);
+            return true;
+        }
+
+        // Caso 2: salir a la escena anterior. Se desapila la actual y nos
+        // quedamos en la de debajo, que permanece en el historial.
+        if (esLaActual) hist.pop();
+        const destino = hist[hist.length - 1];
+        if (!destino) {
+            if (esLaActual) hist.push(actual); // deshacer: no había a dónde ir
+            return false;
+        }
+
+        this.restoreSceneSnapshot(destino);
+        this.replayScene(destino.scene);
         return true;
     }
 
@@ -7733,9 +8219,13 @@ class VisualNovelEngine {
         this.restoreSceneStageState(restoredStage);
         this.currentScene = i;
         this.currentLine = 0;
+        this.sceneAdvances = 0;
         this.sceneEndedByChoice = false;
         this.pendingSceneJump = false;
-        this._lastSeenScene = null;
+        // Si ya estaba en el historial se conserva su entrada, y por eso se marca
+        // como vista (apilarla otra vez duplicaría el escalón); si es una escena
+        // nueva, se deja que se registre sola al entrar.
+        this._lastSeenScene = visitada ? i : null;
         this.updateDebugPanel();
         return true;
     }
@@ -7747,6 +8237,7 @@ class VisualNovelEngine {
         this.history = [];
         this.sceneHistory = [];
         this._lastSeenScene = null;
+        this.sceneAdvances = 0;
         this.lastChapterName = null;
         this.speakingCharacter = null;
         this.speakingPosition = null;
