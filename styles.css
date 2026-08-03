@@ -4455,6 +4455,114 @@ html.electron-app #menu-theme-btn { display: none; }
     filter: drop-shadow(0 0 6px rgba(255, 209, 102, 0.9));
 }
 
+.nm-shortcut.is-checking .nm-shortcut-icon {
+    animation: tools-check-spin .8s linear infinite;
+}
+
+@keyframes tools-check-spin {
+    to { transform: rotate(360deg); }
+}
+
+.sr-only {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.dev-service-dialog {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: grid;
+    place-items: center;
+    padding: 32px;
+    background: rgba(3, 5, 16, .76);
+    -webkit-backdrop-filter: blur(9px);
+    backdrop-filter: blur(9px);
+}
+
+.dev-service-dialog[hidden] { display: none; }
+
+.dev-service-card {
+    width: min(620px, 92%);
+    display: grid;
+    grid-template-columns: 54px 1fr;
+    gap: 18px 20px;
+    padding: 28px 30px;
+    color: #f6f7ff;
+    border: 1px solid rgba(113, 225, 255, .48);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(17, 22, 49, .98), rgba(28, 13, 46, .98));
+    box-shadow: 0 24px 80px rgba(0, 0, 0, .65), inset 0 0 28px rgba(74, 199, 255, .06);
+}
+
+.dev-service-icon {
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    border: 2px solid #ffc85a;
+    border-radius: 50%;
+    color: #ffc85a;
+    font: 800 30px/1 'Outfit', sans-serif;
+    box-shadow: 0 0 20px rgba(255, 200, 90, .24);
+}
+
+.dev-service-card h2 {
+    margin: 1px 0 9px;
+    color: #fff;
+    font-size: 25px;
+}
+
+.dev-service-card p {
+    margin: 0;
+    color: rgba(235, 239, 255, .82);
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.dev-service-card code { color: #8de9ff; }
+
+.dev-service-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 3px;
+}
+
+.dev-service-actions button {
+    min-height: 42px;
+    padding: 9px 17px;
+    color: #f5f7ff;
+    border: 1px solid rgba(165, 177, 255, .35);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .07);
+    font: 700 14px/1 'Outfit', sans-serif;
+    cursor: pointer;
+}
+
+.dev-service-actions button:first-child {
+    color: #07121a;
+    border-color: #78e4ff;
+    background: linear-gradient(135deg, #77e8ff, #72ffbd);
+}
+
+.dev-service-actions button:hover,
+.dev-service-actions button:focus-visible {
+    transform: translateY(-1px);
+    border-color: #fff;
+    outline: 2px solid rgba(113, 225, 255, .42);
+    outline-offset: 2px;
+}
+
 /* Botón ♪ del menú: burbuja de cristal abajo-derecha */
 .neon-menu .menu-theme-btn {
     top: auto;

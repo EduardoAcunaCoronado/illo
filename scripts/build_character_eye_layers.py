@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+import hashlib
 import io
 import json
 import math
@@ -26,7 +27,7 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 import cv2
 import numpy as np
@@ -61,6 +62,13 @@ WHITE_HALO_EDITOR_PATH = Path(__file__).with_name("sprite_white_halo_editor.html
 TOOLS_MENU_PATH = Path(__file__).with_name("eye_tools_menu.html")
 LEGACY_CHARACTER_KEYS = {"epod"}
 SUPPORTED_IMAGES = {".png", ".webp", ".jpg", ".jpeg"}
+TOOLS_SERVICE_NAME = "project-airi-eye-tools"
+TOOLS_PROTOCOL_VERSION = 1
+_CANONICAL_ROOT = str(ROOT.resolve())
+if os.name == "nt":
+    _CANONICAL_ROOT = _CANONICAL_ROOT.lower()
+TOOLS_ROOT_ID = hashlib.sha256(_CANONICAL_ROOT.encode("utf-8")).hexdigest()[:16]
+LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "::1"}
 
 # Regiones normalizadas (x1, y1, x2, y2) para poses donde el detector no ve
 # un rostro fiable. Se completa y revisa visualmente mediante --qa-dir.
@@ -1210,17 +1218,92 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
     def log_message(self, format: str, *args: Any) -> None:
         print(f"[eye-editor] {self.address_string()} {format % args}")
 
-    def send_json(self, payload: Any, status: HTTPStatus = HTTPStatus.OK) -> None:
+    def send_json(
+        self,
+        payload: Any,
+        status: HTTPStatus = HTTPStatus.OK,
+        allow_loopback_cors: bool = False,
+    ) -> None:
         encoded = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(encoded)))
         self.send_header("Cache-Control", "no-store")
+        if allow_loopback_cors:
+            origin = self.headers.get("Origin", "")
+            try:
+                parsed_origin = urlsplit(origin)
+                if (
+                    parsed_origin.scheme in {"http", "https"}
+                    and parsed_origin.hostname in LOOPBACK_HOSTS
+                ):
+                    self.send_header("Access-Control-Allow-Origin", origin)
+                    self.send_header("Vary", "Origin")
+            except ValueError:
+                pass
         self.end_headers()
         self.wfile.write(encoded)
 
+    def request_host_is_local(self) -> bool:
+        try:
+            bound_port = int(self.server.server_address[1])
+            host = urlsplit(f"http://{self.headers.get('Host', '')}")
+            return host.hostname in LOOPBACK_HOSTS and (host.port or 80) == bound_port
+        except (TypeError, ValueError):
+            return False
+
+    def request_path_is_public(self) -> bool:
+        try:
+            decoded = unquote(urlsplit(self.path).path).replace("\\", "/")
+            return not any(part.startswith(".") for part in decoded.split("/"))
+        except (TypeError, ValueError):
+            return False
+
+    def mutation_request_is_local(self) -> bool:
+        """Impide que una web externa use el editor local para escribir archivos."""
+        try:
+            if not self.request_host_is_local():
+                return False
+            bound_port = int(self.server.server_address[1])
+
+            origin = self.headers.get("Origin")
+            if origin:
+                parsed_origin = urlsplit(origin)
+                origin_port = parsed_origin.port or (
+                    443 if parsed_origin.scheme == "https" else 80
+                )
+                return (
+                    parsed_origin.scheme in {"http", "https"}
+                    and parsed_origin.hostname in LOOPBACK_HOSTS
+                    and origin_port == bound_port
+                )
+
+            # curl/urllib no envían Origin. Un navegador sí aporta Sec-Fetch-Site;
+            # sin Origin sólo se admite una petición inequívocamente same-origin.
+            fetch_site = self.headers.get("Sec-Fetch-Site")
+            return fetch_site in {None, "same-origin", "none"}
+        except (TypeError, ValueError):
+            return False
+
     def do_GET(self) -> None:
+        if not self.request_host_is_local():
+            self.send_error(HTTPStatus.FORBIDDEN)
+            return
+        if not self.request_path_is_public():
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
         request = urlsplit(self.path)
+        if request.path == "/api/health":
+            self.send_json(
+                {
+                    "ok": True,
+                    "service": TOOLS_SERVICE_NAME,
+                    "protocolVersion": TOOLS_PROTOCOL_VERSION,
+                    "rootId": TOOLS_ROOT_ID,
+                },
+                allow_loopback_cors=True,
+            )
+            return
         if request.path == "/api/alignment-locations":
             try:
                 query = parse_qs(request.query)
@@ -1363,7 +1446,22 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             return
         super().do_GET()
 
+    def do_HEAD(self) -> None:
+        if not self.request_host_is_local():
+            self.send_error(HTTPStatus.FORBIDDEN)
+            return
+        if not self.request_path_is_public():
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
+        super().do_HEAD()
+
     def do_POST(self) -> None:
+        if not self.mutation_request_is_local():
+            self.send_json(
+                {"ok": False, "error": "Origen no autorizado"},
+                HTTPStatus.FORBIDDEN,
+            )
+            return
         if self.path == "/api/build-preview":
             try:
                 jobs = collect_jobs(manual_only=True)

@@ -22,13 +22,19 @@ npm install
 npm start
 ```
 
-Alternativa en navegador:
+Alternativa recomendada en navegador:
 
 ```powershell
-python -m http.server 8000
+start.bat
 ```
 
-Después abre <http://localhost:8000/>. No abras `index.html` directamente con
+Abre automáticamente <http://127.0.0.1:8000/> y levanta también Tools en 8011;
+`Ctrl+C` cierra los servicios iniciados por el lanzador. `npm run dev:web` hace
+lo mismo sin abrir una pestaña. El supervisor comprueba que ambos servicios
+pertenecen a esta misma copia del repositorio. `python -m http.server 8000`
+sirve para probar sólo el juego; para usar Tools desde su icono emplea el
+supervisor, o abre Tools directamente con `npm run tools:eyes`.
+No abras `index.html` directamente con
 `file://`: los capítulos, personajes, audio y vídeo necesitan un servidor.
 
 Controles esenciales:
@@ -79,6 +85,10 @@ mismo servidor que el juego. Estos dos accesos son de desarrollo: sólo aparecen
 en local o en Electron sin empaquetar. Ambas pantallas incluyen **Menú
 principal** para volver directamente al menú sin repetir el opening, incluso
 cuando Electron utiliza un puerto interno distinto de 8000.
+El botón comprueba primero que el servicio correcto está vivo y que corresponde
+a la misma carpeta del proyecto. Si 8011 está
+apagado, mantiene abierto el menú y ofrece reintentar o copiar el comando; en
+Electron de desarrollo intenta iniciar Tools automáticamente.
 
 ## Antes de entregar un cambio
 

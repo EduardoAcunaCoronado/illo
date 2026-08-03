@@ -269,6 +269,150 @@ if (toolsMenuLink && canUseDevelopmentShortcuts) {
   toolsMenuLink.href = toolsUrl.href;
 }
 
+const toolsOfflineDialog = document.getElementById("tools-offline-dialog");
+const toolsOfflineMessage = document.getElementById("tools-offline-message");
+const toolsStatus = document.getElementById("menu-tools-status");
+const toolsRetryBtn = document.getElementById("tools-retry-btn");
+const toolsCopyCommandBtn = document.getElementById("tools-copy-command-btn");
+const toolsDialogClose = document.getElementById("tools-dialog-close");
+let toolsCheckRunning = false;
+
+function closeToolsOfflineDialog() {
+  if (!toolsOfflineDialog || toolsOfflineDialog.hidden) return;
+  toolsOfflineDialog.hidden = true;
+  toolsMenuLink?.focus();
+}
+
+function toolsFailureMessage(result) {
+  const reason = result?.reason;
+  if (reason === "port-occupied") {
+    return "El puerto 8011 está ocupado por otro programa o por otra copia del proyecto. Ciérralo y pulsa Reintentar.";
+  }
+  if (reason === "python-unavailable") {
+    return "Electron no encuentra Python. Instálalo o ejecuta ABRIR_EDITOR_OJOS.bat para ver el diagnóstico completo.";
+  }
+  if (reason === "start-failed") {
+    return "Tools intentó iniciarse, pero Python terminó con un error. Ejecuta ABRIR_EDITOR_OJOS.bat para ver el detalle.";
+  }
+  if (reason === "wrong-project") {
+    return "El puerto 8011 pertenece a Tools de otra copia del proyecto. Cierra aquel servidor y vuelve a ejecutar start.bat desde esta carpeta.";
+  }
+  if (reason === "unsupported-game-server") {
+    return "Este servidor del juego no puede verificar a qué copia pertenece Tools. Reinicia el proyecto con start.bat o npm run dev:web.";
+  }
+  return "El servidor de Tools no está activo. Inicia el proyecto con start.bat —levanta 8000 y 8011 juntos— o ejecuta ABRIR_EDITOR_OJOS.bat, y pulsa Reintentar.";
+}
+
+function showToolsOfflineDialog(result) {
+  if (!toolsOfflineDialog) return;
+  if (toolsOfflineMessage) toolsOfflineMessage.textContent = toolsFailureMessage(result);
+  toolsOfflineDialog.hidden = false;
+  queueMicrotask(() => toolsRetryBtn?.focus());
+}
+
+async function checkEyeToolsHealth() {
+  if (!toolsMenuLink) return { ok: false };
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 1600);
+  try {
+    const healthUrl = new URL("/api/health", toolsMenuLink.href);
+    const gameHealthUrl = new URL("/api/dev-health", location.origin);
+    const gameResponse = await fetch(gameHealthUrl, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!gameResponse.ok) return { ok: false, reason: "unsupported-game-server" };
+    const gameHealth = await gameResponse.json();
+    const validGame = gameHealth?.ok === true
+      && gameHealth?.service === "project-airi-game-dev"
+      && gameHealth?.protocolVersion === 1;
+    if (!validGame) return { ok: false, reason: "unsupported-game-server" };
+
+    const response = await fetch(healthUrl, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+    if (!response.ok) return { ok: false };
+    const health = await response.json();
+    const validTools = health?.ok === true
+      && health?.service === "project-airi-eye-tools"
+      && health?.protocolVersion === 1;
+    if (!validTools) return { ok: false };
+    if (!health.rootId || health.rootId !== gameHealth.rootId) {
+      return { ok: false, reason: "wrong-project" };
+    }
+    return { ok: true };
+  } catch (_error) {
+    return { ok: false };
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function openEyeTools() {
+  if (!toolsMenuLink || toolsCheckRunning) return;
+  toolsCheckRunning = true;
+  toolsMenuLink.classList.add("is-checking");
+  toolsMenuLink.setAttribute("aria-busy", "true");
+  if (toolsStatus) toolsStatus.textContent = "Comprobando Tools…";
+  if (toolsRetryBtn) toolsRetryBtn.disabled = true;
+
+  let result = null;
+  try {
+    try {
+      if (window.desktopApp?.ensureEyeTools) {
+        result = await window.desktopApp.ensureEyeTools();
+      } else {
+        result = await checkEyeToolsHealth();
+      }
+    } catch (_error) {
+      result = { ok: false, reason: "start-failed" };
+    }
+
+    if (result?.ok) {
+      if (toolsStatus) toolsStatus.textContent = "Tools disponible. Abriendo…";
+      window.location.assign(toolsMenuLink.href);
+      return;
+    }
+
+    if (toolsStatus) toolsStatus.textContent = "Tools no está disponible.";
+    showToolsOfflineDialog(result);
+  } finally {
+    toolsCheckRunning = false;
+    toolsMenuLink.classList.remove("is-checking");
+    toolsMenuLink.removeAttribute("aria-busy");
+    if (toolsRetryBtn) toolsRetryBtn.disabled = false;
+  }
+}
+
+toolsMenuLink?.addEventListener("click", (event) => {
+  event.preventDefault();
+  void openEyeTools();
+});
+toolsRetryBtn?.addEventListener("click", () => void openEyeTools());
+toolsDialogClose?.addEventListener("click", closeToolsOfflineDialog);
+toolsOfflineDialog?.addEventListener("click", (event) => {
+  if (event.target === toolsOfflineDialog) closeToolsOfflineDialog();
+});
+toolsOfflineDialog?.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeToolsOfflineDialog();
+  }
+});
+toolsCopyCommandBtn?.addEventListener("click", async () => {
+  const command = "npm run tools:eyes";
+  try {
+    await navigator.clipboard.writeText(command);
+    toolsCopyCommandBtn.textContent = "Copiado";
+  } catch (_error) {
+    window.prompt("Copia este comando:", command);
+  }
+  setTimeout(() => {
+    if (toolsCopyCommandBtn) toolsCopyCommandBtn.textContent = "Copiar comando";
+  }, 1800);
+});
+
 // "Salir" solo existe en la app de escritorio. El navegador no permite cerrar
 // de forma fiable una pestaña que no ha abierto mediante script.
 const quitBtn = document.getElementById("quit-btn");

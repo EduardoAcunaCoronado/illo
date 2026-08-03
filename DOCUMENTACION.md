@@ -38,7 +38,9 @@ La versión instalada de Windows no necesita Python ni Node.js. Para ejecutar el
 repositorio hacen falta una de estas dos opciones:
 
 - App de escritorio: Node.js y npm.
-- Navegador: Python 3 u otro servidor HTTP local y un navegador moderno.
+- Navegador sólo para jugar: Python 3 u otro servidor HTTP local y un navegador moderno.
+- Navegador con los accesos de desarrollo: Node.js para el supervisor y Python 3
+  con las dependencias gráficas para Tools.
 
 Se recomienda pantalla 16:9, ratón y teclado. El escenario se dibuja a 1280×720
 y se escala conservando proporción; en otras relaciones de aspecto pueden
@@ -61,13 +63,20 @@ npm install
 npm start
 ```
 
-Navegador:
+Navegador recomendado —inicia el juego y Tools como una sola sesión supervisada—:
 
 ```powershell
-python -m http.server 8000
+start.bat
 ```
 
-Abre <http://localhost:8000/>. También se puede ejecutar `start.bat`. No abras
+El lanzador abre <http://127.0.0.1:8000/>, sirve Tools en el puerto 8011 y
+cierra los dos servicios que haya creado al pulsar `Ctrl+C`. También detecta y
+reutiliza una instancia válida de esta misma copia que ya estuviese activa, sin
+finalizar procesos ajenos. Cada servicio publica una huella de su raíz para no
+mezclar assets entre checkouts. `python -m http.server 8000 --bind 127.0.0.1`
+sigue sirviendo para probar sólo el juego, pero el acceso integrado a Tools
+requiere `start.bat`/`npm run dev:web`; Tools también puede abrirse directamente
+con `npm run tools:eyes`. No abras
 `index.html` mediante `file://`: el juego carga JSON, audio y vídeo por HTTP y
 esa vía produce pantallas vacías o capítulos que no aparecen.
 La pestaña del navegador muestra el emblema de WildSoft como icono del juego.
@@ -96,7 +105,7 @@ desde Configuración.
 | **Configuración** | Ajusta sonido, vídeo de escritorio y ayudas opcionales. |
 | **Salir** | Cierra la app de escritorio. Un navegador no puede cerrar de forma fiable su propia pestaña. |
 | **♪** | Vuelve a reproducir el tema principal del menú. |
-| **Tools** | Abre el centro local de herramientas gráficas. Requiere que su servidor ocular esté activo en el puerto 8011. |
+| **Tools** | Comprueba y abre el centro local de herramientas gráficas del puerto 8011. Si está apagado, conserva el menú y muestra cómo iniciarlo. |
 | **Minijuegos** | Abre `minijuegos_test.html` en el mismo servidor del juego para lanzar cada prueba por separado. |
 
 Los dos accesos aparecen como iconos SVG en la esquina superior derecha cuando
@@ -105,7 +114,9 @@ ocultan en el instalador y en un hosting público porque esas utilidades no form
 parte del juego distribuido. Tanto el centro de herramientas como la prueba de
 minijuegos incluyen un botón **Menú principal** que regresa directamente al
 menú, sin repetir el aviso ni el opening. En Electron de desarrollo conservan
-automáticamente el puerto interno elegido por la aplicación.
+automáticamente el puerto interno elegido por la aplicación; Tools se inicia
+bajo demanda desde el proceso principal. En navegador, `start.bat` levanta
+juego y Tools juntos.
 
 ## Controles generales
 
@@ -295,6 +306,7 @@ sección y `LEER_PRIMERO.md` deben actualizarse en el mismo cambio.
 ```powershell
 npm install                 # dependencias
 npm start                   # Electron de desarrollo
+npm run dev:web             # juego 8000 + Tools 8011, cierre conjunto
 npm run validate:content    # JSON, relaciones y assets
 npm run audit:assets        # conversiones pendientes, sin escribir
 npm run optimize:assets     # conserva originales y optimiza runtime
@@ -666,8 +678,35 @@ los conserva durante la sesión; así su acceso **Menú principal** vuelve tanto
 `localhost:8000` como al puerto libre que use Electron, usando `?screen=menu`
 para omitir de forma deliberada el arranque ya visto. Si el centro se abre
 directamente, emplea `localhost:8000` como respaldo. Los accesos se muestran
-sólo en loopback y en Electron no empaquetado; el preload expone únicamente el
-booleano `desktopApp.isPackaged` para impedir enlaces rotos en el instalador.
+sólo en loopback y en Electron no empaquetado; el preload expone una API cerrada
+sin acceso a Node y usa `desktopApp.isPackaged` para impedir enlaces rotos en el
+instalador.
+Antes de navegar, el botón compara `/api/dev-health` con `/api/health` y verifica
+nombre, versión de protocolo y huella de la carpeta. Si no responde o pertenece
+a otro checkout, nunca abandona el juego:
+muestra un diálogo con **Reintentar**, **Copiar comando** y **Cerrar**. Electron
+de desarrollo intenta arrancar Python mediante un IPC cerrado, sin aceptar
+rutas ni comandos procedentes del renderer.
+
+`start.bat` delega en `scripts/start_local_development.js`. El supervisor usa
+el servidor HTTP de `electron/static-server.js` —incluidos Range, MIME,
+anti-traversal y escucha exclusiva en loopback— y controla el proceso Python de
+Tools mediante `electron/eye-tools-process.js`. Sólo finaliza procesos que él
+haya creado. `ABRIR_EDITOR_OJOS.bat` sigue disponible para iniciar únicamente
+Tools y ahora espera activamente al health check en vez de confiar en una pausa
+fija. El supervisor registra el cierre antes de iniciar servicios: un `Ctrl+C`
+durante el arranque también cancela Python y evita procesos huérfanos.
+Las comprobaciones de salud tienen plazo absoluto y el servidor fuerza el cierre
+de descargas atascadas tras una gracia breve, de modo que una respuesta lenta o
+un vídeo pausado no bloquean indefinidamente el lanzador.
+
+Todos los GET/HEAD de juego y Tools exigen un `Host` loopback con el puerto
+correcto y rechazan segmentos privados como `.git`; los POST de Tools validan
+además `Origin`. Así una página externa no puede leer el checkout ni usar el
+servicio local para modificarlo mediante DNS rebinding. El health check sólo
+concede lectura CORS a orígenes HTTP de loopback. Electron
+autoriza la navegación a Tools sólo después de validar esa instancia y rechaza
+IPC de ajustes/cierre cuando el emisor no es el juego.
 
 | Ruta | Herramienta | Salida principal |
 | --- | --- | --- |
@@ -4713,6 +4752,10 @@ caen en el puerto 8000 al abrir el centro directamente; esto permite volver al
 puerto dinámico de Electron sin codificarlo. `ABRIR_EDITOR_OJOS.bat` inicia
 el servidor ocular y abre directamente este centro; si el servidor ya estaba
 activo, reutiliza la misma instancia.
+El arranque web ordinario debe hacerse con `start.bat` o `npm run dev:web` para
+que juego y herramientas compartan ciclo de vida. Si alguien sirve el juego con
+un HTTP genérico, el icono detecta que no puede verificar la carpeta y pide
+reiniciar con el supervisor, sin navegar a una página de error.
 
 #### Editor manual de regiones oculares
 

@@ -1131,3 +1131,17 @@ POSE NERVIOSA DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-03
 - Las herramientas y la pantalla de pruebas vuelven mediante `?screen=menu`; el
   juego consume ese parámetro y abre directamente el menú, sin repetir advertencia
   ni introducción. `/tools` conserva el origen/puerto del juego en `gameOrigin`.
+- `start.bat` y `npm run dev:web` supervisan juntos el servidor estático de juego
+  en 127.0.0.1:8000 y Tools en 127.0.0.1:8011; al salir sólo cierran procesos
+  propios. El botón valida `/api/health`, conserva el menú si Tools está caído y
+  Electron dev puede arrancarlo bajo demanda mediante IPC cerrado.
+- La API de Tools identifica servicio/protocolo en `/api/health`; todos los GET y
+  HEAD de ambos servidores exigen Host loopback/puerto y bloquean dotfiles, y sus
+  POST validan también Origin para impedir lectura o escritura por DNS rebinding.
+- Juego y Tools publican también un `rootId` canónico y sólo se reutilizan si
+  coincide con esta copia del repositorio. El cierre se registra antes del primer
+  `await`, por lo que cancelar durante el arranque no deja Python huérfano.
+- Electron limita la navegación a los orígenes del juego y de Tools ya validado;
+  los IPC de ajustes y salida sólo aceptan al renderer del juego.
+- Los health checks tienen deadline absoluto y el servidor fuerza las conexiones
+  abiertas tras una gracia breve, evitando bloqueos por respuestas o vídeos lentos.

@@ -33,6 +33,7 @@ ipcRenderer.on('settings:changed', (_event, key, value) => {
 // El renderizador no recibe acceso a APIs de Node ni de Electron.
 contextBridge.exposeInMainWorld('desktopApp', {
     isPackaged: Boolean(ipcRenderer.sendSync('app:is-packaged-sync')),
+    ensureEyeTools: () => ipcRenderer.invoke('app:ensure-eye-tools'),
     quit: () => ipcRenderer.send('app:quit'),
     setSetting: (key, value) => ipcRenderer.send('settings:set', key, value),
     onSettingChanged: (callback) => {
