@@ -70,6 +70,7 @@ python -m http.server 8000
 Abre <http://localhost:8000/>. También se puede ejecutar `start.bat`. No abras
 `index.html` mediante `file://`: el juego carga JSON, audio y vídeo por HTTP y
 esa vía produce pantallas vacías o capítulos que no aparecen.
+La pestaña del navegador muestra el emblema de WildSoft como icono del juego.
 
 ## Primer arranque
 
@@ -319,9 +320,10 @@ notarización requieren credenciales externas; se explican en la referencia.
 Orden de scripts, basado en los `window.*` globales: `p5-effects.js` → módulos
 de batalla/créditos/Ketchup/runas → `juice.js` → `engine.js` → `game.js`.
 `game.js` crea una instancia de
-`VisualNovelEngine`, descubre `chapter0`, `chapter1`, etc. hasta el primer hueco,
-carga personajes y llama a `nextLine()`. Cada línea ejecuta acciones, muestra
-texto o elecciones y espera input. `game.js` instala además la pausa global:
+`VisualNovelEngine`, descubre `chapter0`, `chapter1`, etc. hasta encontrar
+`isFinal: true` o el primer hueco, carga personajes y llama a `nextLine()`.
+Cada línea ejecuta acciones, muestra texto o elecciones y espera input. `game.js`
+instala además la pausa global:
 congela timers, RAF y `Date.now`, coordina audio/vídeo y bloquea entradas sin
 modificar los relojes narrativos al reanudar. No introduzcas un hueco en la
 numeración de capítulos: el descubrimiento se detiene ahí.
@@ -673,6 +675,11 @@ no sustituyen este manual ni el menú `/tools`.
 - Flujo, foco y paneles: `game.js`.
 - Presentación: `styles.css`; combate: `battle-styles.css`.
 - Efectos de escena: `juice.js` y acciones JSON.
+
+El favicon declarado en `index.html` reutiliza el asset runtime
+`assets/images/ui/wildsoft_emblema.png`. El icono de los ejecutables se mantiene
+separado en `build/icon.png`; no dupliques ninguno de los dos para cambiar la
+identidad visual.
 
 La pausa global y el ocultado del HUD son responsabilidades de `game.js`:
 `Esc` alterna la pausa fuera de cinemáticas, y `H`/clic derecho alternan el HUD.
@@ -3173,8 +3180,9 @@ API versionada, migraciones y restauración transaccional de todos esos campos.
 ### ¿Cómo Funciona?
 
 El juego descubre capítulos numéricos contiguos y los encadena durante la misma
-sesión. El primer 404 detiene el descubrimiento, por lo que no puede haber
-huecos en la numeración.
+sesión. La marca `isFinal: true` detiene el descubrimiento sin solicitar el ID
+siguiente; para catálogos antiguos sin esa marca, el primer 404 actúa como
+respaldo. No puede haber huecos en la numeración.
 
 ```
 chapter0 → chapter1 → chapter2 → chapter3 → chapter4 → chapter5 → chapter6
@@ -3207,7 +3215,10 @@ chapter0 → chapter1 → chapter2 → chapter3 → chapter4 → chapter5 → ch
 }
 ```
 
-3. Ejecuta `npm run validate:content` y comprueba selector, capítulo anterior,
+3. Si amplías la secuencia, quita `isFinal: true` del final anterior y ponlo en
+   el nuevo último capítulo. El descubrimiento se detiene en la primera marca.
+
+4. Ejecuta `npm run validate:content` y comprueba selector, capítulo anterior,
    pantalla final y entrada directa desde **Capítulos**.
 
 ### Estructura de Archivos
@@ -3362,7 +3373,7 @@ El sistema carga capítulos en orden numérico:
 
 ```
 - chapter0, chapter1, chapter2, ... chapter99
-- Se detiene cuando no encuentra el siguiente
+- Se detiene en `isFinal: true` o cuando no encuentra el siguiente
 - Muestra "Fin del Juego" al llegar al final
 ```
 

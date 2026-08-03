@@ -148,8 +148,8 @@ function startServer(rootDir) {
                 }
                 serveFile(req, res, filePath, stat);
             } catch (error) {
-                // ENOENT es la vía normal: game.js sondea chapters/chapterN.json
-                // hasta recibir un 404 para saber cuántos capítulos hay.
+                // ENOENT puede ser normal: game.js usa el primer 404 como
+                // respaldo si el catálogo de capítulos no marca uno como final.
                 sendError(res, error.code === 'ENOENT' ? 404 : 500);
             }
         });

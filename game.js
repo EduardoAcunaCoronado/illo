@@ -2112,10 +2112,9 @@ function ensureAvailableChapters() {
 async function loadAvailableChapters() {
   AVAILABLE_CHAPTERS = [];
   // Los capítulos son CONSECUTIVOS (chapter0, chapter1, ...). Sondeamos en orden
-  // y paramos en el primero que no exista, en vez de pedir hasta chapter99: eso
-  // generaba ~94 peticiones 404 y llenaba la consola en cada carga. Ahora solo
-  // hay 1 fallo (el centinela que detecta "no hay más capítulos"). El tope de
-  // 100 queda como salvaguarda por si algún día hubiera muchos.
+  // y paramos al encontrar `isFinal: true`. El primer 404 queda como respaldo
+  // para catálogos antiguos sin esa marca, en vez de pedir hasta chapter99. El
+  // tope de 100 queda como salvaguarda por si algún día hubiera muchos.
   for (let i = 0; i < 100; i++) {
     const chapterId = `chapter${i}`;
     try {
@@ -2129,6 +2128,7 @@ async function loadAvailableChapters() {
       const chapter = await response.json();
       const title = chapter.title || `Capítulo ${i}`;
       AVAILABLE_CHAPTERS.push({ id: chapterId, title });
+      if (chapter.isFinal === true) break;
     } catch (error) {
       break; // error de red -> dejar de sondear
     }

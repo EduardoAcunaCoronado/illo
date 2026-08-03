@@ -322,7 +322,8 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - “Capítulos” en el menú es un selector directo, no una carga de partida guardada.
   saveGame() existe pero no se llama; la promesa antigua de autoguardado no describe el
   comportamiento actual.
-- Los capítulos numéricos se detectan consecutivamente hasta el primer 404.
+- Los capítulos numéricos se detectan consecutivamente hasta `isFinal: true`; el
+  primer 404 queda como respaldo para catálogos antiguos sin esa marca.
 - El selector espera la carga asíncrona compartida de esos JSON antes de renderizar;
   esto evita que un clic temprano, especialmente tras saltar el opening, muestre una
   lista vacía. Menú y selector transfieren también inert, aria-hidden y foco.
