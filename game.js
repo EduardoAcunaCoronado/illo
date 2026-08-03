@@ -247,6 +247,28 @@ loadBtn.addEventListener("click", () => loadGame());
 galleryBtn?.addEventListener("click", () => showGalleryPanel());
 document.getElementById("settings-btn")?.addEventListener("click", () => showSettingsPanel());
 
+// El servidor ocular siempre escucha en 8011, mientras que Electron sirve el
+// juego desde un puerto libre. Pasamos el origen real para que Tools pueda
+// volver al mismo menú; en navegador continúa siendo localhost:8000.
+const toolsMenuLink = document.getElementById("menu-tools-link");
+const developmentShortcuts = document.querySelector(".nm-shortcuts");
+const isLoopbackGame = ["localhost", "127.0.0.1", "::1", "[::1]"].includes(location.hostname);
+const canUseDevelopmentShortcuts =
+  isLoopbackGame && (!window.desktopApp || window.desktopApp.isPackaged === false);
+
+developmentShortcuts?.toggleAttribute("hidden", !canUseDevelopmentShortcuts);
+
+if (toolsMenuLink && canUseDevelopmentShortcuts) {
+  const loopbackHost = ["localhost", "127.0.0.1"].includes(location.hostname)
+    ? location.hostname
+    : "localhost";
+  const toolsUrl = new URL("/tools", `http://${loopbackHost}:8011`);
+  if (["http:", "https:"].includes(location.protocol)) {
+    toolsUrl.searchParams.set("gameOrigin", location.origin);
+  }
+  toolsMenuLink.href = toolsUrl.href;
+}
+
 // "Salir" solo existe en la app de escritorio. El navegador no permite cerrar
 // de forma fiable una pestaña que no ha abierto mediante script.
 const quitBtn = document.getElementById("quit-btn");
@@ -2094,6 +2116,28 @@ function startStartupOpening() {
 }
 
 function setupStartupSequence() {
+  const startupTarget = new URLSearchParams(location.search).get("screen");
+  if (startupTarget === "menu") {
+    // Los accesos de desarrollo vuelven aquí. Ya se ha visto el arranque en
+    // la pestaña de origen, así que no repetimos disclaimer ni opening.
+    startupFinished = true;
+    startupStarted = true;
+    document.body.classList.remove("startup-pending");
+    startupOverlay?.remove();
+    setMainMenuVisible(true);
+    showMenuMedia(false);
+    if (isDesktopApp) {
+      menuAudioUnlocked = true;
+      playMenuTheme();
+    }
+    const cleanParams = new URLSearchParams(location.search);
+    cleanParams.delete("screen");
+    const cleanQuery = cleanParams.size ? `?${cleanParams}` : "";
+    const cleanUrl = `${location.pathname}${cleanQuery}${location.hash}`;
+    history.replaceState(history.state, "", cleanUrl);
+    return;
+  }
+
   if (!startupOverlay || !startupOpeningVideo || !startupEnterBtn) {
     document.body.classList.remove("startup-pending");
     setMainMenuVisible(true);

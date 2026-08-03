@@ -83,6 +83,14 @@ ipcMain.on('settings:get-sync', (event) => {
     event.returnValue = loadSettings();
 });
 
+// El menú incluye accesos internos para el equipo (Tools y banco de
+// minijuegos). El renderer necesita distinguir Electron de desarrollo del
+// instalador: en el paquete final esas utilidades no se distribuyen y mostrar
+// sus enlaces produciría rutas rotas.
+ipcMain.on('app:is-packaged-sync', (event) => {
+    event.returnValue = app.isPackaged;
+});
+
 function storeSetting(key, value) {
     if (!SETTINGS_KEYS.has(key) || typeof value !== 'string') return;
     if (key === WINDOW_MODE_KEY && !WINDOW_MODES.has(value)) return;

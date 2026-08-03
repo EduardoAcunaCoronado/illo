@@ -390,6 +390,7 @@ def pose_label(pose_key: str) -> str:
         "thinking": "Pensativo",
         "determined": "Decidido",
         "embarrassed": "Avergonzado",
+        "nervous_scratch": "Nervioso",
         "clapping": "Aplaudiendo",
         "curious": "Curioso",
         "facepalm": "Facepalm",

@@ -39,6 +39,51 @@
             font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
             color: #4fd0ff; margin-top: 18px; opacity: 0.9;
         }
+        .tp-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            display: flex;
+            justify-content: flex-start;
+            width: min(900px, 100%);
+            margin-bottom: -8px;
+            pointer-events: none;
+        }
+        .tp-menu-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            min-height: 44px;
+            padding: 7px 14px 7px 8px;
+            border: 1px solid rgba(255,209,102,.5);
+            border-radius: 13px;
+            color: #fff;
+            background: rgba(12,10,30,.88);
+            box-shadow: 0 0 18px rgba(255,209,102,.13);
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: .08em;
+            text-decoration: none;
+            text-transform: uppercase;
+            pointer-events: auto;
+            transition: transform .12s ease, border-color .12s ease, background .12s ease;
+        }
+        .tp-menu-link:hover { transform: translateY(-2px); border-color:#ffd166; background:rgba(35,25,62,.96); }
+        .tp-menu-link:focus-visible { outline:3px solid #4fd0ff; outline-offset:3px; }
+        .tp-menu-icon {
+            display:grid;
+            place-items:center;
+            width:30px;
+            height:30px;
+            border-radius:9px;
+            color:#ffd166;
+            background:rgba(255,209,102,.13);
+        }
+        .tp-menu-icon svg {
+            width:18px;
+            height:18px;
+            fill:currentColor;
+        }
         .tp-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
         .tp-btn {
             border: 2px solid var(--c, #b04fff);
@@ -90,6 +135,14 @@
             min-height: 22px; font-size: 15px; color: #ffd166; font-weight: bold;
             text-shadow: 0 0 10px rgba(255,209,102,.6);
         }
+        @media (max-width: 520px) {
+            #test-panel { padding: 18px 12px 32px; }
+            .tp-toolbar { width:100%; }
+            .tp-menu-link { width:100%; justify-content:center; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .tp-menu-link { transition:none; }
+        }
     </style>
 </head>
 <body>
@@ -111,6 +164,14 @@
     </script>
 
     <div id="test-panel">
+        <div class="tp-toolbar">
+            <a class="tp-menu-link" href="./?screen=menu" aria-label="Volver al menú principal">
+                <span class="tp-menu-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" focusable="false"><path d="M3 10.75 12 3l9 7.75v9.5a.75.75 0 0 1-.75.75H14.5v-6h-5v6H3.75a.75.75 0 0 1-.75-.75v-9.5Z"/></svg>
+                </span>
+                <span>Menú principal</span>
+            </a>
+        </div>
         <h1>🎮 Prueba de minijuegos</h1>
         <div class="tp-hint">Lanza cualquier minijuego de forma aislada. En <b>Neon Runner</b> pulsa las teclas (D·F·G·J·K) o toca las teclas de pantalla. En <b>Vocal Echo</b> escucha la melodía y repítela clicando los pads.</div>
 

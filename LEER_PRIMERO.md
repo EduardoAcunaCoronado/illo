@@ -73,7 +73,12 @@ Para las herramientas oculares y de limpieza, ejecuta
 npm run tools:eyes
 ```
 
-Abre <http://localhost:8011/tools>.
+Abre <http://localhost:8011/tools>. También puedes entrar con el icono **Tools**
+del menú principal; el icono **Minijuegos** abre el lanzador de pruebas en el
+mismo servidor que el juego. Estos dos accesos son de desarrollo: sólo aparecen
+en local o en Electron sin empaquetar. Ambas pantallas incluyen **Menú
+principal** para volver directamente al menú sin repetir el opening, incluso
+cuando Electron utiliza un puerto interno distinto de 8000.
 
 ## Antes de entregar un cambio
 

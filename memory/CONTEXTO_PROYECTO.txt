@@ -1118,3 +1118,16 @@ ASSETS VISUALES INTEGRADOS DESDE MASTER — 2026-08-03
 - Los nueve frames de carrera de Samu están en WebP bajo
   `assets/images/characters/samu/run/`; la hoja conjunta y fuentes PNG se guardan
   en `workbench/` y no deben reintroducirse como runtime.
+
+POSE NERVIOSA DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-03
+- `samu.nervous_scratch` usa el runtime WebP alfa
+  `assets/images/characters/samu/samu_nervous_scratch.webp`; su PNG generado sin
+  pérdida se conserva en `workbench/originals/runtime/`. El fondo oscuro se dejó
+  transparente y el halo residual se conserva deliberadamente para poder terminar
+  el recorte desde `/white-halo` sin dañar el contorno del personaje.
+- En ejecución local, el menú principal ofrece accesos con iconos a `/tools` y
+  `minijuegos_test.html`. No se muestran en una web pública ni en Electron
+  empaquetado, porque son utilidades de desarrollo y no forman parte del instalador.
+- Las herramientas y la pantalla de pruebas vuelven mediante `?screen=menu`; el
+  juego consume ese parámetro y abre directamente el menú, sin repetir advertencia
+  ni introducción. `/tools` conserva el origen/puerto del juego en `gameOrigin`.

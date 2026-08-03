@@ -6,8 +6,8 @@ la portada y el acceso rápido. Las plantillas de `.github/` son excepciones
 operativas, no documentación paralela.
 
 > **Estado verificado: 2026-08-03.** La validación actual reconoce 7 capítulos,
-> 64 escenas, 917 líneas, 26 fichas de personaje y 1.488 referencias de assets.
-> La galería generada contiene 105 entradas, 155 poses y 130 poses con
+> 64 escenas, 920 líneas, 26 fichas de personaje y 1.496 referencias de assets.
+> La galería generada contiene 105 entradas, 156 poses y 130 poses con
 > parpadeo. Estas cifras son una fotografía
 > fechada; `npm run validate:content` es la fuente actual.
 
@@ -96,6 +96,16 @@ desde Configuración.
 | **Configuración** | Ajusta sonido, vídeo de escritorio y ayudas opcionales. |
 | **Salir** | Cierra la app de escritorio. Un navegador no puede cerrar de forma fiable su propia pestaña. |
 | **♪** | Vuelve a reproducir el tema principal del menú. |
+| **Tools** | Abre el centro local de herramientas gráficas. Requiere que su servidor ocular esté activo en el puerto 8011. |
+| **Minijuegos** | Abre `minijuegos_test.html` en el mismo servidor del juego para lanzar cada prueba por separado. |
+
+Los dos accesos aparecen como iconos SVG en la esquina superior derecha cuando
+el repositorio se ejecuta en local o mediante Electron de desarrollo. Se
+ocultan en el instalador y en un hosting público porque esas utilidades no forman
+parte del juego distribuido. Tanto el centro de herramientas como la prueba de
+minijuegos incluyen un botón **Menú principal** que regresa directamente al
+menú, sin repetir el aviso ni el opening. En Electron de desarrollo conservan
+automáticamente el puerto interno elegido por la aplicación.
 
 ## Controles generales
 
@@ -312,6 +322,7 @@ notarización requieren credenciales externas; se explican en la referencia.
 | `ketchup-minigame.js` | Bullet hell contra Zip. |
 | `rune-channeling-minigame.js` | Canalización cooperativa de runas. |
 | `credits-minigame.js` | Créditos interactivos. |
+| `minijuegos_test.html` | Lanzador aislado de minijuegos; conserva el origen del juego y ofrece regreso al menú. |
 | `chapters/*.json` | Guion ejecutable: capítulos, escenas, líneas, elecciones y acciones. |
 | `characters/*.json` | Nombre visible, color, poses y animaciones de cada personaje. |
 | `assets/metadata/*.json` | Galería, capas oculares, offsets, ediciones y copias limpias. |
@@ -636,10 +647,27 @@ se conservan sólo en `workbench/`. No reintroduzcas PNG runtime al regenerar
 estas familias: precarga, frame inicial y animación deben compartir las listas
 literales WebP.
 
+La pose `samu.nervous_scratch` usa
+`assets/images/characters/samu/samu_nervous_scratch.webp`. El PNG exacto que
+entregó la generación permanece protegido en
+`workbench/originals/runtime/assets/images/characters/samu/`. El WebP runtime es
+sin pérdida y sólo trae preabierto el alfa de los cuatro grandes componentes de
+fondo negro; conserva alrededor del personaje el halo residual para poder
+revisarlo y rematarlo de forma no destructiva en `/white-halo`.
+
 ## Herramientas gráficas locales
 
 Inicia el centro con `ABRIR_EDITOR_OJOS.bat` o `npm run tools:eyes` y abre
 <http://localhost:8011/tools>.
+
+El icono **Tools** del menú construye esa URL con el mismo host de loopback y
+envía el origen actual del juego. `/tools` sólo acepta orígenes HTTP locales y
+los conserva durante la sesión; así su acceso **Menú principal** vuelve tanto a
+`localhost:8000` como al puerto libre que use Electron, usando `?screen=menu`
+para omitir de forma deliberada el arranque ya visto. Si el centro se abre
+directamente, emplea `localhost:8000` como respaldo. Los accesos se muestran
+sólo en loopback y en Electron no empaquetado; el preload expone únicamente el
+booleano `desktopApp.isPackaged` para impedir enlaces rotos en el instalador.
 
 | Ruta | Herramienta | Salida principal |
 | --- | --- | --- |
@@ -4625,7 +4653,7 @@ De este modo, el combate final demuestra el tema «ayudar no es obedecer»: el
 grupo crea condiciones para que AI.RI actúe, pero no derrota su conflicto en su
 nombre.
 
-### Galería integrada: 105 entradas y 155 poses de personaje
+### Galería integrada: 105 entradas y 156 poses de personaje
 
 El menú principal incluye una galería curada desde
 `assets/metadata/gallery_manifest.json`: **104 imágenes y 1 vídeo**, 105 entradas
@@ -4649,12 +4677,12 @@ La interfaz ofrece filtros, miniaturas optimizadas, carga diferida, contador de
 resultados, lightbox para imagen o vídeo, navegación por teclado, descarga del
 original y aviso previo para obras con spoilers. Cada ficha de personaje agrupa
 todas las poses declaradas en `characters/*.json`: el lightbox muestra un
-selector visual con 155 poses, admite ratón y teclado, y puede reproducir una
+selector visual con 156 poses, admite ratón y teclado, y puede reproducir una
 pose en vídeo cuando la ficha la declara. En 130 de esas poses aparece además
 el control `Ver parpadeo`: parte desactivado, reproduce los frames e intervalos
 de la ficha al activarlo y permite volver en cualquier momento al sprite fijo.
-Las 25 poses sin animación no muestran un control inerte. `Mostrar spoilers` es
-una decisión de sesión, no un desbloqueo persistente. El catálogo y sus 260 miniaturas se
+Las 26 poses sin animación no muestran un control inerte. `Mostrar spoilers` es
+una decisión de sesión, no un desbloqueo persistente. El catálogo y sus 261 miniaturas se
 regeneran con `scripts/build_gallery_manifest.py`; no se mantiene a mano una
 segunda lista en el código.
 
@@ -4671,7 +4699,8 @@ PNG completos en la cuadrícula.
 #### Centro de herramientas local
 
 `http://localhost:8011/tools` reúne en un único menú todo el flujo ocular y las
-utilidades HTML del proyecto. Sus indicadores se actualizan desde las API locales:
+utilidades HTML del proyecto. Incluye un acceso visible de vuelta al menú del
+juego. Sus indicadores se actualizan desde las API locales:
 regiones confirmadas, capas limpias disponibles, offsets de alineación y bases sin
 ojos guardadas. Las herramientas de edición tienen un acceso permanente de
 vuelta al centro.
@@ -4679,7 +4708,9 @@ vuelta al centro.
 El flujo recomendado aparece como `Marcar regiones → Alinear capas → Limpiar
 bases`, seguido del editor independiente `Eliminar halos blancos`. En una sección aparte se enlazan el juego, la prueba de minijuegos, el
 generador de assets, los placeholders, las propuestas de menú y el centro de
-control legado, todos servidos por el puerto 8000. `ABRIR_EDITOR_OJOS.bat` inicia
+control legado. Esos enlaces usan el origen que recibe del menú principal y
+caen en el puerto 8000 al abrir el centro directamente; esto permite volver al
+puerto dinámico de Electron sin codificarlo. `ABRIR_EDITOR_OJOS.bat` inicia
 el servidor ocular y abre directamente este centro; si el servidor ya estaba
 activo, reutiliza la misma instancia.
 
@@ -4926,6 +4957,12 @@ controlan el trazo; los píxeles de color y las líneas oscuras se ignoran. Con 
 100%, todo píxel aceptado bajo el centro del pincel queda completamente transparente;
 el suavizado se reserva para el borde exterior del círculo.
 
+Por eso basta con declarar una pose nueva en la ficha del personaje para que
+aparezca en la lista. `samu.nervous_scratch` ya sigue ese circuito: el fondo
+negro exterior se convirtió en transparencia semilla y el editor recibe el
+contorno claro restante, listo para `Quitar halo exterior`, el pincel manual y
+`Guardar copia` sin alterar el PNG original.
+
 La vista ofrece zoom de 25% a 500% mediante el deslizador o `Ctrl + rueda`
 sobre el lienzo, encaje automático, fondos damero, negro,
 blanco y magenta para descubrir bordes, comparación momentánea con la base de
@@ -5114,7 +5151,7 @@ de galería, miniaturas, rutas literales de JS/CSS/HTML y exclusiones sensibles
 del instalador. El resumen impreso —capítulos,
 escenas, líneas, personajes y referencias— es la cifra fiable del estado actual.
 La ejecución de cierre verificada el **2026-08-03** terminó sin errores con
-**7 capítulos, 64 escenas, 920 líneas, 26 personajes y 1493 referencias de
+**7 capítulos, 64 escenas, 920 líneas, 26 personajes y 1496 referencias de
 assets**.
 
 ### Retroceder: a esta escena o a la anterior (2026-08-03)

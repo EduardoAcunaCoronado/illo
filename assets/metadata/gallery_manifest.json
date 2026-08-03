@@ -36,7 +36,7 @@
     "backgrounds": 63,
     "videos": 1,
     "all": 105,
-    "characterPoses": 155,
+    "characterPoses": 156,
     "animatedCharacterPoses": 130
   },
   "items": [
@@ -3271,7 +3271,7 @@
     {
       "id": "char-samu",
       "title": "Samu",
-      "description": "Diseño canónico de Samu con 18 poses disponibles.",
+      "description": "Diseño canónico de Samu con 19 poses disponibles.",
       "type": "image",
       "category": "characters",
       "src": "assets/images/characters/samu/Samu.webp",
@@ -3591,6 +3591,16 @@
             "loop": true
           },
           "thumbnail": "assets/images/gallery/thumbnails/char-samu--pose-embarrassed.webp"
+        },
+        {
+          "id": "nervous-scratch",
+          "key": "nervous_scratch",
+          "label": "Nervioso",
+          "type": "image",
+          "src": "assets/images/characters/samu/samu_nervous_scratch.webp",
+          "alt": "Samu, pose nervioso.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-samu--pose-nervous-scratch.webp"
         },
         {
           "id": "shocked",

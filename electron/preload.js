@@ -32,6 +32,7 @@ ipcRenderer.on('settings:changed', (_event, key, value) => {
 // Canal deliberadamente limitado: cerrar la app y guardar ajustes conocidos.
 // El renderizador no recibe acceso a APIs de Node ni de Electron.
 contextBridge.exposeInMainWorld('desktopApp', {
+    isPackaged: Boolean(ipcRenderer.sendSync('app:is-packaged-sync')),
     quit: () => ipcRenderer.send('app:quit'),
     setSetting: (key, value) => ipcRenderer.send('settings:set', key, value),
     onSettingChanged: (callback) => {
