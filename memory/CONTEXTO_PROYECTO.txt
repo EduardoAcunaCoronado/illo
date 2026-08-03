@@ -720,6 +720,9 @@ SISTEMA TIPOGRÁFICO EMOCIONAL 2026-08-01
 - Los colores especiales de OMG (naranja), CLos (verde), Incel y Simsong (azul)
   se conservan dentro de cualquier emoción, y `prefers-reduced-motion` elimina
   el movimiento sin borrar las señales de color y sombra.
+- El relleno y los brillos de cada emoción heredan el color legible del hablante;
+  el valor CSS `blue` de Edu se normaliza a `#4da3ff` y no pasa por la mezcla
+  genérica con blanco, que lo convertiría en lavanda.
 - La máquina de escribir añade cada grafema al DOM sin reconstruir las letras ya
   visibles: así sus animaciones no se reinician al aparecer el carácter siguiente.
 - La pose `happy` no anima el texto automáticamente. En una racha del mismo
@@ -802,6 +805,10 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   por `python scripts/build_character_eye_layers.py --serve --port 8011`. Enumera
   las 130 poses animables y guarda varias máscaras elípticas normalizadas por pose
   (habitualmente una por ojo) en `assets/metadata/blink_eye_regions_manual.json`.
+  El servidor refresca el inventario al atender cada API y recupera fuentes
+  movidas como ruta configurada -> WebP runtime -> original de `workbench`,
+  consultando `asset_optimization_manifest.json`; no necesita reiniciarse tras
+  reorganizar u optimizar assets.
   Cada elipse se mueve, achata, ensancha y gira por separado. Las 17 cajas previas
   fueron migradas a dos elipses editables con esquema v2. El modo `--build` no puede usar
   detección automática: falla antes de escribir si falta una región confirmada.
@@ -820,6 +827,10 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   introducir el halo exterior de `LANCZOS`; después se anulan residuos de alfa por
   debajo de 8/255. Las 17 poses marcadas actuales ya tienen sus tres previews
   homogéneas y se regeneraron con esta máscara limpia.
+  Cuando cambia el arte completo de una pose, los ojos antiguos se registran
+  contra el lienzo nuevo y se recompone sólo la región ocular; base, semicerrado
+  y cerrado deben compartir dimensiones y alfa. El manifiesto lo marca como
+  `registered-eye-region-composite` y también se regeneran las miniaturas.
   `/tools` sirve `scripts/eye_tools_menu.html`, un centro único con el flujo
   Marcar → Alinear → Limpiar, indicadores de progreso en vivo y enlaces al juego,
   minijuegos y demás utilidades HTML del proyecto. Las interfaces de edición
@@ -1008,8 +1019,8 @@ OPTIMIZACIÓN Y CONSERVACIÓN DE ASSETS — 2026-08-03
   VBR q2 y vídeo seleccionado a H.264 CRF20. Conserva el original antes de tocar
   el runtime y actualiza referencias de forma reanudable.
 - `workbench/optimization/asset_optimization_manifest.json` es la fuente de verdad
-  de las 328 imágenes y 3 medios optimizados: guarda rutas, tamaños y SHA-256.
-  La primera pasada ahorra 475,28 MiB; `assets/` queda en unos 820 MiB.
+  de las 339 imágenes y 4 medios optimizados: guarda rutas, tamaños y SHA-256.
+  El estado actual ahorra 483,96 MiB; `assets/` queda en unos 828 MiB.
 - Los binarios de `workbench/` se versionan como archivos normales de Git; la
   carpeta queda fuera de Electron Builder, no fuera de la recuperación del
   proyecto. No se requiere Git LFS para clonar el estado actual.
@@ -1056,3 +1067,30 @@ VARIANTE 4K DEL BAÑO SIN PERSONAJES — 2026-08-03
 - No sustituye todavía a `bathroom.webp` ni está asignado a una escena.
 - Fuente editada, máster PNG 4K y prompt reproducible se conservan en
   `workbench/sources/images/backgrounds/chapter1/bathroom/`.
+
+INTEGRACIÓN DE PAUSA, CURSOR Y ACTING — 2026-08-03
+- `Esc` activa la pausa global salvo en cinemáticas, donde conserva el salto.
+  Congela timers, RAF, reloj lógico, CSS, audio y vídeo. `H` y clic derecho
+  alternan todo el HUD; el clic secundario nunca avanza ni llega al minijuego.
+- El cursor-retrato usa `assets/images/ui/dialogue_speaker_cursor.webp`, sigue el
+  último grafema durante el tecleo y vuelve al encabezado al terminar. Edu, Tony
+  y José muestran sprites humanos WebP hasta C2/E16/L4, C3/E13/L5 y C4/E2/L4.
+  `speakingAs` no altera su identidad y `???` siempre limpia el retrato.
+- Neit conserva un offset vertical exclusivo de 28 px. El selector centra la
+  escena actual con `scrollTop` de `.scenes-list`; no usar `scrollIntoView()`.
+- La caída anime de Edu se ejecuta como `characterAnimeFall` desde
+  `afterActions` y usa `assets/audio/sfx/sfx_caida_anime_edu.mp3`; funciona al
+  terminar o saltar el tipeo y no bloquea el diálogo.
+- El capítulo 2 conserva el gag de `Fisuras 2 de Stim`, pero la conclusión
+  canónica posterior sigue siendo que Zip explotó el miedo de Edu y que Elion
+  sostenía la jaula.
+
+ASSETS VISUALES INTEGRADOS DESDE MASTER — 2026-08-03
+- El emblema de Edu está activo como
+  `assets/images/others/kingom-souls.webp` y embebido en sus sprites revisados.
+- Los diez frames V3 de Edu volando permanecen activos como WebP RGBA bajo
+  `assets/images/minigames/chapter3/sprites/`; sus PNG y hojas se conservan en
+  `workbench/`.
+- Los nueve frames de carrera de Samu están en WebP bajo
+  `assets/images/characters/samu/run/`; la hoja conjunta y fuentes PNG se guardan
+  en `workbench/` y no deben reintroducirse como runtime.

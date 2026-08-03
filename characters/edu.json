@@ -58,12 +58,20 @@
     "facepalm": [{ "src": "assets/images/characters/edu/animations/blinks/edu_facepalm_blink_open.webp", "duration": 90 }],
     "shocked": [{ "src": "assets/images/characters/edu/animations/blinks/edu_alarmed_blink_closed.webp", "duration": 90 }],
     "thinking": [{ "src": "assets/images/characters/edu/animations/blinks/edu_thinking_blink_closed.webp", "duration": 95 }],
-    "worried": [{ "src": "assets/images/characters/edu/animations/blinks/edu_worried_blink_closed.webp", "duration": 95 }],
+    "worried": [
+      { "src": "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp", "duration": 65 },
+      { "src": "assets/images/characters/edu/animations/blinks/edu_worried_blink_closed.webp", "duration": 95 },
+      { "src": "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp", "duration": 65 }
+    ],
     "bua": [{ "src": "assets/images/characters/edu/animations/blinks/edu_bua_blink_closed.webp", "duration": 95 }],
     "clapping": [{ "src": "assets/images/characters/edu/animations/blinks/edu_clapping_blink_closed.webp", "duration": 90 }],
     "riku": [{ "src": "assets/images/characters/edu/animations/blinks/edu_riku_blink_closed.webp", "duration": 95 }],
     "picado": [{ "src": "assets/images/characters/edu/animations/blinks/edu_picado_blink_closed.webp", "duration": 85 }],
-    "picante": [{ "src": "assets/images/characters/edu/animations/blinks/edu_picante_blink_closed.webp", "duration": 85 }],
+    "picante": [
+      { "src": "assets/images/characters/eye_intermediate_sources/edu/picante/eyes_half_source.webp", "duration": 65 },
+      { "src": "assets/images/characters/edu/animations/blinks/edu_picante_blink_closed.webp", "duration": 85 },
+      { "src": "assets/images/characters/eye_intermediate_sources/edu/picante/eyes_half_source.webp", "duration": 65 }
+    ],
     "zip_happy": [{ "src": "assets/images/characters/edu/animations/blinks/edu_zip_happy_blink_closed.webp", "duration": 95 }],
     "zip_surprised": [{ "src": "assets/images/characters/edu/animations/blinks/edu_zip_surprised_blink_closed.webp", "duration": 90 }],
     "zip_worried": [{ "src": "assets/images/characters/edu/animations/blinks/edu_zip_worried_blink_closed.webp", "duration": 95 }],

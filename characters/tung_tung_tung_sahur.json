@@ -6,6 +6,13 @@
   },
   "defaultPose": "neutral",
   "animations": {
-    "neutral": { "frames": [{ "src": "assets/images/characters/animations/blinks/tung_neutral_blink_closed.webp", "duration": 110 }], "loop": true }
+    "neutral": {
+      "frames": [
+        { "src": "assets/images/characters/eye_intermediate_sources/tung_tung_tung_sahur/neutral/eyes_half_source.webp", "duration": 65 },
+        { "src": "assets/images/characters/animations/blinks/tung_neutral_blink_closed.webp", "duration": 110 },
+        { "src": "assets/images/characters/eye_intermediate_sources/tung_tung_tung_sahur/neutral/eyes_half_source.webp", "duration": 65 }
+      ],
+      "loop": true
+    }
   }
 }

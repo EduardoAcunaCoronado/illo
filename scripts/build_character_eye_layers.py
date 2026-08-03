@@ -50,6 +50,10 @@ PIXEL_EDITS_METADATA_PATH = ROOT / "assets" / "metadata" / "blink_eye_pixel_edit
 PIXEL_EDITS_ROOT = ROOT / "assets" / "images" / "characters" / "eye_layer_edits"
 WHITE_HALO_METADATA_PATH = ROOT / "assets" / "metadata" / "sprite_white_halo_cleaned.json"
 WHITE_HALO_ROOT = ROOT / "assets" / "images" / "characters" / "sprite_halo_cleaned"
+OPTIMIZATION_MANIFEST_PATH = (
+    ROOT / "workbench" / "optimization" / "asset_optimization_manifest.json"
+)
+PRESERVED_RUNTIME_ROOT = ROOT / "workbench" / "originals" / "runtime"
 EDITOR_PATH = Path(__file__).with_name("eye_region_editor.html")
 PREVIEW_PATH = Path(__file__).with_name("eye_layer_preview.html")
 CLEANER_PATH = Path(__file__).with_name("eye_base_cleaner.html")
@@ -63,6 +67,7 @@ SUPPORTED_IMAGES = {".png", ".webp", ".jpg", ".jpeg"}
 REGION_OVERRIDES: dict[str, tuple[float, float, float, float]] = {}
 _EDITOR_INVENTORY_CACHE: list[dict[str, Any]] | None = None
 _BASE_SPRITE_INVENTORY_CACHE: list[dict[str, Any]] | None = None
+_ASSET_RELOCATION_CACHE: tuple[int, dict[str, list[str]]] | None = None
 
 
 @dataclass
@@ -88,6 +93,83 @@ def relative(path: Path) -> str:
     return path.relative_to(ROOT).as_posix()
 
 
+def normalized_asset_reference(value: Any) -> str | None:
+    """Normaliza una ruta de proyecto sin permitir que salga del repositorio."""
+    if not isinstance(value, str) or not value.strip():
+        return None
+    reference = value.split("?", 1)[0].replace("\\", "/").lstrip("/")
+    candidate = (ROOT / reference).resolve()
+    try:
+        candidate.relative_to(ROOT)
+    except ValueError:
+        return None
+    return relative(candidate)
+
+
+def asset_relocations() -> dict[str, list[str]]:
+    """Relaciona fuentes movidas con su WebP runtime y su original protegido.
+
+    La optimización mueve PNG/JPEG a ``workbench/originals/runtime``. Las
+    herramientas deben seguir encontrando una pose aunque un JSON antiguo o un
+    cambio traído de otra rama conserve la ruta anterior.
+    """
+    global _ASSET_RELOCATION_CACHE
+    if not OPTIMIZATION_MANIFEST_PATH.is_file():
+        return {}
+    stamp = OPTIMIZATION_MANIFEST_PATH.stat().st_mtime_ns
+    if _ASSET_RELOCATION_CACHE and _ASSET_RELOCATION_CACHE[0] == stamp:
+        return _ASSET_RELOCATION_CACHE[1]
+    try:
+        payload = json.loads(
+            OPTIMIZATION_MANIFEST_PATH.read_text(encoding="utf-8")
+        )
+    except (OSError, json.JSONDecodeError):
+        return {}
+    relocations: dict[str, list[str]] = {}
+    for source_key, entry in (payload.get("conversions") or {}).items():
+        if not isinstance(entry, dict):
+            continue
+        source = normalized_asset_reference(entry.get("source") or source_key)
+        runtime = normalized_asset_reference(entry.get("runtime"))
+        original = normalized_asset_reference(entry.get("original"))
+        candidates = [item for item in (runtime, original) if item]
+        for alias in (source, runtime, original):
+            if alias:
+                relocations[alias] = candidates
+    _ASSET_RELOCATION_CACHE = (stamp, relocations)
+    return relocations
+
+
+def asset_reference_candidates(value: Any) -> list[str]:
+    reference = normalized_asset_reference(value)
+    if not reference:
+        return []
+    candidates = [reference, *asset_relocations().get(reference, [])]
+    source_path = Path(reference)
+    if source_path.suffix.lower() in {".png", ".jpg", ".jpeg"}:
+        candidates.append(source_path.with_suffix(".webp").as_posix())
+    if reference.startswith("assets/"):
+        candidates.append(
+            relative(PRESERVED_RUNTIME_ROOT / Path(reference))
+        )
+    return list(dict.fromkeys(candidates))
+
+
+def resolve_asset_reference(value: Any) -> str | None:
+    """Devuelve la ruta configurada o, si fue movida, su copia runtime."""
+    for reference in asset_reference_candidates(value):
+        if (ROOT / reference).is_file():
+            return reference
+    return None
+
+
+def require_asset_reference(value: Any) -> str:
+    reference = resolve_asset_reference(value)
+    if reference:
+        return reference
+    raise FileNotFoundError(f"No se encuentra el asset: {value}")
+
+
 def animation_frames(config: Any) -> list[Any]:
     if isinstance(config, list):
         return config
@@ -108,7 +190,8 @@ def resolve_frame_source(character: dict[str, Any], frame: Any) -> str | None:
     value = frame_value(frame)
     if not value:
         return None
-    return (character.get("poses") or {}).get(value, value).replace("\\", "/")
+    configured = (character.get("poses") or {}).get(value, value)
+    return resolve_asset_reference(configured)
 
 
 def load_manual_regions() -> dict[str, Any]:
@@ -253,14 +336,15 @@ def source_eye_layer_path(job_id: str, source_kind: str, state: str) -> str:
     path = paths.get(state)
     if not path:
         raise ValueError("La pose no tiene esa capa ocular")
-    return str(path)
+    return require_asset_reference(path)
 
 
 def edited_eye_layer_path(job_id: str, source_kind: str, state: str) -> str:
     edits = load_pixel_edits()
     path = ((edits.get(source_kind) or {}).get(job_id) or {}).get(state)
-    if path and (ROOT / path).is_file():
-        return str(path)
+    resolved = resolve_asset_reference(path)
+    if resolved:
+        return resolved
     return source_eye_layer_path(job_id, source_kind, state)
 
 
@@ -503,8 +587,10 @@ def update_layer_metadata_offset(job_id: str, offset: list[int]) -> None:
     temporary.replace(METADATA_PATH)
 
 
-def editor_jobs() -> list[dict[str, Any]]:
+def editor_jobs(refresh: bool = False) -> list[dict[str, Any]]:
     global _EDITOR_INVENTORY_CACHE
+    if refresh:
+        _EDITOR_INVENTORY_CACHE = None
     regions = load_manual_regions()
     previews = load_eye_region_previews()
     intermediates = load_eye_intermediates()
@@ -524,6 +610,9 @@ def editor_jobs() -> list[dict[str, Any]]:
                     continue
                 if Path(base_source).suffix.lower() not in SUPPORTED_IMAGES:
                     continue
+                base_source = resolve_asset_reference(base_source)
+                if not base_source:
+                    continue
                 frame_sources = [
                     source
                     for source in (
@@ -534,8 +623,6 @@ def editor_jobs() -> list[dict[str, Any]]:
                 if not frame_sources:
                     continue
                 base_path = ROOT / base_source
-                if not base_path.is_file():
-                    continue
                 with Image.open(base_path) as image:
                     width, height = image.size
                 inventory.append(
@@ -564,9 +651,11 @@ def editor_jobs() -> list[dict[str, Any]]:
     ]
 
 
-def base_sprite_jobs() -> list[dict[str, Any]]:
+def base_sprite_jobs(refresh: bool = False) -> list[dict[str, Any]]:
     """Lista todas las poses base editables, tengan o no parpadeo configurado."""
     global _BASE_SPRITE_INVENTORY_CACHE
+    if refresh:
+        _BASE_SPRITE_INVENTORY_CACHE = None
     saved = load_white_halo_edits()
     if _BASE_SPRITE_INVENTORY_CACHE is None:
         inventory: list[dict[str, Any]] = []
@@ -579,12 +668,12 @@ def base_sprite_jobs() -> list[dict[str, Any]]:
                 source = pose_value.get("src") if isinstance(pose_value, dict) else pose_value
                 if not isinstance(source, str):
                     continue
-                source = source.replace("\\", "/")
                 if Path(source).suffix.lower() not in SUPPORTED_IMAGES:
                     continue
-                source_path = ROOT / source
-                if not source_path.is_file():
+                source = resolve_asset_reference(source)
+                if not source:
                     continue
+                source_path = ROOT / source
                 try:
                     with Image.open(source_path) as image:
                         width, height = image.size
@@ -1239,7 +1328,9 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             self.wfile.write(content)
             return
         if self.path == "/api/jobs":
-            jobs = editor_jobs()
+            # El servidor suele permanecer abierto mientras se mueven o
+            # convierten sprites. Reconstruir aquí evita inventarios obsoletos.
+            jobs = editor_jobs(refresh=True)
             self.send_json(
                 {
                     "jobs": jobs,
@@ -1261,7 +1352,7 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             self.send_json({"edits": load_pixel_edits()})
             return
         if self.path == "/api/base-sprites":
-            jobs = base_sprite_jobs()
+            jobs = base_sprite_jobs(refresh=True)
             self.send_json(
                 {
                     "jobs": jobs,
@@ -1572,6 +1663,11 @@ def collect_jobs(
             if not isinstance(base_source, str) or not frames:
                 continue
             if Path(base_source).suffix.lower() not in SUPPORTED_IMAGES:
+                continue
+            base_source = resolve_asset_reference(base_source)
+            if not base_source:
+                if require_manual:
+                    missing_manual.append(f"{character_key}.{pose_key} (base ausente)")
                 continue
             frame_sources = [
                 source for source in

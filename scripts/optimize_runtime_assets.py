@@ -47,6 +47,8 @@ TEXT_SUFFIXES = {
     ".yml",
 }
 SKIP_PARTS = {
+    "eye_bases_clean",
+    "eye_intermediate_sources",
     "eye_layer_edits",
     "eye_layers",
     "eye_layers_clean",
@@ -55,6 +57,11 @@ SKIP_PARTS = {
 }
 SKIP_ROOTS = {".git", "assets", "dist", "node_modules", "workbench"}
 MEDIA_JOBS = (
+    {
+        "path": "assets/audio/sfx/sfx_caida_anime_edu.wav",
+        "kind": "audio",
+        "destination": "assets/audio/sfx/sfx_caida_anime_edu.mp3",
+    },
     {
         "path": "assets/audio/music/minigames/cae_a_mis_pies.mp3",
         "kind": "audio",

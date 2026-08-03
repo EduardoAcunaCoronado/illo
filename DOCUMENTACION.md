@@ -6,7 +6,7 @@ la portada y el acceso rápido. Las plantillas de `.github/` son excepciones
 operativas, no documentación paralela.
 
 > **Estado verificado: 2026-08-03.** La validación actual reconoce 7 capítulos,
-> 63 escenas, 908 líneas, 26 fichas de personaje y 1.477 referencias de assets.
+> 64 escenas, 917 líneas, 26 fichas de personaje y 1.488 referencias de assets.
 > La galería generada contiene 105 entradas, 155 poses y 130 poses con
 > parpadeo. Estas cifras son una fotografía
 > fechada; `npm run validate:content` es la fuente actual.
@@ -102,8 +102,10 @@ desde Configuración.
 | --- | --- |
 | Clic o toque durante la escritura | Completa de inmediato la línea actual. |
 | Clic o toque con la línea completa | Avanza el diálogo. |
+| `Espacio` o `Enter` | Completa o avanza el diálogo como el clic izquierdo. Se ignora mientras una elección, cinemática o minijuego captura la entrada. |
 | Mantener `Ctrl` | Acelera texto y líneas. No decide elecciones ni juega minijuegos. |
-| `Esc` | Abre o cierra Opciones durante la partida. En una cinemática, la salta. |
+| `Esc` | Abre o cierra la pausa global en diálogos y minijuegos. En una cinemática, la salta. |
+| `H` o clic derecho | Oculta o recupera todo el HUD, incluido el cuadro de diálogo. El clic derecho nunca avanza el texto ni activa un minijuego. |
 | Clic, `Esc`, `Enter` o `Espacio` en una cinemática | Salta el vídeo. |
 | `F11` en Windows/Electron | Alterna pantalla completa. En macOS se usa `Ctrl+Cmd+F`. |
 
@@ -119,6 +121,12 @@ En la parte superior aparecen cuando son aplicables:
   una escena recupera el estado que tenía al visitarla.
 - **Retroceder**: vuelve al comienzo de la escena anterior y restaura fondo,
   personajes, música, inventario y estado narrativo de ese momento.
+
+Junto al nombre del hablante aparece un cursor-retrato. Mientras se escribe una
+frase acompaña el último grafema visible y al terminar regresa suavemente al
+encabezado. Antes de que Edu, Tony y José revelen sus transformaciones muestra
+sus retratos humanos; después utiliza sus sprites furry. `???` no reutiliza la
+cara del hablante anterior.
 
 Las cinemáticas ocultan temporalmente estos botones. Durante una elección o un
 minijuego se puede abrir **Escenas** u **Opciones**; saltar o salir cancela de
@@ -171,19 +179,22 @@ principales actuales son:
 | Persecución de gatos | Flechas o `WASD` para recorrer la cuadrícula sin que alcancen a Samu. |
 | Recolección de guindillas | Izquierda/derecha, `A`/`D` o ratón. Recoge guindillas y evita botellas. |
 | Bullet hell de Kingdom Ketchup | Flechas o `WASD` para moverse y `Espacio` para disparar guindillas. |
-| Conducción | Ratón, `WASD` o flechas para moverse; `P`, `Esc` o el botón visible pausan. |
+| Conducción | Ratón, `WASD` o flechas para moverse; `P` o el botón visible pausan el juego y `Esc` abre la pausa global. |
 | Ritmo | Pulsa las teclas indicadas en pantalla o toca los carriles al cruzar la línea. |
-| Vuelo de Edu | Ratón o `W`/`S` para altura; `Espacio` o clic para impulsar; `P`/`Esc` pausan. |
+| Vuelo de Edu | Ratón o `W`/`S` para altura; `Espacio` o clic para impulsar; `P` pausa el vuelo y `Esc` abre la pausa global. |
 | Batallas por turnos | Ratón o toque para elegir habilidad, objetivo, objeto o cancelar. |
 | Canalización de runas | Mantén y suelta `A`, `S`, `D` y `F`, o usa los cuatro botones en pantalla, para equilibrar las barras. |
 | Créditos interactivos | Clic o toque en **Clic para saltar**. |
 
-Los juegos de conducción y vuelo tienen pausa propia. Si se pierde una prueba
+Los juegos de conducción y vuelo tienen además pausa propia. Si se pierde una prueba
 obligatoria aparece la opción de reintentar. Opciones y Escenas permiten
 abandonar una prueba sin dejar bloqueada la novela.
 
-La pausa general no se promete como congelación de cada temporizador interno:
-en conducción y vuelo usa preferentemente `P` o su botón de pausa.
+La pausa global congela timers, `requestAnimationFrame`, reloj lógico,
+animaciones CSS, audio y vídeo, y absorbe entradas hasta reanudar. En una
+cinemática `Esc` conserva deliberadamente el significado de saltar. En
+conducción y vuelo se puede seguir usando `P` o el botón visible para su pausa
+local.
 
 La compatibilidad táctil es parcial: Furry Maps, batallas, runas y varias UI
 aceptan toque, pero el laberinto de gatos y el bullet hell requieren actualmente
@@ -310,8 +321,10 @@ de batalla/créditos/Ketchup/runas → `juice.js` → `engine.js` → `game.js`.
 `game.js` crea una instancia de
 `VisualNovelEngine`, descubre `chapter0`, `chapter1`, etc. hasta el primer hueco,
 carga personajes y llama a `nextLine()`. Cada línea ejecuta acciones, muestra
-texto o elecciones y espera input. No introduzcas un hueco en la numeración de
-capítulos: el descubrimiento se detiene ahí.
+texto o elecciones y espera input. `game.js` instala además la pausa global:
+congela timers, RAF y `Date.now`, coordina audio/vídeo y bloquea entradas sin
+modificar los relojes narrativos al reanudar. No introduzcas un hueco en la
+numeración de capítulos: el descubrimiento se detiene ahí.
 
 Electron no usa `file://`: `static-server.js` sirve la raíz en un puerto local
 libre y soporta peticiones Range. `preload.js` sólo expone cerrar, guardar ajustes
@@ -441,13 +454,24 @@ El runtime aplica en este orden las copias limpias de halo, intermedios de
 parpadeo y capas oculares. Si falta una capa válida, conserva el sprite completo
 como fallback; nunca debe deformar el cuerpo para simular un parpadeo.
 
+El cursor-retrato del diálogo usa el marco WebP
+`assets/images/ui/dialogue_speaker_cursor.webp`. `engine.js` resuelve la identidad
+real del hablante aunque `speakingAs` centre otro elemento del escenario y,
+antes de cada revelación furry, usa los sprites humanos WebP de
+`assets/images/characters/humans/`. Los umbrales narrativos actuales son
+C2/E16/L4 para Edu, C3/E13/L5 para Tony y C4/E2/L4 para José; se calculan por
+posición para funcionar también al saltar desde **Escenas**. El encuadre se
+ajusta con `--cursor-portrait-size` y `--cursor-portrait-position` y dispone de
+excepciones por personaje/pose. Al añadir una pose con composición atípica hay
+que probar tanto su plano de escenario como este recorte.
+
 ## Resumen de acciones narrativas
 
 | Familia | Acciones principales | Uso |
 | --- | --- | --- |
 | Escenario | `setBackground`, `clearBackground`, `showCG`, `hideCG`, `bgPan`, `fade` | Fondo, ilustración, cámara y transición. |
 | Personajes | `showCharacter`, `hideCharacter`, `removeCharacter`, `setPose` | Presencia, hueco y expresión. |
-| Animación | `animateCharacter`, `poseSequence`, `stopCharacterAnimation` | Acting entre poses. |
+| Animación | `animateCharacter`, `poseSequence`, `stopCharacterAnimation`, `characterAnimeFall` | Acting entre poses y caída cómica fuera de plano. |
 | Glitch | `characterGlitch`, `characterFullGlitch`, `characterGlitchUntilAdvance` | Corrupción puntual o sostenida. |
 | Diálogo | `hideDialog`, `wait`, `waitForClick` | Ritmo y ausencia temporal de caja. |
 | Audio | `playSound`, `stopSound`, `stopAllSounds`, `pauseSound`, `resumeSound`, `setVolume` | Música/SFX con ID, loop y fades. |
@@ -472,6 +496,10 @@ campos y ejemplos de cada acción.
 - `sceneHistory`: hasta 60 snapshots del capítulo actual para Escenas y
   Retroceder; incluye escenario, audio, efectos y estado narrativo.
 
+Al abrir el selector, la escena actual se centra modificando únicamente el
+`scrollTop` de `.scenes-list`. No debe sustituirse por `scrollIntoView()`: en
+Chrome puede desplazar también el contenedor del juego y recortarlo por arriba.
+
 `startNewGame()` y el selector de capítulos limpian la continuidad. El encadenado
 normal entre capítulos conserva inventario, rescates, llamadas y presión. No
 confundas la persistencia durante una sesión con guardado en disco: `saveGame()`
@@ -488,6 +516,12 @@ Usa IDs estables: `bg_music` o `music` se clasifican como música; el resto como
 SFX salvo que la ruta esté bajo `audio/music`. Reutilizar la misma ruta e ID
 evita reinicios entre escenas. Define `fadeIn`/`fadeOut` en milisegundos y
 detén pistas que no deban continuar.
+
+La caída anime de Edu se dispara desde `afterActions` con
+`characterAnimeFall`: baja recto, permanece brevemente fuera de plano y regresa
+sin rebote ni bloqueo del diálogo. Su efecto sincronizado es
+`assets/audio/sfx/sfx_caida_anime_edu.mp3`; debe ejecutarse también cuando se
+salta el tipeo o se usa avance rápido.
 
 `playVideo` puede recibir `audioCrossfade`, `holdLastFrame`, `visualFadeOut` y
 `endBackground`. Si una escena continúa desde el último fotograma, exporta ese
@@ -583,6 +617,17 @@ de Git: no añadas archivos de 100 MB o más y revisa el crecimiento del
 repositorio antes de incorporar material pesado. No muevas originales otra vez
 a `assets/` ni incluyas `workbench/` en Electron Builder.
 
+El emblema canónico de la camiseta de Edu —corona dorada sobre corazón azul—
+está disponible en runtime como `assets/images/others/kingom-souls.webp` y ya
+está integrado en sus sprites activos. Los diez frames V3 de Edu volando (ocho
+de vuelo y dos de dash) viven como WebP RGBA de 512×512 bajo
+`assets/images/minigames/chapter3/sprites/`; las hojas PNG y originales se
+conservan en `workbench/`. La serie de carrera de Samu contiene nueve frames
+WebP en `assets/images/characters/samu/run/`; la hoja conjunta y los PNG fuente
+se conservan sólo en `workbench/`. No reintroduzcas PNG runtime al regenerar
+estas familias: precarga, frame inicial y animación deben compartir las listas
+literales WebP.
+
 ## Herramientas gráficas locales
 
 Inicia el centro con `ABRIR_EDITOR_OJOS.bat` o `npm run tools:eyes` y abre
@@ -608,6 +653,10 @@ Metadatos relacionados:
 Scripts auxiliares:
 
 - `build_character_eye_layers.py`: servidor, previews y construcción de capas.
+  Refresca el inventario en cada petición y resuelve una fuente trasladada en
+  este orden: ruta configurada, WebP activo y original protegido mediante
+  `workbench/optimization/asset_optimization_manifest.json`. Puede permanecer
+  abierto durante una reorganización de assets sin conservar rutas obsoletas.
 - `build_blink_intermediates.py`: cola, registro y saneado de intermedios.
 - `compose_character_blink.py`: composición de prueba.
 - `compose_clean_eye_layers.py`: capas limpias y bases sin ojos.
@@ -624,6 +673,14 @@ no sustituyen este manual ni el menú `/tools`.
 - Flujo, foco y paneles: `game.js`.
 - Presentación: `styles.css`; combate: `battle-styles.css`.
 - Efectos de escena: `juice.js` y acciones JSON.
+
+La pausa global y el ocultado del HUD son responsabilidades de `game.js`:
+`Esc` alterna la pausa fuera de cinemáticas, y `H`/clic derecho alternan el HUD.
+El clic secundario se filtra antes del avance y de los listeners del minijuego.
+El cursor-retrato se reparte entre DOM/flujo del motor y estilos de
+`styles.css`; durante el tecleo sigue un ancla insertada tras cada grafema y
+vuelve al encabezado en 280 ms. Neit conserva un desplazamiento vertical propio
+de 28 px; no convertirlo en una regla global de personajes.
 
 Mantén el escenario base 1280×720 y prueba 16:9, ventana pequeña, pantalla
 completa y zoom del sistema. Todo modal debe tener foco inicial, cierre con Esc
@@ -708,6 +765,10 @@ Al modificar guion:
   transformación deben respetar la causalidad fijada en esa sección.
 - Registra qué sabe cada personaje antes de cada escena y no adelantes
   revelaciones.
+- El gag de **Fisuras 2 de Stim** sucede después de que Edu acepte ir al
+  cumpleaños: Samu pregunta por los portales, Edu lo interpreta como el juego y
+  Samu corta con «Bueno, cambiando de tema…». La broma no sustituye la lectura
+  canónica posterior: Zip explotó el miedo de Edu y Elion sostenía la jaula.
 - La comedia no elimina las consecuencias de una escena tensa ni copia la
   personalidad o dinámica de obras ajenas.
 
@@ -894,6 +955,10 @@ desactivar expresamente el efecto aunque la pose tenga una emoción reconocida;
 `emotion` anterior sigue siendo compatible.
 Las preferencias del sistema para reducir movimiento desactivan las animaciones,
 pero mantienen el color y la sombra emocional para conservar el contexto.
+El relleno y los brillos heredan el color legible del hablante: OMG, CLos,
+Incel y Simsong conservan sus colores de marca. El valor CSS histórico `blue`
+de Edu se normaliza visualmente a `#4da3ff`; no debe pasar por la mezcla genérica
+con blanco porque produciría un tono lavanda.
 
 Los capítulos 0 a 6 contienen una selección curada de 26 diálogos con
 `"textAnimation": true` (entre 2 y 5 por capítulo). Se reservan para
@@ -4157,9 +4222,9 @@ npm run optimize:assets
 El primer comando es una auditoría sin escritura; el segundo conserva los
 originales y aplica las conversiones pendientes.
 
-La primera pasada optimizó 328 imágenes y 3 medios: ahorra 374,62 MiB en
-imágenes y 100,66 MiB en audio/vídeo, 475,28 MiB en total. Tras separar además
-fuentes y recursos retirados, `assets/` ocupa aproximadamente 820 MiB; el
+El manifiesto actual cubre 339 imágenes y 4 medios: ahorra 383,02 MiB en
+imágenes y 100,94 MiB en audio/vídeo, 483,96 MiB en total. Tras separar además
+fuentes y recursos retirados, `assets/` ocupa aproximadamente 828 MiB; el
 material recuperable permanece en `workbench/` y no entra en la aplicación
 empaquetada. La carpeta sí se versiona completa con Git normal, sin requerir Git
 LFS durante la instalación o el clonado. Sus binarios forman parte del historial
@@ -4464,6 +4529,13 @@ el navegador estaba terminando de leer la versión anterior. Antes de codificarl
 se fuerza RGB negro neutro en todo píxel con alfa cero y se usa el modo WebP
 `exact`: esto evita que el codificador reconstruya color residual invisible que
 algunos visores defectuosos llegan a mostrar como franjas o bloques.
+
+Si `master` sustituye el arte completo de una pose, no reutilices su antiguo
+fotograma de parpadeo como cuerpo: registra la región ocular contra el lienzo
+nuevo y recompón sólo esos píxeles. Los estados abierto, semicerrado y cerrado
+deben conservar exactamente dimensiones y alfa del nuevo sprite base. Actualiza
+`blink_eye_intermediates.json`, la secuencia del personaje y sus miniaturas; el
+método queda identificado como `registered-eye-region-composite`.
 La comparativa incluye un modo `Fijar parpadeo` para corregir el desplazamiento de
 la capa ocular por pose. El usuario puede introducir X/Y en píxeles, arrastrar la
 capa o usar las flechas (con `Mayús`, saltos de 5 px); los valores se guardan en

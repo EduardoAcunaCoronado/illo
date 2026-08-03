@@ -1,3 +1,201 @@
+// Registro de audio creado por código. Los elementos new Audio() de los
+// minijuegos no viven en el DOM y no se pueden localizar con querySelector.
+const gamePauseMedia = (() => {
+  const audios = new Set();
+  const contexts = new Set();
+  const NativeAudio = window.Audio;
+
+  if (NativeAudio) {
+    const TrackedAudio = function (...args) {
+      const audio = new NativeAudio(...args);
+      audios.add(audio);
+      audio.addEventListener("ended", () => audios.delete(audio), { once: true });
+      return audio;
+    };
+    TrackedAudio.prototype = NativeAudio.prototype;
+    Object.setPrototypeOf(TrackedAudio, NativeAudio);
+    window.Audio = TrackedAudio;
+  }
+
+  ["AudioContext", "webkitAudioContext"].forEach((name) => {
+    const NativeContext = window[name];
+    if (!NativeContext || NativeContext.__illoTracked) return;
+    const TrackedContext = function (...args) {
+      const context = new NativeContext(...args);
+      contexts.add(context);
+      return context;
+    };
+    TrackedContext.prototype = NativeContext.prototype;
+    Object.setPrototypeOf(TrackedContext, NativeContext);
+    TrackedContext.__illoTracked = true;
+    window[name] = TrackedContext;
+  });
+
+  return { audios, contexts };
+})();
+
+// Reloj pausable de la partida. Los minijuegos usan una mezcla de timers y
+// requestAnimationFrame; centralizarlos aquí hace que Esc congele ambos sin
+// obligar a que cada minijuego implemente una pausa distinta.
+const gamePauseClock = (() => {
+  const nativeSetTimeout = window.setTimeout.bind(window);
+  const nativeClearTimeout = window.clearTimeout.bind(window);
+  const nativeSetInterval = window.setInterval.bind(window);
+  const nativeClearInterval = window.clearInterval.bind(window);
+  const nativeRequestAnimationFrame = window.requestAnimationFrame.bind(window);
+  const nativeCancelAnimationFrame = window.cancelAnimationFrame.bind(window);
+  const realPerformanceNow = performance.now.bind(performance);
+  const realDateNow = Date.now.bind(Date);
+
+  let paused = false;
+  let pausedAt = 0;
+  let pausedDateAt = 0;
+  let totalPaused = 0;
+  let totalDatePaused = 0;
+  let nextId = 1_000_000;
+  const timers = new Map();
+  const frames = new Map();
+
+  const virtualPerformanceNow = () => {
+    const now = realPerformanceNow();
+    return now - totalPaused - (paused ? now - pausedAt : 0);
+  };
+  const virtualDateNow = () => {
+    const now = realDateNow();
+    return now - totalDatePaused - (paused ? now - pausedDateAt : 0);
+  };
+
+  // Los bucles de juego que comparan performance.now()/Date.now() también
+  // deben ignorar el tiempo pasado dentro del menú de pausa.
+  try {
+    Object.defineProperty(performance, "now", {
+      configurable: true,
+      value: virtualPerformanceNow,
+    });
+  } catch (_) {}
+  Date.now = virtualDateNow;
+
+  const invoke = (callback, args) => {
+    if (typeof callback === "function") callback(...args);
+  };
+
+  const armTimer = (record) => {
+    if (paused || !timers.has(record.id)) return;
+    record.startedAt = realPerformanceNow();
+    record.nativeId = nativeSetTimeout(() => {
+      record.nativeId = null;
+      if (!timers.has(record.id)) return;
+      if (record.interval) {
+        record.remaining = record.delay;
+        invoke(record.callback, record.args);
+        if (timers.has(record.id)) armTimer(record);
+      } else {
+        timers.delete(record.id);
+        invoke(record.callback, record.args);
+      }
+    }, Math.max(0, record.remaining));
+  };
+
+  const createTimer = (callback, delay, args, interval) => {
+    // El panel de pausa (y herramientas de accesibilidad/automatización) puede
+    // crear sus propios timers mientras el juego está detenido. Esos timers
+    // nuevos no pertenecen a la simulación pausada y deben seguir funcionando.
+    if (paused) {
+      return interval
+        ? nativeSetInterval(callback, delay, ...args)
+        : nativeSetTimeout(callback, delay, ...args);
+    }
+    const id = nextId++;
+    const normalizedDelay = Math.max(0, Number(delay) || 0);
+    const record = {
+      id,
+      callback,
+      args,
+      interval,
+      delay: normalizedDelay,
+      remaining: normalizedDelay,
+      startedAt: 0,
+      nativeId: null,
+    };
+    timers.set(id, record);
+    armTimer(record);
+    return id;
+  };
+
+  const clearTimer = (id) => {
+    const record = timers.get(id);
+    if (!record) {
+      nativeClearTimeout(id);
+      nativeClearInterval(id);
+      return;
+    }
+    if (record.nativeId !== null) nativeClearTimeout(record.nativeId);
+    timers.delete(id);
+  };
+
+  window.setTimeout = (callback, delay, ...args) =>
+    createTimer(callback, delay, args, false);
+  window.setInterval = (callback, delay, ...args) =>
+    createTimer(callback, delay, args, true);
+  window.clearTimeout = clearTimer;
+  window.clearInterval = clearTimer;
+
+  const armFrame = (record) => {
+    if (paused || !frames.has(record.id)) return;
+    record.nativeId = nativeRequestAnimationFrame(() => {
+      frames.delete(record.id);
+      record.callback(virtualPerformanceNow());
+    });
+  };
+
+  window.requestAnimationFrame = (callback) => {
+    if (paused) return nativeRequestAnimationFrame(callback);
+    const record = { id: nextId++, callback, nativeId: null };
+    frames.set(record.id, record);
+    armFrame(record);
+    return record.id;
+  };
+  window.cancelAnimationFrame = (id) => {
+    const record = frames.get(id);
+    if (!record) {
+      nativeCancelAnimationFrame(id);
+      return;
+    }
+    if (record.nativeId !== null) nativeCancelAnimationFrame(record.nativeId);
+    frames.delete(id);
+  };
+
+  const setPaused = (value) => {
+    const next = !!value;
+    if (next === paused) return;
+
+    if (next) {
+      paused = true;
+      pausedAt = realPerformanceNow();
+      pausedDateAt = realDateNow();
+      for (const record of timers.values()) {
+        if (record.nativeId === null) continue;
+        nativeClearTimeout(record.nativeId);
+        record.nativeId = null;
+        record.remaining = Math.max(0, record.remaining - (pausedAt - record.startedAt));
+      }
+      for (const record of frames.values()) {
+        if (record.nativeId !== null) nativeCancelAnimationFrame(record.nativeId);
+        record.nativeId = null;
+      }
+      return;
+    }
+
+    totalPaused += realPerformanceNow() - pausedAt;
+    totalDatePaused += realDateNow() - pausedDateAt;
+    paused = false;
+    for (const record of timers.values()) armTimer(record);
+    for (const record of frames.values()) armFrame(record);
+  };
+
+  return { setPaused, isPaused: () => paused };
+})();
+
 const engine = new VisualNovelEngine();
 let isGameRunning = false;
 let waitingForInput = false;
@@ -250,7 +448,17 @@ function abrirMenuEscenas() {
   });
   scenesMenu.classList.remove("hidden");
   const activo = scenesList.querySelector(".actual");
-  if (activo) activo.scrollIntoView({ block: "center" });
+  if (activo) {
+    // `scrollIntoView()` también desplaza los ancestros con overflow (incluido
+    // el escenario en algunos tamaños de Chrome), dejando el juego recortado
+    // por arriba. Movemos únicamente la lista interna del selector.
+    const centroActivo =
+      activo.offsetTop - scenesList.offsetTop + activo.offsetHeight / 2;
+    scenesList.scrollTop = Math.max(
+      0,
+      centroActivo - scenesList.clientHeight / 2,
+    );
+  }
 }
 
 scenesBtn?.addEventListener("click", (e) => {
@@ -1426,13 +1634,64 @@ function renderGalleryPanel(manifest) {
 // Lleva los mismos ajustes que Configuración más la salida al menú principal.
 let exitToMenuRequested = false;
 const optionsBtn = document.getElementById("options-btn");
+let mediaPausedByGame = [];
+let audioContextsPausedByGame = [];
 
 function menuPausaAbierto() {
   return !!document.getElementById("pause-menu");
 }
 
+function setGamePaused(paused) {
+  const shouldPause = !!paused;
+  if (shouldPause === gamePauseClock.isPaused()) return;
+
+  if (shouldPause) {
+    engine.setFastForward(false);
+    mediaPausedByGame = [];
+    const candidates = new Set([
+      ...document.querySelectorAll("audio, video"),
+      ...gamePauseMedia.audios,
+      engine.currentMusic,
+      ...Object.values(engine.audioInstances || {}),
+    ]);
+    candidates.forEach((media) => {
+      if (!media || media.paused || media.ended) return;
+      mediaPausedByGame.push(media);
+      try { media.pause(); } catch (_) {}
+    });
+    audioContextsPausedByGame = [];
+    gamePauseMedia.contexts.forEach((context) => {
+      if (!context || context.state !== "running") return;
+      audioContextsPausedByGame.push(context);
+      try { context.suspend(); } catch (_) {}
+    });
+  }
+
+  document.body.classList.toggle("game-paused", shouldPause);
+  gamePauseClock.setPaused(shouldPause);
+  window.dispatchEvent(new CustomEvent("illo:pausechange", {
+    detail: { paused: shouldPause },
+  }));
+
+  if (!shouldPause) {
+    const toResume = mediaPausedByGame;
+    mediaPausedByGame = [];
+    toResume.forEach((media) => {
+      if (!media || media.ended || media._stopping) return;
+      try { media.play().catch(() => {}); } catch (_) {}
+    });
+    const contextsToResume = audioContextsPausedByGame;
+    audioContextsPausedByGame = [];
+    contextsToResume.forEach((context) => {
+      if (!context || context.state === "closed") return;
+      try { context.resume(); } catch (_) {}
+    });
+  }
+}
+
 function cerrarMenuPausa() {
   document.getElementById("pause-menu")?.remove();
+  setGamePaused(false);
 }
 
 function abrirMenuPausa() {
@@ -1453,6 +1712,7 @@ function abrirMenuPausa() {
     `;
   document.getElementById("game-container").appendChild(overlay);
   wireSettings(overlay);
+  setGamePaused(true);
 
   // El juego avanza el diálogo con cualquier clic en document: sin esto, tocar
   // un deslizador o el propio panel pasaría de línea por detrás.
@@ -1477,14 +1737,91 @@ function salirAlMenuPrincipal() {
   desbloquearBucle(() => exitToMenuRequested);
 }
 
+function targetPermiteInputEnPausa(target) {
+  return target instanceof Element && !!target.closest("#pause-menu");
+}
+
+function bloquearInputDurantePausa(e) {
+  if (!gamePauseClock.isPaused() || targetPermiteInputEnPausa(e.target)) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+}
+
+function alternarHUD() {
+  document.body.classList.toggle("hud-hidden");
+}
+
+function puedeAvanzarDialogo() {
+  if (!isGameRunning || gamePauseClock.isPaused() || cutsceneEnMarcha()) return false;
+  if (!dialogBox?.classList.contains("active")) return false;
+  if (document.querySelector("#choices-container.active")) return false;
+  if (engine.hayMinijuegoAbierto?.()) return false;
+  return true;
+}
+
+function avanzarDialogo() {
+  if (!puedeAvanzarDialogo()) return;
+  // Reutiliza exactamente la ruta del clic izquierdo: durante el tecleo lo
+  // completa y, durante la espera, avanza una sola línea.
+  document.dispatchEvent(new MouseEvent("click", { bubbles: true, button: 0 }));
+}
+
+// Captura antes que los controles particulares de los minijuegos: Esc abre una
+// sola pausa global y, mientras está activa, ninguna tecla o clic se filtra al
+// juego que ha quedado debajo del panel.
 document.addEventListener("keydown", (e) => {
-  if (e.key !== "Escape") return;
-  // Durante una cutscene, Esc es suyo: salta el vídeo.
+  if (e.key === "Escape") {
+    // Durante una cutscene, Esc sigue siendo suyo: salta el vídeo.
+    if (!isGameRunning || cutsceneEnMarcha()) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    if (menuPausaAbierto()) cerrarMenuPausa();
+    else abrirMenuPausa();
+    return;
+  }
+
+  if (gamePauseClock.isPaused()) {
+    if (!targetPermiteInputEnPausa(e.target)) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+    return;
+  }
+
+  if (!isGameRunning || e.repeat) return;
+  if (e.key.toLowerCase() === "h") {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    alternarHUD();
+    return;
+  }
+  if ((e.key === " " || e.key === "Enter") && puedeAvanzarDialogo()) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    avanzarDialogo();
+  }
+}, true);
+
+document.addEventListener("keyup", bloquearInputDurantePausa, true);
+["pointerdown", "pointerup", "mousedown", "mouseup", "click", "dblclick", "wheel", "touchstart", "touchend"]
+  .forEach((type) => document.addEventListener(type, bloquearInputDurantePausa, true));
+
+// El clic secundario no debe activar disparos/impulsos antes de que llegue su
+// evento contextmenu: queda reservado por completo para alternar el HUD.
+["pointerdown", "pointerup", "mousedown", "mouseup", "click", "auxclick"].forEach((type) => {
+  document.addEventListener(type, (e) => {
+    if (!isGameRunning || cutsceneEnMarcha() || e.button !== 2) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }, true);
+});
+
+document.addEventListener("contextmenu", (e) => {
   if (!isGameRunning || cutsceneEnMarcha()) return;
   e.preventDefault();
-  if (menuPausaAbierto()) cerrarMenuPausa();
-  else abrirMenuPausa();
-});
+  e.stopImmediatePropagation();
+  if (!gamePauseClock.isPaused()) alternarHUD();
+}, true);
 
 optionsBtn?.addEventListener("click", (e) => {
   // Que el clic no llegue a document: contaría como "avanzar diálogo"
@@ -1819,6 +2156,13 @@ async function loadAllCharacters() {
     "airi_adult",
     "amalgama",
     "amalgama_final",
+    "andres",
+    "carlos",
+    "gorila",
+    "ketchling",
+    "paloma",
+    "santi",
+    "sebas",
     "tung_tung_tung_sahur",
     "ballerina_capuchina",
     "tralalelo_tralala",
@@ -1955,7 +2299,9 @@ function waitForClick() {
   return new Promise((resolve) => {
     waitingForInput = true;
     let fastForwardTimer = null;
-    const handler = () => {
+    const handler = (event) => {
+      // El botón secundario está reservado para ocultar/mostrar el HUD.
+      if (event && event.button !== 0) return;
       waitingForInput = false;
       if (fastForwardTimer) clearTimeout(fastForwardTimer);
       document.removeEventListener("click", handler);

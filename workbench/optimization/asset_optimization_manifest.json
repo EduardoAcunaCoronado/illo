@@ -450,10 +450,10 @@
       "mode": "webp-lossy-q92",
       "width": 1672,
       "height": 941,
-      "originalBytes": 2924208,
+      "originalBytes": 2746684,
       "runtimeBytes": 533126,
-      "savedBytes": 2391082,
-      "originalSha256": "585fa5f5bf092575e31b10bedf642e6bf9f24fc52fb9b0ef7cca5096825cb6c2",
+      "savedBytes": 2213558,
+      "originalSha256": "0e46181660c0944f4931b7c540f6cfff61c7d67c25cc5d91711bf1084c2bc9d4",
       "runtimeSha256": "5d20188b68e2e118026facaddff546f26e0877ac93190a3b2c795108bdca8492"
     },
     "assets/images/backgrounds/chapter4/despertar_jose.png": {
@@ -801,10 +801,10 @@
       "mode": "webp-lossy-q92",
       "width": 1672,
       "height": 941,
-      "originalBytes": 2592856,
+      "originalBytes": 2506522,
       "runtimeBytes": 400234,
-      "savedBytes": 2192622,
-      "originalSha256": "0d1e454251d1b69fc5dacf789e1cc37aa855306ea2054b81231e62d26b044c18",
+      "savedBytes": 2106288,
+      "originalSha256": "b84207ef97400a6c94b6e3c128a4dee3565253f4bb54a83a6fdbdefb6726caff",
       "runtimeSha256": "c50ec7b43c8f721f79269cfabb17bd96149a3b3db3a7341dd7b7c940ba83f946"
     },
     "assets/images/backgrounds/chapter6/paseo_ciudad_paloma_mano.png": {
@@ -983,10 +983,10 @@
       "mode": "webp-lossy-q92",
       "width": 3840,
       "height": 2560,
-      "originalBytes": 9449639,
+      "originalBytes": 18859606,
       "runtimeBytes": 817314,
-      "savedBytes": 8632325,
-      "originalSha256": "3f0ab9f93dde9a8e3081f50114bb657964fbc0ebb99c02e4e034be5379a91f87",
+      "savedBytes": 18042292,
+      "originalSha256": "1fa6afed8bb789530c90abda174a2cbf24813aed17008d9e585f59a8f481f063",
       "runtimeSha256": "fb609d54a6fd5d34a9c8dd3d70019470c072b7fd6b526f9e38fbce078f0b6820"
     },
     "assets/images/cg/chapter2/zip_sombra_1.png": {
@@ -996,10 +996,10 @@
       "mode": "webp-lossy-q92",
       "width": 1672,
       "height": 941,
-      "originalBytes": 2245569,
+      "originalBytes": 2244936,
       "runtimeBytes": 376108,
-      "savedBytes": 1869461,
-      "originalSha256": "62b01f6f6c532a8eb642ded798b0312ff2787c5a16d79f30a98e9ce60e2effeb",
+      "savedBytes": 1868828,
+      "originalSha256": "e5f9f32f245d61c1c5affccc3a743d74da80597521cde4b72f61c937f11d9a42",
       "runtimeSha256": "4069b1b385ad505834ba2d9ab403012ac109864823de72842a871f705bb3dbb8"
     },
     "assets/images/cg/chapter2/zip_sombra_2.png": {
@@ -1009,10 +1009,10 @@
       "mode": "webp-lossy-q92",
       "width": 1672,
       "height": 941,
-      "originalBytes": 2101959,
+      "originalBytes": 2097740,
       "runtimeBytes": 330250,
-      "savedBytes": 1771709,
-      "originalSha256": "c497a257cb3015489c7b0ec416df66f3c264a68f8c244a5626ee0ff80cb3c66a",
+      "savedBytes": 1767490,
+      "originalSha256": "31e15e4a425ef1a6713baf152933812eb7ba0cc018c3fc26bfecae099ae07c5e",
       "runtimeSha256": "e183bf59ed0940f3c7e510aaab11851d4f56d6088772a5114edeb38f8562a24a"
     },
     "assets/images/cg/chapter3/abrazo_trio.png": {
@@ -1022,10 +1022,10 @@
       "mode": "webp-lossy-q92",
       "width": 1672,
       "height": 941,
-      "originalBytes": 1969614,
+      "originalBytes": 2061293,
       "runtimeBytes": 242068,
-      "savedBytes": 1727546,
-      "originalSha256": "bec324b7804af4f97d40d1aa9dd1d02be7a2b6df1cbd6cf2a3b1b80b0c93a5d4",
+      "savedBytes": 1819225,
+      "originalSha256": "66f51c57cab0e7bc69d7dcbb3310f8c1c2f968b3fe85f9035c331c28e94886d3",
       "runtimeSha256": "f0da25285a46a383c8b9d985e355ce62080fb4487e2fe1bc4b8c4176fa48b726"
     },
     "assets/images/cg/chapter3/diapason.png": {
@@ -1399,10 +1399,10 @@
       "mode": "webp-lossless",
       "width": 490,
       "height": 1536,
-      "originalBytes": 1315308,
+      "originalBytes": 1213057,
       "runtimeBytes": 925024,
-      "savedBytes": 390284,
-      "originalSha256": "665e0028f365f3cde89b296c3783dd0b90a26ef8f46c78628f39728bb5383ac6",
+      "savedBytes": 288033,
+      "originalSha256": "398db81bf24804c99b9d8d0b388bed7169540ba8bba43ec1094ee58445090390",
       "runtimeSha256": "5a49b7c032701f438d77dbfb80cb6a64f984aa4d86f3ead5b69deae1aca4a41b"
     },
     "assets/images/characters/edu/chapter2/edu_zip_surprised.png": {
@@ -1412,10 +1412,10 @@
       "mode": "webp-lossless",
       "width": 490,
       "height": 1536,
-      "originalBytes": 1268728,
+      "originalBytes": 1165048,
       "runtimeBytes": 891628,
-      "savedBytes": 377100,
-      "originalSha256": "e53258ae8cee4a7e3310d009a807658d4226021d1e518452f98070a37c0a9b58",
+      "savedBytes": 273420,
+      "originalSha256": "da5da6406ba3c184b04287dab499ee59be392225e910966396a7f04fe6fff558",
       "runtimeSha256": "b665067346f598bd7679b76fb6125996ced2eba53b2df2c0aeb4fdba5ae37df0"
     },
     "assets/images/characters/edu/chapter2/edu_zip_worried.png": {
@@ -1425,10 +1425,10 @@
       "mode": "webp-lossless",
       "width": 982,
       "height": 2048,
-      "originalBytes": 1392727,
+      "originalBytes": 1269956,
       "runtimeBytes": 857126,
-      "savedBytes": 535601,
-      "originalSha256": "168ece66554162b89ce7e7f89444548aa8bc2484fe1f15ac19b1e0d87d93f628",
+      "savedBytes": 412830,
+      "originalSha256": "7d46411135664994bc3040f66f50b6d467499b204ecde5e116daf48caffa5c4e",
       "runtimeSha256": "b6a6a9f695f34a8eda00542d9b76794c4486740963ed7e7539263dc0c63db851"
     },
     "assets/images/characters/edu/Edu.png": {
@@ -1438,10 +1438,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1536,
-      "originalBytes": 2376074,
+      "originalBytes": 2256388,
       "runtimeBytes": 1730820,
-      "savedBytes": 645254,
-      "originalSha256": "eea3bc003030a3c48b5a5b908650ddd5353b9d78c5a958e2c7983ef522331fc2",
+      "savedBytes": 525568,
+      "originalSha256": "2b7f872c66c3e7232d94480c1f40062c347d4d44ac1b47390f1840f90579d6bc",
       "runtimeSha256": "a5fae966fc7aecaa4b9a6720454f91c5cb47ab819c2cafc394cdad585f8b82b6"
     },
     "assets/images/characters/edu/edu_angry.png": {
@@ -1451,10 +1451,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1536,
-      "originalBytes": 2752101,
+      "originalBytes": 2653507,
       "runtimeBytes": 2058574,
-      "savedBytes": 693527,
-      "originalSha256": "9e1bf63569e03ea45487195a90771d417afb35b31fc337d0fcab450098987329",
+      "savedBytes": 594933,
+      "originalSha256": "7a886748e073f01565858b08f00a7be1f00b957f7705be75de19d8d7b0513fab",
       "runtimeSha256": "c2e30712cfebb594b8682dbc66b9b259c34a0044fd161a21805afacd09062c09"
     },
     "assets/images/characters/edu/edu_bua.png": {
@@ -1464,10 +1464,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1024,
-      "originalBytes": 845158,
+      "originalBytes": 867187,
       "runtimeBytes": 550160,
-      "savedBytes": 294998,
-      "originalSha256": "0ea816f08ed28d1bcebf5447ab2b882ede3b2f8f15b0d7b9672287ee4280bd73",
+      "savedBytes": 317027,
+      "originalSha256": "b94b00d5359d0cbea3901081c313f5db723b661c907c86ad28614ce4bdc43f81",
       "runtimeSha256": "77093c268d2a3b081d8864c1e666d57320f72c5fb6526545f652ac6dfd39e25b"
     },
     "assets/images/characters/edu/edu_clapping.png": {
@@ -1477,10 +1477,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1024,
-      "originalBytes": 744538,
+      "originalBytes": 762698,
       "runtimeBytes": 489932,
-      "savedBytes": 254606,
-      "originalSha256": "6a48abd06ce3c2e5cf9b5638b03262379f99667697a62bacd4c2d3e6992296da",
+      "savedBytes": 272766,
+      "originalSha256": "8a691c6c3d9c9970bb9a112e3a02f8422b020eb8ef3733fb59efd81ebe371ec6",
       "runtimeSha256": "ae3e874d55b967427e388a58ca137218fb3fac9572779d444c680b71568ec61e"
     },
     "assets/images/characters/edu/edu_determined.png": {
@@ -1490,10 +1490,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1536,
-      "originalBytes": 2704336,
+      "originalBytes": 2593376,
       "runtimeBytes": 2052122,
-      "savedBytes": 652214,
-      "originalSha256": "45b93a90c294309c1568b5fd6c549920ae0e1424a473cbf8b7a173d762c80c4e",
+      "savedBytes": 541254,
+      "originalSha256": "568b27b13b77b6ed446fd18fb13d83c1191f91a7847a2953730bc8c2e82bde72",
       "runtimeSha256": "831b9104cc570e51d04320a0158be8cc15fc91e94d72b63841fd0ca4ac58ea8e"
     },
     "assets/images/characters/edu/edu_embarrassed.png": {
@@ -1503,10 +1503,10 @@
       "mode": "webp-lossless",
       "width": 1856,
       "height": 2296,
-      "originalBytes": 3092519,
+      "originalBytes": 2986691,
       "runtimeBytes": 1855922,
-      "savedBytes": 1236597,
-      "originalSha256": "403339b6f0f6d8a04bb623bf29f09ecbbe53bc0a1652c5789722b29060e98966",
+      "savedBytes": 1130769,
+      "originalSha256": "890ea751bd24abf9d230871468681cae4bbe7ed55247642dd48fc458f36c1047",
       "runtimeSha256": "82d7918a6fff8396df2ce301cc70d361b3261bbf18e1dc3960c1a935643f6bb2"
     },
     "assets/images/characters/edu/edu_epic.png": {
@@ -1516,10 +1516,10 @@
       "mode": "webp-lossless",
       "width": 1252,
       "height": 1113,
-      "originalBytes": 1056792,
+      "originalBytes": 1072355,
       "runtimeBytes": 719106,
-      "savedBytes": 337686,
-      "originalSha256": "c888bb760331e8d72763cc44f376a0c7853b1fee74de5cba7d2428d4ea1d17d7",
+      "savedBytes": 353249,
+      "originalSha256": "25e8ea97dc6402795c1fdfec3e4079e627001f37cacb8a6332c3a5d6ac3095fd",
       "runtimeSha256": "d12e901f92e2751095ff6f59bb952374442189a09560a3dd62e03c88160aafc2"
     },
     "assets/images/characters/edu/edu_facepalm.png": {
@@ -1529,10 +1529,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1024,
-      "originalBytes": 708600,
+      "originalBytes": 706069,
       "runtimeBytes": 442046,
-      "savedBytes": 266554,
-      "originalSha256": "377c4cdbc3deac08a2ea78cea643086e0a6482701243af5e1d4db8bb307183c1",
+      "savedBytes": 264023,
+      "originalSha256": "10239825f4e4fd2bcd0c81f50c168dddc540c23eeedd1014991631db2d12d0ac",
       "runtimeSha256": "167c6c136c2bf8e98f148068a52fdfdd7d89a8bb53e766a4c1704a79eaff188c"
     },
     "assets/images/characters/edu/edu_happy.png": {
@@ -1542,10 +1542,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1536,
-      "originalBytes": 2760690,
+      "originalBytes": 2656166,
       "runtimeBytes": 2055558,
-      "savedBytes": 705132,
-      "originalSha256": "d8fbb625b29eccb3984e81a704a408744dda369642851706d35a1794e07ce4f6",
+      "savedBytes": 600608,
+      "originalSha256": "51ee13e86bd592f198218b4fcbe46a1039f2f67a10399381e4c23652436ade46",
       "runtimeSha256": "9d29733523427e4bc1c4be145f3be760eae51b207b0e81a9d4deb6ed5e2368e8"
     },
     "assets/images/characters/edu/edu_picado.png": {
@@ -1555,10 +1555,10 @@
       "mode": "webp-lossless",
       "width": 1203,
       "height": 1400,
-      "originalBytes": 2191115,
+      "originalBytes": 2162671,
       "runtimeBytes": 1599696,
-      "savedBytes": 591419,
-      "originalSha256": "dff46a842d993738417e6c2b7ba8f3cd0aa608eb4a4ca94ef86dc47ca3e9f686",
+      "savedBytes": 562975,
+      "originalSha256": "c4bcef6269d691dbeb7975fdf552fadb021f9b576b06fa497172f8bd547a862b",
       "runtimeSha256": "bbec905269908802a24def219386bd2e7303e1fe0e03374847fc2cb7d43d28e8"
     },
     "assets/images/characters/edu/edu_picante_wide_transparent.png": {
@@ -1568,11 +1568,11 @@
       "mode": "webp-lossless",
       "width": 1254,
       "height": 1254,
-      "originalBytes": 1224210,
-      "runtimeBytes": 845296,
-      "savedBytes": 378914,
-      "originalSha256": "ab75d2b680a4b022d4e3950c438e5fbf39dfd2a1446af209b69dc78d6b549f1c",
-      "runtimeSha256": "e3e0484da4b428e66f6c8837c385961b9a78ce25c2059b3e2827763b0f83e755"
+      "originalBytes": 1280937,
+      "runtimeBytes": 867582,
+      "savedBytes": 413355,
+      "originalSha256": "062b190d08175ca32ca515ee0109020dc2402335696e3522536ba4342a16f3bf",
+      "runtimeSha256": "ef035d5ee8349ec112dd3476378b2f448742846c8c17d7f7d7fab7daaf4ec9db"
     },
     "assets/images/characters/edu/edu_riku.png": {
       "source": "assets/images/characters/edu/edu_riku.png",
@@ -1581,10 +1581,10 @@
       "mode": "webp-lossless",
       "width": 1254,
       "height": 1254,
-      "originalBytes": 1447842,
+      "originalBytes": 1131211,
       "runtimeBytes": 770182,
-      "savedBytes": 677660,
-      "originalSha256": "2f8ec6bc45a4d668d34dabf89ee729e503c8f6b31d96cb8356de800f1bf8b155",
+      "savedBytes": 361029,
+      "originalSha256": "68253b6dd842e80ea17535542ea034d9d093c9703fbddd5c9c7419ece62e1e00",
       "runtimeSha256": "d6805e098bd7befa4e89d811e8024e9743bf07002b8e3bd999ef3586254a06ce"
     },
     "assets/images/characters/edu/edu_sad.png": {
@@ -1594,10 +1594,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1536,
-      "originalBytes": 2617812,
+      "originalBytes": 2515421,
       "runtimeBytes": 1964872,
-      "savedBytes": 652940,
-      "originalSha256": "f2e83ebafd580cd3951d3a18ef7c46e01f6e2cff97831ee120cc554ee5d01d5c",
+      "savedBytes": 550549,
+      "originalSha256": "6b59a5ca875ee3c93635a18c8c418d7d6d3a123ea24530e26bb643833ea63ec4",
       "runtimeSha256": "ebe00ef35f6b568edef3cb4b3cbff19cde2f2bd0d2deefc49e45fe5ed5b8ac18"
     },
     "assets/images/characters/edu/edu_shocked.png": {
@@ -1607,10 +1607,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1024,
-      "originalBytes": 860669,
+      "originalBytes": 716109,
       "runtimeBytes": 448832,
-      "savedBytes": 411837,
-      "originalSha256": "c7bb9035063344d11052546e575b5ba7ccb9d7635572b90683d58b8db82c08a4",
+      "savedBytes": 267277,
+      "originalSha256": "47dbd7fc10010a33bc2985972aa38ddc7cd083eeb5b37e9842508a3c042d7771",
       "runtimeSha256": "a6ebc8798aa87435f0ac1898930c5bc99eed5b627ff546496b85243e2d8859d3"
     },
     "assets/images/characters/edu/edu_surprised.png": {
@@ -1620,10 +1620,10 @@
       "mode": "webp-lossless",
       "width": 1024,
       "height": 1536,
-      "originalBytes": 2697711,
+      "originalBytes": 2577605,
       "runtimeBytes": 2011438,
-      "savedBytes": 686273,
-      "originalSha256": "f1aeb6f5befae2720aa8088c9bb7e218994da88251b7983b091e4cc0188a14a7",
+      "savedBytes": 566167,
+      "originalSha256": "ecd38b152c39a6ef637160859246134e50414b41a22b18df7c4b8e3aade8caab",
       "runtimeSha256": "6bcf48c6625eba3844c9a85d95e50c95407576c88af677f492f33262fc305dd8"
     },
     "assets/images/characters/edu/edu_thinking.png": {
@@ -1633,10 +1633,10 @@
       "mode": "webp-lossless",
       "width": 2048,
       "height": 2048,
-      "originalBytes": 2352306,
+      "originalBytes": 2308817,
       "runtimeBytes": 1449976,
-      "savedBytes": 902330,
-      "originalSha256": "a11eee5403e075de69ae1f5d0a26f71d24eef3a80e938d73d9003118d8bb5566",
+      "savedBytes": 858841,
+      "originalSha256": "10f3f729c4c3954f9ce6e11080d78424f977e4149502bc4f0da2f1ebf9d23e14",
       "runtimeSha256": "bd9e1f24889f0aec6898ae400366c8964b32c9dffc85d5312b28163b13acbf4f"
     },
     "assets/images/characters/edu/edu_worried.png": {
@@ -1646,11 +1646,11 @@
       "mode": "webp-lossless",
       "width": 2048,
       "height": 2048,
-      "originalBytes": 2387819,
-      "runtimeBytes": 1476408,
-      "savedBytes": 911411,
-      "originalSha256": "78006a544cb416bac66bf7a60147b522fb490d9b5637a1d454f8c5098f7e6db6",
-      "runtimeSha256": "0d279e9d11948c4c5fd94c09d3df87c60e0759384ed20419bef95633c91a486c"
+      "originalBytes": 2544862,
+      "runtimeBytes": 1630598,
+      "savedBytes": 914264,
+      "originalSha256": "47ae97f170c84cb28ddcdea69c2fa3617891395a55505ef8412eadf3f6af825f",
+      "runtimeSha256": "23beacf0c1d15c382641dd496635bd4f0a972df911c8a210f987c7184a1fc5d9"
     },
     "assets/images/characters/elion_husk/elion_husk_angry.png": {
       "source": "assets/images/characters/elion_husk/elion_husk_angry.png",
@@ -3035,13 +3035,13 @@
       "original": "workbench/originals/runtime/assets/images/characters/tralalelo_tralala.png",
       "runtime": "assets/images/characters/tralalelo_tralala.webp",
       "mode": "webp-lossless",
-      "width": 793,
-      "height": 936,
-      "originalBytes": 622125,
-      "runtimeBytes": 402322,
-      "savedBytes": 219803,
-      "originalSha256": "358f4403d54f7057169914dc94c64ae622fb7a40bdf36f935f879e0417a975ca",
-      "runtimeSha256": "cd01ba94743c15457e8fca9b67e6a2b2d9619020c08982d3dffa124760bf7302"
+      "width": 1179,
+      "height": 1149,
+      "originalBytes": 1052464,
+      "runtimeBytes": 676734,
+      "savedBytes": 375730,
+      "originalSha256": "585962706a809f3453de3eb52e294513f1756bfb0509d412a7c0d1caa5122954",
+      "runtimeSha256": "d1a43f1fea44c92bfbb666d09fab92c4e38f87bfc225a6f197d0e343d14c1fd1"
     },
     "assets/images/characters/tralalelo_tralala_battle_1.png": {
       "source": "assets/images/characters/tralalelo_tralala_battle_1.png",
@@ -3061,13 +3061,13 @@
       "original": "workbench/originals/runtime/assets/images/characters/tung_tung_tung_sahur.png",
       "runtime": "assets/images/characters/tung_tung_tung_sahur.webp",
       "mode": "webp-lossless",
-      "width": 793,
-      "height": 936,
-      "originalBytes": 859266,
-      "runtimeBytes": 651048,
-      "savedBytes": 208218,
-      "originalSha256": "546652971da4f1867db2e7e85f67c84078089c85f423b1ea1c2ed778b1dae26c",
-      "runtimeSha256": "996b5fddbc12d0f460e85cc3dda9fc08f837bd6de4113197a98727ab5ceaf505"
+      "width": 1024,
+      "height": 1536,
+      "originalBytes": 2448571,
+      "runtimeBytes": 1769200,
+      "savedBytes": 679371,
+      "originalSha256": "99940c2870e28a7677ada4aeeecb050fd144b67b6c6a995daf158b0d2e7d31cc",
+      "runtimeSha256": "1cfd959647c5fb696fa07945eba1c621351209672a4965310cb2445e313b211d"
     },
     "assets/images/characters/tung_tung_tung_sahur_battle_1.png": {
       "source": "assets/images/characters/tung_tung_tung_sahur_battle_1.png",
@@ -3791,11 +3791,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 109340,
-      "runtimeBytes": 79514,
-      "savedBytes": 29826,
-      "originalSha256": "58dc42cb9f1413d1cf571b3834e5dc0cea752dde126b50ae1247d38cf82f76df",
-      "runtimeSha256": "928d8644e204317d02a09772d31f185fe2cf243a7110735d81df0ca2e627ff31"
+      "originalBytes": 121047,
+      "runtimeBytes": 76056,
+      "savedBytes": 44991,
+      "originalSha256": "f64ec04fbe36a2880e64a87f301dc5ef939548d15c30ece58a76c75cac22efad",
+      "runtimeSha256": "ee2f86c31286e12e5fdbb8c978aaebc25002f89e0176e85cb11a71effe90dc85"
     },
     "assets/images/minigames/chapter3/sprites/edu_fly_v3_1.png": {
       "source": "assets/images/minigames/chapter3/sprites/edu_fly_v3_1.png",
@@ -3804,11 +3804,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 102106,
-      "runtimeBytes": 75716,
-      "savedBytes": 26390,
-      "originalSha256": "a868a5103029bf8891c3e0abb6c3c03e153aaec8afb3b4e4f0d24fad14e0bf50",
-      "runtimeSha256": "64aa2c19bbd1d96f506c9703d871d3462476bf3bea7e349c1ebd33c28b7780e1"
+      "originalBytes": 111507,
+      "runtimeBytes": 71312,
+      "savedBytes": 40195,
+      "originalSha256": "b0c1f4b9d0b321fed481cd41d196abb06902956c400251fca30f596b76d2ef30",
+      "runtimeSha256": "66aa2a562d742cc97a1e7bbed60891d59aed99cff4bcf92c4c651f594187c5bb"
     },
     "assets/images/minigames/chapter3/sprites/edu_fly_v3_2.png": {
       "source": "assets/images/minigames/chapter3/sprites/edu_fly_v3_2.png",
@@ -3817,11 +3817,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 96621,
-      "runtimeBytes": 72624,
-      "savedBytes": 23997,
-      "originalSha256": "1b243a12b9fe460c6a9f788f82baf7ca095e0a7f5eb6ee85e0356154317cb799",
-      "runtimeSha256": "866e725c1b3581be6c0a553db3dae18ada970ff29ce966c44588c5077baa7d7d"
+      "originalBytes": 111703,
+      "runtimeBytes": 71344,
+      "savedBytes": 40359,
+      "originalSha256": "b051d3b345504dc343447117720099e457d7b3a0a5ac8ce832a0924fbee2e0a5",
+      "runtimeSha256": "b7bf1ebf04d314902104943bfb12ccd5ce31f85f856668e112b7c2b9433f3188"
     },
     "assets/images/minigames/chapter3/sprites/edu_fly_v3_3.png": {
       "source": "assets/images/minigames/chapter3/sprites/edu_fly_v3_3.png",
@@ -3830,11 +3830,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 88238,
-      "runtimeBytes": 65168,
-      "savedBytes": 23070,
-      "originalSha256": "9c72b10c31aef599c4221c02449fcac1055cb56cd987d50d95815c0291def15c",
-      "runtimeSha256": "9128b4bde676e4cea4219c0443b966b03a197ba6c2faaf2b7056559c327da028"
+      "originalBytes": 97358,
+      "runtimeBytes": 63726,
+      "savedBytes": 33632,
+      "originalSha256": "3b2e9c23df7dca226067c630e7d68f8338e7f81b17cfadbcb9a9463730262949",
+      "runtimeSha256": "229ab7c813529ba2078726b5e19cb23d94f916f7d720ad542c6f0b584b0e7801"
     },
     "assets/images/minigames/chapter3/sprites/edu_fly_v3_4.png": {
       "source": "assets/images/minigames/chapter3/sprites/edu_fly_v3_4.png",
@@ -3843,11 +3843,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 101266,
-      "runtimeBytes": 73992,
-      "savedBytes": 27274,
-      "originalSha256": "d0cd1dd4e9fbb77e8dfd16cf6f1b436c5d52f43d74f1705422edef1e43db9001",
-      "runtimeSha256": "44e6186faf5b6cff7577fe601aabe677f4f758e34c9511822085f1ceff5cf530"
+      "originalBytes": 105965,
+      "runtimeBytes": 69962,
+      "savedBytes": 36003,
+      "originalSha256": "c328d8333d4582f6c679915c9b810eb10b078afc509f0e78307151bc9195015e",
+      "runtimeSha256": "b318beece041b1a7f656599e504c89f54c68a72cb5f7980adc3159f52016097f"
     },
     "assets/images/minigames/chapter3/sprites/edu_fly_v3_5.png": {
       "source": "assets/images/minigames/chapter3/sprites/edu_fly_v3_5.png",
@@ -3856,11 +3856,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 101635,
-      "runtimeBytes": 75008,
-      "savedBytes": 26627,
-      "originalSha256": "03860aeed5771818c9f09da2bf5c5aa3f670710f5674cfb5ee6d944d11aac963",
-      "runtimeSha256": "d04f45f6ecaf2d0fc6d6d5a9fd0f62d9d11ec38d46814bf4475cf8789afd0ee3"
+      "originalBytes": 102844,
+      "runtimeBytes": 66736,
+      "savedBytes": 36108,
+      "originalSha256": "2974003940e511fdc6c3fc1874c34c7b0a8d3165b46453f855fb211277388981",
+      "runtimeSha256": "2a4a3ad145cfc75bc6e1b90b6e9b23c5412414b8fc9d86579416d772b15a9c17"
     },
     "assets/images/minigames/chapter3/sprites/edu_fly_v3_6.png": {
       "source": "assets/images/minigames/chapter3/sprites/edu_fly_v3_6.png",
@@ -3869,11 +3869,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 96664,
-      "runtimeBytes": 72114,
-      "savedBytes": 24550,
-      "originalSha256": "8b83b2cd0268572deb4e7fb1875b6786b4e1549c2ef3b5305839849ee9e719b4",
-      "runtimeSha256": "8e3324409c4de9054c0d78252935529ab6fb5296767c202c64e3952c5c2410e5"
+      "originalBytes": 103931,
+      "runtimeBytes": 67504,
+      "savedBytes": 36427,
+      "originalSha256": "35642a0c2372369a71c1e16f3e49765098cbba7f859ba276ca1c44ec7daa4b2c",
+      "runtimeSha256": "58f56847696d92be3b7c34aff462e9bcb747dc0f776407acb8fa683fc215aec4"
     },
     "assets/images/minigames/chapter3/sprites/edu_fly_v3_7.png": {
       "source": "assets/images/minigames/chapter3/sprites/edu_fly_v3_7.png",
@@ -3882,11 +3882,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 105234,
-      "runtimeBytes": 76996,
-      "savedBytes": 28238,
-      "originalSha256": "aae37f32771d394b870dbb2ccb4b3d7c7d3cddd9c5a82c86718ac7ef5e96e337",
-      "runtimeSha256": "b8cdb47f29ba8e85c7555f635d8fb7206717251e9bc78d8f81853b8a19e6c3c9"
+      "originalBytes": 102881,
+      "runtimeBytes": 66866,
+      "savedBytes": 36015,
+      "originalSha256": "8a4dfcfb60cbcddcfea721863ce203ac5dac82d6e5dd04d4ef1493bd465e0fcd",
+      "runtimeSha256": "b5664598c89ba9ec6c50354a9a66f0a2833852e80efbf092a426238fa517b7cf"
     },
     "assets/images/minigames/chapter3/sprites/edu_fly_v3_dash_0.png": {
       "source": "assets/images/minigames/chapter3/sprites/edu_fly_v3_dash_0.png",
@@ -3895,11 +3895,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 118787,
-      "runtimeBytes": 89368,
-      "savedBytes": 29419,
-      "originalSha256": "95d70af6cf13db0b9bf26716b8f1c395592029a519db6151a71e0c8ed24916ea",
-      "runtimeSha256": "202dc504faf4e5c1bac16d5eab4cc6edb567051ca237907b48f36d2316d841e2"
+      "originalBytes": 123700,
+      "runtimeBytes": 79462,
+      "savedBytes": 44238,
+      "originalSha256": "4dae31c7e00cbe3a626a43e864e40939c7628adbeab2fe33d2c35eaaa8650b48",
+      "runtimeSha256": "ac573f5627e21ba9d367701c1d9623cbd2e3a2fb59d64b383d1288ae6fab9dcc"
     },
     "assets/images/minigames/chapter3/sprites/edu_fly_v3_dash_1.png": {
       "source": "assets/images/minigames/chapter3/sprites/edu_fly_v3_dash_1.png",
@@ -3908,11 +3908,11 @@
       "mode": "webp-lossless",
       "width": 512,
       "height": 512,
-      "originalBytes": 100508,
-      "runtimeBytes": 78346,
-      "savedBytes": 22162,
-      "originalSha256": "7096d74065bd30d96fba956c6c6c38a9950e0516152122697bd03be1ef4df92b",
-      "runtimeSha256": "e7d2a327cd735fffd429b6baf012ecb698d16ee8d1a81867ab00a136d6a9a4c7"
+      "originalBytes": 105375,
+      "runtimeBytes": 69306,
+      "savedBytes": 36069,
+      "originalSha256": "192851e6c29f5f0abeb87663789b424b2fadcd25fb177fc907a9c1b9552055a3",
+      "runtimeSha256": "858267f36c3d758f9899db828d755693fee2588aa59090cf6ebf9dcd87556148"
     },
     "assets/images/minigames/chapter3/sprites/meme_bob_v2_0.png": {
       "source": "assets/images/minigames/chapter3/sprites/meme_bob_v2_0.png",
@@ -4264,9 +4264,152 @@
       "savedBytes": 154875,
       "originalSha256": "361047057518db2924d14512a2042e470e527de7face69d0cbd0acaba9668424",
       "runtimeSha256": "4dfecf54a24d6f1430ea1dd794ae904752226398ef66f2d404bce9e6529e404e"
+    },
+    "assets/images/characters/samu/run/samu_run_1.png": {
+      "source": "assets/images/characters/samu/run/samu_run_1.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/run/samu_run_1.png",
+      "runtime": "assets/images/characters/samu/run/samu_run_1.webp",
+      "mode": "webp-lossless",
+      "width": 155,
+      "height": 228,
+      "originalBytes": 48030,
+      "runtimeBytes": 34252,
+      "savedBytes": 13778,
+      "originalSha256": "a1af1515e03e81a25a48bddb252ca88d2f098c0a3e785303043e1e993bc44126",
+      "runtimeSha256": "0c331bb9eb01dae4dab6e441b63a7ddcb4c9a989f287e8d1490cac5502d39aea"
+    },
+    "assets/images/characters/samu/run/samu_run_2.png": {
+      "source": "assets/images/characters/samu/run/samu_run_2.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/run/samu_run_2.png",
+      "runtime": "assets/images/characters/samu/run/samu_run_2.webp",
+      "mode": "webp-lossless",
+      "width": 155,
+      "height": 228,
+      "originalBytes": 46115,
+      "runtimeBytes": 32270,
+      "savedBytes": 13845,
+      "originalSha256": "bfd5b4744db8d91a51ed65ea6660fd836d40184f8bba9f4e1091798e42f798c0",
+      "runtimeSha256": "8c972d15a63ab569748b18a3306afae3ce73e5790c6c71ebf95cf2f354490a85"
+    },
+    "assets/images/characters/samu/run/samu_run_3.png": {
+      "source": "assets/images/characters/samu/run/samu_run_3.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/run/samu_run_3.png",
+      "runtime": "assets/images/characters/samu/run/samu_run_3.webp",
+      "mode": "webp-lossless",
+      "width": 155,
+      "height": 228,
+      "originalBytes": 45112,
+      "runtimeBytes": 31714,
+      "savedBytes": 13398,
+      "originalSha256": "db6bf9159373b03c9e1f1806282e6945dd7c2aa81c4df2d40ef14fd47a0ddc7f",
+      "runtimeSha256": "ca24ac763c0a5822044b84136a3b7741435a5e7d7d8b241b2cde809e3a04b74d"
+    },
+    "assets/images/characters/samu/run/samu_run_4.png": {
+      "source": "assets/images/characters/samu/run/samu_run_4.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/run/samu_run_4.png",
+      "runtime": "assets/images/characters/samu/run/samu_run_4.webp",
+      "mode": "webp-lossless",
+      "width": 155,
+      "height": 228,
+      "originalBytes": 41661,
+      "runtimeBytes": 28460,
+      "savedBytes": 13201,
+      "originalSha256": "9d1925088c28a4cdb099895a8e6f4c5e8d1573bafe045130ae31229a80bafbfd",
+      "runtimeSha256": "a468e7a8694c322db144ca5ffffe94d5e3c8b090fae66c0a8ae453859ea0df4e"
+    },
+    "assets/images/characters/samu/run/samu_run_5.png": {
+      "source": "assets/images/characters/samu/run/samu_run_5.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/run/samu_run_5.png",
+      "runtime": "assets/images/characters/samu/run/samu_run_5.webp",
+      "mode": "webp-lossless",
+      "width": 155,
+      "height": 228,
+      "originalBytes": 44243,
+      "runtimeBytes": 30460,
+      "savedBytes": 13783,
+      "originalSha256": "92e7f67031a71372ed4df591220270ad8cde8d65235a44c44c58486cf00a75d9",
+      "runtimeSha256": "a06fe00471ef9bd58b08e6ed65eeb42d0f031f6ebcd1e3f1f47f9713582c95bd"
+    },
+    "assets/images/characters/samu/run/samu_run_6.png": {
+      "source": "assets/images/characters/samu/run/samu_run_6.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/run/samu_run_6.png",
+      "runtime": "assets/images/characters/samu/run/samu_run_6.webp",
+      "mode": "webp-lossless",
+      "width": 155,
+      "height": 228,
+      "originalBytes": 43324,
+      "runtimeBytes": 29964,
+      "savedBytes": 13360,
+      "originalSha256": "90c481e9e317fece5e91ed057290a1788a7444300277eb9a78986a3be00cd69b",
+      "runtimeSha256": "7bcb4adcee27da7523f8b923ba6817b1292710c3f38ae5bd3603fd0dfbbf948d"
+    },
+    "assets/images/characters/samu/run/samu_run_7.png": {
+      "source": "assets/images/characters/samu/run/samu_run_7.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/run/samu_run_7.png",
+      "runtime": "assets/images/characters/samu/run/samu_run_7.webp",
+      "mode": "webp-lossless",
+      "width": 155,
+      "height": 228,
+      "originalBytes": 45759,
+      "runtimeBytes": 31602,
+      "savedBytes": 14157,
+      "originalSha256": "0787e08e4e7373f8b3ba90b344192cb4e6173724052bc304ed27076bf6acd411",
+      "runtimeSha256": "209c75ed26acecbdac597c362e6a890b00cc3dd0174a80ecb9f7529e52e4b4a5"
+    },
+    "assets/images/characters/samu/run/samu_run_8.png": {
+      "source": "assets/images/characters/samu/run/samu_run_8.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/run/samu_run_8.png",
+      "runtime": "assets/images/characters/samu/run/samu_run_8.webp",
+      "mode": "webp-lossless",
+      "width": 155,
+      "height": 228,
+      "originalBytes": 38949,
+      "runtimeBytes": 27080,
+      "savedBytes": 11869,
+      "originalSha256": "4a87ac3e9c61a4a873304ab9325bc4522b7cfb0176b8458627295c7dc7cbebd6",
+      "runtimeSha256": "981dd39204f7b0505e0ad56f77dca83dd14e5a9683f90389f7eec0ab31ba65c0"
+    },
+    "assets/images/characters/samu/run/samu_run_9.png": {
+      "source": "assets/images/characters/samu/run/samu_run_9.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/run/samu_run_9.png",
+      "runtime": "assets/images/characters/samu/run/samu_run_9.webp",
+      "mode": "webp-lossless",
+      "width": 155,
+      "height": 228,
+      "originalBytes": 39040,
+      "runtimeBytes": 27092,
+      "savedBytes": 11948,
+      "originalSha256": "d45eba864691131f8207c81ab06bb90d85f7aa91c8cb74456fd8cf2476c863a2",
+      "runtimeSha256": "9e9ede7c6e1cd00212ef8e2bef12e9c70b1678a5c0cba3757272d7a224e82ef0"
+    },
+    "assets/images/others/kingom-souls.png": {
+      "source": "assets/images/others/kingom-souls.png",
+      "original": "workbench/originals/runtime/assets/images/others/kingom-souls.png",
+      "runtime": "assets/images/others/kingom-souls.webp",
+      "mode": "webp-lossless",
+      "width": 1254,
+      "height": 1254,
+      "originalBytes": 408553,
+      "runtimeBytes": 194188,
+      "savedBytes": 214365,
+      "originalSha256": "3590ca911fe26de1b2c57ab2e99ff4084805330d7515170a94c19bec41113d62",
+      "runtimeSha256": "74afa0a1a791b5bb56c14102ee25ad215e32eb4e81e546fff7c64b6e43effa43"
+    },
+    "assets/images/ui/dialogue_speaker_cursor.png": {
+      "source": "assets/images/ui/dialogue_speaker_cursor.png",
+      "original": "workbench/originals/runtime/assets/images/ui/dialogue_speaker_cursor.png",
+      "runtime": "assets/images/ui/dialogue_speaker_cursor.webp",
+      "mode": "webp-lossless",
+      "width": 384,
+      "height": 384,
+      "originalBytes": 110746,
+      "runtimeBytes": 84908,
+      "savedBytes": 25838,
+      "originalSha256": "2c4395683603b5f16c48c3bb4a679d8dba4adab6498fbc2d483411ef3fdc865b",
+      "runtimeSha256": "112f132dfeeabe9ebbe16f3ad194b39c12b718dc190f459fb021b6c203e1ab6c"
     }
   },
-  "updatedAt": "2026-08-03T14:58:28.819562+00:00",
+  "updatedAt": "2026-08-03T17:55:02.055079+00:00",
   "mediaConversions": {
     "assets/audio/music/minigames/cae_a_mis_pies.wav": {
       "source": "assets/audio/music/minigames/cae_a_mis_pies.wav",
@@ -4303,6 +4446,18 @@
       "savedBytes": 12604695,
       "originalSha256": "e52b7780a53eb9e023584652df93aeb252fc5d5e08203a9f1838a4e2aa4a9d7f",
       "runtimeSha256": "a81af10313357678943e816b56417a3c21ac7288c2f247494d600bf3dc591016"
+    },
+    "assets/audio/sfx/sfx_caida_anime_edu.wav": {
+      "source": "assets/audio/sfx/sfx_caida_anime_edu.wav",
+      "original": "workbench/originals/runtime/assets/audio/sfx/sfx_caida_anime_edu.wav",
+      "runtime": "assets/audio/sfx/sfx_caida_anime_edu.mp3",
+      "mode": "mp3-vbr-q2",
+      "durationSeconds": 1.75,
+      "originalBytes": 336044,
+      "runtimeBytes": 38061,
+      "savedBytes": 297983,
+      "originalSha256": "21d8e221933d4e4d97892bd7442ef9327100183bc656c9cd3154d11e0582d6dd",
+      "runtimeSha256": "cf465a879470b419ca37f972a0fa113492d115753f4c6de846a403635d36db91"
     }
   }
 }

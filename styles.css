@@ -366,6 +366,65 @@ body.startup-pending #menu-video {
    No se dibuja una copia de la pose anterior: un hueco contiene siempre un
    único fotograma visible, también durante entradas y cambios de personaje. */
 
+/* Caída cómica de anime: el personaje sale entero por el borde inferior,
+   permanece fuera un instante y vuelve por la misma trayectoria. */
+.character.character-anime-fall {
+    z-index: 4;
+    animation: character-anime-fall var(--anime-fall-duration, 1800ms)
+        linear both;
+}
+
+@keyframes character-anime-fall {
+    0%, 10% {
+        translate: 0 0;
+        animation-timing-function: cubic-bezier(.55, .06, .78, .42);
+    }
+    40% {
+        translate: 0 760px;
+    }
+    58% {
+        translate: 0 760px;
+        animation-timing-function: cubic-bezier(.22, .65, .32, 1);
+    }
+    88%, 100% {
+        translate: 0 0;
+    }
+}
+
+/* Líneas cinéticas durante el desplome. */
+.character[data-character="edu"].character-anime-fall::after {
+    content: "";
+    position: absolute;
+    inset: 9% 2% 20%;
+    z-index: 5;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        90deg,
+        transparent 0 22px,
+        rgba(255, 255, 255, .72) 23px 26px,
+        transparent 27px 40px
+    );
+    clip-path: polygon(10% 0, 100% 5%, 86% 100%, 0 78%);
+    animation: anime-fall-speed-lines var(--anime-fall-duration, 1800ms) ease-out both;
+}
+
+@keyframes anime-fall-speed-lines {
+    0%, 10%, 42%, 100% { opacity: 0; }
+    18% { opacity: .25; translate: 0 -22px; }
+    31% { opacity: .85; translate: 0 34px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .character.character-anime-fall {
+        animation: character-anime-fall-reduced 420ms ease-out both;
+    }
+    .character[data-character="edu"].character-anime-fall::after { display: none; }
+    @keyframes character-anime-fall-reduced {
+        0%, 20%, 80%, 100% { translate: 0 0; }
+        45%, 60% { translate: 0 90px; }
+    }
+}
+
 /* Personajes */
 .characters-container {
     position: absolute;
@@ -451,6 +510,12 @@ body.startup-pending #menu-video {
 
 .character-eye-layer[hidden] {
     display: none;
+}
+
+/* Neit tiene el peso visual concentrado algo por encima del borde inferior.
+   Se baja solo su ilustración para que apoye en la escena y no parezca flotar. */
+.character[data-character="neit"] {
+    background-position: center calc(100% + 28px);
 }
 
 /* El retrato humano va separado del teléfono para que el glitch no deforme la
@@ -731,6 +796,8 @@ body.startup-pending #menu-video {
     margin-bottom: 7px;
     padding-bottom: 6px;
     border-bottom: 2px solid rgba(255, 204, 0, 0.5);
+    position: relative;
+    overflow: visible;
 }
 
 .character-name {
@@ -751,6 +818,7 @@ body.startup-pending #menu-video {
 
 .p5-dialog-content {
     position: relative;
+    flex-grow: 1;
 }
 
 .p5-border-top {
@@ -778,8 +846,178 @@ body.startup-pending #menu-video {
     color: #57e389;
 }
 
-.dialog-brand-blue {
+.dialog-brand-blue,
+.dialog-brand-incel {
     color: #4da3ff;
+}
+
+.dialog-brand-simsong {
+    color: #285bc4;
+    text-shadow: 0 0 5px rgba(87, 137, 255, 0.42);
+}
+
+/* Cursor/retrato del hablante: el marco es un asset original y el centro usa
+   la ilustración de la pose activa, por lo que conserva fielmente cada diseño. */
+.speaker-cursor-slot {
+    position: relative;
+    flex: 0 0 58px;
+    width: 58px;
+    height: 58px;
+    margin: -22px 1px -17px -3px;
+}
+
+.speaker-cursor {
+    --speaker-color: #ffd166;
+    --cursor-portrait-size: 100% auto;
+    --cursor-portrait-position: center 10%;
+    position: absolute;
+    inset: 0;
+    width: 58px;
+    height: 58px;
+    transform-origin: 48% 52%;
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.62));
+    isolation: isolate;
+    will-change: transform;
+}
+
+.speaker-cursor-portrait {
+    position: absolute;
+    z-index: 1;
+    left: 18%;
+    top: 17%;
+    width: 63%;
+    height: 63%;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: color-mix(in srgb, var(--speaker-color) 22%, #09081c);
+    background-repeat: no-repeat;
+    background-size: var(--cursor-portrait-size);
+    background-position: var(--cursor-portrait-position);
+    box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.65);
+}
+
+.speaker-cursor-frame {
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    background: url('assets/images/ui/dialogue_speaker_cursor.webp?v=20260803-1') center / contain no-repeat;
+    pointer-events: none;
+}
+
+/* Encuadres particulares para ilustraciones cuyo lienzo no sitÃºa la cabeza en
+   el centro. Las variables mantienen la pose activa y solo corrigen el foco. */
+.speaker-cursor[data-character="paloma"] {
+    --cursor-portrait-size: 175% auto;
+    --cursor-portrait-position: 100% 8%;
+}
+
+.speaker-cursor[data-character="santi"][data-pose="neutral"] {
+    --cursor-portrait-size: 160% auto;
+    --cursor-portrait-position: 0% 3%;
+}
+
+.speaker-cursor[data-character="tralalelo_tralala"] {
+    --cursor-portrait-size: 130% auto;
+    --cursor-portrait-position: 0% 30%;
+}
+
+.speaker-cursor[data-character="tung_tung_tung_sahur"] {
+    --cursor-portrait-size: 145% auto;
+    --cursor-portrait-position: 80% 3%;
+}
+
+.speaker-cursor[data-character="gorila"] {
+    --cursor-portrait-size: 160% auto;
+    --cursor-portrait-position: 50% 2%;
+}
+
+.speaker-cursor[data-character="airi_adult"] {
+    --cursor-portrait-size: 165% auto;
+    --cursor-portrait-position: 50% 5%;
+}
+
+.speaker-cursor[data-character="micaela"] {
+    --cursor-portrait-size: 145% auto;
+    --cursor-portrait-position: 50% 4%;
+}
+
+.speaker-cursor[data-character="micaela"][data-pose="crazy"] {
+    --cursor-portrait-size: 130% auto;
+    --cursor-portrait-position: 50% 55%;
+}
+
+/* Las fichas humanas son hojas de personaje: el recorte toma el primer plano
+   derecho hasta que la historia revela la identidad furry correspondiente. */
+.speaker-cursor.uses-human-portrait {
+    --cursor-portrait-size: 170% auto;
+    --cursor-portrait-position: 100% 10%;
+}
+
+/* La hoja humana de Edu deja mÃ¡s aire sobre el busto que las de Tony/JosÃ©.
+   Un foco vertical propio sube su cara sin alterar el encuadre furry. */
+.speaker-cursor.uses-human-portrait[data-character="edu"] {
+    --cursor-portrait-size: 170% auto;
+    --cursor-portrait-position: 100% 19%;
+}
+
+.speaker-cursor.uses-human-portrait[data-character="jose"] {
+    --cursor-portrait-size: 170% auto;
+    --cursor-portrait-position: 100% 20%;
+}
+
+.speaker-cursor:not(.has-portrait) .speaker-cursor-portrait::after {
+    content: '?';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font: 900 24px/1 'Outfit', sans-serif;
+    text-shadow: 0 0 9px var(--speaker-color);
+}
+
+.speaker-cursor.is-typing:not(.is-following-text) {
+    animation: speaker-cursor-talk 0.42s ease-in-out infinite alternate;
+}
+
+.speaker-cursor.is-following-text {
+    z-index: 12;
+    animation: none;
+    transform: translate3d(
+        var(--cursor-follow-x, 0),
+        var(--cursor-follow-y, 0),
+        0
+    ) scale(0.62);
+    transition: transform 65ms linear;
+}
+
+.speaker-cursor.is-returning {
+    z-index: 12;
+    animation: none;
+    transform: translate3d(0, 0, 0) scale(1);
+    transition: transform 280ms cubic-bezier(0.2, 0.9, 0.25, 1.18);
+}
+
+.speaker-cursor.is-waiting {
+    animation: speaker-cursor-wait 0.85s ease-in-out infinite;
+}
+
+@keyframes speaker-cursor-talk {
+    from { translate: 0 1px; rotate: -1.5deg; scale: 0.96; }
+    to { translate: 1px -2px; rotate: 1.5deg; scale: 1.04; }
+}
+
+@keyframes speaker-cursor-wait {
+    0%, 100% { translate: 0 0; filter: drop-shadow(0 4px 6px rgba(0,0,0,.62)); }
+    50% { translate: 0 -3px; filter: drop-shadow(0 0 8px var(--speaker-color)); }
+}
+
+.dialog-print-anchor {
+    display: inline-block;
+    width: 0;
+    height: 1em;
+    vertical-align: text-bottom;
+    pointer-events: none;
 }
 
 /* Emoción tipográfica: cada carácter recibe el mismo estado con un pequeño
@@ -795,8 +1033,8 @@ body.startup-pending #menu-video {
 }
 
 .dialog-text.dialog-emotion-fear {
-    color: #eeeaff;
-    text-shadow: 0 0 7px rgba(156, 134, 255, 0.48);
+    color: var(--dialog-emotion-color, #eeeaff);
+    text-shadow: 0 0 7px color-mix(in srgb, var(--dialog-emotion-color, #9c86ff) 52%, transparent);
 }
 .dialog-emotion-fear .dialog-letter {
     animation: dialog-letter-fear 0.13s steps(2, end) infinite;
@@ -804,9 +1042,10 @@ body.startup-pending #menu-video {
 }
 
 .dialog-text.dialog-emotion-anger {
-    color: #ffe0d5;
+    color: var(--dialog-emotion-color, #ffe0d5);
     font-weight: 700;
-    text-shadow: 1px 1px 0 #7b1008, 0 0 8px rgba(255, 68, 34, 0.5);
+    text-shadow: 1px 1px 0 color-mix(in srgb, var(--dialog-emotion-color, #ff4422) 45%, #000),
+                 0 0 8px color-mix(in srgb, var(--dialog-emotion-color, #ff4422) 55%, transparent);
 }
 .dialog-emotion-anger .dialog-letter {
     animation: dialog-letter-anger 0.18s steps(2, end) infinite;
@@ -814,8 +1053,8 @@ body.startup-pending #menu-video {
 }
 
 .dialog-text.dialog-emotion-sadness {
-    color: #cddfff;
-    text-shadow: 0 2px 7px rgba(80, 130, 210, 0.45);
+    color: var(--dialog-emotion-color, #cddfff);
+    text-shadow: 0 2px 7px color-mix(in srgb, var(--dialog-emotion-color, #5082d2) 48%, transparent);
 }
 .dialog-emotion-sadness .dialog-letter {
     animation: dialog-letter-sadness 2.2s ease-in-out infinite;
@@ -823,8 +1062,8 @@ body.startup-pending #menu-video {
 }
 
 .dialog-text.dialog-emotion-joy {
-    color: #fff4b8;
-    text-shadow: 0 0 8px rgba(255, 213, 73, 0.58);
+    color: var(--dialog-emotion-color, #fff4b8);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--dialog-emotion-color, #ffd549) 60%, transparent);
 }
 .dialog-emotion-joy .dialog-letter {
     animation: dialog-letter-joy 0.72s ease-in-out infinite;
@@ -832,8 +1071,8 @@ body.startup-pending #menu-video {
 }
 
 .dialog-text.dialog-emotion-surprise {
-    color: #ffffff;
-    text-shadow: 0 0 9px rgba(102, 218, 255, 0.65);
+    color: var(--dialog-emotion-color, #ffffff);
+    text-shadow: 0 0 9px color-mix(in srgb, var(--dialog-emotion-color, #66daff) 65%, transparent);
 }
 .dialog-emotion-surprise .dialog-letter {
     animation: dialog-letter-surprise 0.9s cubic-bezier(.2, 1.2, .4, 1) infinite;
@@ -841,8 +1080,8 @@ body.startup-pending #menu-video {
 }
 
 .dialog-text.dialog-emotion-nervous {
-    color: #ffe4f2;
-    text-shadow: 0 0 6px rgba(255, 123, 185, 0.42);
+    color: var(--dialog-emotion-color, #ffe4f2);
+    text-shadow: 0 0 6px color-mix(in srgb, var(--dialog-emotion-color, #ff7bb9) 48%, transparent);
 }
 .dialog-emotion-nervous .dialog-letter {
     animation: dialog-letter-nervous 0.34s ease-in-out infinite alternate;
@@ -850,9 +1089,9 @@ body.startup-pending #menu-video {
 }
 
 .dialog-text.dialog-emotion-whisper {
-    color: #d9d9df;
+    color: var(--dialog-emotion-color, #d9d9df);
     font-style: italic;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 5px color-mix(in srgb, var(--dialog-emotion-color, #fff) 28%, transparent);
 }
 .dialog-emotion-whisper .dialog-letter {
     animation: dialog-letter-whisper 1.8s ease-in-out infinite;
@@ -860,14 +1099,16 @@ body.startup-pending #menu-video {
 }
 
 .dialog-text.dialog-emotion-scream {
-    color: #ffffff;
+    color: var(--dialog-emotion-color, #ffffff);
     font-family: "Arial Black", Impact, sans-serif;
     font-size: 12px;
     font-weight: 900;
     line-height: 1.05;
     letter-spacing: 0.35px;
     padding: 5px 3px 8px;
-    text-shadow: -2px 0 #ff1744, 2px 0 #00e5ff, 0 0 10px #ffea00;
+    text-shadow: -2px 0 color-mix(in srgb, var(--dialog-emotion-color, #fff) 68%, #ff1744),
+                 2px 0 color-mix(in srgb, var(--dialog-emotion-color, #fff) 68%, #00e5ff),
+                 0 0 10px var(--dialog-emotion-color, #ffea00);
 }
 .dialog-emotion-scream .dialog-letter {
     animation: dialog-letter-scream 0.32s steps(2, end) infinite;
@@ -907,24 +1148,20 @@ body.startup-pending #menu-video {
 }
 @keyframes dialog-letter-scream {
     0% {
-        color: #ffffff;
         transform: translate(-1px, 1px) rotate(-1.5deg) scale(0.98);
-        text-shadow: -2px 0 #ff1744, 2px 0 #00e5ff, 0 0 8px #ffea00;
+        text-shadow: -2px 0 color-mix(in srgb, currentColor 68%, #ff1744), 2px 0 color-mix(in srgb, currentColor 68%, #00e5ff), 0 0 8px currentColor;
     }
     35% {
-        color: #fff36a;
         transform: translate(1px, -2px) rotate(1deg) scale(1.12);
-        text-shadow: 2px 0 #ff1744, -2px 0 #00e5ff, 0 0 13px #ffea00;
+        text-shadow: 2px 0 color-mix(in srgb, currentColor 68%, #ff1744), -2px 0 color-mix(in srgb, currentColor 68%, #00e5ff), 0 0 13px currentColor;
     }
     70% {
-        color: #ffffff;
         transform: translate(-1.5px, -0.5px) rotate(1.5deg) scale(1.04);
-        text-shadow: -2px -1px #00e5ff, 2px 1px #ff17d8, 0 0 10px #ffffff;
+        text-shadow: -2px -1px color-mix(in srgb, currentColor 68%, #00e5ff), 2px 1px color-mix(in srgb, currentColor 68%, #ff17d8), 0 0 10px currentColor;
     }
     100% {
-        color: #ffdc48;
         transform: translate(1px, 1px) rotate(-1deg) scale(1.08);
-        text-shadow: 2px -1px #ff1744, -2px 1px #00e5ff, 0 0 12px #ffea00;
+        text-shadow: 2px -1px color-mix(in srgb, currentColor 68%, #ff1744), -2px 1px color-mix(in srgb, currentColor 68%, #00e5ff), 0 0 12px currentColor;
     }
 }
 
@@ -933,6 +1170,14 @@ body.startup-pending #menu-video {
         animation: none;
         transform: none;
         opacity: 1;
+    }
+    .speaker-cursor {
+        animation: none !important;
+    }
+    .speaker-cursor.is-following-text,
+    .speaker-cursor.is-returning {
+        transform: none !important;
+        transition: none !important;
     }
 }
 
@@ -990,7 +1235,7 @@ body.startup-pending #menu-video {
 }
 
 .choices-container.p5-choices {
-    gap: 8px;
+    gap: 1rem;
 }
 
 .choice-btn {
@@ -2120,7 +2365,7 @@ body.startup-pending #menu-video {
 .furrielva-tour button:hover,
 .furrielva-confirm button:hover,
 .furrielva-location-choices button:hover,
-.furrielva-finish:hover { transform: translateY(-2px); filter: brightness(1.2); }
+.furrielva-finish:hover { transform: scale(1.05); filter: brightness(1.2); }
 
 .furrielva-card { z-index: 18; }
 .furrielva-card strong { color: #ff7575; letter-spacing: .08em; }
@@ -4269,7 +4514,7 @@ html.electron-app #menu-theme-btn { display: none; }
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.6);
     color: #ffd166;
-    transform: translateX(6px);
+    transform: scale(1.05);
     box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
 }
 
@@ -5224,7 +5469,8 @@ html.electron-app #menu-theme-btn { display: none; }
     box-shadow: 0 18px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.10);
     padding: 13px 26px;
     max-width: 78%;
-    margin-bottom: 16px;
+    margin: 0 0 1rem 1rem;
+    min-height: 10.25rem;
     font-family: 'Outfit', sans-serif;
 }
 
@@ -5290,7 +5536,7 @@ html.electron-app #menu-theme-btn { display: none; }
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.6);
     color: #ffd166;
-    transform: translateX(6px);
+    transform: scale(1.05);
     box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
     font-weight: 600;
 }
@@ -5476,6 +5722,28 @@ html.electron-app #menu-theme-btn { display: none; }
     background: rgba(4, 4, 16, 0.55);
     -webkit-backdrop-filter: blur(6px);
     backdrop-filter: blur(6px);
+}
+
+/* La pausa global congela las animaciones del escenario, pero deja vivo el
+   propio panel para conservar sus estados hover/foco. */
+body.game-paused #game-container > :not(.pause-menu),
+body.game-paused #game-container > :not(.pause-menu) * {
+    animation-play-state: paused !important;
+}
+
+/* H o clic derecho esconden la interfaz de juego, incluido el bocadillo de
+   diálogo. Las elecciones y el contenido de la escena permanecen intactos. */
+body.hud-hidden #options-btn,
+body.hud-hidden #rewind-btn,
+body.hud-hidden #scenes-btn,
+body.hud-hidden #scenes-menu,
+body.hud-hidden #dialog-box,
+body.hud-hidden #game-container [class*="hud"],
+body.hud-hidden #game-container .minigame-instructions,
+body.hud-hidden #game-container .ss-pause-btn {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
 .pause-buttons {
@@ -6731,7 +6999,7 @@ html.electron-app #menu-theme-btn { display: none; }
    ============================================================ */
 .rewind-btn {
     position: absolute;
-    top: 14px;
+    top: 1rem;
     right: 16px;
     /* Por encima de los minijuegos (overlay 600, créditos 1500, combate 5000):
        los botones de arriba se ven también durante ellos. */
@@ -6755,7 +7023,7 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 .rewind-btn:hover {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: scale(1.05);
     box-shadow: 0 0 16px rgba(176, 79, 255, 0.55);
 }
 .rewind-btn:active { transform: translateY(1px); }
@@ -6773,7 +7041,7 @@ html.electron-app #menu-theme-btn { display: none; }
    ============================================================ */
 .scenes-btn {
     position: absolute;
-    top: 14px;
+    top: 1rem;
     right: 148px; /* a la izquierda del de retroceder */
     z-index: 5200; /* ver .rewind-btn */
     display: flex;
@@ -6795,7 +7063,7 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 .scenes-btn:hover {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: scale(1.05);
     box-shadow: 0 0 16px rgba(79, 176, 255, 0.55);
 }
 .scenes-btn:active { transform: translateY(1px); }
@@ -6807,7 +7075,7 @@ html.electron-app #menu-theme-btn { display: none; }
    contraria: aquellos van a la derecha y este a la izquierda. */
 .options-btn {
     position: absolute;
-    top: 14px;
+    top: 1rem;
     left: 16px;
     z-index: 5200; /* ver .rewind-btn */
     display: flex;
@@ -6829,7 +7097,7 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 .options-btn:hover {
     opacity: 1;
-    transform: translateY(-1px);
+    transform: scale(1.05);
     box-shadow: 0 0 16px rgba(255, 209, 102, 0.55);
 }
 .options-btn:active { transform: translateY(1px); }

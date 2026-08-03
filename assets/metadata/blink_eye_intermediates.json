@@ -395,7 +395,7 @@
       },
       "status": "generated",
       "half": "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp",
-      "method": "imagegen-eye-region-composite"
+      "method": "registered-eye-region-composite"
     },
     "edu.bua": {
       "base": "assets/images/characters/edu/edu_bua.webp",
@@ -455,7 +455,7 @@
       },
       "status": "generated",
       "half": "assets/images/characters/eye_intermediate_sources/edu/picante/eyes_half_source.webp",
-      "method": "imagegen-eye-region-composite"
+      "method": "registered-eye-region-composite"
     },
     "edu.zip_happy": {
       "base": "assets/images/characters/edu/chapter2/edu_zip_happy.webp",
@@ -1518,24 +1518,24 @@
       "target": "assets/images/characters/animations/blinks/tralalelo_neutral_blink_closed.webp",
       "direction": "closing",
       "canvas": {
-        "width": 793,
-        "height": 936
+        "width": 1179,
+        "height": 1149
       },
       "status": "generated",
       "half": "assets/images/characters/eye_intermediate_sources/tralalelo_tralala/neutral/eyes_half_source.webp",
-      "method": "imagegen-eye-region-composite"
+      "method": "registered-eye-region-composite"
     },
     "tung_tung_tung_sahur.neutral": {
       "base": "assets/images/characters/tung_tung_tung_sahur.webp",
       "target": "assets/images/characters/animations/blinks/tung_neutral_blink_closed.webp",
       "direction": "closing",
       "canvas": {
-        "width": 793,
-        "height": 936
+        "width": 1024,
+        "height": 1536
       },
       "status": "generated",
       "half": "assets/images/characters/eye_intermediate_sources/tung_tung_tung_sahur/neutral/eyes_half_source.webp",
-      "method": "imagegen-eye-region-composite"
+      "method": "registered-eye-region-composite"
     },
     "zip.neutral": {
       "base": "assets/images/characters/others/zip.webp",
