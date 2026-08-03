@@ -1,5 +1,5 @@
 (function () {
-  const ASSET_VERSION = '20260803-ketchup-8';
+  const ASSET_VERSION = '20260803-ketchup-9';
   const REGULAR_KETCHUP_DAMAGE = 1;
   const CORRUPT_KETCHUP_DAMAGE = 2;
   const cacheBust = (path) => `${path}?v=${ASSET_VERSION}`;
@@ -39,7 +39,8 @@
       const enemyBulletSpeed = lerp(1.18, 0.82, powerRatio);
       const enemyAttackDelay = lerp(0.82, 1.42, powerRatio);
       const difficulty = powerRatio >= 0.72 ? 'SUAVE' : powerRatio >= 0.38 ? 'NORMAL' : 'INTENSA';
-     const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
+      const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
+      const corruptKetchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp');
       const chiliIcon = cacheBust('assets/images/minigames/chapter2/ketchup/chili_v2.webp');
       const zipIcon = cacheBust('assets/images/characters/zip/ketchup/zip_1.webp');
       const zipAngryIcon = cacheBust('assets/images/characters/others/zip_angry.webp');

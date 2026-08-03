@@ -118,8 +118,9 @@ galería o minijuegos no avanza accidentalmente el diálogo que queda detrás.
 En la parte superior aparecen cuando son aplicables:
 
 - **Opciones**: pausa, ajustes y regreso al menú principal.
-- **Escenas**: lista la escena actual y las ya visitadas del capítulo. Volver a
-  una escena recupera el estado que tenía al visitarla.
+- **Escenas**: lista todas las escenas del capítulo. Las actuales y visitadas se
+  distinguen visualmente; volver a una visitada recupera su estado, mientras que
+  saltar a una aún no visitada conserva el progreso actual.
 - **Retroceder**: vuelve al comienzo de la escena anterior y restaura fondo,
   personajes, música, inventario y estado narrativo de ese momento.
 
@@ -497,6 +498,11 @@ campos y ejemplos de cada acción.
 - `storyDelay`: alias sincronizado que utilizan acciones y condiciones antiguas.
 - `sceneHistory`: hasta 60 snapshots del capítulo actual para Escenas y
   Retroceder; incluye escenario, audio, efectos y estado narrativo.
+
+`sceneList()` devuelve siempre todas las entradas de `currentChapter.scenes` y
+añade las marcas `actual` y `visitada` sólo para su presentación. No filtres por
+`debugMode` ni por el historial: el menú **Escenas** es navegación completa del
+capítulo, también hacia escenas aún no visitadas.
 
 Al abrir el selector, la escena actual se centra modificando únicamente el
 `scrollTop` de `.scenes-list`. No debe sustituirse por `scrollIntoView()`: en
@@ -5107,8 +5113,9 @@ referencia bajo `assets/`, incluida su capitalización exacta. También audita
 de galería, miniaturas, rutas literales de JS/CSS/HTML y exclusiones sensibles
 del instalador. El resumen impreso —capítulos,
 escenas, líneas, personajes y referencias— es la cifra fiable del estado actual.
-La ejecución de cierre de esta revisión terminó sin errores con **7 capítulos,
-63 escenas, 908 líneas, 26 personajes y 958 referencias de assets**.
+La ejecución de cierre verificada el **2026-08-03** terminó sin errores con
+**7 capítulos, 64 escenas, 920 líneas, 26 personajes y 1493 referencias de
+assets**.
 
 ### Retroceder: a esta escena o a la anterior (2026-08-03)
 
@@ -5131,7 +5138,8 @@ capítulo en cuanto se ha avanzado un diálogo: hay algo a lo que volver.
 
 El "de dónde vengo" es la pila `engine.sceneHistory`, donde cada escena pisada
 apila su índice junto a la foto del progreso (`gameState`, `rescued`,
-`completedCalls`, `inventory`, `storyDelay`, `nextChapter`). Al retroceder se
+`completedCalls`, `inventory`, `storyDelay`, `storyPressure`, `stage` y
+`nextChapter`). Al retroceder se
 **desapila solo la escena actual** y se reproduce la de debajo, que permanece en
 la pila con su foto original. Antes se desapilaban las dos y se confiaba en que
 la escena destino se volviera a registrar sola al reproducirse: cada retroceso

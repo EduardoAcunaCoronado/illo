@@ -8096,23 +8096,18 @@ class VisualNovelEngine {
         this.completedCalls = [...foto.completedCalls];
         this.inventory = [...foto.inventory];
         this.storyDelay = foto.storyDelay;
+        this.storyPressure = foto.storyPressure != null
+            ? foto.storyPressure
+            : foto.storyDelay;
         this.nextChapter = foto.nextChapter;
     }
 
-        this.gameState = JSON.parse(JSON.stringify(destino.gameState || {}));
-        this.rescued = [...destino.rescued];
-        this.completedCalls = [...destino.completedCalls];
-        this.inventory = [...destino.inventory];
-        this.storyDelay = destino.storyDelay;
-        this.storyPressure = destino.storyPressure != null
-            ? destino.storyPressure
-            : destino.storyDelay;
-        this.nextChapter = destino.nextChapter;
-
+    // Deja el motor listo para reproducir una escena desde su primera línea.
+    // La escena ya está en `sceneHistory` con su foto de progreso, así que se
+    // marca como vista para que recordSceneEntry no vuelva a apilarla.
+    replayScene(indiceEscena) {
         this.clearStage();
-        this.restoreSceneStageState(destino.stage);
-
-        this.currentScene = destino.scene;
+        this.currentScene = indiceEscena;
         this.currentLine = 0;
         this.sceneAdvances = 0;
         this.sceneEndedByChoice = false;
@@ -8165,8 +8160,7 @@ class VisualNovelEngine {
                 title: s.title || `Escena ${i + 1}`,
                 actual: i === this.currentScene,
                 visitada: hist.some(h => h.scene === i)
-            }))
-            .filter(scene => this.debugMode || scene.actual || scene.visitada);
+            }));
     }
 
     chapterTitle() {
@@ -8197,21 +8191,17 @@ class VisualNovelEngine {
         }
 
         const hist = this.sceneHistory || [];
+        let visitada = false;
         let restoredStage = null;
         for (let k = hist.length - 1; k >= 0; k--) {
             if (hist[k].scene !== i) continue;
             const d = hist[k];
-            this.gameState = JSON.parse(JSON.stringify(d.gameState || {}));
-            this.rescued = [...d.rescued];
-            this.completedCalls = [...d.completedCalls];
-            this.inventory = [...d.inventory];
-            this.storyDelay = d.storyDelay;
-            this.storyPressure = d.storyPressure != null ? d.storyPressure : d.storyDelay;
-            this.nextChapter = d.nextChapter;
+            this.restoreSceneSnapshot(d);
             restoredStage = d.stage || null;
-            // Se recorta el historial hasta ahí: la escena se vuelve a registrar
-            // sola al entrar, y así retroceder sigue teniendo sentido después.
-            this.sceneHistory = hist.slice(0, k);
+            // Se conserva esa visita como cima del historial para que retroceder
+            // continúe desde ella sin volver a apilarla al reproducirse.
+            this.sceneHistory = hist.slice(0, k + 1);
+            visitada = true;
             break;
         }
 
