@@ -9,7 +9,9 @@ class VisualNovelEngine {
         this.history = [];
         this.isWaitingForInput = false;
         this.fastForward = false;
+        this.textPaused = false;
         this._finishTyping = null;
+        this._setTypingPaused = null;
         this._lastDialogEmotionKey = null;
         this.typingSpeed = 50;
         this.lastChapterName = null;
@@ -50,10 +52,19 @@ class VisualNovelEngine {
     }
 
     setFastForward(active) {
-        this.fastForward = !!active;
+        this.fastForward = !!active && !this.textPaused;
         if (this.fastForward && this._finishTyping) {
             this._finishTyping();
         }
+    }
+
+    // Pausa exclusivamente el escritor de diálogo. Los minijuegos, vídeos y
+    // animaciones siguen su curso cuando el jugador oculta el HUD con H o clic
+    // derecho; al mostrarlo de nuevo, el texto continúa por el mismo grafema.
+    setTextPaused(paused) {
+        this.textPaused = !!paused;
+        if (this.textPaused) this.fastForward = false;
+        if (this._setTypingPaused) this._setTypingPaused(this.textPaused);
     }
 
     async loadChapter(chapterName) {
@@ -6413,6 +6424,9 @@ class VisualNovelEngine {
             let timeoutId = null;
             let finished = false;
             let cursorMoveFrame = null;
+            let typingPaused = this.textPaused;
+            let nextCharacterAt = 0;
+            let remainingDelay = 0;
             const printAnchor = document.createElement('span');
             printAnchor.className = 'dialog-print-anchor';
 
@@ -6658,7 +6672,7 @@ class VisualNovelEngine {
             };
 
             const cleanup = () => {
-                if (timeoutId) clearTimeout(timeoutId);
+                if (timeoutId !== null) clearTimeout(timeoutId);
                 if (cursorMoveFrame) {
                     cancelAnimationFrame(cursorMoveFrame);
                     cursorMoveFrame = null;
@@ -6666,6 +6680,9 @@ class VisualNovelEngine {
                 document.removeEventListener('click', skipHandler);
                 if (this._finishTyping === finishTyping) {
                     this._finishTyping = null;
+                }
+                if (this._setTypingPaused === setTypingPaused) {
+                    this._setTypingPaused = null;
                 }
             };
 
@@ -6679,7 +6696,38 @@ class VisualNovelEngine {
                 resolve();
             };
 
+            const scheduleTypeChar = (delay = 0) => {
+                remainingDelay = Math.max(0, Number(delay) || 0);
+                if (typingPaused || finished) return;
+                nextCharacterAt = performance.now() + remainingDelay;
+                timeoutId = setTimeout(() => {
+                    timeoutId = null;
+                    remainingDelay = 0;
+                    typeChar();
+                }, remainingDelay);
+            };
+
+            const setTypingPaused = (paused) => {
+                const next = !!paused;
+                if (next === typingPaused || finished) return;
+                typingPaused = next;
+
+                if (typingPaused) {
+                    if (timeoutId !== null) {
+                        clearTimeout(timeoutId);
+                        timeoutId = null;
+                        remainingDelay = Math.max(0, nextCharacterAt - performance.now());
+                    }
+                    return;
+                }
+
+                // Reanuda el mismo intervalo pendiente. Si el HUD se ocultó
+                // antes de empezar la línea, remainingDelay es 0 y arranca ya.
+                scheduleTypeChar(remainingDelay);
+            };
+
             const typeChar = () => {
+                if (typingPaused) return;
                 if (this.fastForward) {
                     finishTyping();
                     return;
@@ -6699,7 +6747,7 @@ class VisualNovelEngine {
                         }
                         delay += window.Juice.punctuationPause(ch);
                     }
-                    timeoutId = setTimeout(typeChar, delay);
+                    scheduleTypeChar(delay);
                 } else {
                     finishTyping();
                 }
@@ -6713,11 +6761,12 @@ class VisualNovelEngine {
 
             document.addEventListener('click', skipHandler);
             this._finishTyping = finishTyping;
+            this._setTypingPaused = setTypingPaused;
             speakerCursor?.classList.add('is-typing');
 
             if (this.fastForward) {
                 finishTyping();
-            } else {
+            } else if (!typingPaused) {
                 typeChar();
             }
         });

@@ -3630,7 +3630,10 @@ evitando silencios intermitentes al cambiar rápidamente de música.
   minijuegos ni cinemáticas.
 - **H** o **clic derecho** alternan todo el HUD: botones superiores,
   indicadores e instrucciones de minijuegos y el cuadro de diálogo. El clic
-  derecho nunca completa ni avanza una línea.
+  derecho nunca completa ni avanza una línea. Mientras el HUD está oculto, el
+  typewriter conserva el grafema y el tiempo de puntuación pendientes, no emite
+  blips y no acepta inputs de avance; al mostrarlo continúa exactamente desde
+  ese punto. El avance automático con Control se desactiva al ocultarlo.
 - **Esc** abre una pausa global durante diálogos y minijuegos. Se congelan el
   reloj lógico, `setTimeout`, `setInterval`, `requestAnimationFrame`, las
   animaciones CSS, los elementos multimedia y los contextos Web Audio que

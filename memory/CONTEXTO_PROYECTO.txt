@@ -726,7 +726,9 @@ CONTROLES GLOBALES Y PAUSA 2026-08-01
   cinemáticas y minijuegos.
 - H y clic derecho alternan todo el HUD, incluido el cuadro de diálogo. El clic
   secundario está filtrado antes de los controles y nunca avanza texto ni activa
-  acciones del minijuego.
+  acciones del minijuego. Con el HUD oculto el typewriter queda pausado en el
+  grafema y retardo de puntuación actuales, sin blips; al restaurarlo continúa
+  desde el mismo punto. También se cancela el avance automático con Control.
 - Esc abre la pausa global en diálogos y minijuegos. Congela timers, RAF, reloj
   lógico, animaciones CSS, audio y vídeo; el panel absorbe el resto de entradas
   hasta reanudar. Las cinemáticas conservan Esc para saltar.

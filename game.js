@@ -792,6 +792,10 @@ function abrirMenuPausa() {
 // botones de retroceder y de escenas. playGame() atiende la petición y sale.
 function salirAlMenuPrincipal() {
   if (!isGameRunning) return;
+  // Si se sale desde la pausa con el HUD oculto, hay que despertar primero el
+  // typewriter: el clic sintético que libera playGame también está bloqueado
+  // mientras `hud-hidden` siga activo.
+  mostrarHUD();
   exitToMenuRequested = true;
   desbloquearBucle(() => exitToMenuRequested);
 }
@@ -807,11 +811,44 @@ function bloquearInputDurantePausa(e) {
 }
 
 function alternarHUD() {
-  document.body.classList.toggle("hud-hidden");
+  const oculto = document.body.classList.toggle("hud-hidden");
+  // El motor conserva el grafema y la pausa de puntuación pendientes. También
+  // suelta el avance automático para que no termine la línea a escondidas.
+  engine.setTextPaused(oculto);
+}
+
+function hudOculto() {
+  return document.body.classList.contains("hud-hidden");
+}
+
+// Al terminar la partida el HUD vuelve siempre: dejarlo oculto arrastraría el
+// bloqueo de input al menú o al capítulo siguiente.
+function mostrarHUD() {
+  document.body.classList.remove("hud-hidden");
+  engine.setTextPaused(false);
+}
+
+// Con el HUD escondido no se ve el bocadillo, así que cualquier input solo
+// serviría para pasar líneas a ciegas: mientras esté oculto, la historia no
+// avanza. Se dejan pasar el menú de pausa y las elecciones (que siguen a la
+// vista) y los minijuegos, que llevan su propio ritmo y no son "avanzar".
+function inputBloqueadoPorHUD(target) {
+  if (!isGameRunning || !hudOculto() || cutsceneEnMarcha()) return false;
+  if (engine.hayMinijuegoAbierto?.()) return false;
+  if (target instanceof Element && target.closest("#pause-menu, #choices-container")) return false;
+  return true;
+}
+
+function bloquearInputConHUDOculto(e) {
+  // El botón secundario es justo el que devuelve el HUD: nunca se bloquea.
+  if (e.button === 2 || !inputBloqueadoPorHUD(e.target)) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
 }
 
 function puedeAvanzarDialogo() {
   if (!isGameRunning || gamePauseClock.isPaused() || cutsceneEnMarcha()) return false;
+  if (hudOculto()) return false;
   if (!dialogBox?.classList.contains("active")) return false;
   if (document.querySelector("#choices-container.active")) return false;
   if (engine.hayMinijuegoAbierto?.()) return false;
@@ -847,13 +884,21 @@ document.addEventListener("keydown", (e) => {
     return;
   }
 
-  if (!isGameRunning || e.repeat) return;
-  if (e.key.toLowerCase() === "h") {
+  if (!isGameRunning) return;
+  if (!e.repeat && e.key.toLowerCase() === "h") {
     e.preventDefault();
     e.stopImmediatePropagation();
     alternarHUD();
     return;
   }
+  // H es la única tecla que sigue viva con el HUD oculto (además de Esc, que ya
+  // se ha atendido arriba): ni Control acelera ni Espacio pasa de línea.
+  if (inputBloqueadoPorHUD(e.target)) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    return;
+  }
+  if (e.repeat) return;
   if ((e.key === " " || e.key === "Enter") && puedeAvanzarDialogo()) {
     e.preventDefault();
     e.stopImmediatePropagation();
@@ -863,7 +908,11 @@ document.addEventListener("keydown", (e) => {
 
 document.addEventListener("keyup", bloquearInputDurantePausa, true);
 ["pointerdown", "pointerup", "mousedown", "mouseup", "click", "dblclick", "wheel", "touchstart", "touchend"]
-  .forEach((type) => document.addEventListener(type, bloquearInputDurantePausa, true));
+  .forEach((type) => {
+    document.addEventListener(type, bloquearInputDurantePausa, true);
+    document.addEventListener(type, bloquearInputConHUDOculto, true);
+  });
+document.addEventListener("keyup", bloquearInputConHUDOculto, true);
 
 // El clic secundario no debe activar disparos/impulsos antes de que llegue su
 // evento contextmenu: queda reservado por completo para alternar el HUD.
@@ -1380,6 +1429,7 @@ function volverAlMenuPrincipal() {
   exitToMenuRequested = false;
   stopRewindWatcher();
   cerrarMenuPausa();
+  mostrarHUD();
   engine.hideDialog();
   engine.reset(); // también para la música y limpia fondo y personajes
   // No basta con quitar `hidden`: al iniciar una partida el menú también recibe
@@ -1395,6 +1445,7 @@ async function endGame() {
   rewindRequested = false;
   sceneJumpRequested = null;
   stopRewindWatcher();
+  mostrarHUD();
   engine.hideDialog();
 
   // Capturar la ruta ramificada elegida y si el capítulo es final (los
