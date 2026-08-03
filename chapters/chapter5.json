@@ -46,6 +46,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "worried"
             }
@@ -111,6 +112,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "worried"
             }
@@ -152,6 +154,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "determined"
             }
@@ -255,6 +258,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "worried"
             }
@@ -304,6 +308,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "thinking"
             }
@@ -390,6 +395,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "left",
               "pose": "thinking"
             }
@@ -584,6 +590,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "neutral"
             }
@@ -611,6 +618,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -623,6 +631,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "worried"
             }
@@ -635,6 +644,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -659,6 +669,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -683,6 +694,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "determined"
             }
@@ -720,6 +732,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "embarrassed"
             }
@@ -732,6 +745,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "thinking"
             }
@@ -756,6 +770,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "determined"
             }
@@ -768,6 +783,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -793,6 +809,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "facepalm"
             }
@@ -839,6 +856,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "thinking"
             }
@@ -875,6 +893,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "surprised"
             }
@@ -912,6 +931,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "worried"
             }
@@ -924,6 +944,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -936,6 +957,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "determined"
             }
@@ -948,6 +970,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "determined"
             }
@@ -972,6 +995,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "worried"
             }
@@ -1032,6 +1056,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -1044,6 +1069,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "worried"
             }
@@ -1093,6 +1119,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -1127,6 +1154,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "angry"
             }
@@ -1139,6 +1167,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "alarmed"
             }
@@ -1151,6 +1180,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "determined"
             }
@@ -1173,6 +1203,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "pray"
             },
@@ -1233,6 +1264,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "worried"
             }
@@ -1245,6 +1277,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "surprised"
             }
@@ -1284,6 +1317,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "happy"
             }
@@ -1354,6 +1388,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "happy"
             }
@@ -1380,6 +1415,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "happy"
             }
@@ -1409,6 +1445,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "thinking"
             }
@@ -1449,6 +1486,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "surprised"
             }
@@ -1461,6 +1499,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "facepalm"
             }
@@ -1514,6 +1553,8 @@
             {
               "type": "showCharacter",
               "character": "tung_tung_tung_sahur",
+              "offsetY": "38%",
+              "scale": 1.5,
               "position": "right",
               "pose": "neutral"
             }
@@ -1526,6 +1567,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -1538,6 +1580,8 @@
             {
               "type": "showCharacter",
               "character": "tung_tung_tung_sahur",
+              "offsetY": "38%",
+              "scale": 1.5,
               "position": "right",
               "pose": "neutral"
             }
@@ -1562,6 +1606,8 @@
             {
               "type": "showCharacter",
               "character": "tung_tung_tung_sahur",
+              "offsetY": "38%",
+              "scale": 1.5,
               "position": "right",
               "pose": "neutral"
             }
@@ -1599,6 +1645,8 @@
             {
               "type": "showCharacter",
               "character": "tung_tung_tung_sahur",
+              "offsetY": "38%",
+              "scale": 1.5,
               "position": "right",
               "pose": "neutral"
             }
@@ -1615,6 +1663,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "determined"
             }
@@ -1700,6 +1749,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "epic"
             }
@@ -1712,6 +1762,8 @@
             {
               "type": "showCharacter",
               "character": "tung_tung_tung_sahur",
+              "offsetY": "38%",
+              "scale": 1.5,
               "position": "right",
               "pose": "neutral"
             }
@@ -1814,6 +1866,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "neutral"
             },
@@ -1830,6 +1883,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "worried"
             }
@@ -1842,6 +1896,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -1855,6 +1910,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "sad"
             }
@@ -1879,6 +1935,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "thinking"
             }
@@ -1891,6 +1948,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "neutral"
             }
@@ -1928,6 +1986,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "neutral"
             }
@@ -1940,6 +1999,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "thinking"
             }
@@ -1952,6 +2012,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "thinking"
             }
@@ -1976,6 +2037,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "neutral"
             }
@@ -2001,6 +2063,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "thinking"
             }
@@ -2045,6 +2108,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "pray"
             }
@@ -2228,6 +2292,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "angry"
             }
@@ -2267,6 +2332,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "neutral"
             }
@@ -2326,6 +2392,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "sad"
             }
@@ -2350,6 +2417,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "sad"
             }
@@ -2362,6 +2430,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             }
@@ -2386,6 +2455,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "surprised"
             }
@@ -2410,6 +2480,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "happy"
             }
@@ -2474,6 +2545,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "determined"
             },
@@ -2546,6 +2618,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "worried"
             },
@@ -2567,6 +2640,7 @@
             {
               "type": "showCharacter",
               "character": "airi",
+              "scale": 0.7,
               "position": "center",
               "pose": "error"
             }
@@ -2595,6 +2669,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "alarmed"
             }
@@ -2671,6 +2746,7 @@
             {
               "type": "showCharacter",
               "character": "amalgama",
+              "scale": 1.2,
               "position": "center",
               "pose": "neutral"
             }
@@ -2695,6 +2771,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "determined"
             }
@@ -2797,6 +2874,7 @@
             {
               "type": "showCharacter",
               "character": "amalgama_final",
+              "scale": 1.2,
               "position": "center",
               "pose": "neutral"
             }
@@ -2833,6 +2911,7 @@
             {
               "type": "showCharacter",
               "character": "jose",
+              "scale": 1.18,
               "position": "right",
               "pose": "determined"
             }

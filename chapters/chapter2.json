@@ -149,6 +149,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security",
               "enter": "right"
@@ -175,6 +176,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security"
             }
@@ -263,6 +265,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security"
             }
@@ -288,6 +291,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security"
             }
@@ -848,6 +852,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security",
               "enter": "right"
@@ -879,6 +884,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "security"
             }
@@ -994,6 +1000,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "mechanic"
             }
@@ -1012,6 +1019,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "right",
               "pose": "bottler"
             }
@@ -1683,6 +1691,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "center",
               "pose": "security"
             }
@@ -1696,6 +1705,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "center",
               "pose": "cook"
             },
@@ -1859,6 +1869,7 @@
             {
               "type": "showCharacter",
               "character": "ketchling",
+              "offsetY": "40%",
               "position": "center",
               "pose": "bottler"
             }

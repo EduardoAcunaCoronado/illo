@@ -165,7 +165,7 @@ class VisualNovelEngine {
                 this.setBackground(action.value, action);
                 break;
             case 'showCharacter':
-                await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter);
+                await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter, action.offsetY, action.scale);
                 break;
             case 'hideCharacter':
             case 'removeCharacter':
@@ -5526,7 +5526,7 @@ class VisualNovelEngine {
         return this.currentLine >= reveal.line;
     }
 
-    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null) {
+    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null, offsetY = null, scale = null) {
         const characterKey = this.getCharacterKey(characterName);
         let character = this.characters[characterKey];
         if (!character) {
@@ -5554,10 +5554,10 @@ class VisualNovelEngine {
             const videoPath = character.poses && character.poses[`${pose}_video`];
             this.updateCharacterVideo(charElement, videoPath);
 
-            // Aplicar flip horizontal si está especificado (sin animación) y el
-            // escalado por personaje de los compañeros (p. ej. José un 18% más grande)
-            const characterScale = this.getCharacterScale(characterKey);
-            const characterVerticalOffset = this.getCharacterVerticalOffset(characterKey);
+            // Aplicar flip horizontal si está especificado (sin animación) junto
+            // al tamaño y la altura que pida el guión para esta aparición.
+            const characterScale = this.resolveScale(scale);
+            const characterVerticalOffset = this.resolveVerticalOffset(offsetY);
             charElement.style.transform = `${flipped ? 'scaleX(-1)' : 'scaleX(1)'} translateY(${characterVerticalOffset}) scale(${characterScale})`;
 
             // Entrada animada opcional ("right"/"left"/"bottom"/"fade"). Usa la
@@ -5576,27 +5576,21 @@ class VisualNovelEngine {
         this.layoutCharacters();
     }
 
-    // Escala visual por personaje (cambios de los compañeros): permite que un
-    // personaje concreto se dibuje más grande sin tocar su sprite.
-    getCharacterScale(characterKey) {
-        const characterScales = {
-            airi: 0.7,
-            tung_tung_tung_sahur: 1.5,
-            jose: 1.18,
-            amalgama: 1.2,
-            amalgama_final: 1.2
-        };
-        return characterScales[characterKey] || 1;
+    // El guión manda el encuadre de cada aparición: `offsetY` baja (o sube, en
+    // negativo) al personaje esa fracción de su propia altura, para escenas donde
+    // la estatura es parte de la narración (los Ketchlings miden cuarenta
+    // centímetros y solo asoman la cabeza sobre el cuadro de diálogo; Tung, con
+    // su 1.5 de escala, baja para no salirse por arriba). Admite "40%" o 40.
+    resolveVerticalOffset(offsetY) {
+        if (offsetY == null || offsetY === '') return '0%';
+        return typeof offsetY === 'number' ? `${offsetY}%` : String(offsetY);
     }
 
-    // Al ampliar un sprite vertical, el origen inferior empuja la cabeza fuera
-    // del escenario. Tung baja lo justo para conservar el rostro y convertir
-    // su aparición en un plano de cintura cubierto por el cuadro de diálogo.
-    getCharacterVerticalOffset(characterKey) {
-        const characterVerticalOffsets = {
-            tung_tung_tung_sahur: '38%'
-        };
-        return characterVerticalOffsets[characterKey] || '0%';
+    // `scale` en showCharacter dibuja al personaje más grande o más pequeño sin
+    // tocar su sprite (José un 18% más grande, Airi de niña un 30% más pequeña).
+    resolveScale(scale) {
+        const value = Number(scale);
+        return Number.isFinite(value) && value > 0 ? value : 1;
     }
 
     // Reparte a los personajes ACTIVOS en franjas horizontales iguales.
@@ -5613,7 +5607,7 @@ class VisualNovelEngine {
         });
         const N = active.length;
         if (N === 0) return;
-        const W = 42; // ancho fijo de cada personaje (%), igual que el CSS base
+        const W = 50; // ancho fijo de cada personaje (%), igual que el CSS base
         active.forEach((p, i) => {
             const el = document.getElementById(`character-${p}`);
             const cx = ((2 * i + 1) / (2 * N)) * 100; // centro de su franja (%)

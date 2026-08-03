@@ -368,6 +368,40 @@ Parámetros:
 - `character`: Nombre del personaje (sin .json)
 - `position`: "left" o "right"
 - `pose`: "neutral", "happy", "sad", "angry", "surprised" (opcional)
+- `enter`: "right", "left", "bottom" o "fade" — animación de entrada (opcional)
+- `flipped`: `true` para voltear el sprite horizontalmente (opcional)
+- `offsetY`: desplazamiento vertical del sprite, en porcentaje de su propia
+  altura (opcional). Positivo = más abajo. Admite `"40%"` o `40`.
+- `scale`: tamaño del sprite sin tocar la imagen (opcional). `1` es el tamaño
+  normal; `1.18` un 18% más grande; `0.7` un 30% más pequeño.
+
+`offsetY` y `scale` son **del guión, no del personaje**: el tamaño y la altura
+se deciden en cada aparición, así que el mismo personaje puede salir enorme en
+una escena y normal en otra. En `engine.js` no hay ninguna tabla de escalas.
+
+```json
+{
+  "type": "showCharacter",
+  "character": "ketchling",
+  "offsetY": "40%",
+  "position": "right",
+  "pose": "security"
+}
+```
+
+Valores en uso en los capítulos:
+
+| Personaje                | `scale` | `offsetY` | Motivo                                          |
+| ------------------------ | ------- | --------- | ----------------------------------------------- |
+| `ketchling`              | —       | `"40%"`   | Miden 40 cm: solo asoma la cabeza sobre el texto |
+| `jose`                   | `1.18`  | —         | Más corpulento que el resto                      |
+| `airi`                   | `0.7`   | —         | Es una niña                                      |
+| `amalgama`               | `1.2`   | —         | Presencia imponente                              |
+| `amalgama_final`         | `1.2`   | —         | Presencia imponente                              |
+| `tung_tung_tung_sahur`   | `1.5`   | `"38%"`   | Al agrandarlo se sale por arriba; baja a plano de cintura |
+
+Si añades una aparición nueva de alguno de ellos, **copia también su `scale` y
+su `offsetY`**: sin esos campos saldría a tamaño normal y a ras de suelo.
 
 ### hideCharacter / removeCharacter / quitarPersonaje
 
