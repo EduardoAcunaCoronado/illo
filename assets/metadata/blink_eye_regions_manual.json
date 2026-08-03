@@ -1,0 +1,385 @@
+{
+  "version": 2,
+  "regions": {
+    "3c.angry": [
+      {
+        "cx": 0.397851,
+        "cy": 0.312084,
+        "rx": 0.048879,
+        "ry": 0.024739,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.528391,
+        "cy": 0.286394,
+        "rx": 0.055672,
+        "ry": 0.033753,
+        "rotation": -28.501,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "3c.happy": [
+      {
+        "cx": 0.415452,
+        "cy": 0.31351,
+        "rx": 0.046516,
+        "ry": 0.021408,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 4.0
+      },
+      {
+        "cx": 0.54944,
+        "cy": 0.28116,
+        "rx": 0.058217,
+        "ry": 0.029972,
+        "rotation": -18.956,
+        "mode": "include",
+        "feather": 4.0
+      }
+    ],
+    "3c.neutral": [
+      {
+        "cx": 0.396,
+        "cy": 0.316,
+        "rx": 0.04,
+        "ry": 0.028,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.530195,
+        "cy": 0.286728,
+        "rx": 0.052027,
+        "ry": 0.029271,
+        "rotation": -34.943,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "3c.sad": [
+      {
+        "cx": 0.398359,
+        "cy": 0.313869,
+        "rx": 0.044119,
+        "ry": 0.028427,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.530055,
+        "cy": 0.285325,
+        "rx": 0.057167,
+        "ry": 0.034136,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "3c.surprised": [
+      {
+        "cx": 0.40107,
+        "cy": 0.313026,
+        "rx": 0.043788,
+        "ry": 0.02789,
+        "rotation": 17.852,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.530451,
+        "cy": 0.286407,
+        "rx": 0.052483,
+        "ry": 0.031926,
+        "rotation": -32.501,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.angry": [
+      {
+        "cx": 0.41,
+        "cy": 0.259,
+        "rx": 0.048,
+        "ry": 0.033,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.555,
+        "cy": 0.245,
+        "rx": 0.051,
+        "ry": 0.027,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.bua": [
+      {
+        "cx": 0.405814,
+        "cy": 0.277356,
+        "rx": 0.046931,
+        "ry": 0.028069,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.543694,
+        "cy": 0.262132,
+        "rx": 0.057936,
+        "ry": 0.028069,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.determined": [
+      {
+        "cx": 0.409051,
+        "cy": 0.253092,
+        "rx": 0.048873,
+        "ry": 0.024738,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.553405,
+        "cy": 0.236917,
+        "rx": 0.045636,
+        "ry": 0.02569,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.embarrassed": [
+      {
+        "cx": 0.405814,
+        "cy": 0.256898,
+        "rx": 0.038516,
+        "ry": 0.027593,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.535926,
+        "cy": 0.234062,
+        "rx": 0.046931,
+        "ry": 0.027592,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.happy": [
+      {
+        "cx": 0.421997,
+        "cy": 0.256898,
+        "rx": 0.041105,
+        "ry": 0.034253,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.559877,
+        "cy": 0.237869,
+        "rx": 0.0424,
+        "ry": 0.038059,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.neutral": [
+      {
+        "cx": 0.413257,
+        "cy": 0.253567,
+        "rx": 0.040782,
+        "ry": 0.030923,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.558259,
+        "cy": 0.241199,
+        "rx": 0.051139,
+        "ry": 0.02902,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.pray": [
+      {
+        "cx": 0.395781,
+        "cy": 0.263083,
+        "rx": 0.044019,
+        "ry": 0.027117,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.534308,
+        "cy": 0.250713,
+        "rx": 0.042724,
+        "ry": 0.027116,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.sad": [
+      {
+        "cx": 0.416172,
+        "cy": 0.257373,
+        "rx": 0.044341,
+        "ry": 0.028068,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.560525,
+        "cy": 0.238344,
+        "rx": 0.053026,
+        "ry": 0.026622,
+        "rotation": -8.837,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.surprised": [
+      {
+        "cx": 0.412287,
+        "cy": 0.25119,
+        "rx": 0.045637,
+        "ry": 0.03806,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.556641,
+        "cy": 0.237869,
+        "rx": 0.046931,
+        "ry": 0.041864,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.thinking": [
+      {
+        "cx": 0.410993,
+        "cy": 0.246432,
+        "rx": 0.04499,
+        "ry": 0.026641,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.546284,
+        "cy": 0.226451,
+        "rx": 0.048226,
+        "ry": 0.028544,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi.worried": [
+      {
+        "cx": 0.410993,
+        "cy": 0.25452,
+        "rx": 0.044989,
+        "ry": 0.033778,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.551463,
+        "cy": 0.239297,
+        "rx": 0.05211,
+        "ry": 0.031875,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "airi_adult.neutral": [
+      {
+        "cx": 0.433429,
+        "cy": 0.205043,
+        "rx": 0.030102,
+        "ry": 0.024263,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.52605,
+        "cy": 0.18411,
+        "rx": 0.040521,
+        "ry": 0.023311,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "andres.neutral": [
+      {
+        "cx": 0.423758,
+        "cy": 0.173493,
+        "rx": 0.035,
+        "ry": 0.02801,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 6.0
+      },
+      {
+        "cx": 0.562269,
+        "cy": 0.170576,
+        "rx": 0.041311,
+        "ry": 0.02801,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 6.0
+      }
+    ],
+    "ballerina_capuchina.neutral": [
+      {
+        "cx": 0.416505,
+        "cy": 0.426306,
+        "rx": 0.105589,
+        "ry": 0.042784,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 6.0
+      },
+      {
+        "cx": 0.635716,
+        "cy": 0.372826,
+        "rx": 0.105111,
+        "ry": 0.045248,
+        "rotation": -32.006,
+        "mode": "include",
+        "feather": 6.0
+      }
+    ]
+  }
+}

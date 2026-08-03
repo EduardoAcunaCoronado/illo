@@ -1,0 +1,51 @@
+PROJECT AI.RI — FURRIELVA: IGLESIA, VISTA AÉREA V1
+
+Modo de generación: imagegen integrado, con tres referencias locales.
+Referencias:
+- assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp
+- assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp
+- assets/images/backgrounds/chapter2/furrielva/furrielva_plaza_investigacion_v1_4k.webp
+
+Prompt final:
+
+Create a beautiful, richly detailed elevated view over the Church of Furrielva
+and its surrounding plaza for a premium visual-novel background. The camera is
+high above the district and points noticeably downward, but remains an oblique
+three-quarter aerial view rather than a straight top-down map. The church and
+its plaza are the clear visual focus.
+
+Preserve the canonical church: pale-stone façade, symmetrical twin bell towers
+with green-bronze cupolas, central animal-community mosaic, broad entrance
+steps and paw-themed civic decorations. Surround it with a warm Spanish and
+Mediterranean furry town: terracotta roofs, balconies, orange trees, narrow
+streets, plaza paving, flowerbeds, benches and a fountain. Show enough rooftops
+and streets to establish place, while remaining closer and more cinematic than
+the map reference.
+
+Include several well-drawn pigeons and small birds. A few fly close to the
+camera with convincing wings and silhouettes to create depth; others circle
+over the church or gather naturally on the plaza and roofs. Distant residents
+are tiny, unobtrusive anthropomorphic townsfolk with coherent anatomy.
+
+Premium hand-painted animated-film background, elegant clean linework,
+painterly textures and strong architectural perspective. Exact 16:9 landscape,
+intended for 3840x2160. Elevated oblique 3/4 camera, approximately 55–65 degrees
+downward. Layered foreground birds, midground church and plaza, background
+rooftops. Keep calm areas near the lower corners for visual-novel UI.
+
+Luminous late-afternoon golden light, warm and peaceful, with soft long shadows
+and subtle rim light on the birds. Terracotta, honey stone, leafy green, warm
+gold and restrained violet-blue shadows.
+
+One coherent church only; physically consistent scale, vanishing points, roof
+geometry and shadows; anatomically credible birds; crisp detail across the
+whole image; no seams, text, legible signs, logos or watermark. Avoid straight
+satellite view, flat map appearance, fisheye distortion, duplicated towers,
+warped windows, impossible streets, malformed wings, oversized birds hiding
+the church, photorealism, 3D-render appearance, blur and low-detail corners.
+
+Acabado:
+- Fuente generada: 1672x941 PNG.
+- Superresolución: Real-ESRGAN x4plus-anime, TTA y teselas de 256 px.
+- Máster final: recorte 16:9 y reducción Lanczos a 3840x2160 PNG.
+- Runtime: WebP 3840x2160, calidad 95.

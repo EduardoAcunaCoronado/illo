@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "sprites": {
+    "airi.neutral": {
+      "source": "assets/images/characters/airi/airi.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/airi/neutral/airi_halo_limpio.png",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "transparentPixels": 238628,
+      "updatedAt": "2026-08-03T14:03:47.806167+00:00"
+    },
+    "carlos.neutral": {
+      "source": "assets/images/characters/carlos/carlos.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/carlos_halo_limpio.png",
+      "canvas": {
+        "width": 1122,
+        "height": 1402
+      },
+      "transparentPixels": 676961,
+      "updatedAt": "2026-08-03T13:47:50.289176+00:00"
+    }
+  }
+}

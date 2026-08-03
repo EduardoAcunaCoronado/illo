@@ -1,0 +1,1566 @@
+{
+  "version": 1,
+  "poses": {
+    "3c.neutral": {
+      "base": "assets/images/characters/others/3c.webp",
+      "target": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "3c.happy": {
+      "base": "assets/images/characters/others/3c_happy.webp",
+      "target": "assets/images/characters/others/animations/blinks/3c_happy_blink_closed_v2.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1131,
+        "height": 1391
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/3c/happy/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "3c.sad": {
+      "base": "assets/images/characters/others/3c.webp",
+      "target": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "3c.angry": {
+      "base": "assets/images/characters/others/3c.webp",
+      "target": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "3c.surprised": {
+      "base": "assets/images/characters/others/3c.webp",
+      "target": "assets/images/characters/others/animations/3c_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/3c/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.neutral": {
+      "base": "assets/images/characters/airi/airi.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.happy": {
+      "base": "assets/images/characters/airi/airi_happy.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_happy_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/happy/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.sad": {
+      "base": "assets/images/characters/airi/airi_sad.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_sad_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/sad/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.angry": {
+      "base": "assets/images/characters/airi/airi_angry.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_angry_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/angry/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.surprised": {
+      "base": "assets/images/characters/airi/airi_surprised.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_surprised_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/surprised/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.determined": {
+      "base": "assets/images/characters/airi/airi_determined.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_determined_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/determined/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.embarrassed": {
+      "base": "assets/images/characters/airi/airi_embarrased.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_embarrassed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/embarrassed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.thinking": {
+      "base": "assets/images/characters/airi/airi_thinking.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_thinking_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/thinking/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.bua": {
+      "base": "assets/images/characters/airi/airi_bua.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_bua_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/bua/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.pray": {
+      "base": "assets/images/characters/airi/airi_pray.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_pray_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/pray/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi.worried": {
+      "base": "assets/images/characters/airi/airi_worried.webp",
+      "target": "assets/images/characters/airi/animations/blinks/airi_worried_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi/worried/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "airi_adult.neutral": {
+      "base": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.webp",
+      "target": "assets/images/characters/airi_adult/animations/blinks/airi_adult_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 738,
+        "height": 898
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/airi_adult/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "andres.neutral": {
+      "base": "assets/images/characters/andres/andres.webp",
+      "target": "assets/images/characters/andres/animations/blinks/andres_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1122,
+        "height": 1402
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/andres/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "ballerina_capuchina.neutral": {
+      "base": "assets/images/characters/ballerina_capuchina.webp",
+      "target": "assets/images/characters/ballerina_capuchina/animations/blinks/ballerina_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 793,
+        "height": 936
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/ballerina_capuchina/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "carlos.neutral": {
+      "base": "assets/images/characters/carlos/carlos.webp",
+      "target": "assets/images/characters/carlos/animations/blinks/carlos_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1122,
+        "height": 1402
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/carlos/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.neutral": {
+      "base": "assets/images/characters/edu/Edu.webp",
+      "target": "assets/images/characters/edu/animations/edu_neutral_blink_half.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "existing",
+      "half": "assets/images/characters/edu/animations/edu_neutral_blink_half.webp",
+      "method": "existing-frame"
+    },
+    "edu.happy": {
+      "base": "assets/images/characters/edu/edu_happy.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_happy_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/happy/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.sad": {
+      "base": "assets/images/characters/edu/edu_sad.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_sad_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/sad/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.angry": {
+      "base": "assets/images/characters/edu/edu_angry.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_angry_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/angry/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.surprised": {
+      "base": "assets/images/characters/edu/edu_surprised.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_surprised_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/surprised/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.alarmed": {
+      "base": "assets/images/characters/edu/edu_shocked.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_alarmed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/alarmed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.determined": {
+      "base": "assets/images/characters/edu/edu_determined.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_determined_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/determined/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.embarrassed": {
+      "base": "assets/images/characters/edu/edu_embarrassed.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_embarrassed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1856,
+        "height": 2296
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/embarrassed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.epic": {
+      "base": "assets/images/characters/edu/edu_epic.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_epic_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1252,
+        "height": 1113
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/epic/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.facepalm": {
+      "base": "assets/images/characters/edu/edu_facepalm.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_facepalm_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/facepalm/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.shocked": {
+      "base": "assets/images/characters/edu/edu_shocked.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_alarmed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/alarmed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.thinking": {
+      "base": "assets/images/characters/edu/edu_thinking.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_thinking_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/thinking/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.worried": {
+      "base": "assets/images/characters/edu/edu_worried.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_worried_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp",
+      "method": "registered-eye-region-composite"
+    },
+    "edu.bua": {
+      "base": "assets/images/characters/edu/edu_bua.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_bua_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/bua/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.clapping": {
+      "base": "assets/images/characters/edu/edu_clapping.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_clapping_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/clapping/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.riku": {
+      "base": "assets/images/characters/edu/edu_riku.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_riku_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/riku/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.picado": {
+      "base": "assets/images/characters/edu/edu_picado.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_picado_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1203,
+        "height": 1400
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/picado/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.picante": {
+      "base": "assets/images/characters/edu/edu_picante_wide_transparent.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_picante_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/picante/eyes_half_source.webp",
+      "method": "registered-eye-region-composite"
+    },
+    "edu.zip_happy": {
+      "base": "assets/images/characters/edu/chapter2/edu_zip_happy.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_zip_happy_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 490,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/zip_happy/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.zip_surprised": {
+      "base": "assets/images/characters/edu/chapter2/edu_zip_surprised.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_zip_surprised_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 490,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/zip_surprised/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.zip_worried": {
+      "base": "assets/images/characters/edu/chapter2/edu_zip_worried.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_zip_worried_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 982,
+        "height": 2048
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/zip_worried/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "edu.human": {
+      "base": "assets/images/characters/humans/edu_humano_sprite.webp",
+      "target": "assets/images/characters/edu/animations/blinks/edu_human_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/edu/human/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "elion_husk.neutral": {
+      "base": "assets/images/characters/elion_husk/elion_husk_neutral.webp",
+      "target": "assets/images/characters/elion_husk/animations/blinks/elion_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/elion_husk/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "elion_husk.smirk": {
+      "base": "assets/images/characters/elion_husk/elion_husk_smirk.webp",
+      "target": "assets/images/characters/elion_husk/animations/blinks/elion_smirk_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/elion_husk/smirk/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "elion_husk.angry": {
+      "base": "assets/images/characters/elion_husk/elion_husk_angry.webp",
+      "target": "assets/images/characters/elion_husk/animations/blinks/elion_angry_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/elion_husk/angry/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "elion_husk.shadow": {
+      "base": "assets/images/characters/elion_husk/elion_husk_shadow.webp",
+      "target": "assets/images/characters/elion_husk/animations/blinks/elion_shadow_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/elion_husk/shadow/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "gorila.sospecha": {
+      "base": "assets/images/characters/gorila/gorila_sospecha.webp",
+      "target": "assets/images/characters/gorila/animations/blinks/gorila_sospecha_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 757,
+        "height": 1400
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/gorila/sospecha/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.neutral": {
+      "base": "assets/images/characters/jose/jose.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1085,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.happy": {
+      "base": "assets/images/characters/jose/jose_happy.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_happy_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/happy/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.sad": {
+      "base": "assets/images/characters/jose/jose_sad.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_sad_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/sad/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.angry": {
+      "base": "assets/images/characters/jose/jose_angry.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_angry_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/angry/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.surprised": {
+      "base": "assets/images/characters/jose/jose_surprised.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_surprised_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/surprised/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.alarmed": {
+      "base": "assets/images/characters/jose/jose_alarmed.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_alarmed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/alarmed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.determined": {
+      "base": "assets/images/characters/jose/jose_determined.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_determined_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/determined/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.embarrassed": {
+      "base": "assets/images/characters/jose/jose_embarrassed.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_embarrassed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/embarrassed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.epic": {
+      "base": "assets/images/characters/jose/jose_epic.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_epic_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/epic/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.facepalm": {
+      "base": "assets/images/characters/jose/jose_facepalm.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_facepalm_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/facepalm/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.shocked": {
+      "base": "assets/images/characters/jose/jose_shocked.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_shocked_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/shocked/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.thinking": {
+      "base": "assets/images/characters/jose/jose_thinking.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_thinking_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/thinking/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.worried": {
+      "base": "assets/images/characters/jose/jose_worried.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_worried_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/worried/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.serious": {
+      "base": "assets/images/characters/jose/jose_serious.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_serious_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/serious/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "jose.human": {
+      "base": "assets/images/characters/humans/jose_humano_sprite.webp",
+      "target": "assets/images/characters/jose/animations/blinks/jose_human_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/jose/human/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "ketchling.security": {
+      "base": "assets/images/characters/ketchling/ketchling_security.webp",
+      "target": "assets/images/characters/ketchling/animations/blinks/ketchling_security_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/ketchling/security/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "ketchling.cook": {
+      "base": "assets/images/characters/ketchling/ketchling_cook.webp",
+      "target": "assets/images/characters/ketchling/animations/blinks/ketchling_cook_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/ketchling/cook/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "ketchling.mechanic": {
+      "base": "assets/images/characters/ketchling/ketchling_mechanic.webp",
+      "target": "assets/images/characters/ketchling/animations/blinks/ketchling_mechanic_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/ketchling/mechanic/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "ketchling.bottler": {
+      "base": "assets/images/characters/ketchling/ketchling_bottler.webp",
+      "target": "assets/images/characters/ketchling/animations/blinks/ketchling_bottler_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/ketchling/bottler/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "ketchling.neutral": {
+      "base": "assets/images/characters/ketchling/ketchling_security.webp",
+      "target": "assets/images/characters/ketchling/animations/blinks/ketchling_security_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/ketchling/security/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "ketchling.happy": {
+      "base": "assets/images/characters/ketchling/ketchling_cook.webp",
+      "target": "assets/images/characters/ketchling/animations/blinks/ketchling_cook_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/ketchling/cook/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "ketchling.worried": {
+      "base": "assets/images/characters/ketchling/ketchling_mechanic.webp",
+      "target": "assets/images/characters/ketchling/animations/blinks/ketchling_mechanic_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/ketchling/mechanic/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "ketchling.determined": {
+      "base": "assets/images/characters/ketchling/ketchling_bottler.webp",
+      "target": "assets/images/characters/ketchling/animations/blinks/ketchling_bottler_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/ketchling/bottler/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "micaela.neutral": {
+      "base": "assets/images/characters/others/micaela.webp",
+      "target": "assets/images/characters/others/animations/blinks/micaela_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/micaela/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "micaela.crazy": {
+      "base": "assets/images/characters/others/micaela_crazy.webp",
+      "target": "assets/images/characters/others/animations/blinks/micaela_crazy_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1029,
+        "height": 1528
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/micaela/crazy/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "neit.neutral": {
+      "base": "assets/images/characters/others/neit.webp",
+      "target": "assets/images/characters/others/animations/blinks/neit_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1122,
+        "height": 1402
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/neit/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "nexo.neutral": {
+      "base": "assets/images/characters/others/nexo.webp",
+      "target": "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "nexo.happy": {
+      "base": "assets/images/characters/others/nexo.webp",
+      "target": "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "nexo.sad": {
+      "base": "assets/images/characters/others/nexo.webp",
+      "target": "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "nexo.angry": {
+      "base": "assets/images/characters/others/nexo.webp",
+      "target": "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "nexo.surprised": {
+      "base": "assets/images/characters/others/nexo.webp",
+      "target": "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "paloma.neutral": {
+      "base": "assets/images/characters/others/paloma.webp",
+      "target": "assets/images/characters/others/animations/blinks/paloma_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/paloma/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "paloma.churrera": {
+      "base": "assets/images/characters/others/paloma_churrera.webp",
+      "target": "assets/images/characters/others/animations/blinks/paloma_churrera_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/paloma/churrera/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.neutral": {
+      "base": "assets/images/characters/samu/Samu.webp",
+      "target": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "existing",
+      "half": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
+      "method": "existing-frame"
+    },
+    "samu.happy": {
+      "base": "assets/images/characters/samu/samu_happy.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_happy_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/happy/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.sad": {
+      "base": "assets/images/characters/samu/samu_sad.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_sad_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/sad/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.angry": {
+      "base": "assets/images/characters/samu/samu_angry.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_angry_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/angry/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.surprised": {
+      "base": "assets/images/characters/samu/samu_surprised.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_surprised_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/surprised/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.alarmed": {
+      "base": "assets/images/characters/samu/samu_alarmed.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_alarmed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/alarmed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.bua": {
+      "base": "assets/images/characters/samu/samu_bua.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_bua_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/bua/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.clapping": {
+      "base": "assets/images/characters/samu/samu_clapping.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_clapping_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/clapping/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.determined": {
+      "base": "assets/images/characters/samu/samu_determined.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_determined_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/determined/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.embarrassed": {
+      "base": "assets/images/characters/samu/samu_embarrassed.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_embarrassed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/embarrassed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.shocked": {
+      "base": "assets/images/characters/samu/samu_shocked.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_shocked_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/shocked/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.thinking": {
+      "base": "assets/images/characters/samu/samu_thinking.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_thinking_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/thinking/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.worried": {
+      "base": "assets/images/characters/samu/samu_worried.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "existing",
+      "half": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+      "method": "existing-frame"
+    },
+    "samu.valla": {
+      "base": "assets/images/characters/samu/samu_valla.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_valla_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/valla/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.curious": {
+      "base": "assets/images/characters/samu/samu_curious.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_curious_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 768,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/curious/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.charred_blink": {
+      "base": "assets/images/characters/samu/samu_charred_whiteeyes.webp",
+      "target": "assets/images/characters/samu/samu_charred_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/charred_blink/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "samu.human": {
+      "base": "assets/images/characters/humans/samu_humano_sprite.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_human_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/samu/human/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.neutral": {
+      "base": "assets/images/characters/santi/santi.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1452,
+        "height": 1400
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.conduciendo": {
+      "base": "assets/images/characters/santi/santi_conduciendo.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_conduciendo_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1272,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/conduciendo/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.saludando": {
+      "base": "assets/images/characters/santi/santi_saludando.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_saludando_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 769,
+        "height": 982
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/saludando/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.preocupado": {
+      "base": "assets/images/characters/santi/santi_preocupado.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_preocupado_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 571,
+        "height": 922
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/preocupado/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.mesa": {
+      "base": "assets/images/characters/santi/santi_mesa.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_mesa_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1161,
+        "height": 1021
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/mesa/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.herido": {
+      "base": "assets/images/characters/santi/santi_herido.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_herido_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 715,
+        "height": 932
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/herido/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.riendo": {
+      "base": "assets/images/characters/santi/santi_riendo.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_riendo_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 629,
+        "height": 998
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/riendo/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.despedida": {
+      "base": "assets/images/characters/santi/santi_despedida.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_despedida_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1125,
+        "height": 1400
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/despedida/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.estornudo_1": {
+      "base": "assets/images/characters/santi/santi_est_0.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_estornudo_1_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1075,
+        "height": 1267
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/estornudo_1/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "santi.estornudo_4": {
+      "base": "assets/images/characters/santi/santi_est_3.webp",
+      "target": "assets/images/characters/santi/animations/blinks/santi_estornudo_4_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1075,
+        "height": 1267
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/santi/estornudo_4/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "sebas.neutral": {
+      "base": "assets/images/characters/sebas/sebas.webp",
+      "target": "assets/images/characters/sebas/animations/blinks/sebas_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1046,
+        "height": 1237
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/sebas/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.neutral": {
+      "base": "assets/images/characters/tony/Tony.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.happy": {
+      "base": "assets/images/characters/tony/tony_happy.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_happy_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/happy/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.sad": {
+      "base": "assets/images/characters/tony/tony_sad.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_sad_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/sad/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.angry": {
+      "base": "assets/images/characters/tony/tony_angry.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_angry_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/angry/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.surprised": {
+      "base": "assets/images/characters/tony/tony_surprised.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_surprised_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/surprised/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.alarmed": {
+      "base": "assets/images/characters/tony/tony_alarmed.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_alarmed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/alarmed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.determined": {
+      "base": "assets/images/characters/tony/tony_determined.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_determined_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/determined/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.embarrassed": {
+      "base": "assets/images/characters/tony/tony_embarrassed.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_embarrassed_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/embarrassed/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.shocked": {
+      "base": "assets/images/characters/tony/tony_shocked.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_shocked_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/shocked/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.worried": {
+      "base": "assets/images/characters/tony/tony_worried.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_worried_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/worried/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.flirt": {
+      "base": "assets/images/characters/tony/tony_flirt.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_flirt_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/flirt/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.giggle": {
+      "base": "assets/images/characters/tony/tony_giggle.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_giggle_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/giggle/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.eyeroll": {
+      "base": "assets/images/characters/tony/tony_eyeroll.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_eyeroll_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/eyeroll/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.derrumbe": {
+      "base": "assets/images/characters/tony/tony_derrumbe.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_derrumbe_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/derrumbe/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.cantando": {
+      "base": "assets/images/characters/tony/tony_cantando.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_cantando_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 1160,
+        "height": 1400
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/cantando/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.balada": {
+      "base": "assets/images/characters/tony/tony_balada.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_balada_blink_open.webp",
+      "direction": "opening",
+      "canvas": {
+        "width": 791,
+        "height": 1400
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/balada/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.thinking": {
+      "base": "assets/images/characters/tony/tony_thinking.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_thinking_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 794,
+        "height": 1400
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/thinking/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tony.human": {
+      "base": "assets/images/characters/humans/tony_humano_sprite.webp",
+      "target": "assets/images/characters/tony/animations/blinks/tony_human_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tony/human/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "tralalelo_tralala.neutral": {
+      "base": "assets/images/characters/tralalelo_tralala.webp",
+      "target": "assets/images/characters/animations/blinks/tralalelo_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1179,
+        "height": 1149
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tralalelo_tralala/neutral/eyes_half_source.webp",
+      "method": "registered-eye-region-composite"
+    },
+    "tung_tung_tung_sahur.neutral": {
+      "base": "assets/images/characters/tung_tung_tung_sahur.webp",
+      "target": "assets/images/characters/animations/blinks/tung_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/tung_tung_tung_sahur/neutral/eyes_half_source.webp",
+      "method": "registered-eye-region-composite"
+    },
+    "zip.neutral": {
+      "base": "assets/images/characters/others/zip.webp",
+      "target": "assets/images/characters/others/animations/blinks/zip_neutral_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 544,
+        "height": 1883
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/zip/neutral/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    },
+    "zip.angry": {
+      "base": "assets/images/characters/others/zip_angry.webp",
+      "target": "assets/images/characters/others/animations/blinks/zip_angry_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 908,
+        "height": 1400
+      },
+      "status": "generated",
+      "half": "assets/images/characters/eye_intermediate_sources/zip/angry/eyes_half_source.webp",
+      "method": "imagegen-eye-region-composite"
+    }
+  },
+  "updatedAt": "2026-08-03T00:34:13.437323+00:00"
+}
