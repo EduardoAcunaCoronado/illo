@@ -333,6 +333,12 @@ class VisualNovelEngine {
         const visualFadeOut = Math.max(0, Number(action.visualFadeOut) || 0);
         const endBackground = action.endBackground || action.finalBackground || null;
 
+        // La cinemática siempre parte de un escenario limpio. El audio se conserva
+        // aquí para que el propio reproductor pueda pausarlo y recuperarlo con el
+        // crossfade configurado; los efectos sonoros temporales sí los retira Juice.
+        document.body.classList.add('cutscene-active');
+        this.clearStage({ preserveAudio: true, immediate: true });
+
         // No duplicar la música si currentMusic y bg_music apuntan al mismo Audio.
         const paused = [];
         const pausedSet = new Set();
@@ -427,6 +433,7 @@ class VisualNovelEngine {
             };
 
             const cleanup = () => {
+                document.body.classList.remove('cutscene-active');
                 overlay.remove();
                 resolve();
             };
@@ -7159,16 +7166,41 @@ class VisualNovelEngine {
     }
 
     // Deja el escenario en blanco sin tocar el progreso de la partida.
-    clearStage() {
-        this.stopAllSounds();
+    // Las cinemáticas preservan el audio para que playVideo gestione su fundido.
+    clearStage(options = {}) {
+        const preserveAudio = options.preserveAudio === true;
+        const immediate = options.immediate === true;
+
+        if (!preserveAudio) this.stopAllSounds();
         this.hideDialog();
+        this.clearAdvanceBoundCharacterEffects();
 
         ['character-left', 'character-right', 'character-center'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
                 this.clearCharacterAnimeFall(el);
-                el.classList.remove('active', 'speaking');
+                clearTimeout(el._contactGlitchTimer);
+                clearTimeout(el._fullSignalGlitchTimer);
+                el._contactGlitchTimer = null;
+                el._fullSignalGlitchTimer = null;
+                el.classList.remove(
+                    'active',
+                    'speaking',
+                    'char-exit-fade',
+                    'contact-glitch',
+                    'full-signal-glitch'
+                );
+                el.style.removeProperty('--contact-glitch-duration');
+                el.style.removeProperty('--full-glitch-duration');
                 el.style.backgroundImage = '';
+
+                const videoContainer = el.querySelector('.character-video-container');
+                if (videoContainer) {
+                    videoContainer.querySelectorAll('video').forEach(video => {
+                        try { video.pause(); } catch (e) {}
+                    });
+                    videoContainer.remove();
+                }
             }
         });
         const cont = document.getElementById('characters-container');
@@ -7178,7 +7210,19 @@ class VisualNovelEngine {
         this.speakingPosition = null;
 
         if (window.Juice) window.Juice.reset();
-        this.hideCG?.();
+        this.hideCG?.(immediate ? 0 : undefined);
+        if (immediate) {
+            const cg = document.getElementById('cg-layer');
+            if (cg) {
+                cg.style.transition = 'none';
+                cg.style.opacity = '0';
+                cg.classList.remove('cg-visible');
+                cg.style.backgroundImage = '';
+                cg.style.backgroundSize = '';
+                cg.style.backgroundPosition = '';
+                cg.style.boxShadow = '';
+            }
+        }
 
         const bg = document.getElementById('background');
         if (bg) bg.style.backgroundImage = '';

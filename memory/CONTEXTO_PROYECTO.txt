@@ -598,6 +598,12 @@ REGLAS PARA CAMBIOS FUTUROS
   audio y `kingdomketchup.mp3`, 300 ms reteniendo el último frame y 600 ms de
   fundido hacia `kingdom_ketchup_trono_video_final_4k.png`. `playVideo` admite
   `audioCrossfade`, `holdLastFrame`, `visualFadeOut` y `endBackground`.
+- Toda acción `playVideo` activa primero `body.cutscene-active` y limpia diálogo,
+  personajes (también vídeos y efectos pendientes), CG, fondos, elecciones y
+  efectos temporales con `clearStage({ preserveAudio: true, immediate: true })`.
+  El audio se conserva solo para el crossfade y la escena anterior no se restaura
+  al acabar: regresan únicamente el HUD persistente, `endBackground` y las acciones
+  posteriores del capítulo.
 - En «Uf, no sé», mostrar a Edu con `worried` a proporción normal y aplicar
   `characterGlitchUntilAdvance`. El glitch cromático por franjas se mantiene
   únicamente hasta avanzar el texto y nunca debe comprimir ni escalar el sprite.

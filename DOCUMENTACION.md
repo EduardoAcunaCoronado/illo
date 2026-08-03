@@ -724,6 +724,13 @@ partida.
 
 La **cutscene** es la excepción: ahí los botones sí se esconden, porque es un
 vídeo que ya se salta con un clic o con Esc (`cutsceneEnMarcha()` en `game.js`).
+Antes de insertar el vídeo, `playVideo` activa `body.cutscene-active` y llama a
+`clearStage({ preserveAudio: true, immediate: true })`: desaparecen diálogo,
+sprites y vídeos de personajes, CG, fondos, elecciones y efectos temporales desde
+el primer fotograma. La música se conserva únicamente para que `playVideo` pueda
+pausarla y recuperarla con su crossfade. Al salir no se reconstruye la escena
+anterior; solo permanecen `endBackground` y los elementos creados por las acciones
+posteriores del capítulo.
 
 En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
 (5000) y de los créditos (1500); el menú de escenas a 5300 y el de pausa a 5400.

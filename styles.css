@@ -2465,6 +2465,23 @@ body.startup-pending #menu-video {
 /* ============================================
    CUTSCENE / VÍDEO (opening de Tony, etc.)
    ============================================ */
+/* Se activa antes de insertar el vídeo: ningún elemento interactivo del HUD
+   puede asomar sobre el primer fotograma de la cinemática. */
+body.cutscene-active #options-btn,
+body.cutscene-active #rewind-btn,
+body.cutscene-active #scenes-btn,
+body.cutscene-active #scenes-menu,
+body.cutscene-active #pause-menu,
+body.cutscene-active #dialog-box,
+body.cutscene-active #choices-container,
+body.cutscene-active #game-container [class*="hud"],
+body.cutscene-active #game-container .minigame-instructions,
+body.cutscene-active #game-container .ss-pause-btn {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
 .cutscene-overlay {
     position: absolute;
     inset: 0;

@@ -1322,6 +1322,18 @@
           "text": "¿Una caja de guindillas...? No entiendo para qué voy a querer esto ahora, pero vale. Me la quedo."
         },
         {
+          "type": "hideCharacter",
+          "position": "left"
+        },
+        {
+          "type": "hideCharacter",
+          "position": "center"
+        },
+        {
+          "type": "hideCharacter",
+          "position": "right"
+        },
+        {
           "actions": [
             {
               "type": "goToScene",
