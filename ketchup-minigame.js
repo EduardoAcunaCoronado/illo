@@ -139,17 +139,19 @@
             </div>
             <div class="ketchup-boss-hitbox" id="ketchup-boss-hitbox"><span>BOSS</span></div>
             <div class="mg-player ketchup-player" id="mg-player"><img src="${playerFrames.idle[0]}" alt="Samu" draggable="false"></div>
+            <div class="ketchup-player-marker" id="ketchup-player-marker" aria-hidden="true"></div>
             <div class="ketchup-player-hitbox" id="ketchup-player-hitbox"><span>HITBOX</span></div>
           </div>
           <div class="ketchup-player-hud">
             <span class="ketchup-player-lives"></span>
-            <span class="ketchup-player-help">Mueve con ← ↑ ↓ → / WASD${allowMouse ? ' o ratón' : ''} · Espacio dispara <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla"></span>
+            <span class="ketchup-player-help">Mueve con ← ↑ ↓ → / WASD${allowMouse ? ' o ratón' : ''} · Espacio${allowMouse ? ' / clic' : ''} dispara <img class="mg-inline-icon" src="${chiliIcon}" alt="guindilla"></span>
           </div>
         `;
         document.getElementById('game-container').appendChild(overlay);
 
         const field = overlay.querySelector('#mg-field');
         const player = overlay.querySelector('#mg-player');
+        const playerMarker = overlay.querySelector('#ketchup-player-marker');
         const playerHitbox = overlay.querySelector('#ketchup-player-hitbox');
         const playerImg = player.querySelector('img');
         const boss = overlay.querySelector('#ketchup-boss-enemy');
@@ -164,6 +166,8 @@
         let playerLives = playerMaxLives;
         let playerX = 0.5;
         let playerY = 0.86;
+        let playerVX = 0;
+        let playerVY = 0;
         let mouseTargetX = playerX;
         let mouseTargetY = playerY;
         let mouseActive = false;
@@ -173,14 +177,32 @@
         let enemyMoveTimer = 0;
         const playerW = 0.095;
         const playerH = 0.135;
-        const playerHitW = 0.052;
-        const playerHitH = 0.074;
+        const hitboxConfig = {
+          player: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.052, h: 0.074 },
+          boss: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.2, h: 0.26 },
+          shot: { shape: 'circle', offsetX: 0, offsetY: 0, w: 0.024, h: 0.024 },
+          hazard: { shape: 'circle', offsetX: 0, offsetY: 0, w: 0.024, h: 0.024 },
+          block: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.039, h: 0.039 },
+        };
+        try {
+          const storedHitboxes = JSON.parse(localStorage.getItem('illo_hitbox_config') || '{}').ketchupBoss || {};
+          Object.keys(hitboxConfig).forEach((key) => {
+            if (storedHitboxes[key]) Object.assign(hitboxConfig[key], storedHitboxes[key]);
+          });
+        } catch (error) {
+          console.warn('No se pudo cargar la configuracion de hitboxes.', error);
+        }
+        const setHitboxConfig = (key) => (patch) => {
+          Object.assign(hitboxConfig[key], patch);
+        };
         const playerMinX = playerW * 0.55;
         const playerMaxX = 1 - playerW * 0.55;
         const playerMinY = 0.52;
         const playerMaxY = 0.93;
         const shots = [];
         const enemyBullets = [];
+        const maxPlayerShots = 22;
+        const maxEnemyBullets = 170;
         let running = true;
         let lastTime = null;
         let patternTimer = 0.35;
@@ -222,12 +244,23 @@
         const updatePlayerPos = () => {
           player.style.left = `${playerX * 100}%`;
           player.style.top = `${playerY * 100}%`;
+          const rect = field.getBoundingClientRect();
+          const hitboxLeft = `${(playerX + hitboxConfig.player.offsetX) * 100}%`;
+          const hitboxTop = `${(playerY + hitboxConfig.player.offsetY) * 100}%`;
+          const hitboxWidth = `${Math.max(1, rect.width * hitboxConfig.player.w)}px`;
+          const hitboxHeight = `${Math.max(1, rect.height * hitboxConfig.player.h)}px`;
+          const hitboxRadius = hitboxConfig.player.shape === 'circle' ? '50%' : '4px';
+          playerMarker.style.left = hitboxLeft;
+          playerMarker.style.top = hitboxTop;
+          playerMarker.style.width = hitboxWidth;
+          playerMarker.style.height = hitboxHeight;
+          playerMarker.style.borderRadius = hitboxRadius;
           if (debugHitboxes) {
-            const rect = field.getBoundingClientRect();
-            playerHitbox.style.left = `${playerX * 100}%`;
-            playerHitbox.style.top = `${playerY * 100}%`;
-            playerHitbox.style.width = `${Math.max(1, rect.width * playerHitW)}px`;
-            playerHitbox.style.height = `${Math.max(1, rect.height * playerHitH)}px`;
+            playerHitbox.style.left = hitboxLeft;
+            playerHitbox.style.top = hitboxTop;
+            playerHitbox.style.width = hitboxWidth;
+            playerHitbox.style.height = hitboxHeight;
+            playerHitbox.style.borderRadius = hitboxRadius;
           }
         };
         const updateEnemyPos = () => {
@@ -235,15 +268,67 @@
           boss.style.top = `${enemyY * 100}%`;
           if (debugHitboxes) {
             const rect = field.getBoundingClientRect();
-            bossHitbox.style.left = `${enemyX * 100}%`;
-            bossHitbox.style.top = `${enemyY * 100}%`;
-            bossHitbox.style.width = `${Math.max(1, rect.width * 0.2)}px`;
-            bossHitbox.style.height = `${Math.max(1, rect.height * 0.26)}px`;
+            bossHitbox.style.left = `${(enemyX + hitboxConfig.boss.offsetX) * 100}%`;
+            bossHitbox.style.top = `${(enemyY + hitboxConfig.boss.offsetY) * 100}%`;
+            bossHitbox.style.width = `${Math.max(1, rect.width * hitboxConfig.boss.w)}px`;
+            bossHitbox.style.height = `${Math.max(1, rect.height * hitboxConfig.boss.h)}px`;
+            bossHitbox.style.borderRadius = hitboxConfig.boss.shape === 'circle' ? '50%' : '';
           }
         };
         const updateHud = () => {
           bossFill.style.width = `${clamp(enemyHp / enemyMaxHp, 0, 1) * 100}%`;
           livesEl.textContent = '❤️'.repeat(Math.max(0, playerLives));
+        };
+        const renderDebugHitboxes = () => {
+          if (!window.HitboxDebugger || !window.HitboxDebugger.isEnabled?.()) return;
+          window.HitboxDebugger.render({
+            gameId: 'ketchupBoss',
+            label: 'Bullet Hell de Zip',
+            field,
+            hitboxes: [
+              {
+                id: 'player',
+                label: 'Samu',
+                kind: 'player',
+                x: playerX,
+                y: playerY,
+                ...hitboxConfig.player,
+                set: setHitboxConfig('player'),
+              },
+              {
+                id: 'boss',
+                label: 'Zip',
+                kind: 'boss',
+                x: enemyX,
+                y: enemyY,
+                ...hitboxConfig.boss,
+                set: setHitboxConfig('boss'),
+              },
+              ...shots.map((shot, index) => ({
+                id: `shot-${index}`,
+                label: 'Guindilla',
+                kind: 'shot',
+                type: 'circle',
+                x: shot.x,
+                y: shot.y,
+                ...hitboxConfig.shot,
+                set: setHitboxConfig('shot'),
+              })),
+              ...enemyBullets.map((bullet, index) => {
+                const config = bullet.blocksShots ? hitboxConfig.block : hitboxConfig.hazard;
+                return {
+                  id: `ketchup-${index}`,
+                  label: bullet.blocksShots ? 'Bloqueo' : 'Ketchup',
+                  kind: bullet.blocksShots ? 'block' : 'hazard',
+                  type: bullet.blocksShots ? 'rect' : 'circle',
+                  x: bullet.x,
+                  y: bullet.y,
+                  ...config,
+                  set: setHitboxConfig(bullet.blocksShots ? 'block' : 'hazard'),
+                };
+              }),
+            ],
+          });
         };
 
         const setBossFrame = (frame) => {
@@ -305,6 +390,8 @@
           state.moveDown = false;
           state.shooting = false;
           state.keyboardDirection = 0;
+          playerVX = 0;
+          playerVY = 0;
           mouseActive = false;
         };
         const pointerMove = (e) => {
@@ -313,6 +400,18 @@
           mouseTargetX = clamp((e.clientX - rect.left) / rect.width, playerMinX, playerMaxX);
           mouseTargetY = clamp((e.clientY - rect.top) / rect.height, playerMinY, playerMaxY);
           mouseActive = true;
+        };
+        const pointerDown = (e) => {
+          if (!allowMouse || e.button !== 0) return;
+          pointerMove(e);
+          state.shooting = true;
+          field.setPointerCapture?.(e.pointerId);
+          e.preventDefault();
+        };
+        const pointerUp = (e) => {
+          if (!allowMouse || e.button !== 0) return;
+          state.shooting = false;
+          field.releasePointerCapture?.(e.pointerId);
         };
         const pointerLeave = () => {
           mouseActive = false;
@@ -324,6 +423,9 @@
         window.addEventListener('blur', blur);
         if (allowMouse) {
           field.addEventListener('pointermove', pointerMove);
+          field.addEventListener('pointerdown', pointerDown);
+          field.addEventListener('pointerup', pointerUp);
+          field.addEventListener('pointercancel', pointerUp);
           field.addEventListener('pointerleave', pointerLeave);
         }
         overlay.addEventListener('click', swallowClick, true);
@@ -348,6 +450,35 @@
           field.appendChild(el);
           return el;
         };
+        const hitboxShape = (hitbox) => hitbox.shape || hitbox.type || 'rect';
+        const circleRadius = (hitbox) => (Math.max(Number(hitbox.w) || 0, Number(hitbox.h) || 0) * 0.5);
+        const hitboxCenter = (x, y, hitbox) => ({
+          x: x + (Number(hitbox.offsetX) || 0),
+          y: y + (Number(hitbox.offsetY) || 0),
+        });
+        const rectCircleOverlap = (rectCenter, rect, circleCenter, circle) => {
+          const halfW = (Number(rect.w) || 0) * 0.5;
+          const halfH = (Number(rect.h) || 0) * 0.5;
+          const radius = circleRadius(circle);
+          const closestX = clamp(circleCenter.x, rectCenter.x - halfW, rectCenter.x + halfW);
+          const closestY = clamp(circleCenter.y, rectCenter.y - halfH, rectCenter.y + halfH);
+          return Math.hypot(circleCenter.x - closestX, circleCenter.y - closestY) <= radius;
+        };
+        const overlaps = (aX, aY, a, bX, bY, b) => {
+          const aCenter = hitboxCenter(aX, aY, a);
+          const bCenter = hitboxCenter(bX, bY, b);
+          const aShape = hitboxShape(a);
+          const bShape = hitboxShape(b);
+          if (aShape === 'circle' && bShape === 'circle') {
+            return Math.hypot(aCenter.x - bCenter.x, aCenter.y - bCenter.y) <= circleRadius(a) + circleRadius(b);
+          }
+          if (aShape === 'circle') return rectCircleOverlap(bCenter, b, aCenter, a);
+          if (bShape === 'circle') return rectCircleOverlap(aCenter, a, bCenter, b);
+          return (
+            Math.abs(aCenter.x - bCenter.x) < ((Number(a.w) || 0) + (Number(b.w) || 0)) * 0.5 &&
+            Math.abs(aCenter.y - bCenter.y) < ((Number(a.h) || 0) + (Number(b.h) || 0)) * 0.5
+          );
+        };
 
         const shoot = () => {
           const el = makeSprite('mg-shot', chiliIcon, playerX, playerY - 0.085, 32, 'is-chili');
@@ -358,6 +489,10 @@
             speed: lerp(0.9, 1.18, powerRatio),
             damage: shotDamage,
           });
+          while (shots.length > maxPlayerShots) {
+            const oldest = shots.shift();
+            oldest?.el.remove();
+          }
         };
 
         const pickTeleportX = () => {
@@ -418,6 +553,10 @@
             size,
             damage: corrupt ? CORRUPT_KETCHUP_DAMAGE : REGULAR_KETCHUP_DAMAGE,
           });
+          while (enemyBullets.length > maxEnemyBullets) {
+            const oldest = enemyBullets.shift();
+            oldest?.el.remove();
+          }
         };
 
         const fireSpiralShieldBurst = () => {
@@ -622,6 +761,9 @@
           window.removeEventListener('blur', blur);
           if (allowMouse) {
             field.removeEventListener('pointermove', pointerMove);
+            field.removeEventListener('pointerdown', pointerDown);
+            field.removeEventListener('pointerup', pointerUp);
+            field.removeEventListener('pointercancel', pointerUp);
             field.removeEventListener('pointerleave', pointerLeave);
           }
 
@@ -630,6 +772,7 @@
             musicAudio.currentTime = 0;
           }
           window.clearTimeout(bossCrossfadeTimer);
+          if (window.HitboxDebugger) window.HitboxDebugger.clear();
           specialWarning.classList.remove('is-visible');
 
           shots.forEach((shot) => shot.el.remove());
@@ -663,7 +806,7 @@
           shootCooldown = Math.max(0, shootCooldown - dt);
           playerInvuln = Math.max(0, playerInvuln - dt);
 
-          const moveSpeed = 0.42;
+          const moveSpeed = 0.35;
           let moveX = 0;
           let moveY = 0;
           if (state.moveLeft) moveX -= 1;
@@ -673,14 +816,29 @@
           if (moveX !== 0 || moveY !== 0) {
             mouseActive = false;
             const moveLength = Math.hypot(moveX, moveY);
-            playerX = clamp(playerX + (moveX / moveLength) * moveSpeed * dt, playerMinX, playerMaxX);
-            playerY = clamp(playerY + (moveY / moveLength) * moveSpeed * dt, playerMinY, playerMaxY);
+            const targetVX = (moveX / moveLength) * moveSpeed;
+            const targetVY = (moveY / moveLength) * moveSpeed;
+            const keyboardEase = 1 - Math.pow(0.0008, dt);
+            playerVX = lerp(playerVX, targetVX, keyboardEase);
+            playerVY = lerp(playerVY, targetVY, keyboardEase);
+            playerX = clamp(playerX + playerVX * dt, playerMinX, playerMaxX);
+            playerY = clamp(playerY + playerVY * dt, playerMinY, playerMaxY);
             mouseTargetX = playerX;
             mouseTargetY = playerY;
           } else if (mouseActive) {
             const mouseEase = 1 - Math.pow(0.02, dt);
+            playerVX = 0;
+            playerVY = 0;
             playerX = clamp(lerp(playerX, mouseTargetX, mouseEase), playerMinX, playerMaxX);
             playerY = clamp(lerp(playerY, mouseTargetY, mouseEase), playerMinY, playerMaxY);
+          } else {
+            const stopEase = 1 - Math.pow(0.0003, dt);
+            playerVX = lerp(playerVX, 0, stopEase);
+            playerVY = lerp(playerVY, 0, stopEase);
+            if (Math.abs(playerVX) > 0.001 || Math.abs(playerVY) > 0.001) {
+              playerX = clamp(playerX + playerVX * dt, playerMinX, playerMaxX);
+              playerY = clamp(playerY + playerVY * dt, playerMinY, playerMaxY);
+            }
           }
 
           const shouldFloat = enemyHp / enemyMaxHp > 0.6;
@@ -762,8 +920,7 @@
             for (let j = enemyBullets.length - 1; j >= 0; j--) {
               const bullet = enemyBullets[j];
               if (!bullet.blocksShots) continue;
-              const blockRange = Math.max(0.03, (bullet.size || 30) / 1280);
-              if (Math.abs(shot.x - bullet.x) < blockRange && Math.abs(shot.y - bullet.y) < blockRange) {
+              if (overlaps(shot.x, shot.y, hitboxConfig.shot, bullet.x, bullet.y, hitboxConfig.block)) {
                 shot.el.remove();
                 shots.splice(i, 1);
                 blocked = true;
@@ -771,7 +928,7 @@
               }
             }
             if (blocked) continue;
-            const hitBoss = Math.abs(shot.x - enemyX) < 0.1 && Math.abs(shot.y - enemyY) < 0.13;
+            const hitBoss = overlaps(shot.x, shot.y, hitboxConfig.shot, enemyX, enemyY, hitboxConfig.boss);
             if (hitBoss) {
               enemyHp = Math.max(0, enemyHp - shot.damage);
               updateHud();
@@ -795,8 +952,8 @@
             bullet.el.style.top = `${bullet.y * 100}%`;
             const hitPlayer =
               playerInvuln <= 0 &&
-              Math.abs(bullet.x - playerX) < playerHitW * 0.5 &&
-              Math.abs(bullet.y - playerY) < playerHitH * 0.5;
+              overlaps(bullet.x, bullet.y, bullet.blocksShots ? hitboxConfig.block : hitboxConfig.hazard,
+                playerX, playerY, hitboxConfig.player);
             if (hitPlayer) {
               playerLives = Math.max(0, playerLives - bullet.damage);
               playerInvuln = 0.85;
@@ -812,6 +969,8 @@
               enemyBullets.splice(i, 1);
             }
           }
+
+          renderDebugHitboxes();
 
           if (enemyHp <= 0) return cleanup(true);
           if (playerLives <= 0) return cleanup(false);

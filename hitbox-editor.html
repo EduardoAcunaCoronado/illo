@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de hitboxes</title>
+    <style>
+        :root {
+            --bg: #070310;
+            --panel: rgba(10, 8, 20, .92);
+            --line: rgba(255, 255, 255, .16);
+            --text: #f8fbff;
+            --muted: #aab3cf;
+            --accent: #53d2ff;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            height: 100vh;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 320px;
+            background: radial-gradient(circle at 25% 20%, rgba(83, 210, 255, .18), transparent 34%), var(--bg);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            overflow: hidden;
+        }
+
+        main {
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            min-width: 0;
+            min-height: 0;
+            overflow: auto;
+        }
+
+        #editor-field {
+            position: relative;
+            width: 360px;
+            height: 360px;
+            overflow: visible;
+            border: 2px solid rgba(83, 210, 255, .28);
+            border-radius: 2px;
+            background-color: #f3f3f3;
+            background-image:
+                linear-gradient(45deg, #c8c8c8 25%, transparent 25%),
+                linear-gradient(-45deg, #c8c8c8 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #c8c8c8 75%),
+                linear-gradient(-45deg, transparent 75%, #c8c8c8 75%);
+            background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+            background-size: 16px 16px;
+            box-shadow: inset 0 0 26px rgba(0, 0, 0, .55), 0 0 28px rgba(0, 0, 0, .45);
+        }
+
+        .sprite {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            display: grid;
+            place-items: center;
+        }
+
+        .sprite img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .hitbox {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--c, #fff);
+            background: color-mix(in srgb, var(--c, #fff) 20%, transparent);
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, .68), 0 0 12px color-mix(in srgb, var(--c, #fff) 70%, transparent);
+            cursor: move;
+            z-index: 10;
+        }
+
+        .hitbox.is-circle { border-radius: 50%; }
+        .hitbox.is-selected { outline: 2px solid #fff; outline-offset: 2px; }
+
+        .hitbox span {
+            position: absolute;
+            left: 50%;
+            bottom: calc(100% + 4px);
+            transform: translateX(-50%);
+            padding: 2px 5px;
+            border-radius: 4px;
+            background: rgba(0, 0, 0, .78);
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .resize {
+            position: absolute;
+            right: -6px;
+            bottom: -6px;
+            width: 12px;
+            height: 12px;
+            border: 1px solid #fff;
+            background: var(--c, #fff);
+            cursor: nwse-resize;
+        }
+
+        aside {
+            height: 100vh;
+            min-height: 0;
+            padding: 18px;
+            border-left: 1px solid var(--line);
+            background: var(--panel);
+            overflow-y: auto;
+        }
+
+        h1 {
+            margin: 0 0 6px;
+            font-size: 22px;
+            color: var(--accent);
+        }
+
+        .hint {
+            margin: 0 0 16px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.45;
+        }
+
+        label {
+            display: grid;
+            gap: 6px;
+            margin-top: 11px;
+            color: #dbe7ff;
+            font-size: 12px;
+        }
+
+        select,
+        input {
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, .22);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, .38);
+            color: #fff;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        button {
+            border: 1px solid rgba(255, 255, 255, .26);
+            border-radius: 7px;
+            background: rgba(83, 210, 255, .14);
+            color: #fff;
+            padding: 9px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        button:hover { filter: brightness(1.18); }
+        button.danger { background: rgba(255, 48, 84, .16); }
+        button.full { grid-column: 1 / -1; }
+
+        pre {
+            margin-top: 14px;
+            padding: 10px;
+            min-height: 112px;
+            max-height: 240px;
+            overflow: auto;
+            border: 1px solid rgba(255, 255, 255, .14);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, .35);
+            color: #d7f7ff;
+            font-size: 11px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div id="editor-field"></div>
+    </main>
+
+    <aside>
+        <h1>Hitboxes</h1>
+        <p class="hint">Selecciona un objeto, arrastra su caja o cambia los valores. Guardar aplica los cambios al minijuego cuando vuelva a arrancar.</p>
+
+        <label>Minijuego
+            <select id="game-select"></select>
+        </label>
+
+        <label>Objeto
+            <select id="object-select"></select>
+        </label>
+
+        <label>Imagen / frame
+            <select id="frame-select"></select>
+        </label>
+
+        <label>Forma
+            <select id="box-shape">
+                <option value="rect">Rectangular</option>
+                <option value="circle">Circular</option>
+            </select>
+        </label>
+
+        <label>Offset X
+            <input id="offset-x" type="number" step="0.001">
+        </label>
+        <label>Offset Y
+            <input id="offset-y" type="number" step="0.001">
+        </label>
+        <label>Ancho
+            <input id="box-w" type="number" min="0.001" step="0.001">
+        </label>
+        <label>Alto
+            <input id="box-h" type="number" min="0.001" step="0.001">
+        </label>
+
+        <div class="buttons">
+            <button id="save-btn" type="button">Guardar</button>
+            <button id="copy-btn" type="button">Copiar</button>
+            <button id="reset-object-btn" class="danger" type="button">Reset objeto</button>
+            <button id="reset-game-btn" class="danger" type="button">Reset juego</button>
+            <button id="open-test-btn" class="full" type="button">Volver a minijuegos</button>
+        </div>
+
+        <pre id="output"></pre>
+    </aside>
+
+    <script>
+      const STORAGE_KEY = 'illo_hitbox_config';
+      const colors = {
+        player: '#ff3054',
+        boss: '#53d2ff',
+        shot: '#ffeb4a',
+        hazard: '#ff5252',
+        block: '#be4cff',
+      };
+      const games = {
+        ketchupBoss: {
+          label: 'Bullet Hell de Zip',
+          objects: {
+            player: {
+              label: 'Samu',
+              kind: 'player',
+              type: 'rect',
+              sprite: 'assets/images/characters/samu/ketchup/1.png',
+              frames: [
+                { label: 'Idle · frame 1', sprite: 'assets/images/characters/samu/ketchup/1.png' },
+                { label: 'Idle · frame 3', sprite: 'assets/images/characters/samu/ketchup/3.png' },
+                { label: 'Derecha/arriba · frame 2', sprite: 'assets/images/characters/samu/ketchup/2.png' },
+                { label: 'Derecha/arriba · frame 4', sprite: 'assets/images/characters/samu/ketchup/4.png' },
+                { label: 'Disparo moviendo · frame 5', sprite: 'assets/images/characters/samu/ketchup/5.png' },
+                { label: 'Disparo moviendo · frame 6', sprite: 'assets/images/characters/samu/ketchup/6.png' },
+                { label: 'Disparo parado · frame 8', sprite: 'assets/images/characters/samu/ketchup/8.png' },
+                { label: 'Disparo parado · frame 7', sprite: 'assets/images/characters/samu/ketchup/7.png' },
+              ],
+              spriteW: 0.12,
+              spriteH: 0.22,
+              x: 0.5,
+              y: 0.86,
+              hitbox: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.052, h: 0.074 },
+            },
+            boss: {
+              label: 'Zip',
+              kind: 'boss',
+              type: 'rect',
+              sprite: 'assets/images/characters/zip/ketchup/zip_1.png',
+              frames: [
+                { label: 'Flotando 1', sprite: 'assets/images/characters/zip/ketchup/zip_flotando_1.png' },
+                { label: 'Flotando 2', sprite: 'assets/images/characters/zip/ketchup/zip_flotando_2.png' },
+                { label: 'Flotando 3', sprite: 'assets/images/characters/zip/ketchup/zip_flotando_3.png' },
+                { label: 'Segunda forma 1', sprite: 'assets/images/characters/zip/ketchup/zip_1.png' },
+                { label: 'Segunda forma 2', sprite: 'assets/images/characters/zip/ketchup/zip_2.png' },
+                { label: 'Segunda forma 3', sprite: 'assets/images/characters/zip/ketchup/zip_3.png' },
+                { label: 'Segunda forma 4', sprite: 'assets/images/characters/zip/ketchup/zip_4.png' },
+                { label: 'Segunda forma 5', sprite: 'assets/images/characters/zip/ketchup/zip_5.png' },
+              ],
+              spriteW: 0.12,
+              spriteH: 0.28,
+              x: 0.5,
+              y: 0.18,
+              hitbox: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.2, h: 0.26 },
+            },
+            shot: {
+              label: 'Guindilla',
+              kind: 'shot',
+              type: 'circle',
+              sprite: 'assets/images/minigames/chapter2/ketchup/chili_v2.png',
+              spriteW: 0.05,
+              spriteH: 0.08,
+              x: 0.42,
+              y: 0.55,
+              hitbox: { shape: 'circle', offsetX: 0, offsetY: 0, w: 0.024, h: 0.024 },
+            },
+            hazard: {
+              label: 'Bote ketchup',
+              kind: 'hazard',
+              type: 'circle',
+              sprite: 'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png',
+              spriteW: 0.06,
+              spriteH: 0.1,
+              x: 0.58,
+              y: 0.55,
+              hitbox: { shape: 'circle', offsetX: 0, offsetY: 0, w: 0.024, h: 0.024 },
+            },
+            block: {
+              label: 'Bote corrupto',
+              kind: 'block',
+              type: 'rect',
+              sprite: 'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png',
+              spriteW: 0.07,
+              spriteH: 0.11,
+              x: 0.68,
+              y: 0.42,
+              hitbox: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.039, h: 0.039 },
+            },
+          },
+        },
+      };
+
+      const field = document.getElementById('editor-field');
+      const gameSelect = document.getElementById('game-select');
+      const objectSelect = document.getElementById('object-select');
+      const frameSelect = document.getElementById('frame-select');
+      const inputs = {
+        shape: document.getElementById('box-shape'),
+        offsetX: document.getElementById('offset-x'),
+        offsetY: document.getElementById('offset-y'),
+        w: document.getElementById('box-w'),
+        h: document.getElementById('box-h'),
+      };
+      const output = document.getElementById('output');
+      let config = loadConfig();
+      let currentGame = new URLSearchParams(location.search).get('game') || 'ketchupBoss';
+      let currentObject = 'player';
+      let currentFrame = 0;
+      let drag = null;
+      let renderToken = 0;
+
+      function loadConfig() {
+        try {
+          return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function saveConfig() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(config, null, 2));
+        renderOutput('Guardado en localStorage. Vuelve a lanzar el minijuego para verlo aplicado.');
+      }
+
+      function defaultsFor(gameId, objectId) {
+        return { ...games[gameId].objects[objectId].hitbox };
+      }
+
+      function hitboxFor(gameId, objectId) {
+        return {
+          ...defaultsFor(gameId, objectId),
+          ...(config[gameId]?.[objectId] || {}),
+        };
+      }
+
+      function setHitbox(gameId, objectId, patch) {
+        config[gameId] = config[gameId] || {};
+        config[gameId][objectId] = {
+          ...hitboxFor(gameId, objectId),
+          ...patch,
+        };
+      }
+
+      function renderSelectors() {
+        gameSelect.innerHTML = Object.entries(games)
+          .map(([id, game]) => `<option value="${id}">${game.label}</option>`)
+          .join('');
+        gameSelect.value = games[currentGame] ? currentGame : 'ketchupBoss';
+        currentGame = gameSelect.value;
+        renderObjectSelector();
+      }
+
+      function renderObjectSelector() {
+        objectSelect.innerHTML = Object.entries(games[currentGame].objects)
+          .map(([id, object]) => `<option value="${id}">${object.label}</option>`)
+          .join('');
+        if (!games[currentGame].objects[currentObject]) currentObject = Object.keys(games[currentGame].objects)[0];
+        objectSelect.value = currentObject;
+        renderFrameSelector();
+      }
+
+      function framesFor(object) {
+        return object.frames || [{ label: object.label, sprite: object.sprite }];
+      }
+
+      function renderFrameSelector() {
+        const object = games[currentGame].objects[currentObject];
+        const frames = framesFor(object);
+        if (currentFrame >= frames.length) currentFrame = 0;
+        frameSelect.innerHTML = frames
+          .map((frame, index) => `<option value="${index}">${frame.label}</option>`)
+          .join('');
+        frameSelect.value = String(currentFrame);
+      }
+
+      function renderScene() {
+        const game = games[currentGame];
+        field.innerHTML = '';
+        renderToken++;
+        const token = renderToken;
+
+        const object = game.objects[currentObject];
+        const frame = framesFor(object)[currentFrame] || framesFor(object)[0];
+        const hitbox = hitboxFor(currentGame, currentObject);
+        const editorX = 0.5;
+        const editorY = 0.5;
+        const sprite = document.createElement('div');
+        sprite.className = 'sprite';
+        sprite.style.left = `${editorX * 100}%`;
+        sprite.style.top = `${editorY * 100}%`;
+        sprite.style.width = '100%';
+        sprite.style.height = '100%';
+        const image = document.createElement('img');
+        image.alt = '';
+        image.addEventListener('load', () => fitCanvasToImage(image, object, hitbox, token), { once: true });
+        image.src = frame.sprite;
+        sprite.appendChild(image);
+        field.appendChild(sprite);
+
+        const box = document.createElement('div');
+        box.className = `hitbox is-selected ${hitbox.shape === 'circle' ? 'is-circle' : ''}`;
+        box.style.setProperty('--c', colors[object.kind] || '#fff');
+        box.style.left = `${(editorX + hitbox.offsetX / object.spriteW) * 100}%`;
+        box.style.top = `${(editorY + hitbox.offsetY / object.spriteH) * 100}%`;
+        box.style.width = `${(hitbox.w / object.spriteW) * 100}%`;
+        box.style.height = `${(hitbox.h / object.spriteH) * 100}%`;
+        box.dataset.objectId = currentObject;
+        box.innerHTML = `<span>${object.label}</span><b class="resize"></b>`;
+        field.appendChild(box);
+
+        syncInputs();
+      }
+
+      function fitCanvasToImage(image, object, hitbox, token) {
+        if (token !== renderToken) return;
+        const naturalW = image.naturalWidth || 360;
+        const naturalH = image.naturalHeight || 360;
+        const sidebarW = 320;
+        const viewportPadding = 112;
+        const maxW = Math.max(120, window.innerWidth - sidebarW - viewportPadding);
+        const maxH = Math.max(120, window.innerHeight - viewportPadding);
+        const overflowLeft = Math.max(0, (hitbox.w * 0.5 - hitbox.offsetX) / object.spriteW - 0.5);
+        const overflowRight = Math.max(0, (hitbox.w * 0.5 + hitbox.offsetX) / object.spriteW - 0.5);
+        const overflowTop = Math.max(0, (hitbox.h * 0.5 - hitbox.offsetY) / object.spriteH - 0.5);
+        const overflowBottom = Math.max(0, (hitbox.h * 0.5 + hitbox.offsetY) / object.spriteH - 0.5);
+        const visualW = naturalW * (1 + overflowLeft + overflowRight);
+        const visualH = naturalH * (1 + overflowTop + overflowBottom);
+        const scale = Math.min(1, maxW / visualW, maxH / visualH);
+        field.style.width = `${Math.max(1, Math.round(naturalW * scale))}px`;
+        field.style.height = `${Math.max(1, Math.round(naturalH * scale))}px`;
+      }
+
+      function syncInputs() {
+        const hitbox = hitboxFor(currentGame, currentObject);
+        Object.entries(inputs).forEach(([key, input]) => {
+          input.value = key === 'shape'
+            ? hitbox.shape || 'rect'
+            : Number(hitbox[key] || 0).toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+        });
+        renderOutput();
+      }
+
+      function renderOutput(message = '') {
+        output.textContent = `${message ? message + '\n\n' : ''}${JSON.stringify(config[currentGame] || {}, null, 2)}`;
+      }
+
+      function applyInputs() {
+        setHitbox(currentGame, currentObject, {
+          shape: inputs.shape.value === 'circle' ? 'circle' : 'rect',
+          offsetX: Number(inputs.offsetX.value) || 0,
+          offsetY: Number(inputs.offsetY.value) || 0,
+          w: Math.max(0.001, Number(inputs.w.value) || 0.001),
+          h: Math.max(0.001, Number(inputs.h.value) || 0.001),
+        });
+        renderScene();
+      }
+
+      field.addEventListener('pointerdown', (event) => {
+        const box = event.target.closest('.hitbox');
+        if (!box) return;
+        event.preventDefault();
+        currentObject = box.dataset.objectId;
+        objectSelect.value = currentObject;
+        const isResize = event.target.classList.contains('resize');
+        const rect = field.getBoundingClientRect();
+        const hitbox = hitboxFor(currentGame, currentObject);
+        drag = {
+          mode: isResize ? 'resize' : 'move',
+          startX: event.clientX,
+          startY: event.clientY,
+          fieldW: rect.width,
+          fieldH: rect.height,
+          ...hitbox,
+        };
+        renderScene();
+      });
+
+      window.addEventListener('pointermove', (event) => {
+        if (!drag) return;
+        const dx = (event.clientX - drag.startX) / drag.fieldW;
+        const dy = (event.clientY - drag.startY) / drag.fieldH;
+        const object = games[currentGame].objects[currentObject];
+        if (drag.mode === 'resize') {
+          setHitbox(currentGame, currentObject, {
+            w: Math.max(0.001, drag.w + dx * object.spriteW * 2),
+            h: Math.max(0.001, drag.h + dy * object.spriteH * 2),
+          });
+        } else {
+          setHitbox(currentGame, currentObject, {
+            offsetX: drag.offsetX + dx * object.spriteW,
+            offsetY: drag.offsetY + dy * object.spriteH,
+          });
+        }
+        renderScene();
+      });
+
+      window.addEventListener('pointerup', () => {
+        drag = null;
+      });
+
+      gameSelect.addEventListener('change', () => {
+        currentGame = gameSelect.value;
+        currentObject = Object.keys(games[currentGame].objects)[0];
+        currentFrame = 0;
+        renderObjectSelector();
+        renderScene();
+      });
+      objectSelect.addEventListener('change', () => {
+        currentObject = objectSelect.value;
+        currentFrame = 0;
+        renderFrameSelector();
+        renderScene();
+      });
+      frameSelect.addEventListener('change', () => {
+        currentFrame = Number(frameSelect.value) || 0;
+        renderScene();
+      });
+      Object.values(inputs).forEach((input) => input.addEventListener('change', applyInputs));
+
+      document.getElementById('save-btn').addEventListener('click', saveConfig);
+      document.getElementById('copy-btn').addEventListener('click', () => {
+        navigator.clipboard?.writeText(JSON.stringify(config[currentGame] || {}, null, 2)).catch(() => {});
+        renderOutput('Copiado.');
+      });
+      document.getElementById('reset-object-btn').addEventListener('click', () => {
+        if (config[currentGame]) delete config[currentGame][currentObject];
+        renderScene();
+      });
+      document.getElementById('reset-game-btn').addEventListener('click', () => {
+        delete config[currentGame];
+        renderScene();
+      });
+      document.getElementById('open-test-btn').addEventListener('click', () => {
+        location.href = 'minijuegos_test.html';
+      });
+      window.addEventListener('resize', renderScene);
+
+      renderSelectors();
+      renderScene();
+    </script>
+</body>
+</html>

@@ -219,6 +219,7 @@
             <button class="tp-btn" data-testid="ketchup-medium" style="--c:#4fd0ff" onclick="launchZipBulletHell('medio')">Medio</button>
             <button class="tp-btn" data-testid="ketchup-hard" style="--c:#ff4fa3" onclick="launchZipBulletHell('dificil')">Difícil</button>
             <button class="tp-btn" style="--c:#ffd166" onclick="launchKetchup('medio')">Flujo completo</button>
+            <button class="tp-btn" style="--c:#53d2ff" onclick="openHitboxEditor('ketchupBoss')">Editar hitbox</button>
         </div>
         <div class="tp-config-grid">
             <label>HP Zip
@@ -238,7 +239,7 @@
             <input type="checkbox" id="zip-start-phase-two"> Empezar desde la segunda forma (60% de vida)
         </label>
         <label class="tp-music">
-            <input type="checkbox" id="zip-debug-hitboxes"> Mostrar hitbox real
+            <input type="checkbox" id="zip-debug-hitboxes"> Mostrar hitbox real de Zip
         </label>
 
         <h2>🔷 Equilibrio de poderes</h2>
@@ -306,7 +307,7 @@
     <script>
       (function () {
         var v = Date.now();
-        ['juice.js', 'battle-minigame.js', 'credits-minigame.js', 'chili-harvest-minigame.js',
+        ['juice.js', 'hitbox-debugger.js', 'battle-minigame.js', 'credits-minigame.js', 'chili-harvest-minigame.js',
          'ketchup-minigame.js', 'rune-channeling-minigame.js', 'engine.js'].forEach(function (f) {
           document.write('<scr' + 'ipt src="' + f + '?v=' + v + '"><\/scr' + 'ipt>');
         });
@@ -332,6 +333,19 @@
 
         function musicOn() { return document.getElementById('tp-music-on').checked; }
         function battleDebugStatsOn() { return document.getElementById('tp-battle-debug-stats').checked; }
+        function openHitboxEditor(gameId) {
+            window.open('hitbox-editor.html?game=' + encodeURIComponent(gameId), '_blank');
+        }
+        function syncHitboxDebugger() {
+            if (!window.HitboxDebugger) return;
+            const globalDebug = document.getElementById('tp-hitbox-debugger')?.checked;
+            const zipDebug = document.getElementById('zip-debug-hitboxes')?.checked;
+            window.HitboxDebugger.setEnabled(!!(globalDebug || zipDebug));
+            window.HitboxDebugger.setEditMode(!!document.getElementById('tp-hitbox-edit')?.checked);
+        }
+        ['tp-hitbox-debugger', 'tp-hitbox-edit', 'zip-debug-hitboxes'].forEach(function (id) {
+            document.getElementById(id)?.addEventListener('change', syncHitboxDebugger);
+        });
 
         function startMusic(file) {
             if (!musicOn()) return;
@@ -526,13 +540,14 @@
         function getZipOptions(preset) {
             const opts = ZIP_BULLET_HELL[preset] || ZIP_BULLET_HELL.medio;
             const startPhaseTwo = document.getElementById('zip-start-phase-two').checked;
+            syncHitboxDebugger();
             const options = {
                 ...opts,
                 enemyHp: getNumberInput('zip-hp', opts.enemyHp),
                 maxHits: getNumberInput('zip-lives', opts.maxHits),
                 spicePower: getNumberInput('zip-spice-power', opts.spicePower),
                 maxSpicePower: getNumberInput('zip-max-spice', opts.maxSpicePower),
-                debugHitboxes: document.getElementById('zip-debug-hitboxes').checked
+                debugHitboxes: false
             };
             if (startPhaseTwo) options.startAtHpRatio = 0.6;
             return options;
