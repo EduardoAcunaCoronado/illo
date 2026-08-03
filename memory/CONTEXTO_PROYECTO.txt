@@ -797,3 +797,19 @@ GAG DE FISURAS 2 2026-08-02
   Edu responde que le gusta `Fisuras 2 de Stim`; Samu muestra la pose `shocked`
   durante la respuesta y continúa con «Bueno, cambiando de tema...» antes de
   retomar la búsqueda del resto.
+
+ICONOS NEÓN DE CONFIGURACIÓN 2026-08-03
+- Las pestañas Vídeo, Sonido y Trucos sustituyen sus emojis por PNG RGBA propios
+  de 128×128 en `assets/images/ui/settings/`.
+- `settingsMarkup()` conserva el texto accesible y marca cada imagen como
+  decorativa; los iconos comparten estados normal, hover y activo en `.nm-tab`.
+- Los mismos iconos aparecen tanto en la Configuración principal como en la
+  pausa porque ambas vistas reutilizan el mismo generador de marcado.
+
+RETRATOS CARTOON DE FURRY MAPS 2026-08-03
+- Tadeo Trufa, Lía Lince y Rulo Mapache usan ahora el acabado cartoon 2D del
+  reparto principal: contorno limpio, color plano y cel-shading de dos tonos.
+- Los PNG activos conservan nombre, lienzo RGBA de 965×1630, identidad, pose,
+  vestuario y utilería, por lo que `engine.js` continúa usando las mismas rutas.
+- El montaje `furrielva_informantes_lineup_v1.png` no está referenciado por el
+  juego; los tres retratos individuales son la fuente activa del minijuego.

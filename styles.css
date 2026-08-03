@@ -4722,8 +4722,13 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 /* Panel de Configuración: filas de volumen (misma estética nm) */
 .nm-settings { display: flex; flex-direction: column; gap: 18px; margin-bottom: 26px; min-width: 340px; }
+/* Rejilla de tres columnas igual en todas las filas: rótulo a la izquierda,
+   control estirado en medio y valor (o casilla) a la derecha. El ancho del
+   rótulo es fijo para que "Blips de texto" quepa en una línea y todas las
+   filas arranquen en el mismo punto (cada fila es su propia rejilla). */
 .nm-setting-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 120px 1fr 52px;
     align-items: center;
     gap: 14px;
     font-family: 'Outfit', sans-serif;
@@ -4731,10 +4736,14 @@ html.electron-app #menu-theme-btn { display: none; }
     font-size: 15px;
     letter-spacing: 1px;
     color: #fff;
-    white-space: nowrap;
+    text-align: left;
 }
-.nm-setting-row input[type="range"] { flex: 1; accent-color: #ffd166; cursor: pointer; }
-.nm-setting-val { color: #ffd166; min-width: 44px; text-align: right; }
+.nm-setting-row input[type="range"] { width: 100%; accent-color: #ffd166; cursor: pointer; }
+.nm-setting-val { color: #ffd166; text-align: right; }
+/* La fila de casilla solo tiene dos elementos, así que la casilla se quedaría
+   al final de la columna del control. Se extiende hasta la tercera para que
+   cierre en el mismo borde derecho que los porcentajes. */
+.nm-setting-toggle .nm-setting-row input[type="checkbox"] { grid-column: 2 / span 2; }
 
 /* Ajuste de varias opciones (modo de ventana): rótulo arriba y los botones
    debajo, a lo ancho, porque "Pantalla completa" no cabe en una fila. */
@@ -4791,6 +4800,10 @@ html.electron-app #menu-theme-btn { display: none; }
 }
 .nm-tab {
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     padding: 9px 14px;
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
@@ -4804,11 +4817,31 @@ html.electron-app #menu-theme-btn { display: none; }
     cursor: pointer;
     transition: all 0.2s ease;
 }
+.nm-tab-icon {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    object-fit: contain;
+    opacity: 0.68;
+    filter: saturate(0.72) brightness(0.88);
+    transform: scale(0.92);
+    transition: opacity 0.2s ease, filter 0.2s ease, transform 0.2s ease;
+}
 .nm-tab:hover { color: rgba(255, 209, 102, 0.85); background: rgba(255, 209, 102, 0.07); }
+.nm-tab:hover .nm-tab-icon {
+    opacity: 0.9;
+    filter: saturate(1) brightness(1.05) drop-shadow(0 0 5px rgba(57, 216, 255, 0.5));
+    transform: scale(1);
+}
 .nm-tab.is-active {
     color: #ffd166;
     background: rgba(255, 209, 102, 0.14);
     border-color: rgba(255, 209, 102, 0.5);
+}
+.nm-tab.is-active .nm-tab-icon {
+    opacity: 1;
+    filter: saturate(1.08) brightness(1.08) drop-shadow(0 0 6px rgba(202, 74, 255, 0.65));
+    transform: scale(1.04);
 }
 /* Alto mínimo para que el panel no dé un salto al cambiar de pestaña: la más
    alta es Trucos (fila + explicación). */

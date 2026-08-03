@@ -3703,3 +3703,31 @@ qué el reino utiliza portales. Edu explica que le gusta **Fisuras 2 de Stim**;
 durante su respuesta Samu cambia a la pose `shocked` y, al recuperar la palabra,
 corta el asunto con «Bueno, cambiando de tema...» antes de retomar la búsqueda de
 Tony y José.
+
+### Iconos neón del menú de Configuración (2026-08-03)
+
+Las pestañas **Vídeo**, **Sonido** y **Trucos** ya no utilizan emojis del sistema.
+`settingsMarkup()` carga iconos PNG RGBA propios desde
+`assets/images/ui/settings/`: `video-neon.png`, `sound-neon.png` y
+`cheats-neon.png`. Los tres recursos usan un lenguaje cyber-neón común en cian,
+violeta y oro, tienen lienzo transparente de `128×128` y se muestran a `28×28`.
+
+Los iconos son decorativos (`alt=""` y `aria-hidden="true"`), por lo que el nombre
+de texto de cada pestaña continúa siendo su etiqueta accesible. Los estados
+normal, hover y activo ajustan opacidad, saturación, escala y resplandor sin
+alterar la lógica compartida entre Configuración y el menú de pausa.
+
+### Retratos cartoon de la investigación de Furry Maps (2026-08-03)
+
+Los tres informantes activos del minijuego `furrielvaExplore` se han redibujado
+con el acabado cartoon 2D del resto del reparto: contorno negro limpio, formas de
+pelaje simplificadas, colores planos y cel-shading de dos tonos. Se conservan
+identidad, especie, expresión, vestuario, pose y utilería narrativa: el paquete
+de Tadeo Trufa, el lector y portapapeles de Lía Lince, y la llave, el plano y el
+cinturón de herramientas de Rulo Mapache.
+
+Los archivos activos mantienen sus nombres, lienzo RGBA transparente y tamaño
+`965×1630`: `assets/images/characters/furrielva/tadeo_trufa_v1.png`,
+`lia_lince_v1.png` y `rulo_mapache_v1.png`. Al conservar rutas y dimensiones no
+ha sido necesario modificar `engine.js`; las tres escenas siguen usando el mismo
+encuadre, precarga y lógica de diálogo.

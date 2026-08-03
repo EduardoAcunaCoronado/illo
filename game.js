@@ -515,7 +515,8 @@ function settingsMarkup() {
   if (hayOpcionesDeVideo) {
     grupos.push({
       id: "video",
-      titulo: "🖥️ Vídeo",
+      titulo: "Vídeo",
+      icono: "assets/images/ui/settings/video-neon.png",
       // Dos botones en vez de un <select>: la lista que despliega un select la
       // dibuja el sistema, sale clara sobre el panel oscuro y no hay CSS que la
       // alcance. Así además va a juego con las pestañas.
@@ -534,7 +535,8 @@ function settingsMarkup() {
   }
   grupos.push({
     id: "sonido",
-    titulo: "🔊 Sonido",
+    titulo: "Sonido",
+    icono: "assets/images/ui/settings/sound-neon.png",
     contenido: `
             <label class="nm-setting-row">Música
                 <input type="range" class="opt-vol-music" min="0" max="100" value="${volOf("illo_vol_music", 100)}">
@@ -553,7 +555,8 @@ function settingsMarkup() {
   });
   grupos.push({
     id: "trucos",
-    titulo: "⚔️ Trucos",
+    titulo: "Trucos",
+    icono: "assets/images/ui/settings/cheats-neon.png",
     contenido: `
             <div class="nm-setting-toggle">
                 <label class="nm-setting-row">Ataque Kosai
@@ -567,7 +570,10 @@ function settingsMarkup() {
     .map(
       (g, i) => `
             <button type="button" class="nm-tab${i === 0 ? " is-active" : ""}" role="tab"
-                    aria-selected="${i === 0}" aria-controls="nm-pane-${g.id}" data-tab="${g.id}">${g.titulo}</button>`,
+                    aria-selected="${i === 0}" aria-controls="nm-pane-${g.id}" data-tab="${g.id}">
+                <img class="nm-tab-icon" src="${g.icono}" alt="" aria-hidden="true">
+                <span>${g.titulo}</span>
+            </button>`,
     )
     .join("");
 

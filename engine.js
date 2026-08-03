@@ -731,7 +731,14 @@ class VisualNovelEngine {
                         dialogue: [
                             { speaker: 'SAMU', text: '¿Puedes saber adónde llega por la presión?' },
                             { speaker: 'RULO MAPACHE', text: 'Sale bajo tierra y reaparece en el límite industrial, justo debajo del solar que el mapa deja en blanco.' },
-                            { speaker: 'SAMU', text: 'Tres pistas, el mismo lugar. Ya no parece una casualidad.' }
+                            // El callejón puede ser la primera, segunda o tercera zona visitada,
+                            // así que la frase se ajusta a las pistas reunidas hasta ese momento.
+                            {
+                                speaker: 'SAMU',
+                                text: ({ clues }) => clues <= 1
+                                    ? 'Primera pista y ya apunta a ese solar. A ver si las demás coinciden.'
+                                    : `${clues === 2 ? 'Dos pistas, el mismo lugar. Ya no parece una casualidad.' : 'Tres pistas, el mismo lugar. Demasiada casualidad.'} `
+                            }
                         ],
                         lore: 'La conducción reaparece bajo el solar vacío del límite industrial.'
                     },
@@ -900,7 +907,11 @@ class VisualNovelEngine {
                     const showCurrent = () => {
                         const line = lines[index];
                         setSpeaker(line.speaker);
-                        text.textContent = line.text;
+                        // Una línea puede ser texto fijo o una función que recibe el
+                        // número de pistas conseguidas contando la zona actual.
+                        text.textContent = typeof line.text === 'function'
+                            ? line.text({ clues: visited.size + 1, total: locations.length })
+                            : line.text;
                         choices.innerHTML = `<button type="button" data-continue>${index === lines.length - 1 ? 'Continuar' : 'Siguiente'}</button>`;
                         choices.querySelector('[data-continue]').addEventListener('click', () => {
                             index += 1;
