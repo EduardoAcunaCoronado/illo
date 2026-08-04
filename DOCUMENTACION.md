@@ -5519,6 +5519,24 @@ marca por `validation.forced: false`. Esta excepción nunca permite dimensiones
 incorrectas, alfa expandido, archivos inválidos ni una autorización correspondiente
 a otra revisión del lienzo.
 
+Una copia `REVISAR` puede cerrarse mediante `Marcar como LIMPIO` después de cargar
+la copia guardada exacta y comprobarla sin cambios pendientes en el lienzo. La
+confirmación muestra el número de píxeles protegidos aceptados. Esta acción no
+repara, recodifica ni reescribe ningún WebP: modifica únicamente el manifiesto y
+conserva `forced`, `forcedAt`, `warnings`, métricas y huella de diagnóstico como
+trazabilidad histórica. Añade `validation.review` con política
+`white-halo-manual-review-v1`, fecha, revisión del sujeto y huella del conjunto de
+artefactos; la lista pasa a mostrar `LIMPIO` y su tooltip indica que procede de una
+revisión manual.
+
+El servidor calcula la revisión sobre los metadatos de la entrada y los bytes
+exactos del WebP, ambas miniaturas y todos sus frames derivados. Si otra pestaña
+vuelve a guardar la pose, falta un derivado o cualquiera de esos archivos cambia,
+la aprobación anterior queda obsoleta y no se puede aplicar a la nueva copia. Un
+guardado posterior reconstruye `validation`, elimina naturalmente la revisión
+anterior y vuelve a `REVISAR` si necesita otra excepción. Guardado y aprobación
+comparten un bloqueo para no perder cambios concurrentes del manifiesto.
+
 Todas las copias limpias existentes de Airi, Carlos y Samu, así como las nuevas
 salidas del editor, usan WebP RGBA sin pérdida. El PNG queda reservado para el
 transporte interno exacto del lienzo, el historial de edición y los originales o
@@ -5552,6 +5570,13 @@ una copia que se haya comido el contorno.
 diagnóstico. El servidor recalcula máscaras, métricas y huella antes de escribir:
 la excepción sólo omite el rechazo por reducción protegida; la expansión de alfa y
 el resto de invariantes continúan siendo bloqueos absolutos.
+
+`POST /api/white-halo-review` recibe `id` y la `expectedRevision` publicada por
+`/api/base-sprites`. Sólo acepta una entrada forzada pendiente cuya revisión siga
+coincidiendo; escribe exclusivamente `validation.review` y devuelve
+`assetsChanged: false`. `reviewState` distingue `not-required`, `pending`,
+`approved` y `stale`, y permite que la interfaz derive las etiquetas sin confundir
+una aprobación humana con un guardado que nunca necesitó excepción.
 
 ### Acting de personajes, transiciones y memoria de escenario
 

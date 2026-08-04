@@ -20,8 +20,10 @@ import os
 import re
 import subprocess
 import tempfile
+import threading
 import time
 from datetime import datetime, timezone
+from functools import wraps
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from dataclasses import dataclass
@@ -76,6 +78,18 @@ REGION_OVERRIDES: dict[str, tuple[float, float, float, float]] = {}
 _EDITOR_INVENTORY_CACHE: list[dict[str, Any]] | None = None
 _BASE_SPRITE_INVENTORY_CACHE: list[dict[str, Any]] | None = None
 _ASSET_RELOCATION_CACHE: tuple[int, dict[str, list[str]]] | None = None
+_WHITE_HALO_WRITE_LOCK = threading.RLock()
+
+
+def synchronized_white_halo_write(function):
+    """Serializa guardados y revisiones que comparten artefactos y manifiesto."""
+
+    @wraps(function)
+    def locked(*args, **kwargs):
+        with _WHITE_HALO_WRITE_LOCK:
+            return function(*args, **kwargs)
+
+    return locked
 
 
 @dataclass
@@ -1081,6 +1095,7 @@ def save_white_halo_animation_frames(
     return mapping
 
 
+@synchronized_white_halo_write
 def save_white_halo_sprite(
     job_id: str,
     data_url: Any,
@@ -1288,7 +1303,184 @@ def save_white_halo_sprite(
         entry["animationFrames"] = animation_frames
     edits[job_id] = entry
     save_white_halo_edits(edits)
-    return {"ok": True, "id": job_id, "forced": forced, **entry}
+    return {
+        "ok": True,
+        "id": job_id,
+        "forced": forced,
+        **entry,
+        "reviewState": white_halo_review_state(job_id, entry),
+    }
+
+
+def white_halo_review_artifacts(
+    entry: dict[str, Any],
+) -> list[tuple[str, str]]:
+    """Enumera de forma estable todos los derivados que forman una copia."""
+
+    artifacts: list[tuple[str, str]] = []
+    for field in ("cleaned", "thumbnail", "galleryThumbnail"):
+        value = entry.get(field)
+        if not isinstance(value, str) or not value:
+            raise ValueError(f"La copia guardada no declara el archivo {field}")
+        artifacts.append((field, value))
+    animation_frames = entry.get("animationFrames")
+    if animation_frames is not None:
+        if not isinstance(animation_frames, dict):
+            raise ValueError("Los frames derivados de la copia no son válidos")
+        for source, value in sorted(animation_frames.items()):
+            if not isinstance(value, str) or not value:
+                raise ValueError("Uno de los frames derivados no declara una ruta válida")
+            artifacts.append((f"animation:{source}", value))
+    return artifacts
+
+
+def white_halo_review_fingerprints(
+    job_id: str, entry: dict[str, Any]
+) -> tuple[str, str]:
+    """Vincula la aprobación a metadatos y bytes exactos de sus derivados."""
+
+    artifact_digest = hashlib.sha256()
+    artifact_digest.update(b"white-halo-artifacts-v1\0")
+    root = ROOT.resolve()
+    for role, relative_path in white_halo_review_artifacts(entry):
+        artifact = (ROOT / relative_path).resolve()
+        if not artifact.is_relative_to(root) or not artifact.is_file():
+            raise ValueError(f"Falta un derivado de la copia: {relative_path}")
+        content = artifact.read_bytes()
+        artifact_digest.update(role.encode("utf-8"))
+        artifact_digest.update(b"\0")
+        artifact_digest.update(relative_path.encode("utf-8"))
+        artifact_digest.update(b"\0")
+        artifact_digest.update(len(content).to_bytes(8, "big"))
+        artifact_digest.update(content)
+    artifact_fingerprint = "sha256:" + artifact_digest.hexdigest()
+
+    subject_entry = dict(entry)
+    validation_value = subject_entry.get("validation")
+    if isinstance(validation_value, dict):
+        validation = dict(validation_value)
+        validation.pop("review", None)
+        subject_entry["validation"] = validation
+    subject_digest = hashlib.sha256()
+    subject_digest.update(b"white-halo-manual-review-v1\0")
+    subject_digest.update(TOOLS_ROOT_ID.encode("ascii"))
+    subject_digest.update(b"\0")
+    subject_digest.update(job_id.encode("utf-8"))
+    subject_digest.update(b"\0")
+    subject_digest.update(
+        json.dumps(
+            subject_entry,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
+    subject_digest.update(b"\0")
+    subject_digest.update(artifact_fingerprint.encode("ascii"))
+    return "sha256:" + subject_digest.hexdigest(), artifact_fingerprint
+
+
+def white_halo_review_state(
+    job_id: str, entry: Any
+) -> dict[str, Any]:
+    """Calcula si la copia necesita, conserva o ha perdido su aprobación."""
+
+    validation = entry.get("validation") if isinstance(entry, dict) else None
+    if not isinstance(validation, dict) or validation.get("forced") is not True:
+        return {"status": "not-required", "canApprove": False}
+    try:
+        subject_revision, artifact_fingerprint = white_halo_review_fingerprints(
+            job_id, entry
+        )
+    except (OSError, ValueError):
+        return {"status": "stale", "canApprove": False}
+    review = validation.get("review")
+    approved = (
+        isinstance(review, dict)
+        and review.get("status") == "approved"
+        and review.get("policy") == "white-halo-manual-review-v1"
+        and review.get("subjectRevision") == subject_revision
+        and review.get("artifactSetFingerprint") == artifact_fingerprint
+    )
+    return {
+        "status": "approved" if approved else ("stale" if review else "pending"),
+        "canApprove": not review,
+        "subjectRevision": subject_revision,
+    }
+
+
+@synchronized_white_halo_write
+def review_white_halo_sprite(
+    job_id: str,
+    expected_revision: Any,
+) -> dict[str, Any]:
+    """Aprueba una copia forzada exacta modificando únicamente el manifiesto."""
+
+    base_sprite_job(job_id)
+    if not isinstance(expected_revision, str) or not re.fullmatch(
+        r"sha256:[0-9a-f]{64}", expected_revision
+    ):
+        raise ValueError("Falta la revisión exacta de la copia que quieres aprobar")
+    edits = load_white_halo_edits()
+    stored = edits.get(job_id)
+    if not isinstance(stored, dict):
+        raise ValueError("La pose todavía no tiene una copia guardada que revisar")
+    entry = dict(stored)
+    validation_value = entry.get("validation")
+    if not isinstance(validation_value, dict) or validation_value.get("forced") is not True:
+        raise ValueError("Esta copia no tiene una excepción pendiente de revisión")
+    validation = dict(validation_value)
+    warning_codes = {
+        warning if isinstance(warning, str) else warning.get("code")
+        for warning in validation.get("warnings", [])
+        if isinstance(warning, (str, dict))
+    }
+    if "lost-protected-alpha" not in warning_codes:
+        raise ValueError("La copia no conserva una advertencia revisable conocida")
+
+    subject_revision, artifact_fingerprint = white_halo_review_fingerprints(
+        job_id, entry
+    )
+    if subject_revision != expected_revision:
+        raise ValueError(
+            "La copia guardada cambió desde que la abriste; vuelve a cargarla antes de marcarla como limpia"
+        )
+    current_review = validation.get("review")
+    if isinstance(current_review, dict):
+        current_state = white_halo_review_state(job_id, entry)
+        if current_state.get("status") != "approved":
+            raise ValueError(
+                "La aprobación anterior quedó obsoleta; vuelve a guardar la copia antes de revisarla"
+            )
+        return {
+            "ok": True,
+            "id": job_id,
+            "reviewed": True,
+            "alreadyReviewed": True,
+            "assetsChanged": False,
+            "reviewState": current_state,
+            **entry,
+        }
+
+    validation["review"] = {
+        "status": "approved",
+        "policy": "white-halo-manual-review-v1",
+        "reviewedAt": datetime.now(timezone.utc).isoformat(),
+        "subjectRevision": subject_revision,
+        "artifactSetFingerprint": artifact_fingerprint,
+    }
+    entry["validation"] = validation
+    edits[job_id] = entry
+    save_white_halo_edits(edits)
+    return {
+        "ok": True,
+        "id": job_id,
+        "reviewed": True,
+        "alreadyReviewed": False,
+        "assetsChanged": False,
+        "reviewState": white_halo_review_state(job_id, entry),
+        **entry,
+    }
 
 
 def save_clean_base(job_id: str, data_url: Any, validate_only: bool = False) -> dict[str, Any]:
@@ -1494,14 +1686,18 @@ def base_sprite_jobs(refresh: bool = False) -> list[dict[str, Any]]:
                     }
                 )
         _BASE_SPRITE_INVENTORY_CACHE = inventory
-    return [
-        dict(
-            job,
-            saved=saved.get(job["id"]),
-            destination=white_halo_destination(job),
+    result: list[dict[str, Any]] = []
+    for job in _BASE_SPRITE_INVENTORY_CACHE:
+        saved_entry = saved.get(job["id"])
+        result.append(
+            dict(
+                job,
+                saved=saved_entry,
+                destination=white_halo_destination(job),
+                reviewState=white_halo_review_state(job["id"], saved_entry),
+            )
         )
-        for job in _BASE_SPRITE_INVENTORY_CACHE
-    ]
+    return result
 
 
 def base_sprite_job(job_id: str) -> dict[str, Any]:
@@ -2317,7 +2513,8 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             "/api/region", "/api/offset", "/api/clean-offset", "/api/clean-base",
             "/api/reveal-path", "/api/eye-layer-edit", "/api/white-halo-clean",
             "/api/white-halo-topological", "/api/reveal-white-halo-source",
-            "/api/white-halo-export", "/api/white-halo-protection"
+            "/api/white-halo-export", "/api/white-halo-protection",
+            "/api/white-halo-review"
         }:
             self.send_error(HTTPStatus.NOT_FOUND)
             return
@@ -2382,6 +2579,14 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                     diagnostic_fingerprint,
                 )
                 self.send_json(result)
+                return
+            if self.path == "/api/white-halo-review":
+                self.send_json(
+                    review_white_halo_sprite(
+                        job_id,
+                        payload.get("expectedRevision"),
+                    )
+                )
                 return
             if self.path == "/api/white-halo-export":
                 encoded, filename = export_white_halo_webp(

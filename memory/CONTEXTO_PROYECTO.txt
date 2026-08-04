@@ -957,7 +957,12 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   expansión morada; cualquier edición invalida su huella. Permite conservar un
   suavizado intencional, actualiza WebP/miniaturas/frames, deja intacto el fuente y
   marca la copia como `validation.forced: true` y `REVISAR`. Nunca omite dimensiones,
-  formato ni expansión de alfa. El guardado definitivo restaura el RGB fuente en
+  formato ni expansión de alfa. Con la copia persistida visible y sin cambios,
+  `Marcar como LIMPIO` aprueba la revisión sin tocar imágenes: conserva toda la
+  excepción y añade `validation.review` con fecha y huellas de metadatos, WebP,
+  miniaturas y frames. Si un byte cambia, la revisión queda obsoleta; un guardado
+  nuevo la reinicia. `POST /api/white-halo-review` modifica sólo el manifiesto y
+  guardado/revisión comparten bloqueo. El guardado definitivo restaura el RGB fuente en
   todo píxel retenido, normaliza RGB a cero donde alfa es cero y registra
   métricas de protección/píxeles/componentes. `Motas aisladas (avanzado)` elimina
   componentes separados de hasta 64 píxeles; hay que revisar que no sean brillos,

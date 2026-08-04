@@ -675,6 +675,59 @@ if (fs.existsSync(cleanSpriteFile)) {
           }
         }
       }
+      const validation = entry?.validation;
+      if (validation != null) {
+        if (!validation || typeof validation !== "object" || Array.isArray(validation)) {
+          errors.push(`${where}: validation debe ser un objeto`);
+        } else {
+          if (typeof validation.forced !== "boolean") {
+            errors.push(`${where}: validation.forced debe ser booleano`);
+          }
+          const review = validation.review;
+          if (review != null && validation.forced !== true) {
+            errors.push(`${where}: una copia no forzada no puede declarar revisión manual`);
+          }
+          if (validation.forced === true) {
+            if (validation.policy !== "white-halo-save-v1") {
+              errors.push(`${where}: política de excepción desconocida`);
+            }
+            if (!/^sha256:[0-9a-f]{64}$/.test(validation.diagnosticFingerprint || "")) {
+              errors.push(`${where}: falta diagnosticFingerprint válido`);
+            }
+            if (!validation.forcedAt || Number.isNaN(Date.parse(validation.forcedAt))) {
+              errors.push(`${where}: forcedAt no es una fecha válida`);
+            }
+            const warningCodes = Array.isArray(validation.warnings)
+              ? validation.warnings.map((warning) =>
+                  typeof warning === "string" ? warning : warning?.code,
+                )
+              : [];
+            if (!warningCodes.includes("lost-protected-alpha")) {
+              errors.push(`${where}: la excepción no conserva lost-protected-alpha`);
+            }
+          }
+          if (review != null) {
+            if (!review || typeof review !== "object" || Array.isArray(review)) {
+              errors.push(`${where}: validation.review debe ser un objeto`);
+            } else {
+              if (
+                review.status !== "approved" ||
+                review.policy !== "white-halo-manual-review-v1"
+              ) {
+                errors.push(`${where}: revisión manual desconocida o no aprobada`);
+              }
+              if (!review.reviewedAt || Number.isNaN(Date.parse(review.reviewedAt))) {
+                errors.push(`${where}: reviewedAt no es una fecha válida`);
+              }
+              for (const field of ["subjectRevision", "artifactSetFingerprint"]) {
+                if (!/^sha256:[0-9a-f]{64}$/.test(review[field] || "")) {
+                  errors.push(`${where}: validation.review.${field} no es una huella válida`);
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
