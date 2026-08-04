@@ -5,9 +5,9 @@ uno para quien juega y otro para quien desarrolla. `LEER_PRIMERO.md` es sólo
 la portada y el acceso rápido. Las plantillas de `.github/` son excepciones
 operativas, no documentación paralela.
 
-> **Estado verificado: 2026-08-03.** La validación actual reconoce 7 capítulos,
-> 64 escenas, 920 líneas, 26 fichas de personaje y 1.496 referencias de assets.
-> La galería generada contiene 105 entradas, 156 poses y 130 poses con
+> **Estado verificado: 2026-08-04.** La validación actual reconoce 7 capítulos,
+> 64 escenas, 920 líneas, 27 fichas de personaje y 1.571 referencias de assets.
+> La galería generada contiene 107 entradas, 157 poses y 129 poses con
 > parpadeo. Estas cifras son una fotografía
 > fechada; `npm run validate:content` es la fuente actual.
 
@@ -5663,7 +5663,7 @@ de galería, miniaturas, rutas literales de JS/CSS/HTML y exclusiones sensibles
 del instalador. El resumen impreso —capítulos,
 escenas, líneas, personajes y referencias— es la cifra fiable del estado actual.
 La ejecución de cierre verificada el **2026-08-04** terminó sin errores con
-**7 capítulos, 64 escenas, 920 líneas, 26 personajes y 1500 referencias de
+**7 capítulos, 64 escenas, 920 líneas, 27 personajes y 1571 referencias de
 assets**.
 
 ### Retroceder: a esta escena o a la anterior (2026-08-03)
@@ -5708,3 +5708,23 @@ todavía no se había visto (los diálogos contados eran los de la escena vieja)
 desapilaba la entrada equivocada y caía en la primera escena del capítulo. Por
 seguridad, el caso "volver al principio de esta escena" exige además que la cima
 del historial sea la escena actual.
+
+### Ciervo del patio preparado para escenas futuras (2026-08-04)
+
+El personaje provisional **Ciervo** se registra con la clave `ciervo` en
+`characters/ciervo.json`. No está añadido a ningún capítulo ni a la precarga
+inicial: el motor cargará su ficha a demanda cuando una escena futura ejecute
+`showCharacter`.
+
+- `neutral` usa `assets/images/characters/ciervo/ciervo_neutral.webp`.
+- `seated` usa `assets/images/characters/ciervo/ciervo_seated.webp` e incluye la
+  mecedora rústica completa como parte del propio sprite.
+- Los PNG protegidos viven en
+  `workbench/originals/runtime/assets/images/characters/ciervo/` y los maestros
+  con y sin croma en `workbench/sources/images/characters/ciervo/`.
+- La propuesta realista descartada se conserva exclusivamente en
+  `workbench/sources/images/characters/ciervo/archive/rejected_realistic/`; no
+  forma parte de los assets runtime.
+
+Al regenerar la galería, la ficha aporta automáticamente ambas poses. Todavía no
+tiene animaciones oculares; juego y galería usan los WebP base como fallback.

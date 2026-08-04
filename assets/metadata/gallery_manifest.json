@@ -32,11 +32,11 @@
   "counts": {
     "wallpapers": 4,
     "illustrations": 13,
-    "characters": 25,
+    "characters": 26,
     "backgrounds": 63,
     "videos": 1,
-    "all": 106,
-    "characterPoses": 155,
+    "all": 107,
+    "characterPoses": 157,
     "animatedCharacterPoses": 129
   },
   "items": [
@@ -1099,6 +1099,43 @@
         }
       ],
       "thumbnail": "assets/images/gallery/thumbnails/char-carlos.webp"
+    },
+    {
+      "id": "char-ciervo-neutral",
+      "title": "Ciervo",
+      "description": "Diseño canónico de Ciervo con 2 poses disponibles.",
+      "type": "image",
+      "category": "characters",
+      "src": "assets/images/characters/ciervo/ciervo_neutral.webp",
+      "alt": "Diseño de personaje de Ciervo.",
+      "fit": "contain",
+      "downloadable": false,
+      "spoiler": false,
+      "origin": "character",
+      "characterKey": "ciervo",
+      "poses": [
+        {
+          "id": "neutral",
+          "key": "neutral",
+          "label": "Neutral",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_neutral.webp",
+          "alt": "Ciervo, pose neutral.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-neutral.webp"
+        },
+        {
+          "id": "seated",
+          "key": "seated",
+          "label": "Seated",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated.webp",
+          "alt": "Ciervo, pose seated.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated.webp"
+        }
+      ],
+      "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral.webp"
     },
     {
       "id": "char-edu-happy",

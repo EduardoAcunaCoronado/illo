@@ -1218,3 +1218,13 @@ POSE WORRIED V2 DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-04
   los IPC de ajustes y salida sólo aceptan al renderer del juego.
 - Los health checks tienen deadline absoluto y el servidor fuerza las conexiones
   abiertas tras una gracia breve, evitando bloqueos por respuestas o vídeos lentos.
+
+CIERVO DEL PATIO PREPARADO PARA USO FUTURO — 2026-08-04
+- Clave canónica `ciervo`, nombre visible `Ciervo` y ficha `characters/ciervo.json`.
+- Poses `neutral` y `seated` en `assets/images/characters/ciervo/` con nombres
+  `ciervo_neutral.webp` y `ciervo_seated.webp`; la pose sentada incluye la mecedora.
+- No está colocado en capítulos ni precargado: `showCharacter` lo cargará a demanda.
+- Maestros y originales protegidos se conservan bajo `workbench/.../ciervo/`; la
+  variante realista rechazada queda archivada fuera del runtime.
+- Galería regenerada con ambas poses. Validación: 7 capítulos, 64 escenas,
+  920 líneas, 27 personajes y 1571 referencias de assets, sin errores.

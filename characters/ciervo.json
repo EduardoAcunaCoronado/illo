@@ -1,0 +1,9 @@
+{
+  "name": "Ciervo",
+  "color": "#c8792a",
+  "poses": {
+    "neutral": "assets/images/characters/ciervo/ciervo_neutral.webp",
+    "seated": "assets/images/characters/ciervo/ciervo_seated.webp"
+  },
+  "defaultPose": "neutral"
+}
