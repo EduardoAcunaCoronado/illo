@@ -503,7 +503,7 @@
       },
       "status": "generated",
       "half": "assets/images/characters/eye_intermediate_sources/edu/human/eyes_half_source.webp",
-      "method": "imagegen-eye-region-composite"
+      "method": "registered-eye-region-composite"
     },
     "elion_husk.neutral": {
       "base": "assets/images/characters/elion_husk/elion_husk_neutral.webp",
@@ -743,7 +743,7 @@
       },
       "status": "generated",
       "half": "assets/images/characters/eye_intermediate_sources/jose/human/eyes_half_source.webp",
-      "method": "imagegen-eye-region-composite"
+      "method": "registered-eye-region-composite"
     },
     "ketchling.security": {
       "base": "assets/images/characters/ketchling/ketchling_security.webp",
@@ -1151,7 +1151,7 @@
       },
       "status": "generated",
       "half": "assets/images/characters/eye_intermediate_sources/samu/human/eyes_half_source.webp",
-      "method": "imagegen-eye-region-composite"
+      "method": "registered-eye-region-composite"
     },
     "santi.neutral": {
       "base": "assets/images/characters/santi/santi.webp",
@@ -1499,7 +1499,7 @@
       },
       "status": "generated",
       "half": "assets/images/characters/eye_intermediate_sources/tony/human/eyes_half_source.webp",
-      "method": "imagegen-eye-region-composite"
+      "method": "registered-eye-region-composite"
     },
     "tralalelo_tralala.neutral": {
       "base": "assets/images/characters/tralalelo_tralala.webp",
@@ -1550,5 +1550,5 @@
       "method": "imagegen-eye-region-composite"
     }
   },
-  "updatedAt": "2026-08-03T00:34:13.437323+00:00"
+  "updatedAt": "2026-08-04T18:45:00+02:00"
 }

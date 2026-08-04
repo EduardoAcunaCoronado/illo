@@ -1829,11 +1829,11 @@
       "mode": "webp-lossless",
       "width": 887,
       "height": 1774,
-      "originalBytes": 666393,
-      "runtimeBytes": 434246,
-      "savedBytes": 232147,
-      "originalSha256": "c5ce56d44473cd8e2b715268f2ea50cd6f91fe276c992daf49b1c918be3544b8",
-      "runtimeSha256": "97811e4fec375ca63721c1c0004daf2878e1a35963d4629ce4c6238743c8812e"
+      "originalBytes": 757844,
+      "runtimeBytes": 517960,
+      "savedBytes": 239884,
+      "originalSha256": "b57f234dec1be65afbc34c272f3fd34bf886d3986531bcb90cb026c8806a98ae",
+      "runtimeSha256": "d0d6a261d3b2a7a5cef6fff2dfe6d30c191da5c583ee253c44b2b4aac0c7077a"
     },
     "assets/images/characters/humans/jose_humano_sprite.png": {
       "source": "assets/images/characters/humans/jose_humano_sprite.png",
@@ -1842,11 +1842,11 @@
       "mode": "webp-lossless",
       "width": 887,
       "height": 1774,
-      "originalBytes": 554187,
-      "runtimeBytes": 352472,
-      "savedBytes": 201715,
-      "originalSha256": "433473c8f59f4d9f03dac11b685274c73acecc044890a036452bce4cde527f44",
-      "runtimeSha256": "1249346117d364e9145797c8cc7502ba5828eb91b68c2dad1e0d01a26b687b74"
+      "originalBytes": 700365,
+      "runtimeBytes": 454538,
+      "savedBytes": 245827,
+      "originalSha256": "dde3eed03cd6463710b90bb0edc172da17c84a0e9fcf493ea212bb3b380dbad2",
+      "runtimeSha256": "355ae6435782473d66a6cf209bda3da530140ae0951cdda53e53afd09ecf84d2"
     },
     "assets/images/characters/humans/samu_humano_sprite.png": {
       "source": "assets/images/characters/humans/samu_humano_sprite.png",
@@ -1855,11 +1855,11 @@
       "mode": "webp-lossless",
       "width": 887,
       "height": 1774,
-      "originalBytes": 679340,
-      "runtimeBytes": 443650,
-      "savedBytes": 235690,
-      "originalSha256": "47cf434dc7abf1a2e3f4bf5fe67082b0779656d5394f789de7772010152b6a9c",
-      "runtimeSha256": "0f4ad3e0aef951eaa732d6b7c584d50647bad38b1b083aeabca39defb7127d2e"
+      "originalBytes": 854570,
+      "runtimeBytes": 574534,
+      "savedBytes": 280036,
+      "originalSha256": "c2e9c516ea75cb22ed1f623558933a1ffcc8d455d2d9940e4c7cf3f6b560a4ac",
+      "runtimeSha256": "638ce96708978dd9f8bf643d813f9b545ab10587f20900abd274b2f6a77c9c77"
     },
     "assets/images/characters/humans/tony_humano_sprite.png": {
       "source": "assets/images/characters/humans/tony_humano_sprite.png",
@@ -1868,11 +1868,11 @@
       "mode": "webp-lossless",
       "width": 887,
       "height": 1774,
-      "originalBytes": 629186,
-      "runtimeBytes": 389938,
-      "savedBytes": 239248,
-      "originalSha256": "441d0bab443ba9d7e3c08f07df939a7b71ac54e94a1fb41d6e8db5b2dc563828",
-      "runtimeSha256": "3f379cc004401cbbdceb4d352d71e9881a0d4f901fe8902b37414257d225fb49"
+      "originalBytes": 751034,
+      "runtimeBytes": 464384,
+      "savedBytes": 286650,
+      "originalSha256": "2333d2f4b4fcdc112a92035fc2e53a2109d8101ac0fbca3194f4b304861bc6c4",
+      "runtimeSha256": "b61a6d85794ea14f6413ad6b12ee693b869ba8fb6cd599d6d3d146db55b35051"
     },
     "assets/images/characters/iphone5/iphone5.png": {
       "source": "assets/images/characters/iphone5/iphone5.png",

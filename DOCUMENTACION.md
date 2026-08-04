@@ -5115,6 +5115,17 @@ final luminoso. En la galería ya no duplican las fichas de los protagonistas:
 aparecen como pose `human` dentro de cada personaje y conservan el aviso de
 spoiler propio.
 
+La referencia canónica de cada forma humana es siempre la figura de cuerpo
+entero situada a la izquierda de su hoja. Los cuatro sprites comparten un
+lienzo RGBA de 887 × 1774 px, pero se escalan de forma uniforme: nunca se debe
+estirar sólo el eje vertical para rellenarlo. Las hojas, las bases maestras y
+los estados ocular medio/cerrado se conservan en
+`workbench/sources/images/characters/humans/<personaje>/`; los WebP de runtime
+viven en `assets/images/characters/humans/` y en las carpetas de parpadeo. Las
+versiones antiguas con anatomía alargada están archivadas en
+`workbench/archive/images/characters/humans/distorted_2026-08-04/` y no deben
+volver a publicarse.
+
 La interfaz ofrece filtros, miniaturas optimizadas, carga diferida, contador de
 resultados, lightbox para imagen o vídeo, navegación por teclado, descarga del
 original y aviso previo para obras con spoilers. Cada ficha de personaje agrupa

@@ -848,6 +848,16 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   smirk, angry y shadow en `assets/images/characters/elion_husk/`.
 - Samu, Edu, Tony y José tienen pose RGBA `human` y aparecen ya destransformados
   en el pisito durante el final luminoso.
+- Las formas humanas canónicas son las figuras completas situadas a la izquierda
+  de sus hojas de diseño. Sus bases se encajan de forma uniforme en 887x1774,
+  sin estirar las piernas; hojas y maestros viven en
+  `workbench/sources/images/characters/humans/<personaje>/`. Los assets deformados
+  sustituidos el 2026-08-04 quedaron archivados bajo
+  `workbench/archive/images/characters/humans/distorted_2026-08-04/`.
+- Los parpadeos humanos de Edu, Tony, José y Samu se reconstruyen sólo dentro de
+  dos máscaras oculares registradas sobre la cabeza. Base, semicerrado y cerrado
+  comparten exactamente el mismo alfa para impedir saltos, parches o basura fuera
+  de los ojos.
 - Regenerar el catálogo/miniaturas con `scripts/build_gallery_manifest.py`; no
   mantener un inventario paralelo a mano.
 - Juego y galería cargan `sprite_white_halo_cleaned.json` y priorizan toda copia
