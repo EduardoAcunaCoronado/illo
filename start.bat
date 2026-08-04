@@ -1,16 +1,35 @@
 @echo off
-echo Iniciando servidor local...
+setlocal
+title Project AI.ri - Juego y herramientas
+cd /d "%~dp0"
+
 echo.
-echo Abre tu navegador en: http://localhost:8000
+echo  Project AI.ri - Desarrollo local
+echo  ==================================
 echo.
-echo Presiona Ctrl+C para detener el servidor
+echo  Se iniciaran juntos:
+echo    Juego: http://127.0.0.1:8000/
+echo    Tools: http://127.0.0.1:8011/tools
+echo.
+echo  Pulsa Ctrl+C para cerrar los servicios iniciados aqui.
 echo.
 
-REM Intenta usar Python si está disponible
-python -m http.server 8000
+where node >nul 2>&1
+if errorlevel 1 (
+    echo  No se encontro Node.js. Instalalo para usar el arranque supervisado.
+    echo  Es necesario para comprobar que Juego y Tools pertenecen a esta copia.
+    echo.
+    pause
+    exit /b 1
+)
 
-REM Si no funciona Python, intenta con Node.js
-REM npx http-server -p 8000
+node scripts\start_local_development.js --open-browser
 
-REM Alternativa: simplemente abre el archivo
-REM start index.html
+if errorlevel 1 (
+    echo.
+    echo  El arranque local ha terminado con un error.
+    echo.
+    pause
+)
+
+endlocal

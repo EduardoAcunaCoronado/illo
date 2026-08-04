@@ -1105,18 +1105,6 @@
       "half": "assets/images/characters/eye_intermediate_sources/samu/thinking/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
-    "samu.worried": {
-      "base": "assets/images/characters/samu/samu_worried.webp",
-      "target": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
-      "direction": "closing",
-      "canvas": {
-        "width": 1024,
-        "height": 1024
-      },
-      "status": "existing",
-      "half": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
-      "method": "existing-frame"
-    },
     "samu.valla": {
       "base": "assets/images/characters/samu/samu_valla.webp",
       "target": "assets/images/characters/samu/animations/blinks/samu_valla_blink_closed.webp",

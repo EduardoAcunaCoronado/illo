@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
     <link rel="icon" type="image/png" href="assets/images/ui/wildsoft_emblema.png">
-    <link rel="stylesheet" href="styles.css?v=20260803-2">
+    <link rel="stylesheet" href="styles.css?v=20260803-3">
     <link rel="stylesheet" href="battle-styles.css?v=20260803-2">
     <script>
         if (navigator.userAgent.includes('Electron')) {
@@ -104,6 +104,41 @@
                 <button id="settings-btn" class="nm-item">Configuración</button>
                 <button id="quit-btn" class="nm-item">Salir</button>
             </nav>
+            <nav class="nm-shortcuts" aria-label="Accesos de desarrollo" hidden>
+                <a id="menu-tools-link" class="nm-shortcut" href="http://localhost:8011/tools"
+                   title="Abrir el centro local de herramientas">
+                    <span class="nm-shortcut-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false"><path d="M12 8.25A3.75 3.75 0 1 0 12 15.75 3.75 3.75 0 0 0 12 8.25Zm9 4.88v-2.26l-2.33-.79a7.1 7.1 0 0 0-.69-1.66l1.09-2.2-1.6-1.6-2.2 1.09a7.1 7.1 0 0 0-1.66-.69L12.82 2h-2.26l-.79 2.33a7.1 7.1 0 0 0-1.66.69l-2.2-1.09-1.6 1.6 1.09 2.2a7.1 7.1 0 0 0-.69 1.66L2.38 10.18v2.26l2.33.79c.16.58.39 1.14.69 1.66l-1.09 2.2 1.6 1.6 2.2-1.09c.52.3 1.08.53 1.66.69l.79 2.33h2.26l.79-2.33a7.1 7.1 0 0 0 1.66-.69l2.2 1.09 1.6-1.6-1.09-2.2c.3-.52.53-1.08.69-1.66L21 13.13Z"/></svg>
+                    </span>
+                    <span class="nm-shortcut-label">Tools</span>
+                    <span id="menu-tools-status" class="sr-only" aria-live="polite"></span>
+                </a>
+                <a id="menu-minigames-link" class="nm-shortcut" href="minijuegos_test.html"
+                   title="Abrir la prueba de minijuegos">
+                    <span class="nm-shortcut-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false"><path d="M7.5 8.25h9A5.25 5.25 0 0 1 21.75 13.5v2.25a3 3 0 0 1-5.47 1.7l-1.04-1.52H8.76l-1.04 1.52a3 3 0 0 1-5.47-1.7V13.5A5.25 5.25 0 0 1 7.5 8.25Zm-.75 3v1.5h-1.5v1.5h1.5v1.5h1.5v-1.5h1.5v-1.5h-1.5v-1.5h-1.5Zm9.75.75a1.13 1.13 0 1 0 0 2.25 1.13 1.13 0 0 0 0-2.25Zm2.25 2.25a1.13 1.13 0 1 0 0 2.25 1.13 1.13 0 0 0 0-2.25ZM9.75 3h4.5v1.5h-1.5v2.25h-1.5V4.5h-1.5V3Z"/></svg>
+                    </span>
+                    <span class="nm-shortcut-label">Minijuegos</span>
+                </a>
+            </nav>
+            <div id="tools-offline-dialog" class="dev-service-dialog" role="dialog"
+                 aria-modal="true" aria-labelledby="tools-offline-title" hidden>
+                <div class="dev-service-card">
+                    <div class="dev-service-icon" aria-hidden="true">!</div>
+                    <div>
+                        <h2 id="tools-offline-title">Tools no está iniciado</h2>
+                        <p id="tools-offline-message">
+                            Inicia el proyecto con <code>start.bat</code> o ejecuta
+                            <code>npm run tools:eyes</code>, y vuelve a intentarlo.
+                        </p>
+                    </div>
+                    <div class="dev-service-actions">
+                        <button id="tools-retry-btn" type="button">Reintentar</button>
+                        <button id="tools-copy-command-btn" type="button">Copiar comando</button>
+                        <button id="tools-dialog-close" type="button">Cerrar</button>
+                    </div>
+                </div>
+            </div>
             <button id="menu-theme-btn" class="menu-theme-btn" title="Volver a escuchar el tema">♪</button>
 
             <!-- Sello de la empresa: WildSoft -->
@@ -178,7 +213,7 @@
     <script src="rune-channeling-minigame.js?v=20260728-5"></script>
     <script src="juice.js?v=20260722-1"></script>
     <script src="engine.js?v=20260803-8"></script>
-    <script src="game.js?v=20260803-2"></script>
+    <script src="game.js?v=20260803-3"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->

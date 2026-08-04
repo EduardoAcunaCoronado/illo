@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import base64
 import binascii
+import hashlib
 import io
 import json
 import math
@@ -19,14 +20,16 @@ import os
 import re
 import subprocess
 import tempfile
+import threading
 import time
 from datetime import datetime, timezone
+from functools import wraps
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
-from urllib.parse import parse_qs, urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 import cv2
 import numpy as np
@@ -61,6 +64,13 @@ WHITE_HALO_EDITOR_PATH = Path(__file__).with_name("sprite_white_halo_editor.html
 TOOLS_MENU_PATH = Path(__file__).with_name("eye_tools_menu.html")
 LEGACY_CHARACTER_KEYS = {"epod"}
 SUPPORTED_IMAGES = {".png", ".webp", ".jpg", ".jpeg"}
+TOOLS_SERVICE_NAME = "project-airi-eye-tools"
+TOOLS_PROTOCOL_VERSION = 1
+_CANONICAL_ROOT = str(ROOT.resolve())
+if os.name == "nt":
+    _CANONICAL_ROOT = _CANONICAL_ROOT.lower()
+TOOLS_ROOT_ID = hashlib.sha256(_CANONICAL_ROOT.encode("utf-8")).hexdigest()[:16]
+LOOPBACK_HOSTS = {"localhost", "127.0.0.1", "::1"}
 
 # Regiones normalizadas (x1, y1, x2, y2) para poses donde el detector no ve
 # un rostro fiable. Se completa y revisa visualmente mediante --qa-dir.
@@ -68,6 +78,18 @@ REGION_OVERRIDES: dict[str, tuple[float, float, float, float]] = {}
 _EDITOR_INVENTORY_CACHE: list[dict[str, Any]] | None = None
 _BASE_SPRITE_INVENTORY_CACHE: list[dict[str, Any]] | None = None
 _ASSET_RELOCATION_CACHE: tuple[int, dict[str, list[str]]] | None = None
+_WHITE_HALO_WRITE_LOCK = threading.RLock()
+
+
+def synchronized_white_halo_write(function):
+    """Serializa guardados y revisiones que comparten artefactos y manifiesto."""
+
+    @wraps(function)
+    def locked(*args, **kwargs):
+        with _WHITE_HALO_WRITE_LOCK:
+            return function(*args, **kwargs)
+
+    return locked
 
 
 @dataclass
@@ -426,8 +448,660 @@ def decode_canvas_image(data_url: Any) -> Image.Image:
         raise ValueError("No se pudo leer el PNG recibido") from error
 
 
+def alpha_component_metrics(alpha: np.ndarray) -> dict[str, int]:
+    """Resume las islas visibles sin convertirlas en criterio de rechazo.
+
+    Algunas poses contienen detalles flotantes legítimos, de modo que el número
+    de componentes se expone para QA pero no se impone como una regla general.
+    """
+    visible = np.ascontiguousarray(alpha > 0, dtype=np.uint8)
+    component_count, _, stats, _ = cv2.connectedComponentsWithStats(
+        visible, connectivity=8
+    )
+    areas = stats[1:, cv2.CC_STAT_AREA].astype(np.int64, copy=False)
+    if not len(areas):
+        return {
+            "visibleComponents": 0,
+            "largestComponentPixels": 0,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0,
+        }
+    largest = int(areas.max())
+    specks = areas <= 64
+    return {
+        "visibleComponents": int(component_count - 1),
+        "largestComponentPixels": largest,
+        "detachedVisiblePixels": int(areas.sum() - largest),
+        "speckComponents": int(np.count_nonzero(specks)),
+        "speckPixels": int(areas[specks].sum()),
+    }
+
+
+def white_halo_alpha_metrics(
+    source_alpha: np.ndarray, candidate_alpha: np.ndarray
+) -> dict[str, Any]:
+    source_visible = source_alpha > 0
+    candidate_visible = candidate_alpha > 0
+    return {
+        "fullyTransparentPixels": int(np.count_nonzero(candidate_alpha == 0)),
+        "partialAlphaPixels": int(
+            np.count_nonzero((candidate_alpha > 0) & (candidate_alpha < 255))
+        ),
+        "opaquePixels": int(np.count_nonzero(candidate_alpha == 255)),
+        "removedPixels": int(
+            np.count_nonzero(source_visible & ~candidate_visible)
+        ),
+        "reducedAlphaPixels": int(
+            np.count_nonzero(candidate_alpha < source_alpha)
+        ),
+        "expandedPixels": int(
+            np.count_nonzero(candidate_alpha > source_alpha)
+        ),
+        "components": {
+            "source": alpha_component_metrics(source_alpha),
+            "candidate": alpha_component_metrics(candidate_alpha),
+        },
+    }
+
+
+def white_halo_protection_masks(
+    source_pixels: np.ndarray,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Separa relleno fiable y tinta interior del residuo exterior.
+
+    Un umbral oscuro global no basta para sprites con un halo blanco entre el
+    fondo y el contorno: el antialias exterior también puede ser gris oscuro.
+    La tinta protegida se obtiene por su continuidad con color situado varios
+    píxeles dentro de la silueta, de modo que una franja oscura aislada al otro
+    lado del halo no queda protegida por accidente.
+    """
+
+    alpha = source_pixels[:, :, 3]
+    visible = alpha >= 190
+    rgb = source_pixels[:, :, :3].astype(np.float32, copy=False)
+    luminance = (
+        0.2126 * rgb[:, :, 0]
+        + 0.7152 * rgb[:, :, 1]
+        + 0.0722 * rgb[:, :, 2]
+    )
+    chroma = rgb.max(axis=2) - rgb.min(axis=2)
+    distance = cv2.distanceTransform(
+        np.ascontiguousarray(visible, dtype=np.uint8), cv2.DIST_L2, 5
+    )
+
+    reliable_fill = visible & (distance >= 4.0) & (chroma >= 22.0)
+    visible_pixels = int(np.count_nonzero(visible))
+    minimum_reliable = max(64, int(visible_pixels * 0.01))
+    if int(np.count_nonzero(reliable_fill)) < minimum_reliable:
+        # Los personajes prácticamente monocromos no ofrecen suficiente
+        # cromaticidad. En ese caso protegemos sólo un núcleo claramente
+        # interior; nunca el borde exterior completo.
+        reliable_fill = visible & (distance >= 10.0)
+
+    near_fill = cv2.dilate(
+        np.ascontiguousarray(reliable_fill, dtype=np.uint8),
+        np.ones((5, 5), dtype=np.uint8),
+        iterations=1,
+    ).astype(bool)
+    # El halo antiguo contiene grises bastante oscuros, por lo que no basta con
+    # proteger todo lo que esté por debajo de 112: eso convertiría parte del
+    # residuo en "tinta". Se conserva la tinta realmente negra y cualquier
+    # borde con cromaticidad ligado al relleno interior.
+    protected_ink = visible & near_fill & (
+        (luminance <= 60.0) | (chroma >= 20.0)
+    )
+    protected = reliable_fill | protected_ink
+    return reliable_fill, protected_ink, protected
+
+
+def topological_white_halo_cleanup(job_id: str) -> dict[str, Any]:
+    """Genera una vista previa segura partiendo siempre del sprite fuente.
+
+    La limpieza no intenta adivinar el contorno a partir de un único umbral.
+    Primero confirma una banda clara que toque transparencia y sólo entonces
+    avanza, en cuatro direcciones, por residuos neutros. El relleno, el color y
+    la tinta conectada al interior se protegen antes de iniciar el recorrido.
+    """
+
+    job = base_sprite_job(job_id)
+    source_path = ROOT / job["source"]
+    try:
+        with Image.open(source_path) as source_image:
+            source_image.load()
+            source_pixels = np.asarray(
+                source_image.convert("RGBA"), dtype=np.uint8
+            ).copy()
+    except OSError as error:
+        raise ValueError("No se pudo leer el sprite fuente protegido") from error
+
+    height, width = source_pixels.shape[:2]
+    alpha = source_pixels[:, :, 3]
+    visible = alpha > 0
+    rgb = source_pixels[:, :, :3].astype(np.float32, copy=False)
+    luminance = (
+        0.2126 * rgb[:, :, 0]
+        + 0.7152 * rgb[:, :, 1]
+        + 0.0722 * rgb[:, :, 2]
+    )
+    chroma = rgb.max(axis=2) - rgb.min(axis=2)
+
+    padded_visible = np.pad(
+        np.ascontiguousarray(visible, dtype=np.uint8), 1, constant_values=0
+    )
+    distance = cv2.distanceTransform(padded_visible, cv2.DIST_L2, 5)[1:-1, 1:-1]
+    inner_fill = visible & (
+        ((distance >= 4.0) & (chroma >= 22.0))
+        | ((distance >= 8.0) & (luminance < 130.0))
+    )
+    square_five = np.ones((5, 5), dtype=np.uint8)
+    near_fill = cv2.dilate(
+        np.ascontiguousarray(inner_fill, dtype=np.uint8), square_five, iterations=1
+    ).astype(bool)
+    strong_alpha = alpha >= 190
+    dark_contour = visible & strong_alpha & (luminance <= 112.0) & near_fill
+    colored_contour = visible & (chroma >= 56.0) & near_fill
+    protected = dark_contour | colored_contour
+
+    transparent = ~visible
+    cross = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], dtype=np.uint8)
+    adjacent_to_transparency = cv2.dilate(
+        np.ascontiguousarray(transparent, dtype=np.uint8), cross, iterations=1
+    ).astype(bool)
+    seed = (
+        visible
+        & adjacent_to_transparency
+        & (luminance >= 150.0)
+        & (chroma <= 36.0)
+    )
+    growable = (
+        visible
+        & ~protected
+        & (luminance >= 72.0)
+        & (chroma <= 42.0)
+    )
+
+    removed = seed & growable
+    frontier = removed.copy()
+    for _ in range(21):
+        frontier = (
+            cv2.dilate(
+                np.ascontiguousarray(frontier, dtype=np.uint8), cross, iterations=1
+            ).astype(bool)
+            & growable
+            & ~removed
+        )
+        if not np.any(frontier):
+            break
+        removed |= frontier
+
+    base_removed = int(np.count_nonzero(removed))
+    band = removed.copy()
+    refine_steps: list[int] = []
+    for _ in range(5):
+        current_visible = visible & ~removed
+        touches_band = cv2.dilate(
+            np.ascontiguousarray(band, dtype=np.uint8), cross, iterations=1
+        ).astype(bool)
+        luma_for_minimum = np.where(current_visible, luminance, 255.0).astype(
+            np.float32
+        )
+        local_minimum = cv2.erode(
+            luma_for_minimum,
+            np.ones((7, 7), dtype=np.uint8),
+            borderType=cv2.BORDER_CONSTANT,
+            borderValue=255,
+        )
+        peel = (
+            current_visible
+            & touches_band
+            & ~protected
+            & (chroma <= 42.0)
+            & (luminance >= 45.0)
+            & ((luminance - local_minimum) >= 22.0)
+        )
+        count = int(np.count_nonzero(peel))
+        refine_steps.append(count)
+        if not count:
+            break
+        removed |= peel
+        band |= peel
+
+    # Remate topológico: una vez localizada la banda de halo, se retira todo lo
+    # que siga conectado a ella y no sea relleno cromático, negro real o color
+    # unido al interior. A diferencia del antiguo "Pelado", no atraviesa una
+    # capa oscura ni salta en diagonal. Esta fase elimina las costuras grises de
+    # orejas, cola, axila y brazo sin adelgazar la línea negra.
+    reliable_chromatic = visible & (distance >= 4.0) & (chroma >= 22.0)
+    final_near_fill = cv2.dilate(
+        np.ascontiguousarray(inner_fill, dtype=np.uint8),
+        np.ones((7, 7), dtype=np.uint8),
+        iterations=1,
+    ).astype(bool)
+    final_protected = reliable_chromatic | (
+        visible
+        & final_near_fill
+        & (((alpha >= 190) & (luminance <= 60.0)) | (chroma >= 20.0))
+    )
+    final_steps: list[int] = []
+    for _ in range(max(height, width)):
+        touches_removed = cv2.dilate(
+            np.ascontiguousarray(removed, dtype=np.uint8), cross, iterations=1
+        ).astype(bool)
+        final_peel = visible & ~removed & touches_removed & ~final_protected
+        count = int(np.count_nonzero(final_peel))
+        if not count:
+            break
+        final_steps.append(count)
+        removed |= final_peel
+
+    reliable_fill, protected_ink, validation_protected = (
+        white_halo_protection_masks(source_pixels)
+    )
+    # La máscara de validación es también una barrera de restauración. Esto
+    # impide que un microcorte del contorno (por ejemplo, la axila o la punta
+    # del brazo de Samu) pueda perder tinta aunque haya quedado comunicado con
+    # el exterior durante alguna de las pasadas topológicas.
+    restored_protected = removed & validation_protected
+    removed &= ~validation_protected
+    output_pixels = source_pixels.copy()
+    output_pixels[removed] = 0
+
+    # Elimina únicamente islas minúsculas que no contienen ni relleno fiable ni
+    # contorno protegido. Los dos mechones separados de la axila de Samu, por
+    # ejemplo, superan el límite y se conservan.
+    output_visible = output_pixels[:, :, 3] > 0
+    component_count, labels, stats, _ = cv2.connectedComponentsWithStats(
+        np.ascontiguousarray(output_visible, dtype=np.uint8), connectivity=8
+    )
+    removed_specks = 0
+    removed_speck_pixels = 0
+    if component_count > 1:
+        areas = stats[1:, cv2.CC_STAT_AREA]
+        largest_label = int(np.argmax(areas)) + 1
+        for label in range(1, component_count):
+            area = int(stats[label, cv2.CC_STAT_AREA])
+            component = labels == label
+            if (
+                label != largest_label
+                and area <= 64
+                and not np.any(component & validation_protected)
+            ):
+                output_pixels[component] = 0
+                removed_specks += 1
+                removed_speck_pixels += area
+
+    # El RGB de píxeles invisibles se normaliza antes de devolver la vista
+    # previa para que ninguna conversión posterior reactive basura oculta.
+    output_pixels[output_pixels[:, :, 3] == 0, :3] = 0
+    output_alpha = output_pixels[:, :, 3]
+    metrics = white_halo_alpha_metrics(alpha, output_alpha)
+    reduced = output_alpha < alpha
+    metrics["protection"] = {
+        "reliableFillPixels": int(np.count_nonzero(reliable_fill)),
+        "protectedInkPixels": int(np.count_nonzero(protected_ink)),
+        "protectedPixels": int(np.count_nonzero(validation_protected)),
+        "lostReliableFillPixels": int(np.count_nonzero(reduced & reliable_fill)),
+        "lostProtectedInkPixels": int(np.count_nonzero(reduced & protected_ink)),
+        "lostProtectedPixels": int(
+            np.count_nonzero(reduced & validation_protected)
+        ),
+    }
+    source_visible_pixels = int(np.count_nonzero(alpha > 0))
+    candidate_visible_pixels = int(np.count_nonzero(output_alpha > 0))
+    source_largest = int(
+        metrics["components"]["source"]["largestComponentPixels"]
+    )
+    candidate_largest = int(
+        metrics["components"]["candidate"]["largestComponentPixels"]
+    )
+    visible_retention = (
+        candidate_visible_pixels / source_visible_pixels
+        if source_visible_pixels
+        else 1.0
+    )
+    largest_retention = (
+        candidate_largest / source_largest if source_largest else 1.0
+    )
+    metrics["structure"] = {
+        "sourceVisiblePixels": source_visible_pixels,
+        "candidateVisiblePixels": candidate_visible_pixels,
+        "visibleRetention": visible_retention,
+        "largestComponentRetention": largest_retention,
+    }
+    # No se presenta como "segura" una limpieza que fragmente otra pose cuya
+    # paleta o silueta no encaje con este perfil automático. Samu conserva más
+    # del 97 % del soporte; una caída por debajo del 90 % indica invasión.
+    if visible_retention < 0.90 or largest_retention < 0.90:
+        raise ValueError(
+            "La limpieza automática no es segura para esta pose: la silueta "
+            "perdería demasiada superficie. Usa las herramientas manuales y "
+            "comprueba el resultado sobre varios fondos"
+        )
+
+    output_image = Image.fromarray(output_pixels, "RGBA")
+    encoded = io.BytesIO()
+    output_image.save(encoded, format="PNG", optimize=False, compress_level=6)
+    data_url = "data:image/png;base64," + base64.b64encode(
+        encoded.getvalue()
+    ).decode("ascii")
+
+    return {
+        "ok": True,
+        "image": data_url,
+        "canvas": {"width": width, "height": height},
+        "metrics": metrics,
+        "automatic": {
+            "profile": "topological-safe-v1",
+            "baseRemovedPixels": base_removed,
+            "refineSteps": refine_steps,
+            "finalSteps": final_steps,
+            "removedSpeckComponents": removed_specks,
+            "removedSpeckPixels": removed_speck_pixels,
+            "restoredProtectedPixels": int(
+                np.count_nonzero(restored_protected)
+            ),
+        },
+    }
+
+
+def mask_bbox(mask: np.ndarray) -> dict[str, int] | None:
+    ys, xs = np.nonzero(mask)
+    if not len(xs):
+        return None
+    return {
+        "x": int(xs.min()),
+        "y": int(ys.min()),
+        "width": int(xs.max() - xs.min() + 1),
+        "height": int(ys.max() - ys.min() + 1),
+    }
+
+
+def png_data_url(image: Image.Image) -> str:
+    """Codifica una imagen de trabajo para devolverla al editor local."""
+    encoded = io.BytesIO()
+    image.save(encoded, format="PNG", optimize=False, compress_level=6)
+    return "data:image/png;base64," + base64.b64encode(
+        encoded.getvalue()
+    ).decode("ascii")
+
+
+def white_halo_override_token(
+    job_id: str, source_pixels: np.ndarray, candidate_pixels: np.ndarray
+) -> str:
+    """Vincula una excepción de guardado a una revisión exacta del lienzo."""
+    digest = hashlib.sha256()
+    digest.update(b"white-halo-save-v1\0")
+    digest.update(TOOLS_ROOT_ID.encode("ascii"))
+    digest.update(b"\0")
+    digest.update(job_id.encode("utf-8"))
+    digest.update(b"\0")
+    digest.update(np.ascontiguousarray(source_pixels, dtype=np.uint8).tobytes())
+    digest.update(b"\0")
+    digest.update(np.ascontiguousarray(candidate_pixels, dtype=np.uint8).tobytes())
+    return "sha256:" + digest.hexdigest()
+
+
+def white_halo_protection_diagnostic(
+    job_id: str, data_url: Any, repair: bool = False
+) -> dict[str, Any]:
+    """Localiza y, opcionalmente, recupera detalle protegido del original.
+
+    La máscara se calcula en Python con exactamente el mismo criterio que usa
+    el guardado. Así la interfaz no tiene que inferir el daño a partir del texto
+    de un error ni duplicar la protección de tinta en JavaScript.
+    """
+
+    job = base_sprite_job(job_id)
+    candidate = decode_canvas_image(data_url)
+    expected = (int(job["width"]), int(job["height"]))
+    if candidate.size != expected:
+        raise ValueError(
+            f"La copia debe medir {expected[0]}×{expected[1]} px; recibido "
+            f"{candidate.width}×{candidate.height} px"
+        )
+
+    source_path = ROOT / job["source"]
+    try:
+        with Image.open(source_path) as source_image:
+            source_image.load()
+            source_pixels = np.asarray(
+                source_image.convert("RGBA"), dtype=np.uint8
+            ).copy()
+    except OSError as error:
+        raise ValueError("No se pudo leer el sprite fuente protegido") from error
+    if source_pixels.shape[:2] != (expected[1], expected[0]):
+        raise ValueError(
+            "Las dimensiones reales del sprite fuente no coinciden con el inventario"
+        )
+
+    candidate_pixels = np.asarray(candidate.convert("RGBA"), dtype=np.uint8).copy()
+    source_alpha = source_pixels[:, :, 3]
+    candidate_alpha = candidate_pixels[:, :, 3]
+    reliable_fill, protected_ink, protected = white_halo_protection_masks(
+        source_pixels
+    )
+    reduced = candidate_alpha < source_alpha
+    lost_reliable_fill = reduced & reliable_fill
+    lost_protected_ink = reduced & protected_ink
+    lost_protected = reduced & protected
+    expanded = candidate_alpha > source_alpha
+    bounds = mask_bbox(lost_protected)
+    lost_pixels = int(np.count_nonzero(lost_protected))
+    expanded_pixels = int(np.count_nonzero(expanded))
+
+    overlay_pixels = np.zeros_like(source_pixels)
+    if lost_pixels:
+        exact = np.ascontiguousarray(lost_protected, dtype=np.uint8)
+        halo = cv2.dilate(exact, np.ones((5, 5), dtype=np.uint8), iterations=1)
+        surrounding = (halo > 0) & ~lost_protected
+        overlay_pixels[surrounding] = (255, 209, 102, 105)
+        overlay_pixels[lost_protected] = (255, 45, 132, 245)
+    if expanded_pixels:
+        overlay_pixels[expanded] = (151, 91, 255, 235)
+
+    metrics = {
+        "lostReliableFillPixels": int(np.count_nonzero(lost_reliable_fill)),
+        "lostProtectedInkPixels": int(np.count_nonzero(lost_protected_ink)),
+        "lostProtectedPixels": lost_pixels,
+        "lostProtectedBounds": bounds,
+        "expandedPixels": expanded_pixels,
+    }
+    result: dict[str, Any] = {
+        "ok": True,
+        "safe": lost_pixels == 0 and expanded_pixels == 0,
+        "canvas": {"width": candidate.width, "height": candidate.height},
+        "metrics": metrics,
+        "overlay": (
+            png_data_url(Image.fromarray(overlay_pixels, "RGBA"))
+            if lost_pixels or expanded_pixels
+            else None
+        ),
+        "repaired": False,
+        "restoredPixels": 0,
+        "forceSave": {
+            "allowed": bool(lost_pixels and not expanded_pixels),
+            "warnings": ["lost-protected-alpha"] if lost_pixels else [],
+            "diagnosticFingerprint": (
+                white_halo_override_token(
+                    job_id, source_pixels, candidate_pixels
+                )
+                if lost_pixels and not expanded_pixels
+                else None
+            ),
+        },
+    }
+
+    if repair and lost_pixels:
+        # Sólo se recuperan los píxeles que el guardado considera protegidos.
+        # El resto del alfa y de los colores del trabajo importado permanece
+        # byte a byte intacto.
+        candidate_pixels[lost_protected] = source_pixels[lost_protected]
+        repaired_alpha = candidate_pixels[:, :, 3]
+        remaining = (repaired_alpha < source_alpha) & protected
+        result.update(
+            {
+                "image": png_data_url(Image.fromarray(candidate_pixels, "RGBA")),
+                "repaired": True,
+                "restoredPixels": lost_pixels,
+                "safe": not np.any(remaining) and expanded_pixels == 0,
+                "afterRepair": {
+                    "lostProtectedPixels": int(np.count_nonzero(remaining)),
+                    "expandedPixels": expanded_pixels,
+                },
+            }
+        )
+    return result
+
+
+def white_halo_output_paths(job: dict[str, Any]) -> dict[str, Path]:
+    """Devuelve los tres destinos derivados de una pose sin escribirlos."""
+    character, pose_name = str(job["id"]).split(".", 1)
+    source_stem = slug(Path(str(job["source"])).stem)
+    cleaned = (
+        WHITE_HALO_ROOT
+        / character
+        / pose_name
+        / f"{source_stem}_halo_limpio.webp"
+    )
+    return {
+        "cleaned": cleaned,
+        "thumbnail": cleaned.with_name(f"{cleaned.stem}_miniatura.webp"),
+        "galleryThumbnail": cleaned.with_name(f"{cleaned.stem}_galeria.webp"),
+    }
+
+
+def white_halo_destination(job: dict[str, Any]) -> dict[str, str]:
+    paths = white_halo_output_paths(job)
+    return {
+        "cleaned": relative(paths["cleaned"]),
+        "thumbnail": relative(paths["thumbnail"]),
+        "galleryThumbnail": relative(paths["galleryThumbnail"]),
+        "downloadName": paths["cleaned"].name,
+    }
+
+
+def export_white_halo_webp(job_id: str, data_url: Any) -> tuple[bytes, str]:
+    """Codifica el lienzo actual como WebP lossless sin guardar ni validarlo.
+
+    La herramienta sigue enviando un PNG interno para evitar pérdidas acumuladas
+    durante la edición. Este exportador sólo comprueba pose y dimensiones; así el
+    usuario puede rescatar un trabajo aunque el guardado validado lo rechace.
+    """
+    job = base_sprite_job(job_id)
+    image = decode_canvas_image(data_url)
+    expected = (int(job["width"]), int(job["height"]))
+    if image.size != expected:
+        raise ValueError(
+            f"El sprite debe medir {expected[0]}×{expected[1]} px; recibido "
+            f"{image.width}×{image.height}"
+        )
+    pixels = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
+    pixels[pixels[:, :, 3] == 0, :3] = 0
+    encoded = io.BytesIO()
+    Image.fromarray(pixels, "RGBA").save(
+        encoded,
+        "WEBP",
+        lossless=True,
+        quality=100,
+        method=6,
+        exact=True,
+    )
+    return encoded.getvalue(), white_halo_destination(job)["downloadName"]
+
+
+def white_halo_animation_sources(job: dict[str, Any]) -> list[str]:
+    """Localiza frames completos compatibles con la pose limpia.
+
+    Las poses que ya usan capas oculares no necesitan duplicar sprites. Para el
+    fallback de sprite completo se incluyen tanto los frames declarados en la
+    ficha como el intermedio que el motor inyecta desde el manifiesto.
+    """
+    job_id = str(job["id"])
+    if job_id in load_eye_region_previews():
+        return []
+    character_key, pose_name = job_id.split(".", 1)
+    character_path = CHARACTER_DIR / f"{character_key}.json"
+    if not character_path.is_file():
+        return []
+    character = json.loads(character_path.read_text(encoding="utf-8"))
+    animations = character.get("animations") or character.get("poseAnimations") or {}
+    config = animations.get(pose_name)
+    frames = config if isinstance(config, list) else (config or {}).get("frames", [])
+    if not isinstance(frames, list) or not frames:
+        return []
+
+    poses = character.get("poses") or {}
+    sources: list[str] = []
+    for frame in frames:
+        value = frame
+        if isinstance(frame, dict):
+            value = frame.get("src") or frame.get("image") or frame.get("pose")
+        if not isinstance(value, str) or not value:
+            continue
+        pose_value = poses.get(value)
+        if isinstance(pose_value, dict):
+            value = pose_value.get("src") or pose_value.get("image") or value
+        elif isinstance(pose_value, str):
+            value = pose_value
+        if isinstance(value, str) and value.startswith("assets/"):
+            sources.append(value)
+
+    half = (load_eye_intermediates().get(job_id) or {}).get("half")
+    if isinstance(half, str) and half.startswith("assets/"):
+        sources.append(half)
+    return list(dict.fromkeys(sources))
+
+
+def save_white_halo_animation_frames(
+    job: dict[str, Any], source_alpha: np.ndarray, cleaned_alpha: np.ndarray
+) -> dict[str, str]:
+    """Replica el alfa limpio en frames full-sprite de la misma silueta."""
+    output_dir = white_halo_output_paths(job)["cleaned"].parent / "animations"
+    mapping: dict[str, str] = {}
+    for source in white_halo_animation_sources(job):
+        source_path = ROOT / source
+        if not source_path.is_file():
+            continue
+        try:
+            with Image.open(source_path) as frame_image:
+                frame_image.load()
+                frame_pixels = np.asarray(
+                    frame_image.convert("RGBA"), dtype=np.uint8
+                ).copy()
+        except OSError:
+            continue
+        if frame_pixels.shape[:2] != cleaned_alpha.shape:
+            continue
+        # Una silueta distinta necesita una limpieza propia; aplicar la máscara
+        # de la base podría comerse movimiento corporal legítimo.
+        if not np.array_equal(frame_pixels[:, :, 3], source_alpha):
+            continue
+        frame_pixels[:, :, 3] = cleaned_alpha
+        frame_pixels[cleaned_alpha == 0, :3] = 0
+        output_dir.mkdir(parents=True, exist_ok=True)
+        output_path = output_dir / f"{slug(source_path.stem)}_halo_limpio.webp"
+        temporary = output_path.with_suffix(".webp.tmp")
+        Image.fromarray(frame_pixels, "RGBA").save(
+            temporary,
+            "WEBP",
+            lossless=True,
+            quality=100,
+            method=6,
+            exact=True,
+        )
+        temporary.replace(output_path)
+        mapping[source] = relative(output_path)
+    return mapping
+
+
+@synchronized_white_halo_write
 def save_white_halo_sprite(
-    job_id: str, data_url: Any, validate_only: bool = False
+    job_id: str,
+    data_url: Any,
+    validate_only: bool = False,
+    force: bool = False,
+    override_token: Any = None,
 ) -> dict[str, Any]:
     job = base_sprite_job(job_id)
     image = decode_canvas_image(data_url)
@@ -438,25 +1112,132 @@ def save_white_halo_sprite(
             f"{image.width}×{image.height}"
         )
 
-    alpha = np.asarray(image.getchannel("A"), dtype=np.uint8)
+    source_path = ROOT / job["source"]
+    try:
+        with Image.open(source_path) as source_image:
+            source_image.load()
+            source_pixels = np.asarray(
+                source_image.convert("RGBA"), dtype=np.uint8
+            ).copy()
+            source_alpha = source_pixels[:, :, 3]
+    except OSError as error:
+        raise ValueError("No se pudo leer el sprite fuente protegido") from error
+    if source_alpha.shape != (expected[1], expected[0]):
+        raise ValueError(
+            "Las dimensiones reales del sprite fuente no coinciden con el inventario"
+        )
+
+    pixels = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
+    candidate_override_token = white_halo_override_token(
+        job_id, source_pixels, pixels
+    )
+    alpha = pixels[:, :, 3]
+    metrics = white_halo_alpha_metrics(source_alpha, alpha)
+    retained_visible = (source_alpha > 0) & (alpha > 0)
+    changed_visible_rgb = retained_visible & np.any(
+        pixels[:, :, :3] != source_pixels[:, :, :3], axis=2
+    )
+    metrics["changedVisibleRgbPixels"] = int(
+        np.count_nonzero(changed_visible_rgb)
+    )
+    # El editor de halos es deliberadamente alfa-only. Un canvas puede
+    # redondear el RGB de píxeles semitransparentes al premultiplicar; en vez de
+    # guardar ese cambio accidental, se repone siempre el color exacto del
+    # fuente protegido en todo píxel que siga visible.
+    pixels[retained_visible, :3] = source_pixels[retained_visible, :3]
+    metrics["normalizedRetainedRgbPixels"] = metrics[
+        "changedVisibleRgbPixels"
+    ]
+    reliable_fill, protected_ink, protected = white_halo_protection_masks(
+        source_pixels
+    )
+    reduced = alpha < source_alpha
+    lost_reliable_fill = reduced & reliable_fill
+    lost_protected_ink = reduced & protected_ink
+    lost_protected = reduced & protected
+    metrics["protection"] = {
+        "reliableFillPixels": int(np.count_nonzero(reliable_fill)),
+        "protectedInkPixels": int(np.count_nonzero(protected_ink)),
+        "protectedPixels": int(np.count_nonzero(protected)),
+        "lostReliableFillPixels": int(np.count_nonzero(lost_reliable_fill)),
+        "lostProtectedInkPixels": int(np.count_nonzero(lost_protected_ink)),
+        "lostProtectedPixels": int(np.count_nonzero(lost_protected)),
+        "lostProtectedBounds": mask_bbox(lost_protected),
+    }
+    expanded_pixels = int(metrics["expandedPixels"])
+    lost_pixels = int(metrics["protection"]["lostProtectedPixels"])
+    forced = False
+    if expanded_pixels:
+        expanded_label = "píxel" if expanded_pixels == 1 else "píxeles"
+        expanded_display = f"{expanded_pixels:,}".replace(",", ".")
+        maximum_expansion = int(
+            np.max(alpha.astype(np.int16) - source_alpha.astype(np.int16))
+        )
+        raise ValueError(
+            "La copia limpia expande el alfa fuera del sprite fuente en "
+            f"{expanded_display} {expanded_label} "
+            f"(incremento máximo {maximum_expansion}); corrige el borde antes de guardar"
+        )
+    if lost_pixels and not force:
+        lost_display = f"{lost_pixels:,}".replace(",", ".")
+        bounds = metrics["protection"]["lostProtectedBounds"]
+        bounds_label = ""
+        if bounds:
+            bounds_label = (
+                f"; zona x={bounds['x']}, y={bounds['y']}, "
+                f"{bounds['width']}×{bounds['height']} px"
+            )
+        raise ValueError(
+            "La copia intenta borrar "
+            f"{lost_display} píxeles de relleno o tinta protegida{bounds_label}. "
+            "Restaura el contorno y limpia únicamente el halo exterior"
+        )
+    if lost_pixels and force:
+        if not isinstance(override_token, str) or override_token != candidate_override_token:
+            raise ValueError(
+                "El lienzo no coincide con la comprobación autorizada; "
+                "vuelve a pulsar Comprobar detalle antes de guardar de todos modos"
+            )
+        forced = True
+    elif force:
+        raise ValueError(
+            "El lienzo ya no contiene una pérdida protegida que requiera excepción"
+        )
+    # El RGB oculto no debe conservar basura que pueda reaparecer al reescalar o
+    # convertir el PNG. Esta normalización no altera ningún píxel visible.
+    pixels[alpha == 0, :3] = 0
     transparent_pixels = int(np.count_nonzero(alpha < 255))
     if validate_only:
         return {
             "ok": True,
             "validated": True,
+            "forced": forced,
+            "validation": {
+                "policy": "white-halo-save-v1",
+                "forced": forced,
+                "warnings": ["lost-protected-alpha"] if forced else [],
+            },
             "canvas": {"width": image.width, "height": image.height},
             "transparentPixels": transparent_pixels,
+            "metrics": metrics,
         }
 
-    character, pose_name = job_id.split(".", 1)
-    source_stem = slug(Path(job["source"]).stem)
-    output_path = WHITE_HALO_ROOT / character / pose_name / f"{source_stem}_halo_limpio.png"
+    output_paths = white_halo_output_paths(job)
+    output_path = output_paths["cleaned"]
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    pixels = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
-    pixels[pixels[:, :, 3] == 0, :3] = 0
-    temporary = output_path.with_suffix(".png.tmp")
-    Image.fromarray(pixels, "RGBA").save(temporary, "PNG", optimize=True)
+    temporary = output_path.with_suffix(".webp.tmp")
+    Image.fromarray(pixels, "RGBA").save(
+        temporary,
+        "WEBP",
+        lossless=True,
+        quality=100,
+        method=6,
+        exact=True,
+    )
     temporary.replace(output_path)
+    animation_frames = save_white_halo_animation_frames(
+        job, source_alpha, pixels[:, :, 3]
+    )
 
     def save_contain_thumbnail(size: tuple[int, int], suffix: str) -> Path:
         thumbnail_path = output_path.with_name(f"{output_path.stem}_{suffix}.webp")
@@ -467,7 +1248,14 @@ def save_white_halo_sprite(
             source,
             ((size[0] - source.width) // 2, (size[1] - source.height) // 2),
         )
-        thumbnail.save(thumbnail_path, "WEBP", quality=84, method=6, exact=True)
+        thumbnail.save(
+            thumbnail_path,
+            "WEBP",
+            lossless=True,
+            quality=100,
+            method=6,
+            exact=True,
+        )
         return thumbnail_path
 
     pose_thumbnail_path = save_contain_thumbnail((156, 156), "miniatura")
@@ -481,11 +1269,218 @@ def save_white_halo_sprite(
         "galleryThumbnail": relative(gallery_thumbnail_path),
         "canvas": {"width": image.width, "height": image.height},
         "transparentPixels": transparent_pixels,
+        "metrics": metrics,
         "updatedAt": datetime.now(timezone.utc).isoformat(),
+        "validation": {
+            "policy": "white-halo-save-v1",
+            "forced": forced,
+            "warnings": [],
+        },
     }
+    if forced:
+        entry["validation"].update(
+            {
+                "forcedAt": entry["updatedAt"],
+                "diagnosticFingerprint": candidate_override_token,
+                "warnings": [
+                    {
+                        "code": "lost-protected-alpha",
+                        "pixels": lost_pixels,
+                        "lostReliableFillPixels": metrics["protection"][
+                            "lostReliableFillPixels"
+                        ],
+                        "lostProtectedInkPixels": metrics["protection"][
+                            "lostProtectedInkPixels"
+                        ],
+                        "bounds": metrics["protection"][
+                            "lostProtectedBounds"
+                        ],
+                    }
+                ],
+            }
+        )
+    if animation_frames:
+        entry["animationFrames"] = animation_frames
     edits[job_id] = entry
     save_white_halo_edits(edits)
-    return {"ok": True, "id": job_id, **entry}
+    return {
+        "ok": True,
+        "id": job_id,
+        "forced": forced,
+        **entry,
+        "reviewState": white_halo_review_state(job_id, entry),
+    }
+
+
+def white_halo_review_artifacts(
+    entry: dict[str, Any],
+) -> list[tuple[str, str]]:
+    """Enumera de forma estable todos los derivados que forman una copia."""
+
+    artifacts: list[tuple[str, str]] = []
+    for field in ("cleaned", "thumbnail", "galleryThumbnail"):
+        value = entry.get(field)
+        if not isinstance(value, str) or not value:
+            raise ValueError(f"La copia guardada no declara el archivo {field}")
+        artifacts.append((field, value))
+    animation_frames = entry.get("animationFrames")
+    if animation_frames is not None:
+        if not isinstance(animation_frames, dict):
+            raise ValueError("Los frames derivados de la copia no son válidos")
+        for source, value in sorted(animation_frames.items()):
+            if not isinstance(value, str) or not value:
+                raise ValueError("Uno de los frames derivados no declara una ruta válida")
+            artifacts.append((f"animation:{source}", value))
+    return artifacts
+
+
+def white_halo_review_fingerprints(
+    job_id: str, entry: dict[str, Any]
+) -> tuple[str, str]:
+    """Vincula la aprobación a metadatos y bytes exactos de sus derivados."""
+
+    artifact_digest = hashlib.sha256()
+    artifact_digest.update(b"white-halo-artifacts-v1\0")
+    root = ROOT.resolve()
+    for role, relative_path in white_halo_review_artifacts(entry):
+        artifact = (ROOT / relative_path).resolve()
+        if not artifact.is_relative_to(root) or not artifact.is_file():
+            raise ValueError(f"Falta un derivado de la copia: {relative_path}")
+        content = artifact.read_bytes()
+        artifact_digest.update(role.encode("utf-8"))
+        artifact_digest.update(b"\0")
+        artifact_digest.update(relative_path.encode("utf-8"))
+        artifact_digest.update(b"\0")
+        artifact_digest.update(len(content).to_bytes(8, "big"))
+        artifact_digest.update(content)
+    artifact_fingerprint = "sha256:" + artifact_digest.hexdigest()
+
+    subject_entry = dict(entry)
+    validation_value = subject_entry.get("validation")
+    if isinstance(validation_value, dict):
+        validation = dict(validation_value)
+        validation.pop("review", None)
+        subject_entry["validation"] = validation
+    subject_digest = hashlib.sha256()
+    subject_digest.update(b"white-halo-manual-review-v1\0")
+    subject_digest.update(TOOLS_ROOT_ID.encode("ascii"))
+    subject_digest.update(b"\0")
+    subject_digest.update(job_id.encode("utf-8"))
+    subject_digest.update(b"\0")
+    subject_digest.update(
+        json.dumps(
+            subject_entry,
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    )
+    subject_digest.update(b"\0")
+    subject_digest.update(artifact_fingerprint.encode("ascii"))
+    return "sha256:" + subject_digest.hexdigest(), artifact_fingerprint
+
+
+def white_halo_review_state(
+    job_id: str, entry: Any
+) -> dict[str, Any]:
+    """Calcula si la copia necesita, conserva o ha perdido su aprobación."""
+
+    validation = entry.get("validation") if isinstance(entry, dict) else None
+    if not isinstance(validation, dict) or validation.get("forced") is not True:
+        return {"status": "not-required", "canApprove": False}
+    try:
+        subject_revision, artifact_fingerprint = white_halo_review_fingerprints(
+            job_id, entry
+        )
+    except (OSError, ValueError):
+        return {"status": "stale", "canApprove": False}
+    review = validation.get("review")
+    approved = (
+        isinstance(review, dict)
+        and review.get("status") == "approved"
+        and review.get("policy") == "white-halo-manual-review-v1"
+        and review.get("subjectRevision") == subject_revision
+        and review.get("artifactSetFingerprint") == artifact_fingerprint
+    )
+    return {
+        "status": "approved" if approved else ("stale" if review else "pending"),
+        "canApprove": not review,
+        "subjectRevision": subject_revision,
+    }
+
+
+@synchronized_white_halo_write
+def review_white_halo_sprite(
+    job_id: str,
+    expected_revision: Any,
+) -> dict[str, Any]:
+    """Aprueba una copia forzada exacta modificando únicamente el manifiesto."""
+
+    base_sprite_job(job_id)
+    if not isinstance(expected_revision, str) or not re.fullmatch(
+        r"sha256:[0-9a-f]{64}", expected_revision
+    ):
+        raise ValueError("Falta la revisión exacta de la copia que quieres aprobar")
+    edits = load_white_halo_edits()
+    stored = edits.get(job_id)
+    if not isinstance(stored, dict):
+        raise ValueError("La pose todavía no tiene una copia guardada que revisar")
+    entry = dict(stored)
+    validation_value = entry.get("validation")
+    if not isinstance(validation_value, dict) or validation_value.get("forced") is not True:
+        raise ValueError("Esta copia no tiene una excepción pendiente de revisión")
+    validation = dict(validation_value)
+    warning_codes = {
+        warning if isinstance(warning, str) else warning.get("code")
+        for warning in validation.get("warnings", [])
+        if isinstance(warning, (str, dict))
+    }
+    if "lost-protected-alpha" not in warning_codes:
+        raise ValueError("La copia no conserva una advertencia revisable conocida")
+
+    subject_revision, artifact_fingerprint = white_halo_review_fingerprints(
+        job_id, entry
+    )
+    if subject_revision != expected_revision:
+        raise ValueError(
+            "La copia guardada cambió desde que la abriste; vuelve a cargarla antes de marcarla como limpia"
+        )
+    current_review = validation.get("review")
+    if isinstance(current_review, dict):
+        current_state = white_halo_review_state(job_id, entry)
+        if current_state.get("status") != "approved":
+            raise ValueError(
+                "La aprobación anterior quedó obsoleta; vuelve a guardar la copia antes de revisarla"
+            )
+        return {
+            "ok": True,
+            "id": job_id,
+            "reviewed": True,
+            "alreadyReviewed": True,
+            "assetsChanged": False,
+            "reviewState": current_state,
+            **entry,
+        }
+
+    validation["review"] = {
+        "status": "approved",
+        "policy": "white-halo-manual-review-v1",
+        "reviewedAt": datetime.now(timezone.utc).isoformat(),
+        "subjectRevision": subject_revision,
+        "artifactSetFingerprint": artifact_fingerprint,
+    }
+    entry["validation"] = validation
+    edits[job_id] = entry
+    save_white_halo_edits(edits)
+    return {
+        "ok": True,
+        "id": job_id,
+        "reviewed": True,
+        "alreadyReviewed": False,
+        "assetsChanged": False,
+        "reviewState": white_halo_review_state(job_id, entry),
+        **entry,
+    }
 
 
 def save_clean_base(job_id: str, data_url: Any, validate_only: bool = False) -> dict[str, Any]:
@@ -691,7 +1686,18 @@ def base_sprite_jobs(refresh: bool = False) -> list[dict[str, Any]]:
                     }
                 )
         _BASE_SPRITE_INVENTORY_CACHE = inventory
-    return [dict(job, saved=saved.get(job["id"])) for job in _BASE_SPRITE_INVENTORY_CACHE]
+    result: list[dict[str, Any]] = []
+    for job in _BASE_SPRITE_INVENTORY_CACHE:
+        saved_entry = saved.get(job["id"])
+        result.append(
+            dict(
+                job,
+                saved=saved_entry,
+                destination=white_halo_destination(job),
+                reviewState=white_halo_review_state(job["id"], saved_entry),
+            )
+        )
+    return result
 
 
 def base_sprite_job(job_id: str) -> dict[str, Any]:
@@ -699,6 +1705,25 @@ def base_sprite_job(job_id: str) -> dict[str, Any]:
     if not job:
         raise ValueError("Pose base desconocida")
     return job
+
+
+def reveal_white_halo_source(job_id: str) -> dict[str, Any]:
+    """Abre Explorer y selecciona el sprite fuente protegido de una pose."""
+    job = base_sprite_job(job_id)
+    target = (ROOT / str(job["source"])).resolve()
+    try:
+        target.relative_to(ROOT)
+    except ValueError as error:
+        raise ValueError("La ubicación del sprite queda fuera del proyecto") from error
+    if not target.is_file():
+        raise FileNotFoundError("El sprite original protegido no existe")
+    subprocess.Popen(["explorer.exe", "/select,", str(target)])
+    return {
+        "ok": True,
+        "path": str(target),
+        "relative": relative(target),
+        "folder": str(target.parent),
+    }
 
 
 def validate_manual_region(value: Any) -> list[float] | None:
@@ -1204,23 +2229,118 @@ def reveal_alignment_location(job_id: str, source_kind: str, kind: str) -> dict[
 
 
 class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
+    # Windows no siempre registra WebP en `mimetypes`; sin este override el
+    # navegador lo recibe como octet-stream y «Ver original» puede descargarlo
+    # en vez de mostrarlo en una pestaña.
+    extensions_map = {
+        **SimpleHTTPRequestHandler.extensions_map,
+        ".webp": "image/webp",
+    }
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, directory=str(ROOT), **kwargs)
 
     def log_message(self, format: str, *args: Any) -> None:
         print(f"[eye-editor] {self.address_string()} {format % args}")
 
-    def send_json(self, payload: Any, status: HTTPStatus = HTTPStatus.OK) -> None:
+    def send_json(
+        self,
+        payload: Any,
+        status: HTTPStatus = HTTPStatus.OK,
+        allow_loopback_cors: bool = False,
+    ) -> None:
         encoded = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(encoded)))
         self.send_header("Cache-Control", "no-store")
+        if allow_loopback_cors:
+            origin = self.headers.get("Origin", "")
+            try:
+                parsed_origin = urlsplit(origin)
+                if (
+                    parsed_origin.scheme in {"http", "https"}
+                    and parsed_origin.hostname in LOOPBACK_HOSTS
+                ):
+                    self.send_header("Access-Control-Allow-Origin", origin)
+                    self.send_header("Vary", "Origin")
+            except ValueError:
+                pass
         self.end_headers()
         self.wfile.write(encoded)
 
+    def send_download(self, payload: bytes, filename: str) -> None:
+        safe_name = Path(filename).name.replace('"', "")
+        self.send_response(HTTPStatus.OK)
+        self.send_header("Content-Type", "image/webp")
+        self.send_header(
+            "Content-Disposition", f'attachment; filename="{safe_name}"'
+        )
+        self.send_header("Content-Length", str(len(payload)))
+        self.send_header("Cache-Control", "no-store")
+        self.end_headers()
+        self.wfile.write(payload)
+
+    def request_host_is_local(self) -> bool:
+        try:
+            bound_port = int(self.server.server_address[1])
+            host = urlsplit(f"http://{self.headers.get('Host', '')}")
+            return host.hostname in LOOPBACK_HOSTS and (host.port or 80) == bound_port
+        except (TypeError, ValueError):
+            return False
+
+    def request_path_is_public(self) -> bool:
+        try:
+            decoded = unquote(urlsplit(self.path).path).replace("\\", "/")
+            return not any(part.startswith(".") for part in decoded.split("/"))
+        except (TypeError, ValueError):
+            return False
+
+    def mutation_request_is_local(self) -> bool:
+        """Impide que una web externa use el editor local para escribir archivos."""
+        try:
+            if not self.request_host_is_local():
+                return False
+            bound_port = int(self.server.server_address[1])
+
+            origin = self.headers.get("Origin")
+            if origin:
+                parsed_origin = urlsplit(origin)
+                origin_port = parsed_origin.port or (
+                    443 if parsed_origin.scheme == "https" else 80
+                )
+                return (
+                    parsed_origin.scheme in {"http", "https"}
+                    and parsed_origin.hostname in LOOPBACK_HOSTS
+                    and origin_port == bound_port
+                )
+
+            # curl/urllib no envían Origin. Un navegador sí aporta Sec-Fetch-Site;
+            # sin Origin sólo se admite una petición inequívocamente same-origin.
+            fetch_site = self.headers.get("Sec-Fetch-Site")
+            return fetch_site in {None, "same-origin", "none"}
+        except (TypeError, ValueError):
+            return False
+
     def do_GET(self) -> None:
+        if not self.request_host_is_local():
+            self.send_error(HTTPStatus.FORBIDDEN)
+            return
+        if not self.request_path_is_public():
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
         request = urlsplit(self.path)
+        if request.path == "/api/health":
+            self.send_json(
+                {
+                    "ok": True,
+                    "service": TOOLS_SERVICE_NAME,
+                    "protocolVersion": TOOLS_PROTOCOL_VERSION,
+                    "rootId": TOOLS_ROOT_ID,
+                },
+                allow_loopback_cors=True,
+            )
+            return
         if request.path == "/api/alignment-locations":
             try:
                 query = parse_qs(request.query)
@@ -1363,7 +2483,22 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             return
         super().do_GET()
 
+    def do_HEAD(self) -> None:
+        if not self.request_host_is_local():
+            self.send_error(HTTPStatus.FORBIDDEN)
+            return
+        if not self.request_path_is_public():
+            self.send_error(HTTPStatus.NOT_FOUND)
+            return
+        super().do_HEAD()
+
     def do_POST(self) -> None:
+        if not self.mutation_request_is_local():
+            self.send_json(
+                {"ok": False, "error": "Origen no autorizado"},
+                HTTPStatus.FORBIDDEN,
+            )
+            return
         if self.path == "/api/build-preview":
             try:
                 jobs = collect_jobs(manual_only=True)
@@ -1376,7 +2511,10 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             return
         if self.path not in {
             "/api/region", "/api/offset", "/api/clean-offset", "/api/clean-base",
-            "/api/reveal-path", "/api/eye-layer-edit", "/api/white-halo-clean"
+            "/api/reveal-path", "/api/eye-layer-edit", "/api/white-halo-clean",
+            "/api/white-halo-topological", "/api/reveal-white-halo-source",
+            "/api/white-halo-export", "/api/white-halo-protection",
+            "/api/white-halo-review"
         }:
             self.send_error(HTTPStatus.NOT_FOUND)
             return
@@ -1391,6 +2529,9 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                     str(payload.get("kind", "")),
                 )
                 self.send_json(result)
+                return
+            if self.path == "/api/reveal-white-halo-source":
+                self.send_json(reveal_white_halo_source(job_id))
                 return
             if self.path == "/api/clean-base":
                 result = save_clean_base(
@@ -1410,12 +2551,60 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                 self.send_json(result)
                 return
             if self.path == "/api/white-halo-clean":
+                force_ack = payload.get("force")
+                force_requested = False
+                diagnostic_fingerprint = None
+                if force_ack is not None:
+                    if not isinstance(force_ack, dict):
+                        raise ValueError(
+                            "La autorización de guardado excepcional no es válida"
+                        )
+                    if force_ack.get("warnings") != ["lost-protected-alpha"]:
+                        raise ValueError(
+                            "La advertencia aceptada para el guardado excepcional no es válida"
+                        )
+                    diagnostic_fingerprint = force_ack.get(
+                        "diagnosticFingerprint"
+                    )
+                    if not isinstance(diagnostic_fingerprint, str):
+                        raise ValueError(
+                            "Falta la huella de la comprobación autorizada"
+                        )
+                    force_requested = True
                 result = save_white_halo_sprite(
                     job_id,
                     payload.get("image"),
                     bool(payload.get("validateOnly", False)),
+                    force_requested,
+                    diagnostic_fingerprint,
                 )
                 self.send_json(result)
+                return
+            if self.path == "/api/white-halo-review":
+                self.send_json(
+                    review_white_halo_sprite(
+                        job_id,
+                        payload.get("expectedRevision"),
+                    )
+                )
+                return
+            if self.path == "/api/white-halo-export":
+                encoded, filename = export_white_halo_webp(
+                    job_id, payload.get("image")
+                )
+                self.send_download(encoded, filename)
+                return
+            if self.path == "/api/white-halo-protection":
+                self.send_json(
+                    white_halo_protection_diagnostic(
+                        job_id,
+                        payload.get("image"),
+                        bool(payload.get("repair", False)),
+                    )
+                )
+                return
+            if self.path == "/api/white-halo-topological":
+                self.send_json(topological_white_halo_cleanup(job_id))
                 return
             valid_ids = {job["id"] for job in editor_jobs()}
             if job_id not in valid_ids:

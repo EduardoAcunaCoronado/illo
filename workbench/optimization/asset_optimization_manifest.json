@@ -56,15 +56,16 @@
     "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png": {
       "source": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png",
       "original": "workbench/originals/runtime/assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png",
+      "editedSource": "workbench/sources/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k_integrada_master.png",
       "runtime": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp",
       "mode": "webp-lossy-q92",
       "width": 3840,
       "height": 2160,
       "originalBytes": 12165009,
-      "runtimeBytes": 1577504,
-      "savedBytes": 10587505,
+      "runtimeBytes": 1429854,
+      "savedBytes": 10735155,
       "originalSha256": "887f043f99eb369c55cac45be0519b3e842fa250fa667019774d81a085a56a61",
-      "runtimeSha256": "fd2c20a9065284188b8ace56e72a89357fef0938a6468d4f0c04329a8e25e3d3"
+      "runtimeSha256": "e96de9bdd494391bf089dcdda78ae6ec4ad35a371226cd991869bbfa8779988f"
     },
     "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.png": {
       "source": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.png",
@@ -4407,9 +4408,22 @@
       "savedBytes": 25838,
       "originalSha256": "2c4395683603b5f16c48c3bb4a679d8dba4adab6498fbc2d483411ef3fdc865b",
       "runtimeSha256": "112f132dfeeabe9ebbe16f3ad194b39c12b718dc190f459fb021b6c203e1ab6c"
+    },
+    "assets/images/characters/samu/samu_worried_v2.png": {
+      "source": "assets/images/characters/samu/samu_worried_v2.png",
+      "original": "workbench/originals/runtime/assets/images/characters/samu/samu_worried_v2.png",
+      "runtime": "assets/images/characters/samu/samu_worried_v2.webp",
+      "mode": "webp-lossless-alpha-seeded",
+      "width": 1209,
+      "height": 1301,
+      "originalBytes": 1425740,
+      "runtimeBytes": 783022,
+      "savedBytes": 642718,
+      "originalSha256": "e61e418f66b428b3ce4a15ce48121e1d7f4ee260147408a89509e8e191dffc6f",
+      "runtimeSha256": "f6f8e8637e9166bc4addfd115899fce466b49abdfaace35fa0ebce4f1d024100"
     }
   },
-  "updatedAt": "2026-08-03T17:55:02.055079+00:00",
+  "updatedAt": "2026-08-03T21:33:24.8767664Z",
   "mediaConversions": {
     "assets/audio/music/minigames/cae_a_mis_pies.wav": {
       "source": "assets/audio/music/minigames/cae_a_mis_pies.wav",

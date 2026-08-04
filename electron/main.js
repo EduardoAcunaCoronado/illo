@@ -2,10 +2,12 @@ const { app, BrowserWindow, Menu, shell, screen, ipcMain } = require('electron')
 const fs = require('fs');
 const path = require('path');
 const { startServer } = require('./static-server');
+const { createEyeToolsController } = require('./eye-tools-process');
 
 // La raíz del juego (index.html y compañía). En desarrollo es la carpeta del
 // proyecto; empaquetado es resources/app, porque el build va sin asar.
 const ROOT = app.getAppPath();
+const eyeToolsController = createEyeToolsController(ROOT, { port: 8011 });
 
 const DESIGN_W = 1280;
 const DESIGN_H = 720;
@@ -25,6 +27,45 @@ app.commandLine.appendSwitch('disable-direct-composition-video-overlays');
 
 let server = null;
 let mainWindow = null;
+let toolsNavigationAuthorized = false;
+
+function rendererOrigin(event) {
+    try {
+        return new URL(event.senderFrame?.url || '').origin;
+    } catch (_error) {
+        return null;
+    }
+}
+
+function isGameRenderer(event) {
+    return Boolean(server?.origin && rendererOrigin(event) === server.origin);
+}
+
+function parsedOrigin(url) {
+    try {
+        return new URL(url).origin;
+    } catch (_error) {
+        return null;
+    }
+}
+
+function isAllowedNavigation(url, currentUrl) {
+    const targetOrigin = parsedOrigin(url);
+    if (targetOrigin === server?.origin) {
+        toolsNavigationAuthorized = false;
+        return true;
+    }
+
+    const toolsOrigin = parsedOrigin(eyeToolsController.toolsUrl);
+    if (targetOrigin !== toolsOrigin) return false;
+    if (toolsNavigationAuthorized) {
+        // La autorización obtenida con health/rootId sólo vale para la entrada
+        // inmediata. No queda una puerta abierta si 8011 cambia de dueño luego.
+        toolsNavigationAuthorized = false;
+        return true;
+    }
+    return parsedOrigin(currentUrl) === toolsOrigin;
+}
 
 // El candado de instancia única es un archivo dentro de la carpeta de datos,
 // que Electron no crea hasta el "ready". En la primerísima ejecución todavía no
@@ -80,7 +121,30 @@ function saveSettings(settings) {
 // Síncrono a propósito: el preload lo pide antes de cargar la página, y así el
 // juego se encuentra el localStorage ya puesto en vez de tener que esperar.
 ipcMain.on('settings:get-sync', (event) => {
-    event.returnValue = loadSettings();
+    event.returnValue = isGameRenderer(event) ? loadSettings() : {};
+});
+
+// El menú incluye accesos internos para el equipo (Tools y banco de
+// minijuegos). El renderer necesita distinguir Electron de desarrollo del
+// instalador: en el paquete final esas utilidades no se distribuyen y mostrar
+// sus enlaces produciría rutas rotas.
+ipcMain.on('app:is-packaged-sync', (event) => {
+    event.returnValue = isGameRenderer(event) ? app.isPackaged : true;
+});
+
+// En Electron de desarrollo el navegador no puede arrancar Python por sí solo.
+// Este canal no acepta rutas, comandos ni puertos: sólo garantiza el servicio
+// fijo de Tools y únicamente para el renderer servido por esta instancia.
+ipcMain.handle('app:ensure-eye-tools', async (event) => {
+    if (app.isPackaged || !server?.origin) {
+        return { ok: false, reason: 'unavailable-in-package' };
+    }
+    if (!isGameRenderer(event)) {
+        return { ok: false, reason: 'unauthorized-renderer' };
+    }
+    const result = await eyeToolsController.ensure();
+    if (result.ok) toolsNavigationAuthorized = true;
+    return result;
 });
 
 function storeSetting(key, value) {
@@ -98,6 +162,7 @@ function windowMode() {
 }
 
 ipcMain.on('settings:set', (event, key, value) => {
+    if (!isGameRenderer(event)) return;
     storeSetting(key, value);
     // El modo de ventana no solo se guarda: se aplica al momento. El cambio de
     // verdad lo confirman los eventos enter/leave-full-screen de la ventana.
@@ -191,9 +256,23 @@ function createWindow() {
 
     // Los enlaces externos se abren en el navegador, no dentro del juego.
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-        shell.openExternal(url);
+        try {
+            const protocol = new URL(url).protocol;
+            if (protocol === 'http:' || protocol === 'https:') {
+                void shell.openExternal(url).catch(() => {});
+            }
+        } catch (_error) {
+            // URL inválida o protocolo no permitido: se descarta.
+        }
         return { action: 'deny' };
     });
+
+    const guardNavigation = (event, url) => {
+        if (isAllowedNavigation(url, mainWindow.webContents.getURL())) return;
+        event.preventDefault();
+    };
+    mainWindow.webContents.on('will-navigate', guardNavigation);
+    mainWindow.webContents.on('will-redirect', guardNavigation);
 
     // F11 pantalla completa, F12 devtools, Ctrl+R recargar. En macOS los atajos
     // son otros: F11 y F12 los tiene cogidos el sistema, así que allí valen
@@ -224,7 +303,9 @@ function createWindow() {
 
 // Canal deliberadamente limitado para que el botÃ³n Salir del juego cierre la
 // aplicaciÃ³n sin dar al renderizador acceso a APIs de Node/Electron.
-ipcMain.on('app:quit', () => app.quit());
+ipcMain.on('app:quit', (event) => {
+    if (isGameRenderer(event)) app.quit();
+});
 
 app.whenReady().then(async () => {
     configurarMenu();
@@ -241,5 +322,6 @@ app.on('window-all-closed', () => {
 });
 
 app.on('before-quit', async () => {
+    eyeToolsController.stop();
     if (server) await server.close();
 });

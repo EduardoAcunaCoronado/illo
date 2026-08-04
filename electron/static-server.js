@@ -8,9 +8,25 @@
 // al del navegador, sin tocar una línea del juego.
 
 const http = require('http');
+const crypto = require('crypto');
 const fs = require('fs');
 const fsp = require('fs/promises');
 const path = require('path');
+
+const DEV_SERVER_SERVICE = 'project-airi-game-dev';
+const DEV_SERVER_PROTOCOL_VERSION = 1;
+
+function projectRootId(rootDir) {
+    const resolved = path.resolve(rootDir);
+    let canonicalRoot;
+    try {
+        canonicalRoot = fs.realpathSync.native(resolved);
+    } catch (_error) {
+        canonicalRoot = resolved;
+    }
+    if (process.platform === 'win32') canonicalRoot = canonicalRoot.toLowerCase();
+    return crypto.createHash('sha256').update(canonicalRoot).digest('hex').slice(0, 16);
+}
 
 const MIME = {
     '.html': 'text/html; charset=utf-8',
@@ -59,6 +75,33 @@ function resolveInside(root, urlPath) {
 function sendError(res, status) {
     res.writeHead(status, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end(String(status));
+}
+
+function requestHostIsLoopback(req, expectedPort) {
+    const rawHost = req.headers.host;
+    if (typeof rawHost !== 'string' || !rawHost) return false;
+    try {
+        const parsed = new URL(`http://${rawHost}`);
+        const port = parsed.port ? Number.parseInt(parsed.port, 10) : 80;
+        return (
+            ['localhost', '127.0.0.1', '::1'].includes(parsed.hostname) &&
+            port === expectedPort
+        );
+    } catch (_error) {
+        return false;
+    }
+}
+
+function hasPrivatePathSegment(urlPath) {
+    try {
+        const decoded = decodeURIComponent(urlPath.split('?')[0].split('#')[0]);
+        return decoded
+            .replaceAll('\\', '/')
+            .split('/')
+            .some((segment) => segment.startsWith('.'));
+    } catch (_error) {
+        return true;
+    }
 }
 
 const IMMUTABLE_ASSET_EXTENSIONS = new Set([
@@ -125,15 +168,42 @@ function serveFile(req, res, filePath, stat) {
 }
 
 // Arranca el servidor sobre `root` y resuelve con { origin, close }.
-function startServer(rootDir) {
+function startServer(rootDir, options = {}) {
     // Normalizado para que la comprobación anti-traversal compare rutas del
     // mismo formato (en Windows, con las barras que use el sistema).
     const root = path.resolve(rootDir);
+    const host = options.host || '127.0.0.1';
+    const port = Number.isInteger(options.port) ? options.port : 0;
+    const rootId = projectRootId(root);
 
     return new Promise((resolve, reject) => {
+        const sockets = new Set();
         const server = http.createServer(async (req, res) => {
+            const address = server.address();
+            const expectedPort = typeof address === 'object' && address ? address.port : port;
+            if (!requestHostIsLoopback(req, expectedPort)) return sendError(res, 403);
             if (req.method !== 'GET' && req.method !== 'HEAD') {
                 return sendError(res, 405);
+            }
+
+            const requestPath = (req.url || '/').split('?')[0].split('#')[0];
+            if (hasPrivatePathSegment(requestPath)) return sendError(res, 404);
+            if (requestPath === '/api/dev-health') {
+                const body = Buffer.from(
+                    JSON.stringify({
+                        ok: true,
+                        service: DEV_SERVER_SERVICE,
+                        protocolVersion: DEV_SERVER_PROTOCOL_VERSION,
+                        rootId,
+                    }),
+                    'utf8',
+                );
+                res.writeHead(200, {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Content-Length': body.length,
+                    'Cache-Control': 'no-store',
+                });
+                return req.method === 'HEAD' ? res.end() : res.end(body);
             }
 
             const filePath = resolveInside(root, req.url || '/');
@@ -154,16 +224,44 @@ function startServer(rootDir) {
             }
         });
 
+        server.on('connection', (socket) => {
+            sockets.add(socket);
+            socket.once('close', () => sockets.delete(socket));
+        });
+
         server.on('error', reject);
         // Puerto 0 = el sistema elige uno libre. Solo escucha en loopback.
-        server.listen(0, '127.0.0.1', () => {
-            const { port } = server.address();
+        server.listen(port, host, () => {
+            const address = server.address();
             resolve({
-                origin: `http://127.0.0.1:${port}`,
-                close: () => new Promise((done) => server.close(done)),
+                origin: `http://${host}:${address.port}`,
+                close: () =>
+                    new Promise((done) => {
+                        let settled = false;
+                        let forceTimer = null;
+                        const finish = () => {
+                            if (settled) return;
+                            settled = true;
+                            clearTimeout(forceTimer);
+                            done();
+                        };
+                        forceTimer = setTimeout(() => {
+                            for (const socket of sockets) socket.destroy();
+                            if (typeof server.closeAllConnections === 'function') {
+                                server.closeAllConnections();
+                            }
+                            finish();
+                        }, 1200);
+                        server.close(finish);
+                    }),
             });
         });
     });
 }
 
-module.exports = { startServer };
+module.exports = {
+    DEV_SERVER_SERVICE,
+    DEV_SERVER_PROTOCOL_VERSION,
+    projectRootId,
+    startServer,
+};
