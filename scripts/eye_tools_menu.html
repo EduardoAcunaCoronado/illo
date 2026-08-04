@@ -33,6 +33,7 @@
     a { color:inherit; }
     .shell { width:min(1180px, calc(100% - 36px)); margin:0 auto; padding:42px 0 60px; }
     .topbar { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:34px; }
+    .topbar-actions { display:flex; flex-direction:column; align-items:flex-end; gap:10px; flex:0 0 auto; }
     .eyebrow { margin:0 0 7px; color:var(--cyan); font-size:11px; font-weight:900; letter-spacing:.18em; text-transform:uppercase; }
     h1 { margin:0; font-size:clamp(30px, 5vw, 56px); line-height:1; letter-spacing:-.045em; }
     .subtitle { max-width:680px; margin:15px 0 0; color:var(--muted); font-size:16px; }
@@ -42,6 +43,16 @@
       font-size:11px; font-weight:850; letter-spacing:.08em; text-transform:uppercase;
     }
     .server-pill::before { content:""; width:7px; height:7px; border-radius:50%; background:var(--cyan); box-shadow:0 0 12px var(--cyan); }
+    .home-link {
+      display:flex; align-items:center; gap:9px; min-height:44px; padding:7px 13px 7px 8px;
+      border:1px solid rgba(255,209,102,.38); border-radius:13px; color:var(--text); background:rgba(255,209,102,.07);
+      font-size:11px; font-weight:850; letter-spacing:.08em; text-decoration:none; text-transform:uppercase;
+      transition:border-color .16s ease, background .16s ease, transform .16s ease, box-shadow .16s ease;
+    }
+    .home-link:hover { border-color:var(--gold); background:rgba(255,209,102,.13); transform:translateY(-2px); box-shadow:0 0 22px rgba(255,209,102,.15); }
+    .home-link:focus-visible { outline:3px solid var(--gold); outline-offset:3px; }
+    .home-icon { display:grid; place-items:center; width:30px; height:30px; border-radius:9px; color:var(--gold); background:rgba(255,209,102,.12); }
+    .home-icon svg { width:18px; height:18px; fill:currentColor; }
     .summary {
       display:grid; grid-template-columns:repeat(3, 1fr); gap:1px; overflow:hidden; margin-bottom:34px;
       border:1px solid var(--line); border-radius:18px; background:var(--line);
@@ -97,9 +108,14 @@
     @media (max-width:620px) {
       .shell { width:min(100% - 24px, 1180px); padding-top:25px; }
       .topbar { display:block; }
-      .server-pill { width:max-content; margin-top:18px; }
+      .topbar-actions { align-items:flex-start; margin-top:18px; }
+      .server-pill { width:max-content; margin-top:0; }
       .section-head { display:block; }
       .section-head p { margin-top:5px; }
+      .home-link { width:100%; justify-content:center; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      .card,.small-card,.home-link { transition:none; }
     }
   </style>
 </head>
@@ -111,7 +127,13 @@
         <h1>Centro de herramientas</h1>
         <p class="subtitle">Un único punto de entrada para preparar los parpadeos, comprobar el juego y abrir las utilidades de desarrollo.</p>
       </div>
-      <div class="server-pill">Servidor ocular activo</div>
+      <div class="topbar-actions">
+        <a class="home-link" href="http://localhost:8000/?screen=menu" data-project-path="/?screen=menu">
+          <span class="home-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M3 10.75 12 3l9 7.75v9.5a.75.75 0 0 1-.75.75H14.5v-6h-5v6H3.75a.75.75 0 0 1-.75-.75v-9.5Z"/></svg></span>
+          <span>Menú principal</span>
+        </a>
+        <div class="server-pill">Servidor ocular activo</div>
+      </div>
     </div>
 
     <section class="summary" aria-label="Resumen del trabajo ocular">
@@ -153,21 +175,51 @@
 
     <div class="section-head">
       <h2>Juego y utilidades</h2>
-      <p>Se sirven desde el servidor normal del proyecto, en el puerto 8000</p>
+      <p>Se sirven desde el mismo origen del juego (puerto 8000 en navegador)</p>
     </div>
     <section class="tools" aria-label="Utilidades generales">
-      <a class="small-card" href="http://localhost:8000/"><span class="icon">▶</span><span><strong>Abrir el juego</strong><span>Ejecutar Project AI.ri desde el inicio</span></span><span class="port">:8000</span></a>
-      <a class="small-card" href="http://localhost:8000/minijuegos_test.html"><span class="icon">◆</span><span><strong>Prueba de minijuegos</strong><span>Lanzar y revisar minijuegos por separado</span></span><span class="port">:8000</span></a>
-      <a class="small-card" href="http://localhost:8000/generate-assets.html"><span class="icon">＋</span><span><strong>Generador de assets</strong><span>Utilidad general incluida en el proyecto</span></span><span class="port">:8000</span></a>
-      <a class="small-card" href="http://localhost:8000/create_placeholders.html"><span class="icon">▧</span><span><strong>Crear placeholders</strong><span>Generar imágenes temporales de desarrollo</span></span><span class="port">:8000</span></a>
-      <a class="small-card" href="http://localhost:8000/menu_propuestas.html"><span class="icon">☰</span><span><strong>Propuestas de menú</strong><span>Comparar las variantes visuales del menú</span></span><span class="port">:8000</span></a>
-      <a class="small-card" href="http://localhost:8000/centro-control.html"><span class="icon">⌘</span><span><strong>Centro de control legado</strong><span>Accesos antiguos conservados en el proyecto</span></span><span class="port">:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/" data-project-path="/"><span class="icon">▶</span><span><strong>Abrir el juego</strong><span>Ejecutar Project AI.ri desde el inicio</span></span><span class="port" data-project-port>:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/minijuegos_test.html" data-project-path="/minijuegos_test.html"><span class="icon">◆</span><span><strong>Prueba de minijuegos</strong><span>Lanzar y revisar minijuegos por separado</span></span><span class="port" data-project-port>:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/generate-assets.html" data-project-path="/generate-assets.html"><span class="icon">＋</span><span><strong>Generador de assets</strong><span>Utilidad general incluida en el proyecto</span></span><span class="port" data-project-port>:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/create_placeholders.html" data-project-path="/create_placeholders.html"><span class="icon">▧</span><span><strong>Crear placeholders</strong><span>Generar imágenes temporales de desarrollo</span></span><span class="port" data-project-port>:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/menu_propuestas.html" data-project-path="/menu_propuestas.html"><span class="icon">☰</span><span><strong>Propuestas de menú</strong><span>Comparar las variantes visuales del menú</span></span><span class="port" data-project-port>:8000</span></a>
+      <a class="small-card" href="http://localhost:8000/centro-control.html" data-project-path="/centro-control.html"><span class="icon">⌘</span><span><strong>Centro de control legado</strong><span>Accesos antiguos conservados en el proyecto</span></span><span class="port" data-project-port>:8000</span></a>
     </section>
 
     <p class="note"><strong>Los originales están protegidos.</strong> Las herramientas oculares guardan metadatos o copias nuevas; el limpiador no sobrescribe las poses base.</p>
   </main>
 
   <script>
+    const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
+    const GAME_ORIGIN_STORAGE_KEY = 'project-airi-game-origin';
+    const validateGameOrigin = value => {
+      if (!value) return null;
+      try {
+        const url = new URL(value);
+        if (!['http:', 'https:'].includes(url.protocol) || !LOOPBACK_HOSTS.has(url.hostname.toLowerCase())) return null;
+        return url.origin;
+      } catch (error) {
+        return null;
+      }
+    };
+    const requestedGameOrigin = validateGameOrigin(new URLSearchParams(location.search).get('gameOrigin'));
+    let storedGameOrigin = null;
+    try {
+      storedGameOrigin = validateGameOrigin(sessionStorage.getItem(GAME_ORIGIN_STORAGE_KEY));
+      if (requestedGameOrigin) sessionStorage.setItem(GAME_ORIGIN_STORAGE_KEY, requestedGameOrigin);
+    } catch (error) {
+      // El enlace sigue funcionando aunque el navegador bloquee sessionStorage.
+    }
+    const fallbackGameHost = location.hostname === '127.0.0.1' ? '127.0.0.1' : 'localhost';
+    const gameOrigin = requestedGameOrigin || storedGameOrigin || `http://${fallbackGameHost}:8000`;
+    const gamePort = new URL(gameOrigin).port || (gameOrigin.startsWith('https:') ? '443' : '80');
+    document.querySelectorAll('[data-project-path]').forEach(link => {
+      link.href = new URL(link.dataset.projectPath, `${gameOrigin}/`).href;
+    });
+    document.querySelectorAll('[data-project-port]').forEach(label => {
+      label.textContent = `:${gamePort}`;
+    });
+
     const setText = (id, value) => { document.getElementById(id).textContent = value; };
     const safeJson = async url => {
       const response = await fetch(url, {cache:'no-store'});

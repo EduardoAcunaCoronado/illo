@@ -1,6 +1,6 @@
 {
-  "version": "gallery-2026-08-03-3",
-  "generatedAt": "2026-08-03",
+  "version": "gallery-2026-08-04-3",
+  "generatedAt": "2026-08-04",
   "title": "Galería de Project AI.ri: Transfurmados",
   "description": "Arte canónico, ilustraciones promocionales y extras animados.",
   "categories": [
@@ -31,13 +31,13 @@
   ],
   "counts": {
     "wallpapers": 4,
-    "illustrations": 12,
-    "characters": 25,
+    "illustrations": 13,
+    "characters": 26,
     "backgrounds": 63,
     "videos": 1,
-    "all": 105,
-    "characterPoses": 155,
-    "animatedCharacterPoses": 130
+    "all": 107,
+    "characterPoses": 157,
+    "animatedCharacterPoses": 129
   },
   "items": [
     {
@@ -140,6 +140,21 @@
       "chapter": 2,
       "origin": "chapter",
       "thumbnail": "assets/images/gallery/thumbnails/cg-ketchlings-factory-welcome.webp"
+    },
+    {
+      "id": "cg-caja-guindillas",
+      "title": "Caja Guindillas",
+      "description": "Ilustración narrativa de Capítulo 2: Kingdom Ketchup.",
+      "type": "image",
+      "category": "illustrations",
+      "src": "assets/images/cg/chapter2/caja_guindillas.png",
+      "alt": "Caja Guindillas",
+      "fit": "cover",
+      "downloadable": false,
+      "spoiler": false,
+      "chapter": 2,
+      "origin": "chapter",
+      "thumbnail": "assets/images/gallery/thumbnails/cg-caja-guindillas.webp"
     },
     {
       "id": "cg-golden-cap-portal-activation",
@@ -1084,6 +1099,43 @@
         }
       ],
       "thumbnail": "assets/images/gallery/thumbnails/char-carlos.webp"
+    },
+    {
+      "id": "char-ciervo-neutral",
+      "title": "Ciervo",
+      "description": "Diseño canónico de Ciervo con 2 poses disponibles.",
+      "type": "image",
+      "category": "characters",
+      "src": "assets/images/characters/ciervo/ciervo_neutral.webp",
+      "alt": "Diseño de personaje de Ciervo.",
+      "fit": "contain",
+      "downloadable": false,
+      "spoiler": false,
+      "origin": "character",
+      "characterKey": "ciervo",
+      "poses": [
+        {
+          "id": "neutral",
+          "key": "neutral",
+          "label": "Neutral",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_neutral.webp",
+          "alt": "Ciervo, pose neutral.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-neutral.webp"
+        },
+        {
+          "id": "seated",
+          "key": "seated",
+          "label": "Seated",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated.webp",
+          "alt": "Ciervo, pose seated.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated.webp"
+        }
+      ],
+      "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral.webp"
     },
     {
       "id": "char-edu-happy",
@@ -3659,30 +3711,9 @@
           "key": "worried",
           "label": "Preocupado",
           "type": "image",
-          "src": "assets/images/characters/samu/samu_worried.webp",
+          "src": "assets/images/characters/samu/samu_worried_v2.webp",
           "alt": "Samu, pose preocupado.",
           "spoiler": false,
-          "animation": {
-            "frames": [
-              {
-                "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
-                "duration": 65
-              },
-              {
-                "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp",
-                "duration": 95
-              },
-              {
-                "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
-                "duration": 65
-              }
-            ],
-            "delayRange": [
-              1800,
-              4200
-            ],
-            "loop": true
-          },
           "thumbnail": "assets/images/gallery/thumbnails/char-samu--pose-worried.webp"
         },
         {

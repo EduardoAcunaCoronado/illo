@@ -141,6 +141,7 @@ class VisualNovelEngine {
             ]);
             this.applyWhiteHaloCopies(characterKey, character, whiteHaloCopies);
             this.applyBlinkIntermediateFrames(characterKey, character, intermediates);
+            this.applyWhiteHaloAnimationFrames(characterKey, character, whiteHaloCopies);
             this.applyLayerBlinkFrames(characterKey, character, layerBlinks);
             this.characters[characterKey] = character;
             return character;
@@ -191,6 +192,27 @@ class VisualNovelEngine {
             character.poses[pose] = current && typeof current === 'object'
                 ? { ...current, src: entry.cleaned }
                 : entry.cleaned;
+        });
+    }
+
+    applyWhiteHaloAnimationFrames(characterKey, character, manifest) {
+        const animations = character?.animations || character?.poseAnimations;
+        if (!animations || !manifest?.sprites) return;
+        Object.entries(animations).forEach(([pose, config]) => {
+            const replacements = manifest.sprites[`${characterKey}.${pose}`]?.animationFrames;
+            if (!replacements || typeof replacements !== 'object') return;
+            const frames = Array.isArray(config) ? config : config?.frames;
+            if (!Array.isArray(frames)) return;
+            const replaceFrame = frame => {
+                const source = this.animationFramePath(character, frame);
+                const cleaned = replacements[source];
+                if (!cleaned) return frame;
+                return frame && typeof frame === 'object'
+                    ? { ...frame, src: cleaned }
+                    : cleaned;
+            };
+            if (Array.isArray(config)) animations[pose] = frames.map(replaceFrame);
+            else config.frames = frames.map(replaceFrame);
         });
     }
 
@@ -671,6 +693,11 @@ class VisualNovelEngine {
     // Vaciar el fondo del todo (lo usa el final del compi en cap. 6/créditos)
     clearBackground() {
         this.bgPan({ reset: true });
+        // Igual que un setBackground con corte seco, vaciar el fondo debe
+        // cancelar cualquier crossfade pendiente para que su temporizador no
+        // restaure después la imagen que se acaba de retirar.
+        clearTimeout(this._bgSwapTimer);
+        this._bgSwapTimer = null;
         this.currentBackgroundPath = null;
         const bg = document.getElementById('background');
         const bgB = document.getElementById('background-b');
@@ -1369,6 +1396,14 @@ class VisualNovelEngine {
     }
 
     runChiliHarvestRound(options = {}) {
+        if (window.ChiliHarvestMinigame) {
+            return window.ChiliHarvestMinigame.play(options);
+        }
+        console.warn('ChiliHarvestMinigame no está cargado.');
+        return Promise.resolve(0);
+    }
+
+    runLegacyChiliHarvestRound(options = {}) {
         const rawDuration = Number(options.duration) || 22000;
         const duration = rawDuration <= 120 ? rawDuration * 1000 : rawDuration;
         const powerGoal = Number(options.powerGoal) || 28;

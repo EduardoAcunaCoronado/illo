@@ -340,6 +340,31 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
 - Ketchup boss: bullet hell importado del trabajo de José Manuel. Samu se mueve
   en X/Y, dispara guindillas y esquiva ketchup. Más poder vuelve el combate más
   asequible aumentando daño/cadencia y ralentizando los patrones enemigos.
+  Desde 2026-08-04, Zip usa perfiles de hitbox compuesta por frame/familia
+  (cabeza, torso y extremidades); guindillas y botellas mantienen elipses simples
+  ajustadas. La colisión se calcula en píxeles mediante SAT, respeta la rotación
+  de los proyectiles y evita deformaciones por la relación de aspecto. Los
+  valores canónicos viven en ketchup-hitboxes.js y el editor permite modificar
+  cada pieza por separado en localStorage. Las elipses se aproximan con 32
+  vértices y el marcador de Samu se atenúa con borde discontinuo durante sus
+  0,85 segundos de invulnerabilidad. El editor organiza selección, geometría e
+  historial, ofrece tooltips, ajustes directos, copiar/pegar, deshacer/rehacer,
+  atajos y restauración granular. Cualquier objeto admite crear, duplicar,
+  renombrar y eliminar piezas: los objetos simples se promueven a `parts`, las
+  piezas personalizadas se cargan en el runtime y `{ disabled: true }` desactiva
+  una pieza canónica por perfil. En escritorio, selección y geometría se muestran
+  en dos columnas para mantener todos los controles visibles a 1280 x 720. La
+  geometría se ajusta con sliders coloreados, valores visibles, botones +/- y
+  presets de centrado, proporción cuadrada y rotación cero; las pastillas de
+  valor siguen siendo campos numéricos editables para ajustes exactos. La
+  previsualización usa las dimensiones reales del runtime sobre un campo de
+  referencia de 920 x 600 px y respeta el `object-fit: contain` del juego
+  (Samu visible 60,24 x 94 px, Zip 67,54 x 160 px y proyectiles
+  21,33 x 32 / 22,67 x 34 px), evitando que las cajas cambien de proporción al
+  pasar del editor al minijuego. Los marcadores del runtime y el depurador usan
+  `clientWidth`/`clientHeight` del campo para no aplicar dos veces su escala
+  visual; `getBoundingClientRect()` queda reservado a las coordenadas de
+  puntero.
 - Chase: coche lateral, esquivar motos/obstáculos; dificultad por storyDelay. Desde
   2026-07-30 el coche usa seis poses con distintas fases de sus ruedas originales
   y una carretera nocturna RGBA más detallada; el skyline lejano conserva un
@@ -537,8 +562,12 @@ REGLAS PARA CAMBIOS FUTUROS
   patas y no atribuirle zapatillas, zapatos u otro calzado.
 - El fondo activo de la plaza de Furrielva es
   `assets/images/backgrounds/shared/iglesia_furrielva_v2_4k.webp` (3840x2160). Mantiene la
-  iglesia, mercado, fuente y reparto animal del original; no volver a enlazar
-  `iglesia.png` como fondo principal del capítulo 2.
+  iglesia, mercado, fuente y reparto animal del original e integra el relieve
+  horizontal de cinco figuras coronadas y la vidriera central de cinco regentes.
+  La variante de día, con la misma composición y luces prácticas atenuadas, es
+  `assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_dia_v2_4k.webp`.
+  Los maestros PNG integrados viven en `workbench/sources/images/backgrounds/chapter2/furrielva/`;
+  no volver a enlazar `iglesia.png` como fondo principal del capítulo 2.
 - La investigación de Furrielva usa un móvil horizontal ficticio con **Furry
   Maps**. El mapa activo es
   `assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp`:
@@ -819,6 +848,16 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   smirk, angry y shadow en `assets/images/characters/elion_husk/`.
 - Samu, Edu, Tony y José tienen pose RGBA `human` y aparecen ya destransformados
   en el pisito durante el final luminoso.
+- Las formas humanas canónicas son las figuras completas situadas a la izquierda
+  de sus hojas de diseño. Sus bases se encajan de forma uniforme en 887x1774,
+  sin estirar las piernas; hojas y maestros viven en
+  `workbench/sources/images/characters/humans/<personaje>/`. Los assets deformados
+  sustituidos el 2026-08-04 quedaron archivados bajo
+  `workbench/archive/images/characters/humans/distorted_2026-08-04/`.
+- Los parpadeos humanos de Edu, Tony, José y Samu se reconstruyen sólo dentro de
+  dos máscaras oculares registradas sobre la cabeza. Base, semicerrado y cerrado
+  comparten exactamente el mismo alfa para impedir saltos, parches o basura fuera
+  de los ojos.
 - Regenerar el catálogo/miniaturas con `scripts/build_gallery_manifest.py`; no
   mantener un inventario paralelo a mano.
 - Juego y galería cargan `sprite_white_halo_cleaned.json` y priorizan toda copia
@@ -871,25 +910,32 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   lienzo se desplaza con Espacio/Alt + arrastrar o con el botón central, sin activar
   el pincel durante el gesto. `Base
   de trabajo` permite escoger el
-  sprite fuente protegido, la copia limpia registrada o un archivo local de igual
-  resolución. Si existe una copia se usa por defecto; cambiar de base o de pose
-  avisa si hay cambios sin guardar. Ver/restaurar toman esa base, mientras Guardar
-  copia sólo actualiza `sprite_halo_cleaned` y nunca el fuente. Incluye además
-  `Quitar halo exterior`, que parte
+  sprite fuente protegido, la copia limpia registrada o un respaldo PNG/WebP de
+  resolución exactamente igual. El respaldo puede elegirse con
+  `Importar PNG/WebP…` o arrastrarse sobre el lienzo; recupera sus píxeles RGBA como
+  base pendiente de guardar, pero no el historial Deshacer/Rehacer ni los ajustes
+  de la sesión anterior. Si existe una copia se usa por defecto; cambiar de base o
+  de pose avisa si hay cambios sin guardar. Ver/restaurar toman esa base, mientras
+  Guardar copia sólo actualiza `sprite_halo_cleaned` y nunca el fuente. Incluye
+  `Limpieza segura (recomendada)`, que siempre reconstruye desde el fuente
+  protegido: confirma halo conectado al exterior, protege relleno/color/tinta,
+  restaura cualquier píxel protegido alcanzado por una microabertura y rechaza
+  automáticamente una vista si conserva menos del 90 % del soporte o del
+  componente principal. Incluye además `Limpieza por umbral (avanzada)`, que parte
   de las zonas transparentes, borra en bloque cualquier residuo de fondo hasta el
   alcance elegido y usa los trazos negros o casi negros suficientemente opacos
   como barrera protectora. El control `Solidez` permite atravesar un fringe negro
   semitransparente y el halo blanco posterior hasta detenerse en el contorno real;
-  `Pelado` retira de 0 a 3 capas oscuras exteriores (1 por defecto) para eliminar
-  la última costura de antialias sin sacrificar el cuerpo principal del contorno.
+  `Pelado` retira de 0 a 3 capas oscuras exteriores (0 por defecto). Un valor mayor
+  elimina tinta de forma deliberada y exige revisión ampliada sobre negro y magenta.
   `Cuentagotas tope` permite muestrear directamente el RGB del contorno bueno;
   `Margen color` agrupa tonos próximos y `Solidez` define el núcleo opaco. Desde
   él se protegen hasta cuatro píxeles conectados del mismo tono para conservar el
   antialias de detalles y puntas, mientras el fringe exterior separado por el halo
   se elimina. `Automático` o un cambio de pose borran la muestra y recuperan
   la barrera por luminosidad.
-  La expansión del exterior es de 8 vecinos, incluyendo diagonales, para limpiar
-  halos residuales atrapados en puntas y entrantes sin saltarse la barrera elegida.
+  La expansión exterior es de 4 vecinos, sin diagonales, para que un microcorte del
+  contorno no comunique el fondo con la axila o el interior del personaje.
   `Quitar sólo halo claro` es una segunda pasada conservadora: desde la transparencia
   sólo atraviesa blancos/grises admitidos por Tolerancia hasta Alcance y nunca cruza
   negros o colores, por lo que remata residuos sin erosionar detalles oscuros.
@@ -897,19 +943,65 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   sólo recorre desde el exterior píxeles con alfa menor o igual a `Alfa residual`
   (48 por defecto), se detiene ante mayor opacidad y también respeta Alcance.
   `Suavizar borde` remata dientes de sierra sin desenfocar el interior: aplica una
-  cobertura alfa 3×3 sólo en la frontera con transparencia, reconstruye el color
-  exterior desde vecinos visibles y ofrece intensidad 10–100% con Deshacer.
+  cobertura alfa 3×3 contractiva sólo sobre píxeles ya visibles de la frontera;
+  nunca crea alfa ni copia color fuera de la silueta y ofrece intensidad 10–100%
+  con Deshacer.
   El pincel tiene modos `Limpiar`, `Borrar` y `Restaurar`. Borrar reduce el alfa de
   cualquier color con tamaño, borde suave y fuerza; Restaurar repinta localmente
-  desde la captura anterior a la última limpieza o,
-  opcionalmente, desde la base de trabajo elegida. La fuente anterior se mantiene durante
-  varios trazos restauradores y cada trazo sigue siendo deshacer/rehacer independiente.
-  toda la operación se registra como un único paso reversible. Cada control ofrece
+  desde la captura anterior a la última limpieza, desde la base de trabajo elegida
+  o desde un búfer independiente del sprite original protegido. Esta tercera opción
+  permite rescatar detalles ausentes en una copia limpia sin cambiar la base y se
+  invalida al cambiar de pose para evitar cruces entre personajes. La fuente anterior
+  se mantiene durante varios trazos restauradores y cada trazo sigue siendo
+  deshacer/rehacer independiente. Junto al selector, `Ver original` abre la fuente
+  protegida en otra pestaña y `Ubicación` abre Explorer seleccionando el archivo
+  exacto; ninguno cambia la base, el lienzo, el historial ni la copia guardada.
+  `Comprobar detalle` llama a `POST /api/white-halo-protection` sin escribir y
+  superpone cada píxel problemático: rosa para relleno/tinta protegidos reducidos,
+  amarillo sólo como localizador alrededor de ellos y morado para alfa expandido.
+  Cualquier cambio del lienzo invalida el diagnóstico. `Restaurar protegidos` pide
+  al mismo endpoint `repair: true`, copia exclusivamente el RGBA exacto de los
+  puntos rosas desde el fuente canónico, conserva intacto todo lo demás y forma un
+  único paso deshacible; no corrige las expansiones moradas.
+  Cada operación global se registra como un único paso reversible. Cada control ofrece
   tooltip breve al pasar el puntero o enfocarlo y un icono redondo `?` con ayuda
-  ampliada y accesible por teclado. Nunca sobrescribe fuentes: guarda PNG RGBA en
+  ampliada y accesible por teclado. Nunca sobrescribe fuentes: guarda WebP RGBA
+  sin pérdida en
   `assets/images/characters/sprite_halo_cleaned/` e índice en
   `assets/metadata/sprite_white_halo_cleaned.json`; genera además miniaturas WebP
-  de 156×156 y 480×270 consumidas por la galería.
+  de 156×156 y 480×270 consumidas por la galería. El bloque de archivo muestra la
+  ruta exacta del WebP y las dos miniaturas antes de guardar. `Descargar WebP
+  actual` crea mediante el servidor local un respaldo RGBA WebP sin pérdida del
+  lienzo, sin damero, zoom ni UI; no valida, no toca el manifiesto y no genera
+  miniaturas, por lo que sigue rescatando el lienzo aunque falle o se pause
+  `Guardar copia`; puede reimportarse por botón o arrastre, aunque no reconstruye
+  el historial. No sustituye al guardado validado. Airi, Carlos, Samu y toda salida
+  nueva usan este formato. El PNG queda sólo como transporte/historial interno y
+  para originales o másteres de trabajo en `workbench/`, nunca como copia limpia
+  runtime.
+  Si una pose mantiene un parpadeo full-sprite con el mismo alfa que la base,
+  Guardar copia genera también sus frames WebP con la máscara limpia y los registra
+  en `animationFrames`; motor y galería remapean tanto el intermedio como el extremo.
+  `carlos.neutral` usa esta vía para que el halo no reaparezca al parpadear. Las
+  poses con capas oculares no duplican frames. `validate:content` comprueba `VP8L`,
+  canal alfa y dimensiones de bases, miniaturas y frames derivados.
+  `Guardar copia` ejecuta primero el preflight de protección y se pausa sin escribir
+  cuando detecta rosa o morado. El endpoint de diagnóstico/reparación nunca modifica
+  runtime, miniaturas ni metadatos. `Guardar de todos modos`, rojo, sólo se habilita
+  para la revisión exacta ya diagnosticada cuando hay reducción rosa pero ninguna
+  expansión morada; cualquier edición invalida su huella. Permite conservar un
+  suavizado intencional, actualiza WebP/miniaturas/frames, deja intacto el fuente y
+  marca la copia como `validation.forced: true` y `REVISAR`. Nunca omite dimensiones,
+  formato ni expansión de alfa. Con la copia persistida visible y sin cambios,
+  `Marcar como LIMPIO` aprueba la revisión sin tocar imágenes: conserva toda la
+  excepción y añade `validation.review` con fecha y huellas de metadatos, WebP,
+  miniaturas y frames. Si un byte cambia, la revisión queda obsoleta; un guardado
+  nuevo la reinicia. `POST /api/white-halo-review` modifica sólo el manifiesto y
+  guardado/revisión comparten bloqueo. El guardado definitivo restaura el RGB fuente en
+  todo píxel retenido, normaliza RGB a cero donde alfa es cero y registra
+  métricas de protección/píxeles/componentes. `Motas aisladas (avanzado)` elimina
+  componentes separados de hasta 64 píxeles; hay que revisar que no sean brillos,
+  lágrimas o accesorios pequeños legítimos.
   La propia pantalla incorpora una guía desplegable de 5 pasos y una leyenda de
   decisión síntoma→herramienta para halo completo, línea blanca, borde moteado,
   pérdida de detalles y guardado final.
@@ -996,16 +1088,16 @@ ANIMACIÓN, ESTADO Y AUDIO DE LA REVISIÓN
 - `showCharacter`/`setPose` sustituyen el sprite de forma atómica; no existe capa
   fantasma ni se superponen dos poses. Las fichas admiten `animations` con varios
   sprites de una misma pose, duraciones por frame y espera aleatoria entre ráfagas.
-  Hay parpadeo dibujado en 135 de las 160 poses declaradas: 130 activas y las 5
-  poses del ePod legado, reemplazado por Nexo. Las 130 activas tienen intermedio
-  en `assets/metadata/blink_eye_intermediates.json`: 117 cierres y 13 aperturas
+  Hay parpadeo dibujado en 134 de las 160 poses declaradas: 129 activas y las 5
+  poses del ePod legado, reemplazado por Nexo. Las 129 activas tienen intermedio
+  en `assets/metadata/blink_eye_intermediates.json`: 116 cierres y 13 aperturas
   inversas. Todas recorren reposo/medio/extremo/medio/reposo.
   Las fuentes únicas viven en `assets/images/characters/eye_intermediate_sources/`
   y se generan/sanitizan con `scripts/build_blink_intermediates.py`; la galería y
   `engine.js` inyectan automáticamente el intermedio sin duplicarlo en las fichas.
   Los 116 assets WebP únicos viven en `animations/blinks/`, mantienen tamaño y
   alfa del sprite base y no mueven, escalan ni deforman el cuerpo. Se excluyen
-  solo 25 poses sin ojos animables (siluetas, móviles, formas amorfas, caras
+  solo 26 poses sin ojos animables (siluetas, móviles, formas amorfas, caras
   tapadas y gafas opacas). El compositor es
   `scripts/compose_character_blink.py` y requiere máscaras oculares explícitas.
   Las 17 poses manuales de 3C/Airi ya usan en `engine.js` y en la galería la
@@ -1030,9 +1122,11 @@ ANIMACIÓN, ESTADO Y AUDIO DE LA REVISIÓN
 - Todo archivo bajo `assets/audio/music/` y los IDs `bg_music`/`music` obedecen al
   deslizador de música incluso si no están en bucle; SFX sigue su control separado.
 - Antes de integrar cambios de contenido ejecutar `npm run validate:content`.
-  Además de capítulos/personajes, verifica capitalización exacta, speakers,
-  posiciones, campos de acciones, estructura/duplicados de galería, miniaturas,
-  rutas literales ejecutables y exclusiones sensibles del build.
+  Además de capítulos/personajes, compara las acciones despachadas por el motor
+  con el inventario validado y `DOCUMENTACION.md`, revisa `actions` y
+  `afterActions`, capitalización exacta, speakers, posiciones, campos de
+  acciones, estructura/duplicados de galería, miniaturas, rutas literales
+  ejecutables y exclusiones sensibles del build.
 
 OPTIMIZACIÓN Y CONSERVACIÓN DE ASSETS — 2026-08-03
 - `assets/` queda reservado para runtime y herramientas; fuentes editables van a
@@ -1118,3 +1212,54 @@ ASSETS VISUALES INTEGRADOS DESDE MASTER — 2026-08-03
 - Los nueve frames de carrera de Samu están en WebP bajo
   `assets/images/characters/samu/run/`; la hoja conjunta y fuentes PNG se guardan
   en `workbench/` y no deben reintroducirse como runtime.
+
+POSE WORRIED V2 DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-04
+- La clave canónica sigue siendo `samu.worried`, pero ahora apunta a
+  `assets/images/characters/samu/samu_worried_v2.webp`; la pose independiente
+  `nervous_scratch` se eliminó. Por mantener la clave, la V2 sustituye
+  automáticamente los 33 usos de historia sin editar los capítulos. El PNG
+  protegido vive en
+  `workbench/originals/runtime/assets/images/characters/samu/samu_worried_v2.png`
+  y la entrega/máster editables en
+  `workbench/sources/images/characters/samu/worried/`.
+- La copia limpia runtime es
+  `assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp`;
+  juego y galería la priorizan automáticamente. Sus miniaturas de 156×156 y
+  480×270 son también WebP en la misma carpeta. La normalización descartó 1.356
+  píxeles que ampliaban el alfa, restauró 80 protegidos y el resultado final
+  retira 22.543 píxeles de mate con cero expansión y cero relleno/tinta protegidos
+  perdidos.
+- El parpadeo antiguo de sprite completo para `worried` se desactivó hasta crear
+  capas compatibles con V2; alternar los frames de 1024×1024 con el lienzo nuevo
+  de 1209×1301 produciría un salto visible. La animación especial `charred_shake`
+  y su fallback de movimiento reducido terminan igualmente en la copia limpia V2.
+- En ejecución local, el menú principal ofrece accesos con iconos a `/tools` y
+  `minijuegos_test.html`. No se muestran en una web pública ni en Electron
+  empaquetado, porque son utilidades de desarrollo y no forman parte del instalador.
+- Las herramientas y la pantalla de pruebas vuelven mediante `?screen=menu`; el
+  juego consume ese parámetro y abre directamente el menú, sin repetir advertencia
+  ni introducción. `/tools` conserva el origen/puerto del juego en `gameOrigin`.
+- `start.bat` y `npm run dev:web` supervisan juntos el servidor estático de juego
+  en 127.0.0.1:8000 y Tools en 127.0.0.1:8011; al salir sólo cierran procesos
+  propios. El botón valida `/api/health`, conserva el menú si Tools está caído y
+  Electron dev puede arrancarlo bajo demanda mediante IPC cerrado.
+- La API de Tools identifica servicio/protocolo en `/api/health`; todos los GET y
+  HEAD de ambos servidores exigen Host loopback/puerto y bloquean dotfiles, y sus
+  POST validan también Origin para impedir lectura o escritura por DNS rebinding.
+- Juego y Tools publican también un `rootId` canónico y sólo se reutilizan si
+  coincide con esta copia del repositorio. El cierre se registra antes del primer
+  `await`, por lo que cancelar durante el arranque no deja Python huérfano.
+- Electron limita la navegación a los orígenes del juego y de Tools ya validado;
+  los IPC de ajustes y salida sólo aceptan al renderer del juego.
+- Los health checks tienen deadline absoluto y el servidor fuerza las conexiones
+  abiertas tras una gracia breve, evitando bloqueos por respuestas o vídeos lentos.
+
+CIERVO DEL PATIO PREPARADO PARA USO FUTURO — 2026-08-04
+- Clave canónica `ciervo`, nombre visible `Ciervo` y ficha `characters/ciervo.json`.
+- Poses `neutral` y `seated` en `assets/images/characters/ciervo/` con nombres
+  `ciervo_neutral.webp` y `ciervo_seated.webp`; la pose sentada incluye la mecedora.
+- No está colocado en capítulos ni precargado: `showCharacter` lo cargará a demanda.
+- Maestros y originales protegidos se conservan bajo `workbench/.../ciervo/`; la
+  variante realista rechazada queda archivada fuera del runtime.
+- Galería regenerada con ambas poses. Validación: 7 capítulos, 64 escenas,
+  920 líneas, 27 personajes y 1571 referencias de assets, sin errores.

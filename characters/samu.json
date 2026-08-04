@@ -14,7 +14,7 @@
     "embarrassed": "assets/images/characters/samu/samu_embarrassed.webp",
     "shocked": "assets/images/characters/samu/samu_shocked.webp",
     "thinking": "assets/images/characters/samu/samu_thinking.webp",
-    "worried": "assets/images/characters/samu/samu_worried.webp",
+    "worried": "assets/images/characters/samu/samu_worried_v2.webp",
     "valla": "assets/images/characters/samu/samu_valla.webp",
     "curious": "assets/images/characters/samu/samu_curious.webp",
     "charred_blink": "assets/images/characters/samu/samu_charred_whiteeyes.webp",
@@ -127,27 +127,6 @@
         "duration": 95
       }
     ],
-    "worried": {
-      "frames": [
-        {
-          "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
-          "duration": 65
-        },
-        {
-          "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp",
-          "duration": 95
-        },
-        {
-          "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
-          "duration": 65
-        }
-      ],
-      "delayRange": [
-        1800,
-        4200
-      ],
-      "loop": true
-    },
     "charred_blink": {
       "frames": [
         {

@@ -5,9 +5,9 @@ uno para quien juega y otro para quien desarrolla. `LEER_PRIMERO.md` es sólo
 la portada y el acceso rápido. Las plantillas de `.github/` son excepciones
 operativas, no documentación paralela.
 
-> **Estado verificado: 2026-08-03.** La validación actual reconoce 7 capítulos,
-> 64 escenas, 917 líneas, 26 fichas de personaje y 1.488 referencias de assets.
-> La galería generada contiene 105 entradas, 155 poses y 130 poses con
+> **Estado verificado: 2026-08-04.** La validación actual reconoce 7 capítulos,
+> 64 escenas, 920 líneas, 27 fichas de personaje y 1.571 referencias de assets.
+> La galería generada contiene 107 entradas, 157 poses y 129 poses con
 > parpadeo. Estas cifras son una fotografía
 > fechada; `npm run validate:content` es la fuente actual.
 
@@ -38,7 +38,9 @@ La versión instalada de Windows no necesita Python ni Node.js. Para ejecutar el
 repositorio hacen falta una de estas dos opciones:
 
 - App de escritorio: Node.js y npm.
-- Navegador: Python 3 u otro servidor HTTP local y un navegador moderno.
+- Navegador sólo para jugar: Python 3 u otro servidor HTTP local y un navegador moderno.
+- Navegador con los accesos de desarrollo: Node.js para el supervisor y Python 3
+  con las dependencias gráficas para Tools.
 
 Se recomienda pantalla 16:9, ratón y teclado. El escenario se dibuja a 1280×720
 y se escala conservando proporción; en otras relaciones de aspecto pueden
@@ -61,13 +63,20 @@ npm install
 npm start
 ```
 
-Navegador:
+Navegador recomendado —inicia el juego y Tools como una sola sesión supervisada—:
 
 ```powershell
-python -m http.server 8000
+start.bat
 ```
 
-Abre <http://localhost:8000/>. También se puede ejecutar `start.bat`. No abras
+El lanzador abre <http://127.0.0.1:8000/>, sirve Tools en el puerto 8011 y
+cierra los dos servicios que haya creado al pulsar `Ctrl+C`. También detecta y
+reutiliza una instancia válida de esta misma copia que ya estuviese activa, sin
+finalizar procesos ajenos. Cada servicio publica una huella de su raíz para no
+mezclar assets entre checkouts. `python -m http.server 8000 --bind 127.0.0.1`
+sigue sirviendo para probar sólo el juego, pero el acceso integrado a Tools
+requiere `start.bat`/`npm run dev:web`; Tools también puede abrirse directamente
+con `npm run tools:eyes`. No abras
 `index.html` mediante `file://`: el juego carga JSON, audio y vídeo por HTTP y
 esa vía produce pantallas vacías o capítulos que no aparecen.
 La pestaña del navegador muestra el emblema de WildSoft como icono del juego.
@@ -96,6 +105,18 @@ desde Configuración.
 | **Configuración** | Ajusta sonido, vídeo de escritorio y ayudas opcionales. |
 | **Salir** | Cierra la app de escritorio. Un navegador no puede cerrar de forma fiable su propia pestaña. |
 | **♪** | Vuelve a reproducir el tema principal del menú. |
+| **Tools** | Comprueba y abre el centro local de herramientas gráficas del puerto 8011. Si está apagado, conserva el menú y muestra cómo iniciarlo. |
+| **Minijuegos** | Abre `minijuegos_test.html` en el mismo servidor del juego para lanzar cada prueba por separado. |
+
+Los dos accesos aparecen como iconos SVG en la esquina superior derecha cuando
+el repositorio se ejecuta en local o mediante Electron de desarrollo. Se
+ocultan en el instalador y en un hosting público porque esas utilidades no forman
+parte del juego distribuido. Tanto el centro de herramientas como la prueba de
+minijuegos incluyen un botón **Menú principal** que regresa directamente al
+menú, sin repetir el aviso ni el opening. En Electron de desarrollo conservan
+automáticamente el puerto interno elegido por la aplicación; Tools se inicia
+bajo demanda desde el proceso principal. En navegador, `start.bat` levanta
+juego y Tools juntos.
 
 ## Controles generales
 
@@ -187,6 +208,13 @@ principales actuales son:
 | Batallas por turnos | Ratón o toque para elegir habilidad, objetivo, objeto o cancelar. |
 | Canalización de runas | Mantén y suelta `A`, `S`, `D` y `F`, o usa los cuatro botones en pantalla, para equilibrar las barras. |
 | Créditos interactivos | Clic o toque en **Clic para saltar**. |
+
+En el bullet hell, los impactos siguen la silueta útil y no el rectángulo
+transparente completo de cada imagen. Zip combina varias zonas según su pose;
+las guindillas y botellas usan una zona elíptica sencilla y ajustada al objeto
+visible. Tras recibir daño, Samu tiene 0,85 segundos de invulnerabilidad: su
+indicador cambia a línea discontinua y se atenúa mientras los solapes no causan
+otro impacto.
 
 Los juegos de conducción y vuelo tienen además pausa propia. Si se pierde una prueba
 obligatoria aparece la opción de reintentar. Opciones y Escenas permiten
@@ -285,6 +313,7 @@ sección y `LEER_PRIMERO.md` deben actualizarse en el mismo cambio.
 ```powershell
 npm install                 # dependencias
 npm start                   # Electron de desarrollo
+npm run dev:web             # juego 8000 + Tools 8011, cierre conjunto
 npm run validate:content    # JSON, relaciones y assets
 npm run audit:assets        # conversiones pendientes, sin escribir
 npm run optimize:assets     # conserva originales y optimiza runtime
@@ -310,16 +339,20 @@ notarización requieren credenciales externas; se explican en la referencia.
 | `p5-effects.js` | Biblioteca visual heredada; el nombre del archivo es técnico y no define la identidad actual. |
 | `battle-minigame.js` / `battle-styles.css` | Combate por turnos y su UI. |
 | `ketchup-minigame.js` | Bullet hell contra Zip. |
+| `ketchup-hitboxes.js` | Perfiles canónicos de colisión de Zip, Samu, guindillas y botellas. |
+| `hitbox-debugger.js` / `hitbox-editor.html` | Depuración en vivo y ajuste persistente de hitboxes simples o compuestas. |
 | `rune-channeling-minigame.js` | Canalización cooperativa de runas. |
 | `credits-minigame.js` | Créditos interactivos. |
+| `minijuegos_test.html` | Lanzador aislado de minijuegos; conserva el origen del juego y ofrece regreso al menú. |
 | `chapters/*.json` | Guion ejecutable: capítulos, escenas, líneas, elecciones y acciones. |
 | `characters/*.json` | Nombre visible, color, poses y animaciones de cada personaje. |
 | `assets/metadata/*.json` | Galería, capas oculares, offsets, ediciones y copias limpias. |
 | `electron/` | Ventana segura, servidor interno con Range, ajustes persistentes e IPC limitado. |
 | `scripts/` | Validación, galería, optimización y herramientas gráficas. |
 
-Orden de scripts, basado en los `window.*` globales: `p5-effects.js` → módulos
-de batalla/créditos/Ketchup/runas → `juice.js` → `engine.js` → `game.js`.
+Orden de scripts, basado en los `window.*` globales: `p5-effects.js` → módulo de
+batalla → `ketchup-hitboxes.js` → `hitbox-debugger.js` → módulos de
+créditos/guindillas/Ketchup/runas → `juice.js` → `engine.js` → `game.js`.
 `game.js` crea una instancia de
 `VisualNovelEngine`, descubre `chapter0`, `chapter1`, etc. hasta encontrar
 `isFinal: true` o el primer hueco, carga personajes y llama a `nextLine()`.
@@ -636,10 +669,68 @@ se conservan sólo en `workbench/`. No reintroduzcas PNG runtime al regenerar
 estas familias: precarga, frame inicial y animación deben compartir las listas
 literales WebP.
 
+La clave canónica `samu.worried` apunta ahora a
+`assets/images/characters/samu/samu_worried_v2.webp`; la pose separada
+`nervous_scratch` se eliminó. Al conservar la clave `worried`, sus 33 usos de
+historia reciben la versión V2 automáticamente, sin reescribir los capítulos. El
+PNG protegido está en
+`workbench/originals/runtime/assets/images/characters/samu/samu_worried_v2.png`;
+la entrega y el máster editables viven en
+`workbench/sources/images/characters/samu/worried/`. La copia revisada y sin halo
+se registra como
+`assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp`;
+el juego y la galería la priorizan automáticamente. En la misma carpeta se generan
+`samu_worried_v2_halo_limpio_miniatura.webp` (156×156) y
+`samu_worried_v2_halo_limpio_galeria.webp` (480×270). La entrega se normalizó
+contra la fuente protegida antes de registrarla: se descartaron 1.356 píxeles que
+expandían el alfa fuera del personaje y se restauraron 80 píxeles protegidos. La
+copia final elimina 22.543 píxeles de mate y valida con cero expansión y cero
+pérdida de relleno o tinta protegidos. El parpadeo antiguo de sprite completo para
+`worried` permanece desactivado hasta generar capas compatibles con V2: reutilizar
+los frames de 1024×1024 sobre el nuevo lienzo de 1209×1301 provocaría un salto
+visible. La salida de `charred_shake`, incluido su fallback de movimiento reducido,
+termina también en la misma copia limpia V2 y no en el sprite `worried` legado.
+
 ## Herramientas gráficas locales
 
 Inicia el centro con `ABRIR_EDITOR_OJOS.bat` o `npm run tools:eyes` y abre
 <http://localhost:8011/tools>.
+
+El icono **Tools** del menú construye esa URL con el mismo host de loopback y
+envía el origen actual del juego. `/tools` sólo acepta orígenes HTTP locales y
+los conserva durante la sesión; así su acceso **Menú principal** vuelve tanto a
+`localhost:8000` como al puerto libre que use Electron, usando `?screen=menu`
+para omitir de forma deliberada el arranque ya visto. Si el centro se abre
+directamente, emplea `localhost:8000` como respaldo. Los accesos se muestran
+sólo en loopback y en Electron no empaquetado; el preload expone una API cerrada
+sin acceso a Node y usa `desktopApp.isPackaged` para impedir enlaces rotos en el
+instalador.
+Antes de navegar, el botón compara `/api/dev-health` con `/api/health` y verifica
+nombre, versión de protocolo y huella de la carpeta. Si no responde o pertenece
+a otro checkout, nunca abandona el juego:
+muestra un diálogo con **Reintentar**, **Copiar comando** y **Cerrar**. Electron
+de desarrollo intenta arrancar Python mediante un IPC cerrado, sin aceptar
+rutas ni comandos procedentes del renderer.
+
+`start.bat` delega en `scripts/start_local_development.js`. El supervisor usa
+el servidor HTTP de `electron/static-server.js` —incluidos Range, MIME,
+anti-traversal y escucha exclusiva en loopback— y controla el proceso Python de
+Tools mediante `electron/eye-tools-process.js`. Sólo finaliza procesos que él
+haya creado. `ABRIR_EDITOR_OJOS.bat` sigue disponible para iniciar únicamente
+Tools y ahora espera activamente al health check en vez de confiar en una pausa
+fija. El supervisor registra el cierre antes de iniciar servicios: un `Ctrl+C`
+durante el arranque también cancela Python y evita procesos huérfanos.
+Las comprobaciones de salud tienen plazo absoluto y el servidor fuerza el cierre
+de descargas atascadas tras una gracia breve, de modo que una respuesta lenta o
+un vídeo pausado no bloquean indefinidamente el lanzador.
+
+Todos los GET/HEAD de juego y Tools exigen un `Host` loopback con el puerto
+correcto y rechazan segmentos privados como `.git`; los POST de Tools validan
+además `Origin`. Así una página externa no puede leer el checkout ni usar el
+servicio local para modificarlo mediante DNS rebinding. El health check sólo
+concede lectura CORS a orígenes HTTP de loopback. Electron
+autoriza la navegación a Tools sólo después de validar esa instancia y rechaza
+IPC de ajustes/cierre cuando el emisor no es el juego.
 
 | Ruta | Herramienta | Salida principal |
 | --- | --- | --- |
@@ -1012,14 +1103,50 @@ el que se resalta mientras "habla".
 
 ## ⚙️ Acciones
 
+Esta sección es el contrato canónico de las acciones JSON. Cada acción indica
+sus alias, campos aceptados y valores por defecto. `scripts/validate_game_content.mjs`
+comprueba tanto `actions` como `afterActions`; un nombre que exista en el motor
+pero no en este manual o en el validador es una incompatibilidad que debe
+corregirse antes de cerrar el cambio.
+
+Los tiempos (`duration`, `fadeMs`, `frameMs`, `ms`, `fadeIn` y `fadeOut`) se
+expresan en milisegundos salvo que la descripción diga expresamente otra unidad.
+
+### clearBackground / removeBackground
+
+Vacía las dos capas del fondo y cancela cualquier `bgPan`. Ambos nombres son
+equivalentes y no reciben parámetros adicionales.
+
+```json
+{ "type": "clearBackground" }
+```
+
 ### setBackground
 
-Cambia el fondo de la escena.
+Cambia el fondo de la escena. Por defecto hace un fundido cruzado de 400 ms
+entre el fondo anterior y el nuevo.
 
 ```json
 {
   "type": "setBackground",
   "value": "assets/images/backgrounds/shared/cafe.png"
+}
+```
+
+| Campo | Tipo / valor | Comportamiento |
+| --- | --- | --- |
+| `value` | ruta, obligatorio | Imagen que pasa a ser el fondo. |
+| `cut` | booleano, `false` | Con `true`, aplica un corte seco inmediato, sin fundido. También cancela cualquier cambio de fondo que estuviera a medias para que su temporizador no restaure una imagen anterior. |
+| `fadeMs` | número, `400` | Duración del fundido cruzado. Se ignora cuando `cut` es `true`. |
+
+Cambiar o quitar el fondo reinicia siempre el movimiento de cámara iniciado con
+`bgPan`.
+
+```json
+{
+  "type": "setBackground",
+  "value": "assets/images/backgrounds/shared/cafe.png",
+  "cut": true
 }
 ```
 
@@ -1039,8 +1166,9 @@ Muestra un personaje en pantalla.
 Parámetros:
 
 - `character`: Nombre del personaje (sin .json)
-- `position`: "left" o "right"
-- `pose`: "neutral", "happy", "sad", "angry", "surprised" (opcional)
+- `position`: `"left"`, `"center"` o `"right"` (obligatorio en los JSON)
+- `pose`: clave declarada en `poses` dentro de la ficha del personaje; por
+  defecto `"neutral"`
 - `enter`: "right", "left", "bottom" o "fade" — animación de entrada (opcional)
 - `flipped`: `true` para voltear el sprite horizontalmente (opcional)
 - `offsetY`: desplazamiento vertical del sprite, en porcentaje de su propia
@@ -1102,6 +1230,14 @@ Vacía directamente el hueco derecho (sin importar quién esté).
 
 Quita el hueco derecho (y olvida a "luna" si estaba ahí).
 
+El campo opcional `exit` activa una salida por fundido de 320 ms antes de vaciar
+realmente el hueco. Su valor actual es booleano: cualquier valor verdadero activa
+el fundido.
+
+```json
+{ "type": "hideCharacter", "character": "luna", "exit": true }
+```
+
 > Nota: la posición de cada personaje se rastrea al llamar a `showCharacter`, así
 > que basta con indicar `character`. No hace falta quitar al protagonista (Samu),
 > que permanece en escena durante todo el capítulo.
@@ -1120,6 +1256,13 @@ fotograma, también cuando entra un personaje diferente.
   "pose": "sad"
 }
 ```
+
+`character` y `position` deben identificar al personaje que ya ocupa el hueco;
+`pose` acepta cualquier clave de su ficha y usa `"neutral"` si se omite.
+`setPose` no carga ni muestra un personaje ausente y conserva el
+`flipped`, `scale` y `offsetY` establecidos por `showCharacter`. Por eso debe
+usarse para acting de un personaje visible; `showCharacter` se reserva para una
+entrada, reaparición, traslado o cambio de encuadre.
 
 ### animateCharacter / characterAnimation / poseSequence
 
@@ -1146,9 +1289,52 @@ parpadeos, nervios o sacudidas. Los tres nombres son equivalentes.
 - `immediate`: si vale `false`, espera un intervalo antes del primer fotograma.
 
 `stopCharacterAnimation` y `stopPoseSequence` cancelan explícitamente la
-secuencia. Ocultar al personaje, cambiar de escena, retroceder o reiniciar la
+secuencia. Aceptan `character` y/o `position`; si sólo se indica el personaje se
+usa su posición rastreada. Ocultar al personaje, cambiar de escena, retroceder o reiniciar la
 partida también limpia sus temporizadores. Con `prefers-reduced-motion` se
 conserva un fotograma estático y legible.
+
+### Glitches de personaje
+
+Todas estas acciones requieren `character`; `position` es opcional si el motor
+ya conoce el hueco del personaje. Reproducen automáticamente
+`assets/audio/sfx/sfx_estatica.mp3` y no sustituyen la pose.
+
+| Acción y alias | Campos | Comportamiento |
+| --- | --- | --- |
+| `characterGlitch` / `glitchCharacter` | `duration` (1350) | Interferencia puntual recortada. |
+| `characterFullGlitch` / `fullCharacterGlitch` | `duration` (1050) | Interferencia puntual sobre el sprite completo. |
+| `characterGlitchUntilAdvance` / `glitchUntilAdvance` | — | Mantiene la interferencia hasta avanzar la línea. |
+
+```json
+{
+  "type": "characterGlitch",
+  "character": "edu",
+  "position": "right",
+  "duration": 900
+}
+```
+
+### characterAnimeFall / animeFall
+
+Ejecuta una caída vertical cómica sin bloquear el diálogo. Requiere `character`;
+`position` puede omitirse si está rastreada.
+
+| Campo | Valor por defecto | Uso |
+| --- | --- | --- |
+| `delay` | `0` | Espera antes de iniciar la caída. |
+| `duration` | `1800` (mínimo 900) | Duración completa de la animación. |
+| `sound` | `assets/audio/sfx/sfx_caida_anime_edu.mp3` | Audio del golpe. |
+| `volume` | `0.82` | Volumen del golpe. |
+
+```json
+{
+  "type": "characterAnimeFall",
+  "character": "edu",
+  "position": "right",
+  "duration": 1800
+}
+```
 
 ### Animaciones internas de una pose
 
@@ -1184,7 +1370,7 @@ gestos que no cambian la emoción narrativa:
 - Cambiar de pose, ocultar, reemplazar, saltar o retroceder cancela el temporizador.
 - Con movimiento reducido no se inicia la animación interna.
 
-Hay animación ocular en **135 de las 160 poses declaradas**. Cada variante se
+Hay animación ocular en **134 de las 160 poses declaradas**. Cada variante se
 dibuja para esa pose concreta y se compone únicamente sobre sus ojos: el cuerpo,
 el encuadre y el canal alfa permanecen idénticos al sprite base. Los fotogramas
 viven en las carpetas `animations/blinks/` de cada personaje y usan WebP sin
@@ -1192,7 +1378,7 @@ pérdida. Las poses que originalmente ya tienen los ojos cerrados reciben una
 variante abierta breve; no se aplican respiraciones, rebotes, escalados ni
 deformaciones procedurales.
 
-Las 25 exclusiones son deliberadas porque no contienen ojos animables: siluetas,
+Las 26 exclusiones son deliberadas porque no contienen ojos animables: siluetas,
 pantallas de móvil, formas amorfas, caras tapadas y las poses del Gorila con las
 gafas completamente opacas. `gorila_sospecha` sí parpadea porque baja las gafas.
 El compositor de apoyo es `scripts/compose_character_blink.py`; preserva la
@@ -1273,6 +1459,23 @@ Reproduce un archivo de audio con opciones avanzadas.
 - `id`: Identificador estable para sustituir o detener una pista
 - `fadeIn`: Entrada progresiva en milisegundos
 
+#### Control del audio activo
+
+Las acciones de control localizan el audio por `id`; el campo histórico `audio`
+es un alias del mismo identificador.
+
+| Acción | Campos | Efecto |
+| --- | --- | --- |
+| `stopSound` | `id` o `audio`; `fadeOut` (0) | Detiene una pista, con salida progresiva opcional. Es idempotente si el ID no existe. |
+| `stopAllSounds` | — | Detiene y libera toda la música, efectos y camas sintetizadas. |
+| `pauseSound` | `id` o `audio` | Pausa una pista conservando su posición. |
+| `resumeSound` | `id` o `audio` | Reanuda una pista pausada. |
+| `setVolume` | `id` o `audio`; `volume` | Cambia su volumen base entre 0 y 1, antes del ajuste global del usuario. |
+
+```json
+{ "type": "stopSound", "id": "bg_music", "fadeOut": 800 }
+```
+
 Al detener o sustituir un audio, el motor elimina inmediatamente la referencia
 de `audioInstances` aunque el elemento termine su `fadeOut` en segundo plano.
 Así una pista con la misma ruta e ID puede volver a arrancar sin reutilizar por
@@ -1323,7 +1526,7 @@ Pausa la ejecución.
 }
 ```
 
-El valor está en milisegundos (1000 = 1 segundo).
+Acepta `value` o `ms`. El valor está en milisegundos (1000 = 1 segundo).
 
 Combinado con `hideDialog` sirve para dejar una imagen sola en pantalla unos
 segundos antes de que entre el texto. Así aparece la caja de botellas de kétchup
@@ -1336,6 +1539,15 @@ CG entra con su fundido de 650 ms y se esperan 3 s antes de la narración.
   { "type": "showCG", "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png", "duration": 650 },
   { "type": "wait", "value": 3000 }
 ]
+```
+
+### waitForClick / waitClick / esperarClick
+
+Detiene la cadena de acciones hasta el siguiente clic en el documento. No
+recibe parámetros. Los tres nombres son equivalentes.
+
+```json
+{ "type": "waitForClick" }
 ```
 
 ### textDuration / setTextDuration
@@ -1383,6 +1595,24 @@ Establece variables en el estado del juego.
 }
 ```
 
+### giveItem / addItem
+
+Añade un objeto al inventario persistente de la partida sin duplicarlo. Acepta
+`item` o su alias `value`.
+
+```json
+{ "type": "giveItem", "item": "diapason" }
+```
+
+### rescue
+
+Añade un personaje, sin duplicarlo, al orden persistente de rescates. Requiere
+`character`.
+
+```json
+{ "type": "rescue", "character": "edu" }
+```
+
 ### goToScene
 
 Salta a otra escena por su **título** (o índice) desde dentro de una línea,
@@ -1393,6 +1623,47 @@ una escena común. Debe ser la última acción/línea útil de la escena de orig
 {
   "type": "goToScene",
   "value": "Escena 5: Dentro de Kingdom Ketchup"
+}
+```
+
+`value` puede ser el título exacto o el índice numérico de la escena. En los
+capítulos se recomienda el título porque es revisable y no cambia al insertar
+otra escena antes.
+
+### setNextChapter
+
+Fija la clave del capítulo que cargará la pantalla de continuación. Requiere
+`value`, por ejemplo `"chapter3-edu"`; si no se usa, el flujo intenta el número
+de capítulo siguiente.
+
+```json
+{ "type": "setNextChapter", "value": "chapter3-edu" }
+```
+
+### playVideo / cutscene
+
+Reproduce una cinemática a pantalla completa y espera a que termine o el jugador
+la salte con clic, Esc, Enter o Espacio. Ambos nombres son equivalentes. Antes de
+insertar el vídeo limpia escenario y diálogo, pausa el audio activo y lo recupera
+al salir.
+
+| Campo | Valor por defecto | Uso |
+| --- | --- | --- |
+| `path`, `value` o `src` | obligatorio | Ruta del vídeo. En contenido nuevo se usa `path`. |
+| `muted` | `false` | Silencia el audio propio del vídeo. |
+| `audioCrossfade` | `0` | Fundido entre el audio del vídeo y el audio pausado de la escena. |
+| `holdLastFrame` | `0` | Tiempo que conserva el último fotograma al terminar de forma natural. |
+| `visualFadeOut` | `0` | Fundido visual de salida. Al saltar se limita a 150 ms. |
+| `endBackground` o `finalBackground` | ninguno | Fondo que se prepara mediante corte seco bajo el último fotograma. |
+
+```json
+{
+  "type": "playVideo",
+  "path": "assets/video/cutscenes/opening.mp4",
+  "audioCrossfade": 700,
+  "holdLastFrame": 250,
+  "visualFadeOut": 500,
+  "endBackground": "assets/images/backgrounds/chapter3/opening_end.webp"
 }
 ```
 
@@ -1488,6 +1759,112 @@ El retraso permite dos efectos:
    }
    ```
 
+### fade
+
+Funde el escenario y **espera** a que termine la transición. `to` oscurece hacia
+negro o hacia el color CSS indicado; `from` parte de ese color y revela la
+escena. Si se omiten ambos, equivale a `to: "black"`.
+
+| Campo | Valor por defecto | Uso |
+| --- | --- | --- |
+| `to` | `"black"` | Color de llegada. |
+| `from` | — | Color desde el que se revela la escena. No debe combinarse con `to`. |
+| `duration` | `800` | Duración del fundido. |
+
+```json
+{ "type": "fade", "to": "black", "duration": 500 }
+{ "type": "fade", "from": "black", "duration": 500 }
+```
+
+### bgPan
+
+Aplica un movimiento Ken Burns al fondo. No bloquea el diálogo y se cancela al
+cambiar o quitar el fondo. Con movimiento reducido no se inicia.
+
+| Campo | Valor por defecto |
+| --- | ---: |
+| `zoomFrom` / `zoomTo` | `1.05` / `1` |
+| `xFrom` / `xTo` | `0` / `0` (%) |
+| `yFrom` / `yTo` | `0` / `0` (%) |
+| `duration` | `6000` |
+| `reset` | `false`; con `true` retira inmediatamente el paneo |
+
+```json
+{
+  "type": "bgPan",
+  "zoomFrom": 1.08,
+  "zoomTo": 1,
+  "xFrom": -2,
+  "xTo": 2,
+  "duration": 7000
+}
+```
+
+### showCG / hideCG
+
+`showCG` precarga y muestra una ilustración por encima de fondo y personajes,
+pero por debajo del diálogo; espera a que termine su entrada. `hideCG` inicia la
+salida sin bloquear la cadena.
+
+| Acción | Campos y valores por defecto |
+| --- | --- |
+| `showCG` | `path` o `value` (ruta obligatoria), `duration` (600), `size` (`"cover"`) y `position` (`"center"`). |
+| `hideCG` | `duration` (500). |
+
+`size` y `position` aceptan valores de `background-size` y
+`background-position`. Usa, por ejemplo, `"auto 55%"` para presentar un objeto
+vertical sin recortarlo como una CG panorámica.
+
+```json
+{
+  "type": "showCG",
+  "path": "assets/images/cg/chapter2/diapason.png",
+  "duration": 650,
+  "size": "auto 55%",
+  "position": "center"
+}
+```
+
+### shake / screenShake, flash, grade y vignette
+
+Efectos de dirección de escena. `shake` y `flash` son transitorios; `grade` y
+`vignette` permanecen hasta que otra acción los sustituye o los pone a cero.
+
+| Acción y alias | Campos | Valores por defecto |
+| --- | --- | --- |
+| `shake` / `screenShake` | `intensity` o `value`; `duration` | 8 px; 350 ms |
+| `flash` | `color` o `value`; `duration` | blanco al 85 %; 120 ms |
+| `grade` / `colorGrade` / `tinte` | `value` o `filter`; `duration` | `"none"`; 800 ms |
+| `vignette` / `vigneta` | `value` o `strength`; `duration` | 0.6; 600 ms |
+
+`grade` recibe una cadena CSS de `filter`; `"none"` lo retira. La fuerza de
+`vignette` se limita al rango 0–1 y `0` la retira. `shake` respeta
+`prefers-reduced-motion`.
+
+### sfx
+
+Activa o detiene una cama Web Audio sintetizada. `name` admite `"heartbeat"` y
+`"rumble"`; `on` vale `true` por defecto y `false` detiene esa cama. `volume`
+usa por defecto 0.16 para el latido y 0.10 para el retumbe.
+
+```json
+{ "type": "sfx", "name": "heartbeat", "on": true, "volume": 0.14 }
+{ "type": "sfx", "name": "heartbeat", "on": false }
+```
+
+### minigame
+
+Lanza y espera el minijuego indicado por `game`. Cualquier campo de dificultad
+`nombre` puede acompañarse de `nombreByDelay`, un mapa `umbral → valor`; el motor
+elige el mayor umbral que no supere `storyDelay` y lo aplica como `nombre`. La
+tabla siguiente enumera todas las claves registradas y sus alias; las opciones
+propias se detallan en **Minijuegos disponibles**.
+
+`furrielvaExplore`, `chiliHarvest` (`guindillas`), `ketchupBoss` (`ketchup`),
+`ecchi`, `paloma`, `runa`, `runeChanneling` (`rune_channeling`,
+`canalizacionRunas`), `gatos`, `vocalecho`, `rhythm`, `battle`, `credits`
+(`creditos`), `chase` y `eduvuelo`.
+
 ### Salir de un minijuego
 
 Los tres botones de arriba (**Opciones**, **Escenas** y **Retroceder**) se ven
@@ -1526,14 +1903,59 @@ En CSS, los botones van a `z-index: 5200` para quedar por encima del combate
 
 ### Minijuegos disponibles
 
-| `game`    | Descripción                                                        | Parámetros principales                       |
-| --------- | ------------------------------------------------------------------ | -------------------------------------------- |
-| `chiliHarvest` | Recoge 🌶️ durante un tiempo para cargar el poder contra Zip       | `duration`, `powerGoal`, `boxBonus`          |
-| `ketchupBoss`  | Bullet hell: dispara 🌶️ y esquiva el ketchup de Zip               | `enemyHp`, `maxHits`, `maxSpicePower`        |
-| `ecchi`   | Clica 🍑 a tiempo, evita 💋                                        | `goal`, `maxMisses`, `lifetime`              |
-| `paloma`  | Memoriza y repite la secuencia                                     | `rounds`, `flashMs`, `gapMs`                 |
-| `gatos`   | **Estilo Pac-Man con laberinto**: huye de los gatos por las calles | `survive`, `cats`, `playerSpeed`, `catSpeed` |
-| `chase`   | Persecución lateral en el coche de Santi                            | `distance`, `speed`, `maxHits`, `spawnMs`    |
+| `game` y alias | Descripción | Parámetros propios aceptados |
+| --- | --- | --- |
+| `furrielvaExplore` | Exploración de Furrielva. | `background` |
+| `chiliHarvest` / `guindillas` | Recoge 🌶️ para cargar poder contra Zip. | `duration`, `powerGoal`, `boxBonus`, `maxSpicePower`, `chiliChance`, `spawnRate`, `speedMult` |
+| `ketchupBoss` / `ketchup` | Bullet hell contra Zip. | `enemyHp`, `maxHits`, `maxSpicePower` |
+| `ecchi` | Clica 🍑 a tiempo y evita 💋. | `goal`, `maxMisses`, `lifetime` |
+| `paloma` | Memoriza y repite la secuencia. | `rounds`, `flashMs`, `gapMs`, `diapason` |
+| `runa` | Secuencia de runas. | `rounds`, `flashMs`, `gapMs` |
+| `runeChanneling` / `rune_channeling` / `canalizacionRunas` | Canalización sostenida de runas. | `levels`, `holdRequired` |
+| `gatos` | Laberinto: huye de los gatos. | `survive`, `cats`, `playerSpeed`, `catSpeed` |
+| `vocalecho` | Repite patrones vocales. | `rounds`, `startLength`, `speed`, `strictTempo` |
+| `rhythm` | Juego musical por carriles. | `audio`, `audioId`, `avatar`, `bpm`, `beatOffsetMs`, `beatStep`, `lanes`, `totalNotes`, `travelMs`, `hitWindowMs`, `perfectWindowMs`, `minAccuracy`, `sliderChance`, `sliderBeats`, `spinnerCount`, `spinnerBeats`, `spinnerTaps`, `sfx`, `sfxVolume` |
+| `battle` | Combate por turnos. | `enemy`, `enemyHp`, `party`, `startItems`, `useInventory`, `roleOverride`, `skillsOverride`, `interludes`, `surviveTurns`, `retryOnDefeat`, `retryText`, `victoryTitle`, `victoryText`, `defeatText` |
+| `credits` / `creditos` | Créditos interactivos. | Sin parámetros propios. |
+| `chase` | Persecución en el coche de Santi. | `distance`, `speed`, `maxHits`, `spawnMs`, `graceMs`, `hitGraceMs`, `debugHitboxes` |
+| `eduvuelo` | Vuelo arcade de Edu. | Tabla específica bajo este epígrafe. |
+
+Todos los parámetros numéricos de dificultad admiten la variante opcional
+`...ByDelay` descrita en `minigame`. Los nombres de esta tabla son el contrato
+del motor; los alias sólo se conservan para contenido histórico.
+
+`ketchupBoss` obtiene sus valores base de `ketchup-hitboxes.js`. `boss` no es
+una caja única: contiene `profiles` (`floating`, `phase1`…`phase5`) y cada
+perfil agrupa primitivas bajo `parts`. El frame activo selecciona el perfil y
+un impacto contra cualquiera de sus piezas daña a Zip. Jugador y proyectiles
+parten de una primitiva simple, pero el editor puede promover cualquier objeto
+a `{ parts: { ... } }` al añadir una segunda zona. La colisión, el indicador de
+Samu y la depuración de proyectiles recorren todas las piezas del objeto.
+`rect`, `circle` y `ellipse` aceptan `offsetX`, `offsetY`, `w`, `h` y `rotation`;
+dimensiones y offsets se expresan como fracciones del campo.
+
+La colisión convierte esas fracciones a píxeles del campo antes de aplicar SAT
+sobre polígonos convexos; las elipses usan 32 vértices para que el borde visual
+y el borde de colisión coincidan incluso en contactos rasantes. Así una elipse
+conserva su proporción visual aunque el escenario no sea cuadrado y las
+botellas rotadas comparten orientación con
+su hitbox. `localStorage.illo_hitbox_config.ketchupBoss` puede sobrescribir
+objetos simples y piezas concretas bajo
+`boss.profiles.<perfil>.parts.<pieza>`. Los ajustes antiguos de la caja única de
+`boss` ya no se aplican. Una pieza que no exista en los valores canónicos se
+incorpora como zona personalizada y participa en la colisión; una pieza
+canónica guardada con `{ "disabled": true }` se excluye de ese perfil. Esto
+permite que el editor añada y elimine zonas sin modificar el archivo de valores
+base. Los objetos sin perfiles por frame guardan sus zonas directamente bajo
+`<objeto>.parts.<pieza>`; las configuraciones simples antiguas continúan siendo
+válidas como una única zona implícita.
+
+Los marcadores integrados y `hitbox-debugger.js` convierten las fracciones con
+`clientWidth`/`clientHeight`, igual que la colisión. No deben usar
+`getBoundingClientRect()` para calcular su tamaño: ese rectángulo ya incluye el
+escalado visual del minijuego y, al aplicarlo a un hijo del campo, produciría un
+segundo escalado. Las coordenadas de puntero sí usan el rectángulo visual porque
+llegan en coordenadas de la ventana.
 
 #### Minijuego `gatos` (Micaela Michis)
 
@@ -1698,6 +2120,45 @@ vuelo**. En la persecución dibuja las huellas elípticas: coche en verde,
 obstáculos en rojo y motos en amarillo. En el vuelo mantiene las cajas 2D y los
 coleccionables azules. La opción también se inyecta al usar **Como en la
 historia**, pero nunca se activa en una partida narrativa normal.
+
+El bloque **Bullet Hell de Zip** tiene su propia casilla **Mostrar hitbox real
+de Zip** y un acceso a `hitbox-editor.html`. El editor permite escoger frame,
+perfil y pieza de la hitbox compuesta; también ajusta las primitivas simples de
+Samu y los proyectiles. La interfaz separa selección, geometría e historial;
+incluye navegación anterior/siguiente, visibilidad de etiquetas y piezas,
+deslizadores coloreados para posición, tamaño y rotación, valores visibles con
+coma decimal que también aceptan escritura exacta, botones `−`/`+`, ajuste fino
+y lectura en píxeles. El slider, el campo numérico y los botones permanecen
+sincronizados y comparten el historial. **Centrar**,
+**Cuadrar** y **Rotación 0°** resuelven ajustes habituales sin teclear números;
+los tooltips, copiar/pegar y la restauración por zona, objeto o juego completan
+el flujo.
+La previsualización amplía cada asset para editarlo con comodidad, pero calcula
+su escala con las dimensiones visibles que usa el runtime sobre un campo de
+referencia de 920 × 600 px (Samu: 60,24 × 94 px; Zip, tras aplicar
+`object-fit: contain` a su contenedor de 104 × 160 px: 67,54 × 160 px;
+proyectiles: 21,33 × 32 px o 22,67 × 34 px). Por ello, tamaño y desplazamiento
+de cada zona conservan
+la misma proporción respecto al sprite que en el minijuego.
+Todos los objetos muestran **Añadir zona**, **Duplicar**, **Renombrar** y
+**Eliminar**. Si el objeto era simple, la primera zona se conserva como `base`
+y la nueva lo convierte en compuesto; si usa perfiles por frame, la zona se
+añade únicamente al perfil activo. Se puede colocar inmediatamente y se aplica
+al runtime tras guardar. En escritorio, el panel usa dos columnas: selección y
+geometría quedan en paralelo, mientras historial y guardado ocupan una franja
+inferior. Todos los controles principales caben sin desplazamiento vertical a
+1280 × 720; por debajo de 900 px de ancho el diseño vuelve a una columna y
+permite scroll como respaldo.
+**Deshacer/Rehacer**, `Ctrl+Z`, `Ctrl+Mayús+Z` y `Ctrl+Y` trabajan sobre un
+historial local de hasta 80 estados; `Ctrl+S` guarda, `Page Up/Down` cambia el
+frame y `[`/`]` cambia la pieza. **Guardar e ir a pruebas** persiste y vuelve al banco
+de minijuegos; **Volver sin guardar** pide confirmación si hay cambios pendientes.
+
+**Guardar** persiste únicamente en `localStorage` del origen de pruebas y
+requiere volver a lanzar el minijuego. Durante los 0,85 s
+de invulnerabilidad de Samu, tanto el marcador integrado como el depurador se
+muestran atenuados y con borde discontinuo para distinguir una caja visible de
+una colisión activa.
 
 #### Minijuego `eduvuelo` — peligros aéreos (cap. 3)
 
@@ -4097,17 +4558,26 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
 - La plaza de Furrielva usa `iglesia_furrielva_v2_4k.webp`, una regeneración
   3840x2160 del fondo original. Conserva iglesia, mercado, fuente y todos los
   grupos de animales, con rostros, anatomía, perspectiva y rótulos corregidos.
+  La fachada activa integra ya los dos motivos canónicos: el relieve horizontal
+  superior con cinco figuras coronadas y la vidriera central con el ciervo
+  regente, el zorro, el lince, el conejo y el lobo. La variante diurna equivalente
+  está disponible como `iglesia_furrielva_dia_v2_4k.webp`; mantiene composición y
+  motivos, sustituye el atardecer por cielo azul y reduce el brillo de las luces
+  prácticas. Sus maestros PNG son
+  `workbench/sources/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k_integrada_master.png`
+  y `iglesia_furrielva_dia_v2_4k_master.png`; los dos parches de detalle originales
+  permanecen en la subcarpeta `detail_patches/`.
 - La ilustración aérea `furrielva_iglesia_vista_aerea_v1_4k.webp` ofrece una
   vista 3/4 elevada de la iglesia, la plaza y sus palomas. La variante
   `furrielva_iglesia_vista_aerea_v2_4k.webp` conserva el mismo máster 4K fuera
   de dos máscaras locales y reemplaza únicamente los vitrales de la fachada:
   el relieve superior muestra cinco apóstoles/reyes furros y el ventanal
   central reúne a un ciervo regente, un zorro, un lince, un conejo y un lobo.
-  Las dos ilustraciones independientes, sus versiones con lado largo 3840, el
-  máster integrado y el proceso reproducible están en
+  Las dos ilustraciones independientes, sus versiones con lado largo 3840 y los
+  materiales de integración están en
   `workbench/sources/images/backgrounds/chapter2/furrielva/`. V1 y v2 quedan
-  disponibles para una futura escena o incorporación a la galería, pero aún no
-  sustituyen el fondo narrativo actual.
+  disponibles para una futura escena o incorporación a la galería; sus motivos
+  de fachada sí se comparten ya con el fondo narrativo actual.
 - Samu llega a la fachada, conoce al Ketchling de seguridad y descubre que Edu
   no responde. El tapón dorado pasa a ser una entrada explícita, no una
   casualidad del guion.
@@ -4625,7 +5095,7 @@ De este modo, el combate final demuestra el tema «ayudar no es obedecer»: el
 grupo crea condiciones para que AI.RI actúe, pero no derrota su conflicto en su
 nombre.
 
-### Galería integrada: 105 entradas y 155 poses de personaje
+### Galería integrada: 105 entradas y 156 poses de personaje
 
 El menú principal incluye una galería curada desde
 `assets/metadata/gallery_manifest.json`: **104 imágenes y 1 vídeo**, 105 entradas
@@ -4645,16 +5115,27 @@ final luminoso. En la galería ya no duplican las fichas de los protagonistas:
 aparecen como pose `human` dentro de cada personaje y conservan el aviso de
 spoiler propio.
 
+La referencia canónica de cada forma humana es siempre la figura de cuerpo
+entero situada a la izquierda de su hoja. Los cuatro sprites comparten un
+lienzo RGBA de 887 × 1774 px, pero se escalan de forma uniforme: nunca se debe
+estirar sólo el eje vertical para rellenarlo. Las hojas, las bases maestras y
+los estados ocular medio/cerrado se conservan en
+`workbench/sources/images/characters/humans/<personaje>/`; los WebP de runtime
+viven en `assets/images/characters/humans/` y en las carpetas de parpadeo. Las
+versiones antiguas con anatomía alargada están archivadas en
+`workbench/archive/images/characters/humans/distorted_2026-08-04/` y no deben
+volver a publicarse.
+
 La interfaz ofrece filtros, miniaturas optimizadas, carga diferida, contador de
 resultados, lightbox para imagen o vídeo, navegación por teclado, descarga del
 original y aviso previo para obras con spoilers. Cada ficha de personaje agrupa
 todas las poses declaradas en `characters/*.json`: el lightbox muestra un
 selector visual con 155 poses, admite ratón y teclado, y puede reproducir una
-pose en vídeo cuando la ficha la declara. En 130 de esas poses aparece además
+pose en vídeo cuando la ficha la declara. En 129 de esas poses aparece además
 el control `Ver parpadeo`: parte desactivado, reproduce los frames e intervalos
 de la ficha al activarlo y permite volver en cualquier momento al sprite fijo.
-Las 25 poses sin animación no muestran un control inerte. `Mostrar spoilers` es
-una decisión de sesión, no un desbloqueo persistente. El catálogo y sus 260 miniaturas se
+Las 26 poses sin animación no muestran un control inerte. `Mostrar spoilers` es
+una decisión de sesión, no un desbloqueo persistente. El catálogo y sus 261 miniaturas se
 regeneran con `scripts/build_gallery_manifest.py`; no se mantiene a mano una
 segunda lista en el código.
 
@@ -4666,12 +5147,13 @@ selector de poses de la galería. Si no existe una copia válida se conserva el
 sprite fuente como fallback. El manifiesto de personajes no se reescribe y, por
 tanto, continúa siendo la fuente canónica protegida. La galería utiliza las
 miniaturas limpias de 156×156 y 480×270 generadas al guardar para evitar cargar los
-PNG completos en la cuadrícula.
+WebP completos en la cuadrícula.
 
 #### Centro de herramientas local
 
 `http://localhost:8011/tools` reúne en un único menú todo el flujo ocular y las
-utilidades HTML del proyecto. Sus indicadores se actualizan desde las API locales:
+utilidades HTML del proyecto. Incluye un acceso visible de vuelta al menú del
+juego. Sus indicadores se actualizan desde las API locales:
 regiones confirmadas, capas limpias disponibles, offsets de alineación y bases sin
 ojos guardadas. Las herramientas de edición tienen un acceso permanente de
 vuelta al centro.
@@ -4679,9 +5161,15 @@ vuelta al centro.
 El flujo recomendado aparece como `Marcar regiones → Alinear capas → Limpiar
 bases`, seguido del editor independiente `Eliminar halos blancos`. En una sección aparte se enlazan el juego, la prueba de minijuegos, el
 generador de assets, los placeholders, las propuestas de menú y el centro de
-control legado, todos servidos por el puerto 8000. `ABRIR_EDITOR_OJOS.bat` inicia
+control legado. Esos enlaces usan el origen que recibe del menú principal y
+caen en el puerto 8000 al abrir el centro directamente; esto permite volver al
+puerto dinámico de Electron sin codificarlo. `ABRIR_EDITOR_OJOS.bat` inicia
 el servidor ocular y abre directamente este centro; si el servidor ya estaba
 activo, reutiliza la misma instancia.
+El arranque web ordinario debe hacerse con `start.bat` o `npm run dev:web` para
+que juego y herramientas compartan ciclo de vida. Si alguien sirve el juego con
+un HTTP genérico, el icono detecta que no puede verificar la carpeta y pide
+reiniciar con el supervisor, sin navegar a una página de error.
 
 #### Editor manual de regiones oculares
 
@@ -4926,6 +5414,17 @@ controlan el trazo; los píxeles de color y las líneas oscuras se ignoran. Con 
 100%, todo píxel aceptado bajo el centro del pincel queda completamente transparente;
 el suavizado se reserva para el borde exterior del círculo.
 
+Por eso basta con declarar una pose nueva en la ficha del personaje para que
+aparezca en la lista. `samu.worried` sigue ese circuito con su fuente V2: el fondo
+negro exterior se convirtió en transparencia semilla y su copia limpia se obtuvo
+desde la fuente protegida con `Limpieza segura (recomendada)`. El perfil confirma
+primero una banda clara conectada al exterior, protege relleno, color y tinta
+ligados al interior y sólo avanza en cuatro direcciones. El resultado de referencia
+retira 22.493 píxeles de mate, conserva el 97,6 % del soporte visible y valida con
+cero píxeles de relleno o tinta protegida perdidos, cero expansión y cero cambios
+de RGB retenido. El WebP runtime y los PNG de trabajo protegidos permanecen
+intactos.
+
 La vista ofrece zoom de 25% a 500% mediante el deslizador o `Ctrl + rueda`
 sobre el lienzo, encaje automático, fondos damero, negro,
 blanco y magenta para descubrir bordes, comparación momentánea con la base de
@@ -4938,13 +5437,49 @@ ratón ofrece el mismo acceso directo. Estos gestos interceptan el trazo para qu
 nunca limpien, borren o restauren por accidente.
 `Base de trabajo` permite decidir de forma explícita qué imagen se considera el
 punto de partida de la sesión: el sprite fuente protegido, la última copia limpia
-registrada o un PNG/WebP/JPEG local con idéntica resolución. Si existe una copia
-limpia, se selecciona por defecto al abrir la pose. `Ver base`, `Restaurar base` y
-el origen homónimo del pincel restaurador utilizan esa elección. Cambiar de base o
-de pose solicita confirmación cuando hay cambios sin guardar. Una base local sólo
-vive en memoria hasta utilizar `Guardar copia`; en ningún caso se escribe sobre el
-sprite fuente.
-El botón `Quitar halo exterior` ejecuta una limpieza topológica de una sola vez:
+registrada o un respaldo PNG/WebP local. El botón `Importar PNG/WebP…` y el gesto
+de arrastrar el archivo sobre el lienzo comparten el mismo flujo: exigen que la pose
+ya esté seleccionada y que el respaldo tenga exactamente su ancho y alto. Si existe
+una copia limpia, se selecciona por defecto al abrir la pose. `Ver base` y
+`Restaurar base` utilizan esa elección. El pincel restaurador mantiene además una
+fuente separada `Sprite original protegido`, disponible aunque la base sea una
+copia limpia o un archivo local. Cambiar de base o de pose solicita confirmación
+cuando hay cambios sin guardar.
+
+La importación recupera los píxeles RGBA del respaldo y los convierte en la nueva
+base de trabajo pendiente de validar y guardar; no recupera el historial de
+Deshacer/Rehacer, los ajustes de herramientas ni ningún otro estado de la sesión
+anterior. La base local sólo vive en memoria, pero el archivo PNG/WebP elegido sigue
+intacto en disco. En ningún caso se escribe sobre el sprite fuente.
+Junto a la fuente del pincel restaurador, `Ver original` abre el sprite canónico
+protegido en otra pestaña y `Ubicación` abre el Explorador de Windows dejando
+seleccionado ese archivo exacto. Ambos accesos son sólo de consulta: no cambian la
+base de trabajo, el lienzo, el historial ni la copia limpia guardada.
+
+`Comprobar detalle` compara el lienzo actual con las máscaras de relleno y tinta
+del sprite canónico sin guardar nada. `Ver zonas` superpone un diagnóstico exacto:
+el rosa identifica cada píxel protegido cuyo alfa se ha reducido, el amarillo es
+sólo un halo localizador alrededor de esos puntos y el morado marca alfa expandido
+fuera de la silueta fuente. El marcado es una capa de interfaz, nunca forma parte
+del PNG/WebP ni altera el lienzo. Cualquier edición posterior invalida el informe
+para impedir que se aplique a otra revisión de la imagen.
+
+Cuando hay puntos rosas, `Restaurar protegidos` copia desde el sprite canónico el
+RGBA exacto de esos píxeles y nada más. No repinta la caja rectangular del aviso, no
+toca el halo ya limpiado ni modifica otros colores o valores alfa del respaldo. La
+reparación completa constituye un solo paso de Deshacer/Rehacer. Una expansión
+morada no se corrige con este botón: debe retirarse manualmente y comprobarse de
+nuevo.
+
+El botón `Limpieza segura (recomendada)` reconstruye siempre la vista desde el
+sprite fuente protegido, nunca desde una copia ya erosionada. Además de las
+máscaras de relleno y tinta, restaura cualquier píxel protegido que un microcorte
+del contorno hubiera comunicado con el exterior. Antes de entregar la vista
+comprueba que permanezcan al menos el 90 % de los píxeles visibles y del componente
+principal; si una pose no encaja con el perfil, se detiene y pide usar el ajuste
+manual en lugar de presentar una limpieza destructiva como segura.
+
+El botón `Limpieza por umbral (avanzada)` ejecuta la limpieza configurable:
 parte de toda la transparencia exterior e interior del sprite, elimina los restos
 de fondo que encuentra dentro del alcance configurado y se detiene al tocar una
 línea negra o casi negra. `Borde oscuro` determina qué luminosidad se considera
@@ -4953,8 +5488,9 @@ pueda actuar como barrera. Así, un residuo negro semitransparente se atraviesa 
 se elimina junto al halo claro, mientras que el contorno negro opaco se conserva.
 `Pelado` permite retirar entre cero y tres capas oscuras superficiales antes de
 activar esa barrera, eliminando la costura de un píxel producida por el antialias
-sin tener que borrar manualmente todo el perímetro. El valor inicial es `1`; debe
-usarse `0` en sprites cuyo contorno bueno sea excepcionalmente fino.
+sin tener que borrar manualmente todo el perímetro. El valor inicial y recomendado
+es `0`: cualquier valor superior elimina tinta de forma deliberada y sólo debe
+usarse tras comprobar el resultado ampliado sobre negro y magenta.
 `Cuentagotas tope` ofrece una alternativa a la detección por luminosidad: tras
 activarlo se pulsa un píxel del contorno que debe conservarse y ese RGB pasa a ser
 la barrera. `Margen color` protege variaciones cercanas del trazo y `Solidez`
@@ -4970,10 +5506,10 @@ color perteneciente a otro sprite.
 evitando que una abertura accidental recorra el interior del personaje. La acción
 completa crea un único paso de historial, por lo que `Deshacer` o `Ctrl+Z` recuperan
 exactamente el lienzo anterior.
-El recorrido exterior usa conectividad de ocho direcciones. Además de arriba,
-abajo, izquierda y derecha, alcanza píxeles unidos diagonalmente, lo que elimina
-los últimos restos claros alojados en puntas, entrantes y ángulos cerrados sin
-saltar por encima del color de tope.
+El recorrido exterior usa conectividad de cuatro direcciones: arriba, abajo,
+izquierda y derecha. No salta en diagonal por microaberturas del contorno; éste
+fue el fallo que permitía que una limpieza antigua invadiera la axila y el interior
+del brazo de la actual pose `samu.worried` V2.
 Como remate independiente, `Quitar sólo halo claro` recorre desde la transparencia
 únicamente píxeles blancos o grises claros aceptados por `Tolerancia`, con la
 profundidad limitada por `Alcance`. No atraviesa negros ni colores, por lo que
@@ -4986,14 +5522,21 @@ ante cualquier píxel más opaco y respeta `Alcance`; el valor inicial `48` elim
 contaminación débil conservando el cuerpo del antialias, y puede aumentarse de
 forma gradual con `Deshacer` disponible para cada intento.
 
+`Motas aisladas (avanzado)` analiza los componentes conectados del alfa y elimina
+islas de hasta 64 píxeles separadas del componente principal. No actúa sobre
+huecos internos ni detalles unidos, pero sí podría coincidir con un brillo,
+lágrima o accesorio flotante legítimo: debe revisarse ampliado y deshacerse si el
+elemento no era residuo.
+
 `Suavizar borde` es el último remate para dientes de sierra. No desenfoca el RGB
-del sprite ni sus líneas interiores: localiza exclusivamente píxeles visibles que
-tocan transparencia, calcula una cobertura alfa ponderada de 3×3 y reconstruye el
-color de los nuevos píxeles semitransparentes a partir de vecinos visibles. El
-control `Suavizado` mezcla ese resultado con el borde actual; se recomienda empezar
-entre 35% y 50%, comprobar sobre magenta y utilizar `Deshacer` si el contorno queda
-demasiado blando. Cada aplicación constituye un solo paso reversible y varias
-aplicaciones acumulan el efecto.
+del sprite ni sus líneas interiores: localiza exclusivamente píxeles ya visibles
+que tocan transparencia y reduce su alfa hacia una cobertura ponderada de 3×3.
+Es una operación contractiva: nunca crea píxeles visibles donde el lienzo tenía
+alfa cero ni copia color al exterior de la silueta. El control `Suavizado` mezcla
+ese resultado con el borde actual; se recomienda empezar entre 35% y 50%,
+comprobar sobre magenta y utilizar `Deshacer` si el contorno queda demasiado
+blando. Cada aplicación constituye un solo paso reversible y varias aplicaciones
+acumulan el efecto.
 
 El pincel manual dispone de los modos `Limpiar`, `Borrar` y `Restaurar`. El primero mantiene
 la eliminación selectiva de blancos según `Tolerancia`; `Borrar` reduce el alfa de
@@ -5003,10 +5546,14 @@ los píxeles fuente sólo dentro del trazo, con el mismo `Tamaño`, borde suaviz
 `Fuerza`. La fuente predeterminada `Antes de la última limpieza` es una captura
 exacta del lienzo tomada antes de cada trazo limpiador, restauración completa o
 pasada global, por lo que permite rescatar localmente un detalle sin deshacer el
-resto del resultado. `Base de trabajo` permite recuperar elementos perdidos varias
-operaciones atrás desde la fuente, copia guardada o archivo local elegido, con la
-advertencia de que también puede reintroducir el halo presente en esa base. Un
-trazo restaurador no reemplaza su propia fuente y puede repetirse
+resto del resultado. `Base de trabajo actual` permite recuperar elementos perdidos
+varias operaciones atrás desde la fuente, copia guardada o archivo local elegido.
+`Sprite original protegido` lee siempre la fuente canónica en un búfer independiente:
+sirve para rescatar un detalle que ya no existe en la copia limpia sin cambiar la
+base, `Ver base`, el historial ni el lienzo completo. Como también puede reintroducir
+el halo de la fuente, conviene usar un pincel pequeño y revisar sobre magenta. El
+búfer se invalida al cambiar de pose y las cargas atrasadas se descartan para impedir
+mezclar sprites. Un trazo restaurador no reemplaza su propia fuente y puede repetirse
 sobre varias zonas; cada trazo añade un paso independiente a Deshacer/Rehacer.
 Todos los controles del editor incorporan ayuda contextual en dos niveles. Al
 pasar el puntero o enfocar una opción aparece una descripción breve; el botón
@@ -5023,21 +5570,114 @@ incorporación: se divide en cuatro paneles numerados (`Pincel manual`, `Limpiez
 principal`, `Remates` y `Vista, historial y archivo`). En pantallas anchas se
 distribuyen en una cuadrícula de dos columnas; por debajo de 1400 px se apilan sin
 alterar el orden lógico ni separar cada acción de sus parámetros.
-`Guardar copia` nunca sobrescribe el sprite fuente: crea o actualiza un PNG RGBA en
+`Guardar copia` ejecuta primero la misma comprobación de detalle protegido. Si
+encuentra píxeles rosas o una expansión morada, el guardado se pausa, muestra la
+superposición y no llama al flujo que escribe archivos; tras reparar o limpiar hay
+que volver a pulsarlo. Sólo cuando el preflight está limpio crea o actualiza un WebP
+RGBA sin pérdida en
 `assets/images/characters/sprite_halo_cleaned/<personaje>/<pose>/` y registra la
 ruta en `assets/metadata/sprite_white_halo_cleaned.json`. Al regresar a una pose
 guardada, el editor selecciona esa copia como base para continuar el retoque, pero
 el selector permite volver al fuente protegido en cualquier momento. Cada guardado
 crea también una miniatura de pose y otra de tarjeta; el juego y la galería
 priorizan automáticamente estas copias limpias sin modificar `characters/*.json`.
+El panel `Guardar copia escribirá en` enseña antes de guardar la ruta exacta del
+WebP de la pose seleccionada y, en la ayuda de miniaturas, las dos rutas WebP
+derivadas. `Descargar WebP actual` congela el lienzo RGBA tal como está en ese
+instante y el servidor local lo codifica como WebP sin pérdida para descargarlo
+como respaldo. La descarga no incorpora el
+damero, el fondo de contraste, el zoom, los marcos ni ningún otro elemento de la
+interfaz; tampoco ejecuta la validación del servidor, actualiza el manifiesto o
+genera miniaturas. Por ello sigue rescatando siempre el lienzo aunque el preflight
+pause o el servidor rechace `Guardar copia`; el WebP resultante puede reimportarse
+con el botón o por arrastre. No sustituye al guardado validado que consumen juego y
+galería.
+
+El botón rojo `Guardar de todos modos` es una excepción explícita para suavizados
+intencionales que la máscara heurística identifica como pérdida protegida. No se
+habilita de antemano: primero hay que intentar `Guardar copia` o pulsar
+`Comprobar detalle`, revisar los puntos rosas sobre la imagen y confirmar que no
+existe ninguna expansión morada. La autorización queda vinculada mediante una
+huella al identificador de pose, al sprite fuente y a los píxeles exactos de esa
+revisión del lienzo; cualquier pincelada, Deshacer/Rehacer, cambio de base o cambio
+de pose la invalida y obliga a comprobar de nuevo.
+
+Al confirmar la excepción se conservan los píxeles y el suavizado tal como están en
+pantalla y se actualizan el WebP runtime, sus miniaturas y los frames derivados
+compatibles. El sprite fuente protegido permanece intacto. La copia se registra con
+la política `white-halo-save-v1`, `validation.forced: true`, la huella del
+diagnóstico y el recuento y límites de la advertencia `lost-protected-alpha`; en la
+lista del editor aparece como `REVISAR`. Un guardado seguro posterior reemplaza esa
+marca por `validation.forced: false`. Esta excepción nunca permite dimensiones
+incorrectas, alfa expandido, archivos inválidos ni una autorización correspondiente
+a otra revisión del lienzo.
+
+Una copia `REVISAR` puede cerrarse mediante `Marcar como LIMPIO` después de cargar
+la copia guardada exacta y comprobarla sin cambios pendientes en el lienzo. La
+confirmación muestra el número de píxeles protegidos aceptados. Esta acción no
+repara, recodifica ni reescribe ningún WebP: modifica únicamente el manifiesto y
+conserva `forced`, `forcedAt`, `warnings`, métricas y huella de diagnóstico como
+trazabilidad histórica. Añade `validation.review` con política
+`white-halo-manual-review-v1`, fecha, revisión del sujeto y huella del conjunto de
+artefactos; la lista pasa a mostrar `LIMPIO` y su tooltip indica que procede de una
+revisión manual.
+
+El servidor calcula la revisión sobre los metadatos de la entrada y los bytes
+exactos del WebP, ambas miniaturas y todos sus frames derivados. Si otra pestaña
+vuelve a guardar la pose, falta un derivado o cualquiera de esos archivos cambia,
+la aprobación anterior queda obsoleta y no se puede aplicar a la nueva copia. Un
+guardado posterior reconstruye `validation`, elimina naturalmente la revisión
+anterior y vuelve a `REVISAR` si necesita otra excepción. Guardado y aprobación
+comparten un bloqueo para no perder cambios concurrentes del manifiesto.
+
+Todas las copias limpias existentes de Airi, Carlos y Samu, así como las nuevas
+salidas del editor, usan WebP RGBA sin pérdida. El PNG queda reservado para el
+transporte interno exacto del lienzo, el historial de edición y los originales o
+másteres de `workbench/`; no debe registrarse como salida runtime.
+Cuando una pose limpia conserva un parpadeo de sprite completo con la misma
+silueta, `Guardar copia` deriva también esos frames con exactamente la máscara alfa
+limpia y registra el mapa `animationFrames`. Motor y galería aplican ese mapa tras
+inyectar el frame intermedio, evitando que el halo reaparezca durante la animación.
+`carlos.neutral` usa este circuito para sus estados semicerrado y cerrado; las poses
+con capas oculares no duplican sprites completos. `validate:content` exige que base,
+miniaturas y frames derivados sean WebP lossless `VP8L`, declaren alfa y conserven
+las dimensiones previstas.
+El endpoint `POST /api/white-halo-protection` recibe el identificador de pose, el
+PNG interno del lienzo y `repair` como booleano. Reutiliza exactamente
+`white_halo_protection_masks()` para diagnosticar pérdida protegida y expansión;
+devuelve las métricas y el overlay PNG y, con `repair: true`, una imagen reparada
+que sólo sustituye los píxeles protegidos por su RGBA canónico. Esta operación no
+escribe copias runtime, miniaturas ni metadatos.
+
+Después del preflight, el endpoint de guardado vuelve a comparar el alfa candidato
+con el fuente protegido: rechaza dimensiones distintas, cualquier expansión de la
+silueta y toda reducción de alfa que afecte al relleno o la tinta protegidos. Como
+el canvas puede redondear el color de un píxel semitransparente, el servidor repone
+el RGB exacto del fuente en cada píxel retenido y pone a cero el RGB oculto donde
+alfa es cero. También registra métricas de protección, alfa y componentes conectados
+en el manifiesto. Así una herramienta de remate no puede guardar un halo nuevo ni
+una copia que se haya comido el contorno.
+
+`POST /api/white-halo-clean` acepta opcionalmente un objeto `force` estricto con
+`warnings: ["lost-protected-alpha"]` y la `diagnosticFingerprint` emitida por el
+diagnóstico. El servidor recalcula máscaras, métricas y huella antes de escribir:
+la excepción sólo omite el rechazo por reducción protegida; la expansión de alfa y
+el resto de invariantes continúan siendo bloqueos absolutos.
+
+`POST /api/white-halo-review` recibe `id` y la `expectedRevision` publicada por
+`/api/base-sprites`. Sólo acepta una entrada forzada pendiente cuya revisión siga
+coincidiendo; escribe exclusivamente `validation.review` y devuelve
+`assetsChanged: false`. `reviewState` distingue `not-required`, `pending`,
+`approved` y `stale`, y permite que la interfaz derive las etiquetas sin confundir
+una aprobación humana con un guardado que nunca necesitó excepción.
 
 ### Acting de personajes, transiciones y memoria de escenario
 
 `showCharacter` y `setPose` reemplazan el sprite de forma atómica: nunca crean
 una copia fantasma de la expresión anterior. Las fichas pueden declarar
 `animations` con varios sprites de una misma pose; esos fotogramas se precargan
-y se reproducen en secuencia sin solaparse. Hay 135 poses con parpadeo declarado:
-130 pertenecen a los personajes activos y 5 al archivo legado de ePod, sustituido
+y se reproducen en secuencia sin solaparse. Hay 134 poses con parpadeo declarado:
+129 pertenecen a los personajes activos y 5 al archivo legado de ePod, sustituido
 en el juego por Nexo. Todas las poses activas usan ahora cinco pasos
 (`abierto → medio → cerrado → medio → abierto`); en las 13 poses que reposan con
 los ojos cerrados la lectura se invierte (`cerrado → medio → abierto → medio →
@@ -5106,15 +5746,17 @@ npm run validate:content
 ```
 
 `scripts/validate_game_content.mjs` comprueba los siete JSON de capítulo y todas
-las fichas de personaje; valida acciones y minijuegos conocidos, personajes,
+las fichas de personaje; compara las acciones de `engine.js` con el inventario
+validado y exige que todas aparezcan en este manual. Valida tanto `actions` como
+`afterActions`, además de minijuegos conocidos, personajes,
 poses de secuencias, destinos de escenas y elecciones, y la existencia de cada
 referencia bajo `assets/`, incluida su capitalización exacta. También audita
 `character`/`speakingAs`, posiciones y campos obligatorios, IDs/categorías/tipos
 de galería, miniaturas, rutas literales de JS/CSS/HTML y exclusiones sensibles
 del instalador. El resumen impreso —capítulos,
 escenas, líneas, personajes y referencias— es la cifra fiable del estado actual.
-La ejecución de cierre verificada el **2026-08-03** terminó sin errores con
-**7 capítulos, 64 escenas, 920 líneas, 26 personajes y 1493 referencias de
+La ejecución de cierre verificada el **2026-08-04** terminó sin errores con
+**7 capítulos, 64 escenas, 920 líneas, 27 personajes y 1571 referencias de
 assets**.
 
 ### Retroceder: a esta escena o a la anterior (2026-08-03)
@@ -5159,3 +5801,23 @@ todavía no se había visto (los diálogos contados eran los de la escena vieja)
 desapilaba la entrada equivocada y caía en la primera escena del capítulo. Por
 seguridad, el caso "volver al principio de esta escena" exige además que la cima
 del historial sea la escena actual.
+
+### Ciervo del patio preparado para escenas futuras (2026-08-04)
+
+El personaje provisional **Ciervo** se registra con la clave `ciervo` en
+`characters/ciervo.json`. No está añadido a ningún capítulo ni a la precarga
+inicial: el motor cargará su ficha a demanda cuando una escena futura ejecute
+`showCharacter`.
+
+- `neutral` usa `assets/images/characters/ciervo/ciervo_neutral.webp`.
+- `seated` usa `assets/images/characters/ciervo/ciervo_seated.webp` e incluye la
+  mecedora rústica completa como parte del propio sprite.
+- Los PNG protegidos viven en
+  `workbench/originals/runtime/assets/images/characters/ciervo/` y los maestros
+  con y sin croma en `workbench/sources/images/characters/ciervo/`.
+- La propuesta realista descartada se conserva exclusivamente en
+  `workbench/sources/images/characters/ciervo/archive/rejected_realistic/`; no
+  forma parte de los assets runtime.
+
+Al regenerar la galería, la ficha aporta automáticamente ambas poses. Todavía no
+tiene animaciones oculares; juego y galería usan los WebP base como fallback.
