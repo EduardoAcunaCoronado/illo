@@ -209,6 +209,13 @@ principales actuales son:
 | Canalización de runas | Mantén y suelta `A`, `S`, `D` y `F`, o usa los cuatro botones en pantalla, para equilibrar las barras. |
 | Créditos interactivos | Clic o toque en **Clic para saltar**. |
 
+En el bullet hell, los impactos siguen la silueta útil y no el rectángulo
+transparente completo de cada imagen. Zip combina varias zonas según su pose;
+las guindillas y botellas usan una zona elíptica sencilla y ajustada al objeto
+visible. Tras recibir daño, Samu tiene 0,85 segundos de invulnerabilidad: su
+indicador cambia a línea discontinua y se atenúa mientras los solapes no causan
+otro impacto.
+
 Los juegos de conducción y vuelo tienen además pausa propia. Si se pierde una prueba
 obligatoria aparece la opción de reintentar. Opciones y Escenas permiten
 abandonar una prueba sin dejar bloqueada la novela.
@@ -332,6 +339,8 @@ notarización requieren credenciales externas; se explican en la referencia.
 | `p5-effects.js` | Biblioteca visual heredada; el nombre del archivo es técnico y no define la identidad actual. |
 | `battle-minigame.js` / `battle-styles.css` | Combate por turnos y su UI. |
 | `ketchup-minigame.js` | Bullet hell contra Zip. |
+| `ketchup-hitboxes.js` | Perfiles canónicos de colisión de Zip, Samu, guindillas y botellas. |
+| `hitbox-debugger.js` / `hitbox-editor.html` | Depuración en vivo y ajuste persistente de hitboxes simples o compuestas. |
 | `rune-channeling-minigame.js` | Canalización cooperativa de runas. |
 | `credits-minigame.js` | Créditos interactivos. |
 | `minijuegos_test.html` | Lanzador aislado de minijuegos; conserva el origen del juego y ofrece regreso al menú. |
@@ -341,8 +350,9 @@ notarización requieren credenciales externas; se explican en la referencia.
 | `electron/` | Ventana segura, servidor interno con Range, ajustes persistentes e IPC limitado. |
 | `scripts/` | Validación, galería, optimización y herramientas gráficas. |
 
-Orden de scripts, basado en los `window.*` globales: `p5-effects.js` → módulos
-de batalla/créditos/Ketchup/runas → `juice.js` → `engine.js` → `game.js`.
+Orden de scripts, basado en los `window.*` globales: `p5-effects.js` → módulo de
+batalla → `ketchup-hitboxes.js` → `hitbox-debugger.js` → módulos de
+créditos/guindillas/Ketchup/runas → `juice.js` → `engine.js` → `game.js`.
 `game.js` crea una instancia de
 `VisualNovelEngine`, descubre `chapter0`, `chapter1`, etc. hasta encontrar
 `isFinal: true` o el primer hueco, carga personajes y llama a `nextLine()`.
@@ -1914,6 +1924,39 @@ Todos los parámetros numéricos de dificultad admiten la variante opcional
 `...ByDelay` descrita en `minigame`. Los nombres de esta tabla son el contrato
 del motor; los alias sólo se conservan para contenido histórico.
 
+`ketchupBoss` obtiene sus valores base de `ketchup-hitboxes.js`. `boss` no es
+una caja única: contiene `profiles` (`floating`, `phase1`…`phase5`) y cada
+perfil agrupa primitivas bajo `parts`. El frame activo selecciona el perfil y
+un impacto contra cualquiera de sus piezas daña a Zip. Jugador y proyectiles
+parten de una primitiva simple, pero el editor puede promover cualquier objeto
+a `{ parts: { ... } }` al añadir una segunda zona. La colisión, el indicador de
+Samu y la depuración de proyectiles recorren todas las piezas del objeto.
+`rect`, `circle` y `ellipse` aceptan `offsetX`, `offsetY`, `w`, `h` y `rotation`;
+dimensiones y offsets se expresan como fracciones del campo.
+
+La colisión convierte esas fracciones a píxeles del campo antes de aplicar SAT
+sobre polígonos convexos; las elipses usan 32 vértices para que el borde visual
+y el borde de colisión coincidan incluso en contactos rasantes. Así una elipse
+conserva su proporción visual aunque el escenario no sea cuadrado y las
+botellas rotadas comparten orientación con
+su hitbox. `localStorage.illo_hitbox_config.ketchupBoss` puede sobrescribir
+objetos simples y piezas concretas bajo
+`boss.profiles.<perfil>.parts.<pieza>`. Los ajustes antiguos de la caja única de
+`boss` ya no se aplican. Una pieza que no exista en los valores canónicos se
+incorpora como zona personalizada y participa en la colisión; una pieza
+canónica guardada con `{ "disabled": true }` se excluye de ese perfil. Esto
+permite que el editor añada y elimine zonas sin modificar el archivo de valores
+base. Los objetos sin perfiles por frame guardan sus zonas directamente bajo
+`<objeto>.parts.<pieza>`; las configuraciones simples antiguas continúan siendo
+válidas como una única zona implícita.
+
+Los marcadores integrados y `hitbox-debugger.js` convierten las fracciones con
+`clientWidth`/`clientHeight`, igual que la colisión. No deben usar
+`getBoundingClientRect()` para calcular su tamaño: ese rectángulo ya incluye el
+escalado visual del minijuego y, al aplicarlo a un hijo del campo, produciría un
+segundo escalado. Las coordenadas de puntero sí usan el rectángulo visual porque
+llegan en coordenadas de la ventana.
+
 #### Minijuego `gatos` (Micaela Michis)
 
 Un **Pac-Man por rejilla** en un **laberinto de calles urbanas**. Samu (🐺) recorre
@@ -2077,6 +2120,45 @@ vuelo**. En la persecución dibuja las huellas elípticas: coche en verde,
 obstáculos en rojo y motos en amarillo. En el vuelo mantiene las cajas 2D y los
 coleccionables azules. La opción también se inyecta al usar **Como en la
 historia**, pero nunca se activa en una partida narrativa normal.
+
+El bloque **Bullet Hell de Zip** tiene su propia casilla **Mostrar hitbox real
+de Zip** y un acceso a `hitbox-editor.html`. El editor permite escoger frame,
+perfil y pieza de la hitbox compuesta; también ajusta las primitivas simples de
+Samu y los proyectiles. La interfaz separa selección, geometría e historial;
+incluye navegación anterior/siguiente, visibilidad de etiquetas y piezas,
+deslizadores coloreados para posición, tamaño y rotación, valores visibles con
+coma decimal que también aceptan escritura exacta, botones `−`/`+`, ajuste fino
+y lectura en píxeles. El slider, el campo numérico y los botones permanecen
+sincronizados y comparten el historial. **Centrar**,
+**Cuadrar** y **Rotación 0°** resuelven ajustes habituales sin teclear números;
+los tooltips, copiar/pegar y la restauración por zona, objeto o juego completan
+el flujo.
+La previsualización amplía cada asset para editarlo con comodidad, pero calcula
+su escala con las dimensiones visibles que usa el runtime sobre un campo de
+referencia de 920 × 600 px (Samu: 60,24 × 94 px; Zip, tras aplicar
+`object-fit: contain` a su contenedor de 104 × 160 px: 67,54 × 160 px;
+proyectiles: 21,33 × 32 px o 22,67 × 34 px). Por ello, tamaño y desplazamiento
+de cada zona conservan
+la misma proporción respecto al sprite que en el minijuego.
+Todos los objetos muestran **Añadir zona**, **Duplicar**, **Renombrar** y
+**Eliminar**. Si el objeto era simple, la primera zona se conserva como `base`
+y la nueva lo convierte en compuesto; si usa perfiles por frame, la zona se
+añade únicamente al perfil activo. Se puede colocar inmediatamente y se aplica
+al runtime tras guardar. En escritorio, el panel usa dos columnas: selección y
+geometría quedan en paralelo, mientras historial y guardado ocupan una franja
+inferior. Todos los controles principales caben sin desplazamiento vertical a
+1280 × 720; por debajo de 900 px de ancho el diseño vuelve a una columna y
+permite scroll como respaldo.
+**Deshacer/Rehacer**, `Ctrl+Z`, `Ctrl+Mayús+Z` y `Ctrl+Y` trabajan sobre un
+historial local de hasta 80 estados; `Ctrl+S` guarda, `Page Up/Down` cambia el
+frame y `[`/`]` cambia la pieza. **Guardar e ir a pruebas** persiste y vuelve al banco
+de minijuegos; **Volver sin guardar** pide confirmación si hay cambios pendientes.
+
+**Guardar** persiste únicamente en `localStorage` del origen de pruebas y
+requiere volver a lanzar el minijuego. Durante los 0,85 s
+de invulnerabilidad de Samu, tanto el marcador integrado como el depurador se
+muestran atenuados y con borde discontinuo para distinguir una caja visible de
+una colisión activa.
 
 #### Minijuego `eduvuelo` — peligros aéreos (cap. 3)
 
