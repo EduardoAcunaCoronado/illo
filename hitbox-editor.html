@@ -7,20 +7,24 @@
     <style>
         :root {
             --bg: #070310;
-            --panel: rgba(10, 8, 20, .92);
+            --panel: rgba(10, 8, 20, .94);
             --line: rgba(255, 255, 255, .16);
             --text: #f8fbff;
             --muted: #aab3cf;
             --accent: #53d2ff;
+            --accent-soft: rgba(83, 210, 255, .14);
+            --success: #6ee7a8;
+            --warning: #ffd166;
         }
 
         * { box-sizing: border-box; }
+        [hidden] { display: none !important; }
 
         body {
             margin: 0;
             height: 100vh;
             display: grid;
-            grid-template-columns: minmax(0, 1fr) 320px;
+            grid-template-columns: minmax(0, 1fr) 620px;
             background: radial-gradient(circle at 25% 20%, rgba(83, 210, 255, .18), transparent 34%), var(--bg);
             color: var(--text);
             font-family: Arial, Helvetica, sans-serif;
@@ -54,6 +58,8 @@
             box-shadow: inset 0 0 26px rgba(0, 0, 0, .55), 0 0 28px rgba(0, 0, 0, .45);
         }
 
+        #editor-field.no-grid { background: #e6e8ec; }
+
         .sprite {
             position: absolute;
             transform: translate(-50%, -50%);
@@ -82,7 +88,9 @@
         }
 
         .hitbox.is-circle { border-radius: 50%; }
-        .hitbox.is-selected { outline: 2px solid #fff; outline-offset: 2px; }
+        .hitbox.is-selected { outline: 2px solid #fff; outline-offset: 2px; z-index: 12; }
+        .hitbox.is-muted { opacity: .28; }
+        .hitbox.no-label span { display: none; }
 
         .hitbox span {
             position: absolute;
@@ -112,77 +120,148 @@
         aside {
             height: 100vh;
             min-height: 0;
-            padding: 18px;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            align-content: start;
+            gap: 8px 10px;
+            padding: 12px 14px;
             border-left: 1px solid var(--line);
             background: var(--panel);
             overflow-y: auto;
         }
 
-        h1 {
-            margin: 0 0 6px;
-            font-size: 22px;
+        h1 { margin: 0; font-size: 22px; color: var(--accent); }
+        h2 { margin: 0 0 7px; font-size: 11px; color: #e7efff; letter-spacing: .05em; text-transform: uppercase; }
+
+        .editor-header,
+        .field-title,
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .status-badge {
+            padding: 4px 7px;
+            border: 1px solid rgba(110, 231, 168, .35);
+            border-radius: 999px;
+            color: var(--success);
+            background: rgba(110, 231, 168, .09);
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .status-badge.is-dirty { border-color: rgba(255, 209, 102, .42); color: var(--warning); background: rgba(255, 209, 102, .1); }
+        .editor-header,
+        aside > .hint,
+        .panel-section[aria-labelledby="actions-title"],
+        aside > details { grid-column: 1 / -1; }
+        .hint { margin: 0 0 2px; color: var(--muted); font-size: 11px; line-height: 1.35; }
+        .panel-section { margin: 0; padding: 9px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255, 255, 255, .025); }
+
+        .field { display: grid; gap: 6px; color: #dbe7ff; font-size: 12px; }
+        .field + .field { margin-top: 7px; }
+
+        .help {
+            position: relative;
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            display: inline-grid;
+            place-items: center;
+            padding: 0;
+            border-radius: 50%;
             color: var(--accent);
+            background: var(--accent-soft);
+            font-size: 11px;
+            line-height: 1;
         }
 
-        .hint {
-            margin: 0 0 16px;
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.45;
+        .help::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            right: 0;
+            bottom: calc(100% + 8px);
+            width: 235px;
+            padding: 8px 10px;
+            border: 1px solid rgba(83, 210, 255, .36);
+            border-radius: 7px;
+            color: #eefaff;
+            background: #0b1422;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+            font-size: 11px;
+            font-weight: 400;
+            line-height: 1.4;
+            text-align: left;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity .12s ease, transform .12s ease;
+            z-index: 50;
         }
 
-        label {
-            display: grid;
-            gap: 6px;
-            margin-top: 11px;
-            color: #dbe7ff;
-            font-size: 12px;
-        }
+        .help:hover::after,
+        .help:focus::after { opacity: 1; transform: translateY(0); }
 
         select,
-        input {
-            width: 100%;
-            border: 1px solid rgba(255, 255, 255, .22);
-            border-radius: 6px;
-            background: rgba(0, 0, 0, .38);
-            color: #fff;
-            padding: 8px;
-            font-size: 14px;
-        }
+        input { width: 100%; border: 1px solid rgba(255, 255, 255, .22); border-radius: 6px; background: rgba(0, 0, 0, .38); color: #fff; padding: 6px 7px; font-size: 12px; }
+        select:focus,
+        input:focus,
+        button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-        .buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 16px;
-        }
+        .select-nav,
+        .inline-actions,
+        .toggle-grid { display: grid; gap: 7px; }
+        .select-nav { grid-template-columns: 34px minmax(0, 1fr) 34px; }
+        .inline-actions { grid-template-columns: repeat(4, 1fr); }
+        .part-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 8px; }
+        .toggle-grid { grid-template-columns: 1fr 1fr; }
 
-        button {
-            border: 1px solid rgba(255, 255, 255, .26);
-            border-radius: 7px;
-            background: rgba(83, 210, 255, .14);
-            color: #fff;
-            padding: 9px;
-            font-weight: 700;
-            cursor: pointer;
-        }
+        .geometry-sliders { display: grid; gap: 5px; margin-top: 6px; }
+        .range-field { --range-color: #53d2ff; padding: 5px 7px; border: 1px solid color-mix(in srgb, var(--range-color) 34%, var(--line)); border-radius: 8px; background: color-mix(in srgb, var(--range-color) 7%, transparent); }
+        .range-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 3px; color: #dbe7ff; font-size: 10px; font-weight: 700; }
+        input.range-value { width: 68px; min-width: 68px; padding: 2px 7px; border: 0; border-radius: 999px; color: #071019; background: var(--range-color); font: 800 10px/1.3 ui-monospace, Consolas, monospace; text-align: center; appearance: textfield; }
+        input.range-value::-webkit-inner-spin-button,
+        input.range-value::-webkit-outer-spin-button { margin: 0; appearance: none; }
+        .range-control { display: grid; grid-template-columns: 25px minmax(0, 1fr) 25px; align-items: center; gap: 5px; }
+        button.range-step { min-height: 24px; padding: 2px; border-color: color-mix(in srgb, var(--range-color) 54%, white 10%); color: var(--range-color); background: color-mix(in srgb, var(--range-color) 12%, transparent); font-size: 16px; line-height: 1; }
+        input.geometry-range { width: 100%; height: 20px; margin: 0; padding: 0; border: 0; outline-offset: 3px; background: transparent; cursor: ew-resize; accent-color: var(--range-color); appearance: none; }
+        input.geometry-range::-webkit-slider-runnable-track { height: 5px; border-radius: 999px; background: linear-gradient(90deg, color-mix(in srgb, var(--range-color) 35%, #253044), var(--range-color)); }
+        input.geometry-range::-webkit-slider-thumb { width: 15px; height: 15px; margin-top: -5px; border: 2px solid #fff; border-radius: 50%; background: var(--range-color); box-shadow: 0 0 8px color-mix(in srgb, var(--range-color) 70%, transparent); appearance: none; }
+        input.geometry-range::-moz-range-track { height: 5px; border-radius: 999px; background: color-mix(in srgb, var(--range-color) 45%, #253044); }
+        input.geometry-range::-moz-range-thumb { width: 13px; height: 13px; border: 2px solid #fff; border-radius: 50%; background: var(--range-color); box-shadow: 0 0 8px color-mix(in srgb, var(--range-color) 70%, transparent); }
+        .geometry-presets { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; margin-top: 6px; }
 
+        .buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 8px; }
+        button { border: 1px solid rgba(255, 255, 255, .26); border-radius: 7px; background: var(--accent-soft); color: #fff; padding: 7px 6px; font-size: 11px; font-weight: 700; cursor: pointer; }
         button:hover { filter: brightness(1.18); }
+        button:disabled { opacity: .38; cursor: not-allowed; filter: none; }
         button.danger { background: rgba(255, 48, 84, .16); }
-        button.full { grid-column: 1 / -1; }
+        button.primary { background: rgba(83, 210, 255, .28); border-color: rgba(83, 210, 255, .5); }
+        button.icon { padding: 7px 5px; font-size: 15px; }
+        button.full { grid-column: auto; }
 
-        pre {
-            margin-top: 14px;
-            padding: 10px;
-            min-height: 112px;
-            max-height: 240px;
-            overflow: auto;
-            border: 1px solid rgba(255, 255, 255, .14);
-            border-radius: 6px;
-            background: rgba(0, 0, 0, .35);
-            color: #d7f7ff;
-            font-size: 11px;
-            white-space: pre-wrap;
+        .toggle { display: flex; align-items: center; gap: 6px; padding: 5px 6px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); font-size: 10px; cursor: pointer; }
+        .toggle input { width: auto; margin: 0; accent-color: var(--accent); }
+        .value-note { margin: 6px 0 0; color: var(--muted); font-size: 10px; line-height: 1.35; }
+        .value-note strong { color: #fff; }
+
+        details { margin: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+        summary { padding: 6px 9px; color: var(--muted); font-size: 10px; font-weight: 700; cursor: pointer; user-select: none; }
+        pre { margin: 0; padding: 10px; min-height: 112px; max-height: 240px; overflow: auto; border-top: 1px solid rgba(255, 255, 255, .14); background: rgba(0, 0, 0, .35); color: #d7f7ff; font-size: 11px; white-space: pre-wrap; }
+
+        #toast { position: fixed; left: 18px; bottom: 18px; max-width: min(420px, calc(100vw - 36px)); padding: 10px 13px; border: 1px solid rgba(83, 210, 255, .45); border-radius: 8px; background: #0b1422; color: #fff; box-shadow: 0 10px 32px rgba(0, 0, 0, .5); font-size: 12px; opacity: 0; transform: translateY(10px); pointer-events: none; transition: .16s ease; z-index: 100; }
+        #toast.is-visible { opacity: 1; transform: translateY(0); }
+
+        @media (max-width: 900px) {
+            body { display: block; height: auto; overflow: auto; }
+            main { min-height: 58vh; }
+            aside { height: auto; display: block; border-left: 0; border-top: 1px solid var(--line); }
+            .panel-section { margin-top: 10px; }
+            details { margin-top: 10px; }
         }
     </style>
 </head>
@@ -192,52 +271,122 @@
     </main>
 
     <aside>
-        <h1>Hitboxes</h1>
-        <p class="hint">Selecciona un objeto, arrastra su caja o cambia los valores. Guardar aplica los cambios al minijuego cuando vuelva a arrancar.</p>
-
-        <label>Minijuego
-            <select id="game-select"></select>
-        </label>
-
-        <label>Objeto
-            <select id="object-select"></select>
-        </label>
-
-        <label>Imagen / frame
-            <select id="frame-select"></select>
-        </label>
-
-        <label>Forma
-            <select id="box-shape">
-                <option value="rect">Rectangular</option>
-                <option value="circle">Circular</option>
-            </select>
-        </label>
-
-        <label>Offset X
-            <input id="offset-x" type="number" step="0.001">
-        </label>
-        <label>Offset Y
-            <input id="offset-y" type="number" step="0.001">
-        </label>
-        <label>Ancho
-            <input id="box-w" type="number" min="0.001" step="0.001">
-        </label>
-        <label>Alto
-            <input id="box-h" type="number" min="0.001" step="0.001">
-        </label>
-
-        <div class="buttons">
-            <button id="save-btn" type="button">Guardar</button>
-            <button id="copy-btn" type="button">Copiar</button>
-            <button id="reset-object-btn" class="danger" type="button">Reset objeto</button>
-            <button id="reset-game-btn" class="danger" type="button">Reset juego</button>
-            <button id="open-test-btn" class="full" type="button">Volver a minijuegos</button>
+        <div class="editor-header">
+            <h1>Editor de hitboxes</h1>
+            <span id="save-status" class="status-badge">Guardado</span>
         </div>
+        <p class="hint">Haz clic en una zona para seleccionarla. Arrastra para moverla y usa el cuadrado de la esquina para cambiar su tamaño.</p>
 
-        <pre id="output"></pre>
+        <section class="panel-section" aria-labelledby="selection-title">
+            <h2 id="selection-title">1 · Selección</h2>
+            <div class="field">
+                <div class="field-title"><label for="game-select">Minijuego</label><button class="help" type="button" aria-label="Ayuda sobre minijuego" data-tooltip="El editor guarda cada minijuego por separado en este navegador.">?</button></div>
+                <select id="game-select"></select>
+            </div>
+            <div class="field">
+                <div class="field-title"><label for="object-select">Objeto</label><button class="help" type="button" aria-label="Ayuda sobre objeto" data-tooltip="Elige el personaje o proyectil cuya colisión quieres ajustar.">?</button></div>
+                <select id="object-select"></select>
+            </div>
+            <div class="field">
+                <div class="field-title"><label for="frame-select">Imagen / frame</label><button class="help" type="button" aria-label="Ayuda sobre frames" data-tooltip="Cada pose de Zip puede usar un perfil compuesto diferente. Los botones cambian de frame sin abrir la lista.">?</button></div>
+                <div class="select-nav">
+                    <button id="prev-frame-btn" class="icon" type="button" title="Frame anterior (Page Up)" aria-label="Frame anterior">‹</button>
+                    <select id="frame-select"></select>
+                    <button id="next-frame-btn" class="icon" type="button" title="Frame siguiente (Page Down)" aria-label="Frame siguiente">›</button>
+                </div>
+            </div>
+            <div id="part-row" class="field">
+                <div class="field-title"><label for="part-select">Zonas de colisión</label><button class="help" type="button" aria-label="Ayuda sobre zonas" data-tooltip="Cualquier objeto puede tener una o varias zonas. Solo la seleccionada recibe los cambios; las demás sirven de referencia.">?</button></div>
+                <div class="select-nav">
+                    <button id="prev-part-btn" class="icon" type="button" title="Parte anterior ([)" aria-label="Parte anterior">‹</button>
+                    <select id="part-select"></select>
+                    <button id="next-part-btn" class="icon" type="button" title="Parte siguiente (])" aria-label="Parte siguiente">›</button>
+                </div>
+                <div class="part-actions">
+                    <button id="add-part-btn" type="button" title="Crea otra zona a partir de la seleccionada">＋ Añadir zona</button>
+                    <button id="duplicate-part-btn" type="button" title="Copia la zona seleccionada dentro de este frame">Duplicar</button>
+                    <button id="rename-part-btn" type="button" title="Cambia el nombre visible de la zona">Renombrar</button>
+                    <button id="delete-part-btn" class="danger" type="button" title="Elimina la zona seleccionada">Eliminar</button>
+                </div>
+            </div>
+            <div class="toggle-grid" style="margin-top:6px">
+                <label class="toggle"><input id="show-labels" type="checkbox" checked> Etiquetas</label>
+                <label class="toggle"><input id="show-others" type="checkbox" checked> Otras piezas</label>
+                <label class="toggle"><input id="show-grid" type="checkbox" checked> Cuadrícula</label>
+                <label class="toggle"><input id="fine-step" type="checkbox"> Ajuste fino</label>
+            </div>
+        </section>
+
+        <section class="panel-section" aria-labelledby="geometry-title">
+            <div class="field-title">
+                <h2 id="geometry-title">2 · Geometría</h2>
+                <button class="help" type="button" aria-label="Ayuda sobre unidades" data-tooltip="Offsets y tamaños son fracciones del escenario: 0,01 equivale al 1 %. La lectura inferior muestra su tamaño aproximado en esta imagen.">?</button>
+            </div>
+            <div class="field">
+                <label for="box-shape">Forma</label>
+                <select id="box-shape">
+                    <option value="rect">Rectángulo</option>
+                    <option value="circle">Círculo</option>
+                    <option value="ellipse">Elipse</option>
+                </select>
+            </div>
+            <div class="geometry-sliders">
+                <div class="range-field" style="--range-color:#ff9f43">
+                    <div class="range-heading"><label for="offset-x">↔ Posición X</label><input id="offset-x-value" class="range-value" type="number" step="0.001" aria-label="Valor exacto de posición X"></div>
+                    <div class="range-control"><button class="range-step" type="button" data-range-key="offsetX" data-direction="-1" aria-label="Reducir posición X">−</button><input id="offset-x" class="geometry-range" type="range" min="-0.25" max="0.25" step="0.001" data-base-min="-0.25" data-base-max="0.25"><button class="range-step" type="button" data-range-key="offsetX" data-direction="1" aria-label="Aumentar posición X">+</button></div>
+                </div>
+                <div class="range-field" style="--range-color:#6ee7a8">
+                    <div class="range-heading"><label for="offset-y">↕ Posición Y</label><input id="offset-y-value" class="range-value" type="number" step="0.001" aria-label="Valor exacto de posición Y"></div>
+                    <div class="range-control"><button class="range-step" type="button" data-range-key="offsetY" data-direction="-1" aria-label="Reducir posición Y">−</button><input id="offset-y" class="geometry-range" type="range" min="-0.25" max="0.25" step="0.001" data-base-min="-0.25" data-base-max="0.25"><button class="range-step" type="button" data-range-key="offsetY" data-direction="1" aria-label="Aumentar posición Y">+</button></div>
+                </div>
+                <div class="range-field" style="--range-color:#53d2ff">
+                    <div class="range-heading"><label for="box-w">↔ Ancho</label><input id="box-w-value" class="range-value" type="number" min="0.001" step="0.001" aria-label="Valor exacto de ancho"></div>
+                    <div class="range-control"><button class="range-step" type="button" data-range-key="w" data-direction="-1" aria-label="Reducir ancho">−</button><input id="box-w" class="geometry-range" type="range" min="0.001" max="0.35" step="0.001" data-base-min="0.001" data-base-max="0.35"><button class="range-step" type="button" data-range-key="w" data-direction="1" aria-label="Aumentar ancho">+</button></div>
+                </div>
+                <div class="range-field" style="--range-color:#be7cff">
+                    <div class="range-heading"><label for="box-h">↕ Alto</label><input id="box-h-value" class="range-value" type="number" min="0.001" step="0.001" aria-label="Valor exacto de alto"></div>
+                    <div class="range-control"><button class="range-step" type="button" data-range-key="h" data-direction="-1" aria-label="Reducir alto">−</button><input id="box-h" class="geometry-range" type="range" min="0.001" max="0.35" step="0.001" data-base-min="0.001" data-base-max="0.35"><button class="range-step" type="button" data-range-key="h" data-direction="1" aria-label="Aumentar alto">+</button></div>
+                </div>
+                <div class="range-field" style="--range-color:#ffd166">
+                    <div class="range-heading"><label for="box-rotation">⟳ Rotación</label><input id="box-rotation-value" class="range-value" type="number" step="1" aria-label="Valor exacto de rotación en grados"></div>
+                    <div class="range-control"><button class="range-step" type="button" data-range-key="rotation" data-direction="-1" aria-label="Girar a la izquierda">−</button><input id="box-rotation" class="geometry-range" type="range" min="-180" max="180" step="1" data-base-min="-180" data-base-max="180"><button class="range-step" type="button" data-range-key="rotation" data-direction="1" aria-label="Girar a la derecha">+</button></div>
+                </div>
+            </div>
+            <p id="pixel-readout" class="value-note"></p>
+            <div class="geometry-presets">
+                <button id="center-btn" type="button" title="Lleva la zona al centro del sprite">◎ Centrar</button>
+                <button id="square-btn" type="button" title="Iguala el ancho y el alto">□ Cuadrar</button>
+                <button id="rotation-zero-btn" type="button" title="Elimina la rotación">⟳ Rotación 0°</button>
+            </div>
+        </section>
+
+        <section class="panel-section" aria-labelledby="actions-title">
+            <h2 id="actions-title">3 · Historial y guardado</h2>
+            <div class="inline-actions">
+                <button id="undo-btn" type="button" title="Deshacer (Ctrl+Z)">↶ Deshacer</button>
+                <button id="redo-btn" type="button" title="Rehacer (Ctrl+Mayús+Z)">↷ Rehacer</button>
+                <button id="copy-btn" type="button" title="Copia la zona seleccionada">Copiar</button>
+                <button id="paste-btn" type="button" title="Pega valores JSON sobre la zona seleccionada">Pegar</button>
+            </div>
+            <div class="buttons">
+                <button id="save-btn" class="primary" type="button">Guardar cambios</button>
+                <button id="save-test-btn" class="primary" type="button">Guardar e ir a pruebas</button>
+                <button id="reset-part-btn" class="danger" type="button" title="Descarta los ajustes de la zona seleccionada">Restaurar zona</button>
+                <button id="reset-object-btn" class="danger" type="button" title="Descarta los ajustes de todas las zonas de este objeto">Restaurar objeto</button>
+                <button id="reset-game-btn" class="danger full" type="button" title="Descarta todos los ajustes del minijuego">Restaurar minijuego completo</button>
+                <button id="open-test-btn" class="full" type="button">Volver sin guardar</button>
+            </div>
+            <p class="value-note">Atajos: <strong>Ctrl+S</strong> guarda, <strong>Ctrl+Z</strong> deshace, <strong>Page Up/Down</strong> cambia de frame y <strong>[ ]</strong> cambia de pieza.</p>
+        </section>
+
+        <details>
+            <summary>JSON guardado · avanzado</summary>
+            <pre id="output"></pre>
+        </details>
     </aside>
+    <div id="toast" role="status" aria-live="polite"></div>
 
+    <script src="ketchup-hitboxes.js?v=20260804-1"></script>
     <script>
       const STORAGE_KEY = 'illo_hitbox_config';
       const colors = {
@@ -247,6 +396,12 @@
         hazard: '#ff5252',
         block: '#be4cff',
       };
+      // El editor amplía el sprite, pero conserva la relación que tiene con el
+      // campo real del minijuego (920 × 600 px de referencia).
+      const runtimeSprite = (width, height) => ({
+        spriteW: width / 920,
+        spriteH: height / 600,
+      });
       const games = {
         ketchupBoss: {
           label: 'Bullet Hell de Zip',
@@ -255,19 +410,18 @@
               label: 'Samu',
               kind: 'player',
               type: 'rect',
-              sprite: 'assets/images/characters/samu/ketchup/1.png',
+              sprite: 'assets/images/characters/samu/ketchup/1.webp',
               frames: [
-                { label: 'Idle · frame 1', sprite: 'assets/images/characters/samu/ketchup/1.png' },
-                { label: 'Idle · frame 3', sprite: 'assets/images/characters/samu/ketchup/3.png' },
-                { label: 'Derecha/arriba · frame 2', sprite: 'assets/images/characters/samu/ketchup/2.png' },
-                { label: 'Derecha/arriba · frame 4', sprite: 'assets/images/characters/samu/ketchup/4.png' },
-                { label: 'Disparo moviendo · frame 5', sprite: 'assets/images/characters/samu/ketchup/5.png' },
-                { label: 'Disparo moviendo · frame 6', sprite: 'assets/images/characters/samu/ketchup/6.png' },
-                { label: 'Disparo parado · frame 8', sprite: 'assets/images/characters/samu/ketchup/8.png' },
-                { label: 'Disparo parado · frame 7', sprite: 'assets/images/characters/samu/ketchup/7.png' },
+                { label: 'Idle · frame 1', sprite: 'assets/images/characters/samu/ketchup/1.webp' },
+                { label: 'Idle · frame 3', sprite: 'assets/images/characters/samu/ketchup/3.webp' },
+                { label: 'Derecha/arriba · frame 2', sprite: 'assets/images/characters/samu/ketchup/2.webp' },
+                { label: 'Derecha/arriba · frame 4', sprite: 'assets/images/characters/samu/ketchup/4.webp' },
+                { label: 'Disparo moviendo · frame 5', sprite: 'assets/images/characters/samu/ketchup/5.webp' },
+                { label: 'Disparo moviendo · frame 6', sprite: 'assets/images/characters/samu/ketchup/6.webp' },
+                { label: 'Disparo parado · frame 8', sprite: 'assets/images/characters/samu/ketchup/8.webp' },
+                { label: 'Disparo parado · frame 7', sprite: 'assets/images/characters/samu/ketchup/7.webp' },
               ],
-              spriteW: 0.12,
-              spriteH: 0.22,
+              ...runtimeSprite(94 * 796 / 1242, 94),
               x: 0.5,
               y: 0.86,
               hitbox: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.052, h: 0.074 },
@@ -276,19 +430,18 @@
               label: 'Zip',
               kind: 'boss',
               type: 'rect',
-              sprite: 'assets/images/characters/zip/ketchup/zip_1.png',
+              sprite: 'assets/images/characters/zip/ketchup/zip_1.webp',
               frames: [
-                { label: 'Flotando 1', sprite: 'assets/images/characters/zip/ketchup/zip_flotando_1.png' },
-                { label: 'Flotando 2', sprite: 'assets/images/characters/zip/ketchup/zip_flotando_2.png' },
-                { label: 'Flotando 3', sprite: 'assets/images/characters/zip/ketchup/zip_flotando_3.png' },
-                { label: 'Segunda forma 1', sprite: 'assets/images/characters/zip/ketchup/zip_1.png' },
-                { label: 'Segunda forma 2', sprite: 'assets/images/characters/zip/ketchup/zip_2.png' },
-                { label: 'Segunda forma 3', sprite: 'assets/images/characters/zip/ketchup/zip_3.png' },
-                { label: 'Segunda forma 4', sprite: 'assets/images/characters/zip/ketchup/zip_4.png' },
-                { label: 'Segunda forma 5', sprite: 'assets/images/characters/zip/ketchup/zip_5.png' },
+                { label: 'Flotando 1', sprite: 'assets/images/characters/zip/ketchup/zip_flotando_1.webp' },
+                { label: 'Flotando 2', sprite: 'assets/images/characters/zip/ketchup/zip_flotando_2.webp' },
+                { label: 'Flotando 3', sprite: 'assets/images/characters/zip/ketchup/zip_flotando_3.webp' },
+                { label: 'Segunda forma 1', sprite: 'assets/images/characters/zip/ketchup/zip_1.webp' },
+                { label: 'Segunda forma 2', sprite: 'assets/images/characters/zip/ketchup/zip_2.webp' },
+                { label: 'Segunda forma 3', sprite: 'assets/images/characters/zip/ketchup/zip_3.webp' },
+                { label: 'Segunda forma 4', sprite: 'assets/images/characters/zip/ketchup/zip_4.webp' },
+                { label: 'Segunda forma 5', sprite: 'assets/images/characters/zip/ketchup/zip_5.webp' },
               ],
-              spriteW: 0.12,
-              spriteH: 0.28,
+              ...runtimeSprite(160 * 737 / 1746, 160),
               x: 0.5,
               y: 0.18,
               hitbox: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.2, h: 0.26 },
@@ -297,9 +450,8 @@
               label: 'Guindilla',
               kind: 'shot',
               type: 'circle',
-              sprite: 'assets/images/minigames/chapter2/ketchup/chili_v2.png',
-              spriteW: 0.05,
-              spriteH: 0.08,
+              sprite: 'assets/images/minigames/chapter2/ketchup/chili_v2.webp',
+              ...runtimeSprite(32 * 1024 / 1536, 32),
               x: 0.42,
               y: 0.55,
               hitbox: { shape: 'circle', offsetX: 0, offsetY: 0, w: 0.024, h: 0.024 },
@@ -308,9 +460,8 @@
               label: 'Bote ketchup',
               kind: 'hazard',
               type: 'circle',
-              sprite: 'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png',
-              spriteW: 0.06,
-              spriteH: 0.1,
+              sprite: 'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp',
+              ...runtimeSprite(34 * 1024 / 1536, 34),
               x: 0.58,
               y: 0.55,
               hitbox: { shape: 'circle', offsetX: 0, offsetY: 0, w: 0.024, h: 0.024 },
@@ -319,9 +470,8 @@
               label: 'Bote corrupto',
               kind: 'block',
               type: 'rect',
-              sprite: 'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png',
-              spriteW: 0.07,
-              spriteH: 0.11,
+              sprite: 'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp',
+              ...runtimeSprite(34 * 1024 / 1536, 34),
               x: 0.68,
               y: 0.42,
               hitbox: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.039, h: 0.039 },
@@ -330,24 +480,67 @@
         },
       };
 
+      const hitboxDefaults = window.KetchupHitboxes.createDefaults();
+      const ketchupObjects = games.ketchupBoss.objects;
+      ketchupObjects.player.hitbox = hitboxDefaults.player;
+      ketchupObjects.boss.profiles = hitboxDefaults.boss.profiles;
+      ketchupObjects.boss.frameProfiles = [
+        'floating', 'floating', 'floating', 'phase1', 'phase2', 'phase3', 'phase4', 'phase5',
+      ];
+      ketchupObjects.shot.hitbox = hitboxDefaults.shot;
+      ketchupObjects.hazard.hitbox = hitboxDefaults.hazard;
+      ketchupObjects.block.hitbox = hitboxDefaults.block;
+
       const field = document.getElementById('editor-field');
       const gameSelect = document.getElementById('game-select');
       const objectSelect = document.getElementById('object-select');
       const frameSelect = document.getElementById('frame-select');
+      const partRow = document.getElementById('part-row');
+      const partSelect = document.getElementById('part-select');
+      const output = document.getElementById('output');
+      const saveStatus = document.getElementById('save-status');
+      const pixelReadout = document.getElementById('pixel-readout');
+      const toast = document.getElementById('toast');
+      const undoButton = document.getElementById('undo-btn');
+      const redoButton = document.getElementById('redo-btn');
+      const resetPartButton = document.getElementById('reset-part-btn');
+      const resetObjectButton = document.getElementById('reset-object-btn');
+      const addPartButton = document.getElementById('add-part-btn');
+      const duplicatePartButton = document.getElementById('duplicate-part-btn');
+      const renamePartButton = document.getElementById('rename-part-btn');
+      const deletePartButton = document.getElementById('delete-part-btn');
+      const showLabels = document.getElementById('show-labels');
+      const showOthers = document.getElementById('show-others');
+      const showGrid = document.getElementById('show-grid');
+      const fineStep = document.getElementById('fine-step');
       const inputs = {
         shape: document.getElementById('box-shape'),
         offsetX: document.getElementById('offset-x'),
         offsetY: document.getElementById('offset-y'),
         w: document.getElementById('box-w'),
         h: document.getElementById('box-h'),
+        rotation: document.getElementById('box-rotation'),
       };
-      const output = document.getElementById('output');
+      const rangeOutputs = {
+        offsetX: document.getElementById('offset-x-value'),
+        offsetY: document.getElementById('offset-y-value'),
+        w: document.getElementById('box-w-value'),
+        h: document.getElementById('box-h-value'),
+        rotation: document.getElementById('box-rotation-value'),
+      };
+
       let config = loadConfig();
+      let savedSnapshot = JSON.stringify(config);
       let currentGame = new URLSearchParams(location.search).get('game') || 'ketchupBoss';
       let currentObject = 'player';
       let currentFrame = 0;
+      let currentPart = null;
       let drag = null;
       let renderToken = 0;
+      let toastTimer = null;
+      let allowNavigation = false;
+      const undoStack = [];
+      const redoStack = [];
 
       function loadConfig() {
         try {
@@ -357,28 +550,225 @@
         }
       }
 
+      function snapshot() {
+        return JSON.stringify(config);
+      }
+
+      function notify(message) {
+        toast.textContent = message;
+        toast.classList.add('is-visible');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 2400);
+      }
+
+      function updateStatus() {
+        const dirty = snapshot() !== savedSnapshot;
+        saveStatus.textContent = dirty ? 'Sin guardar' : 'Guardado';
+        saveStatus.classList.toggle('is-dirty', dirty);
+        undoButton.disabled = undoStack.length === 0;
+        redoButton.disabled = redoStack.length === 0;
+      }
+
+      function checkpoint() {
+        const state = snapshot();
+        if (undoStack.at(-1) !== state) undoStack.push(state);
+        if (undoStack.length > 80) undoStack.shift();
+        redoStack.length = 0;
+      }
+
+      function restoreHistory(source, target, message) {
+        if (!source.length) return;
+        target.push(snapshot());
+        config = JSON.parse(source.pop());
+        renderPartSelector();
+        renderScene();
+        notify(message);
+      }
+
       function saveConfig() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(config, null, 2));
-        renderOutput('Guardado en localStorage. Vuelve a lanzar el minijuego para verlo aplicado.');
+        savedSnapshot = snapshot();
+        updateStatus();
+        notify('Cambios guardados. Se aplicarán al volver a lanzar el minijuego.');
       }
 
-      function defaultsFor(gameId, objectId) {
-        return { ...games[gameId].objects[objectId].hitbox };
+      function profileIdFor(object) {
+        return object.frameProfiles?.[currentFrame] || null;
       }
 
-      function hitboxFor(gameId, objectId) {
+      function profileFor(object) {
+        const profileId = profileIdFor(object);
+        const baseProfile = profileId ? object.profiles?.[profileId] : null;
+        const storedContainer = config[currentGame]?.[currentObject];
+        if (!baseProfile && !storedContainer?.parts) return null;
+        if (!baseProfile) {
+          const parts = {};
+          Object.entries(storedContainer.parts).forEach(([partId, storedPart]) => {
+            if (!storedPart?.disabled) parts[partId] = { ...storedPart };
+          });
+          return { label: object.label, parts };
+        }
+        const parts = Object.fromEntries(
+          Object.entries(baseProfile.parts).map(([partId, part]) => [partId, { ...part }]),
+        );
+        const storedParts = config[currentGame]?.[currentObject]?.profiles?.[profileId]?.parts || {};
+        Object.entries(storedParts).forEach(([partId, storedPart]) => {
+          if (storedPart?.disabled) {
+            delete parts[partId];
+            return;
+          }
+          parts[partId] = {
+            ...(parts[partId] || {}),
+            ...storedPart,
+          };
+        });
+        return { ...baseProfile, parts };
+      }
+
+      function defaultsFor(gameId, objectId, partId = currentPart) {
+        const object = games[gameId].objects[objectId];
+        const profileId = profileIdFor(object);
+        if (profileId) {
+          const defaultPart = object.profiles?.[profileId]?.parts?.[partId];
+          const storedPart = config[gameId]?.[objectId]?.profiles?.[profileId]?.parts?.[partId];
+          return { ...(defaultPart || storedPart || {}) };
+        }
+        const storedPart = config[gameId]?.[objectId]?.parts?.[partId];
+        if (storedPart) return { ...storedPart };
+        return { ...object.hitbox };
+      }
+
+      function hitboxFor(gameId, objectId, partId = currentPart) {
+        const object = games[gameId].objects[objectId];
+        const profileId = profileIdFor(object);
+        const objectConfig = config[gameId]?.[objectId];
+        const stored = profileId
+          ? objectConfig?.profiles?.[profileId]?.parts?.[partId]
+          : (objectConfig?.parts ? objectConfig.parts[partId] : objectConfig);
         return {
-          ...defaultsFor(gameId, objectId),
-          ...(config[gameId]?.[objectId] || {}),
+          ...defaultsFor(gameId, objectId, partId),
+          ...(stored || {}),
         };
       }
 
-      function setHitbox(gameId, objectId, patch) {
+      function setHitbox(gameId, objectId, patch, partId = currentPart) {
+        const object = games[gameId].objects[objectId];
+        const profileId = profileIdFor(object);
         config[gameId] = config[gameId] || {};
+        if (profileId) {
+          config[gameId][objectId] = config[gameId][objectId] || { profiles: {} };
+          const profiles = config[gameId][objectId].profiles;
+          profiles[profileId] = profiles[profileId] || { parts: {} };
+          profiles[profileId].parts[partId] = {
+            ...hitboxFor(gameId, objectId, partId),
+            ...patch,
+          };
+          return;
+        }
+        if (config[gameId][objectId]?.parts) {
+          config[gameId][objectId].parts[partId] = {
+            ...hitboxFor(gameId, objectId, partId),
+            ...patch,
+          };
+          return;
+        }
         config[gameId][objectId] = {
           ...hitboxFor(gameId, objectId),
           ...patch,
         };
+      }
+
+      function storedPartsForCurrentProfile() {
+        const object = games[currentGame].objects[currentObject];
+        const profileId = profileIdFor(object);
+        config[currentGame] = config[currentGame] || {};
+        if (!profileId) {
+          const existing = config[currentGame][currentObject];
+          if (!existing?.parts) {
+            const base = {
+              ...object.hitbox,
+              ...(existing || {}),
+              label: object.label,
+            };
+            config[currentGame][currentObject] = { parts: { base } };
+          }
+          return config[currentGame][currentObject].parts;
+        }
+        config[currentGame][currentObject] = config[currentGame][currentObject] || { profiles: {} };
+        const profiles = config[currentGame][currentObject].profiles;
+        profiles[profileId] = profiles[profileId] || { parts: {} };
+        return profiles[profileId].parts;
+      }
+
+      function nextCustomPartId() {
+        const parts = editorProfileFor(games[currentGame].objects[currentObject]).parts;
+        let index = 1;
+        while (parts[`custom${index}`]) index++;
+        return `custom${index}`;
+      }
+
+      function editorProfileFor(object) {
+        return profileFor(object) || {
+          label: object.label,
+          virtual: true,
+          parts: {
+            base: {
+              ...hitboxFor(currentGame, currentObject, 'base'),
+              label: object.label,
+            },
+          },
+        };
+      }
+
+      function createPart({ duplicate = false } = {}) {
+        const profile = editorProfileFor(games[currentGame].objects[currentObject]);
+        checkpoint();
+        const source = hitboxFor(currentGame, currentObject);
+        const partId = nextCustomPartId();
+        const partNumber = Object.keys(profile.parts).length + 1;
+        storedPartsForCurrentProfile()[partId] = {
+          ...source,
+          label: duplicate ? `${source.label || profile.parts[currentPart]?.label || 'Zona'} copia` : `Zona ${partNumber}`,
+          offsetX: (Number(source.offsetX) || 0) + 0.006,
+          offsetY: (Number(source.offsetY) || 0) + 0.006,
+        };
+        currentPart = partId;
+        renderPartSelector();
+        renderScene();
+        notify(duplicate ? 'Zona duplicada. Arrástrala para colocarla.' : 'Zona añadida. Arrástrala para colocarla.');
+      }
+
+      function renameCurrentPart() {
+        const profile = editorProfileFor(games[currentGame].objects[currentObject]);
+        if (!currentPart) return;
+        const currentLabel = profile.parts[currentPart]?.label || currentPart;
+        const nextLabel = prompt('Nombre de la zona:', currentLabel)?.trim();
+        if (!nextLabel || nextLabel === currentLabel) return;
+        checkpoint();
+        setHitbox(currentGame, currentObject, { label: nextLabel });
+        renderPartSelector();
+        renderScene();
+        notify('Zona renombrada.');
+      }
+
+      function deleteCurrentPart() {
+        const object = games[currentGame].objects[currentObject];
+        const profileId = profileIdFor(object);
+        const profile = editorProfileFor(object);
+        if (Object.keys(profile.parts).length <= 1) return;
+        const label = profile.parts[currentPart]?.label || currentPart;
+        if (!confirm(`¿Eliminar la zona «${label}» de este perfil?`)) return;
+        checkpoint();
+        const storedParts = storedPartsForCurrentProfile();
+        if (profileId && object.profiles[profileId].parts[currentPart]) {
+          storedParts[currentPart] = { disabled: true };
+        } else {
+          delete storedParts[currentPart];
+        }
+        currentPart = null;
+        renderPartSelector();
+        renderScene();
+        notify('Zona eliminada del perfil.');
       }
 
       function renderSelectors() {
@@ -411,6 +801,25 @@
           .map((frame, index) => `<option value="${index}">${frame.label}</option>`)
           .join('');
         frameSelect.value = String(currentFrame);
+        renderPartSelector();
+      }
+
+      function renderPartSelector() {
+        const object = games[currentGame].objects[currentObject];
+        const profile = editorProfileFor(object);
+        const parts = profile.parts;
+        partRow.hidden = false;
+        resetPartButton.textContent = 'Restaurar zona';
+        resetObjectButton.hidden = profile.virtual;
+        const partIds = Object.keys(parts);
+        duplicatePartButton.disabled = partIds.length === 0;
+        renamePartButton.disabled = partIds.length === 0;
+        deletePartButton.disabled = partIds.length <= 1;
+        if (!parts[currentPart]) currentPart = partIds[0];
+        partSelect.innerHTML = Object.entries(parts)
+          .map(([id, part]) => `<option value="${id}">${part.label || id}</option>`)
+          .join('');
+        partSelect.value = currentPart;
       }
 
       function renderScene() {
@@ -418,7 +827,6 @@
         field.innerHTML = '';
         renderToken++;
         const token = renderToken;
-
         const object = game.objects[currentObject];
         const frame = framesFor(object)[currentFrame] || framesFor(object)[0];
         const hitbox = hitboxFor(currentGame, currentObject);
@@ -431,22 +839,34 @@
         sprite.style.width = '100%';
         sprite.style.height = '100%';
         const image = document.createElement('img');
-        image.alt = '';
+        image.alt = frame.label;
         image.addEventListener('load', () => fitCanvasToImage(image, object, hitbox, token), { once: true });
         image.src = frame.sprite;
         sprite.appendChild(image);
         field.appendChild(sprite);
 
-        const box = document.createElement('div');
-        box.className = `hitbox is-selected ${hitbox.shape === 'circle' ? 'is-circle' : ''}`;
-        box.style.setProperty('--c', colors[object.kind] || '#fff');
-        box.style.left = `${(editorX + hitbox.offsetX / object.spriteW) * 100}%`;
-        box.style.top = `${(editorY + hitbox.offsetY / object.spriteH) * 100}%`;
-        box.style.width = `${(hitbox.w / object.spriteW) * 100}%`;
-        box.style.height = `${(hitbox.h / object.spriteH) * 100}%`;
-        box.dataset.objectId = currentObject;
-        box.innerHTML = `<span>${object.label}</span><b class="resize"></b>`;
-        field.appendChild(box);
+        const profile = editorProfileFor(object);
+        const renderedHitboxes = Object.keys(profile.parts)
+          .map((partId) => [partId, hitboxFor(currentGame, currentObject, partId)]);
+        renderedHitboxes.forEach(([partId, renderedHitbox]) => {
+          const selected = partId === currentPart;
+          if (!selected && !showOthers.checked) return;
+          const box = document.createElement('div');
+          const rounded = ['circle', 'ellipse'].includes(renderedHitbox.shape);
+          box.className = `hitbox ${selected ? 'is-selected' : 'is-muted'} ${rounded ? 'is-circle' : ''} ${showLabels.checked ? '' : 'no-label'}`;
+          box.style.setProperty('--c', colors[object.kind] || '#fff');
+          box.style.left = `${(editorX + renderedHitbox.offsetX / object.spriteW) * 100}%`;
+          box.style.top = `${(editorY + renderedHitbox.offsetY / object.spriteH) * 100}%`;
+          box.style.width = `${(renderedHitbox.w / object.spriteW) * 100}%`;
+          box.style.height = `${(renderedHitbox.h / object.spriteH) * 100}%`;
+          box.style.transform = `translate(-50%, -50%) rotate(${Number(renderedHitbox.rotation) || 0}rad)`;
+          box.dataset.objectId = currentObject;
+          if (partId) box.dataset.partId = partId;
+          const label = profile.parts[partId].label || object.label;
+          box.title = selected ? 'Arrastra para mover. Usa el cuadrado para redimensionar.' : `Seleccionar ${label}`;
+          box.innerHTML = `<span>${label}</span>${selected ? '<b class="resize" title="Arrastra para cambiar ancho y alto"></b>' : ''}`;
+          field.appendChild(box);
+        });
 
         syncInputs();
       }
@@ -455,8 +875,8 @@
         if (token !== renderToken) return;
         const naturalW = image.naturalWidth || 360;
         const naturalH = image.naturalHeight || 360;
-        const sidebarW = 320;
-        const viewportPadding = 112;
+        const sidebarW = window.innerWidth <= 900 ? 0 : document.querySelector('aside').offsetWidth;
+        const viewportPadding = 96;
         const maxW = Math.max(120, window.innerWidth - sidebarW - viewportPadding);
         const maxH = Math.max(120, window.innerHeight - viewportPadding);
         const overflowLeft = Math.max(0, (hitbox.w * 0.5 - hitbox.offsetX) / object.spriteW - 0.5);
@@ -468,30 +888,132 @@
         const scale = Math.min(1, maxW / visualW, maxH / visualH);
         field.style.width = `${Math.max(1, Math.round(naturalW * scale))}px`;
         field.style.height = `${Math.max(1, Math.round(naturalH * scale))}px`;
+        updatePixelReadout();
+      }
+
+      function formatNumber(value, decimals = 4) {
+        return Number(value || 0).toFixed(decimals).replace(/0+$/, '').replace(/\.$/, '') || '0';
+      }
+
+      function fitRangeToValue(input, value) {
+        const baseMin = Number(input.dataset.baseMin);
+        const baseMax = Number(input.dataset.baseMax);
+        const padding = Math.max((baseMax - baseMin) * 0.08, Number(input.step) || 0.001);
+        input.min = String(Math.min(baseMin, value - padding));
+        input.max = String(Math.max(baseMax, value + padding));
+      }
+
+      function syncRangeSteps() {
+        const precise = fineStep.checked;
+        inputs.offsetX.step = precise ? '0.0001' : '0.001';
+        inputs.offsetY.step = precise ? '0.0001' : '0.001';
+        inputs.w.step = precise ? '0.0001' : '0.001';
+        inputs.h.step = precise ? '0.0001' : '0.001';
+        inputs.rotation.step = precise ? '0.25' : '1';
+        Object.keys(rangeOutputs).forEach((key) => {
+          rangeOutputs[key].step = inputs[key].step;
+        });
+      }
+
+      function updatePixelReadout() {
+        const object = games[currentGame].objects[currentObject];
+        const hitbox = hitboxFor(currentGame, currentObject);
+        const width = (hitbox.w / object.spriteW) * field.clientWidth;
+        const height = (hitbox.h / object.spriteH) * field.clientHeight;
+        const x = (hitbox.offsetX / object.spriteW) * field.clientWidth;
+        const y = (hitbox.offsetY / object.spriteH) * field.clientHeight;
+        pixelReadout.innerHTML = `Vista actual: <strong>${Math.round(width)} × ${Math.round(height)} px</strong> · desplazamiento <strong>${Math.round(x)}, ${Math.round(y)} px</strong>`;
       }
 
       function syncInputs() {
         const hitbox = hitboxFor(currentGame, currentObject);
-        Object.entries(inputs).forEach(([key, input]) => {
-          input.value = key === 'shape'
-            ? hitbox.shape || 'rect'
-            : Number(hitbox[key] || 0).toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+        inputs.shape.value = hitbox.shape || 'rect';
+        const values = {
+          offsetX: Number(hitbox.offsetX) || 0,
+          offsetY: Number(hitbox.offsetY) || 0,
+          w: Number(hitbox.w) || 0.001,
+          h: Number(hitbox.h) || 0.001,
+          rotation: (Number(hitbox.rotation) || 0) * 180 / Math.PI,
+        };
+        syncRangeSteps();
+        Object.entries(values).forEach(([key, value]) => {
+          fitRangeToValue(inputs[key], value);
+          inputs[key].value = String(value);
+          rangeOutputs[key].value = key === 'rotation'
+            ? formatNumber(value, 2)
+            : formatNumber(value);
         });
+        field.classList.toggle('no-grid', !showGrid.checked);
+        updatePixelReadout();
         renderOutput();
+        updateStatus();
       }
 
-      function renderOutput(message = '') {
-        output.textContent = `${message ? message + '\n\n' : ''}${JSON.stringify(config[currentGame] || {}, null, 2)}`;
+      function renderOutput() {
+        output.textContent = JSON.stringify(config[currentGame] || {}, null, 2);
       }
 
-      function applyInputs() {
+      function applyInputs(recordHistory = true) {
+        if (recordHistory) checkpoint();
         setHitbox(currentGame, currentObject, {
-          shape: inputs.shape.value === 'circle' ? 'circle' : 'rect',
+          shape: ['circle', 'ellipse'].includes(inputs.shape.value) ? inputs.shape.value : 'rect',
           offsetX: Number(inputs.offsetX.value) || 0,
           offsetY: Number(inputs.offsetY.value) || 0,
           w: Math.max(0.001, Number(inputs.w.value) || 0.001),
           h: Math.max(0.001, Number(inputs.h.value) || 0.001),
+          rotation: (Number(inputs.rotation.value) || 0) * Math.PI / 180,
         });
+        renderScene();
+      }
+
+      function adjustSelected(patchFactory) {
+        checkpoint();
+        const current = hitboxFor(currentGame, currentObject);
+        setHitbox(currentGame, currentObject, patchFactory(current));
+        renderScene();
+      }
+
+      function changeFrame(delta) {
+        const count = framesFor(games[currentGame].objects[currentObject]).length;
+        currentFrame = (currentFrame + delta + count) % count;
+        frameSelect.value = String(currentFrame);
+        currentPart = null;
+        renderPartSelector();
+        renderScene();
+      }
+
+      function changePart(delta) {
+        const parts = Object.keys(editorProfileFor(games[currentGame].objects[currentObject]).parts);
+        if (!parts.length) return;
+        const index = Math.max(0, parts.indexOf(currentPart));
+        currentPart = parts[(index + delta + parts.length) % parts.length];
+        partSelect.value = currentPart;
+        renderScene();
+      }
+
+      function resetSelected() {
+        checkpoint();
+        const object = games[currentGame].objects[currentObject];
+        const profileId = profileIdFor(object);
+        if (profileId) {
+          const parts = config[currentGame]?.[currentObject]?.profiles?.[profileId]?.parts;
+          if (parts) delete parts[currentPart];
+          if (!object.profiles?.[profileId]?.parts?.[currentPart]) currentPart = null;
+          notify('Zona restaurada a sus valores originales.');
+        } else if (config[currentGame]?.[currentObject]?.parts) {
+          const parts = config[currentGame][currentObject].parts;
+          if (currentPart === 'base') {
+            parts.base = { ...object.hitbox, label: object.label };
+          } else {
+            delete parts[currentPart];
+            currentPart = null;
+          }
+          notify('Zona restaurada a sus valores originales.');
+        } else if (config[currentGame]) {
+          delete config[currentGame][currentObject];
+          notify('Objeto restaurado a sus valores originales.');
+        }
+        renderPartSelector();
         renderScene();
       }
 
@@ -500,12 +1022,15 @@
         if (!box) return;
         event.preventDefault();
         currentObject = box.dataset.objectId;
+        currentPart = box.dataset.partId || null;
         objectSelect.value = currentObject;
+        if (currentPart) partSelect.value = currentPart;
         const isResize = event.target.classList.contains('resize');
         const rect = field.getBoundingClientRect();
         const hitbox = hitboxFor(currentGame, currentObject);
         drag = {
           mode: isResize ? 'resize' : 'move',
+          checkpointed: false,
           startX: event.clientX,
           startY: event.clientY,
           fieldW: rect.width,
@@ -517,6 +1042,10 @@
 
       window.addEventListener('pointermove', (event) => {
         if (!drag) return;
+        if (!drag.checkpointed) {
+          checkpoint();
+          drag.checkpointed = true;
+        }
         const dx = (event.clientX - drag.startX) / drag.fieldW;
         const dy = (event.clientY - drag.startY) / drag.fieldH;
         const object = games[currentGame].objects[currentObject];
@@ -542,36 +1071,210 @@
         currentGame = gameSelect.value;
         currentObject = Object.keys(games[currentGame].objects)[0];
         currentFrame = 0;
+        currentPart = null;
         renderObjectSelector();
         renderScene();
       });
       objectSelect.addEventListener('change', () => {
         currentObject = objectSelect.value;
         currentFrame = 0;
+        currentPart = null;
         renderFrameSelector();
         renderScene();
       });
       frameSelect.addEventListener('change', () => {
         currentFrame = Number(frameSelect.value) || 0;
+        currentPart = null;
+        renderPartSelector();
         renderScene();
       });
-      Object.values(inputs).forEach((input) => input.addEventListener('change', applyInputs));
+      partSelect.addEventListener('change', () => {
+        currentPart = partSelect.value;
+        renderScene();
+      });
+      inputs.shape.addEventListener('change', () => applyInputs());
+      Object.entries(inputs).filter(([key]) => key !== 'shape').forEach(([, input]) => {
+        input.addEventListener('input', () => {
+          if (!input.dataset.historyStarted) {
+            checkpoint();
+            input.dataset.historyStarted = 'true';
+          }
+          applyInputs(false);
+        });
+        const finishRangeEdit = () => delete input.dataset.historyStarted;
+        input.addEventListener('change', finishRangeEdit);
+        input.addEventListener('blur', finishRangeEdit);
+      });
+      Object.entries(rangeOutputs).forEach(([key, exactInput]) => {
+        exactInput.addEventListener('input', () => {
+          const typedValue = exactInput.value;
+          let value = Number(exactInput.value);
+          if (!Number.isFinite(value) || exactInput.value.trim() === '') return;
+          if (['w', 'h'].includes(key)) value = Math.max(0.001, value);
+          if (!exactInput.dataset.historyStarted) {
+            checkpoint();
+            exactInput.dataset.historyStarted = 'true';
+          }
+          const patch = key === 'rotation'
+            ? { rotation: value * Math.PI / 180 }
+            : { [key]: value };
+          setHitbox(currentGame, currentObject, patch);
+          renderScene();
+          exactInput.value = typedValue;
+        });
+        const finishExactEdit = () => {
+          if (!Number.isFinite(Number(exactInput.value)) || exactInput.value.trim() === '') {
+            syncInputs();
+            notify('Introduce un número válido.');
+          }
+          delete exactInput.dataset.historyStarted;
+        };
+        exactInput.addEventListener('change', finishExactEdit);
+        exactInput.addEventListener('blur', finishExactEdit);
+        exactInput.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter') exactInput.blur();
+        });
+      });
+      [showLabels, showOthers, showGrid].forEach((input) => input.addEventListener('change', renderScene));
+      fineStep.addEventListener('change', () => {
+        syncRangeSteps();
+        notify(fineStep.checked ? 'Ajuste fino activado.' : 'Ajuste normal activado.');
+      });
+
+      document.getElementById('prev-frame-btn').addEventListener('click', () => changeFrame(-1));
+      document.getElementById('next-frame-btn').addEventListener('click', () => changeFrame(1));
+      document.getElementById('prev-part-btn').addEventListener('click', () => changePart(-1));
+      document.getElementById('next-part-btn').addEventListener('click', () => changePart(1));
+      addPartButton.addEventListener('click', () => createPart());
+      duplicatePartButton.addEventListener('click', () => createPart({ duplicate: true }));
+      renamePartButton.addEventListener('click', renameCurrentPart);
+      deletePartButton.addEventListener('click', deleteCurrentPart);
+      document.getElementById('center-btn').addEventListener('click', () => adjustSelected(() => ({ offsetX: 0, offsetY: 0 })));
+      document.getElementById('square-btn').addEventListener('click', () => adjustSelected((current) => {
+        const side = (current.w + current.h) * 0.5;
+        return { w: side, h: side };
+      }));
+      document.getElementById('rotation-zero-btn').addEventListener('click', () => adjustSelected(() => ({ rotation: 0 })));
+      document.querySelectorAll('[data-range-key]').forEach((button) => button.addEventListener('click', () => {
+        const key = button.dataset.rangeKey;
+        const direction = Number(button.dataset.direction) || 1;
+        const step = fineStep.checked ? 0.0001 : 0.001;
+        const rotationStep = (fineStep.checked ? 0.25 : 1) * Math.PI / 180;
+        adjustSelected((current) => {
+          if (key === 'rotation') return { rotation: (current.rotation || 0) + direction * rotationStep };
+          const minimum = ['w', 'h'].includes(key) ? 0.001 : -Infinity;
+          return { [key]: Math.max(minimum, (Number(current[key]) || 0) + direction * step) };
+        });
+      }));
 
       document.getElementById('save-btn').addEventListener('click', saveConfig);
-      document.getElementById('copy-btn').addEventListener('click', () => {
-        navigator.clipboard?.writeText(JSON.stringify(config[currentGame] || {}, null, 2)).catch(() => {});
-        renderOutput('Copiado.');
+      document.getElementById('save-test-btn').addEventListener('click', () => {
+        saveConfig();
+        allowNavigation = true;
+        location.href = 'minijuegos_test.html';
       });
-      document.getElementById('reset-object-btn').addEventListener('click', () => {
+      undoButton.addEventListener('click', () => restoreHistory(undoStack, redoStack, 'Cambio deshecho.'));
+      redoButton.addEventListener('click', () => restoreHistory(redoStack, undoStack, 'Cambio rehecho.'));
+      document.getElementById('copy-btn').addEventListener('click', () => {
+        navigator.clipboard?.writeText(JSON.stringify(hitboxFor(currentGame, currentObject), null, 2))
+          .then(() => notify('Zona seleccionada copiada como JSON.'))
+          .catch(() => notify('No se pudo acceder al portapapeles.'));
+      });
+      document.getElementById('paste-btn').addEventListener('click', async () => {
+        try {
+          const parsed = JSON.parse(await navigator.clipboard.readText());
+          const patch = {
+            shape: ['rect', 'circle', 'ellipse'].includes(parsed.shape) ? parsed.shape : 'rect',
+            offsetX: Number(parsed.offsetX) || 0,
+            offsetY: Number(parsed.offsetY) || 0,
+            w: Math.max(0.001, Number(parsed.w) || 0.001),
+            h: Math.max(0.001, Number(parsed.h) || 0.001),
+            rotation: Number(parsed.rotation) || 0,
+          };
+          checkpoint();
+          setHitbox(currentGame, currentObject, patch);
+          renderScene();
+          notify('Valores pegados en la zona seleccionada.');
+        } catch (error) {
+          notify('El portapapeles no contiene una hitbox JSON válida.');
+        }
+      });
+      resetPartButton.addEventListener('click', resetSelected);
+      resetObjectButton.addEventListener('click', () => {
+        if (!confirm('¿Restaurar todas las zonas de este objeto en todos sus frames?')) return;
+        checkpoint();
         if (config[currentGame]) delete config[currentGame][currentObject];
+        currentPart = null;
+        renderPartSelector();
         renderScene();
+        notify('Objeto completo restaurado.');
       });
       document.getElementById('reset-game-btn').addEventListener('click', () => {
+        if (!confirm('¿Restaurar todas las hitboxes de este minijuego?')) return;
+        checkpoint();
         delete config[currentGame];
+        currentPart = null;
+        renderPartSelector();
         renderScene();
+        notify('Minijuego restaurado a sus valores originales.');
       });
       document.getElementById('open-test-btn').addEventListener('click', () => {
+        if (snapshot() !== savedSnapshot && !confirm('Hay cambios sin guardar. ¿Salir igualmente?')) return;
+        allowNavigation = true;
         location.href = 'minijuegos_test.html';
+      });
+
+      document.addEventListener('keydown', (event) => {
+        const modifier = event.ctrlKey || event.metaKey;
+        if (modifier && event.key.toLowerCase() === 's') {
+          event.preventDefault();
+          saveConfig();
+          return;
+        }
+        if (modifier && event.key.toLowerCase() === 'z') {
+          event.preventDefault();
+          restoreHistory(event.shiftKey ? redoStack : undoStack, event.shiftKey ? undoStack : redoStack, event.shiftKey ? 'Cambio rehecho.' : 'Cambio deshecho.');
+          return;
+        }
+        if (modifier && event.key.toLowerCase() === 'y') {
+          event.preventDefault();
+          restoreHistory(redoStack, undoStack, 'Cambio rehecho.');
+          return;
+        }
+        const editingField = ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(event.target.tagName);
+        if (editingField) return;
+        if (event.key === 'PageUp' || event.key === 'PageDown') {
+          event.preventDefault();
+          changeFrame(event.key === 'PageUp' ? -1 : 1);
+          return;
+        }
+        if (event.key === '[' || event.key === ']') {
+          event.preventDefault();
+          changePart(event.key === '[' ? -1 : 1);
+          return;
+        }
+        if (!event.key.startsWith('Arrow')) return;
+        event.preventDefault();
+        const step = fineStep.checked ? 0.0001 : 0.001;
+        const horizontal = event.key === 'ArrowLeft' ? -1 : event.key === 'ArrowRight' ? 1 : 0;
+        const vertical = event.key === 'ArrowUp' ? -1 : event.key === 'ArrowDown' ? 1 : 0;
+        adjustSelected((current) => {
+          if (event.altKey) return { rotation: (current.rotation || 0) + horizontal * Math.PI / 180 };
+          if (event.shiftKey) return {
+            w: Math.max(0.001, current.w + horizontal * step),
+            h: Math.max(0.001, current.h - vertical * step),
+          };
+          return {
+            offsetX: current.offsetX + horizontal * step,
+            offsetY: current.offsetY + vertical * step,
+          };
+        });
+      });
+
+      window.addEventListener('beforeunload', (event) => {
+        if (allowNavigation || snapshot() === savedSnapshot) return;
+        event.preventDefault();
+        event.returnValue = '';
       });
       window.addEventListener('resize', renderScene);
 

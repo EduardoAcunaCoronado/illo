@@ -109,12 +109,13 @@
     return overlay;
   }
 
-  function boxStyle(hitbox, fieldRect) {
+  function boxStyle(hitbox, fieldSize) {
     const color = hitbox.color || colors[hitbox.kind] || colors.default;
+    const inactive = Boolean(hitbox.inactive);
     const x = clamp((Number(hitbox.x) || 0) + (Number(hitbox.offsetX) || 0), -0.5, 1.5);
     const y = clamp((Number(hitbox.y) || 0) + (Number(hitbox.offsetY) || 0), -0.5, 1.5);
-    const w = Math.max(1, fieldRect.width * Math.max(0.001, Number(hitbox.w) || 0.001));
-    const h = Math.max(1, fieldRect.height * Math.max(0.001, Number(hitbox.h) || 0.001));
+    const w = Math.max(1, fieldSize.width * Math.max(0.001, Number(hitbox.w) || 0.001));
+    const h = Math.max(1, fieldSize.height * Math.max(0.001, Number(hitbox.h) || 0.001));
 
     return {
       text: [
@@ -123,11 +124,12 @@
         `top:${y * 100}%`,
         `width:${w}px`,
         `height:${h}px`,
-        'transform:translate(-50%,-50%)',
-        `border:2px solid ${color}`,
-        `background:${color}26`,
-        `box-shadow:0 0 0 1px rgba(255,255,255,.72),0 0 10px ${color}b3`,
-        (hitbox.shape || hitbox.type) === 'circle' ? 'border-radius:50%' : 'border-radius:4px',
+        `transform:translate(-50%,-50%) rotate(${Number(hitbox.rotation) || 0}rad)`,
+        `border:2px ${inactive ? 'dashed' : 'solid'} ${color}`,
+        `background:${color}${inactive ? '0d' : '26'}`,
+        `box-shadow:${inactive ? 'none' : `0 0 0 1px rgba(255,255,255,.72),0 0 10px ${color}b3`}`,
+        `opacity:${inactive ? '.48' : '1'}`,
+        ['circle', 'ellipse'].includes(hitbox.shape || hitbox.type) ? 'border-radius:50%' : 'border-radius:4px',
         'box-sizing:border-box',
       ].join(';'),
       color,
@@ -162,6 +164,7 @@
       ['offsetY', 'Offset Y'],
       ['w', 'Ancho'],
       ['h', 'Alto'],
+      ['rotation', 'Rotación'],
     ];
     panel.innerHTML = `
       <strong style="display:block;margin-bottom:4px;color:#ffd166">${hitbox.label || hitbox.id}</strong>
@@ -171,6 +174,7 @@
           style="width:100%;box-sizing:border-box;border:1px solid rgba(255,255,255,.35);border-radius:4px;background:rgba(255,255,255,.08);color:#fff;padding:3px 4px">
           <option value="rect" ${(hitbox.shape || hitbox.type || 'rect') === 'rect' ? 'selected' : ''}>Rect</option>
           <option value="circle" ${(hitbox.shape || hitbox.type) === 'circle' ? 'selected' : ''}>Circle</option>
+          <option value="ellipse" ${(hitbox.shape || hitbox.type) === 'ellipse' ? 'selected' : ''}>Ellipse</option>
         </select>
       </label>
       ${fields.map(([key, label]) => `
@@ -189,7 +193,9 @@
       input.addEventListener('change', () => {
         const key = input.getAttribute('data-hitbox-input');
         if (key === 'shape') {
-          applyHitboxChange(selectedHitbox(), { shape: input.value === 'circle' ? 'circle' : 'rect' });
+          applyHitboxChange(selectedHitbox(), {
+            shape: ['circle', 'ellipse'].includes(input.value) ? input.value : 'rect',
+          });
           return;
         }
         const value = Number(input.value);
@@ -207,6 +213,7 @@
         offsetY: Number(current.offsetY) || 0,
         w: Number(current.w) || 0,
         h: Number(current.h) || 0,
+        rotation: Number(current.rotation) || 0,
       };
       navigator.clipboard?.writeText(JSON.stringify(payload, null, 2)).catch(() => {});
     });
@@ -229,6 +236,7 @@
       offsetY: Number(hitbox.offsetY) || 0,
       w: Number(hitbox.w) || 0.001,
       h: Number(hitbox.h) || 0.001,
+      rotation: Number(hitbox.rotation) || 0,
     };
     updatePanel();
   }
@@ -290,14 +298,19 @@
     if (title) title.textContent = label || gameId || 'Hitboxes';
     overlay.querySelectorAll('.hitbox-debugger-box').forEach((box) => box.remove());
 
-    const fieldRect = field.getBoundingClientRect();
+    // Las cajas son hijas del campo: necesitan píxeles de layout, no el tamaño
+    // visual ya transformado de getBoundingClientRect(), que se escalaría otra vez.
+    const fieldSize = {
+      width: Math.max(1, field.clientWidth),
+      height: Math.max(1, field.clientHeight),
+    };
     state.hitboxes.clear();
     (hitboxes || []).forEach((hitbox) => {
       if (!hitbox || hitbox.hidden) return;
       state.hitboxes.set(hitbox.id, hitbox);
       const box = document.createElement('div');
       box.className = 'hitbox-debugger-box';
-      const style = boxStyle(hitbox, fieldRect);
+      const style = boxStyle(hitbox, fieldSize);
       box.style.cssText = style.text;
       box.dataset.gameId = gameId || '';
       box.dataset.hitboxId = hitbox.id || '';

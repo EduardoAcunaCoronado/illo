@@ -340,6 +340,31 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
 - Ketchup boss: bullet hell importado del trabajo de José Manuel. Samu se mueve
   en X/Y, dispara guindillas y esquiva ketchup. Más poder vuelve el combate más
   asequible aumentando daño/cadencia y ralentizando los patrones enemigos.
+  Desde 2026-08-04, Zip usa perfiles de hitbox compuesta por frame/familia
+  (cabeza, torso y extremidades); guindillas y botellas mantienen elipses simples
+  ajustadas. La colisión se calcula en píxeles mediante SAT, respeta la rotación
+  de los proyectiles y evita deformaciones por la relación de aspecto. Los
+  valores canónicos viven en ketchup-hitboxes.js y el editor permite modificar
+  cada pieza por separado en localStorage. Las elipses se aproximan con 32
+  vértices y el marcador de Samu se atenúa con borde discontinuo durante sus
+  0,85 segundos de invulnerabilidad. El editor organiza selección, geometría e
+  historial, ofrece tooltips, ajustes directos, copiar/pegar, deshacer/rehacer,
+  atajos y restauración granular. Cualquier objeto admite crear, duplicar,
+  renombrar y eliminar piezas: los objetos simples se promueven a `parts`, las
+  piezas personalizadas se cargan en el runtime y `{ disabled: true }` desactiva
+  una pieza canónica por perfil. En escritorio, selección y geometría se muestran
+  en dos columnas para mantener todos los controles visibles a 1280 x 720. La
+  geometría se ajusta con sliders coloreados, valores visibles, botones +/- y
+  presets de centrado, proporción cuadrada y rotación cero; las pastillas de
+  valor siguen siendo campos numéricos editables para ajustes exactos. La
+  previsualización usa las dimensiones reales del runtime sobre un campo de
+  referencia de 920 x 600 px y respeta el `object-fit: contain` del juego
+  (Samu visible 60,24 x 94 px, Zip 67,54 x 160 px y proyectiles
+  21,33 x 32 / 22,67 x 34 px), evitando que las cajas cambien de proporción al
+  pasar del editor al minijuego. Los marcadores del runtime y el depurador usan
+  `clientWidth`/`clientHeight` del campo para no aplicar dos veces su escala
+  visual; `getBoundingClientRect()` queda reservado a las coordenadas de
+  puntero.
 - Chase: coche lateral, esquivar motos/obstáculos; dificultad por storyDelay. Desde
   2026-07-30 el coche usa seis poses con distintas fases de sus ruedas originales
   y una carretera nocturna RGBA más detallada; el skyline lejano conserva un

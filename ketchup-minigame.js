@@ -135,10 +135,10 @@
               <img class="ketchup-boss-frame ketchup-boss-frame-primary" src="${zipFloatingFrames[0]}" alt="Zip" draggable="false">
               <img class="ketchup-boss-frame ketchup-boss-frame-next" src="${zipFloatingFrames[0]}" alt="" draggable="false">
             </div>
-            <div class="ketchup-boss-hitbox" id="ketchup-boss-hitbox"><span>BOSS</span></div>
+            <div class="ketchup-boss-hitboxes" id="ketchup-boss-hitboxes" aria-hidden="true"></div>
             <div class="mg-player ketchup-player" id="mg-player"><img src="${playerFrames.idle[0]}" alt="Samu" draggable="false"></div>
-            <div class="ketchup-player-marker" id="ketchup-player-marker" aria-hidden="true"></div>
-            <div class="ketchup-player-hitbox" id="ketchup-player-hitbox"><span>HITBOX</span></div>
+            <div class="ketchup-player-markers" id="ketchup-player-markers" aria-hidden="true"></div>
+            <div class="ketchup-player-hitboxes" id="ketchup-player-hitboxes" aria-hidden="true"></div>
           </div>
           <div class="ketchup-player-hud">
             <span class="ketchup-player-lives"></span>
@@ -149,11 +149,11 @@
 
         const field = overlay.querySelector('#mg-field');
         const player = overlay.querySelector('#mg-player');
-        const playerMarker = overlay.querySelector('#ketchup-player-marker');
-        const playerHitbox = overlay.querySelector('#ketchup-player-hitbox');
+        const playerMarkers = overlay.querySelector('#ketchup-player-markers');
+        const playerHitboxes = overlay.querySelector('#ketchup-player-hitboxes');
         const playerImg = player.querySelector('img');
         const boss = overlay.querySelector('#ketchup-boss-enemy');
-        const bossHitbox = overlay.querySelector('#ketchup-boss-hitbox');
+        const bossHitboxes = overlay.querySelector('#ketchup-boss-hitboxes');
         const bossImg = boss.querySelector('.ketchup-boss-frame-primary');
         const bossNextImg = boss.querySelector('.ketchup-boss-frame-next');
         const bossFill = overlay.querySelector('.ketchup-boss-fill');
@@ -175,23 +175,46 @@
         let enemyMoveTimer = 0;
         const playerW = 0.095;
         const playerH = 0.135;
-        const hitboxConfig = {
-          player: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.052, h: 0.074 },
-          boss: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.2, h: 0.26 },
-          shot: { shape: 'circle', offsetX: 0, offsetY: 0, w: 0.024, h: 0.024 },
-          hazard: { shape: 'circle', offsetX: 0, offsetY: 0, w: 0.024, h: 0.024 },
-          block: { shape: 'rect', offsetX: 0, offsetY: 0, w: 0.039, h: 0.039 },
-        };
+        const hitboxConfig = window.KetchupHitboxes?.createDefaults?.();
+        if (!hitboxConfig) throw new Error('No se cargó ketchup-hitboxes.js antes del minijuego.');
         try {
           const storedHitboxes = JSON.parse(localStorage.getItem('illo_hitbox_config') || '{}').ketchupBoss || {};
-          Object.keys(hitboxConfig).forEach((key) => {
-            if (storedHitboxes[key]) Object.assign(hitboxConfig[key], storedHitboxes[key]);
+          ['player', 'shot', 'hazard', 'block'].forEach((key) => {
+            const stored = storedHitboxes[key];
+            if (!stored) return;
+            if (stored.parts) {
+              hitboxConfig[key] = {
+                parts: Object.fromEntries(
+                  Object.entries(stored.parts).filter(([, part]) => !part?.disabled),
+                ),
+              };
+              return;
+            }
+            Object.assign(hitboxConfig[key], stored);
+          });
+          Object.entries(storedHitboxes.boss?.profiles || {}).forEach(([profileId, storedProfile]) => {
+            const profile = hitboxConfig.boss.profiles[profileId];
+            if (!profile) return;
+            Object.entries(storedProfile.parts || {}).forEach(([partId, storedPart]) => {
+              if (storedPart?.disabled) {
+                delete profile.parts[partId];
+                return;
+              }
+              profile.parts[partId] = {
+                ...(profile.parts[partId] || {}),
+                ...storedPart,
+              };
+            });
           });
         } catch (error) {
           console.warn('No se pudo cargar la configuracion de hitboxes.', error);
         }
-        const setHitboxConfig = (key) => (patch) => {
-          Object.assign(hitboxConfig[key], patch);
+        const setBossPartConfig = (profileId, partId) => (patch) => {
+          Object.assign(hitboxConfig.boss.profiles[profileId].parts[partId], patch);
+        };
+        const setObjectPartConfig = (key, partId) => (patch) => {
+          const config = hitboxConfig[key];
+          Object.assign(config.parts?.[partId] || config, patch);
         };
         const playerMinX = playerW * 0.55;
         const playerMaxX = 1 - playerW * 0.55;
@@ -239,38 +262,79 @@
           keyboardDirection: 0,
         };
 
+        const activeBossProfileId = () => {
+          if (bossIsFloating) return 'floating';
+          for (let index = 1; index <= 5; index++) {
+            if (bossFrameKey.includes(`/zip_${index}.webp`)) return `phase${index}`;
+          }
+          return 'phase1';
+        };
+        const activeBossProfile = () => hitboxConfig.boss.profiles[activeBossProfileId()];
+        const hitboxPartEntries = (hitbox) => Object.entries(hitbox?.parts || {}).length
+          ? Object.entries(hitbox.parts)
+          : [['base', hitbox]];
+
         const updatePlayerPos = () => {
           player.style.left = `${playerX * 100}%`;
           player.style.top = `${playerY * 100}%`;
-          const rect = field.getBoundingClientRect();
-          const hitboxLeft = `${(playerX + hitboxConfig.player.offsetX) * 100}%`;
-          const hitboxTop = `${(playerY + hitboxConfig.player.offsetY) * 100}%`;
-          const hitboxWidth = `${Math.max(1, rect.width * hitboxConfig.player.w)}px`;
-          const hitboxHeight = `${Math.max(1, rect.height * hitboxConfig.player.h)}px`;
-          const hitboxRadius = hitboxConfig.player.shape === 'circle' ? '50%' : '4px';
-          playerMarker.style.left = hitboxLeft;
-          playerMarker.style.top = hitboxTop;
-          playerMarker.style.width = hitboxWidth;
-          playerMarker.style.height = hitboxHeight;
-          playerMarker.style.borderRadius = hitboxRadius;
-          if (debugHitboxes) {
-            playerHitbox.style.left = hitboxLeft;
-            playerHitbox.style.top = hitboxTop;
-            playerHitbox.style.width = hitboxWidth;
-            playerHitbox.style.height = hitboxHeight;
-            playerHitbox.style.borderRadius = hitboxRadius;
-          }
+          const fieldWidth = Math.max(1, field.clientWidth);
+          const fieldHeight = Math.max(1, field.clientHeight);
+          const collisionActive = playerInvuln <= 0;
+          const parts = hitboxPartEntries(hitboxConfig.player);
+          const syncPieces = (container, className, withLabel) => {
+            const existing = new Map([...container.children].map((piece) => [piece.dataset.partId, piece]));
+            const activeIds = new Set();
+            parts.forEach(([partId, part]) => {
+              activeIds.add(partId);
+              const piece = existing.get(partId) || document.createElement('i');
+              piece.className = className;
+              piece.dataset.partId = partId;
+              piece.style.left = `${(playerX + (Number(part.offsetX) || 0)) * 100}%`;
+              piece.style.top = `${(playerY + (Number(part.offsetY) || 0)) * 100}%`;
+              piece.style.width = `${Math.max(1, fieldWidth * part.w)}px`;
+              piece.style.height = `${Math.max(1, fieldHeight * part.h)}px`;
+              piece.style.transform = `translate(-50%, -50%) rotate(${Number(part.rotation) || 0}rad)`;
+              piece.style.borderRadius = ['circle', 'ellipse'].includes(part.shape) ? '50%' : '4px';
+              piece.classList.toggle('is-invulnerable', !collisionActive);
+              if (withLabel) {
+                let label = piece.querySelector('span');
+                if (!label) {
+                  label = document.createElement('span');
+                  piece.appendChild(label);
+                }
+                label.textContent = collisionActive
+                  ? `HITBOX · ${part.label || partId}`
+                  : `INVULNERABLE · ${part.label || partId}`;
+              }
+              if (!piece.parentNode) container.appendChild(piece);
+            });
+            existing.forEach((piece, partId) => {
+              if (!activeIds.has(partId)) piece.remove();
+            });
+          };
+          syncPieces(playerMarkers, 'ketchup-player-marker', false);
+          if (debugHitboxes) syncPieces(playerHitboxes, 'ketchup-player-hitbox', true);
+          else playerHitboxes.replaceChildren();
         };
         const updateEnemyPos = () => {
           boss.style.left = `${enemyX * 100}%`;
           boss.style.top = `${enemyY * 100}%`;
           if (debugHitboxes) {
-            const rect = field.getBoundingClientRect();
-            bossHitbox.style.left = `${(enemyX + hitboxConfig.boss.offsetX) * 100}%`;
-            bossHitbox.style.top = `${(enemyY + hitboxConfig.boss.offsetY) * 100}%`;
-            bossHitbox.style.width = `${Math.max(1, rect.width * hitboxConfig.boss.w)}px`;
-            bossHitbox.style.height = `${Math.max(1, rect.height * hitboxConfig.boss.h)}px`;
-            bossHitbox.style.borderRadius = hitboxConfig.boss.shape === 'circle' ? '50%' : '';
+            const fieldWidth = Math.max(1, field.clientWidth);
+            const fieldHeight = Math.max(1, field.clientHeight);
+            const profile = activeBossProfile();
+            bossHitboxes.replaceChildren(...Object.entries(profile.parts).map(([partId, part]) => {
+              const marker = document.createElement('i');
+              marker.className = 'ketchup-boss-hitbox';
+              marker.dataset.partId = partId;
+              marker.style.left = `${(enemyX + part.offsetX) * 100}%`;
+              marker.style.top = `${(enemyY + part.offsetY) * 100}%`;
+              marker.style.width = `${Math.max(1, fieldWidth * part.w)}px`;
+              marker.style.height = `${Math.max(1, fieldHeight * part.h)}px`;
+              marker.style.transform = `translate(-50%, -50%) rotate(${Number(part.rotation) || 0}rad)`;
+              marker.style.borderRadius = part.shape === 'ellipse' || part.shape === 'circle' ? '50%' : '4px';
+              return marker;
+            }));
           }
         };
         const updateHud = () => {
@@ -284,46 +348,49 @@
             label: 'Bullet Hell de Zip',
             field,
             hitboxes: [
-              {
-                id: 'player',
-                label: 'Samu',
+              ...hitboxPartEntries(hitboxConfig.player).map(([partId, part]) => ({
+                id: `player-${partId}`,
+                label: `${playerInvuln > 0 ? 'Samu · invulnerable' : 'Samu'} · ${part.label || partId}`,
                 kind: 'player',
+                inactive: playerInvuln > 0,
                 x: playerX,
                 y: playerY,
-                ...hitboxConfig.player,
-                set: setHitboxConfig('player'),
-              },
-              {
-                id: 'boss',
-                label: 'Zip',
+                ...part,
+                set: setObjectPartConfig('player', partId),
+              })),
+              ...Object.entries(activeBossProfile().parts).map(([partId, part]) => ({
+                id: `boss-${activeBossProfileId()}-${partId}`,
+                label: `Zip · ${part.label || partId}`,
                 kind: 'boss',
                 x: enemyX,
                 y: enemyY,
-                ...hitboxConfig.boss,
-                set: setHitboxConfig('boss'),
-              },
-              ...shots.map((shot, index) => ({
-                id: `shot-${index}`,
-                label: 'Guindilla',
+                ...part,
+                set: setBossPartConfig(activeBossProfileId(), partId),
+              })),
+              ...shots.flatMap((shot, index) => hitboxPartEntries(hitboxConfig.shot).map(([partId, part]) => ({
+                id: `shot-${index}-${partId}`,
+                label: `Guindilla · ${part.label || partId}`,
                 kind: 'shot',
-                type: 'circle',
+                type: part.shape,
                 x: shot.x,
                 y: shot.y,
-                ...hitboxConfig.shot,
-                set: setHitboxConfig('shot'),
-              })),
-              ...enemyBullets.map((bullet, index) => {
+                ...part,
+                set: setObjectPartConfig('shot', partId),
+              }))),
+              ...enemyBullets.flatMap((bullet, index) => {
                 const config = bullet.blocksShots ? hitboxConfig.block : hitboxConfig.hazard;
-                return {
-                  id: `ketchup-${index}`,
-                  label: bullet.blocksShots ? 'Bloqueo' : 'Ketchup',
+                const key = bullet.blocksShots ? 'block' : 'hazard';
+                return hitboxPartEntries(config).map(([partId, part]) => ({
+                  id: `ketchup-${index}-${partId}`,
+                  label: `${bullet.blocksShots ? 'Bloqueo' : 'Ketchup'} · ${part.label || partId}`,
                   kind: bullet.blocksShots ? 'block' : 'hazard',
-                  type: bullet.blocksShots ? 'rect' : 'circle',
+                  type: part.shape,
                   x: bullet.x,
                   y: bullet.y,
-                  ...config,
-                  set: setHitboxConfig(bullet.blocksShots ? 'block' : 'hazard'),
-                };
+                  ...part,
+                  rotation: (Number(part.rotation) || 0) + bullet.rotation,
+                  set: setObjectPartConfig(key, partId),
+                }));
               }),
             ],
           });
@@ -440,43 +507,91 @@
           img.draggable = false;
           el.appendChild(img);
           if (debugHitboxes && hitboxClass) {
-            const hitbox = document.createElement('i');
-            hitbox.className = `ketchup-projectile-hitbox ${hitboxClass}`;
-            hitbox.setAttribute('aria-hidden', 'true');
-            el.appendChild(hitbox);
+            const config = hitboxClass.includes('is-chili')
+              ? hitboxConfig.shot
+              : (hitboxClass.includes('is-blocking') ? hitboxConfig.block : hitboxConfig.hazard);
+            hitboxPartEntries(config).forEach(([partId, part]) => {
+              const hitbox = document.createElement('i');
+              hitbox.className = `ketchup-projectile-hitbox ${hitboxClass}`;
+              hitbox.dataset.partId = partId;
+              hitbox.setAttribute('aria-hidden', 'true');
+              hitbox.style.left = `calc(50% + ${(Number(part.offsetX) || 0) * field.clientWidth}px)`;
+              hitbox.style.top = `calc(50% + ${(Number(part.offsetY) || 0) * field.clientHeight}px)`;
+              hitbox.style.width = `${Math.max(1, field.clientWidth * part.w)}px`;
+              hitbox.style.height = `${Math.max(1, field.clientHeight * part.h)}px`;
+              hitbox.style.transform = `translate(-50%, -50%) rotate(${Number(part.rotation) || 0}rad)`;
+              hitbox.style.borderRadius = ['ellipse', 'circle'].includes(part.shape) ? '50%' : '4px';
+              el.appendChild(hitbox);
+            });
           }
           field.appendChild(el);
           return el;
         };
+        let collisionSpace = { width: 1, height: 1 };
         const hitboxShape = (hitbox) => hitbox.shape || hitbox.type || 'rect';
-        const circleRadius = (hitbox) => (Math.max(Number(hitbox.w) || 0, Number(hitbox.h) || 0) * 0.5);
-        const hitboxCenter = (x, y, hitbox) => ({
-          x: x + (Number(hitbox.offsetX) || 0),
-          y: y + (Number(hitbox.offsetY) || 0),
-        });
-        const rectCircleOverlap = (rectCenter, rect, circleCenter, circle) => {
-          const halfW = (Number(rect.w) || 0) * 0.5;
-          const halfH = (Number(rect.h) || 0) * 0.5;
-          const radius = circleRadius(circle);
-          const closestX = clamp(circleCenter.x, rectCenter.x - halfW, rectCenter.x + halfW);
-          const closestY = clamp(circleCenter.y, rectCenter.y - halfH, rectCenter.y + halfH);
-          return Math.hypot(circleCenter.x - closestX, circleCenter.y - closestY) <= radius;
-        };
-        const overlaps = (aX, aY, a, bX, bY, b) => {
-          const aCenter = hitboxCenter(aX, aY, a);
-          const bCenter = hitboxCenter(bX, bY, b);
-          const aShape = hitboxShape(a);
-          const bShape = hitboxShape(b);
-          if (aShape === 'circle' && bShape === 'circle') {
-            return Math.hypot(aCenter.x - bCenter.x, aCenter.y - bCenter.y) <= circleRadius(a) + circleRadius(b);
+        const hitboxParts = (hitbox) => hitboxPartEntries(hitbox).map(([, part]) => part);
+        const polygonFor = (x, y, hitbox, objectRotation = 0) => {
+          const width = Math.max(1, collisionSpace.width);
+          const height = Math.max(1, collisionSpace.height);
+          const objectAngle = Number(objectRotation) || 0;
+          const offsetX = (Number(hitbox.offsetX) || 0) * width;
+          const offsetY = (Number(hitbox.offsetY) || 0) * height;
+          const objectCos = Math.cos(objectAngle);
+          const objectSin = Math.sin(objectAngle);
+          const centerX = x * width + offsetX * objectCos - offsetY * objectSin;
+          const centerY = y * height + offsetX * objectSin + offsetY * objectCos;
+          const halfW = Math.max(0.5, (Number(hitbox.w) || 0.001) * width * 0.5);
+          const halfH = Math.max(0.5, (Number(hitbox.h) || 0.001) * height * 0.5);
+          const rotation = (Number(hitbox.rotation) || 0) + objectAngle;
+          const cos = Math.cos(rotation);
+          const sin = Math.sin(rotation);
+          const rotatePoint = (localX, localY) => ({
+            x: centerX + localX * cos - localY * sin,
+            y: centerY + localX * sin + localY * cos,
+          });
+          const shape = hitboxShape(hitbox);
+          if (shape === 'circle' || shape === 'ellipse') {
+            const radiusX = shape === 'circle' ? Math.min(halfW, halfH) : halfW;
+            const radiusY = shape === 'circle' ? Math.min(halfW, halfH) : halfH;
+            const points = [];
+            for (let index = 0; index < 32; index++) {
+              const angle = (Math.PI * 2 * index) / 32;
+              points.push(rotatePoint(Math.cos(angle) * radiusX, Math.sin(angle) * radiusY));
+            }
+            return points;
           }
-          if (aShape === 'circle') return rectCircleOverlap(bCenter, b, aCenter, a);
-          if (bShape === 'circle') return rectCircleOverlap(aCenter, a, bCenter, b);
-          return (
-            Math.abs(aCenter.x - bCenter.x) < ((Number(a.w) || 0) + (Number(b.w) || 0)) * 0.5 &&
-            Math.abs(aCenter.y - bCenter.y) < ((Number(a.h) || 0) + (Number(b.h) || 0)) * 0.5
-          );
+          return [
+            rotatePoint(-halfW, -halfH),
+            rotatePoint(halfW, -halfH),
+            rotatePoint(halfW, halfH),
+            rotatePoint(-halfW, halfH),
+          ];
         };
+        const polygonAxes = (polygon) => polygon.map((point, index) => {
+          const next = polygon[(index + 1) % polygon.length];
+          const axisX = -(next.y - point.y);
+          const axisY = next.x - point.x;
+          const length = Math.hypot(axisX, axisY) || 1;
+          return { x: axisX / length, y: axisY / length };
+        });
+        const polygonsOverlap = (a, b) => {
+          const axes = [...polygonAxes(a), ...polygonAxes(b)];
+          return axes.every((axis) => {
+            const project = (polygon) => polygon.reduce((range, point) => {
+              const value = point.x * axis.x + point.y * axis.y;
+              return { min: Math.min(range.min, value), max: Math.max(range.max, value) };
+            }, { min: Infinity, max: -Infinity });
+            const aRange = project(a);
+            const bRange = project(b);
+            return aRange.max >= bRange.min && bRange.max >= aRange.min;
+          });
+        };
+        const overlaps = (aX, aY, a, bX, bY, b, aRotation = 0, bRotation = 0) => (
+          hitboxParts(a).some((aPart) => hitboxParts(b).some((bPart) => polygonsOverlap(
+            polygonFor(aX, aY, aPart, aRotation),
+            polygonFor(bX, bY, bPart, bRotation),
+          )))
+        );
 
         const shoot = () => {
           const el = makeSprite('mg-shot', chiliIcon, playerX, playerY - 0.085, 32, 'is-chili');
@@ -529,6 +644,7 @@
 
         const fireEnemyBullet = (x, y, vx, vy, size = 34, options = {}) => {
           const corrupt = options.corrupt === true;
+          const rotation = Math.atan2(vy, vx) + Math.PI / 2;
           const el = makeSprite(
             `ketchup-enemy-shot${corrupt ? ' is-corrupt' : ''}`,
             corrupt ? corruptKetchupIcon : ketchupIcon,
@@ -537,7 +653,7 @@
             size,
             options.blocksShots ? 'is-ketchup is-blocking' : 'is-ketchup',
           );
-          el.style.setProperty('--shot-rotation', `${Math.atan2(vy, vx) + Math.PI / 2}rad`);
+          el.style.setProperty('--shot-rotation', `${rotation}rad`);
           if (options.blocksShots) {
             const blockSize = Math.max(12, size * 1.65);
             el.style.setProperty('--hitbox-size', `${blockSize}px`);
@@ -549,6 +665,8 @@
             vx: vx * enemyBulletSpeed,
             vy: vy * enemyBulletSpeed,
             size,
+            rotation,
+            blocksShots: options.blocksShots === true,
           });
           while (enemyBullets.length > maxEnemyBullets) {
             const oldest = enemyBullets.shift();
@@ -909,6 +1027,11 @@
             if (patternTimer <= 0) firePattern();
           }
 
+          collisionSpace = {
+            width: Math.max(1, field.clientWidth),
+            height: Math.max(1, field.clientHeight),
+          };
+
           for (let i = shots.length - 1; i >= 0; i--) {
             const shot = shots[i];
             shot.y -= shot.speed * dt;
@@ -917,7 +1040,16 @@
             for (let j = enemyBullets.length - 1; j >= 0; j--) {
               const bullet = enemyBullets[j];
               if (!bullet.blocksShots) continue;
-              if (overlaps(shot.x, shot.y, hitboxConfig.shot, bullet.x, bullet.y, hitboxConfig.block)) {
+              if (overlaps(
+                shot.x,
+                shot.y,
+                hitboxConfig.shot,
+                bullet.x,
+                bullet.y,
+                hitboxConfig.block,
+                0,
+                bullet.rotation,
+              )) {
                 shot.el.remove();
                 shots.splice(i, 1);
                 blocked = true;
@@ -925,7 +1057,7 @@
               }
             }
             if (blocked) continue;
-            const hitBoss = overlaps(shot.x, shot.y, hitboxConfig.shot, enemyX, enemyY, hitboxConfig.boss);
+            const hitBoss = overlaps(shot.x, shot.y, hitboxConfig.shot, enemyX, enemyY, activeBossProfile());
             if (hitBoss) {
               enemyHp = Math.max(0, enemyHp - shot.damage);
               updateHud();
@@ -949,8 +1081,15 @@
             bullet.el.style.top = `${bullet.y * 100}%`;
             const hitPlayer =
               playerInvuln <= 0 &&
-              overlaps(bullet.x, bullet.y, bullet.blocksShots ? hitboxConfig.block : hitboxConfig.hazard,
-                playerX, playerY, hitboxConfig.player);
+              overlaps(
+                bullet.x,
+                bullet.y,
+                bullet.blocksShots ? hitboxConfig.block : hitboxConfig.hazard,
+                playerX,
+                playerY,
+                hitboxConfig.player,
+                bullet.rotation,
+              );
             if (hitPlayer) {
               playerLives = Math.max(0, playerLives - 1);
               playerInvuln = 0.85;

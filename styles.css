@@ -2740,6 +2740,21 @@ body.cutscene-active #game-container .ss-pause-btn {
     display: block;
 }
 
+.ketchup-player-markers,
+.ketchup-player-hitboxes {
+    position: absolute;
+    inset: 0;
+    z-index: 9;
+    pointer-events: none;
+}
+
+.ketchup-boss-hitboxes {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
 .ketchup-boss-hitbox,
 .ketchup-projectile-hitbox {
     position: absolute;
@@ -7828,6 +7843,13 @@ body.hud-hidden #game-container .ss-pause-btn {
     box-shadow:
         0 0 0 2px rgba(0, 0, 0, 0.42),
         0 0 10px rgba(255, 204, 0, 0.75);
+}
+
+.ketchup-player-marker.is-invulnerable,
+.ketchup-player-hitbox.is-invulnerable {
+    border-style: dashed;
+    opacity: 0.42;
+    box-shadow: none;
 }
 
 .ketchup-boss-minigame .mg-player,
