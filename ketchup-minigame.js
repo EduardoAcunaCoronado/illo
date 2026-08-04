@@ -1,5 +1,5 @@
 (function () {
-  const ASSET_VERSION = '20260803-ketchup-9';
+  const ASSET_VERSION = '20260804-ketchup-14';
   const cacheBust = (path) => `${path}?v=${ASSET_VERSION}`;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const lerp = (from, to, amount) => from + (to - from) * amount;
@@ -164,8 +164,6 @@
         let playerLives = playerMaxLives;
         let playerX = 0.5;
         let playerY = 0.86;
-        let playerVX = 0;
-        let playerVY = 0;
         let mouseTargetX = playerX;
         let mouseTargetY = playerY;
         let mouseActive = false;
@@ -455,8 +453,6 @@
           state.moveDown = false;
           state.shooting = false;
           state.keyboardDirection = 0;
-          playerVX = 0;
-          playerVY = 0;
           mouseActive = false;
         };
         const pointerMove = (e) => {
@@ -931,29 +927,14 @@
           if (moveX !== 0 || moveY !== 0) {
             mouseActive = false;
             const moveLength = Math.hypot(moveX, moveY);
-            const targetVX = (moveX / moveLength) * moveSpeed;
-            const targetVY = (moveY / moveLength) * moveSpeed;
-            const keyboardEase = 1 - Math.pow(0.0008, dt);
-            playerVX = lerp(playerVX, targetVX, keyboardEase);
-            playerVY = lerp(playerVY, targetVY, keyboardEase);
-            playerX = clamp(playerX + playerVX * dt, playerMinX, playerMaxX);
-            playerY = clamp(playerY + playerVY * dt, playerMinY, playerMaxY);
+            playerX = clamp(playerX + (moveX / moveLength) * moveSpeed * dt, playerMinX, playerMaxX);
+            playerY = clamp(playerY + (moveY / moveLength) * moveSpeed * dt, playerMinY, playerMaxY);
             mouseTargetX = playerX;
             mouseTargetY = playerY;
           } else if (mouseActive) {
             const mouseEase = 1 - Math.pow(0.02, dt);
-            playerVX = 0;
-            playerVY = 0;
             playerX = clamp(lerp(playerX, mouseTargetX, mouseEase), playerMinX, playerMaxX);
             playerY = clamp(lerp(playerY, mouseTargetY, mouseEase), playerMinY, playerMaxY);
-          } else {
-            const stopEase = 1 - Math.pow(0.0003, dt);
-            playerVX = lerp(playerVX, 0, stopEase);
-            playerVY = lerp(playerVY, 0, stopEase);
-            if (Math.abs(playerVX) > 0.001 || Math.abs(playerVY) > 0.001) {
-              playerX = clamp(playerX + playerVX * dt, playerMinX, playerMaxX);
-              playerY = clamp(playerY + playerVY * dt, playerMinY, playerMaxY);
-            }
           }
 
           const shouldFloat = enemyHp / enemyMaxHp > 0.6;

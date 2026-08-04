@@ -201,7 +201,7 @@ principales actuales son:
 | Exploración de Furry Maps | Ratón o toque para elegir ubicaciones; `Tab` y `Enter` permiten navegación por teclado. |
 | Persecución de gatos | Flechas o `WASD` para recorrer la cuadrícula sin que alcancen a Samu. |
 | Recolección de guindillas | Izquierda/derecha, `A`/`D` o ratón. Recoge guindillas y evita botellas. |
-| Bullet hell de Kingdom Ketchup | Flechas o `WASD` para moverse y `Espacio` para disparar guindillas. |
+| Bullet hell de Kingdom Ketchup | Flechas o `WASD` para moverse con respuesta directa; `Espacio` o clic para disparar guindillas. |
 | Conducción | Ratón, `WASD` o flechas para moverse; `P` o el botón visible pausan el juego y `Esc` abre la pausa global. |
 | Ritmo | Pulsa las teclas indicadas en pantalla o toca los carriles al cruzar la línea. |
 | Vuelo de Edu | Ratón o `W`/`S` para altura; `Espacio` o clic para impulsar; `P` pausa el vuelo y `Esc` abre la pausa global. |
@@ -4630,12 +4630,13 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   mínimo de cero. La ronda nunca bloquea la historia y la puntuación se guarda
   como `gameState.chiliPower`.
 - `ketchupBoss` integra el bullet hell de José Manuel desde `master`: Samu se
-  mueve en dos ejes, dispara guindillas y esquiva los patrones de ketchup de
-  Zip. Más poder picante aumenta el daño y la cadencia de Samu, y reduce tanto
-  la velocidad como la frecuencia de los ataques enemigos.
-- Los proyectiles normales de Zip restan una vida. El anillo de kétchup negro
-  del ataque especial usa la botella corrupta, resta exactamente dos vidas por
-  impacto y limita el resultado a cero antes de refrescar los corazones del HUD.
+  mueve en dos ejes con respuesta directa al teclado, dispara guindillas y
+  esquiva los patrones de ketchup de Zip. Más poder picante aumenta el daño y
+  la cadencia de Samu, y reduce tanto la velocidad como la frecuencia de los
+  ataques enemigos.
+- Los proyectiles de Zip restan una vida por impacto, incluidos los patrones de
+  kétchup negro del ataque especial. El HUD limita el resultado a cero antes de
+  refrescar los corazones.
 - Escuchar la recomendación de Neit entrega `caja_guindillas`. Samu todavía no
   entiende por qué podría necesitarla, pero el objeto aporta 12 puntos extra de
   picante antes del bullet hell; el HUD identifica explícitamente la bonificación.
