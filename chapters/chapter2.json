@@ -8,11 +8,11 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp"
+              "value": "assets/images/backgrounds/shared/iglesia_furrielva_v2_4k.webp"
             },
             {
               "type": "playSound",
-              "path": "assets/audio/music/chapter2/furrielva_despierta.mp3",
+              "path": "assets/audio/music/shared/furrielva_despierta.mp3",
               "volume": 1,
               "loop": true,
               "id": "bg_music",
@@ -372,7 +372,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp",
+              "value": "assets/images/backgrounds/shared/iglesia_furrielva_v2_4k.webp",
               "cut": true
             },
             {
@@ -2176,7 +2176,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp"
+              "value": "assets/images/backgrounds/shared/iglesia_furrielva_v2_4k.webp"
             },
             {
               "type": "hideCharacter",

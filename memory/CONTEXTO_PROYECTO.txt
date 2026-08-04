@@ -536,7 +536,7 @@ REGLAS PARA CAMBIOS FUTUROS
 - Samu, en su forma furry, va descalzo: las descripciones deben hablar de sus
   patas y no atribuirle zapatillas, zapatos u otro calzado.
 - El fondo activo de la plaza de Furrielva es
-  `assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp` (3840x2160). Mantiene la
+  `assets/images/backgrounds/shared/iglesia_furrielva_v2_4k.webp` (3840x2160). Mantiene la
   iglesia, mercado, fuente y reparto animal del original; no volver a enlazar
   `iglesia.png` como fondo principal del capítulo 2.
 - La investigación de Furrielva usa un móvil horizontal ficticio con **Furry

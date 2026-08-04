@@ -2,172 +2,520 @@
   "title": "Capítulo 1: Un furro se levanta",
   "scenes": [
     {
-      "title": "Escena 1: Encrucijada",
+      "title": "Escena 1: Un despertar como nunca",
       "lines": [
         {
+          "character": "¿?",
+          "text": "...",
           "actions": [
             {
+              "type": "playSound",
+              "path": "assets/audio/sfx/chapter1/clock-alarm.mp3",
+              "volume": 0.5
+            }
+          ]
+        },
+        {
+          "character": "¿?",
+          "text": "...... ¡Argh! Ya voy, cállate...",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/chapter1/clock-alarm.mp3"
+            }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/chapter1/clock-hit.mp3"
+            },
+            { "type": "wait", "value": 1200 }
+          ]
+        },
+        {
+          "character": "¿?",
+          "text": "Mmm... ¿A qué hora puse yo el despertador? Me da que es muy tarde para estar durmiendo, pero es que anoche me colé trasnochando tela."
+        },
+        {
+          "character": "¿?",
+          "text": "Buah, a ver si en el baño me despejo un poco.",
+          "actions": [
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/chapter1/indoor-steps.mp3"
+            }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.webp"
+              "value": "assets/images/backgrounds/chapter1/closed-eyes-with-light.png"
             },
             {
               "type": "playSound",
-              "path": "assets/audio/music/chapter1/casasamu.mp3",
-              "volume": 1,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
-          ],
-          "character": "3C",
-          "text": "Una tarde cualquiera, Samu despierta convencido de que sigue siendo Samu. El espejo aún no ha presentado alegaciones."
+              "path": "assets/audio/sfx/chapter1/light-switch-on.mp3"
+            },
+            { "type": "wait", "value": 1500 }
+          ]
+        },
+        {
+          "character": "¿?",
+          "text": "Es que no puedo ni abrir los ojos siquiera."
+        },
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter1/eyes-opening.png"
+            },
+            { "type": "wait", "value": 3000 }
+          ]
         },
         {
           "character": "Samu",
-          "text": "Mmmmmmmmmmmmmmmmgrgrgrgrgrgrg. ¡Buenos días!",
+          "text": "Eh...",
+          "textAnimation": "whisper",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
-              "position": "left"
+              "pose": "alarmed",
+              "position": "center"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "¡Oh, no! Me he quedado dormido. Y eso que le dije a GePeTo que me despertara.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "sad"
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "Supongo que confiarle la hora a una IA no podía salir mal. Frase que seguro envejece estupendamente.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "angry"
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "Bueno, voy a mirarme en el espejo como hago todas las mañanas, aunque sean las 4 de la tarde.",
-          "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "¿Soy un therian? No, espera... ese hocico es mío. ¡Tengo hocico de verdad!",
-          "textAnimation": true,
+          "text": "¡AAAAAAAAAAAAAAAAAAH!",
+          "textAnimation": "scream",
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/bathroom.webp"
+              "value": "assets/images/backgrounds/chapter1/furrielva_iglesia_vista_aerea_4k.png",
+              "cut": true
             },
             {
-              "type": "removeCharacter",
+              "type": "playSound",
+              "path": "assets/audio/sfx/chapter1/pidgeons-flying.mp3"
+            },
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "shocked",
+              "position": "center"
+            },
+            {
+              "type": "hideCharacter",
               "character": "samu"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "Mejor dicho. ¡Sí, joder! Soy un furro de verdad. Así que pelillos a la mar.",
+          "text": "¿¡Pero qué cojones estoy viendo!?",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "pose": "shocked",
+              "position": "center"
+            },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter1/bathroom_4k.webp"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡No puede ser! No puede ser. No puede ser...",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "pose": "surprised",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Pero..."
+        },
+        {
+          "character": "Samu",
+          "text": "¡ME ENCANTA!",
+          "textAnimation": "joy",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "clapping",
+              "position": "center"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter1/casasamu.mp3",
+              "loop": true,
+              "id": "casasamu"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Wow, sigo sin poder creérmelo pero todo se ve completamente real, es imposible que esté soñando. Eso o se trataría del sueño más lúcido de la historia."
+        },
+        {
+          "character": "Samu",
+          "text": "En serio, mira... Tengo hocico, un pelaje precioso ¡y hasta esta enorme cola! Es una sensación muy rara tener cola de repente.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "happy",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Mi mayor fantasía hecha realidad, estoy flipando.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "clapping",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿Pero esto me ha pasado solo a mí? Voy a salir a la calle a comprobarlo.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "thinking",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Samu no puede contener su curiosidad por ver qué ha ocurrido fuera de su casa. A fin de cuentas, lo lógico dentro de esta fantasía que está viviendo es que no sea el único \"afectado\" por así decirlo.",
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Se dirige a la puerta, coge las llaves y baja corriendo las escaleras. Incluso alguna que otra planta la baja a saltos, hasta encontrarse en el portal hacia la calle."
+        }
+      ]
+    },
+    {
+      "title": "Escena 2: ¿Solo me ocurrió a mí?",
+      "lines": [
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "setBackground",
+              "value": "assets/cutscenes/chapter3/opening_samu_sources/storyboard/10.png"
+            },
+            {
+              "type": "stopSound",
+              "id": "casasamu",
+              "fadeOut": 1000
+            },
+            { "type": "wait", "value": 3000 }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Cuánta luz."
+        },
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/shared/white.png"
+            },
+            { "type": "wait", "value": 500 }
+          ]
+        },
+        {
           "actions": [
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.webp"
+              "value": "assets/images/backgrounds/shared/iglesia_furrielva_dia_v2_4k.webp"
             },
             {
+              "type": "playSound",
+              "path": "assets/audio/music/shared/furrielva_despierta.mp3",
+              "loop": true,
+              "id": "furrielva_despierta",
+              "fadeIn": 500
+            },
+            { "type": "wait", "value": 1500 }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Pues no, no me ha pasado solo a mí. ¡Están todos furrificados!",
+          "actions": [
+            {
               "type": "showCharacter",
               "character": "samu",
-              "position": "left",
+              "pose": "surprised",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Lo que me parece una auténtica maravilla, para qué engañarnos.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
               "pose": "happy",
-              "flipped": false
+              "position": "center"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "No me duele nada. Las garras responden, la cola también y mi cuerpo está convencidísimo de que siempre fue así. Yo, en cambio, tengo preguntas.",
-          "actions": [
-            {
-              "type": "animateCharacter",
-              "character": "samu",
-              "position": "left",
-              "poses": [
-                "surprised",
-                "curious",
-                "thinking"
-              ],
-              "frameMs": 260,
-              "loop": false,
-              "untilAdvance": false
-            }
-          ]
-        },
-        {
-          "character": "Samu",
-          "text": "Pero no hay tiempo para celebraciones, tengo que ir a mi cumple, me estarán esperando.",
+          "text": "¿Entonces... esto sigue siendo Huelva?",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
-              "position": "left",
-              "pose": "sad"
+              "pose": "curious",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Al par de segundos de hacerse esa pregunta, repara en un letreto que le comunica el nuevo nombre de la ciudad."
+        },
+        {
+          "character": "Samu",
+          "text": "¡Oh! Ya veo, Huelva a cambiado su nombre por Furrielva.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "pose": "neutral",
+              "position": "center"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "Aunque como siempre llego tarde no se sorprenderán.",
+          "text": "Bonito. Muy bonito. Así debió ser siempre.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
-              "position": "left",
-              "pose": "determined"
+              "pose": "happy",
+              "position": "center"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "Mejor será que avise a mis amigos de que estoy en camino. Voy a llamar a Edu primero.",
+          "text": "La distribución de esta zona está algo cambiada pero recuerdo muy bien la iglesia y esos bloques que tiene a los lados. Sin embargo esta plaza con la fuente es nueva.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "samu",
-              "position": "left",
-              "pose": "neutral"
+              "pose": "thinking",
+              "position": "center"
             }
           ]
         },
         {
+          "character": "Samu",
+          "text": "Bueno, pues tendré que dar una vuelta por la ciudad a ver qué más ha cambiado. Esto voy a disfrutarlo mucho.",
           "actions": [
             {
-              "type": "goToScene",
-              "value": "Escena 2: Llamada a Edu"
+              "type": "showCharacter",
+              "character": "samu",
+              "pose": "determined",
+              "position": "center"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Echar un ojo al barrio.",
+              "nextScene": "Escena 3: echar un ojo al barrio"
+            },
+            {
+              "text": "Ir en dirección al puerto.",
+              "nextScene": "Escena 4: Ir en dirección al puerto"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 2: Llamada a Edu",
+      "title": "Escena 3: echar un ojo al barrio",
+      "lines": [
+        {
+          "character": "Samu",
+          "text": "En realidad... mejor no me alejo mucho no vaya a ser que no sepa volver a casa.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/shared/iglesia_furrielva_dia_v2_4k.webp"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "pose": "embarrassed",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/shared/black.png"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/sfx/chapter1/indoor-steps.mp3"
+            },
+            {
+              "type": "hideCharacter",
+              "character": "samu"
+            },
+            { "type": "wait", "value": 2000 }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "setBackground",
+              "value": "assets/cutscenes/chapter3/opening_samu_sources/storyboard/12-2.png"
+            },
+            { "type": "wait", "value": 1500 }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Hala! Pero qué bonito.",
+          "textAnimation": "joy",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "pose": "clapping",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Desde luego este tipo de patios no estaban por aquí antes. ¿Por qué hoy todo es taaan bueno?"
+        },
+        {
+          "character": "Samu",
+          "text": "Hmm, a ver si diciendo estas cosas voy a gafarlo. Vamos a tocar madera, que la tengo cerca.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "worried",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Pero antes de que pueda alcanzar cualquier tipo de madera..."
+        },
+        {
+          "character": "Edu",
+          "text": "Buenas tardes. Veo que te gusta nuestro patio.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "pose": "happy",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Edu",
+          "text": "Podría decirte que llevamos cuidándolo durante generaciones, herencia de mis tatarabuelos y todas esas cosas pero sabes bien que esto nos ha venido de repente y he de decir que está mucho mejor ahora.",
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "pose": "happy",
+              "position": "right"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 4: Ir en dirección al puerto",
+      "lines": [
+        {
+          "character": "Samu",
+          "text": "Antes había muchas palomas y ahora hay muchos eh... Hombres-paloma.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/shared/iglesia_furrielva_dia_v2_4k.webp"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "center",
+              "pose": "worried"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Antes había muchas palomas y ahora hay muchos eh... Hombres-paloma.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assassets/cutscenes/chapter3/opening_samu_sources/storyboard/12-1.png"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "center",
+              "pose": "worried"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Fin del Capítulo 1",
       "lines": [
         {
           "actions": [
@@ -179,7 +527,6 @@
             {
               "type": "playSound",
               "path": "assets/audio/music/chapter1/casasamu.mp3",
-              "volume": 1,
               "loop": true,
               "id": "bg_music"
             },
@@ -403,7 +750,6 @@
             {
               "type": "playSound",
               "path": "assets/audio/music/chapter1/casasamu.mp3",
-              "volume": 1,
               "loop": true,
               "id": "bg_music"
             },

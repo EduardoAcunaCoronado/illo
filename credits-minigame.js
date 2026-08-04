@@ -1,7 +1,7 @@
 (function () {
   const DEFAULT_IMAGES = [
     "assets/images/backgrounds/chapter1/pisito.webp",
-    "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp",
+    "assets/images/backgrounds/shared/iglesia_furrielva_v2_4k.webp",
     "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono.webp",
     "assets/images/backgrounds/chapter3/coche_interior.webp",
     "assets/images/backgrounds/chapter3/skyline_eechi_land.webp",
