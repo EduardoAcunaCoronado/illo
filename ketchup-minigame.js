@@ -1,7 +1,5 @@
 (function () {
   const ASSET_VERSION = '20260803-ketchup-9';
-  const REGULAR_KETCHUP_DAMAGE = 1;
-  const CORRUPT_KETCHUP_DAMAGE = 2;
   const cacheBust = (path) => `${path}?v=${ASSET_VERSION}`;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const lerp = (from, to, amount) => from + (to - from) * amount;
@@ -551,7 +549,6 @@
             vx: vx * enemyBulletSpeed,
             vy: vy * enemyBulletSpeed,
             size,
-            damage: corrupt ? CORRUPT_KETCHUP_DAMAGE : REGULAR_KETCHUP_DAMAGE,
           });
           while (enemyBullets.length > maxEnemyBullets) {
             const oldest = enemyBullets.shift();
@@ -955,7 +952,7 @@
               overlaps(bullet.x, bullet.y, bullet.blocksShots ? hitboxConfig.block : hitboxConfig.hazard,
                 playerX, playerY, hitboxConfig.player);
             if (hitPlayer) {
-              playerLives = Math.max(0, playerLives - bullet.damage);
+              playerLives = Math.max(0, playerLives - 1);
               playerInvuln = 0.85;
               player.classList.add('is-hit');
               setTimeout(() => player.classList.remove('is-hit'), 220);

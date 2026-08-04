@@ -1,5 +1,7 @@
 (function () {
-  const ASSET_VERSION = '20260802-chili-harvest-1';
+  const ASSET_VERSION = '20260803-chili-harvest-3';
+  const REGULAR_KETCHUP_PENALTY = 1;
+  const CORRUPT_KETCHUP_PENALTY = 2;
   const cacheBust = (path) => `${path}?v=${ASSET_VERSION}`;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const preloadImages = (sources) => Promise.all(
@@ -33,12 +35,12 @@
       const speedMult = Number(this.options.speedMult) || 1.25;
       const chiliChance = this.options.chiliChance !== undefined ? Number(this.options.chiliChance) : 0.72;
       const allowMouse = this.options.allowMouse !== false;
-      const chiliIcon = cacheBust('assets/images/minigames/chapter2/ketchup/chili_v2.png');
-      const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.png');
-      const corruptIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.png');
-      const playerIcon = cacheBust('assets/images/minigames/chapter2/common/samu_player.png');
+      const chiliIcon = cacheBust('assets/images/minigames/chapter2/ketchup/chili_v2.webp');
+      const ketchupIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
+      const corruptIcon = cacheBust('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp');
+      const playerIcon = cacheBust('assets/images/minigames/chapter2/common/samu_player.webp');
       const factoryBackground = cacheBust(
-        'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.png',
+        'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp',
       );
 
       await preloadImages([
@@ -46,9 +48,9 @@
         ketchupIcon,
         corruptIcon,
         playerIcon,
-        cacheBust('assets/images/characters/edu/edu_picante_wide_transparent.png'),
-        cacheBust('assets/images/characters/samu/samu_charred_closed.png'),
-        cacheBust('assets/images/characters/samu/samu_charred_whiteeyes.png'),
+        cacheBust('assets/images/characters/edu/edu_picante_wide_transparent.webp'),
+        cacheBust('assets/images/characters/samu/samu_charred_closed.webp'),
+        cacheBust('assets/images/characters/samu/samu_charred_whiteeyes.webp'),
         factoryBackground,
       ]);
 
@@ -143,6 +145,7 @@
             y: -0.1,
             speed: (0.28 + Math.random() * 0.22) * speedMult,
             good,
+            penalty: corrupt ? CORRUPT_KETCHUP_PENALTY : REGULAR_KETCHUP_PENALTY,
           });
         };
 
@@ -199,7 +202,7 @@
                 player.classList.add('chili-caught');
                 setTimeout(() => player.classList.remove('chili-caught'), 120);
               } else {
-                score = Math.max(0, score - 1);
+                score = Math.max(0, score - item.penalty);
                 field.classList.add('mg-hit');
                 setTimeout(() => field.classList.remove('mg-hit'), 200);
               }
