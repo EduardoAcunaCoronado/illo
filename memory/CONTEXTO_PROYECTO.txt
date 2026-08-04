@@ -875,10 +875,13 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   lienzo se desplaza con Espacio/Alt + arrastrar o con el botón central, sin activar
   el pincel durante el gesto. `Base
   de trabajo` permite escoger el
-  sprite fuente protegido, la copia limpia registrada o un archivo local de igual
-  resolución. Si existe una copia se usa por defecto; cambiar de base o de pose
-  avisa si hay cambios sin guardar. Ver/restaurar toman esa base, mientras Guardar
-  copia sólo actualiza `sprite_halo_cleaned` y nunca el fuente. Incluye
+  sprite fuente protegido, la copia limpia registrada o un respaldo PNG/WebP de
+  resolución exactamente igual. El respaldo puede elegirse con
+  `Importar PNG/WebP…` o arrastrarse sobre el lienzo; recupera sus píxeles RGBA como
+  base pendiente de guardar, pero no el historial Deshacer/Rehacer ni los ajustes
+  de la sesión anterior. Si existe una copia se usa por defecto; cambiar de base o
+  de pose avisa si hay cambios sin guardar. Ver/restaurar toman esa base, mientras
+  Guardar copia sólo actualiza `sprite_halo_cleaned` y nunca el fuente. Incluye
   `Limpieza segura (recomendada)`, que siempre reconstruye desde el fuente
   protegido: confirma halo conectado al exterior, protege relleno/color/tinta,
   restaura cualquier píxel protegido alcanzado por una microabertura y rechaza
@@ -918,6 +921,13 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   deshacer/rehacer independiente. Junto al selector, `Ver original` abre la fuente
   protegida en otra pestaña y `Ubicación` abre Explorer seleccionando el archivo
   exacto; ninguno cambia la base, el lienzo, el historial ni la copia guardada.
+  `Comprobar detalle` llama a `POST /api/white-halo-protection` sin escribir y
+  superpone cada píxel problemático: rosa para relleno/tinta protegidos reducidos,
+  amarillo sólo como localizador alrededor de ellos y morado para alfa expandido.
+  Cualquier cambio del lienzo invalida el diagnóstico. `Restaurar protegidos` pide
+  al mismo endpoint `repair: true`, copia exclusivamente el RGBA exacto de los
+  puntos rosas desde el fuente canónico, conserva intacto todo lo demás y forma un
+  único paso deshacible; no corrige las expansiones moradas.
   Cada operación global se registra como un único paso reversible. Cada control ofrece
   tooltip breve al pasar el puntero o enfocarlo y un icono redondo `?` con ayuda
   ampliada y accesible por teclado. Nunca sobrescribe fuentes: guarda WebP RGBA
@@ -928,10 +938,11 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   ruta exacta del WebP y las dos miniaturas antes de guardar. `Descargar WebP
   actual` crea mediante el servidor local un respaldo RGBA WebP sin pérdida del
   lienzo, sin damero, zoom ni UI; no valida, no toca el manifiesto y no genera
-  miniaturas, por lo que no sustituye a `Guardar copia` pero permite rescatar una
-  edición rechazada por el servidor. Airi, Carlos, Samu y toda salida nueva usan
-  este formato. El PNG queda sólo como transporte/historial interno y para
-  originales o másteres de trabajo en `workbench/`, nunca como copia limpia
+  miniaturas, por lo que sigue rescatando el lienzo aunque falle o se pause
+  `Guardar copia`; puede reimportarse por botón o arrastre, aunque no reconstruye
+  el historial. No sustituye al guardado validado. Airi, Carlos, Samu y toda salida
+  nueva usan este formato. El PNG queda sólo como transporte/historial interno y
+  para originales o másteres de trabajo en `workbench/`, nunca como copia limpia
   runtime.
   Si una pose mantiene un parpadeo full-sprite con el mismo alfa que la base,
   Guardar copia genera también sus frames WebP con la máscara limpia y los registra
@@ -939,9 +950,15 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   `carlos.neutral` usa esta vía para que el halo no reaparezca al parpadear. Las
   poses con capas oculares no duplican frames. `validate:content` comprueba `VP8L`,
   canal alfa y dimensiones de bases, miniaturas y frames derivados.
-  El servidor rechaza todo
-  guardado que expanda el alfa o reduzca relleno/tinta protegidos. Restaura el RGB
-  fuente en todo píxel retenido, normaliza RGB a cero donde alfa es cero y registra
+  `Guardar copia` ejecuta primero el preflight de protección y se pausa sin escribir
+  cuando detecta rosa o morado. El endpoint de diagnóstico/reparación nunca modifica
+  runtime, miniaturas ni metadatos. `Guardar de todos modos`, rojo, sólo se habilita
+  para la revisión exacta ya diagnosticada cuando hay reducción rosa pero ninguna
+  expansión morada; cualquier edición invalida su huella. Permite conservar un
+  suavizado intencional, actualiza WebP/miniaturas/frames, deja intacto el fuente y
+  marca la copia como `validation.forced: true` y `REVISAR`. Nunca omite dimensiones,
+  formato ni expansión de alfa. El guardado definitivo restaura el RGB fuente en
+  todo píxel retenido, normaliza RGB a cero donde alfa es cero y registra
   métricas de protección/píxeles/componentes. `Motas aisladas (avanzado)` elimina
   componentes separados de hasta 64 píxeles; hay que revisar que no sean brillos,
   lágrimas o accesorios pequeños legítimos.

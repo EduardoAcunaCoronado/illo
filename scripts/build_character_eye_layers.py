@@ -803,6 +803,143 @@ def mask_bbox(mask: np.ndarray) -> dict[str, int] | None:
     }
 
 
+def png_data_url(image: Image.Image) -> str:
+    """Codifica una imagen de trabajo para devolverla al editor local."""
+    encoded = io.BytesIO()
+    image.save(encoded, format="PNG", optimize=False, compress_level=6)
+    return "data:image/png;base64," + base64.b64encode(
+        encoded.getvalue()
+    ).decode("ascii")
+
+
+def white_halo_override_token(
+    job_id: str, source_pixels: np.ndarray, candidate_pixels: np.ndarray
+) -> str:
+    """Vincula una excepción de guardado a una revisión exacta del lienzo."""
+    digest = hashlib.sha256()
+    digest.update(b"white-halo-save-v1\0")
+    digest.update(TOOLS_ROOT_ID.encode("ascii"))
+    digest.update(b"\0")
+    digest.update(job_id.encode("utf-8"))
+    digest.update(b"\0")
+    digest.update(np.ascontiguousarray(source_pixels, dtype=np.uint8).tobytes())
+    digest.update(b"\0")
+    digest.update(np.ascontiguousarray(candidate_pixels, dtype=np.uint8).tobytes())
+    return "sha256:" + digest.hexdigest()
+
+
+def white_halo_protection_diagnostic(
+    job_id: str, data_url: Any, repair: bool = False
+) -> dict[str, Any]:
+    """Localiza y, opcionalmente, recupera detalle protegido del original.
+
+    La máscara se calcula en Python con exactamente el mismo criterio que usa
+    el guardado. Así la interfaz no tiene que inferir el daño a partir del texto
+    de un error ni duplicar la protección de tinta en JavaScript.
+    """
+
+    job = base_sprite_job(job_id)
+    candidate = decode_canvas_image(data_url)
+    expected = (int(job["width"]), int(job["height"]))
+    if candidate.size != expected:
+        raise ValueError(
+            f"La copia debe medir {expected[0]}×{expected[1]} px; recibido "
+            f"{candidate.width}×{candidate.height} px"
+        )
+
+    source_path = ROOT / job["source"]
+    try:
+        with Image.open(source_path) as source_image:
+            source_image.load()
+            source_pixels = np.asarray(
+                source_image.convert("RGBA"), dtype=np.uint8
+            ).copy()
+    except OSError as error:
+        raise ValueError("No se pudo leer el sprite fuente protegido") from error
+    if source_pixels.shape[:2] != (expected[1], expected[0]):
+        raise ValueError(
+            "Las dimensiones reales del sprite fuente no coinciden con el inventario"
+        )
+
+    candidate_pixels = np.asarray(candidate.convert("RGBA"), dtype=np.uint8).copy()
+    source_alpha = source_pixels[:, :, 3]
+    candidate_alpha = candidate_pixels[:, :, 3]
+    reliable_fill, protected_ink, protected = white_halo_protection_masks(
+        source_pixels
+    )
+    reduced = candidate_alpha < source_alpha
+    lost_reliable_fill = reduced & reliable_fill
+    lost_protected_ink = reduced & protected_ink
+    lost_protected = reduced & protected
+    expanded = candidate_alpha > source_alpha
+    bounds = mask_bbox(lost_protected)
+    lost_pixels = int(np.count_nonzero(lost_protected))
+    expanded_pixels = int(np.count_nonzero(expanded))
+
+    overlay_pixels = np.zeros_like(source_pixels)
+    if lost_pixels:
+        exact = np.ascontiguousarray(lost_protected, dtype=np.uint8)
+        halo = cv2.dilate(exact, np.ones((5, 5), dtype=np.uint8), iterations=1)
+        surrounding = (halo > 0) & ~lost_protected
+        overlay_pixels[surrounding] = (255, 209, 102, 105)
+        overlay_pixels[lost_protected] = (255, 45, 132, 245)
+    if expanded_pixels:
+        overlay_pixels[expanded] = (151, 91, 255, 235)
+
+    metrics = {
+        "lostReliableFillPixels": int(np.count_nonzero(lost_reliable_fill)),
+        "lostProtectedInkPixels": int(np.count_nonzero(lost_protected_ink)),
+        "lostProtectedPixels": lost_pixels,
+        "lostProtectedBounds": bounds,
+        "expandedPixels": expanded_pixels,
+    }
+    result: dict[str, Any] = {
+        "ok": True,
+        "safe": lost_pixels == 0 and expanded_pixels == 0,
+        "canvas": {"width": candidate.width, "height": candidate.height},
+        "metrics": metrics,
+        "overlay": (
+            png_data_url(Image.fromarray(overlay_pixels, "RGBA"))
+            if lost_pixels or expanded_pixels
+            else None
+        ),
+        "repaired": False,
+        "restoredPixels": 0,
+        "forceSave": {
+            "allowed": bool(lost_pixels and not expanded_pixels),
+            "warnings": ["lost-protected-alpha"] if lost_pixels else [],
+            "diagnosticFingerprint": (
+                white_halo_override_token(
+                    job_id, source_pixels, candidate_pixels
+                )
+                if lost_pixels and not expanded_pixels
+                else None
+            ),
+        },
+    }
+
+    if repair and lost_pixels:
+        # Sólo se recuperan los píxeles que el guardado considera protegidos.
+        # El resto del alfa y de los colores del trabajo importado permanece
+        # byte a byte intacto.
+        candidate_pixels[lost_protected] = source_pixels[lost_protected]
+        repaired_alpha = candidate_pixels[:, :, 3]
+        remaining = (repaired_alpha < source_alpha) & protected
+        result.update(
+            {
+                "image": png_data_url(Image.fromarray(candidate_pixels, "RGBA")),
+                "repaired": True,
+                "restoredPixels": lost_pixels,
+                "safe": not np.any(remaining) and expanded_pixels == 0,
+                "afterRepair": {
+                    "lostProtectedPixels": int(np.count_nonzero(remaining)),
+                    "expandedPixels": expanded_pixels,
+                },
+            }
+        )
+    return result
+
+
 def white_halo_output_paths(job: dict[str, Any]) -> dict[str, Path]:
     """Devuelve los tres destinos derivados de una pose sin escribirlos."""
     character, pose_name = str(job["id"]).split(".", 1)
@@ -945,7 +1082,11 @@ def save_white_halo_animation_frames(
 
 
 def save_white_halo_sprite(
-    job_id: str, data_url: Any, validate_only: bool = False
+    job_id: str,
+    data_url: Any,
+    validate_only: bool = False,
+    force: bool = False,
+    override_token: Any = None,
 ) -> dict[str, Any]:
     job = base_sprite_job(job_id)
     image = decode_canvas_image(data_url)
@@ -972,6 +1113,9 @@ def save_white_halo_sprite(
         )
 
     pixels = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
+    candidate_override_token = white_halo_override_token(
+        job_id, source_pixels, pixels
+    )
     alpha = pixels[:, :, 3]
     metrics = white_halo_alpha_metrics(source_alpha, alpha)
     retained_visible = (source_alpha > 0) & (alpha > 0)
@@ -1005,8 +1149,10 @@ def save_white_halo_sprite(
         "lostProtectedPixels": int(np.count_nonzero(lost_protected)),
         "lostProtectedBounds": mask_bbox(lost_protected),
     }
-    if metrics["expandedPixels"]:
-        expanded_pixels = int(metrics["expandedPixels"])
+    expanded_pixels = int(metrics["expandedPixels"])
+    lost_pixels = int(metrics["protection"]["lostProtectedPixels"])
+    forced = False
+    if expanded_pixels:
         expanded_label = "píxel" if expanded_pixels == 1 else "píxeles"
         expanded_display = f"{expanded_pixels:,}".replace(",", ".")
         maximum_expansion = int(
@@ -1017,8 +1163,7 @@ def save_white_halo_sprite(
             f"{expanded_display} {expanded_label} "
             f"(incremento máximo {maximum_expansion}); corrige el borde antes de guardar"
         )
-    if metrics["protection"]["lostProtectedPixels"]:
-        lost_pixels = int(metrics["protection"]["lostProtectedPixels"])
+    if lost_pixels and not force:
         lost_display = f"{lost_pixels:,}".replace(",", ".")
         bounds = metrics["protection"]["lostProtectedBounds"]
         bounds_label = ""
@@ -1032,6 +1177,17 @@ def save_white_halo_sprite(
             f"{lost_display} píxeles de relleno o tinta protegida{bounds_label}. "
             "Restaura el contorno y limpia únicamente el halo exterior"
         )
+    if lost_pixels and force:
+        if not isinstance(override_token, str) or override_token != candidate_override_token:
+            raise ValueError(
+                "El lienzo no coincide con la comprobación autorizada; "
+                "vuelve a pulsar Comprobar detalle antes de guardar de todos modos"
+            )
+        forced = True
+    elif force:
+        raise ValueError(
+            "El lienzo ya no contiene una pérdida protegida que requiera excepción"
+        )
     # El RGB oculto no debe conservar basura que pueda reaparecer al reescalar o
     # convertir el PNG. Esta normalización no altera ningún píxel visible.
     pixels[alpha == 0, :3] = 0
@@ -1040,6 +1196,12 @@ def save_white_halo_sprite(
         return {
             "ok": True,
             "validated": True,
+            "forced": forced,
+            "validation": {
+                "policy": "white-halo-save-v1",
+                "forced": forced,
+                "warnings": ["lost-protected-alpha"] if forced else [],
+            },
             "canvas": {"width": image.width, "height": image.height},
             "transparentPixels": transparent_pixels,
             "metrics": metrics,
@@ -1094,12 +1256,39 @@ def save_white_halo_sprite(
         "transparentPixels": transparent_pixels,
         "metrics": metrics,
         "updatedAt": datetime.now(timezone.utc).isoformat(),
+        "validation": {
+            "policy": "white-halo-save-v1",
+            "forced": forced,
+            "warnings": [],
+        },
     }
+    if forced:
+        entry["validation"].update(
+            {
+                "forcedAt": entry["updatedAt"],
+                "diagnosticFingerprint": candidate_override_token,
+                "warnings": [
+                    {
+                        "code": "lost-protected-alpha",
+                        "pixels": lost_pixels,
+                        "lostReliableFillPixels": metrics["protection"][
+                            "lostReliableFillPixels"
+                        ],
+                        "lostProtectedInkPixels": metrics["protection"][
+                            "lostProtectedInkPixels"
+                        ],
+                        "bounds": metrics["protection"][
+                            "lostProtectedBounds"
+                        ],
+                    }
+                ],
+            }
+        )
     if animation_frames:
         entry["animationFrames"] = animation_frames
     edits[job_id] = entry
     save_white_halo_edits(edits)
-    return {"ok": True, "id": job_id, **entry}
+    return {"ok": True, "id": job_id, "forced": forced, **entry}
 
 
 def save_clean_base(job_id: str, data_url: Any, validate_only: bool = False) -> dict[str, Any]:
@@ -2128,7 +2317,7 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             "/api/region", "/api/offset", "/api/clean-offset", "/api/clean-base",
             "/api/reveal-path", "/api/eye-layer-edit", "/api/white-halo-clean",
             "/api/white-halo-topological", "/api/reveal-white-halo-source",
-            "/api/white-halo-export"
+            "/api/white-halo-export", "/api/white-halo-protection"
         }:
             self.send_error(HTTPStatus.NOT_FOUND)
             return
@@ -2165,10 +2354,32 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                 self.send_json(result)
                 return
             if self.path == "/api/white-halo-clean":
+                force_ack = payload.get("force")
+                force_requested = False
+                diagnostic_fingerprint = None
+                if force_ack is not None:
+                    if not isinstance(force_ack, dict):
+                        raise ValueError(
+                            "La autorización de guardado excepcional no es válida"
+                        )
+                    if force_ack.get("warnings") != ["lost-protected-alpha"]:
+                        raise ValueError(
+                            "La advertencia aceptada para el guardado excepcional no es válida"
+                        )
+                    diagnostic_fingerprint = force_ack.get(
+                        "diagnosticFingerprint"
+                    )
+                    if not isinstance(diagnostic_fingerprint, str):
+                        raise ValueError(
+                            "Falta la huella de la comprobación autorizada"
+                        )
+                    force_requested = True
                 result = save_white_halo_sprite(
                     job_id,
                     payload.get("image"),
                     bool(payload.get("validateOnly", False)),
+                    force_requested,
+                    diagnostic_fingerprint,
                 )
                 self.send_json(result)
                 return
@@ -2177,6 +2388,15 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                     job_id, payload.get("image")
                 )
                 self.send_download(encoded, filename)
+                return
+            if self.path == "/api/white-halo-protection":
+                self.send_json(
+                    white_halo_protection_diagnostic(
+                        job_id,
+                        payload.get("image"),
+                        bool(payload.get("repair", False)),
+                    )
+                )
                 return
             if self.path == "/api/white-halo-topological":
                 self.send_json(topological_white_halo_cleanup(job_id))

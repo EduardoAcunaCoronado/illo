@@ -5344,17 +5344,40 @@ ratón ofrece el mismo acceso directo. Estos gestos interceptan el trazo para qu
 nunca limpien, borren o restauren por accidente.
 `Base de trabajo` permite decidir de forma explícita qué imagen se considera el
 punto de partida de la sesión: el sprite fuente protegido, la última copia limpia
-registrada o un PNG/WebP/JPEG local con idéntica resolución. Si existe una copia
-limpia, se selecciona por defecto al abrir la pose. `Ver base` y `Restaurar base`
-utilizan esa elección. El pincel restaurador mantiene además una fuente separada
-`Sprite original protegido`, disponible aunque la base sea una copia limpia o un
-archivo local. Cambiar de base o de pose solicita confirmación cuando hay cambios
-sin guardar. Una base local sólo vive en memoria hasta utilizar `Guardar copia`; en
-ningún caso se escribe sobre el sprite fuente.
+registrada o un respaldo PNG/WebP local. El botón `Importar PNG/WebP…` y el gesto
+de arrastrar el archivo sobre el lienzo comparten el mismo flujo: exigen que la pose
+ya esté seleccionada y que el respaldo tenga exactamente su ancho y alto. Si existe
+una copia limpia, se selecciona por defecto al abrir la pose. `Ver base` y
+`Restaurar base` utilizan esa elección. El pincel restaurador mantiene además una
+fuente separada `Sprite original protegido`, disponible aunque la base sea una
+copia limpia o un archivo local. Cambiar de base o de pose solicita confirmación
+cuando hay cambios sin guardar.
+
+La importación recupera los píxeles RGBA del respaldo y los convierte en la nueva
+base de trabajo pendiente de validar y guardar; no recupera el historial de
+Deshacer/Rehacer, los ajustes de herramientas ni ningún otro estado de la sesión
+anterior. La base local sólo vive en memoria, pero el archivo PNG/WebP elegido sigue
+intacto en disco. En ningún caso se escribe sobre el sprite fuente.
 Junto a la fuente del pincel restaurador, `Ver original` abre el sprite canónico
 protegido en otra pestaña y `Ubicación` abre el Explorador de Windows dejando
 seleccionado ese archivo exacto. Ambos accesos son sólo de consulta: no cambian la
 base de trabajo, el lienzo, el historial ni la copia limpia guardada.
+
+`Comprobar detalle` compara el lienzo actual con las máscaras de relleno y tinta
+del sprite canónico sin guardar nada. `Ver zonas` superpone un diagnóstico exacto:
+el rosa identifica cada píxel protegido cuyo alfa se ha reducido, el amarillo es
+sólo un halo localizador alrededor de esos puntos y el morado marca alfa expandido
+fuera de la silueta fuente. El marcado es una capa de interfaz, nunca forma parte
+del PNG/WebP ni altera el lienzo. Cualquier edición posterior invalida el informe
+para impedir que se aplique a otra revisión de la imagen.
+
+Cuando hay puntos rosas, `Restaurar protegidos` copia desde el sprite canónico el
+RGBA exacto de esos píxeles y nada más. No repinta la caja rectangular del aviso, no
+toca el halo ya limpiado ni modifica otros colores o valores alfa del respaldo. La
+reparación completa constituye un solo paso de Deshacer/Rehacer. Una expansión
+morada no se corrige con este botón: debe retirarse manualmente y comprobarse de
+nuevo.
+
 El botón `Limpieza segura (recomendada)` reconstruye siempre la vista desde el
 sprite fuente protegido, nunca desde una copia ya erosionada. Además de las
 máscaras de relleno y tinta, restaura cualquier píxel protegido que un microcorte
@@ -5454,8 +5477,11 @@ incorporación: se divide en cuatro paneles numerados (`Pincel manual`, `Limpiez
 principal`, `Remates` y `Vista, historial y archivo`). En pantallas anchas se
 distribuyen en una cuadrícula de dos columnas; por debajo de 1400 px se apilan sin
 alterar el orden lógico ni separar cada acción de sus parámetros.
-`Guardar copia` nunca sobrescribe el sprite fuente: crea o actualiza un WebP RGBA
-sin pérdida en
+`Guardar copia` ejecuta primero la misma comprobación de detalle protegido. Si
+encuentra píxeles rosas o una expansión morada, el guardado se pausa, muestra la
+superposición y no llama al flujo que escribe archivos; tras reparar o limpiar hay
+que volver a pulsarlo. Sólo cuando el preflight está limpio crea o actualiza un WebP
+RGBA sin pérdida en
 `assets/images/characters/sprite_halo_cleaned/<personaje>/<pose>/` y registra la
 ruta en `assets/metadata/sprite_white_halo_cleaned.json`. Al regresar a una pose
 guardada, el editor selecciona esa copia como base para continuar el retoque, pero
@@ -5469,9 +5495,30 @@ instante y el servidor local lo codifica como WebP sin pérdida para descargarlo
 como respaldo. La descarga no incorpora el
 damero, el fondo de contraste, el zoom, los marcos ni ningún otro elemento de la
 interfaz; tampoco ejecuta la validación del servidor, actualiza el manifiesto o
-genera miniaturas. Por ello sirve para rescatar el trabajo incluso si `Guardar
-copia` es rechazado, pero no sustituye al guardado validado que consumen juego y
+genera miniaturas. Por ello sigue rescatando siempre el lienzo aunque el preflight
+pause o el servidor rechace `Guardar copia`; el WebP resultante puede reimportarse
+con el botón o por arrastre. No sustituye al guardado validado que consumen juego y
 galería.
+
+El botón rojo `Guardar de todos modos` es una excepción explícita para suavizados
+intencionales que la máscara heurística identifica como pérdida protegida. No se
+habilita de antemano: primero hay que intentar `Guardar copia` o pulsar
+`Comprobar detalle`, revisar los puntos rosas sobre la imagen y confirmar que no
+existe ninguna expansión morada. La autorización queda vinculada mediante una
+huella al identificador de pose, al sprite fuente y a los píxeles exactos de esa
+revisión del lienzo; cualquier pincelada, Deshacer/Rehacer, cambio de base o cambio
+de pose la invalida y obliga a comprobar de nuevo.
+
+Al confirmar la excepción se conservan los píxeles y el suavizado tal como están en
+pantalla y se actualizan el WebP runtime, sus miniaturas y los frames derivados
+compatibles. El sprite fuente protegido permanece intacto. La copia se registra con
+la política `white-halo-save-v1`, `validation.forced: true`, la huella del
+diagnóstico y el recuento y límites de la advertencia `lost-protected-alpha`; en la
+lista del editor aparece como `REVISAR`. Un guardado seguro posterior reemplaza esa
+marca por `validation.forced: false`. Esta excepción nunca permite dimensiones
+incorrectas, alfa expandido, archivos inválidos ni una autorización correspondiente
+a otra revisión del lienzo.
+
 Todas las copias limpias existentes de Airi, Carlos y Samu, así como las nuevas
 salidas del editor, usan WebP RGBA sin pérdida. El PNG queda reservado para el
 transporte interno exacto del lienzo, el historial de edición y los originales o
@@ -5484,14 +5531,27 @@ inyectar el frame intermedio, evitando que el halo reaparezca durante la animaci
 con capas oculares no duplican sprites completos. `validate:content` exige que base,
 miniaturas y frames derivados sean WebP lossless `VP8L`, declaren alfa y conserven
 las dimensiones previstas.
-Antes de escribir, el servidor compara el alfa candidato con el fuente protegido:
-rechaza dimensiones distintas, cualquier expansión de la silueta y toda reducción
-de alfa que afecte al relleno o la tinta protegidos. Como el canvas puede redondear
-el color de un píxel semitransparente, el servidor repone el RGB exacto del fuente
-en cada píxel retenido y pone a cero el RGB oculto donde alfa es cero. También
-registra métricas de protección, alfa y componentes conectados en el manifiesto.
-Así una herramienta de remate no puede guardar un halo nuevo ni una copia que se
-haya comido el contorno.
+El endpoint `POST /api/white-halo-protection` recibe el identificador de pose, el
+PNG interno del lienzo y `repair` como booleano. Reutiliza exactamente
+`white_halo_protection_masks()` para diagnosticar pérdida protegida y expansión;
+devuelve las métricas y el overlay PNG y, con `repair: true`, una imagen reparada
+que sólo sustituye los píxeles protegidos por su RGBA canónico. Esta operación no
+escribe copias runtime, miniaturas ni metadatos.
+
+Después del preflight, el endpoint de guardado vuelve a comparar el alfa candidato
+con el fuente protegido: rechaza dimensiones distintas, cualquier expansión de la
+silueta y toda reducción de alfa que afecte al relleno o la tinta protegidos. Como
+el canvas puede redondear el color de un píxel semitransparente, el servidor repone
+el RGB exacto del fuente en cada píxel retenido y pone a cero el RGB oculto donde
+alfa es cero. También registra métricas de protección, alfa y componentes conectados
+en el manifiesto. Así una herramienta de remate no puede guardar un halo nuevo ni
+una copia que se haya comido el contorno.
+
+`POST /api/white-halo-clean` acepta opcionalmente un objeto `force` estricto con
+`warnings: ["lost-protected-alpha"]` y la `diagnosticFingerprint` emitida por el
+diagnóstico. El servidor recalcula máscaras, métricas y huella antes de escribir:
+la excepción sólo omite el rechazo por reducción protegida; la expansión de alfa y
+el resto de invariantes continúan siendo bloqueos absolutos.
 
 ### Acting de personajes, transiciones y memoria de escenario
 

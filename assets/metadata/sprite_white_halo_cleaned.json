@@ -99,6 +99,286 @@
         "assets/images/characters/eye_intermediate_sources/carlos/neutral/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/animations/eyes_half_source_halo_limpio.webp"
       }
     },
+    "samu.alarmed": {
+      "source": "assets/images/characters/samu/samu_alarmed.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/alarmed/samu_alarmed_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/alarmed/samu_alarmed_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/alarmed/samu_alarmed_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "transparentPixels": 483530,
+      "metrics": {
+        "fullyTransparentPixels": 472657,
+        "partialAlphaPixels": 10873,
+        "opaquePixels": 565046,
+        "removedPixels": 20878,
+        "reducedAlphaPixels": 29536,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 5,
+            "largestComponentPixels": 585212,
+            "detachedVisiblePixels": 11585,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 7,
+            "largestComponentPixels": 567199,
+            "detachedVisiblePixels": 8720,
+            "speckComponents": 2,
+            "speckPixels": 3
+          }
+        },
+        "changedVisibleRgbPixels": 12264,
+        "normalizedRetainedRgbPixels": 12264,
+        "protection": {
+          "reliableFillPixels": 485794,
+          "protectedInkPixels": 538811,
+          "protectedPixels": 538811,
+          "lostReliableFillPixels": 559,
+          "lostProtectedInkPixels": 4807,
+          "lostProtectedPixels": 4807,
+          "lostProtectedBounds": {
+            "x": 31,
+            "y": 4,
+            "width": 978,
+            "height": 1020
+          }
+        }
+      },
+      "updatedAt": "2026-08-04T13:51:15.637798+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 4807,
+            "lostReliableFillPixels": 559,
+            "lostProtectedInkPixels": 4807,
+            "bounds": {
+              "x": 31,
+              "y": 4,
+              "width": 978,
+              "height": 1020
+            }
+          }
+        ],
+        "forcedAt": "2026-08-04T13:51:15.637798+00:00",
+        "diagnosticFingerprint": "sha256:2fe5ae7405de73508eb601ffa4299ab10c3167d9ba6a3b67c545fe38c6cd1eb6"
+      },
+      "animationFrames": {
+        "assets/images/characters/samu/animations/blinks/samu_alarmed_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/alarmed/animations/samu_alarmed_blink_closed_halo_limpio.webp",
+        "assets/images/characters/eye_intermediate_sources/samu/alarmed/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/alarmed/animations/eyes_half_source_halo_limpio.webp"
+      }
+    },
+    "samu.angry": {
+      "source": "assets/images/characters/samu/samu_angry.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/angry/samu_angry_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/angry/samu_angry_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/angry/samu_angry_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "transparentPixels": 552231,
+      "metrics": {
+        "fullyTransparentPixels": 545946,
+        "partialAlphaPixels": 6285,
+        "opaquePixels": 496345,
+        "removedPixels": 13162,
+        "reducedAlphaPixels": 17419,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 3,
+            "largestComponentPixels": 515788,
+            "detachedVisiblePixels": 4,
+            "speckComponents": 2,
+            "speckPixels": 4
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 502630,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 9492,
+        "normalizedRetainedRgbPixels": 9492,
+        "protection": {
+          "reliableFillPixels": 407328,
+          "protectedInkPixels": 472627,
+          "protectedPixels": 472627,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 0,
+          "lostProtectedPixels": 0,
+          "lostProtectedBounds": null
+        }
+      },
+      "updatedAt": "2026-08-04T13:11:32.565053+00:00",
+      "animationFrames": {
+        "assets/images/characters/samu/animations/blinks/samu_angry_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/angry/animations/samu_angry_blink_closed_halo_limpio.webp",
+        "assets/images/characters/eye_intermediate_sources/samu/angry/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/angry/animations/eyes_half_source_halo_limpio.webp"
+      }
+    },
+    "samu.happy": {
+      "source": "assets/images/characters/samu/samu_happy.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/happy/samu_happy_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/happy/samu_happy_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/happy/samu_happy_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "transparentPixels": 551484,
+      "metrics": {
+        "fullyTransparentPixels": 542006,
+        "partialAlphaPixels": 9478,
+        "opaquePixels": 497092,
+        "removedPixels": 9945,
+        "reducedAlphaPixels": 15477,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 3,
+            "largestComponentPixels": 516513,
+            "detachedVisiblePixels": 2,
+            "speckComponents": 2,
+            "speckPixels": 2
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 506570,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 20468,
+        "normalizedRetainedRgbPixels": 20468,
+        "protection": {
+          "reliableFillPixels": 268959,
+          "protectedInkPixels": 299720,
+          "protectedPixels": 299720,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 0,
+          "lostProtectedPixels": 0,
+          "lostProtectedBounds": null
+        }
+      },
+      "updatedAt": "2026-08-04T12:50:50.820505+00:00",
+      "animationFrames": {
+        "assets/images/characters/samu/animations/blinks/samu_happy_blink_open.webp": "assets/images/characters/sprite_halo_cleaned/samu/happy/animations/samu_happy_blink_open_halo_limpio.webp",
+        "assets/images/characters/eye_intermediate_sources/samu/happy/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/happy/animations/eyes_half_source_halo_limpio.webp"
+      }
+    },
+    "samu.sad": {
+      "source": "assets/images/characters/samu/samu_sad.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/sad/samu_sad_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/sad/samu_sad_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/sad/samu_sad_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "transparentPixels": 486514,
+      "metrics": {
+        "fullyTransparentPixels": 479535,
+        "partialAlphaPixels": 6979,
+        "opaquePixels": 562062,
+        "removedPixels": 10102,
+        "reducedAlphaPixels": 15570,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 2,
+            "largestComponentPixels": 579142,
+            "detachedVisiblePixels": 1,
+            "speckComponents": 1,
+            "speckPixels": 1
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 569041,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 7576,
+        "normalizedRetainedRgbPixels": 7576,
+        "protection": {
+          "reliableFillPixels": 274423,
+          "protectedInkPixels": 303170,
+          "protectedPixels": 303170,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 0,
+          "lostProtectedPixels": 0,
+          "lostProtectedBounds": null
+        }
+      },
+      "updatedAt": "2026-08-04T13:08:09.738926+00:00",
+      "animationFrames": {
+        "assets/images/characters/samu/animations/blinks/samu_sad_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/sad/animations/samu_sad_blink_closed_halo_limpio.webp",
+        "assets/images/characters/eye_intermediate_sources/samu/sad/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/sad/animations/eyes_half_source_halo_limpio.webp"
+      }
+    },
+    "samu.surprised": {
+      "source": "assets/images/characters/samu/samu_surprised.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/surprised/samu_surprised_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/surprised/samu_surprised_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/surprised/samu_surprised_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "transparentPixels": 556356,
+      "metrics": {
+        "fullyTransparentPixels": 547438,
+        "partialAlphaPixels": 8918,
+        "opaquePixels": 492220,
+        "removedPixels": 8705,
+        "reducedAlphaPixels": 15002,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 2,
+            "largestComponentPixels": 509842,
+            "detachedVisiblePixels": 1,
+            "speckComponents": 1,
+            "speckPixels": 1
+          },
+          "candidate": {
+            "visibleComponents": 932,
+            "largestComponentPixels": 499302,
+            "detachedVisiblePixels": 1836,
+            "speckComponents": 931,
+            "speckPixels": 1836
+          }
+        },
+        "changedVisibleRgbPixels": 9267,
+        "normalizedRetainedRgbPixels": 9267,
+        "protection": {
+          "reliableFillPixels": 227666,
+          "protectedInkPixels": 254090,
+          "protectedPixels": 254090,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 0,
+          "lostProtectedPixels": 0,
+          "lostProtectedBounds": null
+        }
+      },
+      "updatedAt": "2026-08-04T13:12:47.320131+00:00",
+      "animationFrames": {
+        "assets/images/characters/samu/animations/blinks/samu_surprised_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/surprised/animations/samu_surprised_blink_closed_halo_limpio.webp",
+        "assets/images/characters/eye_intermediate_sources/samu/surprised/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/surprised/animations/eyes_half_source_halo_limpio.webp"
+      }
+    },
     "samu.worried": {
       "source": "assets/images/characters/samu/samu_worried_v2.webp",
       "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp",
