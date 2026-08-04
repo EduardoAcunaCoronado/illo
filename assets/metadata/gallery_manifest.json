@@ -1,6 +1,6 @@
 {
-  "version": "gallery-2026-08-03-3",
-  "generatedAt": "2026-08-03",
+  "version": "gallery-2026-08-04-3",
+  "generatedAt": "2026-08-04",
   "title": "Galería de Project AI.ri: Transfurmados",
   "description": "Arte canónico, ilustraciones promocionales y extras animados.",
   "categories": [
@@ -31,13 +31,13 @@
   ],
   "counts": {
     "wallpapers": 4,
-    "illustrations": 12,
+    "illustrations": 13,
     "characters": 25,
     "backgrounds": 63,
     "videos": 1,
-    "all": 105,
-    "characterPoses": 156,
-    "animatedCharacterPoses": 130
+    "all": 106,
+    "characterPoses": 155,
+    "animatedCharacterPoses": 129
   },
   "items": [
     {
@@ -140,6 +140,21 @@
       "chapter": 2,
       "origin": "chapter",
       "thumbnail": "assets/images/gallery/thumbnails/cg-ketchlings-factory-welcome.webp"
+    },
+    {
+      "id": "cg-caja-guindillas",
+      "title": "Caja Guindillas",
+      "description": "Ilustración narrativa de Capítulo 2: Kingdom Ketchup.",
+      "type": "image",
+      "category": "illustrations",
+      "src": "assets/images/cg/chapter2/caja_guindillas.png",
+      "alt": "Caja Guindillas",
+      "fit": "cover",
+      "downloadable": false,
+      "spoiler": false,
+      "chapter": 2,
+      "origin": "chapter",
+      "thumbnail": "assets/images/gallery/thumbnails/cg-caja-guindillas.webp"
     },
     {
       "id": "cg-golden-cap-portal-activation",
@@ -3271,7 +3286,7 @@
     {
       "id": "char-samu",
       "title": "Samu",
-      "description": "Diseño canónico de Samu con 19 poses disponibles.",
+      "description": "Diseño canónico de Samu con 18 poses disponibles.",
       "type": "image",
       "category": "characters",
       "src": "assets/images/characters/samu/Samu.webp",
@@ -3593,16 +3608,6 @@
           "thumbnail": "assets/images/gallery/thumbnails/char-samu--pose-embarrassed.webp"
         },
         {
-          "id": "nervous-scratch",
-          "key": "nervous_scratch",
-          "label": "Nervioso",
-          "type": "image",
-          "src": "assets/images/characters/samu/samu_nervous_scratch.webp",
-          "alt": "Samu, pose nervioso.",
-          "spoiler": false,
-          "thumbnail": "assets/images/gallery/thumbnails/char-samu--pose-nervous-scratch.webp"
-        },
-        {
           "id": "shocked",
           "key": "shocked",
           "label": "Impactado",
@@ -3669,30 +3674,9 @@
           "key": "worried",
           "label": "Preocupado",
           "type": "image",
-          "src": "assets/images/characters/samu/samu_worried.webp",
+          "src": "assets/images/characters/samu/samu_worried_v2.webp",
           "alt": "Samu, pose preocupado.",
           "spoiler": false,
-          "animation": {
-            "frames": [
-              {
-                "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
-                "duration": 65
-              },
-              {
-                "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp",
-                "duration": 95
-              },
-              {
-                "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
-                "duration": 65
-              }
-            ],
-            "delayRange": [
-              1800,
-              4200
-            ],
-            "loop": true
-          },
           "thumbnail": "assets/images/gallery/thumbnails/char-samu--pose-worried.webp"
         },
         {

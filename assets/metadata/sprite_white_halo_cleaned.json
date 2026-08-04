@@ -3,23 +3,148 @@
   "sprites": {
     "airi.neutral": {
       "source": "assets/images/characters/airi/airi.webp",
-      "cleaned": "assets/images/characters/sprite_halo_cleaned/airi/neutral/airi_halo_limpio.png",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/airi/neutral/airi_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/airi/neutral/airi_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/airi/neutral/airi_halo_limpio_galeria.webp",
       "canvas": {
         "width": 646,
         "height": 879
       },
-      "transparentPixels": 238628,
-      "updatedAt": "2026-08-03T14:03:47.806167+00:00"
+      "transparentPixels": 237892,
+      "metrics": {
+        "fullyTransparentPixels": 232319,
+        "partialAlphaPixels": 5573,
+        "opaquePixels": 329942,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 5572,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 2,
+            "largestComponentPixels": 335514,
+            "detachedVisiblePixels": 1,
+            "speckComponents": 1,
+            "speckPixels": 1
+          },
+          "candidate": {
+            "visibleComponents": 2,
+            "largestComponentPixels": 335514,
+            "detachedVisiblePixels": 1,
+            "speckComponents": 1,
+            "speckPixels": 1
+          }
+        },
+        "changedVisibleRgbPixels": 8037,
+        "normalizedRetainedRgbPixels": 8037,
+        "protection": {
+          "reliableFillPixels": 127920,
+          "protectedInkPixels": 137924,
+          "protectedPixels": 137924,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 0,
+          "lostProtectedPixels": 0,
+          "lostProtectedBounds": null
+        }
+      },
+      "updatedAt": "2026-08-04T03:25:33.793483+00:00"
     },
     "carlos.neutral": {
       "source": "assets/images/characters/carlos/carlos.webp",
-      "cleaned": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/carlos_halo_limpio.png",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/carlos_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/carlos_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/carlos_halo_limpio_galeria.webp",
       "canvas": {
         "width": 1122,
         "height": 1402
       },
-      "transparentPixels": 676961,
-      "updatedAt": "2026-08-03T13:47:50.289176+00:00"
+      "transparentPixels": 676942,
+      "metrics": {
+        "fullyTransparentPixels": 625014,
+        "partialAlphaPixels": 51928,
+        "opaquePixels": 896102,
+        "removedPixels": 120036,
+        "reducedAlphaPixels": 120381,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 1068066,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 88,
+            "largestComponentPixels": 947069,
+            "detachedVisiblePixels": 961,
+            "speckComponents": 82,
+            "speckPixels": 320
+          }
+        },
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0,
+        "protection": {
+          "reliableFillPixels": 297140,
+          "protectedInkPixels": 337648,
+          "protectedPixels": 337648,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 0,
+          "lostProtectedPixels": 0,
+          "lostProtectedBounds": null
+        }
+      },
+      "updatedAt": "2026-08-04T03:58:14.035383+00:00",
+      "animationFrames": {
+        "assets/images/characters/carlos/animations/blinks/carlos_neutral_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/animations/carlos_neutral_blink_closed_halo_limpio.webp",
+        "assets/images/characters/eye_intermediate_sources/carlos/neutral/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/animations/eyes_half_source_halo_limpio.webp"
+      }
+    },
+    "samu.worried": {
+      "source": "assets/images/characters/samu/samu_worried_v2.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1209,
+        "height": 1301
+      },
+      "transparentPixels": 651394,
+      "metrics": {
+        "fullyTransparentPixels": 651196,
+        "partialAlphaPixels": 198,
+        "opaquePixels": 921515,
+        "removedPixels": 22543,
+        "reducedAlphaPixels": 22741,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 2,
+            "largestComponentPixels": 944253,
+            "detachedVisiblePixels": 3,
+            "speckComponents": 1,
+            "speckPixels": 3
+          },
+          "candidate": {
+            "visibleComponents": 14,
+            "largestComponentPixels": 921680,
+            "detachedVisiblePixels": 33,
+            "speckComponents": 13,
+            "speckPixels": 33
+          }
+        },
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0,
+        "protection": {
+          "reliableFillPixels": 860615,
+          "protectedInkPixels": 903746,
+          "protectedPixels": 903746,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 0,
+          "lostProtectedPixels": 0,
+          "lostProtectedBounds": null
+        }
+      },
+      "updatedAt": "2026-08-04T03:25:51.292076+00:00"
     }
   }
 }

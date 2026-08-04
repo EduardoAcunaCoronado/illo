@@ -19,9 +19,10 @@
     .job strong{display:block}.job small{color:var(--muted)}.saved{float:right;color:var(--cyan);font-size:9px;font-weight:900}.empty{padding:20px;color:var(--muted);text-align:center}
     main{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto 1fr}.toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:#0d0a1bcc}
     .tool-section{min-width:0;padding:8px 10px 9px;border:1px solid var(--line);border-radius:12px;background:#121025}.tool-section.manual{border-color:#4b3d61}.tool-section.cleanup{border-color:#564172}.tool-section.finishing{border-color:#395a60}.tool-section.output{border-color:#554934}.tool-title{display:flex;align-items:center;gap:8px;margin-bottom:7px;color:var(--text);font-size:11px;font-weight:950;letter-spacing:.05em;text-transform:uppercase}.tool-title b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;color:#0d0a1b;background:var(--gold);font-size:10px}.tool-title span{color:var(--muted);font-size:10px;font-weight:500;letter-spacing:0;text-transform:none}.tool-controls{display:flex;align-items:center;flex-wrap:wrap;gap:7px 0}.group{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:2px 10px;border-right:1px solid var(--line)}.tool-controls .group:first-child{padding-left:0}.tool-controls .group:last-child{padding-right:0;border:0}.group label{color:var(--muted);font-size:11px}.value{min-width:36px;color:var(--gold);font-weight:900}
-    input[type=range]{width:110px;accent-color:var(--gold)}select{padding:7px 9px;border:1px solid var(--line);border-radius:8px;color:var(--text);background:var(--panel2)}button:disabled{opacity:.35;cursor:not-allowed}
+    input[type=range]{width:110px;accent-color:var(--gold)}select{padding:7px 9px;border:1px solid var(--line);border-radius:8px;color:var(--text);background:var(--panel2)}button:disabled,a[aria-disabled="true"]{opacity:.35;cursor:not-allowed}a[aria-disabled="true"]{pointer-events:none}
     .swatch{display:inline-block;width:25px;height:25px;border:2px solid #8c7daa;border-radius:50%;background:conic-gradient(#fff 0 25%,#777 0 50%,#222 0 75%,#bbb 0);box-shadow:0 0 0 2px #090712 inset}.swatch.sampled{background:var(--sample-color)}#barrierColorValue{min-width:58px}.button.active{border-color:var(--gold);color:var(--gold);box-shadow:0 0 0 3px #ffd16618}.stage.picking canvas{cursor:crosshair}
     .base-badge{padding:3px 7px;border:1px solid #4b675f;border-radius:999px;color:var(--cyan);background:#10241f;font-size:9px;font-weight:950;letter-spacing:.05em;text-transform:uppercase}.base-file{display:none}
+    .save-destination{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:4px 9px;width:100%;margin-top:5px;padding:7px 9px;border:1px solid #554934;border-radius:9px;background:#0c0a19}.save-destination strong{color:var(--gold);font-size:10px;text-transform:uppercase}.save-destination code{min-width:0;overflow:hidden;color:#e9e1ff;font:11px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;text-overflow:ellipsis;white-space:nowrap}.save-destination small{grid-column:2;color:var(--muted)}
     .notice{display:flex;align-items:center;gap:8px;padding:8px 15px;border-bottom:1px solid var(--line);color:var(--muted);background:#100d22}.notice strong{color:var(--pink)}#status{margin-left:auto;color:var(--cyan)}
     .tutorial{border:0;border-bottom:1px solid var(--line);background:#0d0a1b}.tutorial summary{display:flex;align-items:center;gap:9px;padding:9px 15px;color:var(--gold);font-weight:900;cursor:pointer;list-style:none}.tutorial summary::-webkit-details-marker{display:none}.tutorial summary::before{content:'▸';transition:transform .18s}.tutorial[open] summary::before{transform:rotate(90deg)}.tutorial summary span{color:var(--muted);font-weight:500}.tutorial-body{display:grid;grid-template-columns:minmax(460px,1.4fr) minmax(360px,1fr);gap:13px;padding:0 15px 13px}.steps{display:grid;grid-template-columns:repeat(5,minmax(120px,1fr));gap:7px;counter-reset:tutorial}.step{position:relative;min-height:92px;padding:10px 9px 9px 38px;border:1px solid var(--line);border-radius:10px;background:#151127;color:var(--muted)}.step::before{counter-increment:tutorial;content:counter(tutorial);position:absolute;left:9px;top:9px;display:grid;place-items:center;width:21px;height:21px;border-radius:50%;color:#07140f;background:var(--cyan);font-weight:950}.step strong{display:block;margin-bottom:4px;color:var(--text)}.decision{display:grid;grid-template-columns:auto 1fr;align-content:start;gap:6px 9px;padding:10px;border:1px solid #493766;border-radius:10px;background:#171129}.decision h3{grid-column:1/-1;margin:0 0 3px;color:var(--pink);font-size:12px}.decision code{align-self:start;padding:2px 6px;border-radius:999px;color:#090713;background:var(--gold);font:800 10px/1.5 Inter,system-ui,sans-serif;white-space:nowrap}.decision span{color:var(--muted)}
     .viewport{position:relative;overflow:auto;min-height:0;padding:34px;overscroll-behavior:contain}.viewport.pan-ready,.viewport.pan-ready canvas{cursor:grab}.viewport.panning,.viewport.panning canvas{cursor:grabbing!important;user-select:none}.stage{position:relative;width:max-content;margin:auto;box-shadow:0 20px 70px #0008}.stage.dark{background:#111}.stage.white{background:#fff}.stage.magenta{background:#ff00b8}.stage.checker{background-color:#111020;background-image:linear-gradient(45deg,#1d1933 25%,transparent 25%),linear-gradient(-45deg,#1d1933 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#1d1933 75%),linear-gradient(-45deg,transparent 75%,#1d1933 75%);background-size:28px 28px;background-position:0 0,0 14px,14px -14px,-14px 0}
@@ -47,15 +48,16 @@
           <div class="tool-title"><b>1</b>Pincel manual <span>limpia, borra o recupera zonas concretas</span></div>
           <div class="tool-controls">
             <div class="group"><label for="workBase">Base de trabajo</label><select id="workBase"><option value="source">Sprite fuente protegido</option><option value="saved">Copia limpia guardada</option><option value="local" disabled>Archivo local elegido</option></select><button id="chooseBaseFile" class="button">📂 Elegir copia…</button><input id="baseFile" class="base-file" type="file" accept="image/png,image/webp,image/jpeg"><span id="baseBadge" class="base-badge">FUENTE</span></div>
-            <div class="group"><button id="eraseTool" class="button active">⌫ Limpiar</button><button id="hardEraseTool" class="button">◯ Borrar</button><button id="restoreTool" class="button">↥ Restaurar</button><label for="restoreSource">Desde</label><select id="restoreSource"><option value="before">Antes de la última limpieza</option><option value="original">Base de trabajo</option></select></div>
+            <div class="group"><button id="eraseTool" class="button active">⌫ Limpiar</button><button id="hardEraseTool" class="button">◯ Borrar</button><button id="restoreTool" class="button">↥ Restaurar</button><label for="restoreSource">Desde</label><select id="restoreSource"><option value="before">Antes de la última limpieza</option><option value="protected" disabled>Sprite original protegido</option><option value="base">Base de trabajo actual</option></select><a id="viewProtectedSource" class="button" href="#" target="_blank" rel="noopener" aria-disabled="true">👁 Ver original</a><button id="revealProtectedSource" class="button" disabled>📂 Ubicación</button></div>
             <div class="group"><label for="size">Tamaño</label><input id="size" type="range" min="2" max="180" value="36"><span id="sizeValue" class="value">36 px</span><label for="strength">Fuerza</label><input id="strength" type="range" min="10" max="100" value="100"><span id="strengthValue" class="value">100%</span></div>
           </div>
         </section>
         <section class="tool-section cleanup">
           <div class="tool-title"><b>2</b>Limpieza principal <span>define el contorno que debe conservarse</span></div>
           <div class="tool-controls">
+            <div class="group"><button id="cleanTopological" class="button magic">✦ Limpieza segura (recomendada)</button><span class="base-badge">FUENTE PROTEGIDO</span></div>
             <div class="group"><button id="pickBarrier" class="button">◉ Cuentagotas tope</button><span id="barrierSwatch" class="swatch" aria-hidden="true"></span><span id="barrierColorValue" class="value">Auto</span><label for="colorTolerance">Margen</label><input id="colorTolerance" type="range" min="0" max="180" value="48"><span id="colorToleranceValue" class="value">48</span><button id="clearBarrier" class="button">Automático</button></div>
-            <div class="group"><label for="darkBarrier">Borde oscuro</label><input id="darkBarrier" type="range" min="20" max="180" value="92"><span id="darkBarrierValue" class="value">92</span><label for="barrierAlpha">Solidez</label><input id="barrierAlpha" type="range" min="16" max="255" value="190"><span id="barrierAlphaValue" class="value">190</span><label for="edgePeel">Pelado</label><input id="edgePeel" type="range" min="0" max="3" value="1"><span id="edgePeelValue" class="value">1 px</span><label for="haloReach">Alcance</label><input id="haloReach" type="range" min="1" max="30" value="10"><span id="haloReachValue" class="value">10 px</span><button id="cleanExterior" class="button magic">✦ Quitar halo exterior</button></div>
+            <div class="group"><label for="darkBarrier">Borde oscuro</label><input id="darkBarrier" type="range" min="20" max="180" value="92"><span id="darkBarrierValue" class="value">92</span><label for="barrierAlpha">Solidez</label><input id="barrierAlpha" type="range" min="16" max="255" value="190"><span id="barrierAlphaValue" class="value">190</span><label for="edgePeel">Pelado</label><input id="edgePeel" type="range" min="0" max="3" value="0"><span id="edgePeelValue" class="value">0 px</span><label for="haloReach">Alcance</label><input id="haloReach" type="range" min="1" max="30" value="10"><span id="haloReachValue" class="value">10 px</span><button id="cleanExterior" class="button">Limpieza por umbral (avanzada)</button></div>
           </div>
         </section>
         <section class="tool-section finishing">
@@ -63,7 +65,7 @@
           <div class="tool-controls">
             <div class="group"><label for="tolerance">Tolerancia clara</label><input id="tolerance" type="range" min="2" max="190" value="32"><span id="toleranceValue" class="value">32</span><button id="cleanLightExterior" class="button">✧ Quitar sólo halo claro</button></div>
             <div class="group"><label for="alphaResidue">Alfa residual</label><input id="alphaResidue" type="range" min="8" max="180" value="48"><span id="alphaResidueValue" class="value">48</span><button id="cleanAlphaExterior" class="button">◌ Quitar residuo transparente</button></div>
-            <div class="group"><label for="edgeSmooth">Suavizado</label><input id="edgeSmooth" type="range" min="10" max="100" value="45"><span id="edgeSmoothValue" class="value">45%</span><button id="smoothEdges" class="button">〰 Suavizar borde</button></div>
+            <div class="group"><button id="cleanSpecks" class="button">✣ Motas aisladas (avanzado)</button><label for="edgeSmooth">Suavizado</label><input id="edgeSmooth" type="range" min="10" max="100" value="45"><span id="edgeSmoothValue" class="value">45%</span><button id="smoothEdges" class="button">〰 Suavizar borde</button></div>
           </div>
         </section>
         <section class="tool-section output">
@@ -72,26 +74,28 @@
             <div class="group"><button id="undo" class="button" disabled>↶ Deshacer</button><button id="redo" class="button" disabled>↷ Rehacer</button></div>
             <div class="group"><label for="zoom">Zoom</label><input id="zoom" type="range" min="25" max="500" value="100"><span id="zoomValue" class="value">100%</span><button id="fit" class="button">Ajustar</button></div>
             <div class="group"><label for="background">Fondo</label><select id="background"><option value="checker">Damero</option><option value="dark">Negro</option><option value="white">Blanco</option><option value="magenta">Magenta</option></select></div>
-            <div class="group"><button id="reset" class="button danger">Restaurar base</button><button id="save" class="button primary">Guardar copia</button></div>
+            <div class="group"><button id="reset" class="button danger">Restaurar base</button><button id="download" class="button" disabled>↓ Descargar WebP actual</button><button id="save" class="button primary">Guardar copia</button></div>
+            <div class="save-destination"><strong>Guardar copia escribirá en</strong><code id="saveDestination" title="Selecciona una pose">Selecciona una pose</code><small id="saveThumbnails">También generará miniaturas de 156×156 y 480×270.</small></div>
           </div>
         </section>
       </div>
-      <div class="notice"><strong>Consejo:</strong> la Base de trabajo puede ser el fuente protegido, la copia guardada o un archivo local; Guardar copia nunca modifica el fuente. Navega con Espacio/Alt + arrastrar o el botón central.<button id="compare" class="button">Ver base</button><span id="status">Selecciona una pose</span></div>
+      <div class="notice"><strong>Consejo:</strong> empieza con «Limpieza segura»: reconstruye el resultado desde el fuente protegido y no puede atravesar tinta ni relleno. Guardar copia nunca modifica el fuente. Navega con Espacio/Alt + arrastrar o el botón central.<button id="compare" class="button">Ver base</button><span id="status">Selecciona una pose</span></div>
       <details class="tutorial" open>
         <summary>Guía rápida de limpieza <span>flujo recomendado y elección de herramienta</span></summary>
         <div class="tutorial-body">
           <div class="steps">
             <div class="step"><strong>Elige la base</strong>Empieza desde el fuente protegido, la copia guardada o una copia local de idéntica resolución.</div>
             <div class="step"><strong>Marca el límite</strong>Usa el cuentagotas sobre el contorno bueno. Ajusta Margen color y Solidez sólo si hace falta.</div>
-            <div class="step"><strong>Limpieza principal</strong>Pulsa «Quitar halo exterior». Si pierde detalle, usa Ctrl+Z o el pincel Restaurar para una corrección local.</div>
+            <div class="step"><strong>Limpieza principal</strong>Pulsa «Limpieza segura». Se regenera desde el fuente protegido y conserva relleno, color y tinta antes de retirar el halo.</div>
             <div class="step"><strong>Remata residuos</strong>Usa las pasadas automáticas; reserva «Borrar» para restos puntuales y «Restaurar» para corregir.</div>
             <div class="step"><strong>Comprueba y guarda</strong>Revisa sobre negro y magenta. Guarda la copia únicamente cuando el perímetro esté limpio.</div>
           </div>
           <div class="decision">
             <h3>¿Qué botón debo usar?</h3>
-            <code>Halo completo</code><span>«Quitar halo exterior» con Automático o Cuentagotas tope.</span>
+            <code>Halo completo</code><span>«Limpieza segura (recomendada)». Usa el modo por umbral sólo como ajuste avanzado y con Pelado 0.</span>
             <code>Línea blanca</code><span>«Quitar sólo halo claro»; empieza con Tolerancia 32–50.</span>
             <code>Borde moteado</code><span>«Quitar residuo transparente»; empieza con Alfa residual 32–48.</span>
+            <code>Mota aislada</code><span>«Motas aisladas (avanzado)» elimina islas de hasta 64 píxeles; comprueba que no sean brillos o accesorios legítimos.</span>
             <code>Diente de sierra</code><span>Como último remate, usa «Suavizar borde» al 35–50% y comprueba sobre magenta.</span>
             <code>Resto puntual</code><span>Usa «Borrar» con un pincel pequeño; elimina cualquier color dentro del trazo.</span>
             <code>Come detalles</code><span>Ctrl+Z si es general; para una zona pequeña usa «Restaurar» desde el estado anterior.</span>
@@ -111,7 +115,8 @@
     const canvas=$('canvas'),ctx=canvas.getContext('2d',{willReadFrequently:true});
     const original=$('original'),originalCtx=original.getContext('2d');
     const restoreBuffer=document.createElement('canvas'),restoreBufferCtx=restoreBuffer.getContext('2d',{willReadFrequently:true});
-    const state={jobs:[],job:null,drawing:false,last:null,zoom:1,undo:[],redo:[],loading:false,pickingBarrier:false,barrierColor:null,tool:'clean',hasRestoreSource:false,baseKind:'source',baseLabel:'Sprite fuente',localBaseImage:null,localBaseLabel:'',dirty:false,spaceDown:false,panning:false,panPointer:null,panStart:null};
+    const protectedSourceBuffer=document.createElement('canvas'),protectedSourceBufferCtx=protectedSourceBuffer.getContext('2d',{willReadFrequently:true});
+    const state={jobs:[],job:null,canvasJobId:null,drawing:false,last:null,zoom:1,undo:[],redo:[],loading:false,loadVersion:0,baseLoadVersion:0,pickingBarrier:false,barrierColor:null,tool:'clean',hasRestoreSource:false,hasProtectedSource:false,baseKind:'source',baseLabel:'Sprite fuente',localBaseImage:null,localBaseLabel:'',dirty:false,spaceDown:false,panning:false,panPointer:null,panStart:null};
     const helpText={
       search:['Filtra la lista de sprites.','Escribe parte del nombre del personaje o de la pose. Sólo cambia la lista visible: no modifica ni guarda ningún archivo.'],
       workBase:['Selecciona la imagen inicial de esta sesión.','Puedes trabajar desde el sprite fuente protegido, desde la última copia limpia registrada o desde un archivo local. Restaurar base y Ver base utilizarán esta elección; Guardar siempre escribe la copia.'],
@@ -119,30 +124,35 @@
       eraseTool:['Activa el pincel que elimina halos claros.','El modo Limpiar conserva el comportamiento del pincel original: sólo reduce el alfa de blancos, grises neutros o halos azulados aceptados por Tolerancia.'],
       hardEraseTool:['Activa un borrador sin filtro de color.','El modo Borrar vuelve transparente cualquier píxel bajo el trazo. Tamaño define el diámetro, Fuerza controla cuánto alfa elimina y el borde se suaviza automáticamente. Úsalo para restos puntuales y apóyate en Restaurar si te pasas.'],
       restoreTool:['Activa el pincel que recupera píxeles eliminados.','Pinta de vuelta únicamente la zona recorrida usando la fuente elegida en Desde. Tamaño y Fuerza controlan la restauración, y cada trazo puede deshacerse.'],
-      restoreSource:['Elige de dónde obtiene los píxeles el restaurador.','Antes de la última limpieza recupera exactamente el estado previo a la operación más reciente. Base de trabajo recupera píxeles de la fuente, copia guardada o copia local que hayas elegido para esta sesión.'],
+      restoreSource:['Elige de dónde obtiene los píxeles el restaurador.','Antes de la última limpieza recupera el estado previo a la operación más reciente. Sprite original protegido rescata detalles de la fuente canónica aunque estés trabajando sobre una copia limpia; puede reintroducir el halo original, así que úsalo con un pincel pequeño y comprueba el resultado sobre magenta. Base de trabajo actual usa la fuente, copia guardada o archivo local elegido para esta sesión.'],
+      viewProtectedSource:['Abre el sprite original protegido en otra pestaña.','Permite inspeccionar la imagen fuente completa sin cambiar la base de trabajo, el lienzo, el historial ni la copia limpia. La ruta aparece al dejar el puntero sobre el botón.'],
+      revealProtectedSource:['Muestra el sprite original protegido en el Explorador.','Abre la carpeta del archivo fuente y deja seleccionado el sprite exacto. No modifica ni mueve el original y tampoco cambia la sesión del editor.'],
       size:['Cambia el diámetro del pincel.','Controla el área afectada por cada pasada del pincel manual. Un tamaño pequeño permite retocar detalles; uno grande limpia zonas amplias con menos trazos.'],
       tolerance:['Decide qué tonos considera halo el pincel.','Los valores bajos aceptan casi sólo blanco puro. Al subirlo se incluyen grises claros y halos ligeramente azulados, pero aumenta el riesgo de afectar detalles claros del dibujo.'],
       strength:['Controla cuánto alfa elimina el pincel.','Al 100% los píxeles aceptados bajo el centro quedan transparentes de una pasada. Valores menores permiten rebajar el halo gradualmente.'],
       cleanLightExterior:['Elimina únicamente blancos claros conectados al fondo.','Es una pasada final segura para residuos blancos o grises claros: utiliza Tolerancia y Alcance, recorre las ocho direcciones y nunca atraviesa líneas negras ni zonas de color. La operación completa puede deshacerse.'],
       alphaResidue:['Fija el alfa máximo considerado residuo exterior.','Los píxeles conectados a la transparencia con una opacidad igual o inferior a este valor podrán eliminarse sin importar su color. Empieza entre 32 y 48 y súbelo sólo si todavía ves una costura moteada.'],
       cleanAlphaExterior:['Elimina píxeles exteriores débilmente transparentes.','Limpia restos negros, blancos, azules o de cualquier RGB cuando su alfa no supera Alfa residual. No puede atravesar píxeles más opacos, utiliza Alcance y registra toda la pasada como un único cambio reversible.'],
-      edgeSmooth:['Controla la intensidad del antialias del perímetro.','Mezcla el alfa actual con una cobertura suavizada de 3×3 píxeles. Empieza entre 35% y 50%; valores altos producen un borde más blando y varias aplicaciones acumulan el efecto.'],
-      smoothEdges:['Suaviza los dientes de sierra sin desenfocar el dibujo.','Sólo actúa donde píxeles visibles tocan transparencia. Ajusta el canal alfa y toma el color de vecinos visibles para los nuevos píxeles de borde; no altera líneas ni colores interiores y toda la operación puede deshacerse.'],
+      cleanTopological:['Regenera una limpieza segura desde el fuente protegido.','Confirma primero una banda clara conectada al exterior, protege el relleno, el color y la tinta ligados al interior y avanza sólo en cuatro direcciones. No reutiliza una copia ya erosionada y toda la operación puede deshacerse.'],
+      cleanSpecks:['Elimina pequeñas islas separadas; úsalo como opción avanzada.','Busca componentes visibles de hasta 64 píxeles que no pertenezcan a la isla principal. Un brillo, lágrima o accesorio diminuto también puede cumplir esa condición: revisa el resultado ampliado y usa Deshacer si desaparece un detalle legítimo.'],
+      edgeSmooth:['Controla la intensidad del antialias interior del perímetro.','Mezcla el alfa actual con una cobertura suavizada de 3×3 píxeles, pero sólo hacia dentro: nunca crea píxeles fuera de la silueta. Empieza entre 30% y 40%; varias aplicaciones acumulan el efecto.'],
+      smoothEdges:['Suaviza los dientes de sierra sin expandir el dibujo.','Sólo reduce el alfa de píxeles ya visibles que tocan transparencia. Nunca inventa color ni alfa fuera de la silueta actual, no altera el interior y toda la operación puede deshacerse.'],
       pickBarrier:['Toma del sprite el color que debe detener la limpieza.','Actívalo y pulsa sobre el contorno bueno que quieres conservar. La limpieza global usará ese RGB como color de barrera, junto con Solidez para ignorar versiones transparentes del mismo tono.'],
       colorTolerance:['Amplía la familia de colores protegidos.','Indica cuánta diferencia puede haber respecto al color tomado con el cuentagotas. Usa un margen bajo para un contorno uniforme y súbelo si el trazo tiene sombras o variaciones de tono.'],
       clearBarrier:['Vuelve a detectar el borde por luminosidad.','Descarta el color escogido con el cuentagotas y recupera el modo automático basado en Borde oscuro. No modifica el lienzo ni el historial.'],
-      darkBarrier:['Define qué tonos detienen la limpieza global.','Quitar halo exterior interpreta como barrera cualquier línea cuya luminosidad sea igual o menor a este valor. Súbelo para proteger contornos grises; bájalo si residuos oscuros están bloqueando la limpieza.'],
+      darkBarrier:['Define qué tonos detienen la limpieza por umbral.','El modo avanzado interpreta como barrera cualquier línea cuya luminosidad sea igual o menor a este valor. Súbelo para proteger contornos grises; bájalo si residuos oscuros están bloqueando la limpieza.'],
       barrierAlpha:['Define el núcleo sólido del borde protector.','En modo cuentagotas, los píxeles que superan este alfa forman el núcleo del contorno. La herramienta protege además hasta cuatro píxeles conectados del mismo color para conservar su antialias, mientras elimina copias exteriores separadas por el halo.'],
-      edgePeel:['Retira las primeras capas oscuras del borde automático.','Permite atravesar de cero a tres píxeles oscuros antes de considerar que comienza el contorno protegido. Usa 1 para eliminar la costura residual del antialias; al tomar un color con el cuentagotas se desactiva porque el color escogido actúa como tope exacto.'],
+      edgePeel:['Retira capas oscuras en el modo avanzado.','Se mantiene en 0 para conservar el contorno. Un valor mayor autoriza explícitamente a la limpieza por umbral a atravesar tinta exterior y puede erosionar el dibujo; la limpieza segura ignora este ajuste.'],
       haloReach:['Limita la profundidad de la limpieza global.','Es la distancia máxima que la limpieza puede avanzar desde una zona transparente antes de encontrar un contorno oscuro. Empieza bajo y amplíalo sólo si el halo es grueso.'],
-      cleanExterior:['Elimina el halo alrededor de todo el sprite.','Recorre de una vez las zonas conectadas a la transparencia, elimina restos de cualquier color dentro del alcance y se detiene ante los bordes oscuros. La operación completa puede deshacerse.'],
+      cleanExterior:['Ejecuta la limpieza manual por umbral.','Es un modo avanzado para casos especiales. Recorre zonas conectadas a la transparencia en cuatro direcciones y se detiene ante los bordes oscuros. Mantén Pelado en 0 salvo que quieras retirar tinta de forma deliberada.'],
       undo:['Recupera el estado anterior del lienzo.','Deshace el último trazo, restauración o limpieza global. El historial conserva todos los cambios realizados mientras permanezcas en la pose y base actuales; también puede usarse con Ctrl+Z.'],
       redo:['Reaplica el último cambio deshecho.','Restaura el paso que acabas de deshacer. También está disponible mediante Ctrl+Y o Ctrl+Mayús+Z.'],
       zoom:['Amplía o reduce la vista de trabajo.','Sólo cambia cómo se muestra el sprite en pantalla; no altera su resolución, sus píxeles ni el archivo que se guarda. También puedes usar Ctrl + rueda sobre el lienzo.'],
       fit:['Encaja el sprite en el espacio disponible.','Calcula automáticamente un zoom que permita ver el sprite completo dentro del área de trabajo sin modificar la imagen.'],
       background:['Cambia el fondo de contraste.','Alterna entre damero, negro, blanco y magenta para descubrir halos que serían difíciles de ver sobre un único color. El fondo nunca forma parte de la imagen guardada.'],
       reset:['Vuelve a cargar los píxeles de la base elegida.','Restaura en el lienzo la fuente, copia guardada o copia local seleccionada como Base de trabajo. No guarda ni sobrescribe ningún archivo por sí sola.'],
-      save:['Guarda el resultado como una copia limpia.','Crea o actualiza un PNG RGBA separado dentro de sprite_halo_cleaned y mantiene intacto el sprite fuente del juego.'],
+      download:['Descarga una copia WebP lossless del lienzo actual.','Exporta el RGBA visible como WebP sin pérdida y con transparencia, sin el fondo de contraste, el zoom ni el comparador. No actualiza el manifiesto ni pasa por las reglas de Guardar copia, por lo que sigue sirviendo como respaldo si la validación rechaza el trabajo.'],
+      save:['Guarda el resultado como una copia limpia validada.','Crea o actualiza un WebP RGBA lossless separado dentro de sprite_halo_cleaned y mantiene intacto el sprite fuente. El servidor rechaza cualquier resultado que expanda la silueta fuera del alfa original.'],
       compare:['Muestra temporalmente la base elegida.','Mantén pulsado el botón para superponer la Base de trabajo y compararla con el resultado que estás editando.']
     };
     const url=path=>path.startsWith('data:')?path:path+(path.includes('?')?'&':'?')+'v='+Date.now();
@@ -163,12 +173,27 @@
     }
 
     function snapshot(){return canvas.toDataURL('image/png')}
+    async function downloadCurrentCanvas(){
+      if(state.loading){setStatus('Espera a que termine la carga actual',true);return}
+      if(!hasActiveCanvas()){setStatus('Selecciona y carga primero una pose',true);return}
+      const targetJob=state.job,targetLoadVersion=state.loadVersion,filename=targetJob.destination?.downloadName||`${targetJob.id.replace(/[^a-z0-9_-]+/gi,'_')}_lienzo.webp`,frozen=document.createElement('canvas');
+      frozen.width=canvas.width;frozen.height=canvas.height;frozen.getContext('2d').drawImage(canvas,0,0);
+      $('download').disabled=true;setStatus('Preparando WebP lossless…');
+      try{
+        const response=await fetch('/api/white-halo-export',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:targetJob.id,image:frozen.toDataURL('image/png')})});
+        if(!response.ok){let message='No se pudo preparar el WebP';try{message=(await response.json()).error||message}catch{}throw new Error(message)}
+        const blob=await response.blob();if(blob.type!=='image/webp')throw new Error('El servidor no devolvió un WebP válido');
+        const objectUrl=URL.createObjectURL(blob),link=document.createElement('a');link.href=objectUrl;link.download=filename;link.hidden=true;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);
+        if(state.job?.id===targetJob.id&&state.loadVersion===targetLoadVersion)setStatus(`WebP descargado: ${filename} · respaldo lossless sin registrar`);
+      }catch(error){if(state.job?.id===targetJob.id&&state.loadVersion===targetLoadVersion)setStatus(error.message||'No se pudo descargar el WebP',true)}finally{if(state.job?.id===targetJob.id&&state.loadVersion===targetLoadVersion)$('download').disabled=false}
+    }
+    function hasActiveCanvas(){return !!state.job&&state.canvasJobId===state.job.id&&canvas.width>0&&canvas.height>0}
     async function restore(data){const image=await loadImage(data);ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);}
     function captureRestoreSource(markAvailable=true){if(!canvas.width)return;restoreBuffer.width=canvas.width;restoreBuffer.height=canvas.height;restoreBufferCtx.clearRect(0,0,restoreBuffer.width,restoreBuffer.height);restoreBufferCtx.drawImage(canvas,0,0);state.hasRestoreSource=markAvailable}
     function pushUndo(updateRestoreSource=true){if(updateRestoreSource)captureRestoreSource();state.undo.push(snapshot());state.redo=[];state.dirty=true;updateHistory()}
     function updateHistory(){$('undo').disabled=!state.undo.length;$('redo').disabled=!state.redo.length}
-    async function undo(){if(!state.undo.length)return;state.redo.push(snapshot());await restore(state.undo.pop());updateHistory();setStatus('Cambio deshecho')}
-    async function redo(){if(!state.redo.length)return;state.undo.push(snapshot());await restore(state.redo.pop());updateHistory();setStatus('Cambio rehecho')}
+    async function undo(){if(state.loading||!hasActiveCanvas()||!state.undo.length)return;state.redo.push(snapshot());await restore(state.undo.pop());updateHistory();setStatus('Cambio deshecho')}
+    async function redo(){if(state.loading||!hasActiveCanvas()||!state.redo.length)return;state.undo.push(snapshot());await restore(state.redo.pop());updateHistory();setStatus('Cambio rehecho')}
 
     function renderList(){
       const query=$('search').value.trim().toLowerCase();
@@ -178,41 +203,53 @@
     }
     function renderBarrierColor(){const swatch=$('barrierSwatch'),value=$('barrierColorValue'),sampled=!!state.barrierColor;$('darkBarrier').disabled=sampled;$('edgePeel').disabled=sampled;if(sampled){const [r,g,b]=state.barrierColor,hex='#'+[r,g,b].map(channel=>channel.toString(16).padStart(2,'0')).join('').toUpperCase();swatch.classList.add('sampled');swatch.style.setProperty('--sample-color',`rgb(${r} ${g} ${b})`);value.textContent=hex}else{swatch.classList.remove('sampled');swatch.style.removeProperty('--sample-color');value.textContent='Auto'}}
     function updateBaseControls(){
-      const selector=$('workBase'),savedOption=selector.querySelector('option[value="saved"]'),localOption=selector.querySelector('option[value="local"]');
+      const selector=$('workBase'),savedOption=selector.querySelector('option[value="saved"]'),localOption=selector.querySelector('option[value="local"]'),protectedRestoreOption=$('restoreSource').querySelector('option[value="protected"]'),source=state.job?.source||'',viewSource=$('viewProtectedSource'),revealSource=$('revealProtectedSource'),destination=state.job?.destination;
       savedOption.disabled=!state.job?.saved?.cleaned;localOption.disabled=!state.localBaseImage;selector.value=state.baseKind;
+      protectedRestoreOption.disabled=!state.hasProtectedSource;
+      viewSource.href=source?'/'+source.replace(/^\/+/, ''):'#';viewSource.title=source;viewSource.setAttribute('aria-disabled',source?'false':'true');viewSource.tabIndex=source?0:-1;revealSource.disabled=!source;revealSource.title=source;
+      const saveTarget=destination?.cleaned||'Selecciona una pose';$('saveDestination').textContent=saveTarget;$('saveDestination').title=saveTarget;
+      $('saveThumbnails').textContent=destination?'También generará miniaturas de 156×156 y 480×270.':'Al guardar también se crearán las dos miniaturas.';$('saveThumbnails').title=destination?`${destination.thumbnail}\n${destination.galleryThumbnail}`:'';$('download').disabled=!hasActiveCanvas();
       const names={source:'FUENTE PROTEGIDO',saved:'COPIA GUARDADA',local:'COPIA LOCAL'};$('baseBadge').textContent=names[state.baseKind]||'FUENTE PROTEGIDO';
     }
-    function applyBaseImage(image,kind,label){
-      const expectedWidth=state.job?.width,expectedHeight=state.job?.height;
+    async function loadProtectedRestoreSource(targetJob=state.job,loadVersion=state.loadVersion){
+      if(!targetJob)return false;
+      const image=await loadImage(targetJob.source),expectedWidth=targetJob.width,expectedHeight=targetJob.height;
+      if(state.job?.id!==targetJob.id||state.loadVersion!==loadVersion)return false;
+      if(image.naturalWidth!==expectedWidth||image.naturalHeight!==expectedHeight)throw new Error(`El sprite original protegido debe medir ${expectedWidth}×${expectedHeight} px; mide ${image.naturalWidth}×${image.naturalHeight} px`);
+      protectedSourceBuffer.width=image.naturalWidth;protectedSourceBuffer.height=image.naturalHeight;protectedSourceBufferCtx.clearRect(0,0,protectedSourceBuffer.width,protectedSourceBuffer.height);protectedSourceBufferCtx.drawImage(image,0,0);state.hasProtectedSource=true;updateBaseControls();return true;
+    }
+    function applyBaseImage(image,kind,label,targetJob=state.job){
+      const expectedWidth=targetJob?.width,expectedHeight=targetJob?.height;
       if(expectedWidth&&expectedHeight&&(image.naturalWidth!==expectedWidth||image.naturalHeight!==expectedHeight))throw new Error(`La base debe medir ${expectedWidth}×${expectedHeight} px; el archivo elegido mide ${image.naturalWidth}×${image.naturalHeight} px`);
       canvas.width=original.width=image.naturalWidth;canvas.height=original.height=image.naturalHeight;
       originalCtx.clearRect(0,0,original.width,original.height);originalCtx.drawImage(image,0,0);
       ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);
-      state.baseKind=kind;state.baseLabel=label;state.undo=[];state.redo=[];state.dirty=false;state.hasRestoreSource=false;captureRestoreSource(false);updateHistory();updateBaseControls();applyZoom();requestAnimationFrame(fitView);setStatus(`Base cargada: ${label}`);
+      state.canvasJobId=targetJob?.id||null;state.baseKind=kind;state.baseLabel=label;state.undo=[];state.redo=[];state.dirty=false;state.hasRestoreSource=false;captureRestoreSource(false);updateHistory();updateBaseControls();applyZoom();requestAnimationFrame(fitView);setStatus(`Base cargada: ${label}`);
     }
-    async function switchWorkingBase(kind,{confirmDirty=true}={}){
-      if(!state.job)return false;
+    async function switchWorkingBase(kind,{confirmDirty=true,targetJob=state.job,loadVersion=state.loadVersion,baseLoadVersion=state.baseLoadVersion}={}){
+      if(!targetJob)return false;
       if(confirmDirty&&state.dirty&&!window.confirm('Hay cambios sin guardar en el lienzo. ¿Quieres descartarlos y cambiar la base de trabajo?')){updateBaseControls();return false}
       let image,label;
       if(kind==='saved'){
-        if(!state.job.saved?.cleaned)throw new Error('Esta pose todavía no tiene una copia limpia guardada');
-        image=await loadImage(state.job.saved.cleaned);label='copia limpia guardada';
+        if(!targetJob.saved?.cleaned)throw new Error('Esta pose todavía no tiene una copia limpia guardada');
+        image=await loadImage(targetJob.saved.cleaned);label='copia limpia guardada';
       }else if(kind==='local'){
         if(!state.localBaseImage)throw new Error('Primero elige un archivo local');
         image=state.localBaseImage;label=state.localBaseLabel||'copia local elegida';
       }else{
-        kind='source';image=await loadImage(state.job.source);label='sprite fuente protegido';
+        kind='source';image=await loadImage(targetJob.source);label='sprite fuente protegido';
       }
-      applyBaseImage(image,kind,label);return true;
+      if(state.job?.id!==targetJob.id||state.loadVersion!==loadVersion||state.baseLoadVersion!==baseLoadVersion)return false;
+      applyBaseImage(image,kind,label,targetJob);return true;
     }
     function setTool(tool){state.tool=tool;$('eraseTool').classList.toggle('active',tool==='clean');$('hardEraseTool').classList.toggle('active',tool==='erase');$('restoreTool').classList.toggle('active',tool==='restore');$('cursor').style.borderColor=tool==='restore'?'var(--cyan)':tool==='erase'?'var(--pink)':'#fff';setStatus(tool==='restore'?'Pincel restaurador activo: pinta sólo la zona que quieres recuperar':tool==='erase'?'Borrador activo: elimina cualquier color bajo el trazo':'Pincel de limpieza selectiva activo')}
     function cancelBarrierPick(){state.pickingBarrier=false;$('pickBarrier').classList.remove('active');$('stage').classList.remove('picking');$('cursor').style.display='none'}
     function toggleBarrierPick(){if(!state.job)return;state.pickingBarrier=!state.pickingBarrier;$('pickBarrier').classList.toggle('active',state.pickingBarrier);$('stage').classList.toggle('picking',state.pickingBarrier);$('cursor').style.display='none';setStatus(state.pickingBarrier?'Pulsa sobre el contorno bueno que quieres conservar':'Cuentagotas cancelado')}
     function sampleBarrierColor(event){const position=point(event),x=Math.max(0,Math.min(canvas.width-1,Math.floor(position.x))),y=Math.max(0,Math.min(canvas.height-1,Math.floor(position.y))),pixel=ctx.getImageData(x,y,1,1).data;if(pixel[3]<=8){setStatus('Ese píxel es transparente; elige un punto del contorno',true);return}state.barrierColor=[pixel[0],pixel[1],pixel[2]];renderBarrierColor();cancelBarrierPick();setStatus(`Color tope tomado: rgb(${pixel[0]}, ${pixel[1]}, ${pixel[2]}) · alfa ${pixel[3]}`)}
     async function selectJob(job){
-      if(state.job&&state.job.id!==job.id&&state.dirty&&!window.confirm('Hay cambios sin guardar en esta pose. ¿Quieres descartarlos y abrir otra?'))return;
-      state.loading=true;state.job=job;state.localBaseImage=null;state.localBaseLabel='';state.baseLabel='Sprite fuente';state.baseKind=job.saved?.cleaned?'saved':'source';state.undo=[];state.redo=[];state.hasRestoreSource=false;setTool('clean');cancelBarrierPick();state.barrierColor=null;renderBarrierColor();updateHistory();updateBaseControls();renderList();setStatus('Cargando…');
-      try{await switchWorkingBase(state.baseKind,{confirmDirty:false})}catch(error){setStatus('No se pudo cargar la base de trabajo',true);console.error(error)}finally{state.loading=false}
+      if(state.job&&state.dirty&&!window.confirm('Hay cambios sin guardar en esta pose. ¿Quieres descartarlos y abrir la pose seleccionada?'))return;
+      const loadVersion=++state.loadVersion,baseLoadVersion=++state.baseLoadVersion;state.loading=true;state.job=job;state.canvasJobId=null;for(const target of [canvas,original]){target.width=target.height=0;target.style.width=target.style.height='0px'}protectedSourceBuffer.width=protectedSourceBuffer.height=0;state.localBaseImage=null;state.localBaseLabel='';state.baseLabel='Sprite fuente';state.baseKind=job.saved?.cleaned?'saved':'source';state.undo=[];state.redo=[];state.hasRestoreSource=false;state.hasProtectedSource=false;$('restoreSource').value='before';setTool('clean');cancelBarrierPick();state.barrierColor=null;renderBarrierColor();updateHistory();updateBaseControls();renderList();setStatus('Cargando…');
+      try{await Promise.all([loadProtectedRestoreSource(job,loadVersion),switchWorkingBase(state.baseKind,{confirmDirty:false,targetJob:job,loadVersion,baseLoadVersion})])}catch(error){if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion){setStatus('No se pudo cargar la base de trabajo o el original protegido',true);console.error(error)}}finally{if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion)state.loading=false}
     }
     function applyZoom(){if(!canvas.width)return;const width=Math.round(canvas.width*state.zoom);const height=Math.round(canvas.height*state.zoom);for(const target of [canvas,original]){target.style.width=width+'px';target.style.height=height+'px'}}
     function setZoom(percent){state.zoom=Math.max(.25,Math.min(5,percent/100));$('zoom').value=Math.round(state.zoom*100);$('zoomValue').textContent=Math.round(state.zoom*100)+'%';applyZoom()}
@@ -240,7 +277,7 @@
     }
     function restoreAt(x,y){
       const radius=+$('size').value/2,left=Math.max(0,Math.floor(x-radius)),top=Math.max(0,Math.floor(y-radius)),right=Math.min(canvas.width,Math.ceil(x+radius)),bottom=Math.min(canvas.height,Math.ceil(y+radius));if(right<=left||bottom<=top)return;
-      const useOriginal=$('restoreSource').value==='original',sourceCtx=useOriginal?originalCtx:restoreBufferCtx,current=ctx.getImageData(left,top,right-left,bottom-top),source=sourceCtx.getImageData(left,top,right-left,bottom-top),data=current.data,sourceData=source.data,strength=+$('strength').value/100;
+      const restoreKind=$('restoreSource').value,sourceCtx=restoreKind==='protected'?protectedSourceBufferCtx:restoreKind==='base'?originalCtx:restoreBufferCtx,current=ctx.getImageData(left,top,right-left,bottom-top),source=sourceCtx.getImageData(left,top,right-left,bottom-top),data=current.data,sourceData=source.data,strength=+$('strength').value/100;
       for(let py=0;py<current.height;py++)for(let px=0;px<current.width;px++){
         const dx=left+px-x,dy=top+py-y,distance=Math.hypot(dx,dy);if(distance>radius)continue;const edge=Math.min(1,(radius-distance)/Math.max(1,radius*.18)),influence=strength*edge;if(influence<=0)continue;const i=(py*current.width+px)*4;
         if(influence>=.999){data[i]=sourceData[i];data[i+1]=sourceData[i+1];data[i+2]=sourceData[i+2];data[i+3]=sourceData[i+3];continue}
@@ -274,8 +311,8 @@
       const image=ctx.getImageData(0,0,canvas.width,canvas.height),data=image.data,width=image.width,height=image.height,total=width*height,alphaLimit=+$('alphaResidue').value,maxDepth=+$('haloReach').value;
       const depth=new Int16Array(total);depth.fill(-1);const queue=new Int32Array(total),toRemove=new Uint8Array(total);let head=0,tail=0,removed=0;
       const alpha=index=>data[index*4+3];
-      for(let index=0;index<total;index++)if(alpha(index)<=8){depth[index]=0;queue[tail++]=index}
-      const visit=(next,currentDepth)=>{if(next<0||next>=total||depth[next]!==-1)return;const a=alpha(next);if(a<=8){depth[next]=0;queue[tail++]=next;return}if(currentDepth>=maxDepth||a>alphaLimit)return;depth[next]=currentDepth+1;toRemove[next]=1;queue[tail++]=next};
+      for(let index=0;index<total;index++)if(alpha(index)===0){depth[index]=0;queue[tail++]=index}
+      const visit=(next,currentDepth)=>{if(next<0||next>=total||depth[next]!==-1)return;const a=alpha(next);if(a===0){depth[next]=0;queue[tail++]=next;return}if(currentDepth>=maxDepth||a>alphaLimit)return;depth[next]=currentDepth+1;toRemove[next]=1;queue[tail++]=next};
       while(head<tail){
         const index=queue[head++],x=index%width,d=depth[index],hasTop=index>=width,hasBottom=index+width<total;
         if(x>0)visit(index-1,d);if(x+1<width)visit(index+1,d);if(hasTop)visit(index-width,d);if(hasBottom)visit(index+width,d);
@@ -285,11 +322,27 @@
       if(!removed){setStatus('No se encontró residuo exterior por debajo de ese alfa');return}
       pushUndo();ctx.putImageData(image,0,0);setStatus(`Residuo transparente eliminado: ${removed.toLocaleString('es-ES')} píxeles · detalles opacos intactos`);
     }
+    async function applyTopologicalCleanup(){
+      if(!hasActiveCanvas()||state.loading)return;
+      const targetJob=state.job,loadVersion=state.loadVersion,baseLoadVersion=state.baseLoadVersion;
+      state.loading=true;$('cleanTopological').disabled=true;setStatus('Reconstruyendo desde el fuente protegido…');
+      try{
+        const response=await fetch('/api/white-halo-topological',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:targetJob.id})});
+        const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo generar la limpieza segura');
+        const preview=await loadImage(result.image);
+        if(state.job?.id!==targetJob.id||state.loadVersion!==loadVersion||state.baseLoadVersion!==baseLoadVersion||!hasActiveCanvas())return;
+        const protection=result.metrics?.protection||{};
+        if(protection.lostReliableFillPixels||protection.lostProtectedPixels)throw new Error('La vista previa no superó la protección de relleno y tinta');
+        pushUndo();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(preview,0,0);
+        const removed=result.metrics?.removedPixels||0;
+        setStatus(`Limpieza segura aplicada desde el fuente · ${removed.toLocaleString('es-ES')} píxeles de halo retirados · tinta protegida intacta`);
+      }catch(error){if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion)setStatus(error.message||'No se pudo generar la limpieza segura',true)}finally{if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion)state.loading=false;$('cleanTopological').disabled=false}
+    }
     function removeExteriorHalo(){
       if(!state.job||state.loading||!canvas.width)return;
       const image=ctx.getImageData(0,0,canvas.width,canvas.height),data=image.data,width=image.width,height=image.height,total=width*height;
       const barrier=+$('darkBarrier').value,barrierAlpha=+$('barrierAlpha').value,colorTolerance=+$('colorTolerance').value,edgePeel=state.barrierColor?0:+$('edgePeel').value,maxDepth=+$('haloReach').value,depth=new Int16Array(total);depth.fill(-1);
-      const darkLayers=new Int8Array(total);darkLayers.fill(-1);
+      const barrierProgress=new Int8Array(total);barrierProgress.fill(-1);
       const queue=new Int32Array(total),toRemove=new Uint8Array(total);let head=0,tail=0,removed=0;
       const alpha=index=>data[index*4+3];
       let protectedBarrier=null;
@@ -308,18 +361,23 @@
       }
       const isDarkBarrier=index=>{if(protectedBarrier)return protectedBarrier[index]>0;const i=index*4,a=data[i+3];if(a<barrierAlpha)return false;const luminance=.2126*data[i]+.7152*data[i+1]+.0722*data[i+2];return luminance<=barrier};
       // La transparencia existente sirve de exterior, incluidos huecos entre pelo, brazos o ropa.
-      for(let index=0;index<total;index++)if(alpha(index)<=8){depth[index]=0;darkLayers[index]=0;queue[tail++]=index}
-      const visit=(next,currentDepth,currentDarkLayers)=>{
+      for(let index=0;index<total;index++)if(alpha(index)===0){depth[index]=0;barrierProgress[index]=-1;queue[tail++]=index}
+      const visit=(next,currentDepth,currentBarrierProgress)=>{
         if(next<0||next>=total||depth[next]!==-1)return;
-        if(alpha(next)<=8){depth[next]=0;darkLayers[next]=0;queue[tail++]=next;return}
+        if(alpha(next)===0){depth[next]=0;barrierProgress[next]=-1;queue[tail++]=next;return}
         if(currentDepth>=maxDepth)return;
-        const dark=isDarkBarrier(next);if(dark&&currentDarkLayers>=edgePeel)return;
-        depth[next]=currentDepth+1;darkLayers[next]=dark?currentDarkLayers+1:currentDarkLayers;toRemove[next]=1;queue[tail++]=next;
+        const dark=isDarkBarrier(next);let nextBarrierProgress=currentBarrierProgress;
+        if(currentBarrierProgress<0){
+          if(dark){if(edgePeel<=0)return;nextBarrierProgress=1}
+        }else{
+          if(currentBarrierProgress>=edgePeel)return;
+          nextBarrierProgress=currentBarrierProgress+1;
+        }
+        depth[next]=currentDepth+1;barrierProgress[next]=nextBarrierProgress;toRemove[next]=1;queue[tail++]=next;
       };
       while(head<tail){
-        const index=queue[head++],x=index%width,d=depth[index],dark=darkLayers[index],hasTop=index>=width,hasBottom=index+width<total;
-        if(x>0)visit(index-1,d,dark);if(x+1<width)visit(index+1,d,dark);if(hasTop)visit(index-width,d,dark);if(hasBottom)visit(index+width,d,dark);
-        if(hasTop&&x>0)visit(index-width-1,d,dark);if(hasTop&&x+1<width)visit(index-width+1,d,dark);if(hasBottom&&x>0)visit(index+width-1,d,dark);if(hasBottom&&x+1<width)visit(index+width+1,d,dark);
+        const index=queue[head++],x=index%width,d=depth[index],progress=barrierProgress[index],hasTop=index>=width,hasBottom=index+width<total;
+        if(x>0)visit(index-1,d,progress);if(x+1<width)visit(index+1,d,progress);if(hasTop)visit(index-width,d,progress);if(hasBottom)visit(index+width,d,progress);
       }
       for(let index=0;index<total;index++)if(toRemove[index]){const i=index*4;if(data[i+3]){data[i]=data[i+1]=data[i+2]=data[i+3]=0;removed++}}
       if(!removed){setStatus('No se encontró halo exterior con estos ajustes');return}
@@ -329,17 +387,38 @@
       if(!state.job||!canvas.width)return;
       const image=ctx.getImageData(0,0,canvas.width,canvas.height),source=image.data,output=new Uint8ClampedArray(source),width=image.width,height=image.height,strength=+$('edgeSmooth').value/100,weights=[1,2,1,2,4,2,1,2,1];let changed=0;
       for(let y=0;y<height;y++)for(let x=0;x<width;x++){
-        const index=(y*width+x)*4,oldAlpha=source[index+3];let weightIndex=0,totalWeight=0,weightedAlpha=0,weightedRed=0,weightedGreen=0,weightedBlue=0,colorWeight=0,hasTransparent=false,hasVisible=false;
+        const index=(y*width+x)*4,oldAlpha=source[index+3];if(oldAlpha===0)continue;let weightIndex=0,totalWeight=0,weightedAlpha=0,hasTransparent=false;
         for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){
           const weight=weights[weightIndex++],nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=width||ny>=height){hasTransparent=true;totalWeight+=weight;continue}
-          const neighbor=(ny*width+nx)*4,alpha=source[neighbor+3];totalWeight+=weight;weightedAlpha+=alpha*weight;if(alpha===0){hasTransparent=true;continue}hasVisible=true;const premultiplied=alpha*weight;colorWeight+=premultiplied;weightedRed+=source[neighbor]*premultiplied;weightedGreen+=source[neighbor+1]*premultiplied;weightedBlue+=source[neighbor+2]*premultiplied;
+          const neighbor=(ny*width+nx)*4,alpha=source[neighbor+3];totalWeight+=weight;weightedAlpha+=alpha*weight;if(alpha===0)hasTransparent=true;
         }
-        if(!hasTransparent||!hasVisible)continue;
-        const blurredAlpha=weightedAlpha/totalWeight,newAlpha=Math.max(0,Math.min(255,Math.round(oldAlpha+(blurredAlpha-oldAlpha)*strength)));if(Math.abs(newAlpha-oldAlpha)<2)continue;
-        output[index+3]=newAlpha;if(oldAlpha===0&&newAlpha>0&&colorWeight>0){output[index]=Math.round(weightedRed/colorWeight);output[index+1]=Math.round(weightedGreen/colorWeight);output[index+2]=Math.round(weightedBlue/colorWeight)}else if(newAlpha===0){output[index]=output[index+1]=output[index+2]=0}changed++;
+        if(!hasTransparent)continue;
+        const blurredAlpha=weightedAlpha/totalWeight,candidate=Math.max(0,Math.min(255,Math.round(oldAlpha+(blurredAlpha-oldAlpha)*strength))),newAlpha=Math.min(oldAlpha,candidate);if(oldAlpha-newAlpha<2)continue;
+        output[index+3]=newAlpha;if(newAlpha===0)output[index]=output[index+1]=output[index+2]=0;changed++;
       }
       if(!changed){setStatus('El perímetro ya está suavizado o no contiene transparencia');return}
       pushUndo();image.data.set(output);ctx.putImageData(image,0,0);setStatus(`Borde suavizado al ${Math.round(strength*100)}% · ${changed.toLocaleString('es-ES')} píxeles ajustados · Deshacer disponible`);
+    }
+    function removeDetachedSpecks(){
+      if(!state.job||state.loading||!canvas.width)return;
+      const image=ctx.getImageData(0,0,canvas.width,canvas.height),data=image.data,width=image.width,height=image.height,total=width*height,labels=new Int32Array(total),queue=new Int32Array(total),sizes=[0];
+      let nextLabel=0,largestLabel=0,largestSize=0;
+      const visit=(next,label,tail)=>{if(next<0||next>=total||labels[next]||data[next*4+3]===0)return tail;labels[next]=label;queue[tail++]=next;return tail};
+      for(let seed=0;seed<total;seed++){
+        if(labels[seed]||data[seed*4+3]===0)continue;
+        const label=++nextLabel;let head=0,tail=0,size=0;labels[seed]=label;queue[tail++]=seed;
+        while(head<tail){
+          const index=queue[head++],x=index%width,hasTop=index>=width,hasBottom=index+width<total;size++;
+          if(x>0)tail=visit(index-1,label,tail);if(x+1<width)tail=visit(index+1,label,tail);if(hasTop)tail=visit(index-width,label,tail);if(hasBottom)tail=visit(index+width,label,tail);
+          if(hasTop&&x>0)tail=visit(index-width-1,label,tail);if(hasTop&&x+1<width)tail=visit(index-width+1,label,tail);if(hasBottom&&x>0)tail=visit(index+width-1,label,tail);if(hasBottom&&x+1<width)tail=visit(index+width+1,label,tail);
+        }
+        sizes[label]=size;if(size>largestSize){largestSize=size;largestLabel=label}
+      }
+      let removedPixels=0,removedComponents=0;const removedLabels=new Uint8Array(nextLabel+1);
+      for(let label=1;label<=nextLabel;label++)if(label!==largestLabel&&sizes[label]<=64){removedLabels[label]=1;removedComponents++}
+      for(let index=0;index<total;index++)if(removedLabels[labels[index]]){const i=index*4;data[i]=data[i+1]=data[i+2]=data[i+3]=0;removedPixels++}
+      if(!removedPixels){setStatus('No se encontraron motas aisladas de hasta 64 píxeles');return}
+      pushUndo();ctx.putImageData(image,0,0);setStatus(`Motas aisladas eliminadas: ${removedComponents.toLocaleString('es-ES')} · ${removedPixels.toLocaleString('es-ES')} píxeles · Deshacer disponible`);
     }
     function updateCursor(event){const cursor=$('cursor');if(state.pickingBarrier){cursor.style.display='none';return}const rect=canvas.getBoundingClientRect(),scale=rect.width/canvas.width,size=+$('size').value*scale;cursor.style.display='block';cursor.style.left=event.clientX+'px';cursor.style.top=event.clientY+'px';cursor.style.width=size+'px';cursor.style.height=size+'px'}
     function isInteractiveTarget(target){return !!target?.closest?.('input,select,button,a,textarea,[contenteditable="true"]')}
@@ -352,29 +431,32 @@
     function movePan(event){if(!state.panning||event.pointerId!==state.panPointer)return;event.preventDefault();const viewport=$('viewport');viewport.scrollLeft=state.panStart.left-(event.clientX-state.panStart.x);viewport.scrollTop=state.panStart.top-(event.clientY-state.panStart.y)}
     function endPan(event){if(!state.panning||event&&event.pointerId!==state.panPointer)return;const viewport=$('viewport');if(event&&viewport.hasPointerCapture(event.pointerId))viewport.releasePointerCapture(event.pointerId);state.panning=false;state.panPointer=null;state.panStart=null;viewport.classList.remove('panning');viewport.classList.toggle('pan-ready',state.spaceDown)}
     $('viewport').addEventListener('pointerdown',beginPan,true);$('viewport').addEventListener('pointermove',movePan);$('viewport').addEventListener('pointerup',endPan);$('viewport').addEventListener('pointercancel',endPan);
-    canvas.addEventListener('pointerdown',event=>{if(!state.job||state.loading)return;event.preventDefault();if(state.pickingBarrier){sampleBarrierColor(event);return}if(state.tool==='restore'&&$('restoreSource').value==='before'&&!state.hasRestoreSource){setStatus('Todavía no hay una limpieza anterior que restaurar; elige Base de trabajo',true);return}canvas.setPointerCapture(event.pointerId);pushUndo(state.tool!=='restore');state.drawing=true;state.last=point(event);applyToolAt(state.last.x,state.last.y);updateCursor(event)});
+    canvas.addEventListener('pointerdown',event=>{if(!hasActiveCanvas()||state.loading)return;event.preventDefault();if(state.pickingBarrier){sampleBarrierColor(event);return}if(state.tool==='restore'&&$('restoreSource').value==='before'&&!state.hasRestoreSource){setStatus('Todavía no hay una limpieza anterior que restaurar; elige Base de trabajo o Sprite original protegido',true);return}if(state.tool==='restore'&&$('restoreSource').value==='protected'&&!state.hasProtectedSource){setStatus('El sprite original protegido todavía no está disponible',true);return}canvas.setPointerCapture(event.pointerId);pushUndo(state.tool!=='restore');state.drawing=true;state.last=point(event);applyToolAt(state.last.x,state.last.y);updateCursor(event)});
     canvas.addEventListener('pointermove',event=>{updateCursor(event);if(!state.drawing)return;const next=point(event);stroke(state.last,next);state.last=next});
     const endStroke=()=>{if(state.drawing&&state.tool==='restore')setStatus('Zona restaurada · Deshacer disponible');else if(state.drawing&&state.tool==='erase')setStatus('Zona borrada · Restaurar y Deshacer disponibles');state.drawing=false;state.last=null};canvas.addEventListener('pointerup',endStroke);canvas.addEventListener('pointercancel',endStroke);canvas.addEventListener('pointerleave',()=>{if(!state.drawing)$('cursor').style.display='none'});
 
     $('size').oninput=()=>{$('sizeValue').textContent=$('size').value+' px'};$('tolerance').oninput=()=>{$('toleranceValue').textContent=$('tolerance').value};$('strength').oninput=()=>{$('strengthValue').textContent=$('strength').value+'%'};$('alphaResidue').oninput=()=>{$('alphaResidueValue').textContent=$('alphaResidue').value};$('edgeSmooth').oninput=()=>{$('edgeSmoothValue').textContent=$('edgeSmooth').value+'%'};$('colorTolerance').oninput=()=>{$('colorToleranceValue').textContent=$('colorTolerance').value};$('darkBarrier').oninput=()=>{$('darkBarrierValue').textContent=$('darkBarrier').value};$('barrierAlpha').oninput=()=>{$('barrierAlphaValue').textContent=$('barrierAlpha').value};$('edgePeel').oninput=()=>{$('edgePeelValue').textContent=$('edgePeel').value+' px'};$('haloReach').oninput=()=>{$('haloReachValue').textContent=$('haloReach').value+' px'};
     $('zoom').oninput=()=>setZoom(+$('zoom').value);$('fit').onclick=fitView;$('background').onchange=()=>{const picking=state.pickingBarrier;$('stage').className='stage '+$('background').value;$('stage').classList.toggle('picking',picking)};$('search').oninput=renderList;$('undo').onclick=undo;$('redo').onclick=redo;
-    $('workBase').onchange=async event=>{const requested=event.target.value;try{state.loading=true;await switchWorkingBase(requested)}catch(error){setStatus(error.message||'No se pudo cambiar la base',true);updateBaseControls()}finally{state.loading=false}};
-    $('chooseBaseFile').onclick=()=>{if(state.job)$('baseFile').click();else setStatus('Selecciona primero una pose',true)};
+    $('workBase').onchange=async event=>{if(state.loading){updateBaseControls();setStatus('Espera a que termine la carga actual',true);return}const requested=event.target.value,loadVersion=state.loadVersion,baseLoadVersion=++state.baseLoadVersion;try{state.loading=true;await switchWorkingBase(requested,{loadVersion,baseLoadVersion})}catch(error){if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion){setStatus(error.message||'No se pudo cambiar la base',true);updateBaseControls()}}finally{if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion)state.loading=false}};
+    $('chooseBaseFile').onclick=()=>{if(state.loading)setStatus('Espera a que termine la carga actual',true);else if(state.job)$('baseFile').click();else setStatus('Selecciona primero una pose',true)};
     $('baseFile').onchange=async event=>{
-      const file=event.target.files?.[0];if(!file)return;
+      const file=event.target.files?.[0],targetJob=state.job,loadVersion=state.loadVersion;if(!file||!targetJob)return;if(state.loading){event.target.value='';setStatus('Espera a que termine la carga actual',true);return}const baseLoadVersion=++state.baseLoadVersion;
       try{
         if(state.dirty&&!window.confirm('Hay cambios sin guardar en el lienzo. ¿Quieres descartarlos y usar este archivo como base?'))return;
         state.loading=true;const image=await loadImage(await readFileAsDataUrl(file));
-        if(image.naturalWidth!==state.job.width||image.naturalHeight!==state.job.height)throw new Error(`La copia local debe medir ${state.job.width}×${state.job.height} px; ${file.name} mide ${image.naturalWidth}×${image.naturalHeight} px`);
-        state.localBaseImage=image;state.localBaseLabel=file.name;await switchWorkingBase('local',{confirmDirty:false});
-      }catch(error){setStatus(error.message||'No se pudo cargar la copia local',true);updateBaseControls()}finally{state.loading=false;event.target.value=''}
+        if(state.job?.id!==targetJob.id||state.loadVersion!==loadVersion||state.baseLoadVersion!==baseLoadVersion)return;
+        if(image.naturalWidth!==targetJob.width||image.naturalHeight!==targetJob.height)throw new Error(`La copia local debe medir ${targetJob.width}×${targetJob.height} px; ${file.name} mide ${image.naturalWidth}×${image.naturalHeight} px`);
+        state.localBaseImage=image;state.localBaseLabel=file.name;await switchWorkingBase('local',{confirmDirty:false,targetJob,loadVersion,baseLoadVersion});
+      }catch(error){if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion){setStatus(error.message||'No se pudo cargar la copia local',true);updateBaseControls()}}finally{if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion)state.loading=false;event.target.value=''}
     };
-    $('eraseTool').onclick=()=>setTool('clean');$('hardEraseTool').onclick=()=>setTool('erase');$('restoreTool').onclick=()=>setTool('restore');
+    $('eraseTool').onclick=()=>setTool('clean');$('hardEraseTool').onclick=()=>setTool('erase');$('restoreTool').onclick=()=>setTool('restore');$('restoreSource').onchange=()=>{if(state.tool==='restore'){const labels={before:'el estado anterior',protected:'el sprite original protegido',base:'la base de trabajo actual'};setStatus(`Pincel restaurador: recuperará desde ${labels[$('restoreSource').value]}`)}};
+    $('viewProtectedSource').onclick=event=>{if(!state.job?.source){event.preventDefault();setStatus('Selecciona primero una pose',true)}};
+    $('revealProtectedSource').onclick=async()=>{const targetJob=state.job;if(!targetJob?.source)return;const button=$('revealProtectedSource');button.disabled=true;setStatus('Abriendo la ubicación del original…');try{const response=await fetch('/api/reveal-white-halo-source',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:targetJob.id})}),result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo abrir la ubicación');if(state.job?.id===targetJob.id){setStatus(`Original seleccionado: ${result.relative}`);button.title=result.path}}catch(error){if(state.job?.id===targetJob.id)setStatus(error.message||'No se pudo abrir la ubicación',true)}finally{if(state.job?.id===targetJob.id)button.disabled=false}};
     $('pickBarrier').onclick=toggleBarrierPick;$('clearBarrier').onclick=()=>{cancelBarrierPick();state.barrierColor=null;renderBarrierColor();setStatus('Color tope descartado: detección automática activa')};
-    $('cleanLightExterior').onclick=removeExposedLightHalo;$('cleanAlphaExterior').onclick=removeLowAlphaExterior;$('cleanExterior').onclick=removeExteriorHalo;$('smoothEdges').onclick=async()=>{if(state.loading)return;state.loading=true;$('smoothEdges').disabled=true;setStatus('Calculando antialias del perímetro…');try{await new Promise(resolve=>requestAnimationFrame(resolve));smoothExteriorEdges()}finally{state.loading=false;$('smoothEdges').disabled=false}};
+    $('cleanTopological').onclick=applyTopologicalCleanup;$('cleanLightExterior').onclick=removeExposedLightHalo;$('cleanAlphaExterior').onclick=removeLowAlphaExterior;$('cleanExterior').onclick=removeExteriorHalo;$('cleanSpecks').onclick=removeDetachedSpecks;$('smoothEdges').onclick=async()=>{if(state.loading)return;state.loading=true;$('smoothEdges').disabled=true;setStatus('Calculando antialias del perímetro…');try{await new Promise(resolve=>requestAnimationFrame(resolve));smoothExteriorEdges()}finally{state.loading=false;$('smoothEdges').disabled=false}};
     $('compare').addEventListener('pointerdown',()=>{$('stage').classList.add('show-original')});for(const type of ['pointerup','pointerleave','pointercancel'])$('compare').addEventListener(type,()=>{$('stage').classList.remove('show-original')});
-    $('reset').onclick=()=>{if(!state.job)return;pushUndo();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(original,0,0);setStatus(`Base restaurada en el lienzo: ${state.baseLabel}`)};
-    $('save').onclick=async()=>{if(!state.job)return;setStatus('Guardando copia…');$('save').disabled=true;try{const response=await fetch('/api/white-halo-clean',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:state.job.id,image:snapshot()})});const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Error al guardar');state.job.saved=result;state.dirty=false;renderList();updateBaseControls();setStatus(`Copia limpia guardada · el fuente sigue protegido · base actual: ${state.baseLabel}`)}catch(error){setStatus(error.message,true)}finally{$('save').disabled=false}};
+    $('reset').onclick=()=>{if(state.loading||!hasActiveCanvas())return;pushUndo();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(original,0,0);setStatus(`Base restaurada en el lienzo: ${state.baseLabel}`)};$('download').onclick=downloadCurrentCanvas;
+    $('save').onclick=async()=>{if(state.loading){setStatus('Espera a que termine la carga actual',true);return}if(!hasActiveCanvas()){setStatus('La base de esta pose todavía no está disponible',true);return}const targetJob=state.job,loadVersion=state.loadVersion;setStatus('Guardando copia…');$('save').disabled=true;try{const response=await fetch('/api/white-halo-clean',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:targetJob.id,image:snapshot()})});const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'Error al guardar');targetJob.saved=result;if(state.job?.id===targetJob.id&&state.loadVersion===loadVersion){state.dirty=false;renderList();updateBaseControls();setStatus(`Copia limpia guardada: ${result.cleaned} · miniaturas actualizadas`)}}catch(error){if(state.job?.id===targetJob.id&&state.loadVersion===loadVersion)setStatus(error.message,true)}finally{$('save').disabled=false}};
     window.addEventListener('keydown',event=>{if(event.code==='Space'&&!isInteractiveTarget(event.target)){event.preventDefault();state.spaceDown=true;$('viewport').classList.add('pan-ready');$('cursor').style.display='none'}if(event.key==='Escape'&&state.pickingBarrier){cancelBarrierPick();setStatus('Cuentagotas cancelado')}if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){event.preventDefault();event.shiftKey?redo():undo()}if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='y'){event.preventDefault();redo()}});
     window.addEventListener('keyup',event=>{if(event.code==='Space'){state.spaceDown=false;if(!state.panning)$('viewport').classList.remove('pan-ready')}});window.addEventListener('blur',()=>{state.spaceDown=false;endPan();$('viewport').classList.remove('pan-ready')});
     installHelp();updateBaseControls();window.addEventListener('resize',hideTooltip);$('viewport').addEventListener('scroll',hideTooltip,{passive:true});$('viewport').addEventListener('wheel',wheelZoom,{passive:false});

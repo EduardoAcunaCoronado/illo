@@ -1032,6 +1032,17 @@ function attachGalleryCleanSprites(manifest, cleanManifest) {
       if (!clean?.cleaned) continue;
       pose.src = clean.cleaned;
       pose.thumbnail = clean.thumbnail || clean.cleaned;
+      const replacements = clean.animationFrames || {};
+      if (Array.isArray(pose.animation?.frames)) {
+        pose.animation.frames = pose.animation.frames.map((frame) => {
+          const source = typeof frame === "string" ? frame : frame?.src;
+          const cleanedFrame = replacements[source];
+          if (!cleanedFrame) return frame;
+          return typeof frame === "string"
+            ? cleanedFrame
+            : { ...frame, src: cleanedFrame };
+        });
+      }
       if (!firstCleanPose) firstCleanPose = { pose, clean };
     }
     if (firstCleanPose && item.poses?.[0] === firstCleanPose.pose) {

@@ -7705,8 +7705,8 @@ body.hud-hidden #game-container .ss-pause-btn {
     48%  { translate: 12px 0; rotate: 4deg; }
     56%  { translate: -8px 0; rotate: -3deg; }
     64%  { translate: 7px 0; rotate: 2deg; background-image: url('assets/images/characters/samu/samu_charred_whiteeyes.webp'); }
-    76%  { translate: -3px 0; rotate: -1deg; background-image: url('assets/images/characters/samu/samu_worried.webp'); }
-    100% { translate: 0 0; rotate: 0deg; background-image: url('assets/images/characters/samu/samu_worried.webp'); }
+    76%  { translate: -3px 0; rotate: -1deg; background-image: url('assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp'); }
+    100% { translate: 0 0; rotate: 0deg; background-image: url('assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp'); }
 }
 
 @keyframes samu-soot-particles {
@@ -7719,7 +7719,7 @@ body.hud-hidden #game-container .ss-pause-btn {
 @media (prefers-reduced-motion: reduce) {
     .character.pose-charred_shake[data-character="samu"] {
         animation: none !important;
-        background-image: url('assets/images/characters/samu/samu_worried.webp') !important;
+        background-image: url('assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp') !important;
     }
     .character.pose-charred_shake[data-character="samu"]::after { display: none; }
 }
