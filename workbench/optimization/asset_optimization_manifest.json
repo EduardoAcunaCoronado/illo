@@ -1890,15 +1890,19 @@
     "assets/images/characters/iphone5/iphone5_concierto.png": {
       "source": "assets/images/characters/iphone5/iphone5_concierto.png",
       "original": "workbench/originals/runtime/assets/images/characters/iphone5/iphone5_concierto.png",
-      "runtime": "assets/images/characters/iphone5/iphone5_concierto.webp",
-      "mode": "webp-lossless",
+      "runtime": "assets/images/characters/iphone5/iphone5_concierto.gif",
+      "mode": "gif-animated-promo-butterfly-glitch",
       "width": 921,
       "height": 1708,
-      "originalBytes": 1302062,
-      "runtimeBytes": 868752,
-      "savedBytes": 433310,
-      "originalSha256": "4d9bf65b56422ce13874cdb897f599446eb13c349df10254644a87d083dfbcc4",
-      "runtimeSha256": "c58113fa620e720b8e0f541960091be8255c106f58689568a4ea542101617d90"
+      "frames": 39,
+      "durationMs": 4820,
+      "loop": true,
+      "animationSource": "assets/video/cutscenes/chapter2/mas_de_lo_que_ven_tus_ojos.mp4",
+      "originalBytes": 1049423,
+      "runtimeBytes": 5303077,
+      "savedBytes": -4253654,
+      "originalSha256": "1f82edefc31bddee5fe88ce00ddde8faf1fba47012d0282ebe18840e6977372",
+      "runtimeSha256": "0a5d54b55a54001f40cadc4c2a07aae367f1e25ea105ad95df8a11c0f18c2cc8"
     },
     "assets/images/characters/iphone5/phone_call_edu_humano_v2_frame.png": {
       "source": "assets/images/characters/iphone5/phone_call_edu_humano_v2_frame.png",

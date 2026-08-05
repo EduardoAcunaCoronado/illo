@@ -1531,13 +1531,15 @@ Acepta `value` o `ms`. El valor está en milisegundos (1000 = 1 segundo).
 Combinado con `hideDialog` sirve para dejar una imagen sola en pantalla unos
 segundos antes de que entre el texto. Así aparece la caja de botellas de kétchup
 en la **Escena 4.5: El tapón dorado** del capítulo 2: se oculta el bocadillo, el
-CG entra con su fundido de 650 ms y se esperan 3 s antes de la narración.
+CG entra con su fundido de 650 ms y se esperan 5 s antes de la narración. El
+correo del concierto replica el patrón: oculta los personajes y el diálogo,
+presenta `iphone5_concierto.gif` centrado al 82 % y espera también 5 s.
 
 ```json
 "actions": [
   { "type": "hideDialog" },
   { "type": "showCG", "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png", "duration": 650 },
-  { "type": "wait", "value": 3000 }
+  { "type": "wait", "value": 5000 }
 ]
 ```
 
@@ -4694,6 +4696,25 @@ botones grandes de Silencio/Teclado/Altavoz/Colgar y una tipografía display má
 legible. Cada contacto tiene identidad propia y siempre humana: Edu usa azul,
 Tony rosa y José verde. Las variantes finales están en
 `assets/images/characters/iphone5/phone_call_*_humano_v2.png`.
+
+La pose de correo `iphone5:concierto` utiliza ahora
+`assets/images/characters/iphone5/iphone5_concierto.gif`. El mensaje muestra el
+remitente `¿¿¿???`, el destinatario `edu@wildsoft.es` y la fecha `Hoy, 18:00`;
+el cuerpo ya no contiene el texto ni el cartel anteriores y muestra, ajustado a
+todo el interior de un visor de neón y a sus esquinas redondeadas, el vídeo
+promocional de Seraphyna. El GIF de 921×1708
+integra 39 fotogramas en bucle durante 4,82 s; mantiene estática la interfaz y
+concentra ráfagas breves de glitch únicamente en la fila del remitente. Durante
+los ocho fotogramas que forman esas ráfagas aparecen pequeñas mariposas azules
+de neón, con aleteo, ecos
+cian/azul y desplazamiento por bandas; no invaden `Para`, `Fecha` ni el visor.
+El sprite fuente con alfa se conserva en
+`workbench/originals/runtime/assets/images/effects/iphone5_neon_butterfly.png`.
+El PNG RGBA maestro del móvil se conserva en
+`workbench/originals/runtime/assets/images/characters/iphone5/iphone5_concierto.png`
+y el MP4 usado como fuente de animación en
+`assets/video/cutscenes/chapter2/mas_de_lo_que_ven_tus_ojos.mp4`. Ya no se carga
+un elemento de vídeo adicional durante la pose.
 
 La llamada de Edu compone `phone_call_edu_humano_v2_frame.png` con la capa
 `phone_call_edu_humano_v2_contact_canvas.png`. Ambos PNG comparten un lienzo
