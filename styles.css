@@ -6258,6 +6258,9 @@ html.electron-app #menu-theme-btn { display: none; }
     height: 28px;
     flex: 0 0 28px;
     object-fit: contain;
+    -webkit-user-drag: none;
+    user-select: none;
+    pointer-events: none;
     opacity: 0.68;
     filter: saturate(0.72) brightness(0.88);
     transform: scale(0.92);
