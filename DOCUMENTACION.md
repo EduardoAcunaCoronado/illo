@@ -2841,6 +2841,10 @@ Este conserva su último tramo opaco debajo, por lo que no aparece el fondo fijo
 ni un frame negro durante la mezcla. Después se pausa y rebobina la copia antigua
 para reutilizarla en la vuelta siguiente. Al abandonar el menú se cancelan tanto
 el `requestAnimationFrame` de vigilancia como el temporizador del fundido.
+Los paneles de **Configuración**, **Capítulos** y **Galería** retiran los controles
+del menú, pero conservan el fondo visible y su vigilancia activa. De este modo el
+MP4 continúa alternando sus dos reproductores mientras el usuario navega por esos
+paneles y no queda detenido en el último fotograma al regresar.
 
 La reconstrucción 4K desde `assets/video/menu/menu_loop_old.mp4` es reproducible con
 `scripts/render_menu_loop_4k.py` y `realesrgan-ncnn-vulkan`. La interpolación
