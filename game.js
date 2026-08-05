@@ -800,7 +800,7 @@ function settingsMarkup() {
       (g, i) => `
             <button type="button" class="nm-tab${i === 0 ? " is-active" : ""}" role="tab"
                     aria-selected="${i === 0}" aria-controls="nm-pane-${g.id}" data-tab="${g.id}">
-                <img class="nm-tab-icon" src="${g.icono}" alt="" aria-hidden="true">
+                <img class="nm-tab-icon" src="${g.icono}" alt="" aria-hidden="true" draggable="false">
                 <span>${g.titulo}</span>
             </button>`,
     )
