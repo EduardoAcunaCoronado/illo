@@ -1274,6 +1274,13 @@ POSE WORRIED V2 DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-04
 - En ejecución local, el menú principal ofrece accesos con iconos a `/tools` y
   `minijuegos_test.html`. No se muestran en una web pública ni en Electron
   empaquetado, porque son utilidades de desarrollo y no forman parte del instalador.
+- `minijuegos_test.html` es un panel de QA catálogo/detalle. Agrupa las pruebas
+  por tipo, permite buscar, guarda la última ficha/modo y admite enlaces
+  `?game=...&mode=...`. Los presets no reciben overrides numéricos: Guindillas y
+  Zip sólo habilitan esos campos en Personalizado. `MINIGAME_CATALOG` declara
+  cada ficha y `runTest()` centraliza ejecución, resultado, tiempo y limpieza.
+  Zip integra Historia como modo del catálogo y lee `ketchupBoss` directamente
+  de `chapter2.json`, además de conservar el flujo completo y el editor.
 - Las herramientas y la pantalla de pruebas vuelven mediante `?screen=menu`; el
   juego consume ese parámetro y abre directamente el menú, sin repetir advertencia
   ni introducción. `/tools` conserva el origen/puerto del juego en `gameOrigin`.
