@@ -522,9 +522,13 @@ PRESENTACIÓN
   nombre coloreado, flecha de continuación, sonido por letra y pausas de puntuación.
 - Los supermercados de la ruta de Edu usan las marcas ficticias El Jarrón,
   Noche y Mercaguasa. Sus fondos heredados `jamon.png`, `dia.png` y
-  `mercadona.png` están unificados a 1600×900 con el estilo anime cinematográfico
-  y la iluminación cálida de las 16:00 del opening de Samu; los tres conservan
-  el portal rojo y su encuadre de gameplay.
+  `mercadona.png` están unificados a 3840×2160 con el estilo anime cinematográfico
+  y la iluminación cálida de las 16:00 del opening de Samu. Ninguno conserva un
+  portal preintegrado: El Jarrón y Noche reconstruyen sus estanterías y
+  Mercaguasa muestra una entrada rectangular acristalada, sin arco ni
+  expositores exteriores de botellas. Los tres integran detrás del cristal el
+  prop reutilizable `assets/images/props/chapter2/caja_botellas_ketchup.png`; el
+  portal narrativo aparece después al activar el tapón dorado.
 - Capítulos tienen cartela de entrada y pantalla de fin.
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.

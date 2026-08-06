@@ -3862,6 +3862,13 @@ parcial en `localStorage`; consulta [Estado, continuidad y navegación](#estado-
   marcas completamente ficticias.
   Comparten el acabado anime cinematográfico, la luz cálida de las 16:00 y la
   dirección artística de `workbench/sources/cutscenes/chapter3/opening_samu/storyboard/`.
+  Los portales rojos preintegrados se retiraron de los tres fondos: El Jarrón y
+  Noche reconstruyen sus estanterías, mientras que Mercaguasa recupera una
+  entrada rectangular acristalada, sin arco ni expositores exteriores de
+  botellas. Cada local anticipa el hallazgo posterior con una
+  composición integrada del mismo prop transparente detrás del cristal
+  `assets/images/props/chapter2/caja_botellas_ketchup.png`, basado en las cajas
+  de `golden_cap_reveal_4k`.
 - Batalla contra Micaela Michis (minigame gatos)
 - Micaela presenta la persecución y cierra la ruta con un mitin político absurdo
   a favor de los gatos: cajas de cartón por decreto, atún subvencionado,
