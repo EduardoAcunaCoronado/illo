@@ -114,7 +114,7 @@
                 "curious",
                 "thinking"
               ],
-              "frameMs": 260,
+              "frameMs": 500,
               "loop": false,
               "untilAdvance": false
             }

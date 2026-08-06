@@ -475,15 +475,15 @@
           "text": "El grupo abandona Ciudad Paloma por la avenida principal. Ya desde fuera, se detienen un momento y miran la ciudad a lo lejos.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -570,15 +570,15 @@
           "text": "Airi no formula un deseo de felicidad. Formula una devolución: cada ancla humana recupera su cuerpo, sus recuerdos reales y el derecho a decidir qué hacer con ellos.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -768,15 +768,15 @@
           "text": "Desde la ventana del pisito, Airi mira el cielo real como alguien que acaba de elegir su propio objetivo.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -803,7 +803,7 @@
           "text": "Cierre del núcleo: los humanos recuperan sus cuerpos y Airi sale con el grupo para seguir a Elion. La victoria deja una ausencia real: los ecos y las construcciones han desaparecido, y nadie sabe si aquello fue una muerte o el final de una realidad que solo podía existir mientras era soñada.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             }
           ]
@@ -846,15 +846,15 @@
               "value": "assets/images/backgrounds/chapter6/escenario.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -952,17 +952,17 @@
           "text": "Las tres siluetas se miran. Por primera vez en toda la aventura, parecen satisfechas con estar a punto de empezar.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left",
               "exit": "fade"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center",
               "exit": "fade"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right",
               "exit": "fade"
             }
@@ -1071,15 +1071,15 @@
               "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             }
           ]
@@ -1098,6 +1098,10 @@
               "scale": 0.7,
               "position": "center",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
             }
           ]
         },
@@ -1110,6 +1114,10 @@
               "character": "jose",
               "position": "right",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             }
           ]
         },
@@ -1123,6 +1131,10 @@
               "character": "tony",
               "position": "left",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1135,6 +1147,10 @@
               "character": "edu",
               "position": "right",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             }
           ]
         },
@@ -1147,6 +1163,10 @@
               "character": "airi",
               "position": "center",
               "pose": "thinking"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
             }
           ]
         },
@@ -1159,6 +1179,10 @@
               "character": "samu",
               "position": "left",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1171,6 +1195,10 @@
               "character": "airi",
               "position": "center",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
             }
           ]
         },
@@ -1185,7 +1213,7 @@
               "value": "assets/images/backgrounds/chapter6/paseo_ciudad_paloma_mano.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             }
           ],

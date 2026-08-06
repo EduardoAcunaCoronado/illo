@@ -5,9 +5,9 @@ uno para quien juega y otro para quien desarrolla. `LEER_PRIMERO.md` es sólo
 la portada y el acceso rápido. Las plantillas de `.github/` son excepciones
 operativas, no documentación paralela.
 
-> **Estado verificado: 2026-08-04.** La validación actual reconoce 7 capítulos,
-> 64 escenas, 920 líneas, 27 fichas de personaje y 1.571 referencias de assets.
-> La galería generada contiene 107 entradas, 157 poses y 129 poses con
+> **Estado verificado: 2026-08-06.** La validación actual reconoce 7 capítulos,
+> 64 escenas, 921 líneas, 27 fichas de personaje y 1.654 referencias de assets.
+> La galería generada contiene 107 entradas, 156 poses y 129 poses con
 > parpadeo. Estas cifras son una fotografía
 > fechada; `npm run validate:content` es la fuente actual.
 
@@ -149,7 +149,13 @@ Junto al nombre del hablante aparece un cursor-retrato. Mientras se escribe una
 frase acompaña el último grafema visible y al terminar regresa suavemente al
 encabezado. Antes de que Edu, Tony y José revelen sus transformaciones muestra
 sus retratos humanos; después utiliza sus sprites furry. `???` no reutiliza la
-cara del hablante anterior.
+cara del hablante anterior. Si una ilustración ya contiene a los personajes, el
+juego evita superponer una segunda copia y el cursor-retrato sigue identificando
+a quien habla con la pose declarada para esa línea. Los retratos humanos de Edu
+y José encuadran la cabeza completa dentro del marco circular.
+
+Cuando cambia el fondo, todos los personajes del escenario se retiran antes de
+componer la nueva imagen. Sólo reaparecen los que la escena vuelva a mostrar.
 
 Las cinemáticas ocultan temporalmente estos botones. Durante una elección o un
 minijuego se puede abrir **Escenas** u **Opciones**; saltar o salir cancela de
@@ -216,9 +222,18 @@ visible. Tras recibir daño, Samu tiene 0,85 segundos de invulnerabilidad: su
 indicador cambia a línea discontinua y se atenúa mientras los solapes no causan
 otro impacto.
 
+Las hitboxes guardadas desde el editor se usan en Fácil, Medio, Difícil, **Flujo
+completo**, **Como en la historia** y en el capítulo 2. Si hay una partida del
+bullet hell abierta en otra pestaña del mismo origen, recibe también el ajuste
+al guardar.
+
 Los juegos de conducción y vuelo tienen además pausa propia. Si se pierde una prueba
 obligatoria aparece la opción de reintentar. Opciones y Escenas permiten
 abandonar una prueba sin dejar bloqueada la novela.
+
+Los minijuegos con vidas muestran hasta cinco corazones individuales. Cuando
+quedan seis o más, el HUD los resume como **❤ × N**, donde `N` es el número de
+vidas restantes; al recibir daño el multiplicador se actualiza de inmediato.
 
 La pausa global congela timers, `requestAnimationFrame`, reloj lógico,
 animaciones CSS, audio y vídeo, y absorbe entradas hasta reanudar. En una
@@ -499,14 +514,26 @@ C2/E16/L4 para Edu, C3/E13/L5 para Tony y C4/E2/L4 para José; se calculan por
 posición para funcionar también al saltar desde **Escenas**. El encuadre se
 ajusta con `--cursor-portrait-size` y `--cursor-portrait-position` y dispone de
 excepciones por personaje/pose. Al añadir una pose con composición atípica hay
-que probar tanto su plano de escenario como este recorte.
+que probar tanto su plano de escenario como este recorte. Las excepciones
+`uses-human-portrait[data-character="edu"]` y
+`uses-human-portrait[data-character="jose"]` corrigen por separado el foco
+horizontal y vertical de sus hojas humanas para mantener pelo y rostro dentro
+del círculo.
+
+Cuando el hablante no tiene sprite activo, el cursor carga su ficha y usa el
+retrato humano narrativo o, si no corresponde, `defaultPose`. Cuando el personaje
+ya está dibujado en el fondo y el cursor necesita una pose concreta, la línea
+ejecuta primero
+`showCharacter` con esa pose y justo después `hideCharacter`: la segunda acción
+oculta el sprite del escenario, pero conserva pose, imagen y asociación interna
+para el retrato.
 
 ## Resumen de acciones narrativas
 
 | Familia | Acciones principales | Uso |
 | --- | --- | --- |
 | Escenario | `setBackground`, `clearBackground`, `showCG`, `hideCG`, `bgPan`, `fade` | Fondo, ilustración, cámara y transición. |
-| Personajes | `showCharacter`, `hideCharacter`, `removeCharacter`, `setPose` | Presencia, hueco y expresión. |
+| Personajes | `showCharacter`, `hideCharacter`, `removeCharacter`, `setPose` | Presencia, ocultación visual, eliminación y expresión. |
 | Animación | `animateCharacter`, `poseSequence`, `stopCharacterAnimation`, `characterAnimeFall` | Acting entre poses y caída cómica fuera de plano. |
 | Glitch | `characterGlitch`, `characterFullGlitch`, `characterGlitchUntilAdvance` | Corrupción puntual o sostenida. |
 | Diálogo | `hideDialog`, `wait`, `waitForClick` | Ritmo y ausencia temporal de caja. |
@@ -591,6 +618,11 @@ motor admite variantes `...ByDelay` que seleccionan valores según
 `storyDelay/storyPressure`. Sólo cambia JavaScript si la regla no puede
 expresarse con opciones existentes.
 
+`window.MinigameLifeDisplay` es el renderizador común de vidas. `renderRepeated`
+se usa en contadores de corazones restantes y `renderSlots` en HUD que conservan
+huecos de daño. Ambos compactan automáticamente cualquier cantidad superior a
+cinco como `❤ × N` y mantienen `aria-label` con el valor restante y el máximo.
+
 Todo minijuego nuevo debe:
 
 1. Resolver una `Promise` al ganar/perder o ser cancelado.
@@ -604,6 +636,7 @@ Todo minijuego nuevo debe:
 8. Cargarse antes de `engine.js`, registrar su caso en `playMinigame` y en
    `knownMinigames` de `scripts/validate_game_content.mjs`.
 9. Incluirse en `minijuegos_test.html` y pasar una prueba dentro del capítulo.
+10. Usar `MinigameLifeDisplay` si el personaje dispone de vidas.
 
 ## Galería y metadatos
 
@@ -1115,7 +1148,8 @@ expresan en milisegundos salvo que la descripción diga expresamente otra unidad
 ### clearBackground / removeBackground
 
 Vacía las dos capas del fondo y cancela cualquier `bgPan`. Ambos nombres son
-equivalentes y no reciben parámetros adicionales.
+equivalentes y no reciben parámetros adicionales. Si había un fondo activo,
+también ejecuta la retirada completa de personajes.
 
 ```json
 { "type": "clearBackground" }
@@ -1123,8 +1157,10 @@ equivalentes y no reciben parámetros adicionales.
 
 ### setBackground
 
-Cambia el fondo de la escena. Por defecto hace un fundido cruzado de 400 ms
-entre el fondo anterior y el nuevo.
+Cambia el fondo de la escena. Si la ruta es distinta de la activa, primero llama
+a `removeCharacter` sobre los huecos `left`, `center` y `right`; por tanto, las
+apariciones que deban continuar se declaran de nuevo después de `setBackground`.
+Por defecto hace un fundido cruzado de 400 ms entre el fondo anterior y el nuevo.
 
 ```json
 {
@@ -1204,11 +1240,36 @@ Valores en uso en los capítulos:
 Si añades una aparición nueva de alguno de ellos, **copia también su `scale` y
 su `offsetY`**: sin esos campos saldría a tamaño normal y a ras de suelo.
 
-### hideCharacter / removeCharacter / quitarPersonaje
+### hideCharacter
 
-Quita a un personaje de la escena (vacía su hueco). Los tres nombres de acción
-son equivalentes. **Recomendado usarlo cuando un personaje deja de intervenir**
-para que no se quede en pantalla en las escenas siguientes.
+Hace invisible el sprite sin vaciar su hueco interno: conserva personaje, pose e
+imagen para que el cursor-retrato use exactamente el estado preparado por
+`showCharacter`. No participa en la distribución visual ni se considera un
+hablante visible. Un `showCharacter` posterior en el mismo hueco lo vuelve a
+mostrar.
+
+Cuando el personaje ya forma parte de la ilustración de fondo, las dos acciones
+deben ir consecutivas:
+
+```json
+{
+  "actions": [
+    { "type": "showCharacter", "character": "luna", "position": "left", "pose": "happy" },
+    { "type": "hideCharacter", "position": "left" }
+  ],
+  "character": "Luna",
+  "text": "El cursor conserva la pose happy sin duplicar a Luna sobre el fondo."
+}
+```
+
+El campo opcional `exit` aplica un fundido de 320 ms antes de hacer invisible el
+sprite.
+
+### removeCharacter / quitarPersonaje
+
+Vacía por completo el hueco y olvida su pose y asociación. Ambos nombres son
+equivalentes. Debe usarse cuando un personaje abandona la escena; no sirve para
+conservar una pose destinada al cursor.
 
 Formas de uso:
 
@@ -1235,12 +1296,12 @@ realmente el hueco. Su valor actual es booleano: cualquier valor verdadero activ
 el fundido.
 
 ```json
-{ "type": "hideCharacter", "character": "luna", "exit": true }
+{ "type": "removeCharacter", "character": "luna", "exit": true }
 ```
 
 > Nota: la posición de cada personaje se rastrea al llamar a `showCharacter`, así
-> que basta con indicar `character`. No hace falta quitar al protagonista (Samu),
-> que permanece en escena durante todo el capítulo.
+> que basta con indicar `character`. Si sólo se indica `position`, se actúa sobre
+> quien ocupe ese hueco.
 
 ### setPose
 
@@ -1926,7 +1987,12 @@ Todos los parámetros numéricos de dificultad admiten la variante opcional
 `...ByDelay` descrita en `minigame`. Los nombres de esta tabla son el contrato
 del motor; los alias sólo se conservan para contenido histórico.
 
-`ketchupBoss` obtiene sus valores base de `ketchup-hitboxes.js`. `boss` no es
+`ketchupBoss` obtiene sus valores base de `ketchup-hitboxes.js`.
+`KetchupHitboxes.createEffective()` combina esos valores con la configuración
+guardada cada vez que comienza una ronda; es la única ruta de carga para los
+presets, Flujo completo y la historia. `KetchupHitboxes.subscribe()` mantiene
+actualizada una ronda abierta cuando el editor guarda desde otra pestaña del
+mismo origen. `boss` no es
 una caja única: contiene `profiles` (`floating`, `phase1`…`phase5`) y cada
 perfil agrupa primitivas bajo `parts`. El frame activo selecciona el perfil y
 un impacto contra cualquiera de sus piezas daña a Zip. Jugador y proyectiles
@@ -2129,10 +2195,11 @@ en la URL mediante `?game=...&mode=...` para poder compartir accesos directos.
 Los presets Fácil, Medio y Difícil se ejecutan sin que los campos numéricos del
 panel los sobrescriban. Guindillas y Zip habilitan esos campos exclusivamente en
 **Personalizado**. Zip conserva además acciones separadas para el flujo completo
-Guindillas → Zip y para abrir el editor de hitboxes. Battle usa un único selector
-de enemigo que sincroniza sus HP iniciales. **Copiar configuración** entrega el
-JSON efectivo de la prueba visible y **Restaurar opciones** sólo reinicia esa
-ficha.
+Guindillas → Zip y para abrir el editor de hitboxes; su modo **Como en la
+historia** lee la acción `ketchupBoss` real de `chapter2.json` y pasa igualmente
+por `runTest()`. Battle usa un único selector de enemigo que sincroniza sus HP
+iniciales. **Copiar configuración** entrega el JSON efectivo de la prueba visible
+y **Restaurar opciones** sólo reinicia esa ficha.
 
 Todos los lanzamientos pasan por `runTest()`, que centraliza resultado, duración,
 limpieza de música/autojugador, recuperación del panel y presentación de errores.
@@ -2179,11 +2246,15 @@ historial local de hasta 80 estados; `Ctrl+S` guarda, `Page Up/Down` cambia el
 frame y `[`/`]` cambia la pieza. **Guardar e ir a pruebas** persiste y vuelve al banco
 de minijuegos; **Volver sin guardar** pide confirmación si hay cambios pendientes.
 
-**Guardar** persiste únicamente en `localStorage` del origen de pruebas y
-requiere volver a lanzar el minijuego. Durante los 0,85 s
-de invulnerabilidad de Samu, tanto el marcador integrado como el depurador se
-muestran atenuados y con borde discontinuo para distinguir una caja visible de
-una colisión activa.
+**Guardar** persiste en `localStorage` del origen actual. Todos los lanzamientos
+posteriores —Fácil, Medio, Difícil, Flujo completo, Como en la historia y la
+escena narrativa— reconstruyen la configuración efectiva desde ese valor. Una
+ronda abierta en otra pestaña del mismo origen se actualiza mediante el evento
+`storage`; `notifyChanged()` cubre consumidores de la misma ventana. La casilla
+**Mostrar hitbox real de Zip** se propaga a todos los botones del banco de
+pruebas. Durante los 0,85 s de invulnerabilidad de Samu, tanto el marcador
+integrado como el depurador se muestran atenuados y con borde discontinuo para
+distinguir una caja visible de una colisión activa.
 
 #### Minijuego `eduvuelo` — peligros aéreos (cap. 3)
 
@@ -3652,7 +3723,8 @@ engine.gameState; // Variables del juego
 // Control manual
 engine.setBackground(path); // Cambiar fondo
 engine.showCharacter(name, pos, pose); // Mostrar personaje
-engine.hideCharacter(name); // Ocultar personaje
+engine.hideCharacter(name); // Hacerlo invisible conservando pose
+engine.removeCharacter(name); // Vaciar el hueco por completo
 engine.setPose(name, pos, pose); // Cambiar pose
 engine.playSound(path); // Reproducir audio
 
@@ -5811,8 +5883,8 @@ referencia bajo `assets/`, incluida su capitalización exacta. También audita
 de galería, miniaturas, rutas literales de JS/CSS/HTML y exclusiones sensibles
 del instalador. El resumen impreso —capítulos,
 escenas, líneas, personajes y referencias— es la cifra fiable del estado actual.
-La ejecución de cierre verificada el **2026-08-04** terminó sin errores con
-**7 capítulos, 64 escenas, 920 líneas, 27 personajes y 1571 referencias de
+La ejecución de cierre verificada el **2026-08-06** terminó sin errores con
+**7 capítulos, 64 escenas, 921 líneas, 27 personajes y 1654 referencias de
 assets**.
 
 ### Retroceder: a esta escena o a la anterior (2026-08-03)

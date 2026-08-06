@@ -482,6 +482,13 @@ body.startup-pending #menu-video-stack {
     opacity: 1;
 }
 
+/* hideCharacter conserva el sprite y su pose para el cursor-retrato, pero lo
+   retira por completo de la composición y de la interacción del escenario. */
+.character.active.character-hidden {
+    opacity: 0 !important;
+    pointer-events: none;
+}
+
 .character-eye-layer {
     position: absolute;
     z-index: 3;
@@ -939,16 +946,17 @@ body.startup-pending #menu-video-stack {
     --cursor-portrait-position: 100% 10%;
 }
 
-/* La hoja humana de Edu deja mÃ¡s aire sobre el busto que las de Tony/JosÃ©.
-   Un foco vertical propio sube su cara sin alterar el encuadre furry. */
+/* Edu y José están desplazados hacia la izquierda en sus hojas humanas. Estos
+   focos centran la cabeza completa y dejan aire sobre el pelo sin alterar el
+   encuadre furry. */
 .speaker-cursor.uses-human-portrait[data-character="edu"] {
     --cursor-portrait-size: 170% auto;
-    --cursor-portrait-position: 100% 19%;
+    --cursor-portrait-position: 28% -2%;
 }
 
 .speaker-cursor.uses-human-portrait[data-character="jose"] {
     --cursor-portrait-size: 170% auto;
-    --cursor-portrait-position: 100% 20%;
+    --cursor-portrait-position: 25% -2%;
 }
 
 .speaker-cursor:not(.has-portrait) .speaker-cursor-portrait::after {
@@ -6750,6 +6758,19 @@ body.hud-hidden #game-container .ss-pause-btn {
 .ss-lives { letter-spacing: 3px; }
 .ss-heart { transition: opacity 0.2s ease, transform 0.2s ease; }
 .ss-heart.ss-lost { opacity: 0.25; transform: scale(0.8); }
+
+.mg-lives.is-condensed,
+.ss-lives.is-condensed,
+.fly-lives.is-condensed,
+.ketchup-player-lives.is-condensed {
+    letter-spacing: 0;
+    white-space: nowrap;
+}
+
+.minigame-life-count {
+    margin-left: 0.28em;
+    font-variant-numeric: tabular-nums;
+}
 
 /* Barra de progreso (chase: distancia; eduvuelo: partituras) */
 .ss-progress-wrap {
