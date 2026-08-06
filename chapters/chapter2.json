@@ -139,7 +139,7 @@
               "fadeIn": 500
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             }
           ]
@@ -342,7 +342,7 @@
           "text": "Perfecto. Una búsqueda del tesoro con felinos. Aguanta, Edu.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "ketchling"
             },
             {
@@ -423,11 +423,11 @@
               "value": "assets/images/backgrounds/chapter2/furrielva/jamon_4k_v2.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "micaela"
             }
           ],
@@ -504,7 +504,7 @@
           "text": "¡Corre por tu vida, Samu! ¡No dejes que ningún michi te alcance!",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "micaela"
             }
           ]
@@ -608,7 +608,7 @@
           "text": "Dejando atrás a Micaela y su ejército de gatos, Samu encuentra una botella promocional caída tras las cajas. El tapón dorado sigue intacto.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "micaela"
             },
             {
@@ -644,11 +644,11 @@
               "value": "assets/images/backgrounds/chapter2/furrielva/dia_4k_v2.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "micaela"
             }
           ],
@@ -704,11 +704,11 @@
               "value": "assets/images/backgrounds/chapter2/furrielva/mercadona_4k_v2.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "micaela"
             }
           ],
@@ -991,15 +991,15 @@
               "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "micaela"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "neit"
             },
             {
@@ -1138,7 +1138,7 @@
           "text": "Dos pasillos conducen a la línea central. Uno dice «KETCHUP». El otro, «CATSUP».",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "ketchling"
             },
             {
@@ -1286,7 +1286,7 @@
               "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             },
             {
@@ -1459,15 +1459,15 @@
           ]
         },
         {
-          "type": "hideCharacter",
+          "type": "removeCharacter",
           "position": "left"
         },
         {
-          "type": "hideCharacter",
+          "type": "removeCharacter",
           "position": "center"
         },
         {
-          "type": "hideCharacter",
+          "type": "removeCharacter",
           "position": "right"
         },
         {
@@ -1515,11 +1515,11 @@
               "cut": true
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "neit"
             }
           ],
@@ -1983,11 +1983,11 @@
               "value": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_v2_4k.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "zip"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "ketchling"
             },
             {
@@ -2082,7 +2082,7 @@
           "text": "Por cierto, ¿a qué viene el tema de los portales?",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "ketchling"
             },
             {
@@ -2179,23 +2179,23 @@
               "value": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "edu"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "neit"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "zip"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "ketchling"
             }
           ],
@@ -2235,11 +2235,11 @@
           "text": "La pantalla muestra el anuncio: «CONCIERTO EXCLUSIVO — Seraphyna en ECCHI LAND. Calle Hentai, nº 69. A las afueras de Furrielva: coge la autovía y sal por el 69. Una noche que no olvidarás.»",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -2415,11 +2415,11 @@
           "text": "Y con más preguntas que respuestas, los dos echan a andar hacia la autovía. El sol termina de caer sobre una ciudad que asegura llevar décadas ahí y que Samu vio nacer esa misma tarde.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "edu"
             },
             {

@@ -300,6 +300,13 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - El clic durante el tecleo completa la línea; el siguiente avance continúa el guion.
 - El personaje que habla queda iluminado y los demás en gris. Narración/off-screen
   deja a todos atenuados. speakingAs permite resaltar un sprite distinto del nombre.
+- Si una ilustración ya integra al personaje, su hueco del escenario se mantiene
+  invisible con la pareja showCharacter + hideCharacter. showCharacter prepara
+  la pose; hideCharacter oculta el sprite sin borrar su estado y el cursor la
+  reutiliza. removeCharacter/quitarPersonaje sí vacían el hueco por completo.
+- Todo cambio real de setBackground, y clearBackground cuando había un fondo,
+  ejecuta removeCharacter sobre left, center y right. Las apariciones del nuevo
+  fondo deben declararse después de setBackground.
 - Menú de escenas: puede saltar a cualquier escena del capítulo, incluso desde una
   elección; se oculta durante un minijuego activo.
 - Retroceso: la unidad es la escena, no la línea. Restaura gameState, rescates, llamadas,
@@ -334,6 +341,9 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
   lista vacía. Menú y selector transfieren también inert, aria-hidden y foco.
 
 MINIJUEGOS USADOS POR EL GUION ACTUAL
+- Los HUD con vidas usan `window.MinigameLifeDisplay`: hasta cinco muestran
+  corazones individuales y, con seis o más vidas restantes, muestran `❤ × N`.
+  La regla cubre los motores integrados y el bullet hell modular de Zip.
 - Gatos: laberinto/supervivencia con flechas o WASD.
 - Guindillas: ronda cronometrada horizontal; cada guindilla carga el poder que
   se utilizará inmediatamente después contra Zip. Las botellas restan una.
@@ -365,6 +375,10 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   `clientWidth`/`clientHeight` del campo para no aplicar dos veces su escala
   visual; `getBoundingClientRect()` queda reservado a las coordenadas de
   puntero.
+  `KetchupHitboxes.createEffective()` es la carga única de defaults + ajustes
+  guardados para Fácil, Medio, Difícil, Flujo completo y capítulo 2. El runtime
+  se suscribe a cambios de `illo_hitbox_config`, por lo que una ronda abierta en
+  otra pestaña del mismo origen recibe el ajuste del editor sin reiniciarse.
 - Chase: coche lateral, esquivar motos/obstáculos; dificultad por storyDelay. Desde
   2026-07-30 el coche usa seis poses con distintas fases de sus ruedas originales
   y una carretera nocturna RGBA más detallada; el skyline lejano conserva un

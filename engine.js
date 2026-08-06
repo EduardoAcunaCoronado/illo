@@ -1,3 +1,42 @@
+// Presentación común de vidas para todos los minijuegos. Hasta cinco mantiene
+// los corazones individuales; a partir de seis evita desbordar el HUD con un
+// único corazón y un multiplicador que siempre refleja las vidas restantes.
+window.MinigameLifeDisplay = Object.freeze({
+    normalize(value) {
+        return Math.max(0, Math.floor(Number(value) || 0));
+    },
+
+    prepare(element, remaining, maximum) {
+        const current = this.normalize(remaining);
+        const max = Math.max(current, this.normalize(maximum));
+        const condensed = current > 5;
+        element.classList.toggle('is-condensed', condensed);
+        element.setAttribute('aria-label', `${current} de ${max} vidas`);
+        return { current, max, condensed };
+    },
+
+    renderRepeated(element, remaining, maximum, heart = '❤') {
+        const state = this.prepare(element, remaining, maximum);
+        element.textContent = state.condensed
+            ? `${heart} × ${state.current}`
+            : heart.repeat(state.current);
+    },
+
+    renderSlots(element, remaining, maximum, heart = '❤') {
+        const state = this.prepare(element, remaining, maximum);
+        if (state.condensed) {
+            element.innerHTML = `<span class="ss-heart">${heart}</span><span class="minigame-life-count">× ${state.current}</span>`;
+            return;
+        }
+
+        const slots = state.max > 5 ? state.current : state.max;
+        const lost = Math.max(0, slots - state.current);
+        element.innerHTML = Array.from({ length: slots }, (_, index) =>
+            `<span class="ss-heart${index < lost ? ' ss-lost' : ''}">${heart}</span>`
+        ).join('');
+    }
+});
+
 class VisualNovelEngine {
     constructor() {
         this.currentChapter = null;
@@ -364,9 +403,11 @@ class VisualNovelEngine {
                 await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter, action.offsetY, action.scale);
                 break;
             case 'hideCharacter':
+                this.hideCharacter(action.character, action.position, action.exit);
+                break;
             case 'removeCharacter':
             case 'quitarPersonaje':
-                this.hideCharacter(action.character, action.position, action.exit);
+                this.removeCharacter(action.character, action.position, action.exit);
                 break;
             case 'setPose':
                 this.setPose(action.character, action.position, action.pose);
@@ -692,6 +733,9 @@ class VisualNovelEngine {
     // normal de la línea y no avance automáticamente.
     // Vaciar el fondo del todo (lo usa el final del compi en cap. 6/créditos)
     clearBackground() {
+        if (this.currentBackgroundPath !== null) {
+            this.removeAllCharacters();
+        }
         this.bgPan({ reset: true });
         // Igual que un setBackground con corte seco, vaciar el fondo debe
         // cancelar cualquier crossfade pendiente para que su temporizador no
@@ -1671,7 +1715,7 @@ class VisualNovelEngine {
                 <div class="minigame-hud">
                     <span class="mg-score"><img class="mg-hud-icon" src="${ketchupIcon}" alt="ketchup"><span class="mg-score-text">0 / ${goal}</span></span>
                     <span class="mg-phase">FASE 1 · REACTIVA LA LÍNEA</span>
-                    <span class="mg-lives">❤️ ${maxHits}</span>
+                    <span class="mg-lives"></span>
                     ${showExtraInfo ? `<span class="mg-extra-info" style="margin-left:20px; font-size:0.8em; color:#ffb4b4">🌶️ Vel: ${(speedMult * 1.5).toFixed(2)}x</span>` : ''}
                 </div>
                 <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${this.cacheBustAsset('assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp')}')">
@@ -1693,6 +1737,10 @@ class VisualNovelEngine {
 
             let score = 0;
             let lives = maxHits;
+            const renderLives = () => {
+                window.MinigameLifeDisplay.renderRepeated(livesEl, lives, maxHits, '❤️');
+            };
+            renderLives();
             let playerX = 0.5; // posición horizontal normalizada (0..1)
             const playerW = 0.12; // ancho del jugador relativo al campo
             let items = [];     // { el, x, y, speed, type }
@@ -1850,7 +1898,7 @@ class VisualNovelEngine {
                         } else {
                             const damage = it.type === 'corrupt' ? 2 : 1;
                             lives = Math.max(0, lives - damage);
-                            livesEl.textContent = `❤️ ${Math.max(0, lives)}`;
+                            renderLives();
                             field.classList.add('mg-hit');
                             setTimeout(() => field.classList.remove('mg-hit'), 200);
                         }
@@ -2307,7 +2355,7 @@ class VisualNovelEngine {
             overlay.innerHTML = `
                 <div class="minigame-hud">
                     <span class="mg-score">🍑 0 / ${goal}</span>
-                    <span class="mg-lives">💔 ${maxMisses}</span>
+                    <span class="mg-lives"></span>
                 </div>
                 <div class="minigame-field" id="mg-field-ecchi"></div>
                 <div class="minigame-instructions">¡Clica los 🍑 a tiempo! No toques los 💋</div>
@@ -2320,6 +2368,15 @@ class VisualNovelEngine {
 
             let score = 0;
             let misses = 0;
+            const renderLives = () => {
+                window.MinigameLifeDisplay.renderRepeated(
+                    livesEl,
+                    Math.max(0, maxMisses - misses),
+                    maxMisses,
+                    '💔'
+                );
+            };
+            renderLives();
             let running = true;
             let spawnTimeout = null;
             const activeTargets = new Set();
@@ -2335,7 +2392,7 @@ class VisualNovelEngine {
 
             const registerMiss = () => {
                 misses++;
-                livesEl.textContent = `💔 ${Math.max(0, maxMisses - misses)}`;
+                renderLives();
                 field.classList.add('mg-hit');
                 setTimeout(() => field.classList.remove('mg-hit'), 200);
                 if (misses >= maxMisses) endRound(false);
@@ -3952,9 +4009,11 @@ class VisualNovelEngine {
                 energyEl.style.width = clamp(energy, 0, 100) + '%';
                 energyWrap.classList.toggle('is-ready', energy >= (cfg.dashCost || 42));
                 progressEl.style.width = clamp(collected / goal * 100, 0, 100) + '%';
-                livesEl.innerHTML = Array.from({ length: maxHits }, (_, index) =>
-                    `<span class="ss-heart${index < hits ? ' ss-lost' : ''}">❤</span>`
-                ).join('');
+                window.MinigameLifeDisplay.renderSlots(
+                    livesEl,
+                    Math.max(0, maxHits - hits),
+                    maxHits
+                );
             };
 
             const addParticleBurst = (x, y, color = '#4fd0ff', amount = 8) => {
@@ -5196,9 +5255,11 @@ class VisualNovelEngine {
                 }
                 const progress = Math.max(0, Math.min(1, isFly ? collected / goal : dist / goal));
                 progressEl.style.width = (progress * 100) + '%';
-                let s = '';
-                for (let i = 0; i < maxHits; i++) s += `<span class="ss-heart${i < hits ? ' ss-lost' : ''}">❤</span>`;
-                livesEl.innerHTML = s;
+                window.MinigameLifeDisplay.renderSlots(
+                    livesEl,
+                    Math.max(0, maxHits - hits),
+                    maxHits
+                );
             };
             updateHud();
 
@@ -5559,7 +5620,11 @@ class VisualNovelEngine {
     // Con { cut: true } se comporta como antes (corte seco intencionado).
     setBackground(imagePath, opts = {}) {
         const bg = document.getElementById('background');
-        this.currentBackgroundPath = imagePath || null;
+        const nextBackgroundPath = imagePath || null;
+        if (this.currentBackgroundPath !== nextBackgroundPath) {
+            this.removeAllCharacters();
+        }
+        this.currentBackgroundPath = nextBackgroundPath;
         const url = `url('${this.cacheBustAsset(imagePath)}')`;
         // Resetear cualquier Ken Burns anterior al cambiar de fondo
         this.bgPan({ reset: true });
@@ -6008,7 +6073,7 @@ class VisualNovelEngine {
 
         const previousPosition = this.characterPositions[characterKey];
         if (previousPosition && previousPosition !== position) {
-            this.hideCharacter(characterKey, previousPosition);
+            this.removeCharacter(characterKey, previousPosition);
         }
 
         const charElement = document.getElementById(`character-${position}`);
@@ -6037,6 +6102,7 @@ class VisualNovelEngine {
 
             this.applyCharacterPoseImage(charElement, poseImage);
             this.applyPoseClass(charElement, pose);
+            charElement.classList.remove('character-hidden');
             charElement.classList.add('active');
             charElement.setAttribute('data-character', characterKey);
 
@@ -6069,7 +6135,8 @@ class VisualNovelEngine {
             this.stageCharacters[position] = {
                 character: characterKey,
                 pose,
-                flipped: !!flipped
+                flipped: !!flipped,
+                hidden: false
             };
             this.startCharacterFrameAnimation(characterKey, position, pose);
         }
@@ -6103,7 +6170,8 @@ class VisualNovelEngine {
         const order = ['left', 'center', 'right'];
         const active = order.filter(p => {
             const el = document.getElementById(`character-${p}`);
-            return el && el.classList.contains('active');
+            return el && el.classList.contains('active')
+                && !el.classList.contains('character-hidden');
         });
         const N = active.length;
         if (N === 0) return;
@@ -6420,7 +6488,8 @@ class VisualNovelEngine {
             .filter(className => className.startsWith('pose-') ||
                 className.startsWith('char-enter-') ||
                 ['active', 'speaking', 'char-exit-fade', 'contact-glitch',
-                    'full-signal-glitch', 'dialogue-glitch-loop'].includes(className))
+                    'full-signal-glitch', 'dialogue-glitch-loop',
+                    'character-hidden'].includes(className))
             .forEach(className => charElement.classList.remove(className));
 
         charElement.style.backgroundImage = '';
@@ -6450,12 +6519,56 @@ class VisualNovelEngine {
         }
     }
 
+    // Oculta solo la representación del personaje. Mantiene pose, sprite,
+    // posición y ficha en memoria para que el cursor-retrato pueda reutilizar
+    // exactamente la pose declarada por showCharacter. removeCharacter es la
+    // operación destructiva que vacía el hueco.
+    hideCharacter(characterName, position, exit = null) {
+        const hideSlot = (pos) => {
+            const el = document.getElementById(`character-${pos}`);
+            if (!el || !el.classList.contains('active')) return;
+
+            const doHide = () => {
+                clearTimeout(el._exitTimer);
+                el._exitTimer = null;
+                el.classList.remove('char-exit-fade', 'speaking');
+                el.classList.add('character-hidden');
+                this.stopCharacterPoseAnimation(null, pos);
+                this.stopCharacterFrameAnimation(pos, true);
+                const visual = this.stageCharacters?.[pos];
+                if (visual) visual.hidden = true;
+                if (this.speakingPosition === pos) {
+                    this.speakingCharacter = null;
+                    this.speakingPosition = null;
+                }
+                this.layoutCharacters();
+            };
+
+            clearTimeout(el._exitTimer);
+            if (exit) {
+                el.classList.add('char-exit-fade');
+                el._exitTimer = setTimeout(doHide, 320);
+            } else {
+                doHide();
+            }
+        };
+
+        if (characterName) {
+            const key = this.getCharacterKey(characterName);
+            const target = position || this.characterPositions[key];
+            if (target) hideSlot(target);
+        } else if (position) {
+            hideSlot(position);
+        }
+        this.layoutCharacters();
+    }
+
     // Quita a un personaje de la escena. Se puede indicar:
     // - characterName: quita al personaje (usando la posición rastreada en la
     //   que se mostró; si además se da position, solo quita si coincide).
     // - position (sin characterName): vacía directamente ese hueco (left/right/center).
     // Si no se indica ninguno, no hace nada.
-    hideCharacter(characterName, position, exit = null) {
+    removeCharacter(characterName, position, exit = null) {
         const clearSlot = (pos) => {
             const el = document.getElementById(`character-${pos}`);
             if (!el) return;
@@ -6494,9 +6607,21 @@ class VisualNovelEngine {
         this.layoutCharacters();
     }
 
+    // Todo cambio real de fondo inaugura una composición nueva. Vaciar los
+    // tres huecos mediante removeCharacter evita que un sprite, una animación
+    // o una pose oculta sobrevivan accidentalmente desde el fondo anterior.
+    removeAllCharacters() {
+        ['left', 'center', 'right'].forEach(position => {
+            this.removeCharacter(null, position);
+        });
+        this.speakingCharacter = null;
+        this.speakingPosition = null;
+    }
+
     focusCharacter(characterName, position) {
         const charElement = document.getElementById(`character-${position}`);
-        if (charElement && charElement.classList.contains('active')) {
+        if (charElement && charElement.classList.contains('active')
+            && !charElement.classList.contains('character-hidden')) {
             charElement.classList.add('speaking');
         }
     }
@@ -7157,8 +7282,10 @@ class VisualNovelEngine {
             // No exigimos 'active': si el sprite aún está entrando/cargando en
             // este mismo instante, la clase llega un frame tarde y el resaltado
             // se saltaba "a veces" (bug reportado por Betanzos). El rastreo de
-            // characterPositions ya garantiza que ahí hay un personaje.
-            if (speakerElement) {
+            // characterPositions ya garantiza que ahí hay un personaje. Sí se
+            // excluye el oculto visual: su pose alimenta el cursor, pero no debe
+            // iluminarse ni atenuar a quienes siguen visibles.
+            if (speakerElement && !speakerElement.classList.contains('character-hidden')) {
                 speakerElement.classList.add('speaking');
                 this.speakingCharacter = speakerName;
                 this.speakingPosition = speakerPosition;
@@ -7966,12 +8093,17 @@ class VisualNovelEngine {
         if (snapshot.background) this.setBackground(snapshot.background, { cut: true });
         for (const [position, visual] of Object.entries(snapshot.characters || {})) {
             if (!visual || !visual.character) continue;
-            this.showCharacter(
+            const restoredCharacter = this.showCharacter(
                 visual.character,
                 position,
                 visual.pose || 'neutral',
                 !!visual.flipped
             );
+            if (visual.hidden) {
+                Promise.resolve(restoredCharacter).then(() => {
+                    this.hideCharacter(visual.character, position);
+                });
+            }
         }
         for (const sound of snapshot.audio || []) {
             this.playSound(sound.path, {
@@ -8039,6 +8171,7 @@ class VisualNovelEngine {
                 el.classList.remove(
                     'active',
                     'speaking',
+                    'character-hidden',
                     'char-exit-fade',
                     'contact-glitch',
                     'full-signal-glitch'
