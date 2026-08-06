@@ -47,11 +47,11 @@
       "mode": "webp-lossy-q92",
       "width": 3840,
       "height": 2160,
-      "originalBytes": 9249405,
-      "runtimeBytes": 1216394,
-      "savedBytes": 8033011,
-      "originalSha256": "90a401656a307fcb9ddbfbe4d60c08054322aa0d95b30f712e4fb6d47400799e",
-      "runtimeSha256": "30f0b0252e1647c2dece863a0054d4da7f421ca757cf97859f27cc3bf3aab015"
+      "originalBytes": 9117337,
+      "runtimeBytes": 1098306,
+      "savedBytes": 8019031,
+      "originalSha256": "4999f6fe3ef9f2cc3a5139efefbbffc0372d80f1ad6d4fa2916f88a3e0ef6141",
+      "runtimeSha256": "d73387cd4a8d5808eb164a8d07fa1eeca6d12980be7a69f2b2b5aa27d85726fc"
     },
     "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png": {
       "source": "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.png",
@@ -74,11 +74,11 @@
       "mode": "webp-lossy-q92",
       "width": 3840,
       "height": 2160,
-      "originalBytes": 9672706,
-      "runtimeBytes": 1369342,
-      "savedBytes": 8303364,
-      "originalSha256": "1ab3e8911ddc349c50d0b32eaf644fcc79294e6be27960588f6a81e0c306a5a5",
-      "runtimeSha256": "981de187d0d463c5a2a1cf795b451ec0c93f31fdb50d8d14eaaceed8fa490d0a"
+      "originalBytes": 9727652,
+      "runtimeBytes": 1274018,
+      "savedBytes": 8453634,
+      "originalSha256": "a4ac2d41350c184b098b31a7376508544f2f6132a2e4c730c516c9064e9a17c7",
+      "runtimeSha256": "b4ec8edc82db1067bdbcc33732d8a3c019ec941bca78f45324dad99c985e1d31"
     },
     "assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png": {
       "source": "assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.png",
@@ -100,11 +100,11 @@
       "mode": "webp-lossy-q92",
       "width": 3840,
       "height": 2160,
-      "originalBytes": 10768597,
-      "runtimeBytes": 1561198,
-      "savedBytes": 9207399,
-      "originalSha256": "3dec2755690a5d4708f8f18f92e28b61d261c8be8b5310c2218dfebb9f80ec1f",
-      "runtimeSha256": "9cbd640f0288aa57fa06a058ce4b0d35e1f6d22f184b083fc69d4dd9068aed3f"
+      "originalBytes": 10665483,
+      "runtimeBytes": 1454716,
+      "savedBytes": 9210767,
+      "originalSha256": "bb2dd4cbcacfd8e5e0803e3f47d33157c00a9de25856d2ce43463cd3be3eb30a",
+      "runtimeSha256": "8e64d0ab71a971a75effebb8138b2bb5662f64aab35a8bfe8fb1f215f6ce6c83"
     },
     "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png": {
       "source": "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_estanterias_v2_4k.png",
@@ -4427,7 +4427,7 @@
       "runtimeSha256": "f6f8e8637e9166bc4addfd115899fce466b49abdfaace35fa0ebce4f1d024100"
     }
   },
-  "updatedAt": "2026-08-03T21:33:24.8767664Z",
+  "updatedAt": "2026-08-06T00:39:05.7424062Z",
   "mediaConversions": {
     "assets/audio/music/minigames/cae_a_mis_pies.wav": {
       "source": "assets/audio/music/minigames/cae_a_mis_pies.wav",
