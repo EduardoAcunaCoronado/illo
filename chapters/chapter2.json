@@ -2232,20 +2232,48 @@
         },
         {
           "character": "3C",
-          "text": "La pantalla muestra el anuncio: «CONCIERTO EXCLUSIVO — Seraphyna en ECCHI LAND. Calle Hentai, nº 69. A las afueras de Furrielva: coge la autovía y sal por el 69. Una noche que no olvidarás.» En el pie, una mariposa azul parpadea donde no debería haber ningún logotipo.",
+          "text": "La pantalla muestra el anuncio: «CONCIERTO EXCLUSIVO — Seraphyna en ECCHI LAND. Calle Hentai, nº 69. A las afueras de Furrielva: coge la autovía y sal por el 69. Una noche que no olvidarás.»",
           "actions": [
             {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "left",
-              "pose": "concierto"
+              "type": "hideCharacter",
+              "position": "left"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
+            },
+            {
+              "type": "hideDialog"
+            },
+            {
+              "type": "showCG",
+              "path": "assets/images/characters/iphone5/iphone5_concierto.gif",
+              "duration": 650,
+              "size": "auto 82%",
+              "position": "center"
+            },
+            {
+              "type": "wait",
+              "value": 5000
             }
           ]
+        },
+        {
+          "character": "3C",
+          "text": "El remitente aparece desconocido y con interferencias llenas de mariposas azules."
         },
         {
           "character": "Edu",
           "text": "¿Seraphyna? ¿Dando un concierto? ...Espera, ¿«a las afueras de Furrielva»? Tío, si eso ya no es ni la ciudad. Eso es otro sitio entero.",
           "actions": [
+            {
+              "type": "hideCG",
+              "duration": 250
+            },
+            {
+              "type": "wait",
+              "ms": 250
+            },
             {
               "type": "showCharacter",
               "character": "edu",
@@ -2375,17 +2403,10 @@
           "text": "...No lo sé. Yo estaba convencidísimo de estar en el mejor sitio del mundo, y ya has visto cómo acabé. Vamos a verlo. Aunque sea para preguntárselo a la cara.",
           "actions": [
             {
-              "type": "animateCharacter",
+              "type": "showCharacter",
               "character": "edu",
               "position": "right",
-              "poses": [
-                "thinking",
-                "worried",
-                "determined"
-              ],
-              "frameMs": 270,
-              "loop": false,
-              "untilAdvance": false
+              "pose": "determined"
             }
           ]
         },

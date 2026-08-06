@@ -201,7 +201,7 @@ principales actuales son:
 | Exploración de Furry Maps | Ratón o toque para elegir ubicaciones; `Tab` y `Enter` permiten navegación por teclado. |
 | Persecución de gatos | Flechas o `WASD` para recorrer la cuadrícula sin que alcancen a Samu. |
 | Recolección de guindillas | Izquierda/derecha, `A`/`D` o ratón. Recoge guindillas y evita botellas. |
-| Bullet hell de Kingdom Ketchup | Flechas o `WASD` para moverse y `Espacio` para disparar guindillas. |
+| Bullet hell de Kingdom Ketchup | Flechas o `WASD` para moverse con respuesta directa; `Espacio` o clic para disparar guindillas. |
 | Conducción | Ratón, `WASD` o flechas para moverse; `P` o el botón visible pausan el juego y `Esc` abre la pausa global. |
 | Ritmo | Pulsa las teclas indicadas en pantalla o toca los carriles al cruzar la línea. |
 | Vuelo de Edu | Ratón o `W`/`S` para altura; `Espacio` o clic para impulsar; `P` pausa el vuelo y `Esc` abre la pausa global. |
@@ -1531,13 +1531,15 @@ Acepta `value` o `ms`. El valor está en milisegundos (1000 = 1 segundo).
 Combinado con `hideDialog` sirve para dejar una imagen sola en pantalla unos
 segundos antes de que entre el texto. Así aparece la caja de botellas de kétchup
 en la **Escena 4.5: El tapón dorado** del capítulo 2: se oculta el bocadillo, el
-CG entra con su fundido de 650 ms y se esperan 3 s antes de la narración.
+CG entra con su fundido de 650 ms y se esperan 5 s antes de la narración. El
+correo del concierto replica el patrón: oculta los personajes y el diálogo,
+presenta `iphone5_concierto.gif` centrado al 82 % y espera también 5 s.
 
 ```json
 "actions": [
   { "type": "hideDialog" },
   { "type": "showCG", "path": "assets/images/cg/chapter2/golden_cap_reveal_4k.png", "duration": 650 },
-  { "type": "wait", "value": 3000 }
+  { "type": "wait", "value": 5000 }
 ]
 ```
 
@@ -2841,6 +2843,10 @@ Este conserva su último tramo opaco debajo, por lo que no aparece el fondo fijo
 ni un frame negro durante la mezcla. Después se pausa y rebobina la copia antigua
 para reutilizarla en la vuelta siguiente. Al abandonar el menú se cancelan tanto
 el `requestAnimationFrame` de vigilancia como el temporizador del fundido.
+Los paneles de **Configuración**, **Capítulos** y **Galería** retiran los controles
+del menú, pero conservan el fondo visible y su vigilancia activa. De este modo el
+MP4 continúa alternando sus dos reproductores mientras el usuario navega por esos
+paneles y no queda detenido en el último fotograma al regresar.
 
 La reconstrucción 4K desde `assets/video/menu/menu_loop_old.mp4` es reproducible con
 `scripts/render_menu_loop_4k.py` y `realesrgan-ncnn-vulkan`. La interpolación
@@ -3856,6 +3862,13 @@ parcial en `localStorage`; consulta [Estado, continuidad y navegación](#estado-
   marcas completamente ficticias.
   Comparten el acabado anime cinematográfico, la luz cálida de las 16:00 y la
   dirección artística de `workbench/sources/cutscenes/chapter3/opening_samu/storyboard/`.
+  Los portales rojos preintegrados se retiraron de los tres fondos: El Jarrón y
+  Noche reconstruyen sus estanterías, mientras que Mercaguasa recupera una
+  entrada rectangular acristalada, sin arco ni expositores exteriores de
+  botellas. Cada local anticipa el hallazgo posterior con una
+  composición integrada del mismo prop transparente detrás del cristal
+  `assets/images/props/chapter2/caja_botellas_ketchup.png`, basado en las cajas
+  de `golden_cap_reveal_4k`.
 - Batalla contra Micaela Michis (minigame gatos)
 - Micaela presenta la persecución y cierra la ruta con un mitin político absurdo
   a favor de los gatos: cajas de cartón por decreto, atún subvencionado,
@@ -4630,12 +4643,13 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   mínimo de cero. La ronda nunca bloquea la historia y la puntuación se guarda
   como `gameState.chiliPower`.
 - `ketchupBoss` integra el bullet hell de José Manuel desde `master`: Samu se
-  mueve en dos ejes, dispara guindillas y esquiva los patrones de ketchup de
-  Zip. Más poder picante aumenta el daño y la cadencia de Samu, y reduce tanto
-  la velocidad como la frecuencia de los ataques enemigos.
-- Los proyectiles normales de Zip restan una vida. El anillo de kétchup negro
-  del ataque especial usa la botella corrupta, resta exactamente dos vidas por
-  impacto y limita el resultado a cero antes de refrescar los corazones del HUD.
+  mueve en dos ejes con respuesta directa al teclado, dispara guindillas y
+  esquiva los patrones de ketchup de Zip. Más poder picante aumenta el daño y
+  la cadencia de Samu, y reduce tanto la velocidad como la frecuencia de los
+  ataques enemigos.
+- Los proyectiles de Zip restan una vida por impacto, incluidos los patrones de
+  kétchup negro del ataque especial. El HUD limita el resultado a cero antes de
+  refrescar los corazones.
 - Escuchar la recomendación de Neit entrega `caja_guindillas`. Samu todavía no
   entiende por qué podría necesitarla, pero el objeto aporta 12 puntos extra de
   picante antes del bullet hell; el HUD identifica explícitamente la bonificación.
@@ -4689,6 +4703,25 @@ botones grandes de Silencio/Teclado/Altavoz/Colgar y una tipografía display má
 legible. Cada contacto tiene identidad propia y siempre humana: Edu usa azul,
 Tony rosa y José verde. Las variantes finales están en
 `assets/images/characters/iphone5/phone_call_*_humano_v2.png`.
+
+La pose de correo `iphone5:concierto` utiliza ahora
+`assets/images/characters/iphone5/iphone5_concierto.gif`. El mensaje muestra el
+remitente `¿¿¿???`, el destinatario `edu@wildsoft.es` y la fecha `Hoy, 18:00`;
+el cuerpo ya no contiene el texto ni el cartel anteriores y muestra, ajustado a
+todo el interior de un visor de neón y a sus esquinas redondeadas, el vídeo
+promocional de Seraphyna. El GIF de 921×1708
+integra 39 fotogramas en bucle durante 4,82 s; mantiene estática la interfaz y
+concentra ráfagas breves de glitch únicamente en la fila del remitente. Durante
+los ocho fotogramas que forman esas ráfagas aparecen pequeñas mariposas azules
+de neón, con aleteo, ecos
+cian/azul y desplazamiento por bandas; no invaden `Para`, `Fecha` ni el visor.
+El sprite fuente con alfa se conserva en
+`workbench/originals/runtime/assets/images/effects/iphone5_neon_butterfly.png`.
+El PNG RGBA maestro del móvil se conserva en
+`workbench/originals/runtime/assets/images/characters/iphone5/iphone5_concierto.png`
+y el MP4 usado como fuente de animación en
+`assets/video/cutscenes/chapter2/mas_de_lo_que_ven_tus_ojos.mp4`. Ya no se carga
+un elemento de vídeo adicional durante la pose.
 
 La llamada de Edu compone `phone_call_edu_humano_v2_frame.png` con la capa
 `phone_call_edu_humano_v2_contact_canvas.png`. Ambos PNG comparten un lienzo

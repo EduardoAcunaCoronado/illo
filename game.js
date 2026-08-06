@@ -800,7 +800,7 @@ function settingsMarkup() {
       (g, i) => `
             <button type="button" class="nm-tab${i === 0 ? " is-active" : ""}" role="tab"
                     aria-selected="${i === 0}" aria-controls="nm-pane-${g.id}" data-tab="${g.id}">
-                <img class="nm-tab-icon" src="${g.icono}" alt="" aria-hidden="true">
+                <img class="nm-tab-icon" src="${g.icono}" alt="" aria-hidden="true" draggable="false">
                 <span>${g.titulo}</span>
             </button>`,
     )
@@ -2371,9 +2371,11 @@ applyMenuVideoRate();
 
 function menuVideoVisible() {
   const stack = menuVideoStackEl();
-  return !!stack &&
-    !stack.classList.contains("hidden") &&
-    !mainMenu.classList.contains("hidden");
+  // Configuración, Capítulos y Galería ocultan el contenido de `mainMenu`, pero
+  // mantienen este fondo visible detrás de sus overlays. El monitor debe seguir
+  // activo en esos paneles; si se detiene, el MP4 llega al final y al volver al
+  // menú queda congelado en su último fotograma.
+  return !!stack && !stack.classList.contains("hidden");
 }
 
 function cancelMenuVideoScheduling() {

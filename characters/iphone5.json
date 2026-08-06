@@ -3,8 +3,7 @@
   "color": "#37dff5",
   "poses": {
     "neutral": "assets/images/characters/iphone5/iphone5.webp",
-    "concierto": "assets/images/characters/iphone5/iphone5_concierto.webp",
-    "concierto_video": "assets/video/cutscenes/chapter2/mas_de_lo_que_ven_tus_ojos.mp4",
+    "concierto": "assets/images/characters/iphone5/iphone5_concierto.gif",
     "edu": "assets/images/characters/iphone5/phone_call_edu_humano_v2_frame.webp",
     "edu_humano": "assets/images/characters/iphone5/phone_call_edu_humano_v2_frame.webp",
     "jose": "assets/images/characters/iphone5/phone_call_jose_humano_v2.webp",
