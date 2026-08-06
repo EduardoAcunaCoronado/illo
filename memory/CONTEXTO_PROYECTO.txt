@@ -294,7 +294,7 @@ MISTERIOS Y SEMILLAS DELIBERADAMENTE ABIERTOS
 FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - index.html monta un escenario fijo 1280×720 escalado a la ventana.
 - game.js controla menú, selector de capítulos, bucle de avance, fin de capítulo,
-  configuración de volumen, menú de escenas y retroceso por escena.
+  configuración de volumen, menú de escenas y retroceso por diálogo.
 - engine.js interpreta JSON, acciones, diálogo con máquina de escribir, poses, sprites,
   fondos, audio, vídeo, CG, efectos, decisiones, estados y minijuegos.
 - El clic durante el tecleo completa la línea; el siguiente avance continúa el guion.
@@ -309,14 +309,13 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
   fondo deben declararse después de setBackground.
 - Menú de escenas: puede saltar a cualquier escena del capítulo, incluso desde una
   elección; se oculta durante un minijuego activo.
-- Retroceso: la unidad es la escena, no la línea. Restaura gameState, rescates, llamadas,
-  inventario, storyDelay y nextChapter a la foto tomada al entrar. Si ya se avanzó algún
-  diálogo en la escena actual vuelve al principio de ESA escena; si se acaba de entrar,
-  sale a la anterior de la pila sceneHistory (se desapila solo la escena actual). Si la
-  escena vino de una elección, la anterior es la escena donde se decidió.
-  Cada escena se apila en el instante del cambio (goToScene, elección o fin de escena),
-  no al pintar su primera línea: entre ambas cosas el bucle espera un clic y el historial
-  se quedaba desfasado.
+- Retroceso: la unidad es cada diálogo realmente mostrado. `dialogueTimeline` conserva
+  hasta 1200 presentaciones con estado/escenario y un checkpoint `resume`; el cursor
+  puede cruzar capítulos. Avanzar después de retroceder recorre las instantáneas sin
+  repetir decisiones, acciones ni minijuegos. Durante un minijuego vuelve al diálogo
+  anterior; en el primer diálogo de un capítulo alcanza el último del anterior.
+  `sceneHistory` queda reservado al menú Escenas. La restauración reconcilia audio por
+  ruta/ID: una música que ya es la correcta no se reinicia y conserva su posición.
 - Estados que importan:
   · rescued: orden/progreso de amigos.
   · completedCalls: vestigio del antiguo sistema de llamadas, aún soportado por engine.

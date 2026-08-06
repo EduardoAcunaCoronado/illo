@@ -142,8 +142,10 @@ En la parte superior aparecen cuando son aplicables:
 - **Escenas**: lista todas las escenas del capítulo. Las actuales y visitadas se
   distinguen visualmente; volver a una visitada recupera su estado, mientras que
   saltar a una aún no visitada conserva el progreso actual.
-- **Retroceder**: vuelve al comienzo de la escena anterior y restaura fondo,
-  personajes, música, inventario y estado narrativo de ese momento.
+- **Retroceder**: vuelve a la línea de diálogo anterior y recupera su hablante,
+  fondo, personajes, poses y música. Las decisiones ya tomadas se conservan: al
+  avanzar de nuevo se recorre la misma ruta sin repetir elecciones ni minijuegos.
+  Desde el primer diálogo de un capítulo puede volver al último del anterior.
 
 Junto al nombre del hablante aparece un cursor-retrato. Mientras se escribe una
 frase acompaña el último grafema visible y al terminar regresa suavemente al
@@ -254,8 +256,9 @@ conectada al menú ni se ejecuta como guardado automático.
 - Cerrar o recargar puede perder la ruta en curso.
 - **Capítulos** sirve para retomar aproximadamente desde el comienzo de un
   capítulo, siempre con estado limpio.
-- El historial de **Escenas** y **Retroceder** sólo existe durante el capítulo
-  activo y conserva hasta 60 entradas.
+- **Escenas** conserva hasta 60 entradas del capítulo activo. **Retroceder** usa
+  una línea temporal separada de hasta 1200 diálogos y puede cruzar capítulos de
+  la partida en curso. Ambos historiales se pierden al salir o recargar.
 - Los ajustes de sonido, ventana y ayudas sí se guardan.
 
 ## Problemas habituales del jugador
@@ -556,8 +559,10 @@ campos y ejemplos de cada acción.
 - `completedCalls`: llamadas completadas; persiste.
 - `storyPressure`: coste acumulado canónico entre capítulos.
 - `storyDelay`: alias sincronizado que utilizan acciones y condiciones antiguas.
-- `sceneHistory`: hasta 60 snapshots del capítulo actual para Escenas y
-  Retroceder; incluye escenario, audio, efectos y estado narrativo.
+- `sceneHistory`: hasta 60 snapshots del capítulo actual para el menú **Escenas**.
+- `dialogueTimeline`: hasta 1200 diálogos realmente vistos, con cursor de
+  reproducción, presentación exacta y checkpoint de reanudación; es la fuente
+  de **Retroceder** y se conserva durante el encadenado de capítulos.
 
 `sceneList()` devuelve siempre todas las entradas de `currentChapter.scenes` y
 añade las marcas `actual` y `visitada` sólo para su presentación. No filtres por
@@ -5831,10 +5836,11 @@ retroceder limpia también vídeos integrados, frames internos, poses, glitches 
 temporizadores de entrada/salida para que ningún hueco conserve trabajo invisible
 de la escena anterior.
 
-El historial de escenas guarda también una foto del escenario: fondo, personaje,
-pose, orientación, audios activos por ID, tinte, viñeta y camas WebAudio. Retroceder
-o saltar a una escena restaura esa composición y cancela animaciones antiguas,
-evitando sprites, músicas o fundidos residuales. El selector oculta escenas futuras durante una
+Los historiales guardan también una foto del escenario: fondo, personaje, pose,
+orientación, escala, desplazamiento, audios activos por ID y estado de pausa,
+tinte, viñeta y camas WebAudio. Retroceder o saltar a una escena restaura esa
+composición y cancela animaciones antiguas, evitando sprites, músicas o fundidos
+residuales. El selector oculta escenas futuras durante una
 partida normal; `debugMode` permite verlas para pruebas.
 
 Las entradas del selector son operables con ratón, Enter o Espacio y exponen su
@@ -5846,8 +5852,8 @@ salto dentro del único bucle de juego: no crea una segunda reproducción concur
 `storyPressure` es la presión narrativa persistente. `storyDelay` continúa como
 alias para no romper capítulos y minijuegos existentes, pero ambos se sincronizan
 en `setDelay` y `addDelay`. Cargar el capítulo siguiente ya no borra la presión;
-solo **Nueva partida** o elegir un capítulo desde el selector la reinician. El
-historial de escenas guarda ambos valores para que retroceder sea determinista.
+solo **Nueva partida** o elegir un capítulo desde el selector la reinician. La
+línea temporal de diálogo guarda ambos valores para que retroceder sea determinista.
 
 ### Audio de la revisión
 
@@ -5887,48 +5893,46 @@ La ejecución de cierre verificada el **2026-08-06** terminó sin errores con
 **7 capítulos, 64 escenas, 921 líneas, 27 personajes y 1654 referencias de
 assets**.
 
-### Retroceder: a esta escena o a la anterior (2026-08-03)
+### Retroceder por línea de diálogo
 
-El botón **Retroceder** siempre lleva al **principio de una escena**, y ahora
-elige cuál según lo avanzado que se esté dentro de la escena actual:
+`engine.dialogueTimeline` registra únicamente frases que llegaron a mostrarse.
+Cada entrada contiene dos puntos distintos:
 
-- **Ya se ha avanzado algún diálogo aquí** → vuelve al principio de **esta misma
-  escena**. Es el caso de quien se pasa de clic: repite lo que acaba de leer sin
-  salirse de la escena.
-- **Recién entrados** (aún en el primer diálogo de la escena) → sale a la
-  **escena anterior**, la que se dejó justo antes.
+- La **presentación** de la frase: capítulo, escena, índice de línea, texto ya
+  resuelto, hablante/`speakingAs`, estado narrativo y foto del escenario.
+- El checkpoint **`resume`** posterior: cursor del guion y estado desde el que se
+  debe continuar una vez agotado el tramo histórico.
 
-Si la escena actual vino de una **elección**, salir de ella lleva a la escena
-donde se tomó la decisión, y allí la pregunta se vuelve a plantear.
+`dialogueTimelineCursor` señala la frase visible. `dialogueIsCurrent` distingue
+una frase que se está escribiendo o espera avance de un tramo sin diálogo. Por
+eso, durante un minijuego o una transición, Retroceder restaura el último diálogo
+en vez de saltarse dos; con una frase visible resta exactamente uno. La entrada
+se marca como actual antes del primer grafema para que el botón no aparezca de
+forma incorrecta durante la primera línea de la partida.
 
-El contador `engine.sceneAdvances` cuenta los diálogos mostrados dentro de la
-escena en curso; se pone a cero en cada entrada de escena y es lo que distingue
-los dos casos. Por eso el botón aparece también en la primera escena del
-capítulo en cuanto se ha avanzado un diálogo: hay algo a lo que volver.
+Al retroceder, `showDialogueTimelineEntry()` restaura directamente la instantánea
+y muestra el texto completo. `nextLine()` entra en modo `dialoguePlayback`: el
+avance recorre las entradas siguientes sin ejecutar `actions`, `afterActions`,
+`choices` ni `minigame`. Al llegar al extremo más reciente,
+`resumeAfterDialoguePlayback()` recupera el checkpoint y el guion vivo continúa.
+Así se respetan la opción elegida y el resultado del minijuego. Si se navega a
+otra escena desde **Escenas**, el futuro incompatible se poda antes de crear la
+nueva rama.
 
-El "de dónde vengo" es la pila `engine.sceneHistory`, donde cada escena pisada
-apila su índice junto a la foto del progreso (`gameState`, `rescued`,
-`completedCalls`, `inventory`, `storyDelay`, `storyPressure`, `stage` y
-`nextChapter`). Al retroceder se
-**desapila solo la escena actual** y se reproduce la de debajo, que permanece en
-la pila con su foto original. Antes se desapilaban las dos y se confiaba en que
-la escena destino se volviera a registrar sola al reproducirse: cada retroceso
-comía dos escalones. El menú de **Escenas** sigue la misma regla: al saltar a una
-escena ya visitada, el historial se recorta hasta esa visita incluida.
+Los capítulos cargados se conservan en `engine.chapters`. El reset intermedio de
+`endGame()` usa `{ preserveDialogueTimeline: true }`, de modo que el primer
+diálogo del capítulo nuevo puede volver al último del anterior sin reproducir
+intros ni pantallas de fin. Nueva partida, selector de capítulos, salida al menú
+y final definitivo sí vacían la línea temporal. No se serializa en disco.
 
-**La escena se apila en el momento del cambio de escena**, no cuando se pinta su
-primera línea: `recordSceneEntry()` se llama desde `jumpToScene()` (acción
-`goToScene`), desde la rama de elección de `nextLine()` (después de
-`registerCall`, que forma parte del estado de entrada) y al pasar de escena por
-agotarse sus líneas. Entre el cambio y la primera línea de la escena nueva hay
-una espera real: al elegir una opción, o al leer la última línea de una escena,
-`currentScene` ya apunta a la siguiente mientras el bucle sigue parado esperando
-el clic del jugador. Apilando tarde, en ese hueco el historial acababa en la
-escena anterior y retroceder hacía cualquier cosa: reiniciaba una escena que
-todavía no se había visto (los diálogos contados eran los de la escena vieja) o
-desapilaba la entrada equivocada y caía en la primera escena del capítulo. Por
-seguridad, el caso "volver al principio de esta escena" exige además que la cima
-del historial sea la escena actual.
+La restauración usa `clearStage({ preserveAudio: true })` y después reconcilia el
+audio por ruta e ID. Una pista que ya es la correcta conserva el mismo elemento
+`Audio` y su `currentTime`, incluso si cambia su alias interno; sólo se sustituye
+cuando la ruta es distinta. Volumen, loop y pausa sí se ajustan a la instantánea.
+Fondo nulo, personajes ocultos, pose, orientación, escala y desplazamiento se
+restauran explícitamente. Abortar una elección, reintento o minijuego marca
+`_navigationInterrupted` para impedir que el guion avance o selle un checkpoint
+posterior a una actividad que no terminó.
 
 ### Ciervo del patio preparado para escenas futuras (2026-08-04)
 

@@ -68,9 +68,18 @@ class VisualNovelEngine {
         this.audioInstances = {}; // Rastrear instancias de audio
         this.currentMusic = null; // Música de fondo actual
         this.sceneEndedByChoice = false; // Indica si la escena terminó por una elección
-        this.sceneHistory = []; // Escenas pisadas en el capítulo, para retroceder
+        this.sceneHistory = []; // Escenas pisadas en el capítulo para el selector
         this._lastSeenScene = null; // Última escena registrada en sceneHistory
-        this.sceneAdvances = 0; // Diálogos mostrados dentro de la escena actual
+        // Línea temporal de instantáneas de diálogos realmente vistos. Retroceder
+        // navega por estas instantáneas en vez de volver a ejecutar el guion:
+        // así conserva decisiones y resultados de minijuegos y puede cruzar
+        // capítulos sin repetir efectos secundarios.
+        this.dialogueTimeline = [];
+        this.dialogueTimelineCursor = -1;
+        this.dialoguePlayback = false;
+        this.dialogueIsCurrent = false;
+        this._navigationInterrupted = false;
+        this._chapterSceneHistories = {};
         this.completedCalls = []; // Rastrear las llamadas completadas
         this.nextChapter = null; // Capítulo a cargar (ruta ramificada elegida)
         this.rescued = []; // Personajes rescatados, en orden (persiste entre capítulos)
@@ -139,16 +148,21 @@ class VisualNovelEngine {
             const chapter = await response.json();
 
             const isNewChapter = this.lastChapterName !== chapterName;
+            if (isNewChapter && this.lastChapterName) {
+                this._chapterSceneHistories[this.lastChapterName] = this.sceneHistory;
+            }
             this.lastChapterName = chapterName;
 
             this.currentChapter = chapter;
+            this.chapters[chapterName] = chapter;
             this.currentScene = 0;
             this.currentLine = 0;
             this._lastDialogEmotionKey = null;
-            // El historial de retroceso es por capítulo: no se vuelve al anterior
+            // El historial del selector sí es local a cada capítulo. La línea
+            // temporal de diálogo se conserva aparte para poder cruzarlos.
             this.sceneHistory = [];
+            this._chapterSceneHistories[chapterName] = this.sceneHistory;
             this._lastSeenScene = null;
-            this.sceneAdvances = 0;
             this.nextChapter = null; // Limpiar la ruta al cargar un capítulo nuevo
             // storyDelay se conserva como alias histórico, pero la fuente de
             // verdad entre capítulos es storyPressure. Al cargar una escena se
@@ -769,8 +783,8 @@ class VisualNovelEngine {
         this.currentScene = sceneIndex;
         this.currentLine = 0;
         this.pendingSceneJump = true;
-        // Apilarla ya, no cuando se pinte: entre el salto y su primera línea el
-        // bucle puede quedarse esperando un clic (ver el bloque de RETROCEDER).
+        // Registrar ya el destino para que el selector marque la escena correcta
+        // incluso mientras el bucle espera el clic previo a su primera línea.
         this.recordSceneEntry();
         // Al cambiar de escena, cualquier CG a pantalla se retira solo
         this.hideCG(250);
@@ -882,10 +896,9 @@ class VisualNovelEngine {
             document.querySelectorAll(
                 '.minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame'
             ).forEach(o => o.remove());
-            // La música y los efectos del minijuego no se van con el overlay.
-            // Quien nos ha sacado (otra escena, retroceder, menú) repinta luego
-            // su propio ambiente sonoro.
-            this.stopAllSounds();
+            // Quien nos ha sacado (otra escena, retroceder, menú) reconcilia a
+            // continuación su ambiente sonoro. No se para aquí la música: si el
+            // destino usa la misma pista debe seguir en su posición, sin reinicio.
         } finally {
             this._abortarMinijuego = null;
         }
@@ -898,7 +911,10 @@ class VisualNovelEngine {
     }
 
     abortarMinijuego() {
-        if (this._abortarMinijuego) this._abortarMinijuego();
+        if (this._abortarMinijuego) {
+            this._navigationInterrupted = true;
+            this._abortarMinijuego();
+        }
     }
 
     // Investigación narrativa de Furrielva. Furry Maps presenta las zonas como
@@ -1982,7 +1998,10 @@ class VisualNovelEngine {
     }
 
     abortarRetry() {
-        if (this._abortarRetry) this._abortarRetry();
+        if (this._abortarRetry) {
+            this._navigationInterrupted = true;
+            this._abortarRetry();
+        }
     }
 
     // Minijuego: Micaela Michis (El Jarrón). Estilo Pac-Man: Samu se mueve
@@ -6136,7 +6155,9 @@ class VisualNovelEngine {
                 character: characterKey,
                 pose,
                 flipped: !!flipped,
-                hidden: false
+                hidden: false,
+                offsetY: characterVerticalOffset,
+                scale: characterScale
             };
             this.startCharacterFrameAnimation(characterKey, position, pose);
         }
@@ -7796,7 +7817,10 @@ class VisualNovelEngine {
     }
 
     abortarEleccion() {
-        if (this._abortarEleccion) this._abortarEleccion();
+        if (this._abortarEleccion) {
+            this._navigationInterrupted = true;
+            this._abortarEleccion();
+        }
     }
 
     // ¿Cumple la línea su condición "showIf"? Soporta:
@@ -7822,13 +7846,28 @@ class VisualNovelEngine {
     }
 
     async nextLine() {
+        // Tras retroceder, el avance normal recorre primero los diálogos ya
+        // vistos. No vuelve a ejecutar acciones, elecciones ni minijuegos.
+        if (this.dialoguePlayback) {
+            if (this.dialogueTimelineCursor < this.dialogueTimeline.length - 1) {
+                return this.showDialogueTimelineEntry(this.dialogueTimelineCursor + 1);
+            }
+            await this.resumeAfterDialoguePlayback();
+        }
+
+        // Al entrar aquí desde waitForClick, el diálogo anterior ya fue
+        // consumido. Durante acciones o minijuegos, el último diálogo de la
+        // línea temporal pasa a ser precisamente el destino de Retroceder.
+        this.dialogueIsCurrent = false;
+        this._navigationInterrupted = false;
+
         // Los efectos declarados «hasta avanzar» sobreviven al tipeo y a la
         // espera del jugador, pero desaparecen antes de ejecutar la línea nueva.
         this.clearAdvanceBoundCharacterEffects();
         const scene = this.getCurrentScene();
         if (!scene || !scene.lines) return false;
 
-        // Guardar el progreso al pisar una escena nueva (para poder retroceder)
+        // Guardar el progreso al pisar una escena nueva para el menú Escenas.
         this.recordSceneEntry();
 
         let line = this.getCurrentLine();
@@ -7841,6 +7880,13 @@ class VisualNovelEngine {
             line = this.getCurrentLine();
         }
         if (!line) return false;
+
+        const finishLine = (result) => {
+            const interrupted = this._navigationInterrupted;
+            if (!interrupted) this.updateDialogueResumeCheckpoint();
+            this._navigationInterrupted = false;
+            return result;
+        };
 
         // Las acciones de una línea pueden fijar su duración, pero el valor no
         // debe heredarse accidentalmente por el siguiente diálogo.
@@ -7861,6 +7907,7 @@ class VisualNovelEngine {
         if (line.actions) {
             for (let action of line.actions) {
                 await this.executeAction(action);
+                if (this._navigationInterrupted) return finishLine(true);
                 // Si una acción solicitó saltar de escena, detener el
                 // procesamiento de esta línea y continuar en el nuevo destino.
                 if (this.pendingSceneJump) {
@@ -7873,24 +7920,24 @@ class VisualNovelEngine {
 
         // Mostrar diálogo si existe (con posible variante por consecuencia)
         if (line.text) {
-            // Cuántos diálogos llevamos vistos DENTRO de esta escena. Es lo que
-            // distingue "acabo de entrar" (1) de "ya he avanzado por aquí" (>1),
-            // y con eso decide retroceder si vuelve al principio de esta escena
-            // o sale a la anterior. Se pone a cero al entrar en cada escena.
-            this.sceneAdvances++;
             const resolvedLine = this.resolveConsequenceLine(line);
             const durationOverride = resolvedLine.textDuration != null
                 ? resolvedLine.textDuration
                 : this._lineTextDurationOverride;
-            await this.displayDialog(durationOverride == null
+            const displayedLine = durationOverride == null
                 ? resolvedLine
-                : Object.assign({}, resolvedLine, { textDuration: durationOverride }));
+                : Object.assign({}, resolvedLine, { textDuration: durationOverride });
+            this.recordDialogueMoment(displayedLine);
+            // Desde el primer grafema esta ya es la frase actual. Así el botón
+            // nunca trata el diálogo que se está escribiendo como un tramo vacío.
+            this.dialogueIsCurrent = true;
+            await this.displayDialog(displayedLine);
         }
 
         // jumpToScene ya dejó currentScene/currentLine apuntando al destino. Si
         // además había diálogo, el bucle esperará el clic normal antes de pedir
         // la línea 0 de la escena nueva; si no lo había, continuará al instante.
-        if (jumpedDuringActions) return true;
+        if (jumpedDuringActions) return finishLine(true);
 
         // Acciones que deben ocurrir justo cuando termina de escribirse el
         // diálogo. A diferencia de un `delay` fijo, también quedan sincronizadas
@@ -7898,9 +7945,10 @@ class VisualNovelEngine {
         if (line.afterActions) {
             for (let action of line.afterActions) {
                 await this.executeAction(action);
+                if (this._navigationInterrupted) return finishLine(true);
                 if (this.pendingSceneJump) {
                     this.pendingSceneJump = false;
-                    return true;
+                    return finishLine(true);
                 }
             }
         }
@@ -7911,7 +7959,7 @@ class VisualNovelEngine {
             // null = la elección se abortó desde fuera (se pidió ir a otra
             // escena). No se elige nada ni se avanza: se devuelve el control al
             // bucle, que atenderá el salto que hay pendiente.
-            if (!selectedChoice) return true;
+            if (!selectedChoice) return finishLine(true);
             this.history.push({
                 scene: this.currentScene,
                 line: this.currentLine,
@@ -7969,13 +8017,11 @@ class VisualNovelEngine {
                 // Registrar la llamada solo si de verdad entramos en la escena de llamada
                 this.registerCall(this.getCurrentScene());
 
-                // Apilar la escena elegida AHORA (después de registrar la llamada,
-                // que forma parte del estado con el que se entra en ella). Así,
-                // mientras el jugador sigue viendo la pregunta, retroceder ya sabe
-                // que la escena de la decisión es la anterior y vuelve a ella.
+                // Apilar la escena elegida después de registrar la llamada, que
+                // forma parte del estado recuperable desde el menú Escenas.
                 this.recordSceneEntry();
 
-                return true;
+                return finishLine(true);
             } else if (selectedChoice.nextLine !== undefined) {
                 this.currentLine = selectedChoice.nextLine;
             } else {
@@ -7990,23 +8036,22 @@ class VisualNovelEngine {
             // Si la escena fue seleccionada por una elección, no avanzar automáticamente
             if (this.sceneEndedByChoice) {
                 this.sceneEndedByChoice = false;
-                return false; // Fin de la escena (sin continuar a la siguiente)
+                return finishLine(false); // Fin de la escena (sin continuar a la siguiente)
             }
 
             this.currentScene++;
             this.currentLine = 0;
 
             if (this.currentScene >= this.currentChapter.scenes.length) {
-                return false; // Fin del capítulo
+                return finishLine(false); // Fin del capítulo
             }
 
-            // La última línea de la escena sigue en pantalla esperando el clic,
-            // pero ya estamos en la siguiente: apilarla ahora para que retroceder
-            // vuelva al principio de la escena que se acaba de leer.
+            // La última línea sigue en pantalla, pero el cursor ya está en la
+            // siguiente escena; registrarla ahora mantiene exacto el selector.
             this.recordSceneEntry();
         }
 
-        return true;
+        return finishLine(true);
     }
 
     hideDialog() {
@@ -8033,39 +8078,185 @@ class VisualNovelEngine {
     }
 
     // ============================================================
-    // RETROCEDER (pedido en la demo del 25-jul-2026)
+    // LÍNEA TEMPORAL DE DIÁLOGO
     // ------------------------------------------------------------
-    // La escena es la unidad narrativa, así que siempre se retrocede al PRINCIPIO
-    // de una escena y se la deja volver a ejecutarse entera: sus acciones vuelven
-    // a poner el fondo, los personajes, la música y los efectos. Por eso hay que
-    // limpiar antes el escenario (si no, se quedan encima los restos de la escena
-    // de la que venimos) y devolver el progreso al estado que tenía al entrar en
-    // aquella escena (si no, cosas como "rescatado" o el inventario se contarían
-    // dos veces al repetirla).
-    //
-    // A QUÉ ESCENA SE VUELVE (dos casos, pedido el 3-ago-2026):
-    //   - Si ya se ha avanzado algún diálogo dentro de la escena actual, se
-    //     vuelve al principio de ESTA escena. Es lo que espera quien se ha
-    //     pasado de clic: repetir lo que se acaba de leer, no salir de la escena.
-    //   - Si estamos recién entrados (en su primer diálogo), se sale a la escena
-    //     ANTERIOR, la que dejamos justo antes de esta.
-    //
-    // El "de dónde vengo" es la pila `sceneHistory`: cada vez que se pisa una
-    // escena nueva se apila su índice junto a la foto del progreso. Retroceder
-    // desapila la escena actual y se queda en la de debajo, que SIGUE en la pila
-    // con su foto original; así el siguiente retroceso baja otro escalón en vez
-    // de caer siempre a la primera escena del capítulo.
-    //
-    // La escena se apila EN EL MISMO MOMENTO en que se cambia de escena (elección,
-    // goToScene o final de escena), no cuando se pinta su primera línea. Entre las
-    // dos cosas hay una espera: al elegir una opción o al leer la última línea de
-    // una escena, `currentScene` ya apunta a la escena nueva pero el bucle sigue
-    // parado esperando el clic del jugador. Si en ese hueco se apilaba tarde, el
-    // historial acababa en la escena ANTERIOR y retroceder se volvía loco: creía
-    // estar "avanzado" en la escena nueva (los diálogos contados eran los de la
-    // vieja) y reiniciaba una escena que aún no se había visto, o desapilaba la
-    // entrada equivocada y caía en la primera escena del capítulo.
+    // Cada frase visible guarda el estado exacto con el que se presentó y un
+    // punto de reanudación posterior. Retroceder solo mueve el cursor por esas
+    // entradas; avanzar desde una entrada histórica recorre la misma secuencia.
+    // Ninguna elección, acción con efectos secundarios o minijuego se reejecuta.
     // ============================================================
+
+    cloneTimelineValue(value, fallback = null) {
+        if (value === undefined) return fallback;
+        return JSON.parse(JSON.stringify(value));
+    }
+
+    captureNarrativeState() {
+        return {
+            gameState: this.cloneTimelineValue(this.gameState, {}),
+            rescued: [...(this.rescued || [])],
+            completedCalls: [...(this.completedCalls || [])],
+            inventory: [...(this.inventory || [])],
+            storyDelay: this.storyDelay,
+            storyPressure: this.storyPressure,
+            nextChapter: this.nextChapter,
+            lastMinigameResult: this.cloneTimelineValue(this.lastMinigameResult),
+            history: this.cloneTimelineValue(this.history, [])
+        };
+    }
+
+    restoreNarrativeState(snapshot) {
+        if (!snapshot) return;
+        this.gameState = this.cloneTimelineValue(snapshot.gameState, {});
+        this.rescued = [...(snapshot.rescued || [])];
+        this.completedCalls = [...(snapshot.completedCalls || [])];
+        this.inventory = [...(snapshot.inventory || [])];
+        this.storyDelay = snapshot.storyDelay || 0;
+        this.storyPressure = snapshot.storyPressure != null
+            ? snapshot.storyPressure
+            : this.storyDelay;
+        this.nextChapter = snapshot.nextChapter ?? null;
+        this.lastMinigameResult = this.cloneTimelineValue(snapshot.lastMinigameResult);
+        this.history = this.cloneTimelineValue(snapshot.history, []);
+    }
+
+    captureDialoguePresentation(line) {
+        const presentation = {};
+        [
+            'character', 'speakingAs', 'text', 'emotion', 'emocion',
+            'textAnimation', 'textEffect', 'textDuration', 'textSpeed'
+        ].forEach(key => {
+            if (line[key] !== undefined) presentation[key] = line[key];
+        });
+        return this.cloneTimelineValue(presentation, {});
+    }
+
+    captureDialogueCheckpoint() {
+        return {
+            chapter: this.lastChapterName,
+            scene: this.currentScene,
+            line: this.currentLine,
+            narrative: this.captureNarrativeState(),
+            stage: this.captureSceneStageState(),
+            lastDialogEmotionKey: this._lastDialogEmotionKey,
+            sceneEndedByChoice: this.sceneEndedByChoice,
+            pendingSceneJump: !!this.pendingSceneJump
+        };
+    }
+
+    recordDialogueMoment(line) {
+        // Una navegación manual puede crear una ruta nueva desde una entrada
+        // histórica. Las instantáneas que ya no pertenecen a esa ruta se podan.
+        if (this.dialogueTimelineCursor < this.dialogueTimeline.length - 1) {
+            this.dialogueTimeline.splice(this.dialogueTimelineCursor + 1);
+        }
+
+        const checkpoint = this.captureDialogueCheckpoint();
+        const entry = {
+            chapter: checkpoint.chapter,
+            scene: checkpoint.scene,
+            line: checkpoint.line,
+            dialog: this.captureDialoguePresentation(line),
+            narrative: checkpoint.narrative,
+            stage: checkpoint.stage,
+            lastDialogEmotionKey: checkpoint.lastDialogEmotionKey,
+            resume: checkpoint
+        };
+        this.dialogueTimeline.push(entry);
+        this.dialogueTimelineCursor = this.dialogueTimeline.length - 1;
+        this.dialoguePlayback = false;
+
+        // El recorrido completo actual tiene menos de 900 frases. El margen
+        // permite crecer sin memoria ilimitada y conserva siempre varios capítulos.
+        const limit = 1200;
+        if (this.dialogueTimeline.length > limit) {
+            const excess = this.dialogueTimeline.length - limit;
+            this.dialogueTimeline.splice(0, excess);
+            this.dialogueTimelineCursor -= excess;
+        }
+        return entry;
+    }
+
+    updateDialogueResumeCheckpoint() {
+        if (this.dialoguePlayback || this.dialogueTimeline.length === 0) return;
+        const latest = this.dialogueTimeline[this.dialogueTimeline.length - 1];
+        latest.resume = this.captureDialogueCheckpoint();
+        this.dialogueTimelineCursor = this.dialogueTimeline.length - 1;
+    }
+
+    clearDialogueTimeline() {
+        this.dialogueTimeline = [];
+        this.dialogueTimelineCursor = -1;
+        this.dialoguePlayback = false;
+        this.dialogueIsCurrent = false;
+    }
+
+    activateTimelineChapter(chapterName) {
+        const chapter = this.chapters[chapterName];
+        if (!chapter) {
+            console.warn('No se puede restaurar el capítulo del historial:', chapterName);
+            return false;
+        }
+        if (this.lastChapterName && this.lastChapterName !== chapterName) {
+            this._chapterSceneHistories[this.lastChapterName] = this.sceneHistory;
+        }
+        this.currentChapter = chapter;
+        this.lastChapterName = chapterName;
+        this.sceneHistory = this._chapterSceneHistories[chapterName] || [];
+        this._chapterSceneHistories[chapterName] = this.sceneHistory;
+        return true;
+    }
+
+    async restoreDialogueCheckpoint(checkpoint) {
+        if (!checkpoint || !this.activateTimelineChapter(checkpoint.chapter)) return false;
+        this.restoreNarrativeState(checkpoint.narrative);
+        this.currentScene = checkpoint.scene;
+        this.currentLine = checkpoint.line;
+        this.clearStage({ preserveAudio: true, immediate: true });
+        await this.restoreSceneStageState(checkpoint.stage, { reconcileAudio: true });
+        this.sceneEndedByChoice = !!checkpoint.sceneEndedByChoice;
+        this.pendingSceneJump = !!checkpoint.pendingSceneJump;
+        this._lastSeenScene = checkpoint.scene;
+        this._lastDialogEmotionKey = checkpoint.lastDialogEmotionKey || null;
+        this.updateDebugPanel();
+        return true;
+    }
+
+    async showDialogueTimelineEntry(index) {
+        const entry = this.dialogueTimeline[index];
+        if (!entry) return false;
+        const restored = await this.restoreDialogueCheckpoint({
+            chapter: entry.chapter,
+            scene: entry.scene,
+            line: entry.line,
+            narrative: entry.narrative,
+            stage: entry.stage,
+            lastDialogEmotionKey: entry.lastDialogEmotionKey,
+            sceneEndedByChoice: false,
+            pendingSceneJump: false
+        });
+        if (!restored) return false;
+
+        this.dialogueTimelineCursor = index;
+        this.dialoguePlayback = true;
+        // Una frase histórica aparece completa: Retroceder debe ser inmediato y
+        // no reproducir de nuevo el ritmo ni los blips del typewriter original.
+        await this.displayDialog(Object.assign({}, entry.dialog, {
+            textDuration: 0,
+            textSpeed: 0
+        }));
+        this.dialogueIsCurrent = true;
+        this.isWaitingForInput = true;
+        return true;
+    }
+
+    async resumeAfterDialoguePlayback() {
+        const entry = this.dialogueTimeline[this.dialogueTimelineCursor];
+        if (entry?.resume) await this.restoreDialogueCheckpoint(entry.resume);
+        this.dialoguePlayback = false;
+        this.dialogueIsCurrent = false;
+        this.isWaitingForInput = false;
+    }
 
     // Foto del progreso al entrar en una escena. Se llama desde nextLine().
     captureSceneStageState() {
@@ -8075,7 +8266,8 @@ class VisualNovelEngine {
                 id,
                 path: instance._srcPath,
                 volume: instance._baseVol != null ? instance._baseVol : 1,
-                loop: !!instance.loop
+                loop: !!instance.loop,
+                paused: !!instance.paused
             }))
             .filter(item => item.path);
         return {
@@ -8088,30 +8280,96 @@ class VisualNovelEngine {
         };
     }
 
-    restoreSceneStageState(snapshot) {
-        if (!snapshot) return;
-        if (snapshot.background) this.setBackground(snapshot.background, { cut: true });
-        for (const [position, visual] of Object.entries(snapshot.characters || {})) {
-            if (!visual || !visual.character) continue;
-            const restoredCharacter = this.showCharacter(
-                visual.character,
-                position,
-                visual.pose || 'neutral',
-                !!visual.flipped
+    reconcileAudioState(audioSnapshot = []) {
+        const desired = new Map(
+            audioSnapshot.filter(sound => sound?.id && sound.path)
+                .map(sound => [sound.id, sound])
+        );
+
+        // Si una cama musical ya reproduce la ruta deseada con otro alias,
+        // reasignar su ID en vez de pararla y crear otro Audio. La identidad
+        // audible es la pista, no el nombre interno usado por una escena.
+        for (const [desiredId, sound] of desired) {
+            const exact = this.audioInstances?.[desiredId];
+            if (exact?._srcPath === sound.path) continue;
+            const reusable = Object.entries(this.audioInstances || {}).find(
+                ([, instance]) => instance?._volKind === 'music' &&
+                    instance._srcPath === sound.path && !instance._stopping &&
+                    !instance.ended
             );
-            if (visual.hidden) {
-                Promise.resolve(restoredCharacter).then(() => {
-                    this.hideCharacter(visual.character, position);
-                });
+            if (!reusable) continue;
+            const [oldId, instance] = reusable;
+            if (exact && exact !== instance) this.fadeOutAndStop(exact, 180);
+            delete this.audioInstances[oldId];
+            this.audioInstances[desiredId] = instance;
+            this.currentMusic = instance;
+        }
+
+        // Retirar únicamente lo que no pertenece al instante restaurado. La
+        // misma ruta con el mismo ID queda viva y conserva currentTime.
+        for (const [id, instance] of Object.entries(this.audioInstances || {})) {
+            const sound = desired.get(id);
+            if (!sound || sound.path !== instance?._srcPath) {
+                this.stopSound(id, instance?._volKind === 'music' ? 180 : 0);
             }
         }
-        for (const sound of snapshot.audio || []) {
+
+        for (const sound of desired.values()) {
+            const existing = this.audioInstances?.[sound.id];
+            if (existing?._srcPath === sound.path && !existing._stopping && !existing.ended) {
+                existing._baseVol = sound.volume;
+                existing.loop = sound.loop;
+                if (sound.paused && !existing.paused) existing.pause();
+                else if (!sound.paused && existing.paused) {
+                    existing.play().catch(e => console.log('Error reanudando sonido:', e));
+                }
+                if (!existing._fadeInterval) {
+                    const factor = this.volFactor(existing._volKind || 'sfx');
+                    existing.volume = Math.max(0, Math.min(1, sound.volume * factor));
+                }
+                continue;
+            }
             this.playSound(sound.path, {
                 id: sound.id,
                 volume: sound.volume,
                 loop: sound.loop,
-                fadeIn: 180
+                autoPlay: !sound.paused,
+                fadeIn: sound.paused ? 0 : 180
             });
+        }
+    }
+
+    async restoreSceneStageState(snapshot, options = {}) {
+        if (!snapshot) return;
+        if (snapshot.background) this.setBackground(snapshot.background, { cut: true });
+        else this.clearBackground();
+        await Promise.all(Object.entries(snapshot.characters || {}).map(
+            async ([position, visual]) => {
+                if (!visual || !visual.character) return;
+                await this.showCharacter(
+                    visual.character,
+                    position,
+                    visual.pose || 'neutral',
+                    !!visual.flipped,
+                    null,
+                    visual.offsetY,
+                    visual.scale
+                );
+                if (visual.hidden) this.hideCharacter(visual.character, position);
+            }
+        ));
+        if (options.reconcileAudio) {
+            this.reconcileAudioState(snapshot.audio || []);
+        } else {
+            for (const sound of snapshot.audio || []) {
+                this.playSound(sound.path, {
+                    id: sound.id,
+                    volume: sound.volume,
+                    loop: sound.loop,
+                    autoPlay: !sound.paused,
+                    fadeIn: sound.paused ? 0 : 180
+                });
+            }
         }
         if (snapshot.juice && window.Juice && typeof window.Juice.restore === 'function') {
             window.Juice.restore(snapshot.juice);
@@ -8122,7 +8380,6 @@ class VisualNovelEngine {
         if (!this.currentChapter) return;
         if (this._lastSeenScene === this.currentScene) return;
         this._lastSeenScene = this.currentScene;
-        this.sceneAdvances = 0; // escena nueva: aún no se ha avanzado nada en ella
         this.sceneHistory = this.sceneHistory || [];
         this.sceneHistory.push({
             chapter: this.lastChapterName,
@@ -8140,14 +8397,13 @@ class VisualNovelEngine {
         if (this.sceneHistory.length > 60) this.sceneHistory.shift();
     }
 
-    // ¿Hay algo a lo que volver? (el botón se oculta si no). Hay dos motivos:
-    // queda alguna escena por debajo en la pila, o se ha avanzado dentro de la
-    // escena actual y se puede volver a su principio (esto último vale también
-    // en la primera escena del capítulo, donde antes el botón no aparecía).
+    // Si hay un diálogo actualmente visible se necesita otro por debajo. Durante
+    // acciones, transiciones o minijuegos, el último visible ya es el anterior.
     canRewind() {
-        if (!this.currentChapter) return false;
-        const hist = this.sceneHistory || [];
-        return hist.length > 1 || (hist.length === 1 && this.sceneAdvances > 1);
+        if (!this.currentChapter || this.dialogueTimelineCursor < 0) return false;
+        return this.dialogueIsCurrent
+            ? this.dialogueTimelineCursor > 0
+            : this.dialogueTimelineCursor >= 0;
     }
 
     // Deja el escenario en blanco sin tocar el progreso de la partida.
@@ -8270,64 +8526,35 @@ class VisualNovelEngine {
         this.nextChapter = foto.nextChapter;
     }
 
-    // Deja el motor listo para reproducir una escena desde su primera línea.
-    // La escena ya está en `sceneHistory` con su foto de progreso, así que se
-    // marca como vista para que recordSceneEntry no vuelva a apilarla.
-    replayScene(indiceEscena) {
-        this.clearStage();
-        this.currentScene = indiceEscena;
-        this.currentLine = 0;
-        this.sceneAdvances = 0;
-        this.sceneEndedByChoice = false;
-        this.pendingSceneJump = false;
-        this._lastSeenScene = indiceEscena;
-        this.updateDebugPanel();
+    // Retrocede exactamente una frase. Si se invoca desde un tramo sin diálogo
+    // (incluido un minijuego), recupera la última frase en vez de saltarse dos.
+    async rewindToPreviousDialogue() {
+        if (!this.canRewind()) return false;
+        const target = this.dialogueIsCurrent
+            ? this.dialogueTimelineCursor - 1
+            : this.dialogueTimelineCursor;
+        return this.showDialogueTimelineEntry(target);
     }
 
-    // Retrocede al principio de la escena actual o de la anterior, según se haya
-    // avanzado ya por esta escena o no (ver el bloque de arriba).
+    // Alias temporal para integraciones externas que todavía usen el nombre de
+    // la navegación antigua por escenas.
     rewindToPreviousScene() {
-        if (!this.canRewind()) return false;
-
-        const hist = this.sceneHistory;
-        const actual = hist[hist.length - 1];
-        const esLaActual = !!actual && actual.scene === this.currentScene;
-
-        // Caso 1: ya hemos leído más de un diálogo aquí -> al principio de ESTA
-        // escena. El historial no se toca: seguimos en la misma escena.
-        // Se exige que la cima del historial sea esta escena: si no lo es, los
-        // diálogos contados son los de la escena anterior y "reiniciar" acabaría
-        // repitiendo una escena que el jugador todavía no ha visto.
-        if (esLaActual && this.sceneAdvances > 1) {
-            this.restoreSceneSnapshot(actual);
-            this.replayScene(this.currentScene);
-            return true;
-        }
-
-        // Caso 2: salir a la escena anterior. Se desapila la actual y nos
-        // quedamos en la de debajo, que permanece en el historial.
-        if (esLaActual) hist.pop();
-        const destino = hist[hist.length - 1];
-        if (!destino) {
-            if (esLaActual) hist.push(actual); // deshacer: no había a dónde ir
-            return false;
-        }
-
-        this.restoreSceneSnapshot(destino);
-        this.replayScene(destino.scene);
-        return true;
+        return this.rewindToPreviousDialogue();
     }
 
     // Escenas del capítulo actual, para pintar el menú de selección.
     sceneList() {
         if (!this.currentChapter) return [];
         const hist = this.sceneHistory || [];
+        const visitedDialogues = this.dialogueTimeline || [];
         return (this.currentChapter.scenes || [])
             .map((s, i) => ({
                 index: i,
                 title: s.title || `Escena ${i + 1}`,
                 actual: i === this.currentScene,
-                visitada: hist.some(h => h.scene === i)
+                visitada: hist.some(h => h.scene === i) || visitedDialogues.some(entry =>
+                    entry.chapter === this.lastChapterName && entry.scene === i
+                )
             }));
     }
 
@@ -8347,7 +8574,7 @@ class VisualNovelEngine {
     // entre escenas del juego acababan aquí: limpiaban el escenario, no
     // marcaban `pendingSceneJump` y se saltaban la línea 0 de la escena
     // destino, que es justo la que pone el fondo. De ahí las pantallas negras.
-    saltarAEscena(destino) {
+    async saltarAEscena(destino) {
         if (!this.currentChapter) return false;
         const escenas = this.currentChapter.scenes || [];
         const i = (typeof destino === 'string')
@@ -8358,6 +8585,24 @@ class VisualNovelEngine {
             return false;
         }
 
+        // Saltar al comienzo de una escena ya vista abre una rama nueva desde
+        // su primera frase. Se descarta el tramo posterior para que Retroceder
+        // nunca mezcle decisiones de dos recorridos incompatibles.
+        let firstDialogueIndex = -1;
+        for (let k = 0; k <= this.dialogueTimelineCursor; k++) {
+            const entry = this.dialogueTimeline[k];
+            if (entry?.chapter === this.lastChapterName && entry.scene === i) {
+                firstDialogueIndex = k;
+                break;
+            }
+        }
+        if (firstDialogueIndex >= 0) {
+            this.dialogueTimeline.splice(firstDialogueIndex);
+            this.dialogueTimelineCursor = firstDialogueIndex - 1;
+        }
+        this.dialoguePlayback = false;
+        this.dialogueIsCurrent = false;
+
         const hist = this.sceneHistory || [];
         let visitada = false;
         let restoredStage = null;
@@ -8366,18 +8611,17 @@ class VisualNovelEngine {
             const d = hist[k];
             this.restoreSceneSnapshot(d);
             restoredStage = d.stage || null;
-            // Se conserva esa visita como cima del historial para que retroceder
-            // continúe desde ella sin volver a apilarla al reproducirse.
+            // Se conserva esa visita como cima del historial del selector para
+            // que otro salto parta del mismo estado sin duplicar la entrada.
             this.sceneHistory = hist.slice(0, k + 1);
             visitada = true;
             break;
         }
 
         this.clearStage();
-        this.restoreSceneStageState(restoredStage);
+        await this.restoreSceneStageState(restoredStage);
         this.currentScene = i;
         this.currentLine = 0;
-        this.sceneAdvances = 0;
         this.sceneEndedByChoice = false;
         this.pendingSceneJump = false;
         // Si ya estaba en el historial se conserva su entrada, y por eso se marca
@@ -8388,14 +8632,24 @@ class VisualNovelEngine {
         return true;
     }
 
-    reset() {
+    reset(options = {}) {
+        const preserveDialogueTimeline = options.preserveDialogueTimeline === true;
+        if (preserveDialogueTimeline && this.lastChapterName) {
+            this._chapterSceneHistories[this.lastChapterName] = this.sceneHistory;
+        }
         this.currentScene = 0;
         this.currentLine = 0;
         this.gameState = {};
         this.history = [];
         this.sceneHistory = [];
+        if (!preserveDialogueTimeline) {
+            this.clearDialogueTimeline();
+            this._chapterSceneHistories = {};
+        } else {
+            this.dialoguePlayback = false;
+            this.dialogueIsCurrent = false;
+        }
         this._lastSeenScene = null;
-        this.sceneAdvances = 0;
         this.lastChapterName = null;
         this.speakingCharacter = null;
         this.speakingPosition = null;

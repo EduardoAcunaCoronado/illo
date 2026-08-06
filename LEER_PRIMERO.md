@@ -43,7 +43,8 @@ Controles esenciales:
 - Mantener `Ctrl`: avance rápido; las decisiones y minijuegos no se saltan.
 - `Esc` o **Opciones**: pausa y configuración.
 - **Escenas**: volver a escenas ya visitadas del capítulo.
-- **Retroceder**: regresar al comienzo de la escena anterior.
+- **Retroceder**: regresar al diálogo anterior, incluso a través de minijuegos o
+  del límite entre capítulos, conservando las decisiones tomadas.
 - Una cinemática se puede saltar con clic, `Esc`, `Enter` o `Espacio`.
 
 Importante: la versión actual conserva los ajustes, pero todavía no guarda una

@@ -431,7 +431,7 @@ document.querySelector(".nm-nav")?.addEventListener("click", (e) => {
   document.getElementById("settings-panel")?.remove();
 });
 
-// ===== Retroceder a la escena anterior (demo 25-jul-2026) =====
+// ===== Retroceder al diálogo anterior =====
 // El bucle de juego está casi siempre parado dentro de waitForClick(), así que
 // el botón no puede limitarse a cambiar el estado: además tiene que desbloquear
 // esa espera. Se marca la petición y se resuelve el clic pendiente a mano; el
@@ -2739,6 +2739,7 @@ async function startNewGame() {
   engine.inventory = [];
   engine.storyDelay = 0;
   engine.storyPressure = 0;
+  engine.clearDialogueTimeline();
 
   // Cargar todos los personajes disponibles
   await loadAllCharacters();
@@ -2779,6 +2780,7 @@ async function playChapter(chapterIdentifier, transitionCurtain = null) {
   if (!chapter) {
     isGameRunning = false;
     engine.setFastForward(false);
+    engine.reset();
     setMainMenuVisible(true);
     showMenuMedia();
     releaseChapterTransition(transitionCurtain);
@@ -2791,6 +2793,14 @@ async function playChapter(chapterIdentifier, transitionCurtain = null) {
   await playGame();
 }
 
+function syncCurrentChapterFromEngine() {
+  const chapterName = engine.lastChapterName;
+  if (!chapterName) return;
+  currentChapterName = chapterName;
+  const numeric = chapterName.match(/^chapter(\d+)/);
+  if (numeric) currentChapterNumber = parseInt(numeric[1], 10);
+}
+
 async function playGame() {
   startRewindWatcher();
   while (isGameRunning) {
@@ -2801,12 +2811,16 @@ async function playGame() {
       break;
     }
 
-    // Petición de retroceso: rebobinar y volver a reproducir la escena anterior
-    // desde su primera línea (sus acciones repintan fondo, personajes y música).
+    // Petición de retroceso: restaurar la frase anterior de la línea temporal.
+    // Las decisiones y los minijuegos ya resueltos no vuelven a ejecutarse.
     if (rewindRequested) {
       rewindRequested = false;
-      engine.rewindToPreviousScene();
+      const rewound = await engine.rewindToPreviousDialogue();
+      syncCurrentChapterFromEngine();
       updateRewindButton();
+      // La instantánea ya incluye y muestra su diálogo; a diferencia del salto
+      // de escena no hay que pedir otra línea, sino esperar la próxima orden.
+      if (rewound && engine.isWaitingForInput) await waitForClick();
       continue;
     }
 
@@ -2814,7 +2828,7 @@ async function playGame() {
     if (sceneJumpRequested !== null) {
       const destino = sceneJumpRequested;
       sceneJumpRequested = null;
-      engine.saltarAEscena(destino);
+      await engine.saltarAEscena(destino);
       updateRewindButton();
       continue;
     }
@@ -2830,6 +2844,7 @@ async function playGame() {
     }
 
     const hasMoreContent = await engine.nextLine();
+    syncCurrentChapterFromEngine();
 
     if (!hasMoreContent) {
       // Último diálogo ya está mostrado, esperar click antes de terminar
@@ -2917,7 +2932,7 @@ async function endGame() {
   const transitionCurtain = await engine.showChapterEnd(chapterTitle);
 
   // Resetear el estado
-  engine.reset();
+  engine.reset({ preserveDialogueTimeline: !isFinalChapter });
 
   // Si el capítulo es el final del juego, volver directamente al menú
   if (isFinalChapter) {
@@ -2937,6 +2952,7 @@ async function endGame() {
     await showContinueOptions(nextChapterId, transitionCurtain);
   } else {
     // No hay más capítulos, volver al menú
+    engine.reset();
     setMainMenuVisible(true);
     showMenuMedia();
     releaseChapterTransition(transitionCurtain);
@@ -2988,6 +3004,7 @@ async function showContinueOptions(nextChapterId, transitionCurtain) {
       isGameRunning = true;
       return playChapter(nextChapterId, transitionCurtain);
     } else {
+      engine.reset();
       setMainMenuVisible(true);
       showMenuMedia();
       releaseChapterTransition(transitionCurtain);
