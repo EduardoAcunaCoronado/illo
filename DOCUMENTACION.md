@@ -343,7 +343,7 @@ notarización requieren credenciales externas; se explican en la referencia.
 | `hitbox-debugger.js` / `hitbox-editor.html` | Depuración en vivo y ajuste persistente de hitboxes simples o compuestas. |
 | `rune-channeling-minigame.js` | Canalización cooperativa de runas. |
 | `credits-minigame.js` | Créditos interactivos. |
-| `minijuegos_test.html` | Lanzador aislado de minijuegos; conserva el origen del juego y ofrece regreso al menú. |
+| `minijuegos_test.html` | Panel de QA de minijuegos: catálogo, modos, opciones contextuales, ejecución aislada y regreso al menú. |
 | `chapters/*.json` | Guion ejecutable: capítulos, escenas, líneas, elecciones y acciones. |
 | `characters/*.json` | Nombre visible, color, poses y animaciones de cada personaje. |
 | `assets/metadata/*.json` | Galería, capas oculares, offsets, ediciones y copias limpias. |
@@ -2117,8 +2117,31 @@ del HUD congelan por completo partida y cuenta atrás. El escenario desactiva lo
 gestos del navegador (`touch-action: none`) para que el control táctil responda
 como conducción.
 
-`minijuegos_test.html` incluye la casilla **Mostrar hitboxes en persecución y
-vuelo**. En la persecución dibuja las huellas elípticas: coche en verde,
+### Banco de pruebas de minijuegos
+
+`minijuegos_test.html` funciona como panel de QA en disposición catálogo/detalle.
+El catálogo agrupa las pruebas en **Ritmo y audio**, **Acción**, **Combate** y
+**Herramientas**, dispone de búsqueda y sólo muestra las opciones de la ficha
+activa. El selector común ofrece los modos compatibles de cada motor; la ficha y
+el último modo elegido se recuerdan en `illo_minigame_test_panel` y se reflejan
+en la URL mediante `?game=...&mode=...` para poder compartir accesos directos.
+
+Los presets Fácil, Medio y Difícil se ejecutan sin que los campos numéricos del
+panel los sobrescriban. Guindillas y Zip habilitan esos campos exclusivamente en
+**Personalizado**. Zip conserva además acciones separadas para el flujo completo
+Guindillas → Zip y para abrir el editor de hitboxes. Battle usa un único selector
+de enemigo que sincroniza sus HP iniciales. **Copiar configuración** entrega el
+JSON efectivo de la prueba visible y **Restaurar opciones** sólo reinicia esa
+ficha.
+
+Todos los lanzamientos pasan por `runTest()`, que centraliza resultado, duración,
+limpieza de música/autojugador, recuperación del panel y presentación de errores.
+Al añadir una prueba nueva se registra una entrada en `MINIGAME_CATALOG`, se
+asocia su panel `data-options-for` y se define su función `run`; no se deben crear
+filas independientes de botones por dificultad.
+
+Las fichas de Persecución y Edu volando incluyen **Mostrar hitboxes de
+movimiento**. En la persecución dibuja las huellas elípticas: coche en verde,
 obstáculos en rojo y motos en amarillo. En el vuelo mantiene las cajas 2D y los
 coleccionables azules. La opción también se inyecta al usar **Como en la
 historia**, pero nunca se activa en una partida narrativa normal.
