@@ -173,40 +173,11 @@
         let enemyMoveTimer = 0;
         const playerW = 0.095;
         const playerH = 0.135;
-        const hitboxConfig = window.KetchupHitboxes?.createDefaults?.();
+        let hitboxConfig = window.KetchupHitboxes?.createEffective?.();
         if (!hitboxConfig) throw new Error('No se cargó ketchup-hitboxes.js antes del minijuego.');
-        try {
-          const storedHitboxes = JSON.parse(localStorage.getItem('illo_hitbox_config') || '{}').ketchupBoss || {};
-          ['player', 'shot', 'hazard', 'block'].forEach((key) => {
-            const stored = storedHitboxes[key];
-            if (!stored) return;
-            if (stored.parts) {
-              hitboxConfig[key] = {
-                parts: Object.fromEntries(
-                  Object.entries(stored.parts).filter(([, part]) => !part?.disabled),
-                ),
-              };
-              return;
-            }
-            Object.assign(hitboxConfig[key], stored);
-          });
-          Object.entries(storedHitboxes.boss?.profiles || {}).forEach(([profileId, storedProfile]) => {
-            const profile = hitboxConfig.boss.profiles[profileId];
-            if (!profile) return;
-            Object.entries(storedProfile.parts || {}).forEach(([partId, storedPart]) => {
-              if (storedPart?.disabled) {
-                delete profile.parts[partId];
-                return;
-              }
-              profile.parts[partId] = {
-                ...(profile.parts[partId] || {}),
-                ...storedPart,
-              };
-            });
-          });
-        } catch (error) {
-          console.warn('No se pudo cargar la configuracion de hitboxes.', error);
-        }
+        const unsubscribeHitboxConfig = window.KetchupHitboxes.subscribe((nextConfig) => {
+          hitboxConfig = nextConfig;
+        });
         const setBossPartConfig = (profileId, partId) => (patch) => {
           Object.assign(hitboxConfig.boss.profiles[profileId].parts[partId], patch);
         };
@@ -337,7 +308,12 @@
         };
         const updateHud = () => {
           bossFill.style.width = `${clamp(enemyHp / enemyMaxHp, 0, 1) * 100}%`;
-          livesEl.textContent = '❤️'.repeat(Math.max(0, playerLives));
+          window.MinigameLifeDisplay.renderRepeated(
+            livesEl,
+            playerLives,
+            playerMaxLives,
+            '❤️',
+          );
         };
         const renderDebugHitboxes = () => {
           if (!window.HitboxDebugger || !window.HitboxDebugger.isEnabled?.()) return;
@@ -867,6 +843,7 @@
 
         const cleanup = (won) => {
           running = false;
+          unsubscribeHitboxConfig();
           document.removeEventListener('keydown', keyDown);
           document.removeEventListener('keyup', keyUp);
           window.removeEventListener('blur', blur);

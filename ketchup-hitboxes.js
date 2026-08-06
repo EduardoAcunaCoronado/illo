@@ -1,4 +1,7 @@
 (function () {
+    const STORAGE_KEY = 'illo_hitbox_config';
+    const CHANGE_EVENT = 'illo:hitbox-config-changed';
+
     const limb = (label, offsetX, offsetY, w, h, rotation = 0) => ({
         label,
         shape: 'ellipse',
@@ -85,7 +88,77 @@
 
     const cloneDefaults = () => JSON.parse(JSON.stringify(defaults));
 
+    const readStoredConfig = () => {
+        try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+        } catch (error) {
+            console.warn('No se pudo leer la configuración de hitboxes.', error);
+            return {};
+        }
+    };
+
+    const applyStoredConfig = (target, storedRoot = {}) => {
+        const stored = storedRoot.ketchupBoss || storedRoot;
+        ['player', 'shot', 'hazard', 'block'].forEach((key) => {
+            const storedObject = stored[key];
+            if (!storedObject) return;
+            if (storedObject.parts) {
+                target[key] = {
+                    parts: Object.fromEntries(
+                        Object.entries(storedObject.parts)
+                            .filter(([, part]) => !part?.disabled)
+                            .map(([partId, part]) => [partId, { ...part }]),
+                    ),
+                };
+                return;
+            }
+            Object.assign(target[key], storedObject);
+        });
+
+        Object.entries(stored.boss?.profiles || {}).forEach(([profileId, storedProfile]) => {
+            const profile = target.boss.profiles[profileId];
+            if (!profile) return;
+            Object.entries(storedProfile.parts || {}).forEach(([partId, storedPart]) => {
+                if (storedPart?.disabled) {
+                    delete profile.parts[partId];
+                    return;
+                }
+                profile.parts[partId] = {
+                    ...(profile.parts[partId] || {}),
+                    ...storedPart,
+                };
+            });
+        });
+        return target;
+    };
+
+    const createEffective = (storedConfig = readStoredConfig()) =>
+        applyStoredConfig(cloneDefaults(), storedConfig);
+
+    const subscribe = (listener) => {
+        const onStorage = (event) => {
+            if (event.key === STORAGE_KEY) listener(createEffective());
+        };
+        const onChange = () => listener(createEffective());
+        window.addEventListener('storage', onStorage);
+        window.addEventListener(CHANGE_EVENT, onChange);
+        return () => {
+            window.removeEventListener('storage', onStorage);
+            window.removeEventListener(CHANGE_EVENT, onChange);
+        };
+    };
+
+    const notifyChanged = () => {
+        window.dispatchEvent(new CustomEvent(CHANGE_EVENT));
+    };
+
     window.KetchupHitboxes = {
+        STORAGE_KEY,
         createDefaults: cloneDefaults,
+        createEffective,
+        applyStoredConfig,
+        readStoredConfig,
+        subscribe,
+        notifyChanged,
     };
 })();

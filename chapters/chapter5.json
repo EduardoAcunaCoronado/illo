@@ -7,15 +7,15 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -191,11 +191,11 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -323,11 +323,11 @@
           "text": "Tralalero tralala... dormidita en su cristal. El núcleo nos expulsó una vez, pero aquí estoy de vuelta. Esta vez no venimos a romper el sueño. Venimos a quedárnoslo.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
@@ -507,7 +507,7 @@
               "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario_grieta.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             }
           ]
@@ -568,11 +568,11 @@
               "id": "bg_music"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -844,15 +844,15 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -1048,15 +1048,15 @@
               "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             }
           ],
@@ -1148,15 +1148,15 @@
               "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme_paloma.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             }
           ]
@@ -1207,11 +1207,11 @@
               "value": "assets/images/backgrounds/shared/plaza_circular.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -1235,7 +1235,7 @@
           "text": "Vale... eso no ha sido una cura normal, cura++ tal vez...",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -1315,11 +1315,11 @@
               "fadeIn": 1200
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             }
           ]
@@ -1367,15 +1367,15 @@
               "type": "hideDialog"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -1688,15 +1688,15 @@
           "text": "Airi junta las manos frente al pecho. Un escudo de luz se abre alrededor de todos, transparente como cristal vivo. La corrupción choca contra la barrera y se deshace en chispas oscuras.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             }
           ]
@@ -1708,15 +1708,15 @@
               "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_ataque_tung.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
@@ -1741,6 +1741,10 @@
               "character": "edu",
               "position": "left",
               "pose": "alarmed"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1753,6 +1757,10 @@
               "character": "samu",
               "position": "left",
               "pose": "determined"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1766,6 +1774,10 @@
               "scale": 1.18,
               "position": "right",
               "pose": "epic"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             }
           ]
         },
@@ -1780,6 +1792,10 @@
               "scale": 1.5,
               "position": "right",
               "pose": "neutral"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             }
           ]
         },
@@ -1815,15 +1831,15 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -2453,7 +2469,7 @@
               "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -2653,15 +2669,15 @@
           "text": "Airi empuja a Samu a un lado. Durante un instante todo se queda suspendido: la mano de Ballerina, el gesto de Samu, la corrupción intentando extenderse.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
@@ -2844,7 +2860,7 @@
           "text": "La Amalgama la arrastra sin responder. Taza, tutú y voz se descomponen en píxeles y quedan absorbidos junto a los demás brainrot.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -2859,15 +2875,15 @@
           "text": "La corrupción se torna de un color negro morado. Los memes se pliegan sobre Airi; los restos de los brainrot —Ballerina incluida— se hunden en su luz.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
@@ -2885,15 +2901,15 @@
           "text": "Sobre la plaza, el cielo se oscurece. La corrupción digital se extiende entre las nubes como una grieta luminosa, tiñendo Ciudad Paloma con una luz imposible.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
@@ -3007,15 +3023,15 @@
           "text": "La Amalgama retrocede, pero no se rompe. La plaza cambia a su alrededor: la piedra se cubre de grietas digitales, la fuente se oscurece y los restos de la ciudad parecen hundirse bajo una capa de corrupción mucho más densa.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
@@ -3215,15 +3231,15 @@
               "victoryText": "El pulso de Airi y la nota verdadera rompen el control de Elion."
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             }
           ]

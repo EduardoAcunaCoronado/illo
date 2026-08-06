@@ -167,7 +167,7 @@
           "text": "Achís...",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -203,11 +203,11 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -329,11 +329,11 @@
               "volume": 1
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -1050,11 +1050,11 @@
               "value": "assets/images/backgrounds/shared/plaza_circular.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             }
           ],
@@ -1078,11 +1078,11 @@
           "text": "El círculo arcano se ilumina bajo Samu y la runa del mago despierta con un resplandor dorado. A su alrededor, destellos de fuego, hielo, relámpago y magia arcana orbitan sus manos, anunciando el nacimiento de un poder que llevaba dentro sin saberlo. La plaza lo reconoce al instante y sella su clase con un brillo solemne: Mago.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             }
           ]
@@ -1115,6 +1115,10 @@
               "character": "samu",
               "position": "left",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1135,11 +1139,11 @@
           "text": "La runa del pícaro se ilumina y estallan chispas azules. Varias copias ilusorias de Edu aparecen a su alrededor, moviéndose como sombras veloces entre trazos de dagas y relámpagos, mientras la plaza reconoce su clase: Pícaro Arcano.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             }
           ]
@@ -1172,6 +1176,10 @@
               "character": "edu",
               "position": "left",
               "pose": "surprised"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1206,11 +1214,11 @@
           "text": "La runa de la estrella se ilumina. Un círculo sagrado se abre a sus pies, dibujando símbolos dorados sobre la piedra. Seraphyna alza la mano, y de pronto el aire se llena de plumas brillantes, notas musicales y pequeños escudos de energía que giran a su alrededor como una melodía protectora. La plaza responde a su voz antes incluso de que cante: Maga Blanca / Cantora.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             }
           ]
@@ -1245,6 +1253,10 @@
               "character": "tony",
               "position": "left",
               "pose": "surprised"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1295,6 +1307,10 @@
               "character": "tony",
               "position": "left",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1315,11 +1331,11 @@
           "text": "Finalmente, la runa de la espada se enciende y la plaza entera responde con un rugido de piedra y luz. Fragmentos del suelo se elevan a su alrededor, varias espadas doradas aparecen suspendidas en el aire, escudos de energía se abren a sus lados y la gran hoja que sostiene clava su punta en el círculo arcano. La clase queda sellada sin margen de duda: Guerrero.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             }
           ]
@@ -1353,6 +1369,10 @@
               "scale": 1.18,
               "position": "right",
               "pose": "determined"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             }
           ]
         },
@@ -1378,6 +1398,10 @@
               "scale": 1.18,
               "position": "right",
               "pose": "neutral"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             }
           ]
         },
@@ -1453,11 +1477,11 @@
           "text": "A lo lejos, algo empieza a caer del cielo entre las grietas digitales: una bailarina con cabeza de capuchino gira sobre sí misma con una sonrisa afilada, un tiburón con zapatillas atraviesa el aire enseñando los dientes y una figura de madera con un bate desciende envuelta en una capa desgarrada.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
@@ -1537,15 +1561,15 @@
               "type": "hideDialog"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -1563,6 +1587,10 @@
               "character": "samu",
               "position": "left",
               "pose": "determined"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1576,6 +1604,10 @@
               "character": "tony",
               "position": "right",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             }
           ]
         },
@@ -1588,6 +1620,10 @@
               "character": "edu",
               "position": "left",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "left"
             }
           ]
         },
@@ -1601,6 +1637,10 @@
               "scale": 1.18,
               "position": "right",
               "pose": "happy"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             }
           ]
         },
@@ -1613,11 +1653,11 @@
           "text": "Pero justo cuando parecía que lo tenían todo controlado, tres figuras cayeron sobre la plaza.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
@@ -1650,6 +1690,10 @@
               "scale": 1.5,
               "position": "right",
               "pose": "neutral"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             },
             {
               "type": "stopSound",
@@ -1739,6 +1783,10 @@
               "character": "tralalelo_tralala",
               "position": "right",
               "pose": "neutral"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "right"
             }
           ]
         },
@@ -1827,7 +1875,7 @@
               "pose": "neutral"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             }
           ]
@@ -1837,7 +1885,7 @@
           "text": "Ballerina Capuchina suelta una carcajada aguda. Durante un fotograma, hilos negros parecen tirar de sus muñecas desde algún lugar fuera del mundo; luego gira sobre una pierna y se deshace en vapor de café, píxeles y purpurina.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             }
           ]
@@ -1956,11 +2004,11 @@
           "text": "Sin perder más tiempo, el grupo se asoma al borde del cráter y desciende por el hueco abierto en la plaza, dejando atrás el caos de Ciudad Paloma para adentrarse en el santuario subterráneo.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             }
           ]

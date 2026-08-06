@@ -279,7 +279,8 @@
             <button class="tp-btn" data-testid="ketchup-easy" style="--c:#7cffb2" onclick="launchZipBulletHell('facil')">Fácil</button>
             <button class="tp-btn" data-testid="ketchup-medium" style="--c:#4fd0ff" onclick="launchZipBulletHell('medio')">Medio</button>
             <button class="tp-btn" data-testid="ketchup-hard" style="--c:#ff4fa3" onclick="launchZipBulletHell('dificil')">Difícil</button>
-            <button class="tp-btn" style="--c:#ffd166" onclick="launchKetchup('medio')">Flujo completo</button>
+            <button class="tp-btn" data-testid="ketchup-full-flow" style="--c:#ffd166" onclick="launchKetchup('medio')">Flujo completo</button>
+            <button class="tp-btn" data-testid="ketchup-story" style="--c:#ff9f6e" onclick="launchZipHistoria()">📖 Como en la historia</button>
             <button class="tp-btn" style="--c:#53d2ff" onclick="openHitboxEditor('ketchupBoss')">Editar hitbox</button>
         </div>
         <div class="tp-config-grid">
@@ -608,7 +609,7 @@
                 maxHits: getNumberInput('zip-lives', opts.maxHits),
                 spicePower: getNumberInput('zip-spice-power', opts.spicePower),
                 maxSpicePower: getNumberInput('zip-max-spice', opts.maxSpicePower),
-                debugHitboxes: false
+                debugHitboxes: document.getElementById('zip-debug-hitboxes').checked
             };
             if (startPhaseTwo) options.startAtHpRatio = 0.6;
             return options;
@@ -639,6 +640,37 @@
             await engine.playKetchupBossMinigame(opts);
             stopMusic();
             resultEl.textContent = '✅ ¡Zip derrotado con ' + opts.spicePower + ' puntos de picante!';
+            panel.classList.remove('hidden');
+        }
+
+        async function launchZipHistoria() {
+            resultEl.textContent = '';
+            panel.classList.add('hidden');
+            syncHitboxDebugger();
+            const chapter = await (await fetch('chapters/chapter2.json?v=' + Date.now(), {
+                cache: 'no-store'
+            })).json();
+            let storyOptions = null;
+            chapter.scenes.forEach(scene => scene.lines.forEach(line => {
+                (line.actions || []).forEach(action => {
+                    if (action.game === 'ketchupBoss') storyOptions = { ...action };
+                });
+            }));
+            if (!storyOptions) {
+                resultEl.textContent = 'No encontré ketchupBoss en chapter2.json.';
+                panel.classList.remove('hidden');
+                return;
+            }
+            delete storyOptions.type;
+            delete storyOptions.game;
+            storyOptions.debugHitboxes = document.getElementById('zip-debug-hitboxes').checked;
+            engine.gameState.chiliPower = getNumberInput('zip-spice-power', 14);
+            engine.gameState.chiliPowerMax = storyOptions.maxSpicePower;
+            engine.inventory = document.getElementById('chili-neit').checked ? ['caja_guindillas'] : [];
+            startMusic("chapter2/zip's-shadow-waltz.mp3");
+            await engine.playKetchupBossMinigame(storyOptions);
+            stopMusic();
+            resultEl.textContent = '✅ Superado con la configuración real de chapter2.json.';
             panel.classList.remove('hidden');
         }
 
