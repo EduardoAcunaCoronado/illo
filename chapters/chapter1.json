@@ -231,7 +231,7 @@
             { "type": "hideDialog" },
             {
               "type": "setBackground",
-              "value": "assets/cutscenes/chapter3/opening_samu_sources/storyboard/10.png"
+              "value": "assets/images/backgrounds/chapter1/10.webp"
             },
             {
               "type": "stopSound",
@@ -263,9 +263,9 @@
             },
             {
               "type": "playSound",
-              "path": "assets/audio/music/shared/furrielva_despierta.mp3",
+              "path": "assets/audio/music/chapter1/furrielva.mp3",
               "loop": true,
-              "id": "furrielva_despierta",
+              "id": "furrielva",
               "fadeIn": 500
             },
             { "type": "wait", "value": 1500 }
@@ -288,19 +288,23 @@
           "text": "Lo que me parece una auténtica maravilla, para qué engañarnos.",
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "setPose",
               "character": "samu",
-              "pose": "happy",
+              "pose": "clapping",
               "position": "center"
             }
           ]
         },
         {
           "character": "Samu",
-          "text": "¿Entonces... esto sigue siendo Huelva?",
+          "text": "Míralos, son todos una preciosidad. ¡No puedo estar más feliz, menudo sueño hecho realidad!"
+        },
+        {
+          "character": "Samu",
+          "text": "Pero entonces... ¿esto sigue siendo Huelva?",
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "setPose",
               "character": "samu",
               "pose": "curious",
               "position": "center"
@@ -316,7 +320,7 @@
           "text": "¡Oh! Ya veo, Huelva a cambiado su nombre por Furrielva.",
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "setPose",
               "character": "samu",
               "pose": "neutral",
               "position": "center"
@@ -325,10 +329,10 @@
         },
         {
           "character": "Samu",
-          "text": "Bonito. Muy bonito. Así debió ser siempre.",
+          "text": "Pues en Furrielva está todo tan bonito. Pero que muy bonito. Así debió ser siempre.",
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "setPose",
               "character": "samu",
               "pose": "happy",
               "position": "center"
@@ -340,7 +344,7 @@
           "text": "La distribución de esta zona está algo cambiada pero recuerdo muy bien la iglesia y esos bloques que tiene a los lados. Sin embargo esta plaza con la fuente es nueva.",
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "setPose",
               "character": "samu",
               "pose": "thinking",
               "position": "center"
@@ -352,7 +356,7 @@
           "text": "Bueno, pues tendré que dar una vuelta por la ciudad a ver qué más ha cambiado. Esto voy a disfrutarlo mucho.",
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "setPose",
               "character": "samu",
               "pose": "determined",
               "position": "center"
@@ -361,7 +365,7 @@
           "choices": [
             {
               "text": "Echar un ojo al barrio.",
-              "nextScene": "Escena 3: echar un ojo al barrio"
+              "nextScene": "Escena 3: Echar un ojo al barrio"
             },
             {
               "text": "Ir en dirección al puerto.",
@@ -372,7 +376,7 @@
       ]
     },
     {
-      "title": "Escena 3: echar un ojo al barrio",
+      "title": "Escena 3: Echar un ojo al barrio",
       "lines": [
         {
           "character": "Samu",
@@ -381,6 +385,13 @@
             {
               "type": "setBackground",
               "value": "assets/images/backgrounds/shared/iglesia_furrielva_dia_v2_4k.webp"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter1/furrielva.mp3",
+              "loop": true,
+              "id": "furrielva",
+              "fadeIn": 500
             },
             {
               "type": "showCharacter",
@@ -399,6 +410,13 @@
             },
             {
               "type": "playSound",
+              "path": "assets/audio/music/chapter1/furrielva.mp3",
+              "loop": true,
+              "id": "furrielva",
+              "volume": 0.5
+            },
+            {
+              "type": "playSound",
               "path": "assets/audio/sfx/chapter1/indoor-steps.mp3"
             },
             {
@@ -413,9 +431,16 @@
             { "type": "hideDialog" },
             {
               "type": "setBackground",
-              "value": "assets/cutscenes/chapter3/opening_samu_sources/storyboard/12-2.png"
+              "value": "assets/images/backgrounds/chapter1/12-2.webp"
             },
-            { "type": "wait", "value": 1500 }
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter1/furrielva.mp3",
+              "loop": true,
+              "id": "furrielva",
+              "volume": 1
+            },
+            { "type": "wait", "value": 3000 }
           ]
         },
         {
@@ -452,26 +477,301 @@
           "text": "Pero antes de que pueda alcanzar cualquier tipo de madera..."
         },
         {
-          "character": "Edu",
+          "character": "Ciervo",
           "text": "Buenas tardes. Veo que te gusta nuestro patio.",
           "actions": [
             {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "alarmed",
+              "position": "center"
+            },
+            {
               "type": "showCharacter",
-              "character": "edu",
+              "character": "ciervo",
+              "pose": "neutral",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "Podría decirte que llevamos cuidándolo durante generaciones, herencia de mis tatarabuelos y todas esas cosas pero sabes bien que esto nos ha venido de repente.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "neutral",
+              "position": "center"
+            },
+            {
+              "type": "showCharacter",
+              "character": "ciervo",
+              "pose": "neutral",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "Y he de decir que está mucho mejor ahora. ¿Qué teníamos antes en el jardín? Creo que eran un par de plantas resecas porque nos olvidábamos de regarlas."
+        },
+        {
+          "character": "Ciervo",
+          "text": "Con lo que favorecen al patio estas flores, esta vez sí las regaremos."
+        },
+        {
+          "character": "Samu",
+          "text": "Deberíais, dan una vista y alegría increíbles."
+        },
+        {
+          "character": "Ciervo",
+          "text": "Descuida que esta vez sí lo haremos.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
               "pose": "happy",
               "position": "right"
             }
           ]
         },
         {
-          "character": "Edu",
-          "text": "Podría decirte que llevamos cuidándolo durante generaciones, herencia de mis tatarabuelos y todas esas cosas pero sabes bien que esto nos ha venido de repente y he de decir que está mucho mejor ahora.",
+          "character": "Ciervo",
+          "text": "Y junto a las vistas ahora se respira calma en el ambiente, no como esta mañana.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "neutral",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¿A qué te refieres?",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "curious",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "No me digas que no te enteraste con todo ese jaleo.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "surprised",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "Hubo como una media hora de pánico generalizado.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "neutral",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "A medida que la gente se iba despertando y viendo el gran cambio de su cuerpo, se oían multitud de gritos de desesperación y llantos a cada momento."
+        },
+        {
+          "character": "Ciervo",
+          "text": "Como que esos gritos que daban despertaban a la gente, que a su vez gritaban y despertaban a más gente."
+        },
+        {
+          "character": "Ciervo",
+          "text": "Pero cuando ese contratiempo pasó, todos encantados. Ahora ya no se escuchan gritos, salvo el de hace un rato.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "happy",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "No sé qué horas son estas de despertarse."
+        },
+        {
+          "character": "Samu",
+          "text": "Me da que fue el mío...",
+          "textAnimation": "whisper",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "worried",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "¿En serio te has despertado tan tarde? ¿Qué estuviste haciendo? Sí que tiene aguante la gente joven de hoy.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "surprised",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "Porque eres joven, ¿verdad? Desde que nos volvimos medio animales me resulta muy complicado saber la edad de alguien por su apariencia.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "surprised",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "Más allá de eso, apenas podemos encontrarle pegas a la situación. Incluso siento como más energía en mí, un rejuvenecimiento.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "neutral",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Interesante, yo también me noto más enérgico, aunque puede ser simplemente por la emoción del momento.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "determined",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Por cierto, no lo digo por mí, pero quizás echáis de menos vuestra anterior apariencia.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "curious",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "Esa podría ser una pega pero, qué quieres que te diga, mi gatita se ve preciosa.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "playful",
+              "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Gata",
+          "text": "Ay, cómo eres, cielo.",
           "actions": [
             {
               "type": "showCharacter",
               "character": "edu",
               "pose": "happy",
+              "position": "left"
+            }
+          ]
+        },
+        {
+          "character": "Gata",
+          "text": "Jamás pensé que los tendría, pero esta es la única forma decente de que mi marido tenga cuernos.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "edu",
+              "pose": "happy",
+              "position": "left"
+            }
+          ]
+        },
+        {
+          "character": "Gata",
+          "text": "Cuernos que le dan un toque tan varonil...",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "edu",
+              "pose": "happy",
+              "position": "left"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "¡Cariño, no delante de las visitas!",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "blushed",
               "position": "right"
+            }
+          ]
+        },
+        {
+          "character": "Gata",
+          "text": "Tranquilo, que estoy de broma. Tenemos que tomarnos el cambio con un poco de humor.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "edu",
+              "pose": "happy",
+              "position": "left"
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "Ya que eres de los más recientes en descubrir el cambio, ¿te apetece quedarte un rato y merendar algo con nosotros? Así te ponemos al día.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "ciervo",
+              "pose": "neutral",
+              "position": "right"
+            }
+          ],
+          "choices": [
+            {
+              "text": "Quedarme a merendar.",
+              "nextScene": "Escena 4: Echar un ojo al barrio"
+            },
+            {
+              "text": "Rechazar su invitación.",
+              "nextScene": "Escena 5: Ir en dirección al puerto"
             }
           ]
         }
@@ -489,6 +789,13 @@
               "value": "assets/images/backgrounds/shared/iglesia_furrielva_dia_v2_4k.webp"
             },
             {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter1/furrielva.mp3",
+              "loop": true,
+              "id": "furrielva",
+              "fadeIn": 500
+            },
+            {
               "type": "showCharacter",
               "character": "samu",
               "position": "center",
@@ -502,7 +809,7 @@
           "actions": [
             {
               "type": "setBackground",
-              "value": "assassets/cutscenes/chapter3/opening_samu_sources/storyboard/12-1.png"
+              "value": "assets/images/backgrounds/chapter1/12-1.webp"
             },
             {
               "type": "showCharacter",

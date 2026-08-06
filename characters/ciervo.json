@@ -2,8 +2,12 @@
   "name": "Ciervo",
   "color": "#c8792a",
   "poses": {
+    "standing": "assets/images/characters/ciervo/ciervo_standing.webp",
     "neutral": "assets/images/characters/ciervo/ciervo_neutral.webp",
-    "seated": "assets/images/characters/ciervo/ciervo_seated.webp"
+    "happy": "assets/images/characters/ciervo/ciervo_happy.webp",
+    "playful": "assets/images/characters/ciervo/ciervo_playful.webp",
+    "surprised": "assets/images/characters/ciervo/ciervo_surprised.webp",
+    "blussed": "assets/images/characters/ciervo/ciervo_blussed.webp"
   },
   "defaultPose": "neutral"
 }
