@@ -107,16 +107,24 @@ desde Configuración.
 | **♪** | Vuelve a reproducir el tema principal del menú. |
 | **Tools** | Comprueba y abre el centro local de herramientas gráficas del puerto 8011. Si está apagado, conserva el menú y muestra cómo iniciarlo. |
 | **Minijuegos** | Abre `minijuegos_test.html` en el mismo servidor del juego para lanzar cada prueba por separado. |
+| **Tests** | Abre el selector de pruebas internas. Permite elegir el test y sus parámetros (por ejemplo repeticiones o caso con 404) antes de abrirlo. |
 
-Los dos accesos aparecen como iconos SVG en la esquina superior derecha cuando
+Estos accesos aparecen como iconos SVG en la esquina superior derecha cuando
 el repositorio se ejecuta en local o mediante Electron de desarrollo. Se
 ocultan en el instalador y en un hosting público porque esas utilidades no forman
-parte del juego distribuido. Tanto el centro de herramientas como la prueba de
-minijuegos incluyen un botón **Menú principal** que regresa directamente al
+parte del juego distribuido. Tanto el centro de herramientas, la prueba de
+minijuegos como el selector de tests incluyen un botón **Menú principal** que regresa directamente al
 menú, sin repetir el aviso ni el opening. En Electron de desarrollo conservan
 automáticamente el puerto interno elegido por la aplicación; Tools se inicia
 bajo demanda desde el proceso principal. En navegador, `start.bat` levanta
 juego y Tools juntos.
+
+Para entrar en **Tests**:
+
+1. Pulsa **Tests** desde el menÃº principal.
+2. Selecciona el test deseado.
+3. Ajusta parÃ¡metros si los tiene (repeticiones, banderas y casos especiales).
+4. Pulsa **Abrir test** para lanzar la prueba con esos valores.
 
 En **Tools > Restaurador de frames de Samu**, **Rectángulo global** (`G`) permite
 arrastrar una zona del frame actual y, tras confirmarla, recuperar esa misma zona
@@ -378,6 +386,7 @@ notarización requieren credenciales externas; se explican en la referencia.
 | `rune-channeling-minigame.js` | Canalización cooperativa de runas. |
 | `credits-minigame.js` | Créditos interactivos. |
 | `minijuegos_test.html` | Panel de QA de minijuegos: catálogo, modos, opciones contextuales, ejecución aislada y regreso al menú. |
+| `test-character-load.html` | Test de carga de personajes con parametros de repeticion y caso inexistente. |
 | `chapters/*.json` | Guion ejecutable: capítulos, escenas, líneas, elecciones y acciones. |
 | `characters/*.json` | Nombre visible, color, poses y animaciones de cada personaje. |
 | `assets/metadata/*.json` | Galería, capas oculares, offsets, ediciones y copias limpias. |
@@ -427,6 +436,7 @@ memory/                       contexto auxiliar, no manual canónico
 | Añadir una escena o elección | El JSON del capítulo | Títulos únicos, destinos y estado al retroceder. |
 | Añadir un capítulo | `chapters/chapterN.json` con N consecutivo | Encadenado, selector y pantalla final. |
 | Cambiar una pose o nombre visible | `characters/<clave>.json` | Todas las referencias y galería. |
+| Crear selector de tests | `game.js`, `index.html`, `styles.css` | `TESTS_CATALOG`, panel de pruebas y parametros de URL. |
 | Añadir un sprite | `assets/images/characters/...` + ficha | Alfa, tamaño, copia limpia y parpadeo. |
 | Añadir parpadeo | Centro ocular, capas y metadatos | Preview, offsets, animación y fallback. |
 | Cambiar fondo o CG | `assets/images/backgrounds` o `cg` + acción del capítulo | Primer frame de escena, transición y galería. |
@@ -5476,8 +5486,10 @@ regiones confirmadas, capas limpias disponibles, offsets de alineación y bases 
 ojos guardadas. Las herramientas de edición tienen un acceso permanente de
 vuelta al centro.
 
-El flujo recomendado aparece como `Marcar regiones → Alinear capas → Limpiar
-bases`, seguido del editor independiente `Eliminar halos blancos`. En una sección aparte se enlazan el juego, la prueba de minijuegos, el
+El flujo recomendado aparece como `Marcar regiones → Alinear y publicar capas →
+Limpiar bases`, seguido del editor independiente `Eliminar halos blancos`. La
+limpieza de bases se conserva como utilidad opcional y no forma parte de la
+publicación ocular normal. En una sección aparte se enlazan el juego, la prueba de minijuegos, el
 generador de assets, los placeholders, las propuestas de menú y el centro de
 control legado. Esos enlaces usan el origen que recibe del menú principal y
 caen en el puerto 8000 al abrir el centro directamente; esto permite volver al
@@ -5500,8 +5512,13 @@ elipse se puede mover, ensanchar, achatar y girar de forma independiente mediant
 tiradores o valores numéricos. También permite comparar la pose original con cada
 fotograma de parpadeo y avanzar por teclado. Las máscaras se guardan inmediatamente
 en coordenadas normalizadas, con esquema versión 2, en
-`assets/metadata/blink_eye_regions_manual.json`. Las 17 selecciones rectangulares
-anteriores se migraron sin perder su encuadre a dos elipses editables por pose.
+`assets/metadata/blink_eye_regions_manual.json`. Las 130 poses activas tienen una
+región confirmada. El botón `Sugerir desde fuentes` calcula una propuesta a partir
+de la diferencia exacta entre los estados de la pose y la aplica únicamente a la
+vista: no sustituye la selección confirmada hasta que se pulsa `Guardar región`.
+Esto permite partir de una localización reproducible y revisar cada ojo antes de
+persistirlo. Las 17 selecciones rectangulares históricas se migraron sin perder su
+encuadre y se conservaron como regiones elípticas editables.
 
 Cada zona puede añadir el parpadeo (`Ojo`) o restarlo (`Protección`). Las
 protecciones se dibujan en rojo y sirven para conservar desde el sprite original
@@ -5510,8 +5527,8 @@ el pelo, cejas, gafas o accesorios que invadan una selección ocular. El campo
 modo `Máscara` permite revisar el conjunto con el personaje atenuado. En la
 generación, sólo se vacía el cuerpo donde la capa ocular resulta totalmente opaca;
 el borde suavizado se compone sobre el cuerpo original y las áreas protegidas no
-se sustituyen. Las 34 elipses ya confirmadas se mantienen como `include` con
-suavizado 0, por lo que esta ampliación no altera su resultado hasta revisarlas.
+se sustituyen. Las regiones históricas se mantienen como `include` con suavizado
+0, por lo que esta ampliación no altera su resultado hasta revisarlas.
 
 Cada guardado de regiones genera además previews PNG transparentes en
 `assets/images/characters/eye_region_previews/<personaje>/<pose>/`. El recorte
@@ -5532,6 +5549,8 @@ por cobertura de área (`BOX`), no con `LANCZOS`: así el antialias queda dentro
 contorno y no genera una corona semitransparente fuera del corte. Tras combinar
 inclusiones y protecciones también se eliminan los residuos de alfa inferiores a
 8/255. Los PNG resultantes conservan RGB neutro bajo alfa cero.
+El índice y los tres recortes de las 130 poses activas están generados; sus
+dimensiones y crop son idénticos dentro de cada pose.
 
 En Windows se puede iniciar de la misma forma haciendo doble clic en
 `ABRIR_EDITOR_OJOS.bat`; el lanzador abre el centro de herramientas en el navegador
@@ -5678,20 +5697,42 @@ El damero de la herramienta es sólo el fondo CSS que identifica transparencia:
 fuera de ella, cada visor puede representar esos píxeles transparentes sobre negro,
 blanco u otro color.
 
-La barra `Ubicaciones` ofrece tres accesos contextuales: `Sprite base`, `Ojos
-utilizados` y `Guardado X/Y`. Los dos primeros cambian automáticamente con la pose
-y el origen ocular seleccionado; el tercero conduce a
+La barra `Ubicaciones` ofrece cuatro accesos contextuales: `Sprite base`, `Ojos
+utilizados`, `Guardado X/Y` y `Producción`. Los dos primeros cambian
+automáticamente con la pose y el origen ocular seleccionado; el tercero conduce a
 `assets/metadata/blink_eye_clean_offsets_manual.json`. Como los navegadores
 bloquean normalmente las rutas `file://`, los botones llaman a una API limitada a
 rutas conocidas del proyecto y abren la carpeta correspondiente en el Explorador
 de Windows. La ruta exacta se muestra también en la propia barra.
 
-Hasta que las bases sin ojos estén terminadas, las tres composiciones muestran aún
-los ojos originales debajo de la capa móvil; la propia interfaz lo advierte. El
-GIF de capa ocular usa las capas limpias, respeta los tres ajustes independientes,
-se reproduce en bucle, se recorta al contenido transparente y limita su lado
-mayor a 960 px. La conexión definitiva al juego queda pendiente de sustituir las
-bases por sus versiones sin ojos.
+`Publicar pose` y `Publicar todas` esperan primero cualquier autoguardado pendiente
+y sólo después hornean los offsets, escalas y retoques de píxel ya persistidos.
+La salida definitiva vive en
+`assets/images/characters/eye_layers_production/<personaje>/<pose>/` y contiene
+exactamente `eyes_base.webp`, `eyes_half.webp` y `eyes_closed.webp`. Son lienzos
+transparentes del mismo tamaño que la pose, limitados a su entorno ocular; el
+sprite completo no se copia. Al componer, el parche incluye los píxeles locales
+necesarios de cara, pelo, gafas o accesorios para cubrir el ojo que ya existe en
+la base, por lo que no hace falta fabricar una base sin ojos.
+
+`assets/metadata/blink_eye_layers_production.json` relaciona cada pose con su
+`sourceBase`, las tres capas, el crop, la dirección de parpadeo y los ajustes
+horneados. En las 13 secuencias de apertura inversa, el nombre técnico
+`eyes_closed.webp` se conserva por compatibilidad aunque el extremo pueda mostrar
+los ojos abiertos; `blinkDirection: opening` elimina la ambigüedad. El manifiesto
+declara 130 poses y 390 WebP oculares, con cero sprites base duplicados.
+
+La misma publicación se puede reproducir con `npm run build:eye-layers` y validar
+sin abrir el juego mediante `npm run validate:eye-layers`. La validación exige el
+inventario exacto de 130 poses y tres estados por pose, dimensiones iguales a la
+base, RGB neutro bajo alfa cero, contenido localizado en la región ocular,
+distinción entre estados y ausencia de archivos extra o copias del sprite completo.
+La publicación genera los assets y su contrato, pero no reescribe
+`characters/*.json` ni modifica por sí sola la selección de frames del motor.
+
+El GIF de capa ocular usa las capas limpias, respeta los tres ajustes
+independientes, se reproduce en bucle, se recorta al contenido transparente y
+limita su lado mayor a 960 px.
 
 Los intermedios de las 130 poses activas se indexan en
 `assets/metadata/blink_eye_intermediates.json`. Hay 117 cierres y 13 aperturas
@@ -6037,14 +6078,15 @@ en el juego por Nexo. Todas las poses activas usan ahora cinco pasos
 los ojos cerrados la lectura se invierte (`cerrado → medio → abierto → medio →
 cerrado`). No hay movimiento corporal asociado al parpadeo.
 
-Las 17 poses de 3C y Airi que ya cuentan con recortes manuales usan además la
-composición ligera tanto en escena como en la galería: el sprite base aporta el
-reposo y los ojos iniciales; encima sólo se muestran los PNG `half`, `closed` y
-`half`, para terminar retirando la capa y revelar de nuevo el sprite base. La
-secuencia efectiva es `base → semicerrados → cerrados → semicerrados → base` y
-respeta el crop, X/Y y estirado guardados en la mesa de alineación, así como las
-copias retocadas en `blink_eye_pixel_edits.json`. Las poses aún no preparadas
-conservan automáticamente el sistema anterior de sprites completos.
+Las 130 poses activas con recortes manuales usan la composición ligera tanto en
+escena como en la galería: el sprite base aporta el reposo y los ojos iniciales;
+encima sólo se muestran los PNG `half`, `closed` y `half`, para terminar retirando
+la capa y revelar de nuevo el sprite base. La secuencia efectiva es
+`base → semicerrados → cerrados → semicerrados → base` y respeta el crop, X/Y y
+estirado guardados en la mesa de alineación, así como las copias retocadas en
+`blink_eye_pixel_edits.json`. `engine.js` construye este inventario desde
+`blink_eye_region_previews.json`; los cinco parpadeos del ePod legado, fuera del
+canon activo, conservan el sistema anterior de sprites completos.
 
 Las acciones `animateCharacter`, `characterAnimation` y `poseSequence` siguen
 sirviendo para encadenar **poses narrativas distintas**, hacer bucles hasta

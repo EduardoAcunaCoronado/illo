@@ -221,12 +221,48 @@ window.addEventListener("blur", () => engine.setFastForward(false));
 let AVAILABLE_CHAPTERS = [];
 let availableChaptersPromise = null;
 
+const TESTS_CATALOG = [
+  {
+    id: "character-load",
+    label: "Carga de personajes",
+    description:
+      "Compara el comportamiento de carga de personajes con y sin deduplicación, usando "
+      + "fetch simulado para comparar tiempos y peticiones repetidas.",
+    file: "test-character-load.html",
+    parameters: [
+      {
+        key: "sceneRepeats",
+        label: "Repeticiones de escena",
+        type: "number",
+        min: 1,
+        max: 20,
+        defaultValue: 1,
+      },
+      {
+        key: "preloadRepeats",
+        label: "Repeticiones de precarga",
+        type: "number",
+        min: 1,
+        max: 20,
+        defaultValue: 1,
+      },
+      {
+        key: "includeMissing",
+        label: "Incluir personaje inexistente",
+        type: "checkbox",
+        defaultValue: false,
+      },
+    ],
+  },
+];
+
 // Elementos del DOM
 const gameContainer = document.getElementById("game-container");
 const mainMenu = document.getElementById("main-menu");
 const startBtn = document.getElementById("start-btn");
 const loadBtn = document.getElementById("load-btn");
 const galleryBtn = document.getElementById("gallery-btn");
+const testsBtn = document.getElementById("tests-btn");
 const dialogBox = document.getElementById("dialog-box");
 const gameArea = document.querySelector("#game-container > :not(#main-menu)");
 
@@ -245,6 +281,7 @@ function setMainMenuVisible(visible) {
 startBtn.addEventListener("click", () => startNewGame());
 loadBtn.addEventListener("click", () => loadGame());
 galleryBtn?.addEventListener("click", () => showGalleryPanel());
+testsBtn?.addEventListener("click", () => showTestsPanel());
 document.getElementById("settings-btn")?.addEventListener("click", () => showSettingsPanel());
 
 // El servidor ocular siempre escucha en 8011, mientras que Electron sirve el
@@ -429,6 +466,8 @@ document.querySelector(".nm-nav")?.addEventListener("click", (e) => {
   const opcion = e.target.closest(".nm-item");
   if (!opcion || opcion.id === "settings-btn") return;
   document.getElementById("settings-panel")?.remove();
+  document.getElementById("gallery-panel")?.remove();
+  document.getElementById("tests-panel")?.remove();
 });
 
 // ===== Retroceder a la escena anterior (demo 25-jul-2026) =====
@@ -942,6 +981,147 @@ function wireSettings(panel) {
     if (!grupoModo.isConnected) return dejarDeEscuchar?.();
     if (key === WINDOW_MODE_KEY) pintarModo(value);
   });
+}
+
+// ===== TESTS =====
+function showTestsPanel() {
+  if (document.getElementById("tests-panel")) return;
+  setMainMenuVisible(false);
+
+  const overlay = document.createElement("div");
+  overlay.id = "tests-panel";
+  overlay.className = "chapter-selector tests-selector";
+
+  const testsHTML = TESTS_CATALOG.map((test) => {
+    const fields =
+      test.parameters?.length > 0
+        ? test.parameters
+            .map((param) => {
+              const fieldId = `test-param-${test.id}-${param.key}`;
+              if (param.type === "checkbox") {
+                return `
+                  <label class="test-param checkbox">
+                    <input
+                      id="${fieldId}"
+                      type="checkbox"
+                      value="true"
+                      ${param.defaultValue ? "checked" : ""}
+                    >
+                    <span>${param.label}</span>
+                  </label>
+                `;
+              }
+
+              const min = Number.isFinite(param.min) ? param.min : "";
+              const max = Number.isFinite(param.max) ? param.max : "";
+              return `
+                <label class="test-param">
+                  <span>${param.label}</span>
+                  <input
+                    id="${fieldId}"
+                    type="number"
+                    min="${min}"
+                    max="${max}"
+                    step="1"
+                    value="${param.defaultValue}"
+                  >
+                </label>
+              `;
+            })
+            .join("")
+        : "";
+
+    return `
+      <section class="test-definition" data-test-id="${test.id}">
+        <h3 class="test-title">${test.label}</h3>
+        <p class="test-meta">${test.description}</p>
+        <div class="test-params">${fields}</div>
+        <button
+          type="button"
+          class="test-run-btn"
+          data-test-launch="${test.id}"
+        >Abrir test</button>
+      </section>
+    `;
+  }).join("");
+
+  overlay.innerHTML = `
+    <div class="chapter-selector-panel tests-selector-panel">
+      <h2 class="chapter-selector-title">Tests</h2>
+      <div class="chapter-selector-list">
+        ${testsHTML || `<p class="chapter-selector-empty">No hay tests activos.</p>`}
+      </div>
+      <button class="chapter-selector-back" id="tests-close">Volver</button>
+    </div>
+  `;
+
+  gameContainer.appendChild(overlay);
+  overlay.querySelectorAll("[data-test-launch]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const testId = button.getAttribute("data-test-launch");
+      launchTestFromPanel(testId);
+    });
+  });
+  overlay
+    .querySelector("#tests-close")
+    ?.addEventListener("click", closeTestsPanel);
+
+  const focusCandidate =
+    overlay.querySelector(".test-run-btn") || overlay.querySelector("#tests-close");
+  focusCandidate?.focus();
+}
+
+function closeTestsPanel() {
+  const testsPanel = document.getElementById("tests-panel");
+  if (!testsPanel) return;
+
+  testsPanel.remove();
+  setMainMenuVisible(true);
+  testsBtn?.focus();
+}
+
+function clampTestNumber(value, min, max, fallback) {
+  const parsed = parseInt(String(value), 10);
+  if (Number.isNaN(parsed)) return fallback;
+  if (Number.isFinite(min) && parsed < min) return min;
+  if (Number.isFinite(max) && parsed > max) return max;
+  return parsed;
+}
+
+function collectTestParams(test) {
+  const values = {};
+  for (const param of test.parameters || []) {
+    const input = document.getElementById(`test-param-${test.id}-${param.key}`);
+    if (!input) continue;
+    if (param.type === "checkbox") {
+      values[param.key] = !!input.checked;
+      continue;
+    }
+    if (param.type === "number") {
+      const defaultValue = Number.isFinite(param.defaultValue)
+        ? param.defaultValue
+        : 1;
+      const min = Number.isFinite(param.min) ? param.min : 1;
+      const max = Number.isFinite(param.max) ? param.max : 20;
+      values[param.key] = clampTestNumber(input.value, min, max, defaultValue);
+      continue;
+    }
+    values[param.key] = input.value;
+  }
+  return values;
+}
+
+function launchTestFromPanel(testId) {
+  const test = TESTS_CATALOG.find((item) => item.id === testId);
+  if (!test) return;
+
+  const params = collectTestParams(test);
+  const target = new URL(test.file, location.href);
+  Object.entries(params).forEach(([key, value]) => {
+    target.searchParams.set(key, String(value));
+  });
+  target.searchParams.set("returnTo", location.href);
+  window.location.href = target.href;
 }
 
 // Configuración se abre igual que Capítulos: pantalla completa con el fondo
@@ -2720,8 +2900,14 @@ async function loadAllCharacters() {
     "ballerina_capuchina",
     "tralalelo_tralala",
   ];
-  for (const character of characters) {
-    await engine.loadCharacter(character);
+  const loadResult = await Promise.allSettled(
+    characters.map((character) => engine.loadCharacter(character)),
+  );
+  const failed = loadResult.filter((entry) => entry.status === "rejected");
+  if (failed.length > 0) {
+    failed.forEach((entry) => {
+      console.warn("No se pudo precargar un personaje:", entry.reason);
+    });
   }
 }
 

@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test: carga de personajes (antes vs despues)</title>
+    <style>
+        :root {
+            color-scheme: dark;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #090713;
+            color: #f2ecff;
+            padding: 24px;
+        }
+        .wrap {
+            max-width: 980px;
+            margin: 0 auto;
+            display: grid;
+            gap: 16px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 1.4rem;
+        }
+        .actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .actions a {
+            text-decoration: none;
+            color: inherit;
+        }
+        button {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            background: #ffd166;
+            color: #190d2b;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .ghost-link {
+            border-radius: 8px;
+            padding: 10px 14px;
+            background: #24163a;
+            border: 1px solid rgba(255, 209, 102, 0.35);
+            color: #f2ecff;
+            text-decoration: none;
+            font-weight: 700;
+        }
+        button[disabled] {
+            opacity: .55;
+            cursor: not-allowed;
+        }
+        .panel {
+            border: 1px solid rgba(255, 209, 102, 0.3);
+            background: #120d1f;
+            border-radius: 10px;
+            padding: 12px;
+            overflow: auto;
+        }
+        .meta {
+            color: #c1bdd8;
+            margin-bottom: 0;
+        }
+        pre {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+        th {
+            color: #ffd166;
+        }
+        .ok { color: #7cffb2; }
+        .warn { color: #ffca7e; }
+        .bad { color: #ff6d8f; }
+        .config {
+            display: grid;
+            gap: 8px;
+            grid-template-columns: repeat(3, minmax(160px, 1fr));
+            align-items: end;
+        }
+        .field {
+            display: grid;
+            gap: 6px;
+            font-size: .93rem;
+        }
+        .field label {
+            color: #e2dcff;
+        }
+        .field input[type="number"] {
+            border: 1px solid rgba(79, 208, 255, 0.45);
+            background: #090d23;
+            color: #f2ecff;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        .field.check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            grid-template-columns: none;
+        }
+        .field.check input {
+            margin: 0;
+            accent-color: #ffd166;
+        }
+        .result-meta {
+            display: grid;
+            gap: 4px;
+            color: #aeb4e8;
+            margin-top: -4px;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>Test de rendimiento: carga de personajes</h1>
+        <p class="meta">
+            Compara "Antes" (secuencial, sin deduccion de duplicados) frente a "Despues"
+            (dedupe + cargas en paralelo). Incluye fetch simulado para que el resultado sea estable.
+        </p>
+        <p id="return-target" class="meta"></p>
+
+        <div class="config">
+            <div class="field">
+                <label for="scene-repeats">Repeticiones de escena</label>
+                <input id="scene-repeats" type="number" min="1" max="20" step="1" value="1">
+            </div>
+            <div class="field">
+                <label for="preload-repeats">Repeticiones de precarga</label>
+                <input id="preload-repeats" type="number" min="1" max="20" step="1" value="1">
+            </div>
+            <div class="field check">
+                <input id="include-missing" type="checkbox">
+                <label for="include-missing">Incluir personaje inexistente (404)</label>
+            </div>
+        </div>
+        <div class="actions">
+            <button id="run-btn">Ejecutar test</button>
+            <button id="clear-btn">Limpiar</button>
+            <a id="return-link" href="#" class="ghost-link hidden">Volver al menu</a>
+        </div>
+
+        <div class="panel">
+            <h2>Escenario</h2>
+            <pre id="scenario"></pre>
+        </div>
+        <div class="panel">
+            <h2>Resumen</h2>
+            <pre id="summary"></pre>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Escenario</th>
+                        <th>Tiempo</th>
+                        <th>Fetch totales</th>
+                        <th>Fetch unicos</th>
+                        <th>Fetch de personajes</th>
+                        <th>Solicitados</th>
+                        <th>Cargados</th>
+                    </tr>
+                </thead>
+                <tbody id="rows"></tbody>
+            </table>
+        </div>
+        <div class="panel">
+            <h2>Detalle por URL</h2>
+            <pre id="detail"></pre>
+        </div>
+    </div>
+
+    <script src="engine.js"></script>
+    <script>
+        const BASE_SCENARIO_CHARACTERS = [
+            "edu",
+            "zip",
+            "nexo",
+            "edu",
+            "3c",
+            "samu",
+            "zip",
+            "nexo",
+            "edu",
+            "mickey",
+            "mickey",
+            "3c",
+            "samu",
+            "edu",
+        ];
+        const BASE_PRELOAD_LIST = [
+            "edu",
+            "zip",
+            "nexo",
+            "elion_husk",
+            "samu",
+            "iphone5",
+            "micaela",
+            "neit",
+            "jose",
+            "3c",
+            "tony",
+            "airi",
+            "airi_adult",
+            "amalgama",
+            "amalgama_final",
+            "andres",
+            "carlos",
+            "gorila",
+            "ketchling",
+            "paloma",
+            "santi",
+            "sebas",
+            "tung_tung_tung_sahur",
+            "ballerina_capuchina",
+            "tralalelo_tralala",
+        ];
+        const MISSING_CHARACTER = "personaje_inexistente_404_test";
+        const ASSET_STAMP = "20260806-1";
+        const DEFAULT_CONFIG = {
+            sceneRepeats: 1,
+            preloadRepeats: 1,
+            includeMissing: false,
+        };
+        const METADATA_MOCK = {
+            "assets/metadata/blink_eye_intermediates.json": { poses: {} },
+            "assets/metadata/sprite_white_halo_cleaned.json": { sprites: {} },
+            "assets/metadata/blink_eye_region_previews.json": { poses: {} },
+            "assets/metadata/blink_eye_clean_offsets_manual.json": { offsets: {} },
+            "assets/metadata/blink_eye_pixel_edits.json": { edits: { saved: {} } },
+        };
+
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        function jsonResponse(value) {
+            return new Response(JSON.stringify(value), {
+                status: 200,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
+
+        function canonicalUrl(input) {
+            const url = typeof input === "string" ? input : String(input?.url || "");
+            return url.split("?")[0];
+        }
+
+        function clampConfigNumber(raw, min, max, fallback) {
+            const parsed = parseInt(raw, 10);
+            if (Number.isNaN(parsed)) return fallback;
+            if (parsed < min) return min;
+            return parsed > max ? max : parsed;
+        }
+
+        function parseConfigFromQuery() {
+            const params = new URLSearchParams(location.search);
+            return {
+                sceneRepeats: clampConfigNumber(params.get("sceneRepeats"), 1, 20, DEFAULT_CONFIG.sceneRepeats),
+                preloadRepeats: clampConfigNumber(params.get("preloadRepeats"), 1, 20, DEFAULT_CONFIG.preloadRepeats),
+                includeMissing: params.get("includeMissing") === "true",
+            };
+        }
+
+        function readConfigFromInputs() {
+            return {
+                sceneRepeats: clampConfigNumber(document.getElementById("scene-repeats").value, 1, 20, DEFAULT_CONFIG.sceneRepeats),
+                preloadRepeats: clampConfigNumber(document.getElementById("preload-repeats").value, 1, 20, DEFAULT_CONFIG.preloadRepeats),
+                includeMissing: document.getElementById("include-missing").checked,
+            };
+        }
+
+        function setInputsFromConfig(config) {
+            document.getElementById("scene-repeats").value = config.sceneRepeats;
+            document.getElementById("preload-repeats").value = config.preloadRepeats;
+            document.getElementById("include-missing").checked = config.includeMissing;
+        }
+
+        function buildRepeatedList(baseList, repeats) {
+            const output = [];
+            const times = clampConfigNumber(repeats, 1, 20, 1);
+            for (let i = 0; i < times; i++) {
+                output.push(...baseList);
+            }
+            return output;
+        }
+
+        function buildScenarioLists(config) {
+            const sceneList = buildRepeatedList(BASE_SCENARIO_CHARACTERS, config.sceneRepeats);
+            const preloadList = buildRepeatedList(BASE_PRELOAD_LIST, config.preloadRepeats);
+            if (config.includeMissing) {
+                sceneList.push(MISSING_CHARACTER);
+                preloadList.push(MISSING_CHARACTER);
+            }
+            return { sceneList, preloadList };
+        }
+
+        function runWithMockedFetch(testBody, config) {
+            const originalFetch = window.fetch;
+            const fetchLog = [];
+
+            window.fetch = async (input, init) => {
+                const rawUrl = typeof input === "string" ? input : String(input?.url || "");
+                const url = canonicalUrl(rawUrl);
+                fetchLog.push(url);
+                await sleep(10);
+
+                if (url.includes("characters/")) {
+                    const match = url.match(/characters\/([^/?#]+)\.json/);
+                    const character = match?.[1] || "unknown";
+                    if (config.includeMissing && character === MISSING_CHARACTER) {
+                        return new Response("{}", { status: 404, headers: { "Content-Type": "application/json" } });
+                    }
+                    return jsonResponse({
+                        key: character,
+                        name: character,
+                        poses: {
+                            neutral: { sprite: `assets/images/characters/${character}/neutral.webp` },
+                        },
+                    });
+                }
+
+                const metadata = METADATA_MOCK[url];
+                if (url.includes("assets/metadata/") && metadata) {
+                    return jsonResponse(metadata);
+                }
+
+                return new Response("{}", { status: 404, headers: { "Content-Type": "application/json" } });
+            };
+
+            return (async () => {
+                try {
+                    return await testBody({ fetchLog, originalFetch });
+                } finally {
+                    window.fetch = originalFetch;
+                }
+            })();
+        }
+
+        function summarizeFetches(fetchLog) {
+            const total = fetchLog.length;
+            const unique = new Set(fetchLog).size;
+            const charFetches = fetchLog.filter((url) => url.includes("/characters/")).length;
+            const uniqueCharacterFetches = new Set(fetchLog.filter((url) => url.includes("/characters/"))).size;
+            return {
+                total,
+                unique,
+                charFetches,
+                uniqueCharacterFetches,
+            };
+        }
+
+        async function loadCharacterLegacy(engine, characterName) {
+            const characterKey = engine.getCharacterKey(characterName);
+            const response = await fetch(`characters/${characterKey}.json?v=${Date.now()}`, {
+                cache: "no-store",
+            });
+            if (!response.ok) {
+                return null;
+            }
+
+            const character = await response.json();
+            const intermediates = await fetch("assets/metadata/blink_eye_intermediates.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { poses: {} }));
+            const layerBlinks = await fetch("assets/metadata/blink_eye_region_previews.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { poses: {} }));
+            const whiteHaloCopies = await fetch("assets/metadata/sprite_white_halo_cleaned.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { sprites: {} }));
+            const blinkEdits = await fetch("assets/metadata/blink_eye_clean_offsets_manual.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { offsets: {} }));
+            const blinkPixelEdits = await fetch("assets/metadata/blink_eye_pixel_edits.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { edits: { saved: {} } }));
+            const metadataBundle = { ...whiteHaloCopies, ...blinkEdits, ...blinkPixelEdits };
+
+            engine.applyWhiteHaloCopies(characterKey, character, metadataBundle);
+            engine.applyBlinkIntermediateFrames(characterKey, character, intermediates);
+            engine.applyWhiteHaloAnimationFrames(characterKey, character, metadataBundle);
+            engine.applyLayerBlinkFrames(characterKey, character, layerBlinks);
+            engine.characters[characterKey] = character;
+            return character;
+        }
+
+        async function runScenario(label, mode, loadList, inParallel = false) {
+            const engine = new VisualNovelEngine();
+            const started = performance.now();
+            let loaded = 0;
+            const safeMode = async (name) => {
+                try {
+                    return !!(await mode(engine, name));
+                } catch (_error) {
+                    return false;
+                }
+            };
+
+            if (inParallel) {
+                const results = await Promise.all(loadList.map((name) => safeMode(name)));
+                loaded = results.filter(Boolean).length;
+            } else {
+                for (const name of loadList) {
+                    if (await safeMode(name)) {
+                        loaded++;
+                    }
+                }
+            }
+            const elapsed = performance.now() - started;
+            return { label, elapsed, loaded, requested: loadList.length };
+        }
+
+        async function runAllScenarios(config) {
+            const { sceneList, preloadList } = buildScenarioLists(config);
+            const missingLabel = config.includeMissing ? "incluye personaje inexistente (404)" : "no incluye personaje inexistente";
+            const scenarios = [
+                {
+                    label: "Antes: escena - secuencial sin dedupe",
+                    detail: `Escena base (${sceneList.length} req) / ${missingLabel}`,
+                    loader: loadCharacterLegacy,
+                    list: sceneList,
+                    parallel: false,
+                },
+                {
+                    label: "Despues: escena - paralelo con dedupe",
+                    detail: `Escena base (${sceneList.length} req) / ${missingLabel}`,
+                    loader: (engine, name) => engine.loadCharacter(name),
+                    list: sceneList,
+                    parallel: true,
+                },
+                {
+                    label: "Antes: pre-carga - secuencial sin dedupe",
+                    detail: `Pre-carga base (${preloadList.length} req) / ${missingLabel}`,
+                    loader: loadCharacterLegacy,
+                    list: preloadList,
+                    parallel: false,
+                },
+                {
+                    label: "Despues: pre-carga - paralelo con dedupe",
+                    detail: `Pre-carga base (${preloadList.length} req) / ${missingLabel}`,
+                    loader: (engine, name) => engine.loadCharacter(name),
+                    list: preloadList,
+                    parallel: true,
+                },
+            ];
+
+            const outputs = [];
+            for (const scenario of scenarios) {
+                const result = await runWithMockedFetch(async ({ fetchLog }) => {
+                    const scenarioResult = await runScenario(scenario.label, scenario.loader, scenario.list, scenario.parallel);
+                    const fetches = summarizeFetches(fetchLog);
+                    return { ...scenarioResult, fetches, requestsByUrl: fetchLog, detail: scenario.detail };
+                }, config);
+                outputs.push(result);
+            }
+            return outputs;
+        }
+
+        function renderResults(results) {
+            const rowsEl = document.getElementById("rows");
+            const summaryEl = document.getElementById("summary");
+            const detailEl = document.getElementById("detail");
+
+            rowsEl.innerHTML = "";
+            summaryEl.textContent = "";
+            detailEl.textContent = "";
+
+            if (!results.length) {
+                summaryEl.textContent = "No hay resultados.";
+                return;
+            }
+
+            const best = results.reduce((acc, item) => {
+                return !acc || item.elapsed < acc.elapsed ? item : acc;
+            }, null);
+
+            results.forEach((item) => {
+                const row = document.createElement("tr");
+                const isBest = item.label === best.label;
+                const cls = isBest ? "ok" : item.label.includes("Antes") ? "bad" : "warn";
+                row.innerHTML = `
+                    <td><span class="${cls}">${item.label}</span></td>
+                    <td>${item.elapsed.toFixed(2)} ms</td>
+                    <td>${item.fetches.total}</td>
+                    <td>${item.fetches.unique}</td>
+                    <td>${item.fetches.charFetches} (${item.fetches.uniqueCharacterFetches} unicos)</td>
+                    <td>${item.requested}</td>
+                    <td>${item.loaded}</td>
+                `;
+                rowsEl.appendChild(row);
+            });
+
+            const winner = results
+                .map((item) => item.label.includes("Despues") ? item.elapsed : Number.POSITIVE_INFINITY)
+                .filter((value) => Number.isFinite(value))
+                .sort((a, b) => a - b)[0];
+            const summaryLines = [
+                `Mejor resultado: ${best.label} (${best.elapsed.toFixed(2)} ms).`,
+                "Observaciones:",
+                `Escena base: ${results[0]?.requestsByUrl ? "OK" : "OK"}`,
+            ];
+
+            if (winner) {
+                summaryLines.push(`Mejor valor de mejora con estrategia 'Despues': ${winner.toFixed(2)} ms`);
+            }
+            summaryEl.textContent = summaryLines.join("\\n");
+
+            const detailByUrl = {};
+            results.forEach((item) => {
+                const byUrl = {};
+                item.requestsByUrl.forEach((url) => {
+                    byUrl[url] = (byUrl[url] || 0) + 1;
+                });
+                detailByUrl[item.label] = {
+                    detalle: item.detail,
+                    tiempo_ms: Number(item.elapsed.toFixed(2)),
+                    peticiones: item.fetches,
+                    urls: byUrl,
+                };
+            });
+            detailEl.textContent = JSON.stringify(detailByUrl, null, 2);
+        }
+
+        function renderScenarioLines(config) {
+            const { sceneList, preloadList } = buildScenarioLists(config);
+            const sceneLines = [
+                `Escena base: ${BASE_SCENARIO_CHARACTERS.length} personajes`,
+                `Pre-carga base: ${BASE_PRELOAD_LIST.length} personajes`,
+                `Repeticiones escena: ${config.sceneRepeats}`,
+                `Repeticiones pre-carga: ${config.preloadRepeats}`,
+                `Personaje inexistente forzado: ${config.includeMissing ? "si" : "no"}`,
+                `Escena total: ${sceneList.length}`,
+                `Pre-carga total: ${preloadList.length}`,
+            ];
+            document.getElementById("scenario").textContent = sceneLines.join("\\n");
+        }
+
+        function initReturnButton() {
+            const params = new URLSearchParams(location.search);
+            const returnTo = params.get("returnTo");
+            const returnLink = document.getElementById("return-link");
+            if (!returnTo) return;
+            const url = new URL(returnTo, location.href);
+            returnLink.href = url.href;
+            returnLink.classList.remove("hidden");
+            returnLink.textContent = "Volver al menu";
+            document.getElementById("return-target").textContent = "Este test fue lanzado desde el menu principal. Usa el boton para volver.";
+        }
+
+        document.getElementById("run-btn").addEventListener("click", async () => {
+            const btn = document.getElementById("run-btn");
+            const config = readConfigFromInputs();
+            btn.disabled = true;
+
+            renderScenarioLines(config);
+            try {
+                const results = await runAllScenarios(config);
+                renderResults(results);
+            } catch (error) {
+                document.getElementById("summary").textContent = `Error ejecutando el test: ${error.message || error}`;
+            } finally {
+                btn.disabled = false;
+            }
+        });
+
+        document.getElementById("clear-btn").addEventListener("click", () => {
+            document.getElementById("scenario").textContent = "";
+            document.getElementById("summary").textContent = "";
+            document.getElementById("rows").innerHTML = "";
+            document.getElementById("detail").textContent = "";
+        });
+
+        (function initializeFromQuery() {
+            const config = parseConfigFromQuery();
+            setInputsFromConfig(config);
+            initReturnButton();
+            renderScenarioLines(config);
+        }());
+    </script>
+</body>
+</html>

@@ -8082,3 +8082,110 @@ body.hud-hidden #game-container .ss-pause-btn {
     will-change: left, top, transform;
     contain: layout paint style;
 }
+
+.tests-selector {
+    z-index: 500; /* por encima del flujo normal del juego y bajo pruebas de HUD */
+}
+
+.tests-selector-panel {
+    max-width: min(800px, 92%);
+    max-height: 86vh;
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.tests-selector .chapter-selector-list {
+    max-height: 100%;
+    display: grid;
+    gap: 12px;
+    overflow-y: auto;
+}
+
+.test-definition {
+    border: 1px solid rgba(79, 176, 255, 0.32);
+    border-radius: 11px;
+    background: rgba(9, 5, 20, 0.6);
+    padding: 12px;
+    display: grid;
+    gap: 8px;
+}
+
+.test-title {
+    margin: 0;
+    color: #ffd166;
+    font-size: 20px;
+    font-family: 'Righteous', Arial, sans-serif;
+    letter-spacing: 0.4px;
+}
+
+.test-meta {
+    color: rgba(247, 244, 255, 0.82);
+    font-size: 13px;
+    line-height: 1.35;
+    margin: 0;
+}
+
+.test-params {
+    margin-top: 2px;
+    display: grid;
+    gap: 8px;
+}
+
+.test-param {
+    display: grid;
+    gap: 6px;
+    align-items: center;
+    color: rgba(247, 244, 255, 0.9);
+    font-size: 13px;
+}
+
+.test-param input {
+    width: 100%;
+    max-width: 120px;
+    border: 1px solid rgba(79, 208, 255, 0.35);
+    background: rgba(9, 12, 28, 0.9);
+    color: #fff;
+    padding: 8px 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    font-family: inherit;
+}
+
+.test-param.checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.test-param.checkbox input {
+    width: auto;
+    max-width: none;
+    margin: 0;
+}
+
+.test-run-btn {
+    justify-self: start;
+    border: 1px solid rgba(255, 209, 102, 0.55);
+    background: rgba(255, 209, 102, 0.16);
+    color: #ffd166;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+}
+
+.test-run-btn:hover,
+.test-run-btn:focus-visible {
+    background: rgba(255, 209, 102, 0.3);
+    outline: none;
+}
+
+@media (max-width: 700px) {
+    .tests-selector-panel {
+        width: 92%;
+    }
+}
