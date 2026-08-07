@@ -5,9 +5,9 @@ uno para quien juega y otro para quien desarrolla. `LEER_PRIMERO.md` es sólo
 la portada y el acceso rápido. Las plantillas de `.github/` son excepciones
 operativas, no documentación paralela.
 
-> **Estado verificado: 2026-08-04.** La validación actual reconoce 7 capítulos,
-> 64 escenas, 920 líneas, 27 fichas de personaje y 1.571 referencias de assets.
-> La galería generada contiene 107 entradas, 157 poses y 129 poses con
+> **Estado verificado: 2026-08-07.** La validación actual reconoce 7 capítulos,
+> 64 escenas, 921 líneas, 27 fichas de personaje y 1.655 referencias de assets.
+> La galería generada contiene 107 entradas, 156 poses y 129 poses con
 > parpadeo. Estas cifras son una fotografía
 > fechada; `npm run validate:content` es la fuente actual.
 
@@ -139,21 +139,63 @@ galería o minijuegos no avanza accidentalmente el diálogo que queda detrás.
 En la parte superior aparecen cuando son aplicables:
 
 - **Opciones**: pausa, ajustes y regreso al menú principal.
-- **Escenas**: lista todas las escenas del capítulo. Las actuales y visitadas se
-  distinguen visualmente; volver a una visitada recupera su estado, mientras que
-  saltar a una aún no visitada conserva el progreso actual.
-- **Retroceder**: vuelve al comienzo de la escena anterior y restaura fondo,
-  personajes, música, inventario y estado narrativo de ese momento.
+- **Escenas**: lista todas las escenas del capítulo. La actual aparece en dorado;
+  el resto de números mantiene siempre el mismo tono neutro, se hayan recorrido o
+  no. Si existe una instantánea de una escena, volver recupera su estado; si no
+  existe, el salto conserva el progreso actual.
+- **Log**: abre el historial cronológico de la ruta recorrida, con el hablante y
+  el texto de cada diálogo. A la izquierda aparece el retrato de la pose que tenía
+  ese personaje al pronunciar la frase y su nombre usa el color de su ficha JSON.
+  Las decisiones aparecen junto a la frase que ofrecía las opciones. El panel se
+  abre por el final, usa el mismo scrollbar que los demás listados, pausa la escena
+  y se cierra con su aspa, pulsando fuera o con `Esc`. Si se retrocede y se elige
+  otra ruta, el Log sustituye el futuro descartado por la nueva elección. Sólo dura
+  durante la partida actual: no se conserva al cerrar o recargar.
+- **Retroceder**: vuelve a la línea de diálogo anterior. En el flujo normal de
+  una elección sigue la ruta que se jugó; si se usa **Escenas** para saltar a una
+  rama o a su primera convergencia, la primera pulsación vuelve directamente a la
+  línea donde se tomó esa decisión. Fuera de esas regiones usa el orden en que
+  capítulos, escenas y líneas aparecen en sus JSON, aunque el texto no se hubiera
+  mostrado: desde la primera línea de un capítulo llega a la última del anterior.
+  Conserva la ruta elegida mientras se recorre el historial. Si el destino es una
+  decisión, muestra de nuevo todas sus opciones; al elegir otra, sustituye sólo el
+  tramo posterior por la nueva ruta, tanto tras un salto manual como en el flujo
+  normal. Las variantes `showIf` incompatibles con el resultado actual se omiten.
+  Recupera el hablante y la composición de ese instante:
+  fondo —incluidos CG, paneo, esperas, fundidos y frame final de cinemática—,
+  personajes, poses y música. Durante un minijuego vuelve al diálogo inmediatamente
+  anterior al minijuego.
+  Si el instante inmediatamente anterior es una espera o cinemática declarada en
+  una línea sin texto, Retroceder recrea primero esa línea visual. Al terminar un
+  vídeo alcanzado así queda visible su frame final: un clic regresa al diálogo
+  posterior y otra pulsación de **Retroceder** continúa hacia el diálogo anterior.
+  La línea se recrea desde el estado que tenía justo antes: vuelve a ejecutar en
+  orden sus acciones de presentación, incluido el ritmo y los efectos del texto,
+  sin desplazar verticalmente ni hacer parpadear el cuadro entre dos diálogos.
+  Las pausas visuales y cinemáticas que ocultan el diálogo siguen respetando esa
+  presentación. No se duplican variables, objetos,
+  rescates ni retraso, y los minijuegos no se repiten. Una decisión restaurada
+  espera una nueva elección en vez de seleccionar automáticamente la anterior.
+  Al avanzar de nuevo, los interludios y cinemáticas del tramo visto conservan su
+  presentación. El botón permanece disponible mientras se muestran opciones: al
+  pulsarlo, cierra la elección sin seleccionar ninguna respuesta y retrocede al
+  diálogo anterior.
 
 Junto al nombre del hablante aparece un cursor-retrato. Mientras se escribe una
 frase acompaña el último grafema visible y al terminar regresa suavemente al
 encabezado. Antes de que Edu, Tony y José revelen sus transformaciones muestra
 sus retratos humanos; después utiliza sus sprites furry. `???` no reutiliza la
-cara del hablante anterior.
+cara del hablante anterior. Si una ilustración ya contiene a los personajes, el
+juego evita superponer una segunda copia y el cursor-retrato sigue identificando
+a quien habla con la pose declarada para esa línea. Los retratos humanos de Edu
+y José encuadran la cabeza completa dentro del marco circular.
+
+Cuando cambia el fondo, todos los personajes del escenario se retiran antes de
+componer la nueva imagen. Sólo reaparecen los que la escena vuelva a mostrar.
 
 Las cinemáticas ocultan temporalmente estos botones. Durante una elección o un
-minijuego se puede abrir **Escenas** u **Opciones**; saltar o salir cancela de
-forma segura la actividad en curso.
+minijuego se puede abrir **Escenas**, **Log** u **Opciones**. El Log sólo pausa;
+saltar o salir cancela de forma segura la actividad en curso.
 
 Al final de cada capítulo puede aparecer **Siguiente capítulo** o **Menú
 principal**. Las decisiones tomadas durante una ruta pueden cambiar la escena o
@@ -216,9 +258,18 @@ visible. Tras recibir daño, Samu tiene 0,85 segundos de invulnerabilidad: su
 indicador cambia a línea discontinua y se atenúa mientras los solapes no causan
 otro impacto.
 
+Las hitboxes guardadas desde el editor se usan en Fácil, Medio, Difícil, **Flujo
+completo**, **Como en la historia** y en el capítulo 2. Si hay una partida del
+bullet hell abierta en otra pestaña del mismo origen, recibe también el ajuste
+al guardar.
+
 Los juegos de conducción y vuelo tienen además pausa propia. Si se pierde una prueba
 obligatoria aparece la opción de reintentar. Opciones y Escenas permiten
 abandonar una prueba sin dejar bloqueada la novela.
+
+Los minijuegos con vidas muestran hasta cinco corazones individuales. Cuando
+quedan seis o más, el HUD los resume como **❤ × N**, donde `N` es el número de
+vidas restantes; al recibir daño el multiplicador se actualiza de inmediato.
 
 La pausa global congela timers, `requestAnimationFrame`, reloj lógico,
 animaciones CSS, audio y vídeo, y absorbe entradas hasta reanudar. En una
@@ -239,8 +290,10 @@ conectada al menú ni se ejecuta como guardado automático.
 - Cerrar o recargar puede perder la ruta en curso.
 - **Capítulos** sirve para retomar aproximadamente desde el comienzo de un
   capítulo, siempre con estado limpio.
-- El historial de **Escenas** y **Retroceder** sólo existe durante el capítulo
-  activo y conserva hasta 60 entradas.
+- **Escenas** conserva hasta 60 entradas del capítulo activo. **Retroceder** usa
+  una línea temporal separada de hasta 1200 diálogos o momentos visuales y puede
+  cruzar capítulos de la partida en curso; **Log** muestra los diálogos de esa
+  misma línea temporal. Ambos historiales se pierden al salir o recargar.
 - Los ajustes de sonido, ventana y ayudas sí se guardan.
 
 ## Problemas habituales del jugador
@@ -343,7 +396,7 @@ notarización requieren credenciales externas; se explican en la referencia.
 | `hitbox-debugger.js` / `hitbox-editor.html` | Depuración en vivo y ajuste persistente de hitboxes simples o compuestas. |
 | `rune-channeling-minigame.js` | Canalización cooperativa de runas. |
 | `credits-minigame.js` | Créditos interactivos. |
-| `minijuegos_test.html` | Lanzador aislado de minijuegos; conserva el origen del juego y ofrece regreso al menú. |
+| `minijuegos_test.html` | Panel de QA de minijuegos: catálogo, modos, opciones contextuales, ejecución aislada y regreso al menú. |
 | `chapters/*.json` | Guion ejecutable: capítulos, escenas, líneas, elecciones y acciones. |
 | `characters/*.json` | Nombre visible, color, poses y animaciones de cada personaje. |
 | `assets/metadata/*.json` | Galería, capas oculares, offsets, ediciones y copias limpias. |
@@ -499,14 +552,26 @@ C2/E16/L4 para Edu, C3/E13/L5 para Tony y C4/E2/L4 para José; se calculan por
 posición para funcionar también al saltar desde **Escenas**. El encuadre se
 ajusta con `--cursor-portrait-size` y `--cursor-portrait-position` y dispone de
 excepciones por personaje/pose. Al añadir una pose con composición atípica hay
-que probar tanto su plano de escenario como este recorte.
+que probar tanto su plano de escenario como este recorte. Las excepciones
+`uses-human-portrait[data-character="edu"]` y
+`uses-human-portrait[data-character="jose"]` corrigen por separado el foco
+horizontal y vertical de sus hojas humanas para mantener pelo y rostro dentro
+del círculo.
+
+Cuando el hablante no tiene sprite activo, el cursor carga su ficha y usa el
+retrato humano narrativo o, si no corresponde, `defaultPose`. Cuando el personaje
+ya está dibujado en el fondo y el cursor necesita una pose concreta, la línea
+ejecuta primero
+`showCharacter` con esa pose y justo después `hideCharacter`: la segunda acción
+oculta el sprite del escenario, pero conserva pose, imagen y asociación interna
+para el retrato.
 
 ## Resumen de acciones narrativas
 
 | Familia | Acciones principales | Uso |
 | --- | --- | --- |
 | Escenario | `setBackground`, `clearBackground`, `showCG`, `hideCG`, `bgPan`, `fade` | Fondo, ilustración, cámara y transición. |
-| Personajes | `showCharacter`, `hideCharacter`, `removeCharacter`, `setPose` | Presencia, hueco y expresión. |
+| Personajes | `showCharacter`, `hideCharacter`, `removeCharacter`, `setPose` | Presencia, ocultación visual, eliminación y expresión. |
 | Animación | `animateCharacter`, `poseSequence`, `stopCharacterAnimation`, `characterAnimeFall` | Acting entre poses y caída cómica fuera de plano. |
 | Glitch | `characterGlitch`, `characterFullGlitch`, `characterGlitchUntilAdvance` | Corrupción puntual o sostenida. |
 | Diálogo | `hideDialog`, `wait`, `waitForClick` | Ritmo y ausencia temporal de caja. |
@@ -529,13 +594,42 @@ campos y ejemplos de cada acción.
 - `completedCalls`: llamadas completadas; persiste.
 - `storyPressure`: coste acumulado canónico entre capítulos.
 - `storyDelay`: alias sincronizado que utilizan acciones y condiciones antiguas.
-- `sceneHistory`: hasta 60 snapshots del capítulo actual para Escenas y
-  Retroceder; incluye escenario, audio, efectos y estado narrativo.
+- `sceneHistory`: hasta 60 snapshots del capítulo actual para el menú **Escenas**.
+- `canonicalChapterOrder` y `_canonicalDialogueLocations`: índice derivado de los
+  JSON en orden capítulo → escena → línea; es el respaldo de **Retroceder** fuera
+  de una ruta de elección o cuando no existe un momento real anterior.
+- `_choiceRewindAnchorCache`: grafo derivado de `choices[].nextScene` y
+  `goToScene`; relaciona las ramas y su primera convergencia con la línea de
+  decisión que las origina.
+- `_choiceFlowTargetCache`: destinos de cualquier elección, incluidas las de una
+  sola opción; hace que el flujo normal de confirmaciones y reintentos vuelva por
+  el diálogo realmente recorrido sin convertirlos en anclas de salto manual.
+- `_pendingManualSceneJump`: marca exclusiva de `saltarAEscena()`. Sobrevive a
+  waits, CG, cinemáticas y minijuegos previos al texto, se copia en esos momentos
+  y se consume al registrar el primer diálogo del destino.
+- `dialogueTimeline`: hasta 1200 momentos realmente vistos —diálogos, esperas
+  visuales y cinemáticas—, más las entradas canónicas que sea necesario
+  reconstruir. Conserva cursor de reproducción, presentación exacta y checkpoint
+  de reanudación para avanzar sin repetir efectos secundarios. Dentro de una ruta
+  de elección conserva además el predecesor realmente jugado. Las entradas de
+  diálogo pueden incluir `selectedChoice`, que vincula la opción confirmada con
+  la frase que la ofreció para presentarla en el **Log**.
 
 `sceneList()` devuelve siempre todas las entradas de `currentChapter.scenes` y
-añade las marcas `actual` y `visitada` sólo para su presentación. No filtres por
-`debugMode` ni por el historial: el menú **Escenas** es navegación completa del
-capítulo, también hacia escenas aún no visitadas.
+añade únicamente la marca `actual` para su presentación. No expone una marca de
+visita ni colorea de azul los números: `sceneHistory` y `dialogueTimeline` siguen
+guardando restauración y retroceso sin intervenir en el estilo del selector. No
+filtres por `debugMode` ni por el historial: el menú **Escenas** es navegación
+completa del capítulo, también hacia escenas aún no recorridas.
+
+`backlogEntries()` proyecta los diálogos visibles de `dialogueTimeline` en el
+formato de interfaz del **Log**: capítulo, escena, hablante, color legible derivado
+de `characters/<clave>.json`, pose, ruta de retrato, texto y elección. La pose se
+resuelve desde `entry.stage.characters`, no desde el escenario presente; si el
+personaje no estaba visible usa `defaultPose`. Los retratos humanos anteriores a
+la revelación respetan la ubicación histórica de la entrada. No mantiene una
+segunda copia del recorrido; por eso la poda normal del timeline al cambiar de
+decisión elimina también la rama descartada del historial mostrado.
 
 Al abrir el selector, la escena actual se centra modificando únicamente el
 `scrollTop` de `.scenes-list`. No debe sustituirse por `scrollIntoView()`: en
@@ -591,6 +685,11 @@ motor admite variantes `...ByDelay` que seleccionan valores según
 `storyDelay/storyPressure`. Sólo cambia JavaScript si la regla no puede
 expresarse con opciones existentes.
 
+`window.MinigameLifeDisplay` es el renderizador común de vidas. `renderRepeated`
+se usa en contadores de corazones restantes y `renderSlots` en HUD que conservan
+huecos de daño. Ambos compactan automáticamente cualquier cantidad superior a
+cinco como `❤ × N` y mantienen `aria-label` con el valor restante y el máximo.
+
 Todo minijuego nuevo debe:
 
 1. Resolver una `Promise` al ganar/perder o ser cancelado.
@@ -604,6 +703,7 @@ Todo minijuego nuevo debe:
 8. Cargarse antes de `engine.js`, registrar su caso en `playMinigame` y en
    `knownMinigames` de `scripts/validate_game_content.mjs`.
 9. Incluirse en `minijuegos_test.html` y pasar una prueba dentro del capítulo.
+10. Usar `MinigameLifeDisplay` si el personaje dispone de vidas.
 
 ## Galería y metadatos
 
@@ -1115,7 +1215,8 @@ expresan en milisegundos salvo que la descripción diga expresamente otra unidad
 ### clearBackground / removeBackground
 
 Vacía las dos capas del fondo y cancela cualquier `bgPan`. Ambos nombres son
-equivalentes y no reciben parámetros adicionales.
+equivalentes y no reciben parámetros adicionales. Si había un fondo activo,
+también ejecuta la retirada completa de personajes.
 
 ```json
 { "type": "clearBackground" }
@@ -1123,8 +1224,10 @@ equivalentes y no reciben parámetros adicionales.
 
 ### setBackground
 
-Cambia el fondo de la escena. Por defecto hace un fundido cruzado de 400 ms
-entre el fondo anterior y el nuevo.
+Cambia el fondo de la escena. Si la ruta es distinta de la activa, primero llama
+a `removeCharacter` sobre los huecos `left`, `center` y `right`; por tanto, las
+apariciones que deban continuar se declaran de nuevo después de `setBackground`.
+Por defecto hace un fundido cruzado de 400 ms entre el fondo anterior y el nuevo.
 
 ```json
 {
@@ -1204,11 +1307,36 @@ Valores en uso en los capítulos:
 Si añades una aparición nueva de alguno de ellos, **copia también su `scale` y
 su `offsetY`**: sin esos campos saldría a tamaño normal y a ras de suelo.
 
-### hideCharacter / removeCharacter / quitarPersonaje
+### hideCharacter
 
-Quita a un personaje de la escena (vacía su hueco). Los tres nombres de acción
-son equivalentes. **Recomendado usarlo cuando un personaje deja de intervenir**
-para que no se quede en pantalla en las escenas siguientes.
+Hace invisible el sprite sin vaciar su hueco interno: conserva personaje, pose e
+imagen para que el cursor-retrato use exactamente el estado preparado por
+`showCharacter`. No participa en la distribución visual ni se considera un
+hablante visible. Un `showCharacter` posterior en el mismo hueco lo vuelve a
+mostrar.
+
+Cuando el personaje ya forma parte de la ilustración de fondo, las dos acciones
+deben ir consecutivas:
+
+```json
+{
+  "actions": [
+    { "type": "showCharacter", "character": "luna", "position": "left", "pose": "happy" },
+    { "type": "hideCharacter", "position": "left" }
+  ],
+  "character": "Luna",
+  "text": "El cursor conserva la pose happy sin duplicar a Luna sobre el fondo."
+}
+```
+
+El campo opcional `exit` aplica un fundido de 320 ms antes de hacer invisible el
+sprite.
+
+### removeCharacter / quitarPersonaje
+
+Vacía por completo el hueco y olvida su pose y asociación. Ambos nombres son
+equivalentes. Debe usarse cuando un personaje abandona la escena; no sirve para
+conservar una pose destinada al cursor.
 
 Formas de uso:
 
@@ -1235,12 +1363,12 @@ realmente el hueco. Su valor actual es booleano: cualquier valor verdadero activ
 el fundido.
 
 ```json
-{ "type": "hideCharacter", "character": "luna", "exit": true }
+{ "type": "removeCharacter", "character": "luna", "exit": true }
 ```
 
 > Nota: la posición de cada personaje se rastrea al llamar a `showCharacter`, así
-> que basta con indicar `character`. No hace falta quitar al protagonista (Samu),
-> que permanece en escena durante todo el capítulo.
+> que basta con indicar `character`. Si sólo se indica `position`, se actúa sobre
+> quien ocupe ese hueco.
 
 ### setPose
 
@@ -1926,7 +2054,12 @@ Todos los parámetros numéricos de dificultad admiten la variante opcional
 `...ByDelay` descrita en `minigame`. Los nombres de esta tabla son el contrato
 del motor; los alias sólo se conservan para contenido histórico.
 
-`ketchupBoss` obtiene sus valores base de `ketchup-hitboxes.js`. `boss` no es
+`ketchupBoss` obtiene sus valores base de `ketchup-hitboxes.js`.
+`KetchupHitboxes.createEffective()` combina esos valores con la configuración
+guardada cada vez que comienza una ronda; es la única ruta de carga para los
+presets, Flujo completo y la historia. `KetchupHitboxes.subscribe()` mantiene
+actualizada una ronda abierta cuando el editor guarda desde otra pestaña del
+mismo origen. `boss` no es
 una caja única: contiene `profiles` (`floating`, `phase1`…`phase5`) y cada
 perfil agrupa primitivas bajo `parts`. El frame activo selecciona el perfil y
 un impacto contra cualquiera de sus piezas daña a Zip. Jugador y proyectiles
@@ -2117,8 +2250,32 @@ del HUD congelan por completo partida y cuenta atrás. El escenario desactiva lo
 gestos del navegador (`touch-action: none`) para que el control táctil responda
 como conducción.
 
-`minijuegos_test.html` incluye la casilla **Mostrar hitboxes en persecución y
-vuelo**. En la persecución dibuja las huellas elípticas: coche en verde,
+### Banco de pruebas de minijuegos
+
+`minijuegos_test.html` funciona como panel de QA en disposición catálogo/detalle.
+El catálogo agrupa las pruebas en **Ritmo y audio**, **Acción**, **Combate** y
+**Herramientas**, dispone de búsqueda y sólo muestra las opciones de la ficha
+activa. El selector común ofrece los modos compatibles de cada motor; la ficha y
+el último modo elegido se recuerdan en `illo_minigame_test_panel` y se reflejan
+en la URL mediante `?game=...&mode=...` para poder compartir accesos directos.
+
+Los presets Fácil, Medio y Difícil se ejecutan sin que los campos numéricos del
+panel los sobrescriban. Guindillas y Zip habilitan esos campos exclusivamente en
+**Personalizado**. Zip conserva además acciones separadas para el flujo completo
+Guindillas → Zip y para abrir el editor de hitboxes; su modo **Como en la
+historia** lee la acción `ketchupBoss` real de `chapter2.json` y pasa igualmente
+por `runTest()`. Battle usa un único selector de enemigo que sincroniza sus HP
+iniciales. **Copiar configuración** entrega el JSON efectivo de la prueba visible
+y **Restaurar opciones** sólo reinicia esa ficha.
+
+Todos los lanzamientos pasan por `runTest()`, que centraliza resultado, duración,
+limpieza de música/autojugador, recuperación del panel y presentación de errores.
+Al añadir una prueba nueva se registra una entrada en `MINIGAME_CATALOG`, se
+asocia su panel `data-options-for` y se define su función `run`; no se deben crear
+filas independientes de botones por dificultad.
+
+Las fichas de Persecución y Edu volando incluyen **Mostrar hitboxes de
+movimiento**. En la persecución dibuja las huellas elípticas: coche en verde,
 obstáculos en rojo y motos en amarillo. En el vuelo mantiene las cajas 2D y los
 coleccionables azules. La opción también se inyecta al usar **Como en la
 historia**, pero nunca se activa en una partida narrativa normal.
@@ -2156,11 +2313,15 @@ historial local de hasta 80 estados; `Ctrl+S` guarda, `Page Up/Down` cambia el
 frame y `[`/`]` cambia la pieza. **Guardar e ir a pruebas** persiste y vuelve al banco
 de minijuegos; **Volver sin guardar** pide confirmación si hay cambios pendientes.
 
-**Guardar** persiste únicamente en `localStorage` del origen de pruebas y
-requiere volver a lanzar el minijuego. Durante los 0,85 s
-de invulnerabilidad de Samu, tanto el marcador integrado como el depurador se
-muestran atenuados y con borde discontinuo para distinguir una caja visible de
-una colisión activa.
+**Guardar** persiste en `localStorage` del origen actual. Todos los lanzamientos
+posteriores —Fácil, Medio, Difícil, Flujo completo, Como en la historia y la
+escena narrativa— reconstruyen la configuración efectiva desde ese valor. Una
+ronda abierta en otra pestaña del mismo origen se actualiza mediante el evento
+`storage`; `notifyChanged()` cubre consumidores de la misma ventana. La casilla
+**Mostrar hitbox real de Zip** se propaga a todos los botones del banco de
+pruebas. Durante los 0,85 s de invulnerabilidad de Samu, tanto el marcador
+integrado como el depurador se muestran atenuados y con borde discontinuo para
+distinguir una caja visible de una colisión activa.
 
 #### Minijuego `eduvuelo` — peligros aéreos (cap. 3)
 
@@ -3629,7 +3790,8 @@ engine.gameState; // Variables del juego
 // Control manual
 engine.setBackground(path); // Cambiar fondo
 engine.showCharacter(name, pos, pose); // Mostrar personaje
-engine.hideCharacter(name); // Ocultar personaje
+engine.hideCharacter(name); // Hacerlo invisible conservando pose
+engine.removeCharacter(name); // Vaciar el hueco por completo
 engine.setPose(name, pos, pose); // Cambiar pose
 engine.playSound(path); // Reproducir audio
 
@@ -4396,7 +4558,10 @@ restaurados, conserva el audio AAC del opening original y reproduce sus zooms,
 fundidos, fogonazos blancos y pausa negra final. Las variantes anteriores se
 conservan fuera de la build en
 `workbench/archive/cutscenes/chapter3/opening_tony/`; el archivo activo queda
-por debajo de 100 MB.
+por debajo de 100 MB. Su acción `playVideo` declara
+`assets/images/backgrounds/chapter3/fans_calmandose.webp` como `endBackground`:
+al terminar, saltar o reproducirla desde Retroceder, la pausa negra entrega el
+escenario al mismo fondo con el que continúa la escena siguiente.
 
 ### Cómo funciona
 
@@ -5736,10 +5901,11 @@ retroceder limpia también vídeos integrados, frames internos, poses, glitches 
 temporizadores de entrada/salida para que ningún hueco conserve trabajo invisible
 de la escena anterior.
 
-El historial de escenas guarda también una foto del escenario: fondo, personaje,
-pose, orientación, audios activos por ID, tinte, viñeta y camas WebAudio. Retroceder
-o saltar a una escena restaura esa composición y cancela animaciones antiguas,
-evitando sprites, músicas o fundidos residuales. El selector oculta escenas futuras durante una
+Los historiales guardan también una foto del escenario: fondo, personaje, pose,
+orientación, escala, desplazamiento, audios activos por ID y estado de pausa,
+tinte, viñeta y camas WebAudio. Retroceder o saltar a una escena restaura esa
+composición y cancela animaciones antiguas, evitando sprites, músicas o fundidos
+residuales. El selector oculta escenas futuras durante una
 partida normal; `debugMode` permite verlas para pruebas.
 
 Las entradas del selector son operables con ratón, Enter o Espacio y exponen su
@@ -5751,8 +5917,8 @@ salto dentro del único bucle de juego: no crea una segunda reproducción concur
 `storyPressure` es la presión narrativa persistente. `storyDelay` continúa como
 alias para no romper capítulos y minijuegos existentes, pero ambos se sincronizan
 en `setDelay` y `addDelay`. Cargar el capítulo siguiente ya no borra la presión;
-solo **Nueva partida** o elegir un capítulo desde el selector la reinician. El
-historial de escenas guarda ambos valores para que retroceder sea determinista.
+solo **Nueva partida** o elegir un capítulo desde el selector la reinician. La
+línea temporal de diálogo guarda ambos valores para que retroceder sea determinista.
 
 ### Audio de la revisión
 
@@ -5788,52 +5954,165 @@ referencia bajo `assets/`, incluida su capitalización exacta. También audita
 de galería, miniaturas, rutas literales de JS/CSS/HTML y exclusiones sensibles
 del instalador. El resumen impreso —capítulos,
 escenas, líneas, personajes y referencias— es la cifra fiable del estado actual.
-La ejecución de cierre verificada el **2026-08-04** terminó sin errores con
-**7 capítulos, 64 escenas, 920 líneas, 27 personajes y 1571 referencias de
+La ejecución de cierre verificada el **2026-08-07** terminó sin errores con
+**7 capítulos, 64 escenas, 921 líneas, 27 personajes y 1655 referencias de
 assets**.
 
-### Retroceder: a esta escena o a la anterior (2026-08-03)
+### Retroceder contextual por línea de diálogo
 
-El botón **Retroceder** siempre lleva al **principio de una escena**, y ahora
-elige cuál según lo avanzado que se esté dentro de la escena actual:
+El destino se resuelve en este orden:
 
-- **Ya se ha avanzado algún diálogo aquí** → vuelve al principio de **esta misma
-  escena**. Es el caso de quien se pasa de clic: repite lo que acaba de leer sin
-  salirse de la escena.
-- **Recién entrados** (aún en el primer diálogo de la escena) → sale a la
-  **escena anterior**, la que se dejó justo antes.
+1. Un salto manual desde **Escenas** a una rama o a su primera convergencia vuelve
+   a la línea de decisión que origina esa región.
+2. En el flujo vivo dentro de una región de elección se usa el diálogo real
+   inmediatamente anterior de `dialogueTimeline`; así se conserva la ruta jugada
+   aunque sus escenas no coincidan con el orden del archivo.
+3. En cualquier otro caso se usa el diálogo anterior del orden canónico
+   capítulo → escena → línea de los JSON.
 
-Si la escena actual vino de una **elección**, salir de ella lleva a la escena
-donde se tomó la decisión, y allí la pregunta se vuelve a plantear.
+`choiceRewindAnchors()` construye y cachea un grafo por capítulo. Sus aristas salen
+de `choices[].nextScene` y de acciones `goToScene`, incluidas `afterActions`; una
+línea sólo es decisión si tiene al menos dos destinos distintos. Cada objetivo,
+las escenas de sus rutas mínimas y el primer nodo común se asocian a la línea de
+origen. Una rama directa o anidada prevalece sobre una asociación exterior; si
+varias decisiones convergen en la misma escena se prefiere la de mayor cobertura
+de rutas mínimas; número de ramas, posición y distancia actúan como desempate.
+Las elecciones de una única opción —confirmaciones o reintentos— no abren una
+región de salto manual, aunque su destino sí se marca para el flujo jugado. Este
+cálculo cubre también convergencias cuyo índice JSON aparece antes que una de sus
+ramas.
 
-El contador `engine.sceneAdvances` cuenta los diálogos mostrados dentro de la
-escena en curso; se pone a cero en cada entrada de escena y es lo que distingue
-los dos casos. Por eso el botón aparece también en la primera escena del
-capítulo en cuanto se ha avanzado un diálogo: hay algo a lo que volver.
+Sólo `saltarAEscena()` crea `_pendingManualSceneJump`, poda el futuro incompatible
+y guarda el ancla de decisión. `recordVisualMoment()` copia esa marca sin
+consumirla, de modo que sobrevive a un `wait`, CG, vídeo o minijuego anterior al
+primer texto; `recordDialogueMoment()` la copia y entonces la consume. Al
+retroceder, `rewindToManualChoiceDecision()` reutiliza una foto histórica exacta
+si quedó adyacente o inserta una copia justo antes del primer momento del destino.
+`showRewoundTimelineEntry()` recrea cualquier decisión alcanzada hacia atrás o
+hacia delante, abre `displayChoices()` y espera una respuesta. Sólo al confirmarla
+poda el tramo posterior, sale de `dialoguePlayback` y aplica la opción mediante
+`applySelectedChoice()`, por lo que la ruta elegida vuelve a ser flujo vivo. Si el
+jugador abre **Escenas** sin elegir, la espera se cancela sin alterar el historial ni
+bloquear el bucle. Cuando no existe foto histórica, la decisión sintética usa
+`buildSceneLocalStageState()` para reconstruir desde el inicio de su propia escena
+sin mezclar el escenario de ramas incompatibles.
 
-El "de dónde vengo" es la pila `engine.sceneHistory`, donde cada escena pisada
-apila su índice junto a la foto del progreso (`gameState`, `rescued`,
-`completedCalls`, `inventory`, `storyDelay`, `storyPressure`, `stage` y
-`nextChapter`). Al retroceder se
-**desapila solo la escena actual** y se reproduce la de debajo, que permanece en
-la pila con su foto original. Antes se desapilaban las dos y se confiaba en que
-la escena destino se volviera a registrar sola al reproducirse: cada retroceso
-comía dos escalones. El menú de **Escenas** sigue la misma regla: al saltar a una
-escena ya visitada, el historial se recorta hasta esa visita incluida.
+Para el respaldo, `loadAvailableChapters()` registra cada JSON mediante
+`engine.registerCanonicalChapter()`. `canonicalDialogueLocations()` ordena los
+identificadores `chapterN` numéricamente y aplana `scenes` y `lines` sin alterar
+su orden. `previousCanonicalDialogue()` omite únicamente una línea `showIf` que
+contradiga resultado, inventario o presión actuales. Si falta el catálogo de
+`game.js`, `ensureCanonicalChaptersThrough()` carga de forma perezosa los capítulos
+anteriores necesarios sin reproducir sus intros.
 
-**La escena se apila en el momento del cambio de escena**, no cuando se pinta su
-primera línea: `recordSceneEntry()` se llama desde `jumpToScene()` (acción
-`goToScene`), desde la rama de elección de `nextLine()` (después de
-`registerCall`, que forma parte del estado de entrada) y al pasar de escena por
-agotarse sus líneas. Entre el cambio y la primera línea de la escena nueva hay
-una espera real: al elegir una opción, o al leer la última línea de una escena,
-`currentScene` ya apunta a la siguiente mientras el bucle sigue parado esperando
-el clic del jugador. Apilando tarde, en ese hueco el historial acababa en la
-escena anterior y retroceder hacía cualquier cosa: reiniciaba una escena que
-todavía no se había visto (los diálogos contados eran los de la escena vieja) o
-desapilaba la entrada equivocada y caía en la primera escena del capítulo. Por
-seguridad, el caso "volver al principio de esta escena" exige además que la cima
-del historial sea la escena actual.
+`engine.dialogueTimeline` registra por separado las frases e interludios que sí
+llegaron a mostrarse. `kind` distingue `dialog`, `wait` y `cinematic`. Cada entrada
+real contiene dos puntos distintos:
+
+- La **presentación**: capítulo, escena, índice de línea, estado narrativo y foto
+  del escenario. Esta última incluye la ruta de fondo, paneo/zoom, CG visible,
+  telón de fundido, personajes y dirección de color. Los diálogos añaden texto ya
+  resuelto y hablante/`speakingAs`; las cinemáticas guardan su acción de vídeo y,
+  para líneas sin texto, la base y el prefijo de acciones que la prepararon.
+- La base **`replay`** de cada diálogo: estado narrativo y escenario justo antes
+  de sus `actions`, más copias de `actions` y `afterActions` en su orden original.
+- El checkpoint **`resume`** posterior: cursor del guion y estado desde el que se
+  debe continuar una vez agotado el tramo histórico.
+
+Cuando `applySelectedChoice()` confirma una opción, añade `selectedChoice` a la
+entrada `dialog` más reciente de esa misma ubicación, incluso si entre el texto y
+los botones hubo una espera o una cinemática. Una elección posterior sobre el
+mismo punto sustituye el valor anterior. `prepareBacklogCharacters()` carga antes
+de la presentación las fichas de hablantes que no estuvieran aún disponibles.
+`backlogEntries()` expone esta ruta a `game.js`; `renderLog()` la agrupa por
+capítulo y escena, construye todo el texto con `textContent` y coloca un retrato
+con `data-character`/`data-pose` para reutilizar los encuadres del cursor de
+diálogo. El nombre y el marco reciben `speakerColor`, calculado por
+`readableNameColor()` a partir del campo `color` de la ficha. `.log-list` comparte
+las reglas de scrollbar de `.scenes-list`. El panel se abre al final, llama a
+`setGamePaused(true)` y admite interacción en pausa mediante `#log-menu`; al
+cerrarse reanuda el juego.
+
+`dialogueTimelineCursor` señala la presentación visible. `dialogueIsCurrent`
+distingue el diálogo en pantalla de las acciones posteriores todavía en curso.
+Durante un minijuego, Retroceder restaura el último `dialog` del timeline, que es
+la frase inmediatamente anterior al minijuego. Desde una espera o cinemática se
+busca igualmente el `dialog` real más cercano. En sentido contrario, si el momento
+inmediatamente anterior al actual es un `wait` o `cinematic` de una línea JSON sin
+texto, se convierte primero en destino de Retroceder; no se confunde con un vídeo
+de `actions`/`afterActions` perteneciente a una línea dialogada. Si el timeline no
+conserva un diálogo, la comparación canónica por capítulo/escena/línea aporta el
+respaldo.
+
+Si el destino canónico contiguo ya es una entrada real, se reutilizan su base de
+recreación y su presentación exactas. Si no existe —por ejemplo, tras seleccionar
+directamente el séptimo capítulo disponible— `buildCanonicalDialogueEntry()`
+inserta una entrada sintética antes de la actual. `buildCanonicalStageState()`
+reduce los JSON hasta esa línea y aplica sólo estado visual y sonoro: fondos, CG,
+paneo, telón, personajes, poses, música, grade, viñeta, SFX sostenidos y frame
+final de vídeo. Ignora elecciones, minijuegos, variables, inventario, rescates,
+retraso y saltos, por lo que no modifica las decisiones ni dispara efectos
+narrativos. Puede devolver tanto el estado anterior a `actions` como la
+presentación posterior, y copia también `afterActions`.
+
+`showDialogueTimelineEntry(index, { recreateActions: true })` restaura la base
+anterior a la línea, ejecuta sus acciones de presentación, escribe de nuevo el
+texto con su ritmo y efectos originales y ejecuta después `afterActions`. El
+cuadro usa `{ instant: true }` sólo para su posición, de modo que no repite la
+animación vertical. Para una entrada `dialog`, pasa `preserveDialog` al checkpoint
+y `clearStage()` conserva el marco activo mientras reconstruye fondo, CG y
+personajes; así no aparece un fotograma vacío entre frases. Una acción explícita
+`hideDialog` puede ocultarlo después y mantiene intactos los interludios. Se
+reproducen fondos, personajes, poses y acting, audio,
+esperas, CG, fundidos, Juice y vídeos. `setVariable`, objetos, rescates, presión,
+saltos y minijuegos están protegidos: se conserva su snapshot narrativo y no se
+duplican ni vuelven a solicitarse. Una orden `playSound` cuya ruta musical ya está
+activa actualiza alias/volumen/loop/pausa sin reiniciar el elemento `Audio`.
+
+Las entradas `wait` y `cinematic` ya registradas se conservan en ambos sentidos.
+Un `wait` restaura su escenario y repite los transitorios previos que no caben en
+el snapshot —SFX de una sola reproducción, `shake` y `flash`— antes de esperar el
+clic. Una cinemática restaura su base, repite las acciones que preparaban fondo y
+música, reproduce el vídeo y reconcilia su frame final, CG, telón y audio. Cuando
+se recorre hacia delante autoencadena el siguiente momento igual que el flujo
+original, sin añadir una pausa vacía; cuando es el destino directo de Retroceder,
+queda en el frame final esperando avance o un nuevo retroceso. `nextLine()` usa
+`dialoguePlayback` para recorrer las entradas siguientes sin ejecutar otras
+`actions`, `afterActions` ni `minigame`. Si encuentra una línea con `choices`,
+restaura esa bifurcación de forma interactiva y sólo reemplaza el futuro después
+de que el jugador elija. `updateRewindButton()` no oculta el control durante esa
+espera; una nueva petición de retroceso pasa por `desbloquearBucle()`, que llama a
+`abortarEleccion()` y permite al bucle atenderla sin aplicar una opción. Al
+alcanzar el extremo real más reciente,
+`resumeAfterDialoguePlayback()` recupera su checkpoint y el guion vivo continúa.
+Si se navega desde **Escenas**, el futuro incompatible se poda antes de crear la
+nueva rama.
+
+Los capítulos registrados se conservan en `engine.chapters`, incluso cuando una
+nueva partida o el selector limpia `dialogueTimeline`. Por eso el primer diálogo
+de un capítulo seleccionado puede volver al último del JSON anterior aunque ese
+capítulo no se haya jugado. El encadenado normal conserva además las fotos reales
+mediante `{ preserveDialogueTimeline: true }`. Nada de este historial se
+serializa en disco.
+
+La restauración usa `clearStage({ preserveAudio: true })` y después reconcilia el
+audio por ruta e ID. Una pista que ya es la correcta conserva el mismo elemento
+`Audio` y su `currentTime`, incluso si cambia su alias interno; sólo se sustituye
+cuando la ruta es distinta. Volumen, loop y pausa sí se ajustan a la instantánea.
+Los sonidos sin ID se rastrean en `transientAudioInstances`: al restaurar se
+detienen antes de recrear el SFX correspondiente, por lo que no se superponen dos
+copias.
+Fondo nulo, CG, paneo, telón, personajes ocultos, pose, orientación, escala y
+desplazamiento se restauran explícitamente. Cada cambio de fondo incrementa una
+revisión e invalida el temporizador y la capa secundaria del crossfade anterior;
+su callback sólo puede consolidar la imagen si revisión y ruta siguen vigentes.
+Declarar otra vez una ruta ya asentada es idempotente, por lo que no reinicia el
+fundido ni el paneo. `bgPan` conserva las transiciones de opacidad/filtro y el
+etalonaje conserva la de `transform`, para que ambos efectos puedan coexistir.
+`showCG` usa la misma idea de revisión alrededor de la precarga: una ilustración
+abandonada no puede reaparecer al terminar de decodificarse. Abortar una elección,
+reintento o minijuego marca `_navigationInterrupted` para impedir que el guion
+avance o selle un checkpoint posterior a una actividad que no terminó.
 
 ### Ciervo del patio preparado para escenas futuras (2026-08-04)
 

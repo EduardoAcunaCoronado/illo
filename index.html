@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project AI.ri: Transfurmados</title>
     <link rel="icon" type="image/png" href="assets/images/ui/wildsoft_emblema.png">
-    <link rel="stylesheet" href="styles.css?v=20260803-3">
+    <link rel="stylesheet" href="styles.css?v=20260807-2">
     <link rel="stylesheet" href="battle-styles.css?v=20260803-2">
     <script>
         if (navigator.userAgent.includes('Electron')) {
@@ -58,14 +58,13 @@
         </div>
 
         <!-- Opciones durante la partida: abre el mismo menú que la tecla Esc.
-             Va arriba a la IZQUIERDA; los de retroceder y escenas van a la derecha. -->
+             Va arriba a la IZQUIERDA; Retroceder, Escenas y Log van a la derecha. -->
         <button id="options-btn" class="options-btn hidden" title="Opciones (Esc)">
             <span class="options-icon">&#9881;</span><span class="options-label">Opciones</span>
         </button>
 
-        <!-- Retroceder a la escena anterior (pedido en la demo del 25-jul-2026).
-             Se muestra solo cuando hay escena a la que volver; game.js lo gestiona. -->
-        <button id="rewind-btn" class="rewind-btn hidden" title="Volver a la escena anterior">
+        <!-- Retroceder al diálogo anterior según chapter, scene y line en los JSON. -->
+        <button id="rewind-btn" class="rewind-btn hidden" title="Volver al diálogo anterior">
             <span class="rewind-icon">&#9198;</span><span class="rewind-label">Retroceder</span>
         </button>
 
@@ -74,6 +73,25 @@
         <button id="scenes-btn" class="scenes-btn hidden" title="Ir a una escena">
             <span class="scenes-icon">&#9776;</span><span class="scenes-label">Escenas</span>
         </button>
+
+        <!-- Backlog de novela visual: diálogos leídos y elecciones tomadas. -->
+        <button id="log-btn" class="log-btn hidden" type="button"
+                title="Ver historial de diálogo" aria-controls="log-menu" aria-expanded="false">
+            <span class="log-icon" aria-hidden="true">&#9636;</span><span class="log-label">Historial</span>
+        </button>
+        <div id="log-menu" class="log-menu hidden" role="dialog" aria-modal="true"
+             aria-labelledby="log-title" aria-hidden="true">
+            <section class="log-panel">
+                <header class="log-head">
+                    <div>
+                        <h2 id="log-title">Historial</h2>
+                    </div>
+                    <button id="log-close" class="log-close" type="button"
+                            title="Cerrar" aria-label="Cerrar historial">&#10005;</button>
+                </header>
+                <ol id="log-list" class="log-list"></ol>
+            </section>
+        </div>
         <div id="scenes-menu" class="scenes-menu hidden">
             <div class="scenes-panel">
                 <div class="scenes-head">
@@ -208,15 +226,15 @@
 
     <script src="p5-effects.js?v=20260716-2"></script>
     <script src="battle-minigame.js?v=20260801-4"></script>
-    <script src="ketchup-hitboxes.js?v=20260804-1"></script>
+    <script src="ketchup-hitboxes.js?v=20260806-2"></script>
     <script src="hitbox-debugger.js?v=20260804-5"></script>
     <script src="credits-minigame.js?v=20260724-2"></script>
     <script src="chili-harvest-minigame.js?v=20260803-3"></script>
-    <script src="ketchup-minigame.js?v=20260804-14"></script>
+    <script src="ketchup-minigame.js?v=20260806-2"></script>
     <script src="rune-channeling-minigame.js?v=20260728-5"></script>
-    <script src="juice.js?v=20260722-1"></script>
-    <script src="engine.js?v=20260803-8"></script>
-    <script src="game.js?v=20260805-1"></script>
+    <script src="juice.js?v=20260806-1"></script>
+    <script src="engine.js?v=20260807-7"></script>
+    <script src="game.js?v=20260807-3"></script>
 
     <!-- Escalado del escenario: dibuja el juego a 1280x720 y lo escala como bloque
          para llenar la ventana manteniendo la proporción (bandas negras si no es 16:9). -->

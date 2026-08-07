@@ -1,3 +1,42 @@
+// Presentación común de vidas para todos los minijuegos. Hasta cinco mantiene
+// los corazones individuales; a partir de seis evita desbordar el HUD con un
+// único corazón y un multiplicador que siempre refleja las vidas restantes.
+window.MinigameLifeDisplay = Object.freeze({
+    normalize(value) {
+        return Math.max(0, Math.floor(Number(value) || 0));
+    },
+
+    prepare(element, remaining, maximum) {
+        const current = this.normalize(remaining);
+        const max = Math.max(current, this.normalize(maximum));
+        const condensed = current > 5;
+        element.classList.toggle('is-condensed', condensed);
+        element.setAttribute('aria-label', `${current} de ${max} vidas`);
+        return { current, max, condensed };
+    },
+
+    renderRepeated(element, remaining, maximum, heart = '❤') {
+        const state = this.prepare(element, remaining, maximum);
+        element.textContent = state.condensed
+            ? `${heart} × ${state.current}`
+            : heart.repeat(state.current);
+    },
+
+    renderSlots(element, remaining, maximum, heart = '❤') {
+        const state = this.prepare(element, remaining, maximum);
+        if (state.condensed) {
+            element.innerHTML = `<span class="ss-heart">${heart}</span><span class="minigame-life-count">× ${state.current}</span>`;
+            return;
+        }
+
+        const slots = state.max > 5 ? state.current : state.max;
+        const lost = Math.max(0, slots - state.current);
+        element.innerHTML = Array.from({ length: slots }, (_, index) =>
+            `<span class="ss-heart${index < lost ? ' ss-lost' : ''}">${heart}</span>`
+        ).join('');
+    }
+});
+
 class VisualNovelEngine {
     constructor() {
         this.currentChapter = null;
@@ -5,6 +44,15 @@ class VisualNovelEngine {
         this.currentLine = 0;
         this.characters = {};
         this.chapters = {};
+        // Catalogo independiente del recorrido jugado. Retroceder combina el
+        // grafo de decisiones, el camino realmente recorrido y, como respaldo,
+        // el orden chapter -> scene -> line declarado por los JSON.
+        this.canonicalChapterOrder = [];
+        this._canonicalDialogueLocations = null;
+        this._choiceRewindAnchorCache = new Map();
+        this._choiceFlowTargetCache = new Map();
+        this._manualSceneJumpSerial = 0;
+        this._pendingManualSceneJump = null;
         this.gameState = {};
         this.history = [];
         this.isWaitingForInput = false;
@@ -25,13 +73,27 @@ class VisualNovelEngine {
         this.characterPositions = {}; // Rastrear qué personaje está en qué posición
         this.stageCharacters = {}; // Pose/flip por hueco para restaurar escenas visitadas
         this.currentBackgroundPath = null;
+        this._backgroundRevision = 0;
+        this._bgSwapTimer = null;
+        this._backgroundPanState = null;
+        this._cgRevision = 0;
+        this._currentCGState = null;
         this._charColorMissing = new Set(); // Claves de personaje sin ficha (evita 404 repetidos al colorear el nombre)
         this.audioInstances = {}; // Rastrear instancias de audio
+        this.transientAudioInstances = new Set(); // SFX sin ID, detenibles al restaurar
         this.currentMusic = null; // Música de fondo actual
         this.sceneEndedByChoice = false; // Indica si la escena terminó por una elección
-        this.sceneHistory = []; // Escenas pisadas en el capítulo, para retroceder
+        this.sceneHistory = []; // Escenas pisadas en el capítulo para el selector
         this._lastSeenScene = null; // Última escena registrada en sceneHistory
-        this.sceneAdvances = 0; // Diálogos mostrados dentro de la escena actual
+        // Las instantáneas vistas permiten reproducir hacia delante el tramo ya
+        // presentado. Las ramas enlazan con su recorrido real y los saltos del
+        // selector llevan una marca explícita hasta su primer diálogo.
+        this.dialogueTimeline = [];
+        this.dialogueTimelineCursor = -1;
+        this.dialoguePlayback = false;
+        this.dialogueIsCurrent = false;
+        this._navigationInterrupted = false;
+        this._chapterSceneHistories = {};
         this.completedCalls = []; // Rastrear las llamadas completadas
         this.nextChapter = null; // Capítulo a cargar (ruta ramificada elegida)
         this.rescued = []; // Personajes rescatados, en orden (persiste entre capítulos)
@@ -61,6 +123,46 @@ class VisualNovelEngine {
         this.layerBlinkPromise = null;
         this.whiteHaloManifest = null;
         this.whiteHaloPromise = null;
+    }
+
+    registerCanonicalChapter(chapterName, chapter) {
+        if (!chapterName || !chapter) return null;
+        this.chapters[chapterName] = chapter;
+        if (!this.canonicalChapterOrder.includes(chapterName)) {
+            this.canonicalChapterOrder.push(chapterName);
+            this.canonicalChapterOrder.sort((a, b) => {
+                const aMatch = String(a).match(/^chapter(\d+)$/);
+                const bMatch = String(b).match(/^chapter(\d+)$/);
+                if (aMatch && bMatch) return Number(aMatch[1]) - Number(bMatch[1]);
+                if (aMatch) return -1;
+                if (bMatch) return 1;
+                return String(a).localeCompare(String(b));
+            });
+        }
+        this._canonicalDialogueLocations = null;
+        this._choiceRewindAnchorCache.delete(chapterName);
+        this._choiceFlowTargetCache.delete(chapterName);
+        return chapter;
+    }
+
+    async ensureCanonicalChaptersThrough(chapterName) {
+        const match = String(chapterName || '').match(/^chapter(\d+)$/);
+        if (!match) return;
+        const last = Number(match[1]);
+        for (let index = 0; index <= last; index++) {
+            const id = `chapter${index}`;
+            if (this.chapters[id]) continue;
+            try {
+                const response = await fetch(`chapters/${id}.json?v=${Date.now()}`, {
+                    cache: 'no-store'
+                });
+                if (!response.ok) break;
+                this.registerCanonicalChapter(id, await response.json());
+            } catch (error) {
+                console.warn('No se pudo completar el indice canonico:', id, error);
+                break;
+            }
+        }
     }
 
     // Añade un objeto al inventario (sin duplicar). Persiste entre capítulos.
@@ -100,16 +202,22 @@ class VisualNovelEngine {
             const chapter = await response.json();
 
             const isNewChapter = this.lastChapterName !== chapterName;
+            if (isNewChapter && this.lastChapterName) {
+                this._chapterSceneHistories[this.lastChapterName] = this.sceneHistory;
+            }
             this.lastChapterName = chapterName;
 
             this.currentChapter = chapter;
+            this.registerCanonicalChapter(chapterName, chapter);
             this.currentScene = 0;
             this.currentLine = 0;
+            this._pendingManualSceneJump = null;
             this._lastDialogEmotionKey = null;
-            // El historial de retroceso es por capítulo: no se vuelve al anterior
+            // El historial del selector sí es local a cada capítulo. La línea
+            // temporal de diálogo se conserva aparte para poder cruzarlos.
             this.sceneHistory = [];
+            this._chapterSceneHistories[chapterName] = this.sceneHistory;
             this._lastSeenScene = null;
-            this.sceneAdvances = 0;
             this.nextChapter = null; // Limpiar la ruta al cargar un capítulo nuevo
             // storyDelay se conserva como alias histórico, pero la fuente de
             // verdad entre capítulos es storyPressure. Al cargar una escena se
@@ -364,9 +472,11 @@ class VisualNovelEngine {
                 await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter, action.offsetY, action.scale);
                 break;
             case 'hideCharacter':
+                this.hideCharacter(action.character, action.position, action.exit);
+                break;
             case 'removeCharacter':
             case 'quitarPersonaje':
-                this.hideCharacter(action.character, action.position, action.exit);
+                this.removeCharacter(action.character, action.position, action.exit);
                 break;
             case 'setPose':
                 this.setPose(action.character, action.position, action.pose);
@@ -692,20 +802,19 @@ class VisualNovelEngine {
     // normal de la línea y no avance automáticamente.
     // Vaciar el fondo del todo (lo usa el final del compi en cap. 6/créditos)
     clearBackground() {
+        if (this.currentBackgroundPath !== null) {
+            this.removeAllCharacters();
+        }
         this.bgPan({ reset: true });
         // Igual que un setBackground con corte seco, vaciar el fondo debe
         // cancelar cualquier crossfade pendiente para que su temporizador no
         // restaure después la imagen que se acaba de retirar.
-        clearTimeout(this._bgSwapTimer);
-        this._bgSwapTimer = null;
+        this.invalidateBackgroundTransition();
         this.currentBackgroundPath = null;
         const bg = document.getElementById('background');
-        const bgB = document.getElementById('background-b');
-        if (bg) bg.style.backgroundImage = '';
-        if (bgB) {
-            bgB.style.transition = 'none';
-            bgB.style.opacity = '0';
-            bgB.style.backgroundImage = '';
+        if (bg) {
+            bg.style.backgroundImage = '';
+            delete bg.dataset.backgroundPath;
         }
     }
 
@@ -725,8 +834,8 @@ class VisualNovelEngine {
         this.currentScene = sceneIndex;
         this.currentLine = 0;
         this.pendingSceneJump = true;
-        // Apilarla ya, no cuando se pinte: entre el salto y su primera línea el
-        // bucle puede quedarse esperando un clic (ver el bloque de RETROCEDER).
+        // Registrar ya el destino para que el selector marque la escena correcta
+        // incluso mientras el bucle espera el clic previo a su primera línea.
         this.recordSceneEntry();
         // Al cambiar de escena, cualquier CG a pantalla se retira solo
         this.hideCG(250);
@@ -838,10 +947,9 @@ class VisualNovelEngine {
             document.querySelectorAll(
                 '.minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame'
             ).forEach(o => o.remove());
-            // La música y los efectos del minijuego no se van con el overlay.
-            // Quien nos ha sacado (otra escena, retroceder, menú) repinta luego
-            // su propio ambiente sonoro.
-            this.stopAllSounds();
+            // Quien nos ha sacado (otra escena, retroceder, menú) reconcilia a
+            // continuación su ambiente sonoro. No se para aquí la música: si el
+            // destino usa la misma pista debe seguir en su posición, sin reinicio.
         } finally {
             this._abortarMinijuego = null;
         }
@@ -854,7 +962,10 @@ class VisualNovelEngine {
     }
 
     abortarMinijuego() {
-        if (this._abortarMinijuego) this._abortarMinijuego();
+        if (this._abortarMinijuego) {
+            this._navigationInterrupted = true;
+            this._abortarMinijuego();
+        }
     }
 
     // Investigación narrativa de Furrielva. Furry Maps presenta las zonas como
@@ -1671,7 +1782,7 @@ class VisualNovelEngine {
                 <div class="minigame-hud">
                     <span class="mg-score"><img class="mg-hud-icon" src="${ketchupIcon}" alt="ketchup"><span class="mg-score-text">0 / ${goal}</span></span>
                     <span class="mg-phase">FASE 1 · REACTIVA LA LÍNEA</span>
-                    <span class="mg-lives">❤️ ${maxHits}</span>
+                    <span class="mg-lives"></span>
                     ${showExtraInfo ? `<span class="mg-extra-info" style="margin-left:20px; font-size:0.8em; color:#ffb4b4">🌶️ Vel: ${(speedMult * 1.5).toFixed(2)}x</span>` : ''}
                 </div>
                 <div class="minigame-field" id="mg-field" style="--ketchup-factory:url('${this.cacheBustAsset('assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp')}')">
@@ -1693,6 +1804,10 @@ class VisualNovelEngine {
 
             let score = 0;
             let lives = maxHits;
+            const renderLives = () => {
+                window.MinigameLifeDisplay.renderRepeated(livesEl, lives, maxHits, '❤️');
+            };
+            renderLives();
             let playerX = 0.5; // posición horizontal normalizada (0..1)
             const playerW = 0.12; // ancho del jugador relativo al campo
             let items = [];     // { el, x, y, speed, type }
@@ -1850,7 +1965,7 @@ class VisualNovelEngine {
                         } else {
                             const damage = it.type === 'corrupt' ? 2 : 1;
                             lives = Math.max(0, lives - damage);
-                            livesEl.textContent = `❤️ ${Math.max(0, lives)}`;
+                            renderLives();
                             field.classList.add('mg-hit');
                             setTimeout(() => field.classList.remove('mg-hit'), 200);
                         }
@@ -1934,7 +2049,10 @@ class VisualNovelEngine {
     }
 
     abortarRetry() {
-        if (this._abortarRetry) this._abortarRetry();
+        if (this._abortarRetry) {
+            this._navigationInterrupted = true;
+            this._abortarRetry();
+        }
     }
 
     // Minijuego: Micaela Michis (El Jarrón). Estilo Pac-Man: Samu se mueve
@@ -2307,7 +2425,7 @@ class VisualNovelEngine {
             overlay.innerHTML = `
                 <div class="minigame-hud">
                     <span class="mg-score">🍑 0 / ${goal}</span>
-                    <span class="mg-lives">💔 ${maxMisses}</span>
+                    <span class="mg-lives"></span>
                 </div>
                 <div class="minigame-field" id="mg-field-ecchi"></div>
                 <div class="minigame-instructions">¡Clica los 🍑 a tiempo! No toques los 💋</div>
@@ -2320,6 +2438,15 @@ class VisualNovelEngine {
 
             let score = 0;
             let misses = 0;
+            const renderLives = () => {
+                window.MinigameLifeDisplay.renderRepeated(
+                    livesEl,
+                    Math.max(0, maxMisses - misses),
+                    maxMisses,
+                    '💔'
+                );
+            };
+            renderLives();
             let running = true;
             let spawnTimeout = null;
             const activeTargets = new Set();
@@ -2335,7 +2462,7 @@ class VisualNovelEngine {
 
             const registerMiss = () => {
                 misses++;
-                livesEl.textContent = `💔 ${Math.max(0, maxMisses - misses)}`;
+                renderLives();
                 field.classList.add('mg-hit');
                 setTimeout(() => field.classList.remove('mg-hit'), 200);
                 if (misses >= maxMisses) endRound(false);
@@ -3952,9 +4079,11 @@ class VisualNovelEngine {
                 energyEl.style.width = clamp(energy, 0, 100) + '%';
                 energyWrap.classList.toggle('is-ready', energy >= (cfg.dashCost || 42));
                 progressEl.style.width = clamp(collected / goal * 100, 0, 100) + '%';
-                livesEl.innerHTML = Array.from({ length: maxHits }, (_, index) =>
-                    `<span class="ss-heart${index < hits ? ' ss-lost' : ''}">❤</span>`
-                ).join('');
+                window.MinigameLifeDisplay.renderSlots(
+                    livesEl,
+                    Math.max(0, maxHits - hits),
+                    maxHits
+                );
             };
 
             const addParticleBurst = (x, y, color = '#4fd0ff', amount = 8) => {
@@ -5196,9 +5325,11 @@ class VisualNovelEngine {
                 }
                 const progress = Math.max(0, Math.min(1, isFly ? collected / goal : dist / goal));
                 progressEl.style.width = (progress * 100) + '%';
-                let s = '';
-                for (let i = 0; i < maxHits; i++) s += `<span class="ss-heart${i < hits ? ' ss-lost' : ''}">❤</span>`;
-                livesEl.innerHTML = s;
+                window.MinigameLifeDisplay.renderSlots(
+                    livesEl,
+                    Math.max(0, maxHits - hits),
+                    maxHits
+                );
             };
             updateHud();
 
@@ -5557,25 +5688,65 @@ class VisualNovelEngine {
 
     // Cambia el fondo con CROSSFADE suave (400 ms) usando una segunda capa.
     // Con { cut: true } se comporta como antes (corte seco intencionado).
-    setBackground(imagePath, opts = {}) {
-        const bg = document.getElementById('background');
-        this.currentBackgroundPath = imagePath || null;
-        const url = `url('${this.cacheBustAsset(imagePath)}')`;
-        // Resetear cualquier Ken Burns anterior al cambiar de fondo
-        this.bgPan({ reset: true });
-        if (opts.cut || !document.getElementById('game-container')) {
-            // Un corte seco tiene que cancelar cualquier fundido a medias: si
-            // no, el temporizador del anterior dispara después y pisa este
-            // fondo con el de la escena de la que venimos.
+    invalidateBackgroundTransition() {
+        this._backgroundRevision = (this._backgroundRevision || 0) + 1;
+        if (this._bgSwapTimer !== null) {
             clearTimeout(this._bgSwapTimer);
             this._bgSwapTimer = null;
-            const bPrev = document.getElementById('background-b');
-            if (bPrev) { bPrev.style.transition = 'none'; bPrev.style.opacity = '0'; }
+        }
+        const bgB = document.getElementById('background-b');
+        if (bgB) {
+            bgB.style.transition = 'none';
+            bgB.style.opacity = '0';
+            bgB.style.backgroundImage = '';
+            delete bgB.dataset.backgroundPath;
+        }
+        return this._backgroundRevision;
+    }
+
+    setBackground(imagePath, opts = {}) {
+        const bg = document.getElementById('background');
+        const nextBackgroundPath = imagePath || null;
+        if (!nextBackgroundPath) {
+            this.clearBackground();
+            return;
+        }
+
+        const sameBackground = this.currentBackgroundPath === nextBackgroundPath;
+        const cut = opts.cut || !document.getElementById('game-container');
+
+        // Varias escenas reiteran su fondo para poder arrancar de forma aislada.
+        // Durante el recorrido normal esa declaración es idempotente: no debe
+        // reiniciar un crossfade ni un paneo que ya esté en curso.
+        const sameBackgroundSettled = sameBackground && this._bgSwapTimer === null &&
+            bg?.dataset.backgroundPath === nextBackgroundPath;
+        if (sameBackgroundSettled ||
+            (sameBackground && !cut && (this._bgSwapTimer !== null || bg?.style.backgroundImage))) {
+            return;
+        }
+
+        if (!sameBackground) {
+            this.removeAllCharacters();
+        }
+        const url = `url('${this.cacheBustAsset(imagePath)}')`;
+        const revision = this.invalidateBackgroundTransition();
+        this.currentBackgroundPath = nextBackgroundPath;
+        // Resetear cualquier Ken Burns anterior al cambiar de fondo
+        this.bgPan({ reset: true });
+        if (!bg) return;
+
+        if (cut) {
+            // Un corte seco invalida cualquier fundido a medias antes de pintar.
             bg.style.backgroundImage = url;
+            bg.dataset.backgroundPath = nextBackgroundPath;
             return;
         }
         const { bgB } = this.ensureSceneLayers();
-        if (!bgB) { bg.style.backgroundImage = url; return; }
+        if (!bgB) {
+            bg.style.backgroundImage = url;
+            bg.dataset.backgroundPath = nextBackgroundPath;
+            return;
+        }
         // Pintar el nuevo fondo en la capa B y fundirla por encima
         bgB.style.transition = 'none';
         bgB.style.opacity = '0';
@@ -5587,16 +5758,22 @@ class VisualNovelEngine {
             ? window.Juice.currentGrade()
             : (bg.style.filter || getComputedStyle(bg).filter || 'none');
         bgB.style.backgroundImage = url;
+        bgB.dataset.backgroundPath = nextBackgroundPath;
         // Forzar reflow para que la transición arranque desde 0
         void bgB.offsetWidth;
         const dur = opts.fadeMs != null ? opts.fadeMs : 400;
         bgB.style.transition = `opacity ${dur}ms ease`;
         bgB.style.opacity = '1';
-        clearTimeout(this._bgSwapTimer);
         this._bgSwapTimer = setTimeout(() => {
+            if (revision !== this._backgroundRevision ||
+                this.currentBackgroundPath !== nextBackgroundPath) return;
             bg.style.backgroundImage = url;
+            bg.dataset.backgroundPath = nextBackgroundPath;
             bgB.style.transition = 'none';
             bgB.style.opacity = '0';
+            bgB.style.backgroundImage = '';
+            delete bgB.dataset.backgroundPath;
+            this._bgSwapTimer = null;
         }, dur + 60);
     }
 
@@ -5625,11 +5802,21 @@ class VisualNovelEngine {
 
     // Ken Burns del fondo: zoom/paneo lento. Se resetea al cambiar de fondo.
     bgPan(action = {}) {
+        if (action.reset) this._backgroundPanState = null;
         const bg = document.getElementById('background');
         if (!bg) return;
+        const bgB = document.getElementById('background-b');
+        const layers = bgB ? [bg, bgB] : [bg];
+        const transitionsWithoutTransform = layer => (layer.style.transition || '')
+            .split(',')
+            .map(part => part.trim())
+            .filter(part => part && part !== 'none' && !/\btransform\b/.test(part));
         if (action.reset) {
-            bg.style.transition = 'none';
-            bg.style.transform = '';
+            layers.forEach(layer => {
+                const preserved = transitionsWithoutTransform(layer);
+                layer.style.transition = preserved.join(', ') || 'none';
+                layer.style.transform = '';
+            });
             return;
         }
         const zf = action.zoomFrom != null ? action.zoomFrom : 1.05;
@@ -5638,11 +5825,30 @@ class VisualNovelEngine {
         const yf = action.yFrom || 0, yt = action.yTo || 0;
         const dur = action.duration != null ? action.duration : 6000;
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-        bg.style.transition = 'none';
-        bg.style.transform = `scale(${zf}) translate(${xf}%, ${yf}%)`;
+        this._backgroundPanState = {
+            zoomFrom: zf,
+            zoomTo: zt,
+            xFrom: xf,
+            xTo: xt,
+            yFrom: yf,
+            yTo: yt,
+            duration: dur
+        };
+        const preservedTransitions = new Map();
+        layers.forEach(layer => {
+            const preserved = transitionsWithoutTransform(layer);
+            preservedTransitions.set(layer, preserved);
+            layer.style.transition = preserved.join(', ') || 'none';
+            layer.style.transform = `scale(${zf}) translate(${xf}%, ${yf}%)`;
+        });
         void bg.offsetWidth;
-        bg.style.transition = `transform ${dur}ms ease-out`;
-        bg.style.transform = `scale(${zt}) translate(${xt}%, ${yt}%)`;
+        layers.forEach(layer => {
+            layer.style.transition = [
+                ...preservedTransitions.get(layer),
+                `transform ${dur}ms ease-out`
+            ].join(', ');
+            layer.style.transform = `scale(${zt}) translate(${xt}%, ${yt}%)`;
+        });
     }
 
     // Lámina CG a pantalla (por encima de personajes, por debajo del diálogo).
@@ -5655,17 +5861,25 @@ class VisualNovelEngine {
     async showCG(path, duration = 600, opts = {}) {
         const { cg } = this.ensureSceneLayers();
         if (!cg || !path) return;
+        const revision = ++this._cgRevision;
         // Las láminas 4K pueden tardar en descargarse y decodificarse. Si se
         // cambia el background antes de que estén listas, el CG anterior puede
         // reaparecer un instante o dejar un hueco durante el fundido.
         await this.preloadImages([path]);
+        if (revision !== this._cgRevision) return;
+        this._currentCGState = {
+            path,
+            size: opts.size || 'cover',
+            position: opts.position || 'center',
+            objectMode: opts.objectMode != null ? !!opts.objectMode : !!opts.size
+        };
         cg.style.backgroundImage = `url('${this.cacheBustAsset(path)}')`;
-        cg.style.backgroundSize = opts.size || 'cover';
-        cg.style.backgroundPosition = opts.position || 'center';
+        cg.style.backgroundSize = this._currentCGState.size;
+        cg.style.backgroundPosition = this._currentCGState.position;
         // La viñeta interior de .cg-layer es para las ilustraciones a pantalla
         // completa. En modo objeto la capa es casi toda transparente, así que
         // ese borde oscuro se comería la escena que hay detrás.
-        cg.style.boxShadow = opts.size ? 'none' : '';
+        cg.style.boxShadow = this._currentCGState.objectMode ? 'none' : '';
         cg.style.transition = `opacity ${duration}ms ease`;
         cg.style.opacity = '1';
         cg.classList.add('cg-visible');
@@ -5673,6 +5887,8 @@ class VisualNovelEngine {
     }
 
     hideCG(duration = 500) {
+        this._cgRevision++;
+        this._currentCGState = null;
         const cg = document.getElementById('cg-layer');
         if (!cg) return;
         cg.style.transition = `opacity ${duration}ms ease`;
@@ -5982,7 +6198,7 @@ class VisualNovelEngine {
         return portraits[characterKey] || null;
     }
 
-    isFurryIdentityRevealed(characterKey) {
+    isFurryIdentityRevealed(characterKey, location = null) {
         const revealAt = {
             edu: { chapter: 2, scene: 16, line: 4 },
             tony: { chapter: 3, scene: 13, line: 5 },
@@ -5991,11 +6207,14 @@ class VisualNovelEngine {
         const reveal = revealAt[characterKey];
         if (!reveal) return true;
 
-        const chapterMatch = String(this.lastChapterName || '').match(/^chapter(\d+)/);
+        const chapterName = location?.chapter ?? this.lastChapterName;
+        const scene = location?.scene ?? this.currentScene;
+        const line = location?.line ?? this.currentLine;
+        const chapterMatch = String(chapterName || '').match(/^chapter(\d+)/);
         const chapter = chapterMatch ? Number(chapterMatch[1]) : 0;
         if (chapter !== reveal.chapter) return chapter > reveal.chapter;
-        if (this.currentScene !== reveal.scene) return this.currentScene > reveal.scene;
-        return this.currentLine >= reveal.line;
+        if (scene !== reveal.scene) return scene > reveal.scene;
+        return line >= reveal.line;
     }
 
     async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null, offsetY = null, scale = null) {
@@ -6008,7 +6227,7 @@ class VisualNovelEngine {
 
         const previousPosition = this.characterPositions[characterKey];
         if (previousPosition && previousPosition !== position) {
-            this.hideCharacter(characterKey, previousPosition);
+            this.removeCharacter(characterKey, previousPosition);
         }
 
         const charElement = document.getElementById(`character-${position}`);
@@ -6037,6 +6256,7 @@ class VisualNovelEngine {
 
             this.applyCharacterPoseImage(charElement, poseImage);
             this.applyPoseClass(charElement, pose);
+            charElement.classList.remove('character-hidden');
             charElement.classList.add('active');
             charElement.setAttribute('data-character', characterKey);
 
@@ -6069,7 +6289,10 @@ class VisualNovelEngine {
             this.stageCharacters[position] = {
                 character: characterKey,
                 pose,
-                flipped: !!flipped
+                flipped: !!flipped,
+                hidden: false,
+                offsetY: characterVerticalOffset,
+                scale: characterScale
             };
             this.startCharacterFrameAnimation(characterKey, position, pose);
         }
@@ -6103,7 +6326,8 @@ class VisualNovelEngine {
         const order = ['left', 'center', 'right'];
         const active = order.filter(p => {
             const el = document.getElementById(`character-${p}`);
-            return el && el.classList.contains('active');
+            return el && el.classList.contains('active')
+                && !el.classList.contains('character-hidden');
         });
         const N = active.length;
         if (N === 0) return;
@@ -6420,7 +6644,8 @@ class VisualNovelEngine {
             .filter(className => className.startsWith('pose-') ||
                 className.startsWith('char-enter-') ||
                 ['active', 'speaking', 'char-exit-fade', 'contact-glitch',
-                    'full-signal-glitch', 'dialogue-glitch-loop'].includes(className))
+                    'full-signal-glitch', 'dialogue-glitch-loop',
+                    'character-hidden'].includes(className))
             .forEach(className => charElement.classList.remove(className));
 
         charElement.style.backgroundImage = '';
@@ -6450,12 +6675,56 @@ class VisualNovelEngine {
         }
     }
 
+    // Oculta solo la representación del personaje. Mantiene pose, sprite,
+    // posición y ficha en memoria para que el cursor-retrato pueda reutilizar
+    // exactamente la pose declarada por showCharacter. removeCharacter es la
+    // operación destructiva que vacía el hueco.
+    hideCharacter(characterName, position, exit = null) {
+        const hideSlot = (pos) => {
+            const el = document.getElementById(`character-${pos}`);
+            if (!el || !el.classList.contains('active')) return;
+
+            const doHide = () => {
+                clearTimeout(el._exitTimer);
+                el._exitTimer = null;
+                el.classList.remove('char-exit-fade', 'speaking');
+                el.classList.add('character-hidden');
+                this.stopCharacterPoseAnimation(null, pos);
+                this.stopCharacterFrameAnimation(pos, true);
+                const visual = this.stageCharacters?.[pos];
+                if (visual) visual.hidden = true;
+                if (this.speakingPosition === pos) {
+                    this.speakingCharacter = null;
+                    this.speakingPosition = null;
+                }
+                this.layoutCharacters();
+            };
+
+            clearTimeout(el._exitTimer);
+            if (exit) {
+                el.classList.add('char-exit-fade');
+                el._exitTimer = setTimeout(doHide, 320);
+            } else {
+                doHide();
+            }
+        };
+
+        if (characterName) {
+            const key = this.getCharacterKey(characterName);
+            const target = position || this.characterPositions[key];
+            if (target) hideSlot(target);
+        } else if (position) {
+            hideSlot(position);
+        }
+        this.layoutCharacters();
+    }
+
     // Quita a un personaje de la escena. Se puede indicar:
     // - characterName: quita al personaje (usando la posición rastreada en la
     //   que se mostró; si además se da position, solo quita si coincide).
     // - position (sin characterName): vacía directamente ese hueco (left/right/center).
     // Si no se indica ninguno, no hace nada.
-    hideCharacter(characterName, position, exit = null) {
+    removeCharacter(characterName, position, exit = null) {
         const clearSlot = (pos) => {
             const el = document.getElementById(`character-${pos}`);
             if (!el) return;
@@ -6494,9 +6763,21 @@ class VisualNovelEngine {
         this.layoutCharacters();
     }
 
+    // Todo cambio real de fondo inaugura una composición nueva. Vaciar los
+    // tres huecos mediante removeCharacter evita que un sprite, una animación
+    // o una pose oculta sobrevivan accidentalmente desde el fondo anterior.
+    removeAllCharacters() {
+        ['left', 'center', 'right'].forEach(position => {
+            this.removeCharacter(null, position);
+        });
+        this.speakingCharacter = null;
+        this.speakingPosition = null;
+    }
+
     focusCharacter(characterName, position) {
         const charElement = document.getElementById(`character-${position}`);
-        if (charElement && charElement.classList.contains('active')) {
+        if (charElement && charElement.classList.contains('active')
+            && !charElement.classList.contains('character-hidden')) {
             charElement.classList.add('speaking');
         }
     }
@@ -6565,6 +6846,7 @@ class VisualNovelEngine {
         };
         apply(this.currentMusic);
         for (const id in this.audioInstances) apply(this.audioInstances[id]);
+        for (const audio of this.transientAudioInstances) apply(audio);
     }
 
     playSound(soundPath, options = {}) {
@@ -6625,6 +6907,8 @@ class VisualNovelEngine {
                 this.fadeOutAndStop(prev, 350);
             }
             this.audioInstances[id] = audio;
+        } else {
+            this.transientAudioInstances.add(audio);
         }
 
         // Si el navegador no puede cargar o decodificar una pista, no dejar su
@@ -6665,9 +6949,17 @@ class VisualNovelEngine {
     forgetAudio(audio) {
         if (!audio) return;
         if (this.currentMusic === audio) this.currentMusic = null;
+        this.transientAudioInstances.delete(audio);
         for (const [id, instance] of Object.entries(this.audioInstances || {})) {
             if (instance === audio) delete this.audioInstances[id];
         }
+    }
+
+    stopTransientSounds() {
+        for (const audio of [...this.transientAudioInstances]) {
+            this.fadeOutAndStop(audio, 0);
+        }
+        this.transientAudioInstances.clear();
     }
 
     // Desvanece el volumen a 0 en `ms` y luego pausa y rebobina. Cancela
@@ -6731,6 +7023,8 @@ class VisualNovelEngine {
         this.currentMusic = null;
         for (const id in this.audioInstances) kill(this.audioInstances[id]);
         this.audioInstances = {};
+        for (const audio of this.transientAudioInstances) kill(audio);
+        this.transientAudioInstances.clear();
         // También los beds WebAudio de juice.js (heartbeat/rumble): "parar todo"
         // tiene que significar TODO, o un latido huérfano se cuela en la
         // siguiente escena.
@@ -7028,7 +7322,7 @@ class VisualNovelEngine {
         }
     }
 
-    async displayDialog(line) {
+    async displayDialog(line, options = {}) {
         // Actualizar debug panel si está activo
         if (this.debugMode) {
             this.updateDebugPanel();
@@ -7043,7 +7337,17 @@ class VisualNovelEngine {
 
         characterName.textContent = line.character || '';
         dialogText.textContent = '';
-        dialogBox.classList.add('active');
+        if (options.instant === true) {
+            // Al restaurar una entrada histórica el cuadro debe aparecer ya en
+            // su sitio. clearStage lo había ocultado y la transición normal lo
+            // hacía subir desde fuera de pantalla en cada pulsación de Retroceder.
+            dialogBox.style.transition = 'none';
+            dialogBox.classList.add('active');
+            void dialogBox.offsetWidth;
+            dialogBox.style.removeProperty('transition');
+        } else {
+            dialogBox.classList.add('active');
+        }
 
         // Encontrar y aplicar efecto al personaje que habla. Por defecto es el
         // sprite cuyo nombre coincide con line.character, pero se puede forzar
@@ -7157,8 +7461,10 @@ class VisualNovelEngine {
             // No exigimos 'active': si el sprite aún está entrando/cargando en
             // este mismo instante, la clase llega un frame tarde y el resaltado
             // se saltaba "a veces" (bug reportado por Betanzos). El rastreo de
-            // characterPositions ya garantiza que ahí hay un personaje.
-            if (speakerElement) {
+            // characterPositions ya garantiza que ahí hay un personaje. Sí se
+            // excluye el oculto visual: su pose alimenta el cursor, pero no debe
+            // iluminarse ni atenuar a quienes siguen visibles.
+            if (speakerElement && !speakerElement.classList.contains('character-hidden')) {
                 speakerElement.classList.add('speaking');
                 this.speakingCharacter = speakerName;
                 this.speakingPosition = speakerPosition;
@@ -7631,6 +7937,11 @@ class VisualNovelEngine {
             return true;
         });
 
+        if (availableChoices.length === 0) {
+            choicesContainer.classList.remove('active');
+            return null;
+        }
+
         return new Promise(resolve => {
             // Se guarda el resolvedor para poder ABORTAR la elección desde fuera
             // (menú de escenas / retroceder). Sin esto, una pantalla de elección
@@ -7662,6 +7973,75 @@ class VisualNovelEngine {
         });
     }
 
+    // Aplica una opción ya elegida tanto en el flujo vivo como al reabrir una
+    // decisión desde Retroceder. Centralizarlo evita que ambas rutas diverjan en
+    // llamadas, capítulos dinámicos, historial o sceneEndedByChoice.
+    applySelectedChoice(selectedChoice) {
+        if (!selectedChoice) return false;
+        this.history.push({
+            scene: this.currentScene,
+            line: this.currentLine,
+            choice: selectedChoice.text
+        });
+        // El backlog muestra la elección justo después de la frase que la
+        // planteó. Puede haber waits/cinemáticas de la misma línea entre ambos,
+        // por eso se busca hacia atrás el diálogo más reciente de esa ubicación.
+        for (let index = this.dialogueTimelineCursor; index >= 0; index--) {
+            const entry = this.dialogueTimeline[index];
+            if (entry?.chapter !== this.lastChapterName ||
+                entry.scene !== this.currentScene || entry.line !== this.currentLine) {
+                continue;
+            }
+            if (entry.kind !== 'dialog') continue;
+            entry.selectedChoice = {
+                text: String(selectedChoice.text || 'Opción elegida')
+            };
+            break;
+        }
+
+        if (selectedChoice.nextChapter !== undefined) {
+            this.nextChapter = selectedChoice.nextChapter;
+        }
+        if (selectedChoice.chapter3ByFirst && this.rescued.length > 0) {
+            this.nextChapter = `chapter3-${this.rescued[0]}`;
+        }
+        if (selectedChoice.chapter2ByFirstCalled && this.completedCalls.length > 0) {
+            this.nextChapter = `chapter2-${this.completedCalls[0]}`;
+        }
+        if (selectedChoice.chapter2ByLastCalled && this.completedCalls.length > 0) {
+            this.nextChapter = `chapter2-${this.completedCalls[this.completedCalls.length - 1]}`;
+        }
+
+        if (selectedChoice.nextScene !== undefined) {
+            // Regla del teléfono: si Samu ya consumió la llamada disponible, la
+            // misma opción se redirige a la escena fuera de cobertura.
+            let targetTitle = selectedChoice.nextScene;
+            if (this.isCallChoice(selectedChoice) && !this.canMakeRealCall()) {
+                targetTitle = selectedChoice.offCoverageScene || "Escena: Fuera de cobertura";
+            }
+            if (typeof targetTitle === 'string') {
+                const sceneIndex = this.currentChapter.scenes.findIndex(
+                    scene => scene.title === targetTitle
+                );
+                this.currentScene = sceneIndex !== -1 ? sceneIndex : 0;
+            } else {
+                this.currentScene = targetTitle;
+            }
+            this.currentLine = 0;
+            this.sceneEndedByChoice = true;
+            this.registerCall(this.getCurrentScene());
+            this.recordSceneEntry();
+            return true;
+        }
+
+        if (selectedChoice.nextLine !== undefined) {
+            this.currentLine = selectedChoice.nextLine;
+        } else {
+            this.currentLine++;
+        }
+        return false;
+    }
+
     // ¿Hay una elección esperando respuesta? La usa el menú de escenas para
     // saber si tiene que abortarla antes de saltar.
     hayEleccionAbierta() {
@@ -7669,7 +8049,10 @@ class VisualNovelEngine {
     }
 
     abortarEleccion() {
-        if (this._abortarEleccion) this._abortarEleccion();
+        if (this._abortarEleccion) {
+            this._navigationInterrupted = true;
+            this._abortarEleccion();
+        }
     }
 
     // ¿Cumple la línea su condición "showIf"? Soporta:
@@ -7695,13 +8078,33 @@ class VisualNovelEngine {
     }
 
     async nextLine() {
+        // Tras retroceder, el avance normal recorre primero los momentos ya
+        // vistos. Las cinemáticas reproducen de nuevo su vídeo y una línea de
+        // decisión vuelve a ser interactiva; no se repiten minijuegos ni otros
+        // efectos narrativos protegidos.
+        if (this.dialoguePlayback) {
+            if (this.dialogueTimelineCursor < this.dialogueTimeline.length - 1) {
+                return this.showRewoundTimelineEntry(
+                    this.dialogueTimelineCursor + 1,
+                    { recreateActions: false }
+                );
+            }
+            await this.resumeAfterDialoguePlayback();
+        }
+
+        // Al entrar aquí desde la espera exterior, el momento anterior ya fue
+        // consumido. Durante acciones no registradas o minijuegos, la última
+        // entrada de la línea temporal es precisamente el destino de Retroceder.
+        this.dialogueIsCurrent = false;
+        this._navigationInterrupted = false;
+
         // Los efectos declarados «hasta avanzar» sobreviven al tipeo y a la
         // espera del jugador, pero desaparecen antes de ejecutar la línea nueva.
         this.clearAdvanceBoundCharacterEffects();
         const scene = this.getCurrentScene();
         if (!scene || !scene.lines) return false;
 
-        // Guardar el progreso al pisar una escena nueva (para poder retroceder)
+        // Guardar el progreso al pisar una escena nueva para el menú Escenas.
         this.recordSceneEntry();
 
         let line = this.getCurrentLine();
@@ -7715,6 +8118,13 @@ class VisualNovelEngine {
         }
         if (!line) return false;
 
+        const finishLine = (result) => {
+            const interrupted = this._navigationInterrupted;
+            if (!interrupted) this.updateDialogueResumeCheckpoint();
+            this._navigationInterrupted = false;
+            return result;
+        };
+
         // Las acciones de una línea pueden fijar su duración, pero el valor no
         // debe heredarse accidentalmente por el siguiente diálogo.
         this._lineTextDurationOverride = null;
@@ -7727,13 +8137,48 @@ class VisualNovelEngine {
         // de acciones de ESTA línea tras la primera acción. Limpiarlo siempre.
         this.pendingSceneJump = false;
 
+        // Base exacta desde la que se compuso esta línea. Retroceder la usa para
+        // volver a ejecutar sus acciones de presentación en el mismo orden.
+        const dialogueReplayCheckpoint = this.captureDialogueCheckpoint();
+
         // Ejecutar acciones previas al diálogo. Un goToScene puede convivir con
         // texto en la misma línea: el destino queda preparado, pero la frase
         // actual todavía debe mostrarse antes de entrar en él.
         let jumpedDuringActions = false;
         if (line.actions) {
-            for (let action of line.actions) {
+            for (let actionIndex = 0; actionIndex < line.actions.length; actionIndex++) {
+                const action = line.actions[actionIndex];
+                const actionType = action?.type;
+                if (['waitForClick', 'waitClick', 'esperarClick'].includes(actionType)) {
+                    // La pantalla preparada por las acciones anteriores es un
+                    // instante interactivo por derecho propio (revelaciones de
+                    // clase, fondos a pantalla completa, puzles, etc.).
+                    this.recordVisualMoment('wait', {
+                        action: actionType,
+                        replayActions: this.captureVisualMomentReplayActions(
+                            line.actions.slice(0, actionIndex)
+                        )
+                    });
+                }
                 await this.executeAction(action);
+                if (this._navigationInterrupted) return finishLine(true);
+                if (['playVideo', 'cutscene'].includes(actionType)) {
+                    // La cinemática ya terminó y el escenario contiene su frame
+                    // final. También conservamos el estado anterior a la línea y
+                    // sus acciones previas: una línea sin texto puede preparar
+                    // fondo y música antes del vídeo y debe recrearse completa.
+                    this.recordVisualMoment('cinematic', {
+                        action,
+                        replay: {
+                            narrative: dialogueReplayCheckpoint.narrative,
+                            stage: dialogueReplayCheckpoint.stage,
+                            actions: this.cloneTimelineValue(
+                                line.actions.slice(0, actionIndex),
+                                []
+                            )
+                        }
+                    });
+                }
                 // Si una acción solicitó saltar de escena, detener el
                 // procesamiento de esta línea y continuar en el nuevo destino.
                 if (this.pendingSceneJump) {
@@ -7746,34 +8191,58 @@ class VisualNovelEngine {
 
         // Mostrar diálogo si existe (con posible variante por consecuencia)
         if (line.text) {
-            // Cuántos diálogos llevamos vistos DENTRO de esta escena. Es lo que
-            // distingue "acabo de entrar" (1) de "ya he avanzado por aquí" (>1),
-            // y con eso decide retroceder si vuelve al principio de esta escena
-            // o sale a la anterior. Se pone a cero al entrar en cada escena.
-            this.sceneAdvances++;
             const resolvedLine = this.resolveConsequenceLine(line);
             const durationOverride = resolvedLine.textDuration != null
                 ? resolvedLine.textDuration
                 : this._lineTextDurationOverride;
-            await this.displayDialog(durationOverride == null
+            const displayedLine = durationOverride == null
                 ? resolvedLine
-                : Object.assign({}, resolvedLine, { textDuration: durationOverride }));
+                : Object.assign({}, resolvedLine, { textDuration: durationOverride });
+            this.recordDialogueMoment(displayedLine, dialogueReplayCheckpoint, line);
+            // Desde el primer grafema esta ya es la frase actual. Así el botón
+            // nunca trata el diálogo que se está escribiendo como un tramo vacío.
+            this.dialogueIsCurrent = true;
+            await this.displayDialog(displayedLine);
         }
 
         // jumpToScene ya dejó currentScene/currentLine apuntando al destino. Si
         // además había diálogo, el bucle esperará el clic normal antes de pedir
         // la línea 0 de la escena nueva; si no lo había, continuará al instante.
-        if (jumpedDuringActions) return true;
+        if (jumpedDuringActions) return finishLine(true);
 
         // Acciones que deben ocurrir justo cuando termina de escribirse el
         // diálogo. A diferencia de un `delay` fijo, también quedan sincronizadas
         // si el jugador completa la frase con un clic o usa avance rápido.
         if (line.afterActions) {
-            for (let action of line.afterActions) {
+            for (let actionIndex = 0; actionIndex < line.afterActions.length; actionIndex++) {
+                const action = line.afterActions[actionIndex];
+                const actionType = action?.type;
+                if (['waitForClick', 'waitClick', 'esperarClick'].includes(actionType)) {
+                    this.recordVisualMoment('wait', {
+                        action: actionType,
+                        replayActions: this.captureVisualMomentReplayActions(
+                            line.afterActions.slice(0, actionIndex)
+                        )
+                    });
+                }
                 await this.executeAction(action);
+                if (this._navigationInterrupted) return finishLine(true);
+                if (['playVideo', 'cutscene'].includes(actionType)) {
+                    this.recordVisualMoment('cinematic', {
+                        action,
+                        replay: {
+                            narrative: dialogueReplayCheckpoint.narrative,
+                            stage: dialogueReplayCheckpoint.stage,
+                            actions: this.cloneTimelineValue([
+                                ...(line.actions || []),
+                                ...line.afterActions.slice(0, actionIndex)
+                            ], [])
+                        }
+                    });
+                }
                 if (this.pendingSceneJump) {
                     this.pendingSceneJump = false;
-                    return true;
+                    return finishLine(true);
                 }
             }
         }
@@ -7784,76 +8253,8 @@ class VisualNovelEngine {
             // null = la elección se abortó desde fuera (se pidió ir a otra
             // escena). No se elige nada ni se avanza: se devuelve el control al
             // bucle, que atenderá el salto que hay pendiente.
-            if (!selectedChoice) return true;
-            this.history.push({
-                scene: this.currentScene,
-                line: this.currentLine,
-                choice: selectedChoice.text
-            });
-
-            // Si la elección define una ruta de capítulo, guardarla para
-            // que el juego cargue el capítulo correspondiente al terminar
-            if (selectedChoice.nextChapter !== undefined) {
-                this.nextChapter = selectedChoice.nextChapter;
-            }
-
-            // Si la elección lleva al Capítulo 3 según el primer rescatado,
-            // resolver el destino dinámicamente (chapter3-<primero>)
-            if (selectedChoice.chapter3ByFirst && this.rescued.length > 0) {
-                this.nextChapter = `chapter3-${this.rescued[0]}`;
-            }
-
-            // Si la elección lleva al Capítulo 2 según el primer amigo llamado,
-            // resolver el destino dinámicamente (chapter2-<primera llamada>)
-            if (selectedChoice.chapter2ByFirstCalled && this.completedCalls.length > 0) {
-                this.nextChapter = `chapter2-${this.completedCalls[0]}`;
-            }
-
-            // Si la elección lleva al Capítulo 2 según el último amigo llamado,
-            // resolver el destino dinámicamente (chapter2-<última llamada>)
-            if (selectedChoice.chapter2ByLastCalled && this.completedCalls.length > 0) {
-                this.nextChapter = `chapter2-${this.completedCalls[this.completedCalls.length - 1]}`;
-            }
-
-            // Ir a la escena/línea correspondiente
-            if (selectedChoice.nextScene !== undefined) {
-                // Regla del teléfono: si es una llamada pero Samu ya gastó su
-                // llamada disponible (sin rescatar a nadie desde entonces),
-                // redirigir a la escena de "fuera de cobertura" y no completar
-                // la llamada real.
-                let targetTitle = selectedChoice.nextScene;
-                if (this.isCallChoice(selectedChoice) && !this.canMakeRealCall()) {
-                    targetTitle = selectedChoice.offCoverageScene || "Escena: Fuera de cobertura";
-                }
-
-                // Si el destino es un string (título), buscar la escena por título
-                if (typeof targetTitle === 'string') {
-                    const sceneIndex = this.currentChapter.scenes.findIndex(
-                        scene => scene.title === targetTitle
-                    );
-                    this.currentScene = sceneIndex !== -1 ? sceneIndex : 0;
-                } else {
-                    // Si es un número, usarlo directamente
-                    this.currentScene = targetTitle;
-                }
-                this.currentLine = 0;
-                this.sceneEndedByChoice = true; // Marcar que esta escena vino de una elección
-
-                // Registrar la llamada solo si de verdad entramos en la escena de llamada
-                this.registerCall(this.getCurrentScene());
-
-                // Apilar la escena elegida AHORA (después de registrar la llamada,
-                // que forma parte del estado con el que se entra en ella). Así,
-                // mientras el jugador sigue viendo la pregunta, retroceder ya sabe
-                // que la escena de la decisión es la anterior y vuelve a ella.
-                this.recordSceneEntry();
-
-                return true;
-            } else if (selectedChoice.nextLine !== undefined) {
-                this.currentLine = selectedChoice.nextLine;
-            } else {
-                this.currentLine++;
-            }
+            if (!selectedChoice) return finishLine(true);
+            if (this.applySelectedChoice(selectedChoice)) return finishLine(true);
         } else {
             this.currentLine++;
         }
@@ -7863,23 +8264,22 @@ class VisualNovelEngine {
             // Si la escena fue seleccionada por una elección, no avanzar automáticamente
             if (this.sceneEndedByChoice) {
                 this.sceneEndedByChoice = false;
-                return false; // Fin de la escena (sin continuar a la siguiente)
+                return finishLine(false); // Fin de la escena (sin continuar a la siguiente)
             }
 
             this.currentScene++;
             this.currentLine = 0;
 
             if (this.currentScene >= this.currentChapter.scenes.length) {
-                return false; // Fin del capítulo
+                return finishLine(false); // Fin del capítulo
             }
 
-            // La última línea de la escena sigue en pantalla esperando el clic,
-            // pero ya estamos en la siguiente: apilarla ahora para que retroceder
-            // vuelva al principio de la escena que se acaba de leer.
+            // La última línea sigue en pantalla, pero el cursor ya está en la
+            // siguiente escena; registrarla ahora mantiene exacto el selector.
             this.recordSceneEntry();
         }
 
-        return true;
+        return finishLine(true);
     }
 
     hideDialog() {
@@ -7906,39 +8306,902 @@ class VisualNovelEngine {
     }
 
     // ============================================================
-    // RETROCEDER (pedido en la demo del 25-jul-2026)
+    // LÍNEA TEMPORAL DE MOMENTOS NARRATIVOS
     // ------------------------------------------------------------
-    // La escena es la unidad narrativa, así que siempre se retrocede al PRINCIPIO
-    // de una escena y se la deja volver a ejecutarse entera: sus acciones vuelven
-    // a poner el fondo, los personajes, la música y los efectos. Por eso hay que
-    // limpiar antes el escenario (si no, se quedan encima los restos de la escena
-    // de la que venimos) y devolver el progreso al estado que tenía al entrar en
-    // aquella escena (si no, cosas como "rescatado" o el inventario se contarían
-    // dos veces al repetirla).
-    //
-    // A QUÉ ESCENA SE VUELVE (dos casos, pedido el 3-ago-2026):
-    //   - Si ya se ha avanzado algún diálogo dentro de la escena actual, se
-    //     vuelve al principio de ESTA escena. Es lo que espera quien se ha
-    //     pasado de clic: repetir lo que se acaba de leer, no salir de la escena.
-    //   - Si estamos recién entrados (en su primer diálogo), se sale a la escena
-    //     ANTERIOR, la que dejamos justo antes de esta.
-    //
-    // El "de dónde vengo" es la pila `sceneHistory`: cada vez que se pisa una
-    // escena nueva se apila su índice junto a la foto del progreso. Retroceder
-    // desapila la escena actual y se queda en la de debajo, que SIGUE en la pila
-    // con su foto original; así el siguiente retroceso baja otro escalón en vez
-    // de caer siempre a la primera escena del capítulo.
-    //
-    // La escena se apila EN EL MISMO MOMENTO en que se cambia de escena (elección,
-    // goToScene o final de escena), no cuando se pinta su primera línea. Entre las
-    // dos cosas hay una espera: al elegir una opción o al leer la última línea de
-    // una escena, `currentScene` ya apunta a la escena nueva pero el bucle sigue
-    // parado esperando el clic del jugador. Si en ese hueco se apilaba tarde, el
-    // historial acababa en la escena ANTERIOR y retroceder se volvía loco: creía
-    // estar "avanzado" en la escena nueva (los diálogos contados eran los de la
-    // vieja) y reiniciaba una escena que aún no se había visto, o desapilaba la
-    // entrada equivocada y caía en la primera escena del capítulo.
+    // Cada frase o interludio visual visto guarda su estado exacto y un punto de
+    // reanudación. La línea temporal conserva el camino de las elecciones; el
+    // grafo resuelve los saltos manuales y el índice JSON completa lo no jugado.
+    // Una decisión restaurada vuelve a ofrecer sus opciones; sus efectos
+    // narrativos y los minijuegos no se duplican.
     // ============================================================
+
+    canonicalDialogueLocations() {
+        if (this._canonicalDialogueLocations) return this._canonicalDialogueLocations;
+        const locations = [];
+        for (const chapterName of this.canonicalChapterOrder) {
+            const chapter = this.chapters[chapterName];
+            for (let scene = 0; scene < (chapter?.scenes || []).length; scene++) {
+                const lines = chapter.scenes[scene]?.lines || [];
+                for (let line = 0; line < lines.length; line++) {
+                    if (lines[line]?.text) locations.push({ chapter: chapterName, scene, line });
+                }
+            }
+        }
+        this._canonicalDialogueLocations = locations;
+        return locations;
+    }
+
+    sameCanonicalLocation(a, b) {
+        return !!a && !!b && a.chapter === b.chapter &&
+            a.scene === b.scene && a.line === b.line;
+    }
+
+    lineAtCanonicalLocation(location) {
+        return this.chapters[location?.chapter]?.scenes?.[location.scene]?.lines?.[location.line] || null;
+    }
+
+    choiceRewindAnchors(chapterName) {
+        const cached = this._choiceRewindAnchorCache.get(chapterName);
+        if (cached) return cached;
+        const chapter = this.chapters[chapterName];
+        const scenes = chapter?.scenes || [];
+        const titleToIndex = new Map(scenes.map((scene, index) => [scene.title, index]));
+        const outgoing = scenes.map(() => new Set());
+        const decisions = [];
+        const choiceFlowTargets = new Set();
+
+        scenes.forEach((scene, sceneIndex) => {
+            (scene.lines || []).forEach((line, lineIndex) => {
+                for (const action of [...(line.actions || []), ...(line.afterActions || [])]) {
+                    if (action?.type !== 'goToScene') continue;
+                    const target = typeof action.value === 'number'
+                        ? action.value
+                        : titleToIndex.get(action.value);
+                    if (target >= 0) outgoing[sceneIndex].add(target);
+                }
+                const targets = [];
+                for (const choice of line.choices || []) {
+                    if (choice.nextScene == null) continue;
+                    const target = typeof choice.nextScene === 'number'
+                        ? choice.nextScene
+                        : titleToIndex.get(choice.nextScene);
+                    if (!(target >= 0)) continue;
+                    outgoing[sceneIndex].add(target);
+                    choiceFlowTargets.add(target);
+                    targets.push(target);
+                }
+                const uniqueTargets = [...new Set(targets)];
+                // Una sola opción es una confirmación/reintento, no una ruta.
+                if (uniqueTargets.length >= 2) {
+                    decisions.push({
+                        chapter: chapterName,
+                        scene: sceneIndex,
+                        line: lineIndex,
+                        targets: uniqueTargets,
+                        branchCount: uniqueTargets.length
+                    });
+                }
+            });
+        });
+        const incoming = scenes.map(() => new Set());
+        outgoing.forEach((targets, source) => {
+            for (const target of targets) incoming[target]?.add(source);
+        });
+
+        const graphDistances = (start, graph) => {
+            const distances = new Map([[start, 0]]);
+            const queue = [start];
+            while (queue.length) {
+                const scene = queue.shift();
+                for (const target of graph[scene] || []) {
+                    if (distances.has(target)) continue;
+                    distances.set(target, distances.get(scene) + 1);
+                    queue.push(target);
+                }
+            }
+            return distances;
+        };
+        const candidates = new Map();
+        const addCandidate = (targetScene, decision, kind, distance = 0, coverage = 0) => {
+            if (!candidates.has(targetScene)) candidates.set(targetScene, []);
+            candidates.get(targetScene).push({ decision, kind, distance, coverage });
+        };
+
+        for (const decision of decisions) {
+            for (const target of decision.targets) addCandidate(target, decision, 'branch', 1);
+            const distanceMaps = decision.targets.map(target => graphDistances(target, outgoing));
+            const common = [...distanceMaps[0].keys()]
+                .filter(scene => scene !== decision.scene &&
+                    distanceMaps.every(distances => distances.has(scene)))
+                .map(scene => ({
+                    scene,
+                    maximum: Math.max(...distanceMaps.map(distances => distances.get(scene))),
+                    total: distanceMaps.reduce((sum, distances) => sum + distances.get(scene), 0)
+                }))
+                .sort((a, b) => a.maximum - b.maximum || a.total - b.total || a.scene - b.scene);
+            if (common[0]) {
+                const convergence = common[0].scene;
+                const routeCoverage = new Set(decision.targets);
+
+                // También pertenecen a la decisión las escenas intermedias de
+                // cada ruta hasta la primera convergencia. Sólo se incluyen los
+                // nodos que forman parte de un camino mínimo hacia ella, para no
+                // contaminar el mapa con escenas posteriores o ciclos de reintento.
+                const distanceToConvergence = graphDistances(convergence, incoming);
+                distanceMaps.forEach(distances => {
+                    const routeLength = distances.get(convergence);
+                    for (const [scene, distanceFromTarget] of distances) {
+                        if (scene === decision.scene || scene === convergence) continue;
+                        const distanceFromScene = distanceToConvergence.get(scene);
+                        if (distanceFromScene == null ||
+                            distanceFromTarget + distanceFromScene !== routeLength) continue;
+                        routeCoverage.add(scene);
+                        addCandidate(scene, decision, 'route', distanceFromTarget + 1);
+                    }
+                });
+                addCandidate(
+                    convergence,
+                    decision,
+                    'convergence',
+                    common[0].maximum,
+                    routeCoverage.size
+                );
+            }
+        }
+
+        const anchors = new Map();
+        for (const [targetScene, options] of candidates) {
+            const priority = { branch: 0, route: 1, convergence: 2 };
+            const bestPriority = Math.min(...options.map(option => priority[option.kind]));
+            const pool = options.filter(option => priority[option.kind] === bestPriority);
+            pool.sort((a, b) => {
+                if (a.kind !== 'convergence') {
+                    return b.decision.scene - a.decision.scene ||
+                        b.decision.line - a.decision.line || a.distance - b.distance;
+                }
+                return b.coverage - a.coverage ||
+                    b.decision.branchCount - a.decision.branchCount ||
+                    a.decision.scene - b.decision.scene || a.distance - b.distance;
+            });
+            const selected = pool[0];
+            anchors.set(targetScene, {
+                chapter: chapterName,
+                targetScene,
+                kind: selected.kind,
+                decision: {
+                    chapter: chapterName,
+                    scene: selected.decision.scene,
+                    line: selected.decision.line
+                }
+            });
+        }
+        this._choiceRewindAnchorCache.set(chapterName, anchors);
+        this._choiceFlowTargetCache.set(chapterName, choiceFlowTargets);
+        return anchors;
+    }
+
+    choiceRewindAnchorForScene(chapterName, sceneIndex) {
+        return this.choiceRewindAnchors(chapterName).get(sceneIndex) || null;
+    }
+
+    choiceFlowTargetScenes(chapterName) {
+        if (!this._choiceFlowTargetCache.has(chapterName)) {
+            this.choiceRewindAnchors(chapterName);
+        }
+        return this._choiceFlowTargetCache.get(chapterName) || new Set();
+    }
+
+    firstDialogueLocationInScene(chapterName, sceneIndex) {
+        const lines = this.chapters[chapterName]?.scenes?.[sceneIndex]?.lines || [];
+        for (let line = 0; line < lines.length; line++) {
+            if (!lines[line]?.text) continue;
+            if (lines[line].showIf && !this.lineConditionMet(lines[line].showIf)) continue;
+            return { chapter: chapterName, scene: sceneIndex, line };
+        }
+        return null;
+    }
+
+    previousCanonicalDialogue(location) {
+        const locations = this.canonicalDialogueLocations();
+        const currentIndex = locations.findIndex(candidate =>
+            this.sameCanonicalLocation(candidate, location)
+        );
+        let searchIndex = currentIndex - 1;
+        if (currentIndex < 0) {
+            const chapterIndex = this.canonicalChapterOrder.indexOf(location?.chapter);
+            if (chapterIndex < 0) return null;
+            searchIndex = locations.length - 1;
+            while (searchIndex >= 0) {
+                const candidate = locations[searchIndex];
+                const candidateChapter = this.canonicalChapterOrder.indexOf(candidate.chapter);
+                if (candidateChapter < chapterIndex ||
+                    (candidateChapter === chapterIndex && candidate.scene < location.scene) ||
+                    (candidateChapter === chapterIndex && candidate.scene === location.scene &&
+                        candidate.line < location.line)) break;
+                searchIndex--;
+            }
+        }
+        for (let index = searchIndex; index >= 0; index--) {
+            const candidate = locations[index];
+            const line = this.lineAtCanonicalLocation(candidate);
+            // El orden siempre es el del JSON; solo se descartan variantes que
+            // contradicen el resultado, inventario o retraso ya decidido.
+            if (!line?.showIf || this.lineConditionMet(line.showIf)) return candidate;
+        }
+        return null;
+    }
+
+    findTimelineDialogIndex(startIndex, location = null) {
+        for (let index = startIndex; index >= 0; index--) {
+            const entry = this.dialogueTimeline[index];
+            if (entry?.kind !== 'dialog') continue;
+            if (!location || this.sameCanonicalLocation(entry, location)) return index;
+            return -1;
+        }
+        return -1;
+    }
+
+    findHistoricalTimelineDialogIndex(startIndex, location) {
+        let canonicalFallback = -1;
+        for (let index = startIndex; index >= 0; index--) {
+            const entry = this.dialogueTimeline[index];
+            if (entry?.kind !== 'dialog' || !this.sameCanonicalLocation(entry, location)) continue;
+            if (!entry.canonical) return index;
+            if (canonicalFallback < 0) canonicalFallback = index;
+        }
+        return canonicalFallback;
+    }
+
+    emptyCanonicalStageState() {
+        return {
+            background: null,
+            backgroundPan: null,
+            cg: null,
+            fader: {
+                background: '#000',
+                opacity: '0',
+                pointerEvents: 'none'
+            },
+            characters: {},
+            audio: [],
+            juice: { grade: 'none', vignette: 0, sfx: [] }
+        };
+    }
+
+    applyCanonicalStageAction(stage, rawAction) {
+        const action = rawAction || {};
+        let characters = stage.characters;
+        const audio = new Map((stage.audio || []).map(sound => [sound.id, sound]));
+        const findCharacterPosition = character => Object.keys(characters).find(
+            position => characters[position]?.character === this.getCharacterKey(character)
+        );
+        const removePosition = position => {
+            if (position) delete characters[position];
+        };
+        const resetVisualStage = () => {
+            stage.background = null;
+            stage.backgroundPan = null;
+            stage.cg = null;
+            stage.characters = {};
+            characters = stage.characters;
+            stage.fader = { background: '#000', opacity: '0', pointerEvents: 'none' };
+            stage.juice = { grade: 'none', vignette: 0, sfx: [] };
+        };
+
+        switch (action.type) {
+            case 'clearBackground':
+            case 'removeBackground':
+                if (stage.background !== null) {
+                    stage.characters = {};
+                    characters = stage.characters;
+                }
+                stage.background = null;
+                stage.backgroundPan = null;
+                break;
+            case 'setBackground': {
+                const path = action.value || null;
+                if (path !== stage.background) {
+                    stage.characters = {};
+                    characters = stage.characters;
+                    stage.backgroundPan = null;
+                }
+                stage.background = path;
+                break;
+            }
+            case 'showCharacter': {
+                const character = this.getCharacterKey(action.character);
+                const position = action.position || 'left';
+                const previousPosition = findCharacterPosition(character);
+                if (previousPosition && previousPosition !== position) removePosition(previousPosition);
+                characters[position] = {
+                    character,
+                    pose: action.pose || 'neutral',
+                    flipped: !!action.flipped,
+                    hidden: false,
+                    offsetY: action.offsetY == null || action.offsetY === ''
+                        ? '0%'
+                        : typeof action.offsetY === 'number' ? `${action.offsetY}%` : String(action.offsetY),
+                    scale: Number.isFinite(Number(action.scale)) && Number(action.scale) > 0
+                        ? Number(action.scale)
+                        : 1
+                };
+                break;
+            }
+            case 'hideCharacter': {
+                const position = action.position || findCharacterPosition(action.character);
+                if (characters[position]) characters[position].hidden = true;
+                break;
+            }
+            case 'removeCharacter':
+            case 'quitarPersonaje':
+                removePosition(action.position || findCharacterPosition(action.character));
+                break;
+            case 'removeAllCharacters':
+                stage.characters = {};
+                characters = stage.characters;
+                break;
+            case 'setPose': {
+                const position = action.position || findCharacterPosition(action.character);
+                if (characters[position]) characters[position].pose = action.pose || 'neutral';
+                break;
+            }
+            case 'animateCharacter':
+            case 'characterAnimation':
+            case 'poseSequence': {
+                const position = action.position || findCharacterPosition(action.character);
+                const poses = (action.poses || action.frames || []).filter(Boolean);
+                if (characters[position] && poses.length) characters[position].pose = poses[0];
+                break;
+            }
+            case 'playSound':
+                if (action.id && (action.path || action.value)) {
+                    audio.set(action.id, {
+                        id: action.id,
+                        path: action.path || action.value,
+                        volume: action.volume !== undefined ? action.volume : 1,
+                        loop: !!action.loop,
+                        paused: action.autoPlay === false
+                    });
+                }
+                break;
+            case 'stopSound':
+                audio.delete(action.id || action.audio);
+                break;
+            case 'stopAllSounds':
+                audio.clear();
+                stage.juice.sfx = [];
+                break;
+            case 'pauseSound': {
+                const sound = audio.get(action.id || action.audio);
+                if (sound) sound.paused = true;
+                break;
+            }
+            case 'resumeSound': {
+                const sound = audio.get(action.id || action.audio);
+                if (sound) sound.paused = false;
+                break;
+            }
+            case 'setVolume': {
+                const sound = audio.get(action.id || action.audio);
+                if (sound) sound.volume = action.volume;
+                break;
+            }
+            case 'playVideo':
+            case 'cutscene': {
+                resetVisualStage();
+                const endBackground = action.endBackground || action.finalBackground;
+                if (endBackground) stage.background = endBackground;
+                break;
+            }
+            case 'grade':
+            case 'colorGrade':
+            case 'tinte':
+                stage.juice.grade = action.value || action.filter || 'none';
+                break;
+            case 'clearGrade':
+                stage.juice.grade = 'none';
+                break;
+            case 'vignette':
+            case 'vigneta': {
+                const value = action.value != null ? action.value : action.strength;
+                stage.juice.vignette = Math.max(0, Math.min(1, value == null ? 0.6 : value));
+                break;
+            }
+            case 'clearVignette':
+                stage.juice.vignette = 0;
+                break;
+            case 'fade': {
+                const goingDark = action.from == null;
+                const color = typeof action.to === 'string' && action.to !== 'black'
+                    ? action.to
+                    : typeof action.from === 'string' && action.from !== 'black'
+                        ? action.from
+                        : '#000';
+                stage.fader = {
+                    background: color,
+                    opacity: goingDark ? '1' : '0',
+                    pointerEvents: goingDark ? 'auto' : 'none'
+                };
+                break;
+            }
+            case 'bgPan':
+                stage.backgroundPan = action.reset ? null : {
+                    zoomFrom: action.zoomFrom != null ? action.zoomFrom : 1.05,
+                    zoomTo: action.zoomTo != null ? action.zoomTo : 1,
+                    xFrom: action.xFrom || 0,
+                    xTo: action.xTo || 0,
+                    yFrom: action.yFrom || 0,
+                    yTo: action.yTo || 0,
+                    duration: action.duration != null ? action.duration : 6000
+                };
+                break;
+            case 'showCG':
+                if (action.path || action.value) {
+                    stage.cg = {
+                        path: action.path || action.value,
+                        size: action.size || 'cover',
+                        position: action.position || 'center',
+                        objectMode: action.objectMode != null ? !!action.objectMode : !!action.size
+                    };
+                }
+                break;
+            case 'hideCG':
+                stage.cg = null;
+                break;
+            case 'sfx': {
+                const current = new Map((stage.juice.sfx || []).map(entry => [entry.name, entry]));
+                if (action.on === false) current.delete(action.name);
+                else if (action.name) {
+                    current.set(action.name, {
+                        name: action.name,
+                        options: this.cloneTimelineValue(action, {})
+                    });
+                }
+                stage.juice.sfx = [...current.values()];
+                break;
+            }
+        }
+        stage.audio = [...audio.values()];
+        return stage;
+    }
+
+    buildCanonicalStageState(location, options = {}) {
+        const chapter = this.chapters[location.chapter];
+        const stage = this.emptyCanonicalStageState();
+        for (let sceneIndex = 0; sceneIndex <= location.scene; sceneIndex++) {
+            const lines = chapter?.scenes?.[sceneIndex]?.lines || [];
+            const lastLine = sceneIndex === location.scene ? location.line : lines.length - 1;
+            for (let lineIndex = 0; lineIndex <= lastLine; lineIndex++) {
+                const line = lines[lineIndex];
+                if (!line || (line.showIf && !this.lineConditionMet(line.showIf))) continue;
+                const isTarget = sceneIndex === location.scene && lineIndex === location.line;
+                if (isTarget && options.beforeActions === true) return stage;
+                for (const action of line.actions || []) this.applyCanonicalStageAction(stage, action);
+                if (isTarget) return stage;
+                for (const action of line.afterActions || []) this.applyCanonicalStageAction(stage, action);
+            }
+        }
+        return stage;
+    }
+
+    buildSceneLocalStageState(location, options = {}) {
+        const lines = this.chapters[location.chapter]?.scenes?.[location.scene]?.lines || [];
+        const stage = this.emptyCanonicalStageState();
+        for (let lineIndex = 0; lineIndex <= location.line; lineIndex++) {
+            const line = lines[lineIndex];
+            if (!line || (line.showIf && !this.lineConditionMet(line.showIf))) continue;
+            const isTarget = lineIndex === location.line;
+            if (isTarget && options.beforeActions === true) return stage;
+            for (const action of line.actions || []) this.applyCanonicalStageAction(stage, action);
+            if (isTarget) return stage;
+            for (const action of line.afterActions || []) this.applyCanonicalStageAction(stage, action);
+        }
+        return stage;
+    }
+
+    buildCanonicalDialogueEntry(location, options = {}) {
+        const line = this.lineAtCanonicalLocation(location);
+        if (!line?.text) return null;
+        const resolvedLine = this.resolveConsequenceLine(line);
+        const narrative = this.captureNarrativeState();
+        const buildStage = beforeActions => options.sceneLocalStage === true
+            ? this.buildSceneLocalStageState(location, { beforeActions })
+            : this.buildCanonicalStageState(location, { beforeActions });
+        return {
+            kind: 'dialog',
+            chapter: location.chapter,
+            scene: location.scene,
+            line: location.line,
+            dialog: this.captureDialoguePresentation(resolvedLine),
+            narrative,
+            stage: buildStage(false),
+            replay: {
+                narrative,
+                stage: buildStage(true),
+                actions: this.cloneTimelineValue(line.actions, []),
+                afterActions: this.cloneTimelineValue(line.afterActions, [])
+            },
+            lastDialogEmotionKey: null,
+            resume: null,
+            canonical: true,
+            origin: options.origin || 'canonical'
+        };
+    }
+
+    cloneTimelineValue(value, fallback = null) {
+        if (value === undefined) return fallback;
+        return JSON.parse(JSON.stringify(value));
+    }
+
+    captureNarrativeState() {
+        return {
+            gameState: this.cloneTimelineValue(this.gameState, {}),
+            rescued: [...(this.rescued || [])],
+            completedCalls: [...(this.completedCalls || [])],
+            inventory: [...(this.inventory || [])],
+            storyDelay: this.storyDelay,
+            storyPressure: this.storyPressure,
+            nextChapter: this.nextChapter,
+            lastMinigameResult: this.cloneTimelineValue(this.lastMinigameResult),
+            history: this.cloneTimelineValue(this.history, [])
+        };
+    }
+
+    restoreNarrativeState(snapshot) {
+        if (!snapshot) return;
+        this.gameState = this.cloneTimelineValue(snapshot.gameState, {});
+        this.rescued = [...(snapshot.rescued || [])];
+        this.completedCalls = [...(snapshot.completedCalls || [])];
+        this.inventory = [...(snapshot.inventory || [])];
+        this.storyDelay = snapshot.storyDelay || 0;
+        this.storyPressure = snapshot.storyPressure != null
+            ? snapshot.storyPressure
+            : this.storyDelay;
+        this.nextChapter = snapshot.nextChapter ?? null;
+        this.lastMinigameResult = this.cloneTimelineValue(snapshot.lastMinigameResult);
+        this.history = this.cloneTimelineValue(snapshot.history, []);
+    }
+
+    captureDialoguePresentation(line) {
+        const presentation = {};
+        [
+            'character', 'speakingAs', 'text', 'emotion', 'emocion',
+            'textAnimation', 'textEffect', 'textDuration', 'textSpeed'
+        ].forEach(key => {
+            if (line[key] !== undefined) presentation[key] = line[key];
+        });
+        return this.cloneTimelineValue(presentation, {});
+    }
+
+    captureVisualMomentReplayActions(actions = []) {
+        const transientTypes = new Set(['shake', 'screenShake', 'flash']);
+        return this.cloneTimelineValue(actions.filter(action =>
+            transientTypes.has(action?.type) ||
+            (action?.type === 'playSound' && action.loop !== true)
+        ), []);
+    }
+
+    captureDialogueCheckpoint() {
+        return {
+            chapter: this.lastChapterName,
+            scene: this.currentScene,
+            line: this.currentLine,
+            narrative: this.captureNarrativeState(),
+            stage: this.captureSceneStageState(),
+            lastDialogEmotionKey: this._lastDialogEmotionKey,
+            sceneEndedByChoice: this.sceneEndedByChoice,
+            pendingSceneJump: !!this.pendingSceneJump
+        };
+    }
+
+    appendTimelineEntry(entry) {
+        // Una navegación manual puede crear una ruta nueva desde una entrada
+        // histórica. Las instantáneas que ya no pertenecen a esa ruta se podan.
+        if (this.dialogueTimelineCursor < this.dialogueTimeline.length - 1) {
+            this.dialogueTimeline.splice(this.dialogueTimelineCursor + 1);
+        }
+        this.dialogueTimeline.push(entry);
+        this.dialogueTimelineCursor = this.dialogueTimeline.length - 1;
+        this.dialoguePlayback = false;
+
+        // El recorrido completo actual queda por debajo de 950 momentos. El margen
+        // permite crecer sin memoria ilimitada y conserva siempre varios capítulos.
+        const limit = 1200;
+        if (this.dialogueTimeline.length > limit) {
+            const excess = this.dialogueTimeline.length - limit;
+            this.dialogueTimeline.splice(0, excess);
+            this.dialogueTimelineCursor -= excess;
+        }
+        return entry;
+    }
+
+    recordDialogueMoment(line, replayCheckpoint = null, sourceLine = null) {
+        const checkpoint = this.captureDialogueCheckpoint();
+        const manualSceneJump = this.cloneTimelineValue(this._pendingManualSceneJump);
+        const entry = this.appendTimelineEntry({
+            kind: 'dialog',
+            chapter: checkpoint.chapter,
+            scene: checkpoint.scene,
+            line: checkpoint.line,
+            origin: 'live',
+            manualSceneJump,
+            dialog: this.captureDialoguePresentation(line),
+            narrative: checkpoint.narrative,
+            stage: checkpoint.stage,
+            replay: replayCheckpoint ? {
+                narrative: replayCheckpoint.narrative,
+                stage: replayCheckpoint.stage,
+                actions: this.cloneTimelineValue(sourceLine?.actions, []),
+                afterActions: this.cloneTimelineValue(sourceLine?.afterActions, [])
+            } : null,
+            lastDialogEmotionKey: checkpoint.lastDialogEmotionKey,
+            resume: checkpoint
+        });
+        // La marca sobrevive a waits, CG y cinemáticas previas, pero el primer
+        // diálogo es el punto estable que la consume. La copia de la entrada
+        // sigue permitiendo reconocer ese salto al volver a ella más tarde.
+        if (manualSceneJump) this._pendingManualSceneJump = null;
+        return entry;
+    }
+
+    recordVisualMoment(kind, visual = {}) {
+        const checkpoint = this.captureDialogueCheckpoint();
+        const entry = this.appendTimelineEntry({
+            kind,
+            chapter: checkpoint.chapter,
+            scene: checkpoint.scene,
+            line: checkpoint.line,
+            origin: 'live',
+            manualSceneJump: this.cloneTimelineValue(this._pendingManualSceneJump),
+            visual: this.cloneTimelineValue(visual, {}),
+            narrative: checkpoint.narrative,
+            stage: checkpoint.stage,
+            lastDialogEmotionKey: checkpoint.lastDialogEmotionKey,
+            resume: checkpoint
+        });
+        // Mientras una pantalla con espera está visible, Retroceder debe partir
+        // de ella igual que partiría de una frase que espera confirmación.
+        this.dialogueIsCurrent = true;
+        return entry;
+    }
+
+    updateDialogueResumeCheckpoint() {
+        if (this.dialoguePlayback || this.dialogueTimeline.length === 0) return;
+        const latest = this.dialogueTimeline[this.dialogueTimeline.length - 1];
+        latest.resume = this.captureDialogueCheckpoint();
+        this.dialogueTimelineCursor = this.dialogueTimeline.length - 1;
+    }
+
+    clearDialogueTimeline() {
+        this.dialogueTimeline = [];
+        this.dialogueTimelineCursor = -1;
+        this.dialoguePlayback = false;
+        this.dialogueIsCurrent = false;
+    }
+
+    activateTimelineChapter(chapterName) {
+        const chapter = this.chapters[chapterName];
+        if (!chapter) {
+            console.warn('No se puede restaurar el capítulo del historial:', chapterName);
+            return false;
+        }
+        if (this.lastChapterName && this.lastChapterName !== chapterName) {
+            this._chapterSceneHistories[this.lastChapterName] = this.sceneHistory;
+        }
+        this.currentChapter = chapter;
+        this.lastChapterName = chapterName;
+        this.sceneHistory = this._chapterSceneHistories[chapterName] || [];
+        this._chapterSceneHistories[chapterName] = this.sceneHistory;
+        return true;
+    }
+
+    async restoreDialogueCheckpoint(checkpoint, options = {}) {
+        if (!checkpoint || !this.activateTimelineChapter(checkpoint.chapter)) return false;
+        this.restoreNarrativeState(checkpoint.narrative);
+        this.currentScene = checkpoint.scene;
+        this.currentLine = checkpoint.line;
+        this.clearStage({
+            preserveAudio: true,
+            preserveDialog: options.preserveDialog === true,
+            immediate: true
+        });
+        await this.restoreSceneStageState(checkpoint.stage, { reconcileAudio: true });
+        this.sceneEndedByChoice = !!checkpoint.sceneEndedByChoice;
+        this.pendingSceneJump = !!checkpoint.pendingSceneJump;
+        this._lastSeenScene = checkpoint.scene;
+        this._lastDialogEmotionKey = checkpoint.lastDialogEmotionKey || null;
+        this.updateDebugPanel();
+        return true;
+    }
+
+    replayableDialogueAction(action) {
+        // Estas acciones cambian progreso o navegación. La línea histórica debe
+        // conservar su resultado, no volver a resolverlo ni duplicarlo.
+        switch (action?.type) {
+            case 'setVariable':
+            case 'giveItem':
+            case 'addItem':
+            case 'minigame':
+            case 'rescue':
+            case 'setDelay':
+            case 'addDelay':
+            case 'goToScene':
+            case 'setNextChapter':
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    replaySoundAction(action) {
+        const path = action.path || action.value;
+        const id = action.id;
+        if (!path || !id) return false;
+        const exact = this.audioInstances?.[id];
+        let reusable = exact?._volKind === 'music' && exact._srcPath === path &&
+            !exact._stopping && !exact.ended
+            ? exact
+            : null;
+        let reusableId = reusable ? id : null;
+        if (!reusable) {
+            const match = Object.entries(this.audioInstances || {}).find(
+                ([, instance]) => instance?._volKind === 'music' &&
+                    instance._srcPath === path && !instance._stopping && !instance.ended
+            );
+            if (match) [reusableId, reusable] = match;
+        }
+        if (!reusable) return false;
+
+        if (exact && exact !== reusable) this.fadeOutAndStop(exact, 180);
+        if (reusableId !== id) {
+            delete this.audioInstances[reusableId];
+            this.audioInstances[id] = reusable;
+        }
+        reusable._baseVol = action.volume !== undefined ? action.volume : 1;
+        reusable.loop = !!action.loop;
+        const factor = this.volFactor(reusable._volKind || 'sfx');
+        reusable.volume = Math.max(0, Math.min(1, reusable._baseVol * factor));
+        if (action.autoPlay === false) reusable.pause();
+        else if (reusable.paused) reusable.play().catch(() => {});
+        if (reusable._volKind === 'music') this.currentMusic = reusable;
+        return true;
+    }
+
+    async replayDialogueActions(actions = []) {
+        for (const action of actions) {
+            if (!this.replayableDialogueAction(action)) continue;
+            // Reaplicar una orden musical idéntica no debe reiniciar la canción;
+            // sí se actualizan alias, volumen, loop y pausa.
+            if (action?.type === 'playSound' && this.replaySoundAction(action)) continue;
+            await this.executeAction(this.cloneTimelineValue(action, {}));
+        }
+    }
+
+    async showDialogueTimelineEntry(index, options = {}) {
+        const entry = this.dialogueTimeline[index];
+        if (!entry) return false;
+        const recreateActions = options.recreateActions === true && entry.kind === 'dialog';
+        const recreateCinematic = entry.kind === 'cinematic' && entry.visual?.replay;
+        const sourceLine = recreateActions ? this.lineAtCanonicalLocation(entry) : null;
+        const replay = recreateActions
+            ? (entry.replay || {
+                narrative: entry.narrative,
+                stage: this.buildCanonicalStageState(entry, { beforeActions: true }),
+                actions: this.cloneTimelineValue(sourceLine?.actions, []),
+                afterActions: this.cloneTimelineValue(sourceLine?.afterActions, [])
+            })
+            : (recreateCinematic ? entry.visual.replay : null);
+        const replayStage = replay
+            ? this.cloneTimelineValue(replay.stage, this.emptyCanonicalStageState())
+            : null;
+        if (replayStage && entry.stage?.audio) {
+            // El audio se lleva directamente al resultado de la línea. Después
+            // playSound se reaplica de forma idempotente, evitando cambiar a la
+            // pista previa y volver enseguida a otra que ya estaba sonando.
+            replayStage.audio = this.cloneTimelineValue(entry.stage.audio, []);
+        }
+        const finalCheckpoint = {
+            chapter: entry.chapter,
+            scene: entry.scene,
+            line: entry.line,
+            narrative: entry.narrative,
+            stage: entry.stage,
+            lastDialogEmotionKey: entry.lastDialogEmotionKey,
+            sceneEndedByChoice: false,
+            pendingSceneJump: false
+        };
+        const checkpoint = replay ? Object.assign({}, finalCheckpoint, {
+            narrative: replay.narrative || entry.narrative,
+            stage: replayStage || entry.stage
+        }) : finalCheckpoint;
+        const restored = await this.restoreDialogueCheckpoint(checkpoint, {
+            // Mantener el marco visible mientras se reconstruyen fondo, CG y
+            // personajes evita un fotograma vacío entre dos diálogos. Las
+            // acciones de la propia línea (p. ej. hideDialog antes de una CG)
+            // todavía pueden ocultarlo cuando la puesta en escena lo exige.
+            preserveDialog: entry.kind === 'dialog'
+        });
+        if (!restored) return false;
+
+        this.dialogueTimelineCursor = index;
+        this.dialoguePlayback = true;
+        this.dialogueIsCurrent = true;
+
+        if (entry.kind === 'cinematic') {
+            this.hideDialog();
+            this.isWaitingForInput = false;
+            if (recreateCinematic) {
+                await this.replayDialogueActions(replay.actions);
+                this.restoreNarrativeState(entry.narrative);
+                this.currentScene = entry.scene;
+                this.currentLine = entry.line;
+            }
+            const action = this.cloneTimelineValue(entry.visual?.action);
+            if (action) await this.playVideo(action);
+            // El vídeo puede terminar por fin natural, salto o error. Reconciliar
+            // después garantiza exactamente el frame final, CG, telón y audio
+            // que quedaron registrados durante el recorrido original.
+            await this.restoreDialogueCheckpoint(finalCheckpoint);
+            this.dialogueTimelineCursor = index;
+            this.dialoguePlayback = true;
+            this.dialogueIsCurrent = true;
+            this.hideDialog();
+            // Al avanzar por el historial, la reproducción normal autoencadena.
+            // Si Retroceder eligió ESTA línea visual como destino, se conserva
+            // en su frame final: otro Retroceder sigue hacia atrás y un clic
+            // vuelve al diálogo posterior sin repetir el vídeo.
+            this.isWaitingForInput = options.rewindTarget === true;
+            return true;
+        }
+
+        if (entry.kind && entry.kind !== 'dialog') {
+            this.hideDialog();
+            if (entry.kind === 'wait') {
+                // El snapshot recupera fondo/CG/personajes. Los efectos fugaces
+                // anteriores al wait (SFX, shake, flash) deben dispararse otra vez.
+                await this.replayDialogueActions(entry.visual?.replayActions || []);
+            }
+            this.isWaitingForInput = true;
+            return true;
+        }
+
+        if (recreateActions) {
+            this._lineTextDurationOverride = null;
+            await this.replayDialogueActions(replay.actions);
+            // Las acciones protegidas no se repiten; recuperar la foto narrativa
+            // exacta garantiza además que ninguna acción futura pueda duplicar
+            // progreso al añadirse al motor sin entrar aún en la lista anterior.
+            this.restoreNarrativeState(entry.narrative);
+            this.currentScene = entry.scene;
+            this.currentLine = entry.line;
+        }
+
+        const durationOverride = entry.dialog?.textDuration != null
+            ? entry.dialog.textDuration
+            : this._lineTextDurationOverride;
+        const displayedDialog = durationOverride == null
+            ? entry.dialog
+            : Object.assign({}, entry.dialog, { textDuration: durationOverride });
+        await this.displayDialog(recreateActions
+            ? displayedDialog
+            : Object.assign({}, displayedDialog, { textDuration: 0, textSpeed: 0 }),
+        { instant: true });
+
+        if (recreateActions) {
+            await this.replayDialogueActions(replay.afterActions);
+            this.restoreNarrativeState(entry.narrative);
+        }
+        this.isWaitingForInput = true;
+        return true;
+    }
+
+    async resumeAfterDialoguePlayback() {
+        const entry = this.dialogueTimeline[this.dialogueTimelineCursor];
+        if (entry?.resume) await this.restoreDialogueCheckpoint(entry.resume);
+        this.dialoguePlayback = false;
+        this.dialogueIsCurrent = false;
+        this.isWaitingForInput = false;
+    }
 
     // Foto del progreso al entrar en una escena. Se llama desde nextLine().
     captureSceneStageState() {
@@ -7948,11 +9211,20 @@ class VisualNovelEngine {
                 id,
                 path: instance._srcPath,
                 volume: instance._baseVol != null ? instance._baseVol : 1,
-                loop: !!instance.loop
+                loop: !!instance.loop,
+                paused: !!instance.paused
             }))
             .filter(item => item.path);
+        const fader = document.getElementById('scene-fader');
         return {
             background: this.currentBackgroundPath,
+            backgroundPan: this.cloneTimelineValue(this._backgroundPanState),
+            cg: this.cloneTimelineValue(this._currentCGState),
+            fader: fader ? {
+                background: fader.style.background || '#000',
+                opacity: fader.style.opacity || '0',
+                pointerEvents: fader.style.pointerEvents || 'none'
+            } : null,
             characters: JSON.parse(JSON.stringify(this.stageCharacters || {})),
             audio,
             juice: window.Juice && typeof window.Juice.snapshot === 'function'
@@ -7961,28 +9233,116 @@ class VisualNovelEngine {
         };
     }
 
-    restoreSceneStageState(snapshot) {
-        if (!snapshot) return;
-        if (snapshot.background) this.setBackground(snapshot.background, { cut: true });
-        for (const [position, visual] of Object.entries(snapshot.characters || {})) {
-            if (!visual || !visual.character) continue;
-            this.showCharacter(
-                visual.character,
-                position,
-                visual.pose || 'neutral',
-                !!visual.flipped
+    reconcileAudioState(audioSnapshot = []) {
+        // Los SFX sin ID no forman parte de una foto persistente. Al restaurar
+        // deben terminar antes de volver a ejecutar los transitorios del destino,
+        // evitando dos copias superpuestas del mismo golpe de sonido.
+        this.stopTransientSounds();
+        const desired = new Map(
+            audioSnapshot.filter(sound => sound?.id && sound.path)
+                .map(sound => [sound.id, sound])
+        );
+
+        // Si una cama musical ya reproduce la ruta deseada con otro alias,
+        // reasignar su ID en vez de pararla y crear otro Audio. La identidad
+        // audible es la pista, no el nombre interno usado por una escena.
+        for (const [desiredId, sound] of desired) {
+            const exact = this.audioInstances?.[desiredId];
+            if (exact?._srcPath === sound.path) continue;
+            const reusable = Object.entries(this.audioInstances || {}).find(
+                ([, instance]) => instance?._volKind === 'music' &&
+                    instance._srcPath === sound.path && !instance._stopping &&
+                    !instance.ended
             );
+            if (!reusable) continue;
+            const [oldId, instance] = reusable;
+            if (exact && exact !== instance) this.fadeOutAndStop(exact, 180);
+            delete this.audioInstances[oldId];
+            this.audioInstances[desiredId] = instance;
+            this.currentMusic = instance;
         }
-        for (const sound of snapshot.audio || []) {
+
+        // Retirar únicamente lo que no pertenece al instante restaurado. La
+        // misma ruta con el mismo ID queda viva y conserva currentTime.
+        for (const [id, instance] of Object.entries(this.audioInstances || {})) {
+            const sound = desired.get(id);
+            if (!sound || sound.path !== instance?._srcPath) {
+                this.stopSound(id, instance?._volKind === 'music' ? 180 : 0);
+            }
+        }
+
+        for (const sound of desired.values()) {
+            const existing = this.audioInstances?.[sound.id];
+            if (existing?._srcPath === sound.path && !existing._stopping && !existing.ended) {
+                existing._baseVol = sound.volume;
+                existing.loop = sound.loop;
+                if (sound.paused && !existing.paused) existing.pause();
+                else if (!sound.paused && existing.paused) {
+                    existing.play().catch(e => console.log('Error reanudando sonido:', e));
+                }
+                if (!existing._fadeInterval) {
+                    const factor = this.volFactor(existing._volKind || 'sfx');
+                    existing.volume = Math.max(0, Math.min(1, sound.volume * factor));
+                }
+                continue;
+            }
             this.playSound(sound.path, {
                 id: sound.id,
                 volume: sound.volume,
                 loop: sound.loop,
-                fadeIn: 180
+                autoPlay: !sound.paused,
+                fadeIn: sound.paused ? 0 : 180
             });
+        }
+    }
+
+    async restoreSceneStageState(snapshot, options = {}) {
+        if (!snapshot) return;
+        if (snapshot.background) this.setBackground(snapshot.background, { cut: true });
+        else this.clearBackground();
+        if (snapshot.backgroundPan) this.bgPan(snapshot.backgroundPan);
+        if (snapshot.cg?.path) {
+            await this.showCG(snapshot.cg.path, 0, snapshot.cg);
+        } else {
+            this.hideCG(0);
+        }
+        await Promise.all(Object.entries(snapshot.characters || {}).map(
+            async ([position, visual]) => {
+                if (!visual || !visual.character) return;
+                await this.showCharacter(
+                    visual.character,
+                    position,
+                    visual.pose || 'neutral',
+                    !!visual.flipped,
+                    null,
+                    visual.offsetY,
+                    visual.scale
+                );
+                if (visual.hidden) this.hideCharacter(visual.character, position);
+            }
+        ));
+        if (options.reconcileAudio) {
+            this.reconcileAudioState(snapshot.audio || []);
+        } else {
+            for (const sound of snapshot.audio || []) {
+                this.playSound(sound.path, {
+                    id: sound.id,
+                    volume: sound.volume,
+                    loop: sound.loop,
+                    autoPlay: !sound.paused,
+                    fadeIn: sound.paused ? 0 : 180
+                });
+            }
         }
         if (snapshot.juice && window.Juice && typeof window.Juice.restore === 'function') {
             window.Juice.restore(snapshot.juice);
+        }
+        const fader = document.getElementById('scene-fader');
+        if (fader && snapshot.fader) {
+            fader.style.transition = 'none';
+            fader.style.background = snapshot.fader.background || '#000';
+            fader.style.opacity = snapshot.fader.opacity || '0';
+            fader.style.pointerEvents = snapshot.fader.pointerEvents || 'none';
         }
     }
 
@@ -7990,7 +9350,6 @@ class VisualNovelEngine {
         if (!this.currentChapter) return;
         if (this._lastSeenScene === this.currentScene) return;
         this._lastSeenScene = this.currentScene;
-        this.sceneAdvances = 0; // escena nueva: aún no se ha avanzado nada en ella
         this.sceneHistory = this.sceneHistory || [];
         this.sceneHistory.push({
             chapter: this.lastChapterName,
@@ -8008,24 +9367,229 @@ class VisualNovelEngine {
         if (this.sceneHistory.length > 60) this.sceneHistory.shift();
     }
 
-    // ¿Hay algo a lo que volver? (el botón se oculta si no). Hay dos motivos:
-    // queda alguna escena por debajo en la pila, o se ha avanzado dentro de la
-    // escena actual y se puede volver a su principio (esto último vale también
-    // en la primera escena del capítulo, donde antes el botón no aparecía).
+    activeManualSceneJump() {
+        const currentEntry = this.dialogueTimeline[this.dialogueTimelineCursor];
+        return this._pendingManualSceneJump || currentEntry?.manualSceneJump || null;
+    }
+
+    activeManualChoiceJump() {
+        const jump = this.activeManualSceneJump();
+        return jump?.decisionAnchor ? jump : null;
+    }
+
+    manualSceneJumpStartIndex(jump) {
+        let index = this.dialogueTimelineCursor;
+        if (this.dialogueTimeline[index]?.manualSceneJump?.id !== jump?.id) return -1;
+        while (index > 0 &&
+            this.dialogueTimeline[index - 1]?.manualSceneJump?.id === jump.id) {
+            index--;
+        }
+        return index;
+    }
+
+    buildManualDecisionTimelineEntry(jump, resumeCheckpoint, insertionIndex) {
+        const location = jump?.decisionAnchor;
+        if (!location) return null;
+        const historicalIndex = this.findHistoricalTimelineDialogIndex(
+            insertionIndex - 1,
+            location
+        );
+        const historicalEntry = historicalIndex >= 0
+            ? this.dialogueTimeline[historicalIndex]
+            : null;
+        const entry = historicalEntry
+            ? this.cloneTimelineValue(historicalEntry)
+            : this.buildCanonicalDialogueEntry(location, {
+                sceneLocalStage: true,
+                origin: 'manual-choice-anchor'
+            });
+        if (!entry) return null;
+        entry.canonical = true;
+        entry.origin = 'manual-choice-anchor';
+        entry.manualSceneJump = null;
+        entry.manualDecisionFor = jump.id;
+        entry.resume = this.cloneTimelineValue(resumeCheckpoint);
+        return entry;
+    }
+
+    async showRewoundTimelineEntry(index, options = {}) {
+        const entry = this.dialogueTimeline[index];
+        if (!entry) return false;
+        const showOptions = Object.assign({}, options);
+        if (entry.kind === 'dialog' && showOptions.recreateActions === undefined) {
+            showOptions.recreateActions = true;
+        }
+        const shown = await this.showDialogueTimelineEntry(index, showOptions);
+        if (!shown) return false;
+
+        const sourceLine = this.lineAtCanonicalLocation(entry);
+        if (entry.kind !== 'dialog' || !sourceLine?.choices?.length) return true;
+
+        const selectedChoice = await this.displayChoices(sourceLine.choices);
+        if (!selectedChoice) {
+            // Escenas, salida al menú u otra navegación externa abortaron la
+            // elección. No dejar al bucle esperando un clic bajo otro panel.
+            this.isWaitingForInput = false;
+            return true;
+        }
+
+        // La opción convierte la decisión histórica en el nuevo punto vivo. El
+        // destino del salto manual y cualquier tramo posterior ya no pertenecen
+        // a la ruta elegida ahora.
+        this.dialogueTimeline.splice(index + 1);
+        this.dialogueTimelineCursor = index;
+        entry.resume = null;
+        this.dialoguePlayback = false;
+        this.dialogueIsCurrent = false;
+        this.isWaitingForInput = false;
+        this._navigationInterrupted = false;
+        this._pendingManualSceneJump = null;
+        this.applySelectedChoice(selectedChoice);
+        entry.resume = this.captureDialogueCheckpoint();
+        this.updateDebugPanel();
+        return true;
+    }
+
+    async rewindToManualChoiceDecision(jump) {
+        const targetResume = this.captureDialogueCheckpoint();
+        const jumpStartIndex = this.manualSceneJumpStartIndex(jump);
+        const insertionIndex = jumpStartIndex >= 0
+            ? jumpStartIndex
+            : this.dialogueTimelineCursor + 1;
+        const adjacentIndex = insertionIndex - 1;
+        const adjacentEntry = this.dialogueTimeline[adjacentIndex];
+
+        // Si la decisión ya quedó justo delante del destino, reutilizarla. Esto
+        // evita acumular copias al alternar varias veces entre ambos momentos.
+        if (adjacentEntry?.kind === 'dialog' &&
+            adjacentEntry.manualDecisionFor === jump.id &&
+            this.sameCanonicalLocation(adjacentEntry, jump.decisionAnchor)) {
+            if (jumpStartIndex < 0) {
+                adjacentEntry.resume = this.cloneTimelineValue(targetResume);
+            }
+            this._pendingManualSceneJump = null;
+            return this.showRewoundTimelineEntry(adjacentIndex);
+        }
+
+        const decisionEntry = this.buildManualDecisionTimelineEntry(
+            jump,
+            targetResume,
+            insertionIndex
+        );
+        if (!decisionEntry) return false;
+        this.dialogueTimeline.splice(insertionIndex, 0, decisionEntry);
+        this._pendingManualSceneJump = null;
+        return this.showRewoundTimelineEntry(insertionIndex);
+    }
+
+    async rewindManualJumpToCanonical(jump) {
+        const firstDestinationDialogue = this.firstDialogueLocationInScene(
+            jump.chapter,
+            jump.targetScene
+        );
+        const targetLocation = this.previousCanonicalDialogue(firstDestinationDialogue);
+        if (!targetLocation) return false;
+        const targetResume = this.captureDialogueCheckpoint();
+        const jumpStartIndex = this.manualSceneJumpStartIndex(jump);
+        const insertionIndex = jumpStartIndex >= 0
+            ? jumpStartIndex
+            : this.dialogueTimelineCursor + 1;
+        const adjacentIndex = insertionIndex - 1;
+        const adjacentEntry = this.dialogueTimeline[adjacentIndex];
+
+        if (adjacentEntry?.kind === 'dialog' &&
+            adjacentEntry.origin === 'manual-canonical-anchor' &&
+            this.sameCanonicalLocation(adjacentEntry, targetLocation)) {
+            adjacentEntry.resume = this.cloneTimelineValue(targetResume);
+            this._pendingManualSceneJump = null;
+            return this.showRewoundTimelineEntry(adjacentIndex);
+        }
+
+        const historicalIndex = this.findHistoricalTimelineDialogIndex(
+            insertionIndex - 1,
+            targetLocation
+        );
+        const historicalEntry = historicalIndex >= 0
+            ? this.dialogueTimeline[historicalIndex]
+            : null;
+        const targetEntry = historicalEntry
+            ? this.cloneTimelineValue(historicalEntry)
+            : this.buildCanonicalDialogueEntry(targetLocation, {
+                origin: 'manual-canonical-anchor'
+            });
+        if (!targetEntry) return false;
+        targetEntry.canonical = true;
+        targetEntry.origin = 'manual-canonical-anchor';
+        targetEntry.manualSceneJump = null;
+        targetEntry.resume = this.cloneTimelineValue(targetResume);
+        this.dialogueTimeline.splice(insertionIndex, 0, targetEntry);
+        this._pendingManualSceneJump = null;
+        return this.showRewoundTimelineEntry(insertionIndex);
+    }
+
+    entryUsesPlayedChoicePath(entry) {
+        return !!entry && !entry.canonical &&
+            (!!this.choiceRewindAnchorForScene(entry.chapter, entry.scene) ||
+                this.choiceFlowTargetScenes(entry.chapter).has(entry.scene));
+    }
+
+    isStandaloneVisualMoment(entry) {
+        if (!entry || !['wait', 'cinematic'].includes(entry.kind)) return false;
+        const sourceLine = this.lineAtCanonicalLocation(entry);
+        return !!sourceLine && !sourceLine.text;
+    }
+
+    // Durante acciones o minijuegos el último diálogo visible es el destino. En
+    // rutas de elección se consulta antes el camino real; el JSON es el respaldo.
     canRewind() {
         if (!this.currentChapter) return false;
-        const hist = this.sceneHistory || [];
-        return hist.length > 1 || (hist.length === 1 && this.sceneAdvances > 1);
+        if (this.activeManualChoiceJump()) return true;
+        const manualSceneJump = this.activeManualSceneJump();
+        if (manualSceneJump) {
+            const firstDestinationDialogue = this.firstDialogueLocationInScene(
+                manualSceneJump.chapter,
+                manualSceneJump.targetScene
+            );
+            return !!this.previousCanonicalDialogue(firstDestinationDialogue);
+        }
+        const currentEntry = this.dialogueTimeline[this.dialogueTimelineCursor];
+        if (this.dialogueTimelineCursor < 0) return false;
+        if (!this.dialogueIsCurrent) {
+            return this.findTimelineDialogIndex(this.dialogueTimelineCursor) >= 0;
+        }
+        const entry = currentEntry;
+        const immediatePrevious = this.dialogueTimeline[this.dialogueTimelineCursor - 1];
+        if (!entry?.canonical && this.isStandaloneVisualMoment(immediatePrevious)) {
+            return true;
+        }
+        if (!entry) return false;
+        if (entry.kind !== 'dialog') {
+            if (this.findTimelineDialogIndex(this.dialogueTimelineCursor - 1) >= 0) {
+                return true;
+            }
+        }
+        if (this.entryUsesPlayedChoicePath(entry) &&
+            this.findTimelineDialogIndex(this.dialogueTimelineCursor - 1) >= 0) {
+            return true;
+        }
+        if (this.previousCanonicalDialogue(entry)) return true;
+
+        // Respaldo para cargas directas donde game.js aun no ha precargado el
+        // catalogo. El metodo asincrono completara los JSON antes de resolver.
+        const match = String(entry.chapter || '').match(/^chapter(\d+)$/);
+        return !!match && Number(match[1]) > 0 &&
+            !this.chapters[`chapter${Number(match[1]) - 1}`];
     }
 
     // Deja el escenario en blanco sin tocar el progreso de la partida.
     // Las cinemáticas preservan el audio para que playVideo gestione su fundido.
     clearStage(options = {}) {
         const preserveAudio = options.preserveAudio === true;
+        const preserveDialog = options.preserveDialog === true;
         const immediate = options.immediate === true;
 
         if (!preserveAudio) this.stopAllSounds();
-        this.hideDialog();
+        if (!preserveDialog) this.hideDialog();
         this.clearAdvanceBoundCharacterEffects();
 
         ['character-left', 'character-right', 'character-center'].forEach(id => {
@@ -8039,6 +9603,7 @@ class VisualNovelEngine {
                 el.classList.remove(
                     'active',
                     'speaking',
+                    'character-hidden',
                     'char-exit-fade',
                     'contact-glitch',
                     'full-signal-glitch'
@@ -8086,25 +9651,16 @@ class VisualNovelEngine {
         }
 
         const bg = document.getElementById('background');
-        if (bg) bg.style.backgroundImage = '';
+        this.bgPan({ reset: true });
+        this.invalidateBackgroundTransition();
+        if (bg) {
+            bg.style.backgroundImage = '';
+            delete bg.dataset.backgroundPath;
+        }
         this.currentBackgroundPath = null;
 
-        // El fondo se cambia con CROSSFADE usando una segunda capa: se pinta en
-        // `background-b`, se sube su opacidad y 460 ms después un temporizador
-        // copia la imagen a la capa A y vuelve a esconder la B. Si se limpia el
-        // escenario en mitad de ese fundido (saltar de escena, retroceder), la
-        // capa B se quedaba ENCIMA con la imagen vieja y, peor aún, el
-        // temporizador pendiente disparaba después y reescribía en la capa A el
-        // fondo de la escena anterior: a partir de ahí ninguna escena parecía
-        // cargar su fondo. Hay que cortar las dos cosas.
-        clearTimeout(this._bgSwapTimer);
-        this._bgSwapTimer = null;
-        const bgB = document.getElementById('background-b');
-        if (bgB) {
-            bgB.style.transition = 'none';
-            bgB.style.opacity = '0';
-            bgB.style.backgroundImage = '';
-        }
+        // invalidateBackgroundTransition también limpia la capa secundaria y
+        // garantiza que ningún crossfade abandonado pueda reaparecer después.
 
         // Y el telón negro de los fundidos. Va en z-index 60: tapa fondo y
         // personajes pero deja ver el diálogo. Si se sale de una escena entre un
@@ -8137,65 +9693,171 @@ class VisualNovelEngine {
         this.nextChapter = foto.nextChapter;
     }
 
-    // Deja el motor listo para reproducir una escena desde su primera línea.
-    // La escena ya está en `sceneHistory` con su foto de progreso, así que se
-    // marca como vista para que recordSceneEntry no vuelva a apilarla.
-    replayScene(indiceEscena) {
-        this.clearStage();
-        this.currentScene = indiceEscena;
-        this.currentLine = 0;
-        this.sceneAdvances = 0;
-        this.sceneEndedByChoice = false;
-        this.pendingSceneJump = false;
-        this._lastSeenScene = indiceEscena;
-        this.updateDebugPanel();
+    // Retrocede al diálogo que corresponde al contexto: decisión para un salto
+    // manual a su ruta, camino real durante el juego y orden JSON como respaldo.
+    async rewindToPreviousDialogue() {
+        if (!this.currentChapter) return false;
+        await this.ensureCanonicalChaptersThrough(this.lastChapterName);
+
+        const manualSceneJump = this.activeManualSceneJump();
+        const manualChoiceJump = manualSceneJump?.decisionAnchor
+            ? manualSceneJump
+            : null;
+        if (manualChoiceJump) {
+            return this.rewindToManualChoiceDecision(manualChoiceJump);
+        }
+        if (manualSceneJump) {
+            return this.rewindManualJumpToCanonical(manualSceneJump);
+        }
+        if (this.dialogueTimelineCursor < 0) return false;
+
+        // Durante acciones posteriores (incluido un minijuego), el ultimo
+        // dialogo mostrado es precisamente el destino solicitado.
+        if (!this.dialogueIsCurrent) {
+            const previousVisible = this.findTimelineDialogIndex(this.dialogueTimelineCursor);
+            return previousVisible >= 0
+                ? this.showRewoundTimelineEntry(previousVisible)
+                : false;
+        }
+
+        const currentEntry = this.dialogueTimeline[this.dialogueTimelineCursor];
+        if (!currentEntry) return false;
+
+        // Una línea real sin texto que contiene una espera o cinemática sigue
+        // siendo un instante narrativo. Desde el momento posterior se visita
+        // antes que el diálogo de la ruta o el respaldo canónico. Los saltos
+        // manuales ya se resolvieron arriba y conservan su prioridad a decisión.
+        const immediatePreviousIndex = this.dialogueTimelineCursor - 1;
+        const immediatePrevious = this.dialogueTimeline[immediatePreviousIndex];
+        if (!currentEntry.canonical && this.isStandaloneVisualMoment(immediatePrevious)) {
+            return this.showRewoundTimelineEntry(immediatePreviousIndex, {
+                rewindTarget: true
+            });
+        }
+
+        // Un wait o una cinemática es un interludio, no un diálogo. Su anterior
+        // real es siempre la frase visible más cercana, esté o no en la misma
+        // línea JSON (varios interludios viven en líneas sin texto).
+        if (currentEntry.kind !== 'dialog') {
+            const previousDialog = this.findTimelineDialogIndex(
+                this.dialogueTimelineCursor - 1
+            );
+            if (previousDialog >= 0) {
+                return this.showRewoundTimelineEntry(previousDialog);
+            }
+        }
+
+        // Dentro de una rama o en su primera convergencia manda la secuencia
+        // efectivamente recorrida. Así, por ejemplo, una ruta que aparece más
+        // tarde en el JSON puede volver correctamente desde una escena anterior.
+        if (this.entryUsesPlayedChoicePath(currentEntry)) {
+            const playedTarget = this.findTimelineDialogIndex(
+                this.dialogueTimelineCursor - 1
+            );
+            if (playedTarget >= 0) {
+                return this.showRewoundTimelineEntry(playedTarget);
+            }
+        }
+
+        const targetLocation = this.previousCanonicalDialogue(currentEntry);
+        if (!targetLocation) return false;
+
+        // Reutilizar una foto exacta solo si es el dialogo canonico contiguo.
+        // Las entradas visuales intermedias se conservan para el avance posterior.
+        const recordedTarget = this.findTimelineDialogIndex(
+            this.dialogueTimelineCursor - 1,
+            targetLocation
+        );
+        if (recordedTarget >= 0) {
+            return this.showRewoundTimelineEntry(recordedTarget);
+        }
+
+        const syntheticEntry = this.buildCanonicalDialogueEntry(targetLocation);
+        if (!syntheticEntry) return false;
+        const insertionIndex = this.dialogueTimelineCursor;
+        this.dialogueTimeline.splice(insertionIndex, 0, syntheticEntry);
+        return this.showRewoundTimelineEntry(insertionIndex);
     }
 
-    // Retrocede al principio de la escena actual o de la anterior, según se haya
-    // avanzado ya por esta escena o no (ver el bloque de arriba).
+    // Compatibilidad con controles e integraciones anteriores a los momentos
+    // visuales de la línea temporal.
+    rewindToPreviousMoment() {
+        return this.rewindToPreviousDialogue();
+    }
+
+    // Alias temporal para integraciones externas que todavía usen el nombre de
+    // la navegación antigua por escenas.
     rewindToPreviousScene() {
-        if (!this.canRewind()) return false;
-
-        const hist = this.sceneHistory;
-        const actual = hist[hist.length - 1];
-        const esLaActual = !!actual && actual.scene === this.currentScene;
-
-        // Caso 1: ya hemos leído más de un diálogo aquí -> al principio de ESTA
-        // escena. El historial no se toca: seguimos en la misma escena.
-        // Se exige que la cima del historial sea esta escena: si no lo es, los
-        // diálogos contados son los de la escena anterior y "reiniciar" acabaría
-        // repitiendo una escena que el jugador todavía no ha visto.
-        if (esLaActual && this.sceneAdvances > 1) {
-            this.restoreSceneSnapshot(actual);
-            this.replayScene(this.currentScene);
-            return true;
-        }
-
-        // Caso 2: salir a la escena anterior. Se desapila la actual y nos
-        // quedamos en la de debajo, que permanece en el historial.
-        if (esLaActual) hist.pop();
-        const destino = hist[hist.length - 1];
-        if (!destino) {
-            if (esLaActual) hist.push(actual); // deshacer: no había a dónde ir
-            return false;
-        }
-
-        this.restoreSceneSnapshot(destino);
-        this.replayScene(destino.scene);
-        return true;
+        return this.rewindToPreviousDialogue();
     }
 
     // Escenas del capítulo actual, para pintar el menú de selección.
     sceneList() {
         if (!this.currentChapter) return [];
-        const hist = this.sceneHistory || [];
         return (this.currentChapter.scenes || [])
             .map((s, i) => ({
                 index: i,
                 title: s.title || `Escena ${i + 1}`,
-                actual: i === this.currentScene,
-                visitada: hist.some(h => h.scene === i)
+                actual: i === this.currentScene
             }));
+    }
+
+    // Backlog al estilo de las novelas visuales: sólo texto ya incorporado a la
+    // línea temporal de esta partida, en orden, con la elección asociada a la
+    // frase que la ofreció. Las ramas podadas desaparecen con el propio timeline.
+    backlogEntries() {
+        return (this.dialogueTimeline || [])
+            .filter(entry => entry?.kind === 'dialog' && entry.dialog?.text)
+            .map(entry => {
+                const chapter = this.chapters?.[entry.chapter];
+                const scene = chapter?.scenes?.[entry.scene];
+                const characterKey = this.getCharacterKey(entry.dialog.character);
+                const character = this.characters?.[characterKey];
+                const stageCharacter = Object.values(entry.stage?.characters || {})
+                    .find(item => item?.character === characterKey);
+                const pose = stageCharacter?.pose || character?.defaultPose || 'neutral';
+                const humanPortrait = this.humanDialogPortrait(characterKey);
+                const usesHumanPortrait = Boolean(
+                    humanPortrait && !this.isFurryIdentityRevealed(characterKey, entry)
+                );
+                const portrait = usesHumanPortrait
+                    ? humanPortrait
+                    : this.getCharacterPoseImage(character, pose);
+                return {
+                    chapter: entry.chapter,
+                    chapterTitle: chapter?.title || entry.chapter || '',
+                    scene: entry.scene,
+                    sceneTitle: scene?.title || `Escena ${entry.scene + 1}`,
+                    speaker: entry.dialog.character || 'Narración',
+                    characterKey,
+                    speakerColor: this.readableNameColor(character?.color),
+                    pose,
+                    portrait,
+                    usesHumanPortrait,
+                    text: entry.dialog.text,
+                    choice: entry.selectedChoice?.text || null
+                };
+            });
+    }
+
+    // El diálogo puede registrar un hablante que no estaba visible en el
+    // escenario. Antes de pintar el Log se cargan sus fichas para obtener del
+    // JSON el color, la pose por defecto y su imagen, sin bloquear el gameplay.
+    async prepareBacklogCharacters() {
+        const pendingKeys = new Set();
+        for (const entry of this.dialogueTimeline || []) {
+            if (entry?.kind !== 'dialog' || !entry.dialog?.character) continue;
+            const characterKey = this.getCharacterKey(entry.dialog.character);
+            if (!characterKey || this.characters?.[characterKey] ||
+                this._charColorMissing.has(characterKey) || !/[a-z0-9]/.test(characterKey)) {
+                continue;
+            }
+            pendingKeys.add(characterKey);
+        }
+        await Promise.all([...pendingKeys].map(async characterKey => {
+            const character = await this.loadCharacter(characterKey);
+            if (!character) this._charColorMissing.add(characterKey);
+        }));
     }
 
     chapterTitle() {
@@ -8214,7 +9876,7 @@ class VisualNovelEngine {
     // entre escenas del juego acababan aquí: limpiaban el escenario, no
     // marcaban `pendingSceneJump` y se saltaban la línea 0 de la escena
     // destino, que es justo la que pone el fondo. De ahí las pantallas negras.
-    saltarAEscena(destino) {
+    async saltarAEscena(destino) {
         if (!this.currentChapter) return false;
         const escenas = this.currentChapter.scenes || [];
         const i = (typeof destino === 'string')
@@ -8225,6 +9887,36 @@ class VisualNovelEngine {
             return false;
         }
 
+        const choiceAnchor = this.choiceRewindAnchorForScene(this.lastChapterName, i);
+        this._pendingManualSceneJump = {
+            id: ++this._manualSceneJumpSerial,
+            chapter: this.lastChapterName,
+            targetScene: i,
+            decisionAnchor: this.cloneTimelineValue(choiceAnchor?.decision),
+            choiceRegion: choiceAnchor?.kind || null
+        };
+
+        // Saltar al comienzo de una escena ya vista abre una rama nueva desde
+        // su primera frase. Se descarta el tramo posterior para que Retroceder
+        // nunca mezcle decisiones de dos recorridos incompatibles.
+        if (this.dialogueTimelineCursor < this.dialogueTimeline.length - 1) {
+            this.dialogueTimeline.splice(this.dialogueTimelineCursor + 1);
+        }
+        let firstDialogueIndex = -1;
+        for (let k = 0; k <= this.dialogueTimelineCursor; k++) {
+            const entry = this.dialogueTimeline[k];
+            if (entry?.chapter === this.lastChapterName && entry.scene === i) {
+                firstDialogueIndex = k;
+                break;
+            }
+        }
+        if (firstDialogueIndex >= 0) {
+            this.dialogueTimeline.splice(firstDialogueIndex);
+            this.dialogueTimelineCursor = firstDialogueIndex - 1;
+        }
+        this.dialoguePlayback = false;
+        this.dialogueIsCurrent = false;
+
         const hist = this.sceneHistory || [];
         let visitada = false;
         let restoredStage = null;
@@ -8233,18 +9925,17 @@ class VisualNovelEngine {
             const d = hist[k];
             this.restoreSceneSnapshot(d);
             restoredStage = d.stage || null;
-            // Se conserva esa visita como cima del historial para que retroceder
-            // continúe desde ella sin volver a apilarla al reproducirse.
+            // Se conserva esa visita como cima del historial del selector para
+            // que otro salto parta del mismo estado sin duplicar la entrada.
             this.sceneHistory = hist.slice(0, k + 1);
             visitada = true;
             break;
         }
 
         this.clearStage();
-        this.restoreSceneStageState(restoredStage);
+        await this.restoreSceneStageState(restoredStage);
         this.currentScene = i;
         this.currentLine = 0;
-        this.sceneAdvances = 0;
         this.sceneEndedByChoice = false;
         this.pendingSceneJump = false;
         // Si ya estaba en el historial se conserva su entrada, y por eso se marca
@@ -8255,14 +9946,24 @@ class VisualNovelEngine {
         return true;
     }
 
-    reset() {
+    reset(options = {}) {
+        const preserveDialogueTimeline = options.preserveDialogueTimeline === true;
+        if (preserveDialogueTimeline && this.lastChapterName) {
+            this._chapterSceneHistories[this.lastChapterName] = this.sceneHistory;
+        }
         this.currentScene = 0;
         this.currentLine = 0;
         this.gameState = {};
         this.history = [];
         this.sceneHistory = [];
+        if (!preserveDialogueTimeline) {
+            this.clearDialogueTimeline();
+            this._chapterSceneHistories = {};
+        } else {
+            this.dialoguePlayback = false;
+            this.dialogueIsCurrent = false;
+        }
         this._lastSeenScene = null;
-        this.sceneAdvances = 0;
         this.lastChapterName = null;
         this.speakingCharacter = null;
         this.speakingPosition = null;
@@ -8270,6 +9971,7 @@ class VisualNovelEngine {
         this.stageCharacters = {};
         this.currentBackgroundPath = null;
         this.sceneEndedByChoice = false;
+        this._pendingManualSceneJump = null;
         // Nota: completedCalls NO se limpia aquí; debe persistir entre capítulos
         // igual que rescued, para que la regla de llamadas funcione al final de
         // cada Capítulo 2. Se limpia solo al empezar una partida nueva.
@@ -8307,20 +10009,14 @@ class VisualNovelEngine {
 
         // Limpiar fondo
         const bg = document.getElementById('background');
-        if (bg) bg.style.backgroundImage = '';
-
-        if (this._bgSwapTimer) {
-            clearTimeout(this._bgSwapTimer);
-            this._bgSwapTimer = null;
+        this.bgPan({ reset: true });
+        this.invalidateBackgroundTransition();
+        if (bg) {
+            bg.style.backgroundImage = '';
+            delete bg.dataset.backgroundPath;
         }
 
-        const secondaryBg = document.getElementById('background-b');
-        if (secondaryBg) {
-            secondaryBg.style.transition = 'none';
-            secondaryBg.style.opacity = '0';
-            secondaryBg.style.backgroundImage = '';
-        }
-
+        this.hideCG(0);
         const cgLayer = document.getElementById('cg-layer');
         if (cgLayer) {
             cgLayer.style.transition = 'none';

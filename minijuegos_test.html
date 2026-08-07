@@ -8,46 +8,43 @@
     <script>document.getElementById("css-principal").href = "styles.css?v=" + Date.now();</script>
     <link rel="stylesheet" href="battle-styles.css?v=20260801-2">
     <style>
-        body { background: #05010f; }
+        :root {
+            --tp-bg: #05010f;
+            --tp-surface: rgba(16, 10, 34, .92);
+            --tp-surface-2: rgba(27, 16, 52, .82);
+            --tp-border: rgba(166, 132, 255, .24);
+            --tp-text: #f7f3ff;
+            --tp-muted: #aaa0c6;
+            --tp-pink: #ff4fa3;
+            --tp-cyan: #4fd0ff;
+            --tp-gold: #ffd166;
+            --tp-green: #7cffb2;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--tp-bg); }
         #test-panel {
             position: fixed;
             inset: 0;
             z-index: 50;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 22px;
-            box-sizing: border-box;
             min-height: 100vh;
-            padding: 32px 20px 40px;
+            padding: 22px;
             overflow-y: auto;
             overscroll-behavior: contain;
-            color: #fff;
-            font-family: Arial, Helvetica, sans-serif;
-            background: radial-gradient(60% 60% at 50% 30%, rgba(176,79,255,0.25), transparent 70%), #05010f;
-            text-align: center;
+            color: var(--tp-text);
+            font-family: Inter, Arial, Helvetica, sans-serif;
+            background:
+                radial-gradient(70% 80% at 8% 0%, rgba(176, 79, 255, .22), transparent 64%),
+                radial-gradient(60% 70% at 95% 10%, rgba(79, 208, 255, .13), transparent 60%),
+                var(--tp-bg);
         }
         #test-panel.hidden { display: none; }
-        #test-panel h1 {
-            font-size: clamp(24px, 5vw, 40px);
-            color: #ff4fa3;
-            text-shadow: 0 0 18px rgba(255,79,163,0.7);
-            margin-bottom: 4px;
-        }
-        #test-panel h2 {
-            font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
-            color: #4fd0ff; margin-top: 18px; opacity: 0.9;
-        }
-        .tp-toolbar {
-            position: sticky;
-            top: 0;
-            z-index: 2;
-            display: flex;
-            justify-content: flex-start;
-            width: min(900px, 100%);
-            margin-bottom: -8px;
-            pointer-events: none;
+        .tp-shell { width: min(1180px, 100%); margin: 0 auto; }
+        .tp-topbar {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 16px;
         }
         .tp-menu-link {
             display: inline-flex;
@@ -55,114 +52,237 @@
             gap: 9px;
             min-height: 44px;
             padding: 7px 14px 7px 8px;
-            border: 1px solid rgba(255,209,102,.5);
+            border: 1px solid rgba(255, 209, 102, .48);
             border-radius: 13px;
             color: #fff;
-            background: rgba(12,10,30,.88);
-            box-shadow: 0 0 18px rgba(255,209,102,.13);
+            background: rgba(12, 10, 30, .88);
+            box-shadow: 0 0 18px rgba(255, 209, 102, .13);
             font-size: 11px;
             font-weight: 800;
             letter-spacing: .08em;
             text-decoration: none;
             text-transform: uppercase;
-            pointer-events: auto;
             transition: transform .12s ease, border-color .12s ease, background .12s ease;
         }
-        .tp-menu-link:hover { transform: translateY(-2px); border-color:#ffd166; background:rgba(35,25,62,.96); }
-        .tp-menu-link:focus-visible { outline:3px solid #4fd0ff; outline-offset:3px; }
+        .tp-menu-link:hover { transform: translateY(-2px); border-color: var(--tp-gold); background: rgba(35, 25, 62, .96); }
+        .tp-menu-link:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+            outline: 3px solid var(--tp-cyan);
+            outline-offset: 3px;
+        }
         .tp-menu-icon {
-            display:grid;
-            place-items:center;
-            width:30px;
-            height:30px;
-            border-radius:9px;
-            color:#ffd166;
-            background:rgba(255,209,102,.13);
-        }
-        .tp-menu-icon svg {
-            width:18px;
-            height:18px;
-            fill:currentColor;
-        }
-        .tp-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-        .tp-btn {
-            border: 2px solid var(--c, #b04fff);
-            background: color-mix(in srgb, var(--c, #b04fff) 16%, #000);
-            color: #fff; font-weight: bold; font-size: 15px;
-            padding: 14px 22px; border-radius: 12px; cursor: pointer;
-            box-shadow: 0 0 14px color-mix(in srgb, var(--c,#b04fff) 45%, transparent);
-            transition: transform .08s ease, filter .12s ease; filter: brightness(.9);
-            min-width: 120px;
-        }
-        .tp-btn:hover { filter: brightness(1.15); transform: translateY(-2px); }
-        .tp-btn:active { transform: translateY(1px); }
-        .tp-music { display: flex; align-items: center; gap: 8px; font-size: 13px; opacity: .85; margin-top: 6px; }
-        .tp-hint { font-size: 12px; opacity: .55; max-width: 460px; line-height: 1.5; }
-        .tp-battle-row { align-items: stretch; }
-        .tp-battle-card {
             display: grid;
-            gap: 8px;
-            min-width: 170px;
-            padding: 12px;
-            border: 1px solid color-mix(in srgb, var(--c, #b04fff) 68%, transparent);
-            border-radius: 12px;
-            background: color-mix(in srgb, var(--c, #b04fff) 12%, #08020f);
-            box-shadow: 0 0 14px color-mix(in srgb, var(--c,#b04fff) 28%, transparent);
-        }
-        .tp-battle-card label {
-            display: grid;
-            gap: 5px;
-            color: #d8e2ff;
-            font-size: 12px;
-            text-align: left;
-        }
-        .tp-battle-card input {
-            width: 100%;
-            border: 1px solid color-mix(in srgb, var(--c, #b04fff) 60%, #fff);
-            border-radius: 8px;
-            background: rgba(0, 0, 0, 0.45);
-            color: #fff;
-            font-size: 15px;
-            padding: 8px;
-        }
-        .tp-battle-card .tp-btn {
-            width: 100%;
-            min-width: 0;
-            padding: 10px 12px;
+            place-items: center;
+            width: 30px;
+            height: 30px;
             border-radius: 9px;
+            color: var(--tp-gold);
+            background: rgba(255, 209, 102, .13);
         }
-        .tp-config-grid {
+        .tp-menu-icon svg { width: 18px; height: 18px; fill: currentColor; }
+        .tp-brand h1 {
+            margin: 0 0 5px;
+            color: var(--tp-pink);
+            font-size: clamp(24px, 4vw, 36px);
+            line-height: 1;
+            text-shadow: 0 0 18px rgba(255, 79, 163, .55);
+        }
+        .tp-brand p { margin: 0; color: var(--tp-muted); font-size: 13px; line-height: 1.45; }
+        .tp-global-toggle, .tp-check {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            color: #ddd6f2;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .tp-global-toggle {
+            min-height: 44px;
+            padding: 0 14px;
+            border: 1px solid var(--tp-border);
+            border-radius: 12px;
+            background: rgba(8, 5, 22, .76);
+            white-space: nowrap;
+        }
+        input[type="checkbox"] { accent-color: var(--tp-pink); }
+        .tp-result {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            width: min(760px, 100%);
+            grid-template-columns: auto 1fr auto;
+            gap: 11px;
+            align-items: center;
+            min-height: 54px;
+            margin-bottom: 16px;
+            padding: 10px 14px;
+            border: 1px solid var(--tp-border);
+            border-radius: 14px;
+            background: rgba(9, 5, 25, .86);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, .2);
         }
-        .tp-config-grid label {
+        .tp-result[data-state="success"] { border-color: rgba(124, 255, 178, .5); }
+        .tp-result[data-state="error"] { border-color: rgba(255, 79, 112, .55); }
+        .tp-result[data-state="running"] { border-color: rgba(79, 208, 255, .55); }
+        .tp-result-icon { color: var(--tp-gold); font-size: 20px; }
+        .tp-result-copy { display: grid; gap: 2px; min-width: 0; }
+        .tp-result-copy strong { font-size: 13px; }
+        .tp-result-copy span { overflow: hidden; color: var(--tp-muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+        .tp-result-time { color: var(--tp-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+        .tp-workspace {
             display: grid;
-            gap: 5px;
-            color: #d8e2ff;
-            font-size: 12px;
-            text-align: left;
+            grid-template-columns: 270px minmax(0, 1fr);
+            gap: 16px;
+            align-items: start;
         }
-        .tp-config-grid input {
-            border: 1px solid rgba(255, 255, 255, .24);
-            border-radius: 8px;
-            background: rgba(0, 0, 0, .45);
+        .tp-sidebar, .tp-inspector {
+            border: 1px solid var(--tp-border);
+            border-radius: 18px;
+            background: var(--tp-surface);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, .28);
+            backdrop-filter: blur(14px);
+        }
+        .tp-sidebar {
+            position: sticky;
+            top: 18px;
+            max-height: calc(100vh - 44px);
+            padding: 14px;
+            overflow-y: auto;
+        }
+        .tp-search {
+            width: 100%;
+            min-height: 42px;
+            padding: 0 12px;
+            border: 1px solid var(--tp-border);
+            border-radius: 11px;
             color: #fff;
-            font-size: 14px;
-            padding: 8px;
+            background: rgba(0, 0, 0, .28);
+            font: inherit;
         }
-        #tp-result {
-            min-height: 22px; font-size: 15px; color: #ffd166; font-weight: bold;
-            text-shadow: 0 0 10px rgba(255,209,102,.6);
+        .tp-category { margin-top: 16px; }
+        .tp-category:first-child { margin-top: 14px; }
+        .tp-category h2 {
+            margin: 0 8px 7px;
+            color: var(--tp-muted);
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: .14em;
+            text-transform: uppercase;
+        }
+        .tp-catalog-list { display: grid; gap: 5px; }
+        .tp-game-tab {
+            display: grid;
+            grid-template-columns: 34px 1fr auto;
+            gap: 9px;
+            align-items: center;
+            width: 100%;
+            min-height: 50px;
+            padding: 7px 9px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            color: #e9e4f7;
+            background: transparent;
+            font: inherit;
+            text-align: left;
+            cursor: pointer;
+            transition: background .12s ease, border-color .12s ease, transform .12s ease;
+        }
+        .tp-game-tab:hover { transform: translateX(2px); background: rgba(176, 79, 255, .1); }
+        .tp-game-tab[aria-selected="true"] {
+            border-color: rgba(255, 79, 163, .45);
+            background: linear-gradient(100deg, rgba(255, 79, 163, .19), rgba(79, 208, 255, .08));
+        }
+        .tp-game-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: rgba(255,255,255,.07); font-size: 17px; }
+        .tp-game-name { font-size: 13px; font-weight: 750; line-height: 1.2; }
+        .tp-game-chapter { color: var(--tp-muted); font-size: 9px; text-transform: uppercase; }
+        .tp-empty { padding: 20px 8px; color: var(--tp-muted); font-size: 12px; text-align: center; }
+        .tp-inspector { overflow: hidden; }
+        .tp-detail-head {
+            display: grid;
+            grid-template-columns: 56px minmax(0, 1fr);
+            gap: 15px;
+            padding: 22px 24px 18px;
+            border-bottom: 1px solid var(--tp-border);
+            background: linear-gradient(115deg, rgba(255, 79, 163, .12), transparent 52%, rgba(79, 208, 255, .1));
+        }
+        .tp-detail-icon { display: grid; place-items: center; width: 56px; height: 56px; border: 1px solid rgba(255,255,255,.12); border-radius: 16px; background: rgba(0,0,0,.2); font-size: 28px; }
+        .tp-detail-title-row { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; }
+        .tp-detail-title-row h2 { margin: 0; font-size: clamp(21px, 3vw, 29px); }
+        .tp-badge { padding: 4px 8px; border: 1px solid rgba(79, 208, 255, .3); border-radius: 99px; color: var(--tp-cyan); background: rgba(79, 208, 255, .08); font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+        .tp-detail-head p { max-width: 720px; margin: 7px 0 0; color: var(--tp-muted); font-size: 13px; line-height: 1.5; }
+        .tp-section { padding: 20px 24px; border-bottom: 1px solid var(--tp-border); }
+        .tp-section-title { margin: 0 0 10px; color: #dcd5ef; font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+        .tp-mode-picker { display: flex; flex-wrap: wrap; gap: 7px; }
+        .tp-mode-button {
+            min-height: 38px;
+            padding: 0 14px;
+            border: 1px solid var(--tp-border);
+            border-radius: 10px;
+            color: #dcd5ed;
+            background: rgba(0, 0, 0, .24);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 750;
+            cursor: pointer;
+        }
+        .tp-mode-button[aria-pressed="true"] { border-color: var(--tp-pink); color: #fff; background: rgba(255, 79, 163, .19); box-shadow: 0 0 16px rgba(255, 79, 163, .13); }
+        .tp-context-row { display: flex; flex-wrap: wrap; gap: 14px 24px; margin-top: 14px; }
+        .tp-options-panel[hidden], .tp-context-control[hidden], .tp-custom-fields[hidden], .tp-flow-action[hidden] { display: none; }
+        .tp-option-note { margin: 0; color: var(--tp-muted); font-size: 13px; line-height: 1.55; }
+        .tp-config-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 11px; }
+        .tp-field { display: grid; gap: 6px; color: #d8e2ff; font-size: 11px; font-weight: 700; text-align: left; }
+        .tp-field input, .tp-field select, .tp-inline-select {
+            width: 100%;
+            min-height: 42px;
+            padding: 0 10px;
+            border: 1px solid rgba(255, 255, 255, .2);
+            border-radius: 10px;
+            color: #fff;
+            background: rgba(0, 0, 0, .3);
+            font: inherit;
+            font-size: 13px;
+        }
+        .tp-custom-fields { margin-top: 14px; padding: 14px; border: 1px dashed rgba(255, 209, 102, .3); border-radius: 13px; background: rgba(255, 209, 102, .035); }
+        .tp-custom-caption { margin: 0 0 10px; color: var(--tp-gold); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .tp-check-grid { display: flex; flex-wrap: wrap; gap: 13px 24px; margin-top: 14px; }
+        .tp-actions { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; padding: 18px 24px 22px; }
+        .tp-actions-spacer { flex: 1; }
+        .tp-action {
+            min-height: 42px;
+            padding: 0 15px;
+            border: 1px solid var(--tp-border);
+            border-radius: 11px;
+            color: #eee9fb;
+            background: rgba(255, 255, 255, .04);
+            font: inherit;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+        .tp-action:hover { border-color: rgba(255,255,255,.38); background: rgba(255,255,255,.08); }
+        .tp-action-primary { min-width: 170px; border-color: var(--tp-pink); background: linear-gradient(110deg, rgba(255,79,163,.88), rgba(176,79,255,.82)); box-shadow: 0 0 22px rgba(255,79,163,.22); }
+        .tp-action-secondary { border-color: rgba(255, 209, 102, .45); color: var(--tp-gold); }
+        .tp-action:disabled { cursor: wait; filter: grayscale(.5); opacity: .58; }
+        @media (max-width: 820px) {
+            #test-panel { padding: 14px; }
+            .tp-topbar { grid-template-columns: auto 1fr; }
+            .tp-global-toggle { grid-column: 1 / -1; justify-content: center; }
+            .tp-workspace { grid-template-columns: 1fr; }
+            .tp-sidebar { position: static; max-height: min(45vh, 360px); }
+            #tp-catalog { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+            .tp-category { margin-top: 0; }
+            .tp-result { position: sticky; top: 8px; z-index: 4; }
         }
         @media (max-width: 520px) {
-            #test-panel { padding: 18px 12px 32px; }
-            .tp-toolbar { width:100%; }
-            .tp-menu-link { width:100%; justify-content:center; }
+            .tp-topbar { grid-template-columns: 1fr; }
+            .tp-menu-link { justify-content: center; }
+            .tp-brand { text-align: center; }
+            #tp-catalog { grid-template-columns: 1fr; }
+            .tp-detail-head { grid-template-columns: 44px 1fr; padding: 18px; }
+            .tp-detail-icon { width: 44px; height: 44px; border-radius: 13px; font-size: 22px; }
+            .tp-section, .tp-actions { padding-left: 18px; padding-right: 18px; }
+            .tp-actions-spacer { display: none; }
+            .tp-action, .tp-action-primary { flex: 1 1 100%; }
+            .tp-result-time { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {
-            .tp-menu-link { transition:none; }
+            .tp-menu-link, .tp-game-tab { transition: none; }
         }
     </style>
 </head>
@@ -185,67 +305,87 @@
     </script>
 
     <div id="test-panel">
-        <div class="tp-toolbar">
-            <a class="tp-menu-link" href="./?screen=menu" aria-label="Volver al menú principal">
-                <span class="tp-menu-icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24" focusable="false"><path d="M3 10.75 12 3l9 7.75v9.5a.75.75 0 0 1-.75.75H14.5v-6h-5v6H3.75a.75.75 0 0 1-.75-.75v-9.5Z"/></svg>
+        <div class="tp-shell">
+            <header class="tp-topbar">
+                <a class="tp-menu-link" href="./?screen=menu" aria-label="Volver al menú principal">
+                    <span class="tp-menu-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false"><path d="M3 10.75 12 3l9 7.75v9.5a.75.75 0 0 1-.75.75H14.5v-6h-5v6H3.75a.75.75 0 0 1-.75-.75v-9.5Z"/></svg>
+                    </span>
+                    <span>Menú principal</span>
+                </a>
+                <div class="tp-brand">
+                    <h1>🎮 Banco de minijuegos</h1>
+                    <p>Elige una prueba, configura su modo y ejecútala desde un único panel.</p>
+                </div>
+                <label class="tp-global-toggle">
+                    <input type="checkbox" id="tp-music-on" checked>
+                    Música de fondo
+                </label>
+            </header>
+
+            <div id="tp-result" class="tp-result" data-state="idle" role="status" aria-live="polite">
+                <span class="tp-result-icon" id="tp-result-icon" aria-hidden="true">●</span>
+                <span class="tp-result-copy">
+                    <strong id="tp-result-title">Preparado para probar</strong>
+                    <span id="tp-result-detail">Selecciona un minijuego y revisa su configuración efectiva.</span>
                 </span>
-                <span>Menú principal</span>
-            </a>
-        </div>
-        <h1>🎮 Prueba de minijuegos</h1>
-        <div class="tp-hint">Lanza cualquier minijuego de forma aislada. En <b>Neon Runner</b> pulsa las teclas (D·F·G·J·K) o toca las teclas de pantalla. En <b>Vocal Echo</b> escucha la melodía y repítela clicando los pads.</div>
+                <span class="tp-result-time" id="tp-result-time"></span>
+            </div>
 
-        <div id="tp-result"></div>
+            <div class="tp-workspace">
+                <aside class="tp-sidebar" aria-label="Catálogo de minijuegos">
+                    <input id="tp-search" class="tp-search" type="search" placeholder="Buscar minijuego…" autocomplete="off" aria-label="Buscar minijuego">
+                    <nav id="tp-catalog" aria-label="Minijuegos disponibles"></nav>
+                </aside>
 
-        <h2>🏃 Neon Runner (ritmo 3D)</h2>
-        <div class="tp-row">
-            <button class="tp-btn" style="--c:#7cffb2" onclick="launchRhythm('facil')">Fácil</button>
-            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchRhythm('medio')">Medio</button>
-            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchRhythm('dificil')">Difícil</button>
-            <button class="tp-btn" style="--c:#ffd166" onclick="launchRhythm('demo')">Demo (auto)</button>
-        </div>
+                <main class="tp-inspector">
+                    <header class="tp-detail-head">
+                        <span class="tp-detail-icon" id="tp-detail-icon" aria-hidden="true">🏃</span>
+                        <div>
+                            <div class="tp-detail-title-row">
+                                <h2 id="tp-detail-title">Neon Runner</h2>
+                                <span class="tp-badge" id="tp-detail-chapter">Capítulo 3</span>
+                            </div>
+                            <p id="tp-detail-description"></p>
+                        </div>
+                    </header>
 
-        <h2>🎤 Vocal Echo / Dúo (Simon musical)</h2>
-        <div class="tp-row">
-            <button class="tp-btn" style="--c:#7cffb2" onclick="launchVocal('facil')">Fácil</button>
-            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchVocal('medio')">Medio</button>
-            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchVocal('dificil')">Difícil</button>
-        </div>
+                    <section class="tp-section" id="tp-mode-section">
+                        <h3 class="tp-section-title">Modo de ejecución</h3>
+                        <div id="tp-mode-picker" class="tp-mode-picker" role="group" aria-label="Modo de ejecución"></div>
+                        <div class="tp-context-row">
+                            <label class="tp-field tp-context-control" id="tp-story-delay-wrap" hidden>
+                                Retraso de la historia
+                                <select id="tp-retraso" class="tp-inline-select">
+                                    <option value="0">0 — sin entretenerse</option>
+                                    <option value="1">1 — algo de retraso</option>
+                                    <option value="2">2 — muy tardón</option>
+                                </select>
+                            </label>
+                            <label class="tp-check tp-context-control" id="tp-side-hitboxes-wrap" hidden>
+                                <input type="checkbox" id="tp-side-hitboxes">
+                                Mostrar hitboxes de movimiento
+                            </label>
+                        </div>
+                    </section>
 
-        <label class="tp-music">
-            <input type="checkbox" id="tp-music-on" checked> Música de fondo durante el minijuego
-        </label>
-        <label class="tp-music">
-            <input type="checkbox" id="tp-auto"> 🤖 Modo auto (se juega solo, para comprobar el ritmo)
-        </label>
+                    <section class="tp-section">
+                        <h3 class="tp-section-title">Opciones</h3>
 
-        <label class="tp-music">Retraso de la historia (los minijuegos escalan con él):
-            <select id="tp-retraso">
-                <option value="0">0 — sin entretenerse</option>
-                <option value="1">1 — algo de retraso</option>
-                <option value="2">2 — muy tardón</option>
-            </select>
-        </label>
-        <label class="tp-music">
-            <input type="checkbox" id="tp-side-hitboxes"> Mostrar hitboxes en persecución y vuelo
-        </label>
+                        <div class="tp-options-panel" data-options-for="rhythm">
+                            <p class="tp-option-note">Usa D · F · G · J · K o las teclas de pantalla. El modo Demo activa el jugador automático.</p>
+                            <div class="tp-check-grid">
+                                <label class="tp-check"><input type="checkbox" id="tp-auto"> Activar jugador automático</label>
+                            </div>
+                        </div>
 
-        <h2>🏎️ Persecución (chase)</h2>
-        <div class="tp-row">
-            <button class="tp-btn" style="--c:#7cffb2" onclick="launchChase('facil')">Fácil</button>
-            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchChase('medio')">Medio</button>
-            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchChase('dificil')">Difícil</button>
-            <button class="tp-btn" style="--c:#ffd166" onclick="launchHistoria('chase')">📖 Como en la historia</button>
-        </div>
+                        <div class="tp-options-panel" data-options-for="vocal" hidden>
+                            <p class="tp-option-note">Escucha la melodía y repítela sobre los pads. El preset controla rondas, longitud, velocidad y rigor temporal.</p>
+                        </div>
 
-        <h2>🐉 Edu volando (eduvuelo)</h2>
-        <div class="tp-row">
-            <button class="tp-btn" style="--c:#7cffb2" onclick="launchEduVuelo('facil')">Fácil</button>
-            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchEduVuelo('medio')">Medio</button>
-            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchEduVuelo('dificil')">Difícil</button>
-            <button class="tp-btn" style="--c:#ffd166" onclick="launchHistoria('eduvuelo')">📖 Como en la historia</button>
-        </div>
+                        <div class="tp-options-panel" data-options-for="chase" hidden>
+                            <p class="tp-option-note">Los presets aislados sirven para ajuste rápido. Historia lee la acción real del capítulo 3 y aplica el retraso seleccionado.</p>
+                        </div>
 
         <h2>🌶️ Recolectar guindillas</h2>
         <div class="tp-row">
@@ -344,19 +484,25 @@
             </div>
         </div>
 
+                        <div class="tp-options-panel" data-options-for="furrielva" hidden>
+                            <p class="tp-option-note">Abre directamente el mapa de investigación de Furrielva con el fondo usado por el minijuego.</p>
+                        </div>
 
-        <label class="tp-music">
-            <input type="checkbox" id="tp-battle-debug-stats"> Mostrar HP/PM del enemigo en Battle
-        </label>
+                        <div class="tp-options-panel" data-options-for="credits" hidden>
+                            <p class="tp-option-note">Ejecuta la secuencia completa de créditos fuera de la historia.</p>
+                        </div>
+                    </section>
 
-        <h2>🗺️ Investigación de Furrielva</h2>
-        <div class="tp-row">
-            <button class="tp-btn" style="--c:#63e0cd" onclick="launchFurrielvaMap()">Abrir Furry Maps</button>
-        </div>
-
-        <h2>🎬 Créditos</h2>
-        <div class="tp-row">
-            <button class="tp-btn" style="--c:#ffd166" onclick="launchCredits()">Ver créditos</button>
+                    <footer class="tp-actions">
+                        <button class="tp-action" id="tp-reset" type="button">Restaurar opciones</button>
+                        <button class="tp-action" id="tp-copy-config" type="button">Copiar configuración</button>
+                        <button class="tp-action tp-action-secondary" id="tp-edit-hitbox" type="button" hidden>Editar hitbox</button>
+                        <span class="tp-actions-spacer"></span>
+                        <button class="tp-action tp-action-secondary tp-flow-action" id="tp-flow-action" type="button" hidden>Flujo Guindillas → Zip</button>
+                        <button class="tp-action tp-action-primary" id="tp-launch" type="button">Jugar en Medio</button>
+                    </footer>
+                </main>
+            </div>
         </div>
 
     </div>
@@ -378,6 +524,51 @@
         const engine = new VisualNovelEngine();
         const panel = document.getElementById('test-panel');
         const resultEl = document.getElementById('tp-result');
+        const resultIconEl = document.getElementById('tp-result-icon');
+        const resultTitleEl = document.getElementById('tp-result-title');
+        const resultDetailEl = document.getElementById('tp-result-detail');
+        const resultTimeEl = document.getElementById('tp-result-time');
+
+        function setResult(state, title, detail = '', durationMs = null) {
+            const icons = { idle: '●', running: '◌', success: '✓', error: '!' };
+            resultEl.dataset.state = state;
+            resultIconEl.textContent = icons[state] || icons.idle;
+            resultTitleEl.textContent = title;
+            resultDetailEl.textContent = detail;
+            resultTimeEl.textContent = durationMs === null ? '' : `${(durationMs / 1000).toFixed(1)} s`;
+        }
+
+        async function runTest(title, task) {
+            const startedAt = performance.now();
+            const launchButton = document.getElementById('tp-launch');
+            const flowButton = document.getElementById('tp-flow-action');
+            setResult('running', `Ejecutando ${title}`, 'La configuración seleccionada ya está aplicada.');
+            launchButton.disabled = true;
+            flowButton.disabled = true;
+            panel.classList.add('hidden');
+            try {
+                const outcome = await task();
+                const ok = outcome?.ok !== false;
+                setResult(
+                    ok ? 'success' : 'error',
+                    outcome?.title || (ok ? 'Prueba completada' : 'Prueba no superada'),
+                    outcome?.detail || title,
+                    performance.now() - startedAt,
+                );
+                return outcome;
+            } catch (error) {
+                console.error(`Error al ejecutar ${title}.`, error);
+                setResult('error', `Error en ${title}`, error?.message || 'Consulta la consola para ver el detalle.', performance.now() - startedAt);
+                return { ok: false, error };
+            } finally {
+                stopAuto();
+                stopMusic();
+                panel.classList.remove('hidden');
+                launchButton.disabled = false;
+                flowButton.disabled = false;
+                launchButton.focus({ preventScroll: true });
+            }
+        }
 
         const RHYTHM = {
             // bpm/beatOffsetMs = rejilla musical de neon_runner.mp3 (sincronía)
@@ -450,29 +641,32 @@
         function stopAuto() { if (autoTimer) { clearInterval(autoTimer); autoTimer = null; } }
 
         async function launchRhythm(preset) {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            const opts = preset === 'demo' ? RHYTHM.facil : RHYTHM[preset];
-            startMusic('chapter3/neon_runner.mp3');
-            // Pasar el audio para que las notas vayan al ritmo de la canción
-            const audio = musicOn() ? engine.audioInstances['mg_test'] : null;
-            const auto = preset === 'demo' || document.getElementById('tp-auto').checked;
-            if (auto) startAuto();
-            const won = await engine.runRhythmRound(Object.assign({}, opts, { audio }));
-            stopAuto();
-            stopMusic();
-            resultEl.textContent = won ? '✅ ¡Superado el Neon Runner!' : '❌ Te absorbió el trance. ¡Otra vez!';
-            panel.classList.remove('hidden');
+            return runTest('Neon Runner', async () => {
+                const opts = preset === 'demo' ? RHYTHM.facil : RHYTHM[preset];
+                startMusic('chapter3/neon_runner.mp3');
+                // Pasar el audio para que las notas vayan al ritmo de la canción.
+                const audio = musicOn() ? engine.audioInstances['mg_test'] : null;
+                const auto = preset === 'demo' || document.getElementById('tp-auto').checked;
+                if (auto) startAuto();
+                const won = await engine.runRhythmRound(Object.assign({}, opts, { audio }));
+                return {
+                    ok: won,
+                    title: won ? 'Neon Runner superado' : 'Neon Runner no superado',
+                    detail: auto ? 'Ejecución con jugador automático.' : `Preset ${preset}.`,
+                };
+            });
         }
 
         async function launchVocal(preset) {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            startMusic('minigames/dueto_vocal_echo.mp3');
-            const won = await engine.runVocalEchoRound(Object.assign({}, VOCAL[preset]));
-            stopMusic();
-            resultEl.textContent = won ? '✅ ¡Dúo perfecto!' : '❌ Desafinaste. ¡Inténtalo otra vez!';
-            panel.classList.remove('hidden');
+            return runTest('Vocal Echo', async () => {
+                startMusic('minigames/dueto_vocal_echo.mp3');
+                const won = await engine.runVocalEchoRound(Object.assign({}, VOCAL[preset]));
+                return {
+                    ok: won,
+                    title: won ? 'Dúo perfecto' : 'Vocal Echo no superado',
+                    detail: `Preset ${preset}.`,
+                };
+            });
         }
 
         const CHASE = {
@@ -530,54 +724,59 @@
         // valores por defecto del motor. NO son lo que se juega en la historia.
         // Este botón lee chapter3.json y lanza el minijuego con su configuración
         // real, resolviendo las variantes *ByDelay según el retraso elegido.
-        async function launchHistoria(juego) {
-            const retraso = Number(document.getElementById("tp-retraso").value) || 0;
-            const cap = await (await fetch("chapters/chapter3.json?v=" + Date.now(),
-                                           { cache: "no-store" })).json();
+        async function getStoryMinigameOptions(juego) {
+            const retraso = Number(document.getElementById('tp-retraso').value) || 0;
+            const cap = await (await fetch(`chapters/chapter3.json?v=${Date.now()}`, { cache: 'no-store' })).json();
             let cfg = null;
-            cap.scenes.forEach(sc => sc.lines.forEach(li => (li.actions || []).forEach(a => {
-                if (a.game === juego) cfg = a;
+            cap.scenes.forEach(sc => sc.lines.forEach(li => (li.actions || []).forEach(action => {
+                if (action.game === juego) cfg = action;
             })));
-            if (!cfg) { resultEl.textContent = "No encontré ese minijuego en el capítulo 3."; return; }
-            cfg = Object.assign({}, cfg);
-            cfg.debugHitboxes = document.getElementById("tp-side-hitboxes").checked;
-            Object.keys(cfg).filter(k => k.endsWith("ByDelay")).forEach(k => {
-                const base = k.slice(0, -"ByDelay".length);
-                const umbrales = Object.keys(cfg[k]).map(Number).filter(n => n <= retraso).sort((a, b) => a - b);
-                if (umbrales.length) cfg[base] = cfg[k][umbrales[umbrales.length - 1]];
+            if (!cfg) throw new Error('No se encontró ese minijuego en el capítulo 3.');
+            cfg = Object.assign({}, cfg, {
+                debugHitboxes: document.getElementById('tp-side-hitboxes').checked,
             });
-            resultEl.textContent = "";
-            panel.classList.add("hidden");
-            startMusic(juego === "chase" ? "chapter3/persecucion_carretera.mp3" : "chapter3/vuelo_edu.mp3");
-            if (juego === "chase") await engine.playChaseMinigame(cfg);
-            else await engine.playEduVueloMinigame(cfg);
-            stopMusic();
-            resultEl.textContent = "✅ Superado (config real del capítulo 3, retraso " + retraso + ")";
-            panel.classList.remove("hidden");
+            Object.keys(cfg).filter(key => key.endsWith('ByDelay')).forEach(key => {
+                const base = key.slice(0, -'ByDelay'.length);
+                const thresholds = Object.keys(cfg[key]).map(Number).filter(value => value <= retraso).sort((a, b) => a - b);
+                if (thresholds.length) cfg[base] = cfg[key][thresholds[thresholds.length - 1]];
+                delete cfg[key];
+            });
+            return { cfg, retraso };
+        }
+
+        async function launchHistoria(juego) {
+            const title = juego === 'chase' ? 'Persecución · Historia' : 'Edu volando · Historia';
+            return runTest(title, async () => {
+                const { cfg, retraso } = await getStoryMinigameOptions(juego);
+                startMusic(juego === 'chase' ? 'chapter3/persecucion_carretera.mp3' : 'chapter3/vuelo_edu.mp3');
+                if (juego === 'chase') await engine.playChaseMinigame(cfg);
+                else await engine.playEduVueloMinigame(cfg);
+                return {
+                    ok: true,
+                    title: 'Configuración de historia superada',
+                    detail: `Capítulo 3 · retraso ${retraso}.`,
+                };
+            });
         }
         async function launchChase(preset) {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            startMusic('chapter3/persecucion_carretera.mp3');
-            await engine.playChaseMinigame({
-                ...CHASE[preset],
-                debugHitboxes: document.getElementById('tp-side-hitboxes').checked
+            return runTest('Persecución', async () => {
+                startMusic('chapter3/persecucion_carretera.mp3');
+                await engine.playChaseMinigame({
+                    ...CHASE[preset],
+                    debugHitboxes: document.getElementById('tp-side-hitboxes').checked,
+                });
+                return { ok: true, title: 'Persecución superada', detail: `Preset ${preset}.` };
             });
-            stopMusic();
-            resultEl.textContent = '✅ ¡Escapaste de los memes!';
-            panel.classList.remove('hidden');
         }
         async function launchEduVuelo(preset) {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            startMusic('chapter3/vuelo_edu.mp3');
-            await engine.playEduVueloMinigame({
-                ...FLY[preset],
-                debugHitboxes: document.getElementById('tp-side-hitboxes').checked
+            return runTest('Edu volando', async () => {
+                startMusic('chapter3/vuelo_edu.mp3');
+                await engine.playEduVueloMinigame({
+                    ...FLY[preset],
+                    debugHitboxes: document.getElementById('tp-side-hitboxes').checked,
+                });
+                return { ok: true, title: 'Vuelo superado', detail: `Preset ${preset}.` };
             });
-            stopMusic();
-            resultEl.textContent = '✅ ¡Partituras recogidas!';
-            panel.classList.remove('hidden');
         }
 
         function getNumberInput(id, fallback) {
@@ -586,20 +785,25 @@
             return Number.isFinite(value) ? value : fallback;
         }
 
-        function getChiliOptions(preset) {
-            const opts = CHILI_HARVEST[preset] || CHILI_HARVEST.medio;
-            return {
+        function getChiliOptions(preset, useCustom = preset === 'custom') {
+            const resolvedPreset = preset === 'custom' ? 'medio' : preset;
+            const opts = CHILI_HARVEST[resolvedPreset] || CHILI_HARVEST.medio;
+            const options = {
                 ...opts,
-                duration: getNumberInput('chili-duration', opts.duration),
-                powerGoal: getNumberInput('chili-power-goal', 16),
-                maxSpicePower: getNumberInput('chili-max-power', 28),
-                boxBonus: getNumberInput('chili-box-bonus', 12),
-                neit: document.getElementById('chili-neit').checked
+                neit: document.getElementById('chili-neit').checked,
             };
+            if (useCustom) {
+                options.duration = getNumberInput('chili-duration', opts.duration);
+                options.powerGoal = getNumberInput('chili-power-goal', 16);
+                options.maxSpicePower = getNumberInput('chili-max-power', 28);
+                options.boxBonus = getNumberInput('chili-box-bonus', 12);
+            }
+            return options;
         }
 
-        function getZipOptions(preset) {
-            const opts = ZIP_BULLET_HELL[preset] || ZIP_BULLET_HELL.medio;
+        function getZipOptions(preset, useCustom = preset === 'custom') {
+            const resolvedPreset = preset === 'custom' ? 'medio' : preset;
+            const opts = ZIP_BULLET_HELL[resolvedPreset] || ZIP_BULLET_HELL.medio;
             const startPhaseTwo = document.getElementById('zip-start-phase-two').checked;
             syncHitboxDebugger();
             const options = {
@@ -610,75 +814,127 @@
                 maxSpicePower: getNumberInput('zip-max-spice', opts.maxSpicePower),
                 debugHitboxes: false
             };
+            if (useCustom) {
+                options.enemyHp = getNumberInput('zip-hp', opts.enemyHp);
+                options.maxHits = getNumberInput('zip-lives', opts.maxHits);
+                options.spicePower = getNumberInput('zip-spice-power', opts.spicePower);
+                options.maxSpicePower = getNumberInput('zip-max-spice', opts.maxSpicePower);
+            }
             if (startPhaseTwo) options.startAtHpRatio = 0.6;
             return options;
         }
 
         async function launchChiliHarvest(preset) {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            startMusic('chapter2/ketchup.mp3');
-            const opts = getChiliOptions(preset);
-            engine.inventory = opts.neit ? ['caja_guindillas'] : [];
-            await engine.playChiliHarvestMinigame(opts);
-            document.getElementById('chili-speed-val').textContent = engine.gameState.chiliPower + ' puntos';
-            document.getElementById('zip-spice-power').value = engine.gameState.chiliPower;
-            stopMusic();
-            resultEl.textContent = '✅ ¡' + engine.gameState.chiliPower + ' puntos de picante reunidos!';
-            panel.classList.remove('hidden');
+            return runTest('Recolectar guindillas', async () => {
+                startMusic('chapter2/ketchup.mp3');
+                const opts = getChiliOptions(preset);
+                engine.inventory = opts.neit ? ['caja_guindillas'] : [];
+                await engine.playChiliHarvestMinigame(opts);
+                document.getElementById('chili-speed-val').textContent = `${engine.gameState.chiliPower} puntos`;
+                document.getElementById('zip-spice-power').value = engine.gameState.chiliPower;
+                return {
+                    ok: true,
+                    title: 'Recolección completada',
+                    detail: `${engine.gameState.chiliPower} puntos de picante reunidos.`,
+                };
+            });
         }
 
         async function launchZipBulletHell(preset) {
+            return runTest('Bullet Hell de Zip', async () => {
+                const opts = getZipOptions(preset);
+                engine.gameState.chiliPower = opts.spicePower;
+                engine.gameState.chiliPowerMax = opts.maxSpicePower;
+                engine.inventory = document.getElementById('chili-neit').checked ? ['caja_guindillas'] : [];
+                startMusic("chapter2/zip's-shadow-waltz.mp3");
+                await engine.playKetchupBossMinigame(opts);
+                return {
+                    ok: true,
+                    title: 'Zip derrotado',
+                    detail: `${opts.spicePower} puntos de picante iniciales.`,
+                };
+            });
+        }
+
+        async function launchZipHistoria() {
             resultEl.textContent = '';
             panel.classList.add('hidden');
-            const opts = getZipOptions(preset);
-            engine.gameState.chiliPower = opts.spicePower;
-            engine.gameState.chiliPowerMax = opts.maxSpicePower;
+            syncHitboxDebugger();
+            const chapter = await (await fetch('chapters/chapter2.json?v=' + Date.now(), {
+                cache: 'no-store'
+            })).json();
+            let storyOptions = null;
+            chapter.scenes.forEach(scene => scene.lines.forEach(line => {
+                (line.actions || []).forEach(action => {
+                    if (action.game === 'ketchupBoss') storyOptions = { ...action };
+                });
+            }));
+            if (!storyOptions) {
+                resultEl.textContent = 'No encontré ketchupBoss en chapter2.json.';
+                panel.classList.remove('hidden');
+                return;
+            }
+            delete storyOptions.type;
+            delete storyOptions.game;
+            storyOptions.debugHitboxes = document.getElementById('zip-debug-hitboxes').checked;
+            engine.gameState.chiliPower = getNumberInput('zip-spice-power', 14);
+            engine.gameState.chiliPowerMax = storyOptions.maxSpicePower;
             engine.inventory = document.getElementById('chili-neit').checked ? ['caja_guindillas'] : [];
             startMusic("chapter2/zip's-shadow-waltz.mp3");
-            await engine.playKetchupBossMinigame(opts);
+            await engine.playKetchupBossMinigame(storyOptions);
             stopMusic();
-            resultEl.textContent = '✅ ¡Zip derrotado con ' + opts.spicePower + ' puntos de picante!';
+            resultEl.textContent = '✅ Superado con la configuración real de chapter2.json.';
             panel.classList.remove('hidden');
         }
 
         async function launchKetchup(preset) {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            startMusic('chapter2/ketchup.mp3');
-            const opts = getChiliOptions(preset);
-            engine.inventory = opts.neit ? ['caja_guindillas'] : [];
-            await engine.playChiliHarvestMinigame(opts);
-            document.getElementById('chili-speed-val').textContent = engine.gameState.chiliPower + ' puntos';
-            document.getElementById('zip-spice-power').value = engine.gameState.chiliPower;
-            stopMusic();
-            startMusic("assets/audio/music/chapter2/zip's-shadow-waltz.mp3");
-            await engine.playKetchupBossMinigame({
-                ...getZipOptions(preset),
-                spicePower: engine.gameState.chiliPower,
-                maxSpicePower: engine.gameState.chiliPowerMax
+            return runTest('Flujo Guindillas → Zip', async () => {
+                startMusic('chapter2/ketchup.mp3');
+                const opts = getChiliOptions(preset);
+                engine.inventory = opts.neit ? ['caja_guindillas'] : [];
+                await engine.playChiliHarvestMinigame(opts);
+                document.getElementById('chili-speed-val').textContent = `${engine.gameState.chiliPower} puntos`;
+                document.getElementById('zip-spice-power').value = engine.gameState.chiliPower;
+                stopMusic();
+                startMusic("assets/audio/music/chapter2/zip's-shadow-waltz.mp3");
+                await engine.playKetchupBossMinigame({
+                    ...getZipOptions(preset),
+                    spicePower: engine.gameState.chiliPower,
+                    maxSpicePower: engine.gameState.chiliPowerMax,
+                });
+                return {
+                    ok: true,
+                    title: 'Flujo del capítulo 2 superado',
+                    detail: `Zip derrotado con ${engine.gameState.chiliPower} puntos de picante.`,
+                };
             });
-            stopMusic();
-            resultEl.textContent = '✅ ¡Zip derrotado con ' + engine.gameState.chiliPower + ' puntos de picante!';
-            panel.classList.remove('hidden');
         }
 
         async function launchRuneChanneling(preset) {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            startMusic('chapter4/abriendo_el_sello.mp3');
-            const won = await window.RuneChannelingMinigame.play(RUNE_CHANNELING[preset]);
-            stopMusic();
-            resultEl.textContent = won ? '✅ ¡Poderes equilibrados!' : '❌ Los poderes se descompensaron.';
-            panel.classList.remove('hidden');
+            return runTest('Equilibrio de poderes', async () => {
+                startMusic('chapter4/abriendo_el_sello.mp3');
+                const won = await window.RuneChannelingMinigame.play(RUNE_CHANNELING[preset]);
+                return {
+                    ok: won,
+                    title: won ? 'Poderes equilibrados' : 'Los poderes se descompensaron',
+                    detail: `Preset ${preset}.`,
+                };
+            });
         }
 
-        function getBattleHp(enemy) {
-            const input = document.getElementById('hp-' + enemy);
+        function getBattleHp() {
+            const input = document.getElementById('battle-hp');
             const hp = input ? parseInt(input.value, 10) : NaN;
             return Number.isFinite(hp) && hp > 0 ? hp : undefined;
         }
 
+        const BATTLE_DEFAULT_HP = {
+            ballerina_capuchina: 420,
+            tralalelo_tralala: 520,
+            tung_tung_tung_sahur: 620,
+            amalgama: 840,
+            amalgama_final: 1120,
+        };
         const BATTLE_MUSIC = {
             ballerina_capuchina: 'chapter4/ballerina_capuchina_battle.mp3',
             tralalelo_tralala: 'chapter5/tralalero_theme.mp3',
@@ -688,35 +944,344 @@
         };
 
         async function launchBattle(enemy) {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            startMusic(BATTLE_MUSIC[enemy] || 'shared/brainrot_theme.mp3');
-            const options = { game: 'battle', enemy, debugStats: battleDebugStatsOn() };
-            const enemyHp = getBattleHp(enemy);
-            if (enemyHp) options.enemyHp = enemyHp;
-            const won = await engine.playBattleMinigame(options);
-            stopMusic();
-            resultEl.textContent = won ? '✅ ¡Victoria en combate!' : '❌ Game Over en combate.';
-            panel.classList.remove('hidden');
+            return runTest('Battle', async () => {
+                startMusic(BATTLE_MUSIC[enemy] || 'shared/brainrot_theme.mp3');
+                const options = { game: 'battle', enemy, debugStats: battleDebugStatsOn() };
+                const enemyHp = getBattleHp();
+                if (enemyHp) options.enemyHp = enemyHp;
+                const won = await engine.playBattleMinigame(options);
+                return {
+                    ok: won,
+                    title: won ? 'Victoria en combate' : 'Game Over en combate',
+                    detail: `${enemy.replaceAll('_', ' ')} · ${enemyHp || 'HP predeterminado'}.`,
+                };
+            });
         }
 
         async function launchCredits() {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            await engine.playCreditsMinigame();
-            resultEl.textContent = '✅ Créditos finalizados.';
-            panel.classList.remove('hidden');
+            return runTest('Créditos', async () => {
+                await engine.playCreditsMinigame();
+                return { ok: true, title: 'Créditos finalizados', detail: 'Secuencia completa reproducida.' };
+            });
         }
 
         async function launchFurrielvaMap() {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
-            await engine.playFurrielvaExploreMinigame({
-                background: 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp'
+            return runTest('Investigación de Furrielva', async () => {
+                await engine.playFurrielvaExploreMinigame({
+                    background: 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp',
+                });
+                return { ok: true, title: 'Ruta localizada', detail: 'Mapa de Furrielva completado.' };
             });
-            resultEl.textContent = '✅ Ruta a Kingdom Ketchup localizada.';
-            panel.classList.remove('hidden');
         }
+
+        const MODE_LABELS = {
+            facil: 'Fácil',
+            medio: 'Medio',
+            dificil: 'Difícil',
+            demo: 'Demo automática',
+            historia: 'Como en la historia',
+            custom: 'Personalizado',
+        };
+        const CATEGORY_ORDER = ['Ritmo y audio', 'Acción', 'Combate', 'Herramientas'];
+        const MINIGAME_CATALOG = [
+            {
+                id: 'rhythm', icon: '🏃', title: 'Neon Runner', chapter: 'Capítulo 3', category: 'Ritmo y audio',
+                description: 'Ritmo 3D con cuatro o cinco carriles, notas mantenidas y secuencias de machaque.',
+                modes: ['facil', 'medio', 'dificil', 'demo'], defaultMode: 'medio',
+                run: mode => launchRhythm(mode),
+            },
+            {
+                id: 'vocal', icon: '🎤', title: 'Vocal Echo', chapter: 'Capítulo 6', category: 'Ritmo y audio',
+                description: 'Dúo de memoria musical: escucha una secuencia y repítela sobre los pads.',
+                modes: ['facil', 'medio', 'dificil'], defaultMode: 'medio',
+                run: mode => launchVocal(mode),
+            },
+            {
+                id: 'chase', icon: '🏎️', title: 'Persecución', chapter: 'Capítulo 3', category: 'Acción',
+                description: 'Conducción lateral con obstáculos, motos y dificultad condicionada por la historia.',
+                modes: ['facil', 'medio', 'dificil', 'historia'], defaultMode: 'medio', storyAware: true,
+                run: mode => mode === 'historia' ? launchHistoria('chase') : launchChase(mode),
+            },
+            {
+                id: 'eduvuelo', icon: '🐉', title: 'Edu volando', chapter: 'Capítulo 3', category: 'Acción',
+                description: 'Vuelo, dash, obstáculos y recogida de partituras con configuración escalable.',
+                modes: ['facil', 'medio', 'dificil', 'historia'], defaultMode: 'medio', storyAware: true,
+                run: mode => mode === 'historia' ? launchHistoria('eduvuelo') : launchEduVuelo(mode),
+            },
+            {
+                id: 'chili', icon: '🌶️', title: 'Recolectar guindillas', chapter: 'Capítulo 2', category: 'Acción',
+                description: 'Primera parte del flujo de Ketchup: reúne picante y prueba el bonus de Neit.',
+                modes: ['facil', 'medio', 'dificil', 'custom'], defaultMode: 'medio',
+                run: mode => launchChiliHarvest(mode),
+            },
+            {
+                id: 'ketchupBoss', icon: '🍅', title: 'Bullet Hell de Zip', chapter: 'Capítulo 2', category: 'Acción',
+                description: 'Combate completo contra Zip, con control de fase, picante e inspección de hitboxes.',
+                modes: ['facil', 'medio', 'dificil', 'custom'], defaultMode: 'medio', supportsFlow: true, hitboxEditor: true,
+                run: mode => launchZipBulletHell(mode),
+            },
+            {
+                id: 'rune', icon: '🔷', title: 'Equilibrio de poderes', chapter: 'Capítulo 4', category: 'Combate',
+                description: 'Mantén las runas dentro de su zona estable durante siete niveles consecutivos.',
+                modes: ['facil', 'medio', 'dificil'], defaultMode: 'medio',
+                run: mode => launchRuneChanneling(mode),
+            },
+            {
+                id: 'battle', icon: '⚔️', title: 'Battle', chapter: 'Capítulos 4–5', category: 'Combate',
+                description: 'Selecciona un enemigo, ajusta sus HP y ejecuta el sistema de combate por turnos.',
+                modes: [], defaultMode: null, actionLabel: 'Iniciar combate',
+                run: () => launchBattle(document.getElementById('battle-enemy').value),
+            },
+            {
+                id: 'furrielva', icon: '🗺️', title: 'Investigación de Furrielva', chapter: 'Capítulo 2', category: 'Herramientas',
+                description: 'Abre el mapa explorable de Furrielva de forma aislada.',
+                modes: [], defaultMode: null, actionLabel: 'Abrir Furry Maps', run: launchFurrielvaMap,
+            },
+            {
+                id: 'credits', icon: '🎬', title: 'Créditos', chapter: 'Final', category: 'Herramientas',
+                description: 'Reproduce y valida la secuencia de créditos completa.',
+                modes: [], defaultMode: null, actionLabel: 'Ver créditos', run: launchCredits,
+            },
+        ];
+
+        const catalogEl = document.getElementById('tp-catalog');
+        const searchEl = document.getElementById('tp-search');
+        const modeSectionEl = document.getElementById('tp-mode-section');
+        const modePickerEl = document.getElementById('tp-mode-picker');
+        const launchEl = document.getElementById('tp-launch');
+        const flowEl = document.getElementById('tp-flow-action');
+        const editHitboxEl = document.getElementById('tp-edit-hitbox');
+        let activeGameId = null;
+        let activeMode = null;
+        let testPanelPrefs = { game: null, modes: {} };
+
+        try {
+            testPanelPrefs = Object.assign(testPanelPrefs, JSON.parse(localStorage.getItem('illo_minigame_test_panel') || '{}'));
+            testPanelPrefs.modes = testPanelPrefs.modes || {};
+        } catch (_error) {
+            testPanelPrefs = { game: null, modes: {} };
+        }
+
+        function saveTestPanelPrefs() {
+            try {
+                localStorage.setItem('illo_minigame_test_panel', JSON.stringify(testPanelPrefs));
+            } catch (_error) {}
+        }
+
+        function normalizeSearch(value) {
+            return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        }
+
+        function renderCatalog(filter = '') {
+            const query = normalizeSearch(filter.trim());
+            catalogEl.replaceChildren();
+            let visibleCount = 0;
+            CATEGORY_ORDER.forEach(category => {
+                const entries = MINIGAME_CATALOG.filter(entry => {
+                    if (entry.category !== category) return false;
+                    const searchable = normalizeSearch(`${entry.title} ${entry.chapter} ${entry.description}`);
+                    return !query || searchable.includes(query);
+                });
+                if (!entries.length) return;
+                visibleCount += entries.length;
+                const section = document.createElement('section');
+                section.className = 'tp-category';
+                const heading = document.createElement('h2');
+                heading.textContent = category;
+                const list = document.createElement('div');
+                list.className = 'tp-catalog-list';
+                entries.forEach(entry => {
+                    const button = document.createElement('button');
+                    button.type = 'button';
+                    button.className = 'tp-game-tab';
+                    button.dataset.game = entry.id;
+                    button.setAttribute('aria-selected', String(entry.id === activeGameId));
+                    button.innerHTML = `<span class="tp-game-icon" aria-hidden="true">${entry.icon}</span><span class="tp-game-name">${entry.title}</span><span class="tp-game-chapter">${entry.chapter}</span>`;
+                    button.addEventListener('click', () => {
+                        selectGame(entry.id);
+                        if (window.matchMedia('(max-width: 820px)').matches) {
+                            document.querySelector('.tp-inspector').scrollIntoView({ block: 'start' });
+                        }
+                    });
+                    list.appendChild(button);
+                });
+                section.append(heading, list);
+                catalogEl.appendChild(section);
+            });
+            if (!visibleCount) {
+                const empty = document.createElement('p');
+                empty.className = 'tp-empty';
+                empty.textContent = 'No hay minijuegos que coincidan con la búsqueda.';
+                catalogEl.appendChild(empty);
+            }
+        }
+
+        function entryFor(id = activeGameId) {
+            return MINIGAME_CATALOG.find(entry => entry.id === id);
+        }
+
+        function updateUrl() {
+            const url = new URL(window.location.href);
+            url.searchParams.set('game', activeGameId);
+            if (activeMode) url.searchParams.set('mode', activeMode);
+            else url.searchParams.delete('mode');
+            history.replaceState(null, '', url);
+        }
+
+        function renderModes(entry) {
+            modePickerEl.replaceChildren();
+            modeSectionEl.hidden = entry.modes.length === 0;
+            entry.modes.forEach(mode => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'tp-mode-button';
+                button.dataset.mode = mode;
+                button.textContent = MODE_LABELS[mode] || mode;
+                button.setAttribute('aria-pressed', String(mode === activeMode));
+                if (entry.id === 'ketchupBoss') {
+                    const suffix = { facil: 'easy', medio: 'medium', dificil: 'hard', custom: 'custom' }[mode];
+                    button.dataset.testid = `ketchup-${suffix}`;
+                }
+                button.addEventListener('click', () => selectMode(mode));
+                modePickerEl.appendChild(button);
+            });
+        }
+
+        function selectMode(mode, { updateHistory = true } = {}) {
+            const entry = entryFor();
+            if (!entry) return;
+            activeMode = entry.modes.includes(mode) ? mode : entry.defaultMode;
+            modePickerEl.querySelectorAll('[data-mode]').forEach(button => {
+                button.setAttribute('aria-pressed', String(button.dataset.mode === activeMode));
+            });
+            document.querySelectorAll('[data-custom-for]').forEach(panel => {
+                const visible = panel.dataset.customFor === activeGameId && activeMode === 'custom';
+                panel.hidden = !visible;
+                panel.querySelectorAll('input, select').forEach(control => { control.disabled = !visible; });
+            });
+            launchEl.textContent = entry.actionLabel || (activeMode ? `Jugar en ${MODE_LABELS[activeMode]}` : 'Jugar');
+            if (activeMode) testPanelPrefs.modes[activeGameId] = activeMode;
+            saveTestPanelPrefs();
+            if (updateHistory) updateUrl();
+        }
+
+        function selectGame(gameId, requestedMode = null) {
+            const entry = entryFor(gameId) || MINIGAME_CATALOG[0];
+            activeGameId = entry.id;
+            testPanelPrefs.game = entry.id;
+            saveTestPanelPrefs();
+            document.getElementById('tp-detail-icon').textContent = entry.icon;
+            document.getElementById('tp-detail-title').textContent = entry.title;
+            document.getElementById('tp-detail-chapter').textContent = entry.chapter;
+            document.getElementById('tp-detail-description').textContent = entry.description;
+            document.querySelectorAll('[data-options-for]').forEach(panel => {
+                panel.hidden = panel.dataset.optionsFor !== entry.id;
+            });
+            document.getElementById('tp-story-delay-wrap').hidden = !entry.storyAware;
+            document.getElementById('tp-side-hitboxes-wrap').hidden = !entry.storyAware;
+            flowEl.hidden = !entry.supportsFlow;
+            editHitboxEl.hidden = !entry.hitboxEditor;
+            activeMode = requestedMode || testPanelPrefs.modes[entry.id] || entry.defaultMode;
+            if (!entry.modes.includes(activeMode)) activeMode = entry.defaultMode;
+            renderModes(entry);
+            selectMode(activeMode, { updateHistory: false });
+            renderCatalog(searchEl.value);
+            updateUrl();
+        }
+
+        function resetActiveOptions() {
+            const entry = entryFor();
+            const optionsPanel = document.querySelector(`[data-options-for="${activeGameId}"]`);
+            optionsPanel?.querySelectorAll('input, select').forEach(control => {
+                if (control.type === 'checkbox' || control.type === 'radio') control.checked = control.defaultChecked;
+                else control.value = control.defaultValue;
+            });
+            if (entry.storyAware) {
+                document.getElementById('tp-retraso').value = '0';
+                document.getElementById('tp-side-hitboxes').checked = false;
+            }
+            if (entry.id === 'battle') syncBattleHp();
+            selectMode(entry.defaultMode);
+            setResult('idle', 'Opciones restauradas', `${entry.title} vuelve a sus valores iniciales.`);
+        }
+
+        async function getEffectiveConfig() {
+            const entry = entryFor();
+            switch (entry.id) {
+                case 'rhythm': return { game: entry.id, mode: activeMode, ...RHYTHM[activeMode === 'demo' ? 'facil' : activeMode], auto: activeMode === 'demo' || document.getElementById('tp-auto').checked };
+                case 'vocal': return { game: entry.id, mode: activeMode, ...VOCAL[activeMode] };
+                case 'chase':
+                    if (activeMode === 'historia') {
+                        return {
+                            source: 'chapters/chapter3.json',
+                            storyDelay: Number(document.getElementById('tp-retraso').value),
+                            ...(await getStoryMinigameOptions('chase')).cfg,
+                            mode: activeMode,
+                        };
+                    }
+                    return {
+                        game: entry.id,
+                        mode: activeMode,
+                        ...CHASE[activeMode],
+                        debugHitboxes: document.getElementById('tp-side-hitboxes').checked,
+                    };
+                case 'eduvuelo':
+                    if (activeMode === 'historia') {
+                        return {
+                            source: 'chapters/chapter3.json',
+                            storyDelay: Number(document.getElementById('tp-retraso').value),
+                            ...(await getStoryMinigameOptions('eduvuelo')).cfg,
+                            mode: activeMode,
+                        };
+                    }
+                    return {
+                        game: entry.id,
+                        mode: activeMode,
+                        ...FLY[activeMode],
+                        debugHitboxes: document.getElementById('tp-side-hitboxes').checked,
+                    };
+                case 'chili': return { game: entry.id, mode: activeMode, ...getChiliOptions(activeMode) };
+                case 'ketchupBoss': return { game: entry.id, mode: activeMode, ...getZipOptions(activeMode) };
+                case 'rune': return { game: entry.id, mode: activeMode, ...RUNE_CHANNELING[activeMode] };
+                case 'battle': return { game: entry.id, enemy: document.getElementById('battle-enemy').value, enemyHp: getBattleHp(), debugStats: battleDebugStatsOn() };
+                case 'furrielva': return { game: entry.id, background: 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp' };
+                default: return { game: entry.id };
+            }
+        }
+
+        async function copyEffectiveConfig() {
+            try {
+                await navigator.clipboard.writeText(JSON.stringify(await getEffectiveConfig(), null, 2));
+                setResult('success', 'Configuración copiada', `${entryFor().title} · ${MODE_LABELS[activeMode] || 'modo único'}.`);
+            } catch (error) {
+                setResult('error', 'No se pudo copiar', error?.message || 'El navegador bloqueó el portapapeles.');
+            }
+        }
+
+        function syncBattleHp() {
+            const enemy = document.getElementById('battle-enemy').value;
+            document.getElementById('battle-hp').value = BATTLE_DEFAULT_HP[enemy];
+        }
+
+        async function runSelectedGame() {
+            const entry = entryFor();
+            await entry.run(activeMode);
+        }
+
+        searchEl.addEventListener('input', () => renderCatalog(searchEl.value));
+        launchEl.addEventListener('click', runSelectedGame);
+        flowEl.addEventListener('click', () => launchKetchup(['facil', 'medio', 'dificil', 'custom'].includes(activeMode) ? activeMode : 'medio'));
+        editHitboxEl.addEventListener('click', () => openHitboxEditor('ketchupBoss'));
+        document.getElementById('tp-reset').addEventListener('click', resetActiveOptions);
+        document.getElementById('tp-copy-config').addEventListener('click', copyEffectiveConfig);
+        document.getElementById('battle-enemy').addEventListener('change', syncBattleHp);
+
+        const initialUrl = new URL(window.location.href);
+        const requestedGame = initialUrl.searchParams.get('game');
+        const requestedMode = initialUrl.searchParams.get('mode');
+        const initialGame = entryFor(requestedGame)?.id || entryFor(testPanelPrefs.game)?.id || MINIGAME_CATALOG[0].id;
+        renderCatalog();
+        selectGame(initialGame, requestedMode);
     </script>
 </body>
 </html>

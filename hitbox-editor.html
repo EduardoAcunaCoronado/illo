@@ -386,9 +386,9 @@
     </aside>
     <div id="toast" role="status" aria-live="polite"></div>
 
-    <script src="ketchup-hitboxes.js?v=20260804-1"></script>
+    <script src="ketchup-hitboxes.js?v=20260806-2"></script>
     <script>
-      const STORAGE_KEY = 'illo_hitbox_config';
+      const STORAGE_KEY = window.KetchupHitboxes.STORAGE_KEY;
       const colors = {
         player: '#ff3054',
         boss: '#53d2ff',
@@ -587,9 +587,10 @@
 
       function saveConfig() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(config, null, 2));
+        window.KetchupHitboxes.notifyChanged();
         savedSnapshot = snapshot();
         updateStatus();
-        notify('Cambios guardados. Se aplicarán al volver a lanzar el minijuego.');
+        notify('Cambios guardados. Se aplican a pruebas e historia; las rondas abiertas se sincronizan.');
       }
 
       function profileIdFor(object) {

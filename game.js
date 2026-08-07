@@ -431,7 +431,7 @@ document.querySelector(".nm-nav")?.addEventListener("click", (e) => {
   document.getElementById("settings-panel")?.remove();
 });
 
-// ===== Retroceder a la escena anterior (demo 25-jul-2026) =====
+// ===== Retroceder al diálogo anterior según salto, ruta o respaldo JSON =====
 // El bucle de juego está casi siempre parado dentro de waitForClick(), así que
 // el botón no puede limitarse a cambiar el estado: además tiene que desbloquear
 // esa espera. Se marca la petición y se resuelve el clic pendiente a mano; el
@@ -514,17 +514,160 @@ function cutsceneEnMarcha() {
 
 function updateRewindButton() {
   if (!rewindBtn) return;
-  const hayElecciones = !!document.querySelector("#choices-container.active");
-  const visible =
-    isGameRunning && engine.canRewind() && !cutsceneEnMarcha() && !hayElecciones;
+  const visible = isGameRunning && engine.canRewind() && !cutsceneEnMarcha();
   rewindBtn.classList.toggle("hidden", !visible);
 }
+
+// ===== Log / backlog de diálogos =====
+// Patrón habitual de novela visual: una capa pausada, cronológica y desplazable
+// con hablante, texto y la respuesta elegida después de cada bifurcación.
+const logBtn = document.getElementById("log-btn");
+const logMenu = document.getElementById("log-menu");
+const logList = document.getElementById("log-list");
+const logClose = document.getElementById("log-close");
+let logPausedGame = false;
+
+function logAbierto() {
+  return !!logMenu && !logMenu.classList.contains("hidden");
+}
+
+function updateLogButton() {
+  if (!logBtn) return;
+  const visible =
+    isGameRunning && engine.backlogEntries().length > 0 && !cutsceneEnMarcha();
+  logBtn.classList.toggle("hidden", !visible);
+  if (!visible) cerrarLog({ restoreFocus: false });
+}
+
+function renderLog() {
+  if (!logList) return;
+  logList.replaceChildren();
+  const entries = engine.backlogEntries();
+  if (!entries.length) {
+    const empty = document.createElement("li");
+    empty.className = "log-empty";
+    empty.textContent = "Aún no hay diálogos en el historial.";
+    logList.appendChild(empty);
+    return;
+  }
+
+  let sectionKey = null;
+  entries.forEach((entry) => {
+    const nextSectionKey = `${entry.chapter}:${entry.scene}`;
+    if (nextSectionKey !== sectionKey) {
+      sectionKey = nextSectionKey;
+      const divider = document.createElement("li");
+      divider.className = "log-divider";
+      const chapter = document.createElement("span");
+      chapter.textContent = entry.chapterTitle;
+      const scene = document.createElement("strong");
+      scene.textContent = entry.sceneTitle;
+      divider.append(chapter, scene);
+      logList.appendChild(divider);
+    }
+
+    const item = document.createElement("li");
+    item.className = "log-entry";
+    const portrait = document.createElement("div");
+    portrait.className = "log-portrait";
+    portrait.dataset.character = entry.characterKey || "unknown";
+    portrait.dataset.pose = entry.pose || "neutral";
+    portrait.style.setProperty("--speaker-color", entry.speakerColor);
+    if (entry.usesHumanPortrait) portrait.classList.add("uses-human-portrait");
+    if (entry.portrait) {
+      portrait.classList.add("has-portrait");
+      portrait.style.backgroundImage = `url(${JSON.stringify(
+        engine.cacheBustAsset(entry.portrait),
+      )})`;
+      portrait.setAttribute("role", "img");
+      portrait.setAttribute(
+        "aria-label",
+        `${entry.speaker}, pose ${entry.pose || "neutral"}`,
+      );
+    } else {
+      portrait.setAttribute("aria-hidden", "true");
+    }
+
+    const body = document.createElement("div");
+    body.className = "log-entry-body";
+    const speaker = document.createElement("div");
+    speaker.className = "log-speaker";
+    speaker.textContent = entry.speaker;
+    speaker.style.color = entry.speakerColor;
+    const text = document.createElement("p");
+    text.className = "log-text";
+    text.textContent = entry.text;
+    body.append(speaker, text);
+
+    if (entry.choice) {
+      const choice = document.createElement("div");
+      choice.className = "log-choice";
+      const label = document.createElement("span");
+      label.textContent = "ELECCIÓN";
+      const value = document.createElement("strong");
+      value.textContent = entry.choice;
+      choice.append(label, value);
+      body.appendChild(choice);
+    }
+    item.append(portrait, body);
+    logList.appendChild(item);
+  });
+}
+
+async function abrirLog() {
+  if (!logMenu || !logList || !isGameRunning || cutsceneEnMarcha()) return;
+  cerrarMenuEscenas();
+  renderLog();
+  logMenu.classList.remove("hidden");
+  logMenu.setAttribute("aria-hidden", "false");
+  logBtn?.setAttribute("aria-expanded", "true");
+  logPausedGame = true;
+  setGamePaused(true);
+  logList.scrollTop = logList.scrollHeight;
+  logClose?.focus();
+  await engine.prepareBacklogCharacters();
+  if (!logAbierto()) return;
+  renderLog();
+  logList.scrollTop = logList.scrollHeight;
+}
+
+function cerrarLog(options = {}) {
+  if (!logMenu || logMenu.classList.contains("hidden")) return;
+  logMenu.classList.add("hidden");
+  logMenu.setAttribute("aria-hidden", "true");
+  logBtn?.setAttribute("aria-expanded", "false");
+  if (logPausedGame) {
+    logPausedGame = false;
+    setGamePaused(false);
+  }
+  if (options.restoreFocus !== false) logBtn?.focus();
+}
+
+logBtn?.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  if (logAbierto()) cerrarLog();
+  else abrirLog();
+});
+
+logClose?.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  cerrarLog();
+});
+
+logMenu?.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
+  if (event.target === logMenu) cerrarLog();
+});
 
 function startRewindWatcher() {
   stopRewindWatcher();
   rewindWatcher = setInterval(() => {
     updateRewindButton();
     updateScenesButton();
+    updateLogButton();
     updateOptionsButton();
   }, 200);
 }
@@ -534,11 +677,13 @@ function stopRewindWatcher() {
   rewindWatcher = null;
   rewindBtn?.classList.add("hidden");
   scenesBtn?.classList.add("hidden");
+  logBtn?.classList.add("hidden");
   optionsBtn?.classList.add("hidden");
   cerrarMenuEscenas();
+  cerrarLog({ restoreFocus: false });
 }
 
-// El botón de opciones sigue la misma regla que los otros dos: solo se esconde
+// El botón de opciones sigue la misma regla que los otros tres: solo se esconde
 // durante una cutscene, donde Esc es del vídeo.
 function updateOptionsButton() {
   if (!optionsBtn) return;
@@ -583,8 +728,7 @@ function abrirMenuEscenas() {
     const li = document.createElement("li");
     li.className =
       "scenes-item" +
-      (e.actual ? " actual" : "") +
-      (e.visitada && !e.actual ? " visitada" : "");
+      (e.actual ? " actual" : "");
     li.setAttribute("role", "button");
     li.tabIndex = 0;
     if (e.actual) li.setAttribute("aria-current", "true");
@@ -2042,7 +2186,7 @@ function salirAlMenuPrincipal() {
 }
 
 function targetPermiteInputEnPausa(target) {
-  return target instanceof Element && !!target.closest("#pause-menu");
+  return target instanceof Element && !!target.closest("#pause-menu, #log-menu");
 }
 
 function bloquearInputDurantePausa(e) {
@@ -2112,7 +2256,8 @@ document.addEventListener("keydown", (e) => {
     if (!isGameRunning || cutsceneEnMarcha()) return;
     e.preventDefault();
     e.stopImmediatePropagation();
-    if (menuPausaAbierto()) cerrarMenuPausa();
+    if (logAbierto()) cerrarLog();
+    else if (menuPausaAbierto()) cerrarMenuPausa();
     else abrirMenuPausa();
     return;
   }
@@ -2679,6 +2824,7 @@ async function loadAvailableChapters() {
       );
       if (!response.ok) break; // no existe -> no hay más capítulos
       const chapter = await response.json();
+      engine.registerCanonicalChapter(chapterId, chapter);
       const title = chapter.title || `Capítulo ${i}`;
       AVAILABLE_CHAPTERS.push({ id: chapterId, title });
       if (chapter.isFinal === true) break;
@@ -2739,6 +2885,7 @@ async function startNewGame() {
   engine.inventory = [];
   engine.storyDelay = 0;
   engine.storyPressure = 0;
+  engine.clearDialogueTimeline();
 
   // Cargar todos los personajes disponibles
   await loadAllCharacters();
@@ -2779,6 +2926,7 @@ async function playChapter(chapterIdentifier, transitionCurtain = null) {
   if (!chapter) {
     isGameRunning = false;
     engine.setFastForward(false);
+    engine.reset();
     setMainMenuVisible(true);
     showMenuMedia();
     releaseChapterTransition(transitionCurtain);
@@ -2791,6 +2939,14 @@ async function playChapter(chapterIdentifier, transitionCurtain = null) {
   await playGame();
 }
 
+function syncCurrentChapterFromEngine() {
+  const chapterName = engine.lastChapterName;
+  if (!chapterName) return;
+  currentChapterName = chapterName;
+  const numeric = chapterName.match(/^chapter(\d+)/);
+  if (numeric) currentChapterNumber = parseInt(numeric[1], 10);
+}
+
 async function playGame() {
   startRewindWatcher();
   while (isGameRunning) {
@@ -2801,12 +2957,18 @@ async function playGame() {
       break;
     }
 
-    // Petición de retroceso: rebobinar y volver a reproducir la escena anterior
-    // desde su primera línea (sus acciones repintan fondo, personajes y música).
+    // Petición de retroceso: los saltos manuales a una ruta vuelven a su decisión,
+    // el flujo jugado conserva el camino elegido y el resto usa el orden JSON.
+    // Una decisión restaurada vuelve a mostrar opciones y sustituye el futuro
+    // sólo al escoger; los minijuegos resueltos no vuelven a ejecutarse.
     if (rewindRequested) {
       rewindRequested = false;
-      engine.rewindToPreviousScene();
+      const rewound = await engine.rewindToPreviousDialogue();
+      syncCurrentChapterFromEngine();
       updateRewindButton();
+      // La instantánea ya muestra su diálogo; a diferencia del salto de escena
+      // no hay que pedir otra línea, sino esperar la próxima orden.
+      if (rewound && engine.isWaitingForInput) await waitForClick();
       continue;
     }
 
@@ -2814,7 +2976,7 @@ async function playGame() {
     if (sceneJumpRequested !== null) {
       const destino = sceneJumpRequested;
       sceneJumpRequested = null;
-      engine.saltarAEscena(destino);
+      await engine.saltarAEscena(destino);
       updateRewindButton();
       continue;
     }
@@ -2830,6 +2992,9 @@ async function playGame() {
     }
 
     const hasMoreContent = await engine.nextLine();
+    // El avance histórico puede cruzar de nuevo un límite de capítulo. Mantener
+    // el contador de game.js alineado con el capítulo activado por el motor.
+    syncCurrentChapterFromEngine();
 
     if (!hasMoreContent) {
       // Último diálogo ya está mostrado, esperar click antes de terminar
@@ -2917,7 +3082,7 @@ async function endGame() {
   const transitionCurtain = await engine.showChapterEnd(chapterTitle);
 
   // Resetear el estado
-  engine.reset();
+  engine.reset({ preserveDialogueTimeline: !isFinalChapter });
 
   // Si el capítulo es el final del juego, volver directamente al menú
   if (isFinalChapter) {
@@ -2937,6 +3102,7 @@ async function endGame() {
     await showContinueOptions(nextChapterId, transitionCurtain);
   } else {
     // No hay más capítulos, volver al menú
+    engine.reset();
     setMainMenuVisible(true);
     showMenuMedia();
     releaseChapterTransition(transitionCurtain);
@@ -2988,6 +3154,7 @@ async function showContinueOptions(nextChapterId, transitionCurtain) {
       isGameRunning = true;
       return playChapter(nextChapterId, transitionCurtain);
     } else {
+      engine.reset();
       setMainMenuVisible(true);
       showMenuMedia();
       releaseChapterTransition(transitionCurtain);

@@ -348,10 +348,6 @@
               "character": "samu",
               "pose": "thinking",
               "position": "center"
-            },
-            {
-              "type": "goToScene",
-              "value": "Escena 3: Echar un ojo al barrio"
             }
           ]
         },

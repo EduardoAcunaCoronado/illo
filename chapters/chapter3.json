@@ -117,11 +117,11 @@
               "loop": false
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -504,7 +504,7 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -740,15 +740,15 @@
               "cut": true
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -896,11 +896,11 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -1437,11 +1437,11 @@
               "pose": "enfadado"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -1475,7 +1475,7 @@
               "value": "assets/images/backgrounds/chapter3/callejon_trasero.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -1558,15 +1558,15 @@
               "duration": 600
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -1822,15 +1822,15 @@
               "cut": true
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -1954,15 +1954,15 @@
               "value": "assets/images/backgrounds/chapter3/backstage_mesa.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -2027,7 +2027,7 @@
               "duration": 700
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -2045,6 +2045,10 @@
               "character": "santi",
               "position": "center",
               "pose": "herido"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
             }
           ],
           "character": "Santi",
@@ -2115,11 +2119,11 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -2290,6 +2294,10 @@
               "character": "santi",
               "position": "center",
               "pose": "herido"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
             }
           ],
           "character": "Santi",
@@ -2310,11 +2318,11 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -2522,15 +2530,15 @@
               "value": "assets/images/backgrounds/chapter3/pasillo_backstage.webp"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -2652,7 +2660,7 @@
               "duration": 700
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center",
               "exit": "fade"
             }
@@ -2906,11 +2914,11 @@
               "loop": false
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right",
               "exit": "fade"
             },
@@ -2966,15 +2974,15 @@
               "cut": true
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "left"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center"
             },
             {
@@ -3014,7 +3022,8 @@
           "actions": [
             {
               "type": "playVideo",
-              "path": "assets/video/cutscenes/chapter3/opening_tony.mp4"
+              "path": "assets/video/cutscenes/chapter3/opening_tony.mp4",
+              "endBackground": "assets/images/backgrounds/chapter3/fans_calmandose.webp"
             }
           ],
           "character": "",
@@ -3078,6 +3087,10 @@
               "position": "center",
               "pose": "cantando",
               "enter": "fade"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
             }
           ],
           "character": "3C",
@@ -3109,7 +3122,7 @@
               "id": "bg_music"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center",
               "exit": "fade"
             },
@@ -3180,7 +3193,7 @@
               "fadeMs": 600
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "center",
               "exit": "fade"
             },
@@ -3194,6 +3207,10 @@
               "position": "center",
               "pose": "sad",
               "enter": "fade"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
             }
           ],
           "character": "Seraphyna",
@@ -3205,7 +3222,7 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right"
             },
             {
@@ -3237,6 +3254,10 @@
               "character": "tony",
               "position": "center",
               "pose": "balada"
+            },
+            {
+              "type": "hideCharacter",
+              "position": "center"
             }
           ],
           "character": "Seraphyna",
@@ -3725,7 +3746,7 @@
         {
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "position": "right",
               "exit": "fade"
             },
