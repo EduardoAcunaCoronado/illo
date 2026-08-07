@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tests internos — Project AI.ri</title>
+    <style>
+        @font-face {
+            font-family: "Righteous";
+            src: url("assets/fonts/ui/Righteous.woff2") format("woff2");
+            font-display: swap;
+        }
+        @font-face {
+            font-family: "Outfit";
+            src: url("assets/fonts/ui/Outfit-var.woff2") format("woff2");
+            font-weight: 100 900;
+            font-display: swap;
+        }
+        :root {
+            color-scheme: dark;
+            --gold: #ffd166;
+            --cyan: #4fd0ff;
+            --pink: #ff4fa3;
+            --ok: #61e6a8;
+            --bad: #ff6b81;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Outfit", sans-serif;
+            background:
+                radial-gradient(circle at 10% 0%, rgba(45, 73, 137, 0.55), transparent 34%),
+                radial-gradient(circle at 88% 12%, rgba(151, 34, 105, 0.35), transparent 30%),
+                #070812;
+            color: #f2ecff;
+        }
+        .wrap {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: grid;
+            gap: 18px;
+            padding: 24px 20px 64px;
+        }
+        h1 {
+            margin: 0;
+            color: var(--gold);
+            font-family: "Righteous", sans-serif;
+            font-size: clamp(2.6rem, 7vw, 6rem);
+            line-height: 0.9;
+            letter-spacing: -0.045em;
+        }
+        p {
+            margin: 0;
+            color: #c1bdd8;
+        }
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .hero {
+            position: relative;
+            overflow: hidden;
+            min-height: 280px;
+            padding: 30px;
+            display: grid;
+            align-content: end;
+            gap: 12px;
+            border: 1px solid rgba(79, 208, 255, 0.25);
+            background: linear-gradient(145deg, rgba(21, 26, 51, 0.96), rgba(8, 9, 22, 0.94));
+            box-shadow: 0 26px 80px rgba(0, 0, 0, 0.42);
+        }
+        .hero::after {
+            content: "QA";
+            position: absolute;
+            right: -0.04em;
+            top: -0.3em;
+            color: rgba(79, 208, 255, 0.055);
+            font: 900 15rem/1 "Righteous", sans-serif;
+        }
+        .hero-copy {
+            max-width: 760px;
+            line-height: 1.55;
+        }
+        .actions a {
+            color: #f2ecff;
+            text-decoration: none;
+        }
+        .ghost-link {
+            border: 1px solid rgba(255, 209, 102, 0.35);
+            background: #24163a;
+            color: #f2ecff;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-weight: 700;
+        }
+        .latest {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 14px;
+            align-items: center;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(10, 12, 28, 0.86);
+        }
+        .latest-score {
+            min-width: 96px;
+            text-align: center;
+            padding: 12px;
+            border: 1px solid rgba(79, 208, 255, 0.28);
+            color: var(--cyan);
+            font-size: 1.5rem;
+            font-weight: 900;
+        }
+        .latest.pass .latest-score { color: var(--ok); border-color: rgba(97, 230, 168, 0.5); }
+        .latest.fail .latest-score { color: var(--bad); border-color: rgba(255, 107, 129, 0.5); }
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        .test-card {
+            border: 1px solid rgba(255, 209, 102, 0.32);
+            border-radius: 0;
+            background: linear-gradient(150deg, rgba(20, 24, 47, 0.96), rgba(10, 11, 25, 0.96));
+            padding: 18px;
+            display: grid;
+            gap: 10px;
+        }
+        .test-card.recommended { border-color: rgba(255, 209, 102, 0.7); box-shadow: inset 4px 0 var(--gold); }
+        .test-title {
+            margin: 0;
+            color: #ffd166;
+            font-size: 1.15rem;
+        }
+        .test-meta {
+            color: #d6d0f2;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .test-params {
+            display: grid;
+            gap: 8px;
+        }
+        .coverage { display: flex; flex-wrap: wrap; gap: 6px; }
+        .pill { padding: 4px 8px; border: 1px solid rgba(79, 208, 255, 0.28); border-radius: 999px; color: #bdeaff; font-size: 0.72rem; }
+        .recommended-label { color: var(--gold); font-size: 0.74rem; font-weight: 900; letter-spacing: 0.1em; text-transform: uppercase; }
+        .field {
+            display: grid;
+            gap: 6px;
+            font-size: 0.92rem;
+        }
+        .field label {
+            color: #e2dcff;
+        }
+        .field input[type="number"] {
+            border: 1px solid rgba(79, 208, 255, 0.45);
+            background: #090d23;
+            color: #f2ecff;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+        .field.check {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .field.check input {
+            margin: 0;
+            accent-color: #ffd166;
+        }
+        button {
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 14px;
+            background: #ffd166;
+            color: #190d2b;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        button:hover, .ghost-link:hover { filter: brightness(1.12); transform: translateY(-1px); }
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+        }
+        @media (max-width: 640px) {
+            .wrap { padding: 10px 10px 40px; }
+            .hero { min-height: 240px; padding: 18px; }
+            .hero::after { font-size: 9rem; }
+            .latest { grid-template-columns: 1fr; }
+            .test-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <header class="hero">
+            <div class="actions"><span class="recommended-label">Project AI.ri / laboratorio local</span><a id="return-to-main" class="ghost-link" href="index.html">Volver al menú</a></div>
+            <h1>Tests internos</h1>
+            <p class="hero-copy">Selecciona una prueba, ajusta la carga y obtén evidencia reproducible. La suite principal comprueba cada optimización con criterios PASS/FAIL; los milisegundos son contexto, no la única señal.</p>
+        </header>
+        <section id="latest-result" class="latest" aria-live="polite">
+            <div class="latest-score">Sin datos</div>
+            <div><strong>Última ejecución</strong><p>Ejecuta la suite principal para guardar aquí su resumen.</p></div>
+        </section>
+        <section id="tests-list" class="test-grid" aria-label="Catálogo de pruebas"></section>
+    </main>
+
+    <script>
+        const TESTS_CATALOG = [
+            {
+                id: "character-load",
+                label: "Carga de personajes",
+                description:
+                    "Compara el comportamiento de carga de personajes con y sin deduplicación, usando "
+                    + "fetch simulado para comparar tiempos y peticiones repetidas.",
+                file: "test-character-load.html",
+                coverage: ["fichas JSON", "dedupe en vuelo", "precarga paralela", "404"],
+                parameters: [
+                    {
+                        key: "sceneRepeats",
+                        label: "Repeticiones de escena",
+                        type: "number",
+                        min: 1,
+                        max: 20,
+                        defaultValue: 2,
+                    },
+                    {
+                        key: "preloadRepeats",
+                        label: "Repeticiones de precarga",
+                        type: "number",
+                        min: 1,
+                        max: 20,
+                        defaultValue: 2,
+                    },
+                    {
+                        key: "includeMissing",
+                        label: "Incluir personaje inexistente",
+                        type: "checkbox",
+                        defaultValue: false,
+                    },
+                ],
+            },
+            {
+                id: "runtime-load-bench",
+                label: "Rendimiento de carga (antes y después)",
+                description:
+                    "Ejecuta escenarios de personajes, capítulos, fondos y sonidos con y sin "
+                    + "caché/dedupe para comparar peticiones y tiempo.",
+                file: "test-runtime-load-bench.html",
+                recommended: true,
+                coverage: ["13 criterios", "personajes", "capítulos", "prefetch", "fondos", "audio", "historial"],
+                parameters: [
+                    {
+                        key: "sceneRepeats",
+                        label: "Repeticiones de personaje en escena",
+                        type: "number",
+                        min: 1,
+                        max: 20,
+                        defaultValue: 2,
+                    },
+                    {
+                        key: "preloadRepeats",
+                        label: "Repeticiones de precarga de personajes",
+                        type: "number",
+                        min: 1,
+                        max: 20,
+                        defaultValue: 2,
+                    },
+                    {
+                        key: "chapterRepeats",
+                        label: "Repeticiones de carga de capítulo",
+                        type: "number",
+                        min: 1,
+                        max: 20,
+                        defaultValue: 2,
+                    },
+                    {
+                        key: "backgroundRepeats",
+                        label: "Repeticiones de fondo",
+                        type: "number",
+                        min: 1,
+                        max: 20,
+                        defaultValue: 2,
+                    },
+                    {
+                        key: "audioRepeats",
+                        label: "Repeticiones de sonido",
+                        type: "number",
+                        min: 1,
+                        max: 20,
+                        defaultValue: 2,
+                    },
+                    {
+                        key: "includeMissing",
+                        label: "Incluir recursos inexistentes (404) en escenarios 404",
+                        type: "checkbox",
+                        defaultValue: false,
+                    },
+                ],
+            },
+        ];
+
+        const queryParams = new URLSearchParams(location.search);
+        const returnTo = queryParams.get("returnTo");
+        const returnTarget = document.getElementById("return-to-main");
+        if (returnTo) {
+            returnTarget.href = returnTo;
+        }
+
+        function clampNumber(raw, min, max, fallback) {
+            const parsed = parseInt(String(raw), 10);
+            if (Number.isNaN(parsed)) return fallback;
+            if (Number.isFinite(min) && parsed < min) return min;
+            if (Number.isFinite(max) && parsed > max) return max;
+            return parsed;
+        }
+
+        function renderField(test, param) {
+            const fieldId = `test-param-${test.id}-${param.key}`;
+            if (param.type === "checkbox") {
+                const checked = param.defaultValue ? "checked" : "";
+                return `
+                    <label class="field check">
+                        <input
+                            id="${fieldId}"
+                            type="checkbox"
+                            data-test-param="${param.key}"
+                            ${checked}
+                        />
+                        <span>${param.label}</span>
+                    </label>
+                `;
+            }
+
+            return `
+                <label class="field">
+                    <span>${param.label}</span>
+                    <input
+                        id="${fieldId}"
+                        type="number"
+                        data-test-param="${param.key}"
+                        min="${Number.isFinite(param.min) ? param.min : ""}"
+                        max="${Number.isFinite(param.max) ? param.max : ""}"
+                        step="1"
+                        value="${param.defaultValue}"
+                    />
+                </label>
+            `;
+        }
+
+        function renderTestCard(test) {
+            const fields = test.parameters.map((param) => renderField(test, param)).join("");
+            const coverage = (test.coverage || []).map((item) => `<span class="pill">${item}</span>`).join("");
+            return `
+                <article class="test-card ${test.recommended ? "recommended" : ""}" data-test-id="${test.id}">
+                    ${test.recommended ? '<span class="recommended-label">Suite principal recomendada</span>' : ""}
+                    <h2 class="test-title">${test.label}</h2>
+                    <p class="test-meta">${test.description}</p>
+                    <div class="coverage">${coverage}</div>
+                    <div class="test-params">${fields}</div>
+                    <button type="button" data-test-launch>Configurar y abrir</button>
+                </article>
+            `;
+        }
+
+        function renderLastReport() {
+            const panel = document.getElementById("latest-result");
+            try {
+                const report = JSON.parse(localStorage.getItem("illo_test_results_v1") || "null");
+                if (!report?.summary) return;
+                const { passed, failed, total } = report.summary;
+                panel.classList.add(failed === 0 ? "pass" : "fail");
+                panel.querySelector(".latest-score").textContent = `${passed}/${total}`;
+                const date = report.generatedAt ? new Date(report.generatedAt).toLocaleString("es-ES") : "fecha desconocida";
+                panel.querySelector("p").textContent = `${failed === 0 ? "Todo aprobado" : `${failed} fallo(s)`}. ${date}.`;
+            } catch (_) {}
+        }
+
+        function collectParams(card, paramsDefinition) {
+            const result = {};
+            paramsDefinition.forEach((param) => {
+                const input = card.querySelector(`[data-test-param="${param.key}"]`);
+                if (!input) return;
+
+                if (param.type === "checkbox") {
+                    result[param.key] = String(Boolean(input.checked));
+                    return;
+                }
+
+                result[param.key] = clampNumber(
+                    input.value,
+                    Number.isFinite(param.min) ? param.min : -Infinity,
+                    Number.isFinite(param.max) ? param.max : Infinity,
+                    param.defaultValue,
+                );
+            });
+            return result;
+        }
+
+        function launchTest(card) {
+            const testId = card.getAttribute("data-test-id");
+            const test = TESTS_CATALOG.find((item) => item.id === testId);
+            if (!test) return;
+
+            const target = new URL(test.file, location.href);
+            const params = collectParams(card, test.parameters || []);
+            Object.entries(params).forEach(([key, value]) => {
+                target.searchParams.set(key, String(value));
+            });
+            target.searchParams.set("returnTo", location.href);
+            location.href = target.href;
+        }
+
+        function renderCatalog() {
+            const container = document.getElementById("tests-list");
+            const cards = TESTS_CATALOG.map((test) => renderTestCard(test)).join("");
+            container.innerHTML = cards || '<p>No hay tests activos.</p>';
+
+            container.addEventListener("click", (event) => {
+                const button = event.target.closest("[data-test-launch]");
+                if (!button) return;
+                launchTest(button.closest("[data-test-id]"));
+            });
+        }
+
+        renderCatalog();
+        renderLastReport();
+    </script>
+</body>
+</html>

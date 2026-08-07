@@ -103,7 +103,7 @@ class Persona5Effects {
      * Efecto de aparición de texto con destellos
      */
     spanText(text) {
-        const spans = text.split('').map(char => {
+        const spans = text.split('').map((char) => {
             const span = document.createElement('span');
             span.textContent = char;
             span.style.display = 'inline-block';
@@ -133,7 +133,7 @@ class Persona5Effects {
         `;
         container.appendChild(overlay);
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             requestAnimationFrame(() => {
                 overlay.style.opacity = '1';
                 setTimeout(() => {
@@ -276,7 +276,8 @@ class Persona5Effects {
 
             container.appendChild(particle);
 
-            let px = x, py = y;
+            let px = x,
+                py = y;
             let vx = Math.cos(angle) * velocity;
             let vy = Math.sin(angle) * velocity;
             let life = 1;
@@ -308,10 +309,10 @@ class Persona5Effects {
         if (!this.soundEnabled) return;
 
         const soundMap = {
-            'select': 'sounds/select.mp3',
-            'impact': 'sounds/impact.mp3',
-            'transition': 'sounds/transition.mp3',
-            'confirm': 'sounds/confirm.mp3',
+            select: 'sounds/select.mp3',
+            impact: 'sounds/impact.mp3',
+            transition: 'sounds/transition.mp3',
+            confirm: 'sounds/confirm.mp3',
         };
 
         const soundPath = soundMap[soundType];
@@ -319,7 +320,7 @@ class Persona5Effects {
             try {
                 const audio = new Audio(soundPath);
                 audio.volume = 0.5;
-                audio.play().catch(e => {
+                audio.play().catch((e) => {
                     // Audio no disponible, ignorar silenciosamente
                 });
             } catch (e) {

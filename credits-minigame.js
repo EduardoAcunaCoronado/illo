@@ -1,36 +1,36 @@
 (function () {
-  const DEFAULT_IMAGES = [
-    "assets/images/backgrounds/chapter1/pisito.webp",
-    "assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp",
-    "assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono.webp",
-    "assets/images/backgrounds/chapter3/coche_interior.webp",
-    "assets/images/backgrounds/chapter3/skyline_eechi_land.webp",
-    "assets/images/backgrounds/chapter3/multitud_entrada.webp",
-    "assets/images/backgrounds/chapter3/camerino_seraphyna.webp",
-    "assets/images/backgrounds/chapter3/foco_cae_santi.webp",
-    "assets/images/backgrounds/chapter4/ciudad_paloma.webp",
-    "assets/images/backgrounds/chapter4/entrada_epica_jose.webp",
-    "assets/images/backgrounds/shared/plaza_circular.webp",
-    "assets/images/backgrounds/chapter4/cielo_glitch_brainrot.webp",
-    "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.webp",
-    "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.webp",
-    "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.webp",
-    "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp",
-    "assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.webp",
-    "assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.webp",
-    "assets/images/backgrounds/chapter6/paseo_ciudad_paloma.webp",
-    "assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma.webp",
-    "assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma_mariposa.webp",
-  ];
+    const DEFAULT_IMAGES = [
+        'assets/images/backgrounds/chapter1/pisito.webp',
+        'assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_v2_4k.webp',
+        'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_trono.webp',
+        'assets/images/backgrounds/chapter3/coche_interior.webp',
+        'assets/images/backgrounds/chapter3/skyline_eechi_land.webp',
+        'assets/images/backgrounds/chapter3/multitud_entrada.webp',
+        'assets/images/backgrounds/chapter3/camerino_seraphyna.webp',
+        'assets/images/backgrounds/chapter3/foco_cae_santi.webp',
+        'assets/images/backgrounds/chapter4/ciudad_paloma.webp',
+        'assets/images/backgrounds/chapter4/entrada_epica_jose.webp',
+        'assets/images/backgrounds/shared/plaza_circular.webp',
+        'assets/images/backgrounds/chapter4/cielo_glitch_brainrot.webp',
+        'assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.webp',
+        'assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.webp',
+        'assets/images/backgrounds/chapter5/airi_sala_interior_santuario.webp',
+        'assets/images/backgrounds/shared/fuente_ciudad_paloma.webp',
+        'assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.webp',
+        'assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.webp',
+        'assets/images/backgrounds/chapter6/paseo_ciudad_paloma.webp',
+        'assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma.webp',
+        'assets/images/backgrounds/chapter6/ultimo_vistazo_ciudad_paloma_mariposa.webp',
+    ];
 
-  const DEFAULT_MUSIC = "assets/audio/music/minigames/cae_a_mis_pies.mp3";
-  const cacheBust = (path) => `${path}?v=${Date.now()}`;
+    const DEFAULT_MUSIC = 'assets/audio/music/minigames/cae_a_mis_pies.mp3';
+    const cacheBust = (path) => `${path}?v=${Date.now()}`;
 
-  function ensureStyles() {
-    if (document.getElementById("credits-minigame-styles")) return;
-    const style = document.createElement("style");
-    style.id = "credits-minigame-styles";
-    style.textContent = `
+    function ensureStyles() {
+        if (document.getElementById('credits-minigame-styles')) return;
+        const style = document.createElement('style');
+        style.id = 'credits-minigame-styles';
+        style.textContent = `
       .credits-minigame {
         position: fixed;
         inset: 0;
@@ -136,41 +136,39 @@
         50% { opacity: 0.9; }
       }
     `;
-    document.head.appendChild(style);
-  }
-
-  class CreditsMinigame {
-    constructor(options = {}) {
-      this.options = options;
-      this.images = Array.isArray(options.images) && options.images.length > 0
-        ? options.images
-        : DEFAULT_IMAGES;
-      this.music = options.music || options.path || DEFAULT_MUSIC;
-      this.message = options.message || "Gracias por jugar";
-      this.overlay = null;
-      this.audio = null;
-      this.timers = [];
-      this.resolve = null;
-      this.finished = false;
-      this.activeBgIndex = 0;
-      this.hasActiveImage = false;
-      this.transitionTimer = null;
+        document.head.appendChild(style);
     }
 
-    play() {
-      ensureStyles();
-      return new Promise((resolve) => {
-        this.resolve = resolve;
-        this.render();
-        this.startAudio();
-        this.startSequence();
-      });
-    }
+    class CreditsMinigame {
+        constructor(options = {}) {
+            this.options = options;
+            this.images = Array.isArray(options.images) && options.images.length > 0 ? options.images : DEFAULT_IMAGES;
+            this.music = options.music || options.path || DEFAULT_MUSIC;
+            this.message = options.message || 'Gracias por jugar';
+            this.overlay = null;
+            this.audio = null;
+            this.timers = [];
+            this.resolve = null;
+            this.finished = false;
+            this.activeBgIndex = 0;
+            this.hasActiveImage = false;
+            this.transitionTimer = null;
+        }
 
-    render() {
-      this.overlay = document.createElement("div");
-      this.overlay.className = "credits-minigame";
-      this.overlay.innerHTML = `
+        play() {
+            ensureStyles();
+            return new Promise((resolve) => {
+                this.resolve = resolve;
+                this.render();
+                this.startAudio();
+                this.startSequence();
+            });
+        }
+
+        render() {
+            this.overlay = document.createElement('div');
+            this.overlay.className = 'credits-minigame';
+            this.overlay.innerHTML = `
         <img class="credits-bg credits-bg-a" alt="">
         <img class="credits-bg credits-bg-b" alt="">
         <div class="credits-shade"></div>
@@ -179,127 +177,125 @@
           <h2>${this.escape(this.message)}</h2>
         </section>
       `;
-      document.getElementById("game-container").appendChild(this.overlay);
-      this.overlay
-        .querySelector(".credits-skip")
-        .addEventListener("click", () => this.finish());
+            document.getElementById('game-container').appendChild(this.overlay);
+            this.overlay.querySelector('.credits-skip').addEventListener('click', () => this.finish());
+        }
+
+        startAudio() {
+            this.audio = new Audio(this.music);
+            this.audio.volume = this.options.volume == null ? 0.75 : this.options.volume;
+            this.audio.addEventListener('ended', () => this.finish());
+            this.audio.play().catch(() => {
+                this.scheduleFallback();
+            });
+        }
+
+        startSequence() {
+            this.showImage(0);
+            const begin = () => {
+                if (this.finished) return;
+                const durationMs = Number.isFinite(this.audio.duration)
+                    ? this.audio.duration * 1000
+                    : this.options.duration || 90000;
+                const thanksMs = this.options.thanksDuration || 6500;
+                const imageWindow = Math.max(8000, durationMs - thanksMs);
+                const step = Math.max(3500, imageWindow / this.images.length);
+
+                this.images.forEach((_, index) => {
+                    if (index === 0) return;
+                    this.timers.push(setTimeout(() => this.showImage(index), step * index));
+                });
+                this.timers.push(setTimeout(() => this.showThanks(), imageWindow));
+                this.timers.push(setTimeout(() => this.finish(), durationMs + 400));
+            };
+
+            if (this.audio.readyState >= 1) begin();
+            else {
+                this.audio.addEventListener('loadedmetadata', begin, { once: true });
+                this.timers.push(setTimeout(begin, 1200));
+            }
+        }
+
+        scheduleFallback() {
+            if (this.finished) return;
+            const durationMs = this.options.duration || 90000;
+            this.timers.push(setTimeout(() => this.finish(), durationMs));
+        }
+
+        showImage(index) {
+            if (!this.overlay || this.finished) return;
+            const imagePath = cacheBust(this.images[index % this.images.length]);
+            const image = new Image();
+            image.onload = () => this.crossfadeTo(imagePath);
+            image.onerror = () => this.crossfadeTo(imagePath);
+            image.src = imagePath;
+        }
+
+        crossfadeTo(imagePath) {
+            if (!this.overlay || this.finished) return;
+            const backgrounds = this.overlay.querySelectorAll('.credits-bg');
+            if (!this.hasActiveImage) {
+                const firstBg = backgrounds[this.activeBgIndex];
+                firstBg.src = imagePath;
+                firstBg.style.zIndex = '1';
+                requestAnimationFrame(() => firstBg.classList.add('is-visible'));
+                this.hasActiveImage = true;
+                return;
+            }
+
+            const nextIndex = this.activeBgIndex === 0 ? 1 : 0;
+            const currentBg = backgrounds[this.activeBgIndex];
+            const nextBg = backgrounds[nextIndex];
+
+            nextBg.classList.remove('is-visible');
+            nextBg.style.zIndex = '1';
+            currentBg.style.zIndex = '0';
+            nextBg.src = imagePath;
+            nextBg.offsetHeight;
+            requestAnimationFrame(() => nextBg.classList.add('is-visible'));
+            if (this.transitionTimer) clearTimeout(this.transitionTimer);
+            this.transitionTimer = setTimeout(() => {
+                if (!this.overlay || this.finished) return;
+                currentBg.classList.remove('is-visible');
+                this.transitionTimer = null;
+            }, 1250);
+            this.activeBgIndex = nextIndex;
+        }
+
+        showThanks() {
+            if (!this.overlay || this.finished) return;
+            this.overlay.querySelector('.credits-thanks').classList.add('is-visible');
+        }
+
+        finish() {
+            if (this.finished) return;
+            this.finished = true;
+            if (this.transitionTimer) clearTimeout(this.transitionTimer);
+            this.timers.forEach((timer) => clearTimeout(timer));
+            this.timers = [];
+            if (this.audio) {
+                try {
+                    this.audio.pause();
+                    this.audio.currentTime = 0;
+                } catch (e) {}
+            }
+            if (this.overlay) this.overlay.remove();
+            if (this.resolve) this.resolve(true);
+        }
+
+        escape(value) {
+            return String(value)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
     }
 
-    startAudio() {
-      this.audio = new Audio(this.music);
-      this.audio.volume = this.options.volume == null ? 0.75 : this.options.volume;
-      this.audio.addEventListener("ended", () => this.finish());
-      this.audio.play().catch(() => {
-        this.scheduleFallback();
-      });
-    }
-
-    startSequence() {
-      this.showImage(0);
-      const begin = () => {
-        if (this.finished) return;
-        const durationMs = Number.isFinite(this.audio.duration)
-          ? this.audio.duration * 1000
-          : (this.options.duration || 90000);
-        const thanksMs = this.options.thanksDuration || 6500;
-        const imageWindow = Math.max(8000, durationMs - thanksMs);
-        const step = Math.max(3500, imageWindow / this.images.length);
-
-        this.images.forEach((_, index) => {
-          if (index === 0) return;
-          this.timers.push(setTimeout(() => this.showImage(index), step * index));
-        });
-        this.timers.push(setTimeout(() => this.showThanks(), imageWindow));
-        this.timers.push(setTimeout(() => this.finish(), durationMs + 400));
-      };
-
-      if (this.audio.readyState >= 1) begin();
-      else {
-        this.audio.addEventListener("loadedmetadata", begin, { once: true });
-        this.timers.push(setTimeout(begin, 1200));
-      }
-    }
-
-    scheduleFallback() {
-      if (this.finished) return;
-      const durationMs = this.options.duration || 90000;
-      this.timers.push(setTimeout(() => this.finish(), durationMs));
-    }
-
-    showImage(index) {
-      if (!this.overlay || this.finished) return;
-      const imagePath = cacheBust(this.images[index % this.images.length]);
-      const image = new Image();
-      image.onload = () => this.crossfadeTo(imagePath);
-      image.onerror = () => this.crossfadeTo(imagePath);
-      image.src = imagePath;
-    }
-
-    crossfadeTo(imagePath) {
-      if (!this.overlay || this.finished) return;
-      const backgrounds = this.overlay.querySelectorAll(".credits-bg");
-      if (!this.hasActiveImage) {
-        const firstBg = backgrounds[this.activeBgIndex];
-        firstBg.src = imagePath;
-        firstBg.style.zIndex = "1";
-        requestAnimationFrame(() => firstBg.classList.add("is-visible"));
-        this.hasActiveImage = true;
-        return;
-      }
-
-      const nextIndex = this.activeBgIndex === 0 ? 1 : 0;
-      const currentBg = backgrounds[this.activeBgIndex];
-      const nextBg = backgrounds[nextIndex];
-
-      nextBg.classList.remove("is-visible");
-      nextBg.style.zIndex = "1";
-      currentBg.style.zIndex = "0";
-      nextBg.src = imagePath;
-      nextBg.offsetHeight;
-      requestAnimationFrame(() => nextBg.classList.add("is-visible"));
-      if (this.transitionTimer) clearTimeout(this.transitionTimer);
-      this.transitionTimer = setTimeout(() => {
-        if (!this.overlay || this.finished) return;
-        currentBg.classList.remove("is-visible");
-        this.transitionTimer = null;
-      }, 1250);
-      this.activeBgIndex = nextIndex;
-    }
-
-    showThanks() {
-      if (!this.overlay || this.finished) return;
-      this.overlay.querySelector(".credits-thanks").classList.add("is-visible");
-    }
-
-    finish() {
-      if (this.finished) return;
-      this.finished = true;
-      if (this.transitionTimer) clearTimeout(this.transitionTimer);
-      this.timers.forEach((timer) => clearTimeout(timer));
-      this.timers = [];
-      if (this.audio) {
-        try {
-          this.audio.pause();
-          this.audio.currentTime = 0;
-        } catch (e) {}
-      }
-      if (this.overlay) this.overlay.remove();
-      if (this.resolve) this.resolve(true);
-    }
-
-    escape(value) {
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-  }
-
-  window.CreditsMinigame = {
-    play(options = {}) {
-      return new CreditsMinigame(options).play();
-    },
-    defaultImages: DEFAULT_IMAGES,
-  };
+    window.CreditsMinigame = {
+        play(options = {}) {
+            return new CreditsMinigame(options).play();
+        },
+        defaultImages: DEFAULT_IMAGES,
+    };
 })();

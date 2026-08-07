@@ -83,10 +83,7 @@ function requestHostIsLoopback(req, expectedPort) {
     try {
         const parsed = new URL(`http://${rawHost}`);
         const port = parsed.port ? Number.parseInt(parsed.port, 10) : 80;
-        return (
-            ['localhost', '127.0.0.1', '::1'].includes(parsed.hostname) &&
-            port === expectedPort
-        );
+        return ['localhost', '127.0.0.1', '::1'].includes(parsed.hostname) && port === expectedPort;
     } catch (_error) {
         return false;
     }
@@ -105,9 +102,23 @@ function hasPrivatePathSegment(urlPath) {
 }
 
 const IMMUTABLE_ASSET_EXTENSIONS = new Set([
-    '.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.ico',
-    '.mp4', '.webm', '.mp3', '.ogg', '.wav', '.m4a',
-    '.woff', '.woff2', '.ttf', '.otf',
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.webp',
+    '.svg',
+    '.ico',
+    '.mp4',
+    '.webm',
+    '.mp3',
+    '.ogg',
+    '.wav',
+    '.m4a',
+    '.woff',
+    '.woff2',
+    '.ttf',
+    '.otf',
 ]);
 
 function cachePolicyFor(filePath) {
@@ -126,7 +137,7 @@ function serveFile(req, res, filePath, stat) {
         'Content-Type': mimeFor(filePath),
         'Accept-Ranges': 'bytes',
         'Cache-Control': cachePolicyFor(filePath),
-        'ETag': etag,
+        ETag: etag,
         'Last-Modified': stat.mtime.toUTCString(),
     };
 

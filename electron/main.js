@@ -100,9 +100,7 @@ function loadSettings() {
     try {
         const saved = JSON.parse(fs.readFileSync(SETTINGS_FILE, 'utf8'));
         return Object.fromEntries(
-            Object.entries(saved).filter(
-                ([key, value]) => SETTINGS_KEYS.has(key) && typeof value === 'string',
-            ),
+            Object.entries(saved).filter(([key, value]) => SETTINGS_KEYS.has(key) && typeof value === 'string'),
         );
     } catch (error) {
         // Todavía no hay archivo (primer arranque) o está corrupto: valores por defecto.
@@ -301,8 +299,8 @@ function createWindow() {
     mainWindow.loadURL(`${server.origin}/index.html`);
 }
 
-// Canal deliberadamente limitado para que el botÃ³n Salir del juego cierre la
-// aplicaciÃ³n sin dar al renderizador acceso a APIs de Node/Electron.
+// Canal deliberadamente limitado para que el botón Salir del juego cierre la
+// aplicación sin dar al renderizador acceso a APIs de Node/Electron.
 ipcMain.on('app:quit', (event) => {
     if (isGameRenderer(event)) app.quit();
 });

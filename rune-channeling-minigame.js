@@ -1,78 +1,78 @@
 (function () {
-  const cacheBust = (path) => `${path}?v=${Date.now()}`;
-  const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
+    const cacheBust = (path) => `${path}?v=${Date.now()}`;
+    const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
-  const RUNES = [
-    {
-      id: "samu",
-      key: "a",
-      name: "Samu",
-      role: "Magia",
-      color: "#ff4f5f",
-      image: "assets/images/minigames/shared/runes/runa_samu.webp",
-    },
-    {
-      id: "edu",
-      key: "s",
-      name: "Edu",
-      role: "Velocidad",
-      color: "#4fd0ff",
-      image: "assets/images/minigames/shared/runes/runa_edu.webp",
-    },
-    {
-      id: "tony",
-      key: "d",
-      name: "Seraphyna",
-      role: "Sanación",
-      color: "#ff69b4",
-      image: "assets/images/minigames/shared/runes/runa_tony.webp",
-    },
-    {
-      id: "jose",
-      key: "f",
-      name: "José",
-      role: "Fuerza",
-      color: "#7cff8b",
-      image: "assets/images/minigames/shared/runes/runa_jose.webp",
-    },
-  ];
+    const RUNES = [
+        {
+            id: 'samu',
+            key: 'a',
+            name: 'Samu',
+            role: 'Magia',
+            color: '#ff4f5f',
+            image: 'assets/images/minigames/shared/runes/runa_samu.webp',
+        },
+        {
+            id: 'edu',
+            key: 's',
+            name: 'Edu',
+            role: 'Velocidad',
+            color: '#4fd0ff',
+            image: 'assets/images/minigames/shared/runes/runa_edu.webp',
+        },
+        {
+            id: 'tony',
+            key: 'd',
+            name: 'Seraphyna',
+            role: 'Sanación',
+            color: '#ff69b4',
+            image: 'assets/images/minigames/shared/runes/runa_tony.webp',
+        },
+        {
+            id: 'jose',
+            key: 'f',
+            name: 'José',
+            role: 'Fuerza',
+            color: '#7cff8b',
+            image: 'assets/images/minigames/shared/runes/runa_jose.webp',
+        },
+    ];
 
-  class RuneChannelingMinigame {
-    constructor(options = {}) {
-      this.options = options;
-      this.levels = options.levels || 7;
-      this.level = 1;
-      this.holdRequired = options.holdRequired || 1.35;
-      this.stableTime = 0;
-      this.integrity = 100;
-      this.keys = new Set();
-      this.running = false;
-      this.lastTime = 0;
-      this.resolve = null;
-      this.rafId = null;
-      this.runes = [];
-    }
+    class RuneChannelingMinigame {
+        constructor(options = {}) {
+            this.options = options;
+            this.levels = options.levels || 7;
+            this.level = 1;
+            this.holdRequired = options.holdRequired || 1.35;
+            this.stableTime = 0;
+            this.integrity = 100;
+            this.keys = new Set();
+            this.running = false;
+            this.lastTime = 0;
+            this.resolve = null;
+            this.rafId = null;
+            this.runes = [];
+        }
 
-    static play(options = {}) {
-      return new RuneChannelingMinigame(options).play();
-    }
+        static play(options = {}) {
+            return new RuneChannelingMinigame(options).play();
+        }
 
-    play() {
-      return new Promise((resolve) => {
-        this.resolve = resolve;
-        this.render();
-        this.startLevel(1);
-        this.bindEvents();
-        this.running = true;
-        this.lastTime = performance.now();
-        this.rafId = requestAnimationFrame((time) => this.tick(time));
-      });
-    }
+        play() {
+            return new Promise((resolve) => {
+                this.resolve = resolve;
+                this.render();
+                this.startLevel(1);
+                this.bindEvents();
+                this.running = true;
+                this.lastTime = performance.now();
+                this.rafId = requestAnimationFrame((time) => this.tick(time));
+            });
+        }
 
-    render() {
-      this.overlay = document.createElement("div");
-      this.overlay.className = "minigame-overlay rune-channeling-minigame";
-      this.overlay.innerHTML = `
+        render() {
+            this.overlay = document.createElement('div');
+            this.overlay.className = 'minigame-overlay rune-channeling-minigame';
+            this.overlay.innerHTML = `
         <style>${RuneChannelingMinigame.styles()}</style>
         <div class="rc-hud">
           <span class="rc-level">Nivel 1 / ${this.levels}</span>
@@ -81,7 +81,7 @@
         </div>
         <div class="rc-board">
           ${RUNES.map(
-            (rune) => `
+              (rune) => `
               <section class="rc-rune" data-rune="${rune.id}" style="--rune-color: ${rune.color}">
                 <div class="rc-rune-top">
                   <img class="rc-rune-icon" src="${cacheBust(rune.image)}" alt="">
@@ -97,218 +97,214 @@
                 <button class="rc-key" type="button" data-key="${rune.key}">${rune.key.toUpperCase()}</button>
               </section>
             `,
-          ).join("")}
+          ).join('')}
         </div>
         <div class="minigame-instructions">
           Mantén A · S · D · F para accionar cada poder y suelta para dejarlo ceder. Magia, velocidad, sanación y fuerza deben quedar en equilibrio.
         </div>
       `;
-      document.getElementById("game-container").appendChild(this.overlay);
-    }
-
-    bindEvents() {
-      this.onKeyDown = (event) => {
-        const key = event.key.toLowerCase();
-        if (!RUNES.some((rune) => rune.key === key)) return;
-        event.preventDefault();
-        this.keys.add(key);
-      };
-      this.onKeyUp = (event) => {
-        this.keys.delete(event.key.toLowerCase());
-      };
-      this.onBlur = () => this.keys.clear();
-      this.onPointerDown = (event) => {
-        const button = event.target.closest(".rc-key");
-        if (!button) return;
-        event.preventDefault();
-        this.keys.add(button.dataset.key);
-      };
-      this.onPointerUp = () => this.keys.clear();
-      this.swallowClick = (event) => event.stopPropagation();
-
-      document.addEventListener("keydown", this.onKeyDown);
-      document.addEventListener("keyup", this.onKeyUp);
-      window.addEventListener("blur", this.onBlur);
-      this.overlay.addEventListener("pointerdown", this.onPointerDown);
-      document.addEventListener("pointerup", this.onPointerUp);
-      this.overlay.addEventListener("click", this.swallowClick, true);
-    }
-
-    startLevel(level) {
-      this.level = level;
-      this.stableTime = 0;
-      const progress = this.levels > 1 ? (level - 1) / (this.levels - 1) : 0;
-      const startZoneHalfWidth = 8.5;
-      const endZoneHalfWidth = 3.5;
-      this.zoneHalfWidth =
-        startZoneHalfWidth - (startZoneHalfWidth - endZoneHalfWidth) * progress;
-      const speed = 11 + level * 2.2;
-      this.runes = RUNES.map((rune, index) => ({
-        ...rune,
-        value: 18 + Math.random() * 64,
-        velocity: 0,
-        drift: speed * (0.78 + Math.random() * 0.42),
-        target: 24 + Math.random() * 52,
-      }));
-      this.updateHud();
-      this.updateVisuals();
-      this.message(`Nivel ${level}: cada poder busca su propio equilibrio.`);
-    }
-
-    tick(time) {
-      // Si nos han sacado desde los botones de arriba, el overlay ya no está en
-      // el documento: parar el bucle y soltar los oyentes de teclado, que
-      // cuelgan de document y no se van con él.
-      if (!this.running) return;
-      if (!this.overlay.isConnected) {
-        this.running = false;
-        this.cleanupEvents();
-        return;
-      }
-      const dt = Math.min((time - this.lastTime) / 1000, 0.04);
-      this.lastTime = time;
-      this.update(dt);
-      this.updateVisuals();
-      this.rafId = requestAnimationFrame((nextTime) => this.tick(nextTime));
-    }
-
-    update(dt) {
-      let allStable = true;
-      const push = 58 + this.level * 4.5;
-      const gravity = 72 + this.level * 5.4;
-
-      this.runes.forEach((rune) => {
-        const pressing = this.keys.has(rune.key);
-        const driftNoise = Math.sin(performance.now() / 520 + rune.value) * 3.2;
-        const acceleration = pressing ? push : -gravity;
-        rune.velocity += acceleration * dt;
-        rune.velocity += driftNoise * dt;
-        rune.velocity *= Math.pow(0.88, dt * 60);
-        rune.value += (rune.velocity + rune.drift * 0.18) * dt;
-
-        if (pressing) {
-          this.integrity -= rune.value > 82 ? 8 * dt : 0;
-        } else {
-          this.integrity -= rune.value < 18 ? 8 * dt : 0;
+            document.getElementById('game-container').appendChild(this.overlay);
         }
 
-        if (rune.value <= 0 || rune.value >= 100) {
-          rune.value = clamp(rune.value, 0, 100);
-          rune.velocity *= -0.55;
-          this.integrity -= 11 * dt;
+        bindEvents() {
+            this.onKeyDown = (event) => {
+                const key = event.key.toLowerCase();
+                if (!RUNES.some((rune) => rune.key === key)) return;
+                event.preventDefault();
+                this.keys.add(key);
+            };
+            this.onKeyUp = (event) => {
+                this.keys.delete(event.key.toLowerCase());
+            };
+            this.onBlur = () => this.keys.clear();
+            this.onPointerDown = (event) => {
+                const button = event.target.closest('.rc-key');
+                if (!button) return;
+                event.preventDefault();
+                this.keys.add(button.dataset.key);
+            };
+            this.onPointerUp = () => this.keys.clear();
+            this.swallowClick = (event) => event.stopPropagation();
+
+            document.addEventListener('keydown', this.onKeyDown);
+            document.addEventListener('keyup', this.onKeyUp);
+            window.addEventListener('blur', this.onBlur);
+            this.overlay.addEventListener('pointerdown', this.onPointerDown);
+            document.addEventListener('pointerup', this.onPointerUp);
+            this.overlay.addEventListener('click', this.swallowClick, true);
         }
 
-        const distance = Math.abs(rune.value - rune.target);
-        if (distance > this.zoneHalfWidth) allStable = false;
-        if (distance > 32) this.integrity -= (distance - 32) * 0.11 * dt;
-      });
+        startLevel(level) {
+            this.level = level;
+            this.stableTime = 0;
+            const progress = this.levels > 1 ? (level - 1) / (this.levels - 1) : 0;
+            const startZoneHalfWidth = 8.5;
+            const endZoneHalfWidth = 3.5;
+            this.zoneHalfWidth = startZoneHalfWidth - (startZoneHalfWidth - endZoneHalfWidth) * progress;
+            const speed = 11 + level * 2.2;
+            this.runes = RUNES.map((rune, index) => ({
+                ...rune,
+                value: 18 + Math.random() * 64,
+                velocity: 0,
+                drift: speed * (0.78 + Math.random() * 0.42),
+                target: 24 + Math.random() * 52,
+            }));
+            this.updateHud();
+            this.updateVisuals();
+            this.message(`Nivel ${level}: cada poder busca su propio equilibrio.`);
+        }
 
-      this.integrity = clamp(this.integrity, 0, 100);
+        tick(time) {
+            // Si nos han sacado desde los botones de arriba, el overlay ya no está en
+            // el documento: parar el bucle y soltar los oyentes de teclado, que
+            // cuelgan de document y no se van con él.
+            if (!this.running) return;
+            if (!this.overlay.isConnected) {
+                this.running = false;
+                this.cleanupEvents();
+                return;
+            }
+            const dt = Math.min((time - this.lastTime) / 1000, 0.04);
+            this.lastTime = time;
+            this.update(dt);
+            this.updateVisuals();
+            this.rafId = requestAnimationFrame((nextTime) => this.tick(nextTime));
+        }
 
-      if (allStable) {
-        this.stableTime += dt;
-        if (this.stableTime >= this.holdRequired) this.completeLevel();
-      } else {
-        this.stableTime = Math.max(0, this.stableTime - dt * 1.25);
-      }
+        update(dt) {
+            let allStable = true;
+            const push = 58 + this.level * 4.5;
+            const gravity = 72 + this.level * 5.4;
 
-      if (this.integrity <= 0) this.finish(false);
-      this.updateHud();
-    }
+            this.runes.forEach((rune) => {
+                const pressing = this.keys.has(rune.key);
+                const driftNoise = Math.sin(performance.now() / 520 + rune.value) * 3.2;
+                const acceleration = pressing ? push : -gravity;
+                rune.velocity += acceleration * dt;
+                rune.velocity += driftNoise * dt;
+                rune.velocity *= Math.pow(0.88, dt * 60);
+                rune.value += (rune.velocity + rune.drift * 0.18) * dt;
 
-    completeLevel() {
-      if (this.level >= this.levels) {
-        this.finish(true);
-        return;
-      }
-      this.playTone(880, 0.08, "triangle", 0.08);
-      this.startLevel(this.level + 1);
-    }
+                if (pressing) {
+                    this.integrity -= rune.value > 82 ? 8 * dt : 0;
+                } else {
+                    this.integrity -= rune.value < 18 ? 8 * dt : 0;
+                }
 
-    updateVisuals() {
-      const stableHeight = this.zoneHalfWidth * 2;
-      this.overlay.querySelectorAll(".rc-rune").forEach((card, index) => {
-        const rune = this.runes[index];
-        if (!rune) return;
-        const stable = Math.abs(rune.value - rune.target) <= this.zoneHalfWidth;
-        const stableMin = rune.target - this.zoneHalfWidth;
-        card.classList.toggle("is-pressed", this.keys.has(rune.key));
-        card.classList.toggle("is-stable", stable);
-        card.classList.toggle("is-danger", Math.abs(rune.value - 50) > 34);
-        card.querySelector(".rc-value").style.bottom = `${rune.value}%`;
-        const zone = card.querySelector(".rc-zone");
-        zone.style.bottom = `${stableMin}%`;
-        zone.style.height = `${stableHeight}%`;
-      });
-    }
+                if (rune.value <= 0 || rune.value >= 100) {
+                    rune.value = clamp(rune.value, 0, 100);
+                    rune.velocity *= -0.55;
+                    this.integrity -= 11 * dt;
+                }
 
-    updateHud() {
-      this.overlay.querySelector(".rc-level").textContent =
-        `Nivel ${this.level} / ${this.levels}`;
-      this.overlay.querySelector(".rc-integrity").textContent =
-        `Estabilidad ${Math.ceil(this.integrity)}%`;
-      const progress = Math.round(
-        clamp((this.stableTime / this.holdRequired) * 100, 0, 100),
-      );
-      this.overlay.querySelector(".rc-status").textContent =
-        progress > 0
-          ? `Sello alineado ${progress}%`
-          : "Equilibra los cuatro poderes";
-    }
+                const distance = Math.abs(rune.value - rune.target);
+                if (distance > this.zoneHalfWidth) allStable = false;
+                if (distance > 32) this.integrity -= (distance - 32) * 0.11 * dt;
+            });
 
-    message(text) {
-      const status = this.overlay.querySelector(".rc-status");
-      status.textContent = text;
-    }
+            this.integrity = clamp(this.integrity, 0, 100);
 
-    playTone(freq, dur, type, volume) {
-      if (!window.AudioContext && !window.webkitAudioContext) return;
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        const now = ctx.currentTime;
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, now);
-        gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
-        gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-        osc.connect(gain).connect(ctx.destination);
-        osc.start(now);
-        osc.stop(now + dur + 0.02);
-        setTimeout(() => ctx.close(), (dur + 0.08) * 1000);
-      } catch (error) {}
-    }
+            if (allStable) {
+                this.stableTime += dt;
+                if (this.stableTime >= this.holdRequired) this.completeLevel();
+            } else {
+                this.stableTime = Math.max(0, this.stableTime - dt * 1.25);
+            }
 
-    finish(won) {
-      if (!this.running) return;
-      this.running = false;
-      cancelAnimationFrame(this.rafId);
-      this.cleanupEvents();
-      const result = document.createElement("div");
-      result.className = "minigame-result";
-      result.textContent = won
-        ? "¡Los mecanismos del santuario quedan en equilibrio!"
-        : "¡Los poderes se descompensaron!";
-      this.overlay.appendChild(result);
-      this.playTone(won ? 1046 : 180, won ? 0.16 : 0.24, won ? "triangle" : "sawtooth", won ? 0.08 : 0.06);
-      setTimeout(() => {
-        this.overlay.remove();
-        this.resolve(won);
-      }, won ? 1500 : 900);
-    }
+            if (this.integrity <= 0) this.finish(false);
+            this.updateHud();
+        }
 
-    cleanupEvents() {
-      document.removeEventListener("keydown", this.onKeyDown);
-      document.removeEventListener("keyup", this.onKeyUp);
-      window.removeEventListener("blur", this.onBlur);
-      this.overlay.removeEventListener("pointerdown", this.onPointerDown);
-      document.removeEventListener("pointerup", this.onPointerUp);
-      this.overlay.removeEventListener("click", this.swallowClick, true);
-    }
+        completeLevel() {
+            if (this.level >= this.levels) {
+                this.finish(true);
+                return;
+            }
+            this.playTone(880, 0.08, 'triangle', 0.08);
+            this.startLevel(this.level + 1);
+        }
 
-    static styles() {
-      return `
+        updateVisuals() {
+            const stableHeight = this.zoneHalfWidth * 2;
+            this.overlay.querySelectorAll('.rc-rune').forEach((card, index) => {
+                const rune = this.runes[index];
+                if (!rune) return;
+                const stable = Math.abs(rune.value - rune.target) <= this.zoneHalfWidth;
+                const stableMin = rune.target - this.zoneHalfWidth;
+                card.classList.toggle('is-pressed', this.keys.has(rune.key));
+                card.classList.toggle('is-stable', stable);
+                card.classList.toggle('is-danger', Math.abs(rune.value - 50) > 34);
+                card.querySelector('.rc-value').style.bottom = `${rune.value}%`;
+                const zone = card.querySelector('.rc-zone');
+                zone.style.bottom = `${stableMin}%`;
+                zone.style.height = `${stableHeight}%`;
+            });
+        }
+
+        updateHud() {
+            this.overlay.querySelector('.rc-level').textContent = `Nivel ${this.level} / ${this.levels}`;
+            this.overlay.querySelector('.rc-integrity').textContent = `Estabilidad ${Math.ceil(this.integrity)}%`;
+            const progress = Math.round(clamp((this.stableTime / this.holdRequired) * 100, 0, 100));
+            this.overlay.querySelector('.rc-status').textContent =
+                progress > 0 ? `Sello alineado ${progress}%` : 'Equilibra los cuatro poderes';
+        }
+
+        message(text) {
+            const status = this.overlay.querySelector('.rc-status');
+            status.textContent = text;
+        }
+
+        playTone(freq, dur, type, volume) {
+            if (!window.AudioContext && !window.webkitAudioContext) return;
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const now = ctx.currentTime;
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.0001, now);
+                gain.gain.exponentialRampToValueAtTime(volume, now + 0.01);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+                osc.connect(gain).connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + dur + 0.02);
+                setTimeout(() => ctx.close(), (dur + 0.08) * 1000);
+            } catch (error) {}
+        }
+
+        finish(won) {
+            if (!this.running) return;
+            this.running = false;
+            cancelAnimationFrame(this.rafId);
+            this.cleanupEvents();
+            const result = document.createElement('div');
+            result.className = 'minigame-result';
+            result.textContent = won
+                ? '¡Los mecanismos del santuario quedan en equilibrio!'
+                : '¡Los poderes se descompensaron!';
+            this.overlay.appendChild(result);
+            this.playTone(won ? 1046 : 180, won ? 0.16 : 0.24, won ? 'triangle' : 'sawtooth', won ? 0.08 : 0.06);
+            setTimeout(
+                () => {
+                    this.overlay.remove();
+                    this.resolve(won);
+                },
+                won ? 1500 : 900,
+            );
+        }
+
+        cleanupEvents() {
+            document.removeEventListener('keydown', this.onKeyDown);
+            document.removeEventListener('keyup', this.onKeyUp);
+            window.removeEventListener('blur', this.onBlur);
+            this.overlay.removeEventListener('pointerdown', this.onPointerDown);
+            document.removeEventListener('pointerup', this.onPointerUp);
+            this.overlay.removeEventListener('click', this.swallowClick, true);
+        }
+
+        static styles() {
+            return `
         .rune-channeling-minigame {
           background:
             radial-gradient(circle at 50% 46%, rgba(95, 210, 255, 0.20), transparent 34%),
@@ -449,8 +445,8 @@
           bottom: 24px;
         }
       `;
+        }
     }
-  }
 
-  window.RuneChannelingMinigame = RuneChannelingMinigame;
+    window.RuneChannelingMinigame = RuneChannelingMinigame;
 })();

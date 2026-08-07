@@ -1,0 +1,1347 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Banco de rendimiento | Project AI.ri</title>
+    <style>
+        :root { color-scheme: dark; --ink:#080914; --panel:#12162a; --gold:#ffd166; --cyan:#4fd0ff; --pink:#ff4fa3; --ok:#61e6a8; --bad:#ff6b81; }
+        * { box-sizing: border-box; }
+        body { margin:0; min-height:100vh; font-family:"Segoe UI",sans-serif; color:#f6f4ff; background:radial-gradient(circle at 12% 0%,#26305e 0,transparent 34%),radial-gradient(circle at 90% 10%,#4b173c 0,transparent 30%),var(--ink); }
+        .shell { width:min(1400px,calc(100% - 32px)); margin:0 auto; padding:32px 0 64px; display:grid; gap:18px; }
+        .hero,.panel { border:1px solid rgba(79,208,255,.22); background:linear-gradient(145deg,rgba(20,25,49,.96),rgba(9,10,24,.94)); box-shadow:0 24px 70px rgba(0,0,0,.35); }
+        .hero { padding:28px; position:relative; overflow:hidden; }
+        .hero::after { content:"BENCH"; position:absolute; right:-12px; top:-28px; font-size:8rem; font-weight:900; color:rgba(79,208,255,.045); letter-spacing:-.08em; }
+        h1,h2,h3,p { margin-top:0; }
+        h1 { margin-bottom:8px; color:var(--gold); font-size:clamp(2rem,5vw,4.6rem); line-height:.9; letter-spacing:-.045em; }
+        .lede { max-width:780px; color:#c9c8dc; line-height:1.55; }
+        .top-actions,.run-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+        button,.link { border:1px solid rgba(255,209,102,.5); border-radius:999px; padding:10px 16px; background:rgba(255,209,102,.12); color:var(--gold); font:700 .9rem inherit; cursor:pointer; text-decoration:none; }
+        button.primary { background:var(--gold); color:#171021; }
+        button:disabled { opacity:.48; cursor:wait; }
+        .panel { padding:20px; }
+        .config { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; }
+        label { display:grid; gap:6px; color:#d9d8e7; font-size:.86rem; }
+        input[type="number"] { width:100%; border:1px solid rgba(79,208,255,.35); border-radius:8px; background:#090d20; color:white; padding:9px; }
+        .check { display:flex; align-items:center; align-self:end; min-height:38px; }
+        .status-strip { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+        .metric { padding:14px; background:#0b0e20; border-left:3px solid var(--cyan); }
+        .metric strong { display:block; font-size:1.55rem; }
+        .checks { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
+        .check-card { padding:14px; border:1px solid rgba(255,255,255,.1); background:#0b0e20; }
+        .check-card.pass { border-color:rgba(97,230,168,.5); }
+        .check-card.fail { border-color:rgba(255,107,129,.6); }
+        .check-card h3 { margin-bottom:6px; font-size:1rem; }
+        .badge { display:inline-block; margin-bottom:8px; padding:3px 8px; border-radius:99px; font-size:.72rem; font-weight:900; background:#252b47; }
+        .pass .badge { color:#07150f; background:var(--ok); }
+        .fail .badge { color:#21070d; background:var(--bad); }
+        .evidence { margin:0; color:#bfc0d3; font-size:.84rem; line-height:1.4; }
+        .table-wrap { overflow:auto; }
+        table { width:100%; border-collapse:collapse; min-width:900px; }
+        th,td { padding:10px; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; font-size:.84rem; }
+        th { color:var(--cyan); }
+        tr.error { background:rgba(255,107,129,.08); }
+        pre { margin:0; max-height:420px; overflow:auto; white-space:pre-wrap; color:#bdeaff; background:#070916; padding:14px; border-radius:8px; }
+        .hidden { display:none !important; }
+        @media (max-width:700px) { .status-strip { grid-template-columns:1fr; } .shell { width:min(100% - 20px,1400px); padding-top:10px; } .hero,.panel { padding:16px; } }
+    </style>
+</head>
+<body>
+<main class="shell">
+    <header class="hero">
+        <div class="top-actions"><a id="return-link" class="link" href="tests.html">Volver a Tests</a><a class="link" href="index.html">Menú principal</a></div>
+        <h1>Antes / después</h1>
+        <p class="lede">Banco determinista con red, imágenes y audio simulados. El tiempo ayuda a comparar, pero el aprobado se decide con invariantes estables: peticiones, reutilización, destino de prefetch y copias sin referencias compartidas.</p>
+        <p id="return-target" class="lede"></p>
+    </header>
+    <section class="panel">
+        <h2>Parámetros</h2>
+        <div class="config">
+            <label>Escenas repetidas<input id="scene-repeats" type="number" min="1" max="20" value="2" /></label>
+            <label>Precargas repetidas<input id="preload-repeats" type="number" min="1" max="20" value="2" /></label>
+            <label>Capítulos repetidos<input id="chapter-repeats" type="number" min="1" max="20" value="2" /></label>
+            <label>Fondos repetidos<input id="background-repeats" type="number" min="1" max="20" value="2" /></label>
+            <label>Audios repetidos<input id="audio-repeats" type="number" min="1" max="20" value="2" /></label>
+            <label class="check"><input id="include-missing" type="checkbox" /> Incluir respuestas 404</label>
+        </div>
+        <div class="run-actions" style="margin-top:16px"><button id="run-btn" class="primary">Ejecutar suite completa</button><button id="clear-btn">Limpiar</button></div>
+    </section>
+    <section class="status-strip" aria-live="polite">
+        <div class="metric"><span>Aprobados</span><strong id="passed-count">0</strong></div>
+        <div class="metric"><span>Fallidos</span><strong id="failed-count">0</strong></div>
+        <div class="metric"><span>Duración total</span><strong id="total-time">—</strong></div>
+    </section>
+    <section class="panel"><h2>Criterios verificables</h2><div id="checks" class="checks"><p>Ejecuta la suite para obtener resultados.</p></div></section>
+    <section class="panel"><h2>Escenario</h2><pre id="scenario"></pre></section>
+    <section class="panel"><h2>Resumen comparativo</h2><div id="benchmark-summary"></div></section>
+    <section class="panel table-wrap"><table><thead><tr><th>Escenario</th><th>Estado</th><th>Tiempo</th><th>Fetch total/único</th><th>Imágenes total/único</th><th>Audio total/único</th><th>Solicitudes</th><th>Éxitos</th></tr></thead><tbody id="rows"></tbody></table></section>
+    <details class="panel"><summary>Resultado JSON exportable</summary><pre id="detail"></pre></details>
+</main>
+<script src="engine.js"></script>
+<script>
+        const BASE_SCENE_CHARACTERS = [
+            "edu",
+            "zip",
+            "nexo",
+            "edu",
+            "3c",
+            "samu",
+            "zip",
+            "nexo",
+            "edu",
+            "mickey",
+            "mickey",
+            "3c",
+            "samu",
+            "edu",
+        ];
+        const BASE_PRELOAD_CHARACTERS = [
+            "edu",
+            "zip",
+            "nexo",
+            "elion_husk",
+            "samu",
+            "iphone5",
+            "micaela",
+            "neit",
+            "jose",
+            "3c",
+            "tony",
+            "airi",
+            "airi_adult",
+            "amalgama",
+            "amalgama_final",
+            "andres",
+            "carlos",
+            "gorila",
+            "ketchling",
+            "paloma",
+            "santi",
+            "sebas",
+            "tung_tung_tung_sahur",
+            "ballerina_capuchina",
+            "tralalelo_tralala",
+        ];
+        const BASE_CHAPTERS = [
+            "chapter0",
+            "chapter1",
+            "chapter2",
+            "chapter3",
+            "chapter4",
+            "chapter5",
+            "chapter6",
+        ];
+        const BASE_BACKGROUNDS = [
+            "assets/images/backgrounds/shared/menu_cover.webp",
+            "assets/images/backgrounds/shared/menu_cover.webp",
+            "assets/images/backgrounds/shared/plaza_circular.webp",
+            "assets/images/backgrounds/chapter3/skyline_eechi_land.webp",
+            "assets/images/backgrounds/chapter4/ciudad_paloma.webp",
+            "assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.webp",
+            "assets/images/backgrounds/chapter6/escenario.webp",
+        ];
+        const BASE_AUDIOS = [
+            "assets/audio/sfx/click.mp3",
+            "assets/audio/music/shared/santurario-abierto.mp3",
+            "assets/audio/music/shared/brainrot_theme.mp3",
+            "assets/audio/music/menu/tema_menu_v2.mp3",
+        ];
+        const MISSING_NAME = "personaje_inexistente_404_test";
+        const MISSING_CHAPTER = "chapter_missing_404_test";
+        const DEFAULT_CONFIG = {
+            sceneRepeats: 2,
+            preloadRepeats: 2,
+            chapterRepeats: 2,
+            backgroundRepeats: 2,
+            audioRepeats: 2,
+            includeMissing: false,
+        };
+
+        function buildPrefetchBenchmarkChapter() {
+            return {
+                id: 'bench-prefetch',
+                title: 'Capítulo de benchmark de prefetch',
+                scenes: [
+                    {
+                        title: 'Escena de prefetch 1',
+                        lines: [
+                            {
+                                background: 'assets/images/backgrounds/shared/menu_cover.webp',
+                                character: 'Edu',
+                                text: 'Primera línea de benchmark con prefetch',
+                                actions: [
+                                    { type: 'setBackground', value: 'assets/images/backgrounds/shared/menu_cover.webp' },
+                                    { type: 'showCharacter', character: 'edu', position: 'left', pose: 'neutral' },
+                                    { type: 'playSound', path: 'assets/audio/sfx/click.mp3', loop: false },
+                                ],
+                                afterActions: [
+                                    { type: 'playSound', path: 'assets/audio/music/shared/santurario-abierto.mp3', loop: false },
+                                ],
+                            },
+                            {
+                                background: 'assets/images/backgrounds/chapter3/skyline_eechi_land.webp',
+                                character: 'Samu',
+                                text: 'Segunda línea de prefetch (mismo capítulo)',
+                                actions: [
+                                    { type: 'setBackground', value: 'assets/images/backgrounds/chapter3/skyline_eechi_land.webp' },
+                                    { type: 'showCharacter', character: 'samu', position: 'right', pose: 'neutral' },
+                                ],
+                                afterActions: [
+                                    { type: 'showCharacter', character: 'nexo', position: 'left', pose: 'neutral' },
+                                ],
+                            },
+                        ],
+                    },
+                    {
+                        title: 'Escena de prefetch 2',
+                        lines: [
+                            {
+                                background: 'assets/images/backgrounds/chapter4/ciudad_paloma.webp',
+                                character: 'Mickey',
+                                text: 'Tercera línea tras cambio de escena',
+                                actions: [
+                                    { type: 'setBackground', value: 'assets/images/backgrounds/chapter4/ciudad_paloma.webp' },
+                                    { type: 'showCharacter', character: 'mickey', position: 'center', pose: 'neutral' },
+                                ],
+                                afterActions: [
+                                    { type: 'playSound', path: 'assets/audio/sfx/click.mp3', loop: false },
+                                ],
+                            },
+                            {
+                                background: 'assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.webp',
+                                character: 'Nexo',
+                                text: 'Última línea de benchmark de prefetch',
+                                actions: [
+                                    { type: 'setBackground', value: 'assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.webp' },
+                                    { type: 'showCharacter', character: 'neit', position: 'left', pose: 'neutral' },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+                isFinal: false,
+            };
+        }
+
+        const METADATA_MOCK = {
+            "assets/metadata/blink_eye_intermediates.json": { poses: {} },
+            "assets/metadata/sprite_white_halo_cleaned.json": { sprites: {} },
+            "assets/metadata/blink_eye_region_previews.json": { poses: {} },
+            "assets/metadata/blink_eye_clean_offsets_manual.json": { offsets: {} },
+            "assets/metadata/blink_eye_pixel_edits.json": { edits: { saved: {} } },
+        };
+
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        function canonicalUrl(input) {
+            const url = typeof input === "string" ? input : String(input?.url || "");
+            return url.split("?")[0];
+        }
+
+        function clampConfigNumber(raw, min, max, fallback) {
+            const parsed = parseInt(raw, 10);
+            if (Number.isNaN(parsed)) return fallback;
+            if (parsed < min) return min;
+            return parsed > max ? max : parsed;
+        }
+
+        function parseConfigFromQuery() {
+            const params = new URLSearchParams(location.search);
+            return {
+                sceneRepeats: clampConfigNumber(params.get("sceneRepeats"), 1, 20, DEFAULT_CONFIG.sceneRepeats),
+                preloadRepeats: clampConfigNumber(params.get("preloadRepeats"), 1, 20, DEFAULT_CONFIG.preloadRepeats),
+                chapterRepeats: clampConfigNumber(params.get("chapterRepeats"), 1, 20, DEFAULT_CONFIG.chapterRepeats),
+                backgroundRepeats: clampConfigNumber(params.get("backgroundRepeats"), 1, 20, DEFAULT_CONFIG.backgroundRepeats),
+                audioRepeats: clampConfigNumber(params.get("audioRepeats"), 1, 20, DEFAULT_CONFIG.audioRepeats),
+                includeMissing: params.get("includeMissing") === "true",
+            };
+        }
+
+        function readConfigFromInputs() {
+            return {
+                sceneRepeats: clampConfigNumber(document.getElementById("scene-repeats").value, 1, 20, DEFAULT_CONFIG.sceneRepeats),
+                preloadRepeats: clampConfigNumber(document.getElementById("preload-repeats").value, 1, 20, DEFAULT_CONFIG.preloadRepeats),
+                chapterRepeats: clampConfigNumber(document.getElementById("chapter-repeats").value, 1, 20, DEFAULT_CONFIG.chapterRepeats),
+                backgroundRepeats: clampConfigNumber(document.getElementById("background-repeats").value, 1, 20, DEFAULT_CONFIG.backgroundRepeats),
+                audioRepeats: clampConfigNumber(document.getElementById("audio-repeats").value, 1, 20, DEFAULT_CONFIG.audioRepeats),
+                includeMissing: document.getElementById("include-missing").checked,
+            };
+        }
+
+        function setInputsFromConfig(config) {
+            document.getElementById("scene-repeats").value = config.sceneRepeats;
+            document.getElementById("preload-repeats").value = config.preloadRepeats;
+            document.getElementById("chapter-repeats").value = config.chapterRepeats;
+            document.getElementById("background-repeats").value = config.backgroundRepeats;
+            document.getElementById("audio-repeats").value = config.audioRepeats;
+            document.getElementById("include-missing").checked = config.includeMissing;
+        }
+
+        function buildRepeatedList(baseList, repeats) {
+            const output = [];
+            const times = clampConfigNumber(repeats, 1, 20, 1);
+            for (let i = 0; i < times; i++) {
+                output.push(...baseList);
+            }
+            return output;
+        }
+
+        function buildScenarioLists(config) {
+            const sceneList = buildRepeatedList(BASE_SCENE_CHARACTERS, config.sceneRepeats);
+            const preloadList = buildRepeatedList(BASE_PRELOAD_CHARACTERS, config.preloadRepeats);
+            const chapterList = buildRepeatedList(BASE_CHAPTERS, config.chapterRepeats);
+            const backgroundList = buildRepeatedList(BASE_BACKGROUNDS, config.backgroundRepeats);
+            const audioList = buildRepeatedList(BASE_AUDIOS, config.audioRepeats);
+
+            if (config.includeMissing) {
+                sceneList.push(MISSING_NAME);
+                preloadList.push(MISSING_NAME);
+                chapterList.push(MISSING_CHAPTER);
+                chapterList.push(MISSING_CHAPTER);
+            }
+            return {
+                sceneList,
+                preloadList,
+                chapterList,
+                backgroundList,
+                audioList,
+            };
+        }
+
+        function jsonResponse(value, status = 200) {
+            return new Response(JSON.stringify(value), {
+                status,
+                headers: { "Content-Type": "application/json" },
+            });
+        }
+
+        function fakeChapterFixture(chapterId) {
+            const numeric = chapterId.match(/chapter(\d+)/);
+            const numericSuffix = numeric ? parseInt(numeric[1], 10) : 0;
+            return {
+                id: chapterId,
+                title: `Capítulo test ${chapterId}`,
+                scenes: [
+                    {
+                        title: `Escena A (${chapterId})`,
+                        lines: [],
+                    },
+                ],
+                isFinal: numericSuffix === 6,
+            };
+        }
+
+        function installRuntimeMocks(config) {
+            const original = {
+                fetch: window.fetch,
+                Image: window.Image,
+                Audio: window.Audio,
+            };
+
+            const buildMockEvent = (target, type) => ({
+                type,
+                target,
+                currentTarget: target,
+                timeStamp: performance.now(),
+            });
+
+            const metrics = {
+                fetchLog: [],
+                imageLog: [],
+                audioLog: [],
+                imageCalls: 0,
+                audioCalls: 0,
+            };
+
+            window.fetch = async (input, _init) => {
+                const rawUrl = typeof input === "string" ? input : String(input?.url || "");
+                const url = canonicalUrl(rawUrl);
+                metrics.fetchLog.push(url);
+                await sleep(5);
+
+                if (/characters\//.test(url)) {
+                    const match = url.match(/characters\/([^/]+)\.json$/);
+                    const character = decodeURIComponent(match?.[1] || "");
+                    if (config.includeMissing && character === MISSING_NAME) {
+                        return jsonResponse({}, 404);
+                    }
+                    return jsonResponse({
+                        key: character,
+                        name: character,
+                        poses: {
+                            neutral: { src: `assets/images/characters/${character}/neutral.webp` },
+                        },
+                    });
+                }
+
+                if (/chapters\//.test(url)) {
+                    const match = url.match(/chapters\/([^/]+)\.json$/);
+                    const chapter = decodeURIComponent(match?.[1] || "");
+                    if (config.includeMissing && chapter === MISSING_CHAPTER) {
+                        return jsonResponse({}, 404);
+                    }
+                    return jsonResponse(fakeChapterFixture(chapter));
+                }
+
+                const metadata = METADATA_MOCK[url];
+                if (metadata) {
+                    return jsonResponse(metadata);
+                }
+
+                return jsonResponse({}, 404);
+            };
+
+            const OriginalImage = original.Image;
+            window.Image = class {
+                constructor() {
+                    this._listeners = {};
+                    this._src = "";
+                    this._loadDispatched = false;
+                    this.onload = null;
+                    this.onerror = null;
+                    this.decoding = "async";
+                    this.crossOrigin = null;
+                    metrics.imageCalls += 1;
+                }
+                _emit(type) {
+                    const handlers = this._listeners[type];
+                    if (handlers?.length) {
+                        handlers.slice().forEach((entry) => {
+                            if (entry) {
+                                const event = buildMockEvent(this, type);
+                                entry.handler.call(this, event);
+                                if (entry.once) {
+                                    this.removeEventListener(type, entry.handler);
+                                }
+                            }
+                        });
+                    }
+                    if (type === "load" && typeof this.onload === "function") {
+                        this.onload.call(this, buildMockEvent(this, type));
+                    }
+                }
+                addEventListener(type, handler, options = {}) {
+                    if (!handler) return;
+                    if (!this._listeners[type]) this._listeners[type] = [];
+                    const once = options?.once === true;
+                    this._listeners[type].push({ handler, once });
+                }
+                removeEventListener(type, handler) {
+                    const handlers = this._listeners[type];
+                    if (!handlers) return;
+                    this._listeners[type] = handlers.filter((entry) => entry.handler !== handler);
+                }
+                setAttribute(name, value) {
+                    if (name === "src") {
+                        this.src = value;
+                    }
+                }
+                getAttribute(name) {
+                    if (name === "src") return this.src;
+                    return null;
+                }
+                set src(value) {
+                    this._src = String(value || "");
+                    metrics.imageLog.push(canonicalUrl(this._src));
+                    if (!this._loadDispatched) {
+                        this._loadDispatched = true;
+                        setTimeout(() => {
+                            this._emit("loadeddata");
+                            this._emit("load");
+                        }, 0);
+                    }
+                }
+                get src() {
+                    return this._src;
+                }
+                decode() {
+                    return Promise.resolve();
+                }
+            };
+
+            const OriginalAudio = original.Audio;
+            window.Audio = class {
+                constructor(initialSrc = "") {
+                    this._listeners = {};
+                    this._src = "";
+                    this._stopped = false;
+                    this._baseVol = 1;
+                    this._fadeInterval = null;
+                    this.preload = "auto";
+                    this.loop = false;
+                    this.currentTime = 0;
+                    this.paused = true;
+                    this.volume = 1;
+                    this.ended = false;
+                    this.muted = false;
+                    this.readyState = 4;
+                    metrics.audioCalls += 1;
+                    if (initialSrc) this.src = initialSrc;
+                }
+                _emit(type) {
+                    const handlers = this._listeners[type];
+                    if (handlers?.length) {
+                        handlers.slice().forEach((entry) => {
+                            if (entry) {
+                                const event = buildMockEvent(this, type);
+                                entry.handler.call(this, event);
+                                if (entry.once) {
+                                    this.removeEventListener(type, entry.handler);
+                                }
+                            }
+                        });
+                    }
+                    if (type === "error" && typeof this.onerror === "function") {
+                        this.onerror.call(this, buildMockEvent(this, type));
+                    }
+                }
+                addEventListener(type, handler, options = {}) {
+                    if (!handler) return;
+                    if (!this._listeners[type]) this._listeners[type] = [];
+                    const once = options?.once === true;
+                    this._listeners[type].push({ handler, once });
+                }
+                removeEventListener(type, handler) {
+                    const handlers = this._listeners[type];
+                    if (!handlers) return;
+                    this._listeners[type] = handlers.filter((entry) => entry.handler !== handler);
+                }
+                set src(value) {
+                    this._src = String(value || "");
+                    metrics.audioLog.push(canonicalUrl(this._src));
+                    setTimeout(() => {
+                        this.ended = false;
+                        this._emit("loadeddata");
+                        this._emit("canplaythrough");
+                    }, 0);
+                }
+                get src() {
+                    return this._src;
+                }
+                play() {
+                    this.paused = false;
+                    this.ended = false;
+                    return Promise.resolve();
+                }
+                pause() {
+                    this.paused = true;
+                    this.ended = true;
+                }
+                load() {}
+                setAttribute(name, value) {
+                    if (name === "src") {
+                        this.src = value;
+                    }
+                }
+                getAttribute(name) {
+                    if (name === "src") return this.src;
+                    return null;
+                }
+                removeAttribute(name) {
+                    if (name === "src") this._src = "";
+                }
+                set srcAttribute(value) {
+                    this.src = value;
+                }
+            };
+
+            return {
+                metrics,
+                restore: () => {
+                    window.fetch = original.fetch;
+                    window.Image = original.Image;
+                    window.Audio = original.Audio;
+                },
+            };
+        }
+
+        function summarizeMetrics(metrics) {
+            const fetchTotal = metrics.fetchLog.length;
+            const uniqueFetch = new Set(metrics.fetchLog).size;
+            const imageTotal = metrics.imageLog.length;
+            const uniqueImage = new Set(metrics.imageLog).size;
+            const audioTotal = metrics.audioLog.length;
+            const uniqueAudio = new Set(metrics.audioLog).size;
+            return {
+                fetch: { total: fetchTotal, unique: uniqueFetch },
+                images: { total: imageTotal, unique: uniqueImage },
+                audios: { total: audioTotal, unique: uniqueAudio },
+                calls: {
+                    imageCalls: metrics.imageCalls,
+                    audioCalls: metrics.audioCalls,
+                },
+            };
+        }
+
+        async function runWithInstrumentation(testBody, config) {
+            const { metrics, restore } = installRuntimeMocks(config);
+            try {
+                const scenarioData = await testBody();
+                return {
+                    ...scenarioData,
+                    metrics: summarizeMetrics(metrics),
+                };
+            } finally {
+                restore();
+            }
+        }
+
+        async function loadCharacterLegacy(engine, characterName) {
+            const characterKey = engine.getCharacterKey(characterName);
+            const response = await fetch(`characters/${characterKey}.json?v=${Date.now()}`, {
+                cache: "no-store",
+            });
+            if (!response.ok) return null;
+            const character = await response.json();
+
+            const intermediates = await fetch("assets/metadata/blink_eye_intermediates.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { poses: {} }));
+            const layerBlinks = await fetch("assets/metadata/blink_eye_region_previews.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { poses: {} }));
+            const whiteHaloCopies = await fetch("assets/metadata/sprite_white_halo_cleaned.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { sprites: {} }));
+            const blinkEdits = await fetch("assets/metadata/blink_eye_clean_offsets_manual.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { offsets: {} }));
+            const blinkPixelEdits = await fetch("assets/metadata/blink_eye_pixel_edits.json", {
+                cache: "no-store",
+            }).then((res) => (res.ok ? res.json() : { edits: { saved: {} } }));
+
+            const metadataBundle = { ...whiteHaloCopies, ...blinkEdits, ...blinkPixelEdits };
+            const layerBundle = { ...layerBlinks };
+
+            engine.applyWhiteHaloCopies(characterKey, character, metadataBundle);
+            engine.applyBlinkIntermediateFrames(characterKey, character, intermediates);
+            engine.applyWhiteHaloAnimationFrames(characterKey, character, metadataBundle);
+            engine.applyLayerBlinkFrames(characterKey, character, layerBundle);
+            engine.characters[characterKey] = character;
+            return character;
+        }
+
+        async function loadChapterLegacy(chapterName) {
+            const response = await fetch(`chapters/${chapterName}.json?v=${Date.now()}`, {
+                cache: "no-store",
+            });
+            if (!response.ok) return null;
+            return response.json();
+        }
+
+        function legacySetBackground(engine, imagePath) {
+            const url = engine.cacheBustAsset(imagePath);
+            const bg = document.getElementById("background");
+            const img = new Image();
+            img.src = url;
+            if (bg) {
+                bg.style.backgroundImage = `url('${url}')`;
+            }
+            return img;
+        }
+
+        function createBackgroundSurface() {
+            const surface = document.getElementById("bench-background");
+            if (surface) surface.remove();
+            const root = document.createElement("div");
+            root.id = "bench-background";
+            root.style.position = "fixed";
+            root.style.left = "-9999px";
+            root.style.top = "0";
+            root.style.width = "1px";
+            root.style.height = "1px";
+            const container = document.createElement("div");
+            container.id = "game-container";
+            const bg = document.createElement("div");
+            bg.id = "background";
+            container.appendChild(bg);
+            root.appendChild(container);
+            document.body.appendChild(root);
+            return { root, container, bg };
+        }
+
+        function cleanBackgroundSurface() {
+            const surface = document.getElementById("bench-background");
+            if (surface) surface.remove();
+        }
+
+        function renderScenarioText(config) {
+            const { sceneList, preloadList, chapterList, backgroundList, audioList } = buildScenarioLists(config);
+            const linePrefetchLines = buildPrefetchBenchmarkChapter().scenes
+                .reduce((acc, scene) => acc + (scene.lines ? scene.lines.length : 0), 0);
+            const lines = [
+                `Personajes de escena: ${sceneList.length}`,
+                `Personajes en precarga: ${preloadList.length}`,
+                `Capítulos: ${chapterList.length}`,
+                `Líneas de prefetch: ${linePrefetchLines}`,
+                `Fondos: ${backgroundList.length}`,
+                `Audios: ${audioList.length}`,
+                `Casos 404: ${config.includeMissing ? "sí" : "no"}`,
+                `Repeticiones: escena=${config.sceneRepeats}, precarga=${config.preloadRepeats}, cap=${config.chapterRepeats}, fondo=${config.backgroundRepeats}, audio=${config.audioRepeats}`,
+            ];
+            document.getElementById("scenario").textContent = lines.join("\n");
+        }
+
+        async function runCharacterScenario(mode, list) {
+            const engine = new VisualNovelEngine();
+            let success = 0;
+            const started = performance.now();
+
+            for (const name of list) {
+                const result = await (mode === "legacy"
+                    ? loadCharacterLegacy(engine, name)
+                    : engine.loadCharacter(name));
+                if (result) success += 1;
+            }
+
+            return {
+                scenario: mode === "legacy" ? "personajes-legacy" : "personajes-optim",
+                elapsedMs: performance.now() - started,
+                requested: list.length,
+                success,
+            };
+        }
+
+        async function runCharacterPreloadScenario(mode, list) {
+            const engine = new VisualNovelEngine();
+            let success = 0;
+            const started = performance.now();
+
+            if (mode === "legacy") {
+                for (const name of list) {
+                    const result = await loadCharacterLegacy(engine, name);
+                    if (result) success += 1;
+                }
+            } else {
+                const results = await Promise.all(list.map((name) => engine.loadCharacter(name)));
+                success = results.filter(Boolean).length;
+            }
+
+            return {
+                scenario: mode === "legacy" ? "pre-carga-legacy" : "pre-carga-optim",
+                elapsedMs: performance.now() - started,
+                requested: list.length,
+                success,
+            };
+        }
+
+        async function runChapterScenario(mode, list) {
+            const engine = new VisualNovelEngine();
+            // Este escenario mide carga/caché JSON. La intro y el prefetch
+            // necesitan el DOM del juego y dejarían tareas asíncronas vivas.
+            engine.playChapterIntro = async () => {};
+            engine.prefetchLineAssets = () => Promise.resolve();
+            let success = 0;
+            const started = performance.now();
+
+            for (const chapterName of list) {
+                const result = await (mode === "legacy"
+                    ? loadChapterLegacy(chapterName)
+                    : engine.loadChapter(chapterName));
+                if (result) success += 1;
+            }
+
+            return {
+                scenario: mode === "legacy" ? "capitulos-legacy" : "capitulos-optim",
+                elapsedMs: performance.now() - started,
+                requested: list.length,
+                success,
+            };
+        }
+
+        async function runLinePrefetchScenario(mode) {
+            const engine = new VisualNovelEngine();
+            const chapter = buildPrefetchBenchmarkChapter();
+            const isLegacy = mode === "legacy";
+            const legacyPrefetchLineAssets = engine.prefetchLineAssets;
+            const legacyPrefetchNextLineAssets = engine.prefetchNextLineAssets;
+            const legacyDisplayDialog = engine.displayDialog;
+            const legacyRecordSceneEntry = engine.recordSceneEntry;
+            const legacyClearAdvanceBound = engine.clearAdvanceBoundCharacterEffects;
+            const legacyExecuteAction = engine.executeAction;
+
+            if (isLegacy) {
+                engine.prefetchLineAssets = () => Promise.resolve();
+                engine.prefetchNextLineAssets = () => Promise.resolve();
+            }
+
+            engine.displayDialog = async () => {};
+            engine.recordSceneEntry = () => {};
+            engine.clearAdvanceBoundCharacterEffects = () => {};
+            // Aislar la anticipación: las acciones normales cargarían los mismos
+            // recursos al consumir la línea y ocultarían la diferencia.
+            engine.executeAction = async () => {};
+            engine.currentChapter = chapter;
+            engine.currentScene = 0;
+            engine.currentLine = 0;
+            engine.sceneHistory = [];
+            engine.sceneEndedByChoice = false;
+            engine.pendingSceneJump = false;
+
+            const requestedLines = chapter.scenes.reduce((acc, scene) => acc + (scene.lines ? scene.lines.length : 0), 0);
+            const started = performance.now();
+            let success = 0;
+
+            try {
+                for (let i = 0; i < requestedLines; i++) {
+                    const keepPlaying = await engine.nextLine();
+                    success += 1;
+                    if (!keepPlaying) break;
+                }
+                // Los prefetch son intencionadamente no bloqueantes en el motor.
+                // El mock tarda 5 ms: este margen permite medir sus efectos sin
+                // convertir la interacción real en una espera.
+                if (!isLegacy) await sleep(15);
+            } finally {
+                engine.prefetchLineAssets = legacyPrefetchLineAssets;
+                engine.prefetchNextLineAssets = legacyPrefetchNextLineAssets;
+                engine.displayDialog = legacyDisplayDialog;
+                engine.recordSceneEntry = legacyRecordSceneEntry;
+                engine.clearAdvanceBoundCharacterEffects = legacyClearAdvanceBound;
+                engine.executeAction = legacyExecuteAction;
+            }
+
+            return {
+                scenario: isLegacy ? "line-prefetch-legacy" : "line-prefetch-optim",
+                elapsedMs: performance.now() - started,
+                requested: requestedLines,
+                success,
+            };
+        }
+
+        async function runBackgroundScenario(mode, list) {
+            const started = performance.now();
+            let success = 0;
+            createBackgroundSurface();
+            const engine = new VisualNovelEngine();
+
+            for (const path of list) {
+                if (mode === "legacy") {
+                    legacySetBackground(engine, path);
+                } else {
+                    engine.setBackground(path, { cut: true });
+                }
+                success += 1;
+            }
+            await sleep(0);
+            cleanBackgroundSurface();
+            return {
+                scenario: mode === "legacy" ? "fondos-legacy" : "fondos-optim",
+                elapsedMs: performance.now() - started,
+                requested: list.length,
+                success,
+            };
+        }
+
+        function runAudioLegacy(path, options = {}) {
+            const {
+                loop = true,
+                autoPlay = false,
+            } = options;
+
+            const audio = new Audio(path);
+            audio.preload = "auto";
+            audio.loop = loop;
+            audio._volKind = "music";
+            audio._baseVol = 1;
+            if (autoPlay) {
+                audio.play();
+            }
+            return audio;
+        }
+
+        async function runAudioScenario(mode, list, options = {}) {
+            const {
+                id = null,
+                loop = true,
+            } = options;
+
+            const engine = new VisualNovelEngine();
+            let success = 0;
+            const started = performance.now();
+            const startedAudios = [];
+
+            try {
+                for (const path of list) {
+                    const result = mode === "legacy"
+                        ? runAudioLegacy(path, {
+                            loop,
+                            autoPlay: false,
+                        })
+                        : engine.playSound(path, {
+                            id,
+                            loop,
+                            autoPlay: false,
+                        });
+                    if (result) {
+                        success += 1;
+                        startedAudios.push(result);
+                    }
+                }
+            } finally {
+                if (mode === "legacy") {
+                    startedAudios.forEach((audio) => {
+                        if (!audio) return;
+                        audio.pause();
+                        audio.currentTime = 0;
+                        audio.removeAttribute("src");
+                        audio.load();
+                    });
+                } else {
+                    startedAudios.forEach((audio) => {
+                        if (!audio) return;
+                        engine.stopSound(audio, 0);
+                    });
+                }
+            }
+
+            return {
+                scenario: mode === "legacy"
+                    ? (id ? "sonido-id-legacy" : "sonido-loop-legacy")
+                    : (id ? "sonido-id-optim" : "sonido-loop-optim"),
+                elapsedMs: performance.now() - started,
+                requested: list.length,
+                success,
+                instances: new Set(startedAudios).size,
+            };
+        }
+
+        function summaryLabelByKey(key) {
+            const map = {
+                "personajes-legacy": "Personajes (antes): escena - secuencial sin dedupe",
+                "personajes-optim": "Personajes (después): escena - dedupe + cacheo",
+                "pre-carga-legacy": "Personajes (antes): precarga - secuencial sin dedupe",
+                "pre-carga-optim": "Personajes (después): precarga - dedupe + cacheo",
+                "capitulos-legacy": "Capítulos (antes): carga secuencial con fetch directo",
+                "capitulos-optim": "Capítulos (después): dedupe de `fetchJson` y cargas cacheadas",
+                "line-prefetch-legacy": "Prefetch de líneas (antes): sin anticipación de activos",
+                "line-prefetch-optim": "Prefetch de líneas (después): una línea adelantada",
+                "fondos-legacy": "Fondos (antes): setBackground sin preload/cache de imágenes",
+                "fondos-optim": "Fondos (después): setBackground con preload + cacheo",
+                "sonido-loop-legacy": "Audio (antes): cada llamada crea un audio nuevo (loop)",
+                "sonido-loop-optim": "Audio (después): reutilización de loops repetidos por ruta",
+                "sonido-id-legacy": "Audio (antes): misma ID -> crea un objeto nuevo (sin dedupe)",
+                "sonido-id-optim": "Audio (después): misma ID reutiliza instancia existente",
+            };
+            return map[key] || key;
+        }
+
+        async function runAllScenarios(config) {
+            const { sceneList, preloadList, chapterList, backgroundList, audioList } = buildScenarioLists(config);
+            const repeatedSingleAudio = Array.from(
+                { length: Math.max(2, audioList.length) },
+                () => BASE_AUDIOS[0],
+            );
+
+            const scenarios = [
+                { key: "personajes-legacy", fn: () => runCharacterScenario("legacy", sceneList) },
+                { key: "personajes-optim", fn: () => runCharacterScenario("modern", sceneList) },
+                { key: "pre-carga-legacy", fn: () => runCharacterPreloadScenario("legacy", preloadList) },
+                { key: "pre-carga-optim", fn: () => runCharacterPreloadScenario("modern", preloadList) },
+                { key: "capitulos-legacy", fn: () => runChapterScenario("legacy", chapterList) },
+                { key: "capitulos-optim", fn: () => runChapterScenario("modern", chapterList) },
+                { key: "line-prefetch-legacy", fn: () => runLinePrefetchScenario("legacy") },
+                { key: "line-prefetch-optim", fn: () => runLinePrefetchScenario("modern") },
+                { key: "fondos-legacy", fn: () => runBackgroundScenario("legacy", backgroundList) },
+                { key: "fondos-optim", fn: () => runBackgroundScenario("modern", backgroundList) },
+                { key: "sonido-loop-legacy", fn: () => runAudioScenario("legacy", audioList) },
+                { key: "sonido-loop-optim", fn: () => runAudioScenario("modern", audioList) },
+                {
+                    key: "sonido-id-legacy",
+                    fn: () => runAudioScenario("legacy", repeatedSingleAudio, { id: "menu_music" }),
+                },
+                {
+                    key: "sonido-id-optim",
+                    fn: () => runAudioScenario("modern", repeatedSingleAudio, { id: "menu_music" }),
+                },
+            ];
+
+            const outputs = [];
+            for (const scenario of scenarios) {
+                const started = performance.now();
+                try {
+                    const data = await runWithInstrumentation(() => scenario.fn(), config);
+                    outputs.push({ ...data, status: "ok", label: summaryLabelByKey(scenario.key) });
+                } catch (error) {
+                    outputs.push({
+                        scenario: scenario.key,
+                        label: summaryLabelByKey(scenario.key),
+                        status: "error",
+                        error: error?.message || String(error),
+                        elapsedMs: performance.now() - started,
+                        requested: 0,
+                        success: 0,
+                        metrics: {
+                            fetch: { total: 0, unique: 0 },
+                            images: { total: 0, unique: 0 },
+                            audios: { total: 0, unique: 0 },
+                            calls: { imageCalls: 0, audioCalls: 0 },
+                        },
+                    });
+                }
+            }
+            return outputs;
+        }
+
+        async function runFunctionalDiagnostics(config) {
+            return runWithInstrumentation(async () => {
+                const engine = new VisualNovelEngine();
+
+                const jsonResults = await Promise.all(
+                    Array.from({ length: 6 }, () => engine.fetchJson("characters/edu.json")),
+                );
+                const jsonInFlightShared = jsonResults.every((value) => value === jsonResults[0]);
+
+                await engine.preloadImages([
+                    BASE_BACKGROUNDS[0],
+                    BASE_BACKGROUNDS[0],
+                    BASE_BACKGROUNDS[0],
+                ]);
+                await engine.preloadImages([BASE_BACKGROUNDS[0]]);
+
+                engine.characters.micaela = {
+                    name: "Micaela Michis",
+                    aliases: ["Michis"],
+                    poses: {},
+                };
+                const lookupA = engine.getCharacterKey("Micaela Michis");
+                const lookupB = engine.getCharacterKey("Michis");
+                const lookupCached = lookupA === "micaela" && lookupB === "micaela"
+                    && engine.characterKeyCache.get("michis") === "micaela";
+
+                let layoutCalls = 0;
+                const originalLayout = engine.layoutCharacters;
+                engine.layoutCharacters = () => { layoutCalls += 1; };
+                engine.removeAllCharacters();
+                engine.layoutCharacters = originalLayout;
+
+                const sourceState = { branch: { score: 7 }, list: [1, 2, 3] };
+                const snapshot = engine._snapshotForHistory(sourceState);
+                sourceState.branch.score = 99;
+                sourceState.list.push(4);
+                const snapshotIsolated = snapshot.branch.score === 7 && snapshot.list.length === 3;
+
+                const firstShort = engine.playSound(BASE_AUDIOS[0], {
+                    loop: false,
+                    autoPlay: false,
+                });
+                firstShort.paused = false;
+                firstShort._emit("ended");
+                const secondShort = engine.playSound(BASE_AUDIOS[0], {
+                    loop: false,
+                    autoPlay: false,
+                });
+                const shortAudioReused = firstShort === secondShort;
+
+                return {
+                    jsonInFlightShared,
+                    lookupCached,
+                    layoutCalls,
+                    snapshotIsolated,
+                    shortAudioReused,
+                    stableAssetUrl:
+                        engine.cacheBustAsset(BASE_BACKGROUNDS[0])
+                        === engine.cacheBustAsset(BASE_BACKGROUNDS[0]),
+                };
+            }, config);
+        }
+
+        function evaluateChecks(results, diagnostics) {
+            const byKey = (key) => results.find((item) => item.scenario === key);
+            const pair = (beforeKey, afterKey) => [byKey(beforeKey), byKey(afterKey)];
+            const checks = [];
+            const add = (name, pass, evidence) => checks.push({ name, pass: Boolean(pass), evidence });
+
+            let [before, after] = pair("personajes-legacy", "personajes-optim");
+            add(
+                "Caché de fichas de personaje",
+                before?.status === "ok" && after?.status === "ok"
+                    && after.metrics.fetch.total < before.metrics.fetch.total,
+                `${before?.metrics.fetch.total ?? "—"} → ${after?.metrics.fetch.total ?? "—"} fetch`,
+            );
+
+            [before, after] = pair("pre-carga-legacy", "pre-carga-optim");
+            add(
+                "Precarga paralela",
+                before?.status === "ok" && after?.status === "ok" && after.elapsedMs < before.elapsedMs,
+                `${formatNumber(before?.elapsedMs)} → ${formatNumber(after?.elapsedMs)}`,
+            );
+
+            [before, after] = pair("capitulos-legacy", "capitulos-optim");
+            add(
+                "Caché de capítulos y JSON",
+                before?.status === "ok" && after?.status === "ok"
+                    && after.metrics.fetch.total < before.metrics.fetch.total,
+                `${before?.metrics.fetch.total ?? "—"} → ${after?.metrics.fetch.total ?? "—"} fetch`,
+            );
+
+            [before, after] = pair("line-prefetch-legacy", "line-prefetch-optim");
+            add(
+                "Prefetch de la línea inmediata",
+                after?.status === "ok" && after.metrics.fetch.total > (before?.metrics.fetch.total || 0)
+                    && after.metrics.images.total > 0 && after.metrics.audios.total > 0,
+                `${after?.metrics.fetch.total ?? 0} JSON, ${after?.metrics.images.total ?? 0} imágenes, ${after?.metrics.audios.total ?? 0} audios anticipados`,
+            );
+
+            [before, after] = pair("fondos-legacy", "fondos-optim");
+            add(
+                "Reutilización de imágenes y fondos",
+                before?.status === "ok" && after?.status === "ok"
+                    && after.metrics.calls.imageCalls < before.metrics.calls.imageCalls,
+                `${before?.metrics.calls.imageCalls ?? "—"} → ${after?.metrics.calls.imageCalls ?? "—"} objetos Image`,
+            );
+
+            [before, after] = pair("sonido-loop-legacy", "sonido-loop-optim");
+            add(
+                "Reutilización de audio en loop",
+                before?.status === "ok" && after?.status === "ok" && after.instances < before.instances,
+                `${before?.instances ?? "—"} → ${after?.instances ?? "—"} instancias de reproducción`,
+            );
+
+            [before, after] = pair("sonido-id-legacy", "sonido-id-optim");
+            add(
+                "Deduplicación de audio por ID",
+                before?.status === "ok" && after?.status === "ok" && after.instances < before.instances,
+                `${before?.instances ?? "—"} → ${after?.instances ?? "—"} instancias de reproducción`,
+            );
+
+            add("Deduplicación JSON en vuelo", diagnostics.jsonInFlightShared && diagnostics.metrics.fetch.total === 1,
+                `${diagnostics.metrics.fetch.total} fetch para 6 llamadas simultáneas`);
+            add("Caché de alias de personaje", diagnostics.lookupCached, diagnostics.lookupCached ? "nombre y alias resuelven a micaela" : "resolución incorrecta");
+            add("Layout agrupado al limpiar personajes", diagnostics.layoutCalls === 1, `${diagnostics.layoutCalls} recálculo(s) de layout`);
+            add("Snapshot profundo del historial", diagnostics.snapshotIsolated, diagnostics.snapshotIsolated ? "sin referencias compartidas" : "la mutación se filtró al snapshot");
+            add("Pool de efectos cortos", diagnostics.shortAudioReused, diagnostics.shortAudioReused ? "se reutilizó la instancia" : "se creó otra instancia");
+            add("URL estable de assets", diagnostics.stableAssetUrl, diagnostics.stableAssetUrl ? "mismo sello durante la sesión" : "URL variable");
+            return checks;
+        }
+
+        function bestByCategory(results, suffix) {
+            return results
+                .filter((item) => item.scenario.endsWith(suffix))
+                .reduce((acc, item) => (!acc || item.elapsedMs < acc.elapsedMs ? item : acc), null);
+        }
+
+        function formatImprovement(beforeMs, afterMs) {
+            if (!Number.isFinite(beforeMs) || beforeMs <= 0 || !Number.isFinite(afterMs)) {
+                return "sin base temporal estable";
+            }
+            const diff = beforeMs - afterMs;
+            const ratio = (diff / beforeMs) * 100;
+            if (Math.abs(ratio) < 0.05) return "≈ sin cambio";
+            if (ratio > 0) return `${ratio.toFixed(1)}% más rápido`;
+            return `${Math.abs(ratio).toFixed(1)}% más lento`;
+        }
+
+        function formatNumber(value) {
+            return Number.isFinite(value) ? `${value.toFixed(2)} ms` : "—";
+        }
+
+        function renderResults(results) {
+            const rowsEl = document.getElementById("rows");
+            const summaryEl = document.getElementById("benchmark-summary");
+            const detailEl = document.getElementById("detail");
+
+            rowsEl.innerHTML = "";
+            summaryEl.textContent = "";
+
+            if (!results.length) {
+                summaryEl.textContent = "No hay resultados.";
+                return;
+            }
+
+            const groupedBest = [
+                { key: "personajes", label: "Personajes (escena)", scenarioSuffix: "personajes-optim" },
+                { key: "pre-carga", label: "Personajes (precarga)", scenarioSuffix: "pre-carga-optim" },
+                { key: "capitulos", label: "Capítulos", scenarioSuffix: "capitulos-optim" },
+                { key: "line-prefetch", label: "Prefetch de líneas", scenarioSuffix: "line-prefetch-optim" },
+                { key: "fondos", label: "Fondos", scenarioSuffix: "fondos-optim" },
+                { key: "audio-loop", label: "Audio (loops)", scenarioSuffix: "sonido-loop-optim" },
+                { key: "audio-id", label: "Audio (ID)", scenarioSuffix: "sonido-id-optim" },
+            ];
+
+            const bests = groupedBest.map((group) => {
+                const best = bestByCategory(results, group.scenarioSuffix);
+                return best ? `${group.label}: ${best.label} (${formatNumber(best.elapsedMs)})` : `${group.label}: sin resultados`;
+            });
+
+            const scenarioByKey = (key) => results.find((item) => item.scenario === key);
+            const comparisons = [
+                ["Personajes (escena)", "personajes-legacy", "personajes-optim"],
+                ["Personajes (precarga)", "pre-carga-legacy", "pre-carga-optim"],
+                ["Capítulos", "capitulos-legacy", "capitulos-optim"],
+                ["Prefetch de líneas", "line-prefetch-legacy", "line-prefetch-optim"],
+                ["Fondos", "fondos-legacy", "fondos-optim"],
+                ["Audio (loops)", "sonido-loop-legacy", "sonido-loop-optim"],
+                ["Audio (ID)", "sonido-id-legacy", "sonido-id-optim"],
+            ].map(([label, beforeKey, afterKey]) => {
+                const before = scenarioByKey(beforeKey);
+                const after = scenarioByKey(afterKey);
+                if (!before || !after) return `${label}: sin par comparable`;
+                const gain = formatImprovement(before.elapsedMs, after.elapsedMs);
+                return `${label}: ${formatNumber(before.elapsedMs)} → ${formatNumber(after.elapsedMs)} (${gain})`;
+            });
+
+            const fastest = results.reduce((acc, item) => (!acc || item.elapsedMs < acc.elapsedMs ? item : acc), null);
+            const summaryLines = [
+                `Resumen global: escenarios m&aacute;s r&aacute;pido ${fastest.label} en ${formatNumber(fastest.elapsedMs)}.`,
+                ...bests,
+                ...comparisons,
+            ];
+            summaryEl.innerHTML = `<ul>${summaryLines.map((line) => `<li>${line}</li>`).join("")}</ul>`;
+
+            const bestOverall = results.reduce((acc, item) => {
+                return item.elapsedMs < acc.elapsedMs ? item : acc;
+            }, results[0]);
+
+            results.forEach((item) => {
+                const row = document.createElement("tr");
+                const isBest = item === bestOverall;
+                const cls = isBest ? "row-best" : "";
+                row.innerHTML = `
+                    <td class="${cls}">${item.label}</td>
+                    <td>${formatNumber(item.elapsedMs)}</td>
+                    <td>${item.metrics.fetch.total} / ${item.metrics.fetch.unique}</td>
+                    <td>${item.metrics.images.total} / ${item.metrics.images.unique}</td>
+                    <td>${item.metrics.audios.total} / ${item.metrics.audios.unique}</td>
+                    <td>${item.requested}</td>
+                    <td>${item.success}</td>
+                `;
+                rowsEl.appendChild(row);
+            });
+
+            const detail = {};
+            results.forEach((item) => {
+                detail[item.label] = {
+                    tiempo_ms: Number(item.elapsedMs.toFixed(2)),
+                    solicitudes: item.requested,
+                    exitosas: item.success,
+                    fetch: item.metrics.fetch,
+                    images: item.metrics.images,
+                    audios: item.metrics.audios,
+                    llamadas: item.metrics.calls,
+                };
+            });
+            detailEl.textContent = JSON.stringify(detail, null, 2);
+        }
+
+        function renderEnhancedResults(results, diagnostics, config, totalElapsedMs) {
+            const checks = evaluateChecks(results, diagnostics);
+            const passed = checks.filter((check) => check.pass).length;
+            const failed = checks.length - passed;
+            document.getElementById("passed-count").textContent = String(passed);
+            document.getElementById("failed-count").textContent = String(failed);
+            document.getElementById("total-time").textContent = formatNumber(totalElapsedMs);
+
+            const checksEl = document.getElementById("checks");
+            checksEl.innerHTML = checks.map((check) => `
+                <article class="check-card ${check.pass ? "pass" : "fail"}">
+                    <span class="badge">${check.pass ? "PASS" : "FAIL"}</span>
+                    <h3>${check.name}</h3>
+                    <p class="evidence">${check.evidence}</p>
+                </article>
+            `).join("");
+
+            const rowsEl = document.getElementById("rows");
+            rowsEl.innerHTML = "";
+            results.forEach((item) => {
+                const row = document.createElement("tr");
+                if (item.status === "error") row.className = "error";
+                row.innerHTML = `
+                    <td>${item.label}</td>
+                    <td>${item.status === "ok" ? "OK" : `ERROR: ${item.error}`}</td>
+                    <td>${formatNumber(item.elapsedMs)}</td>
+                    <td>${item.metrics.fetch.total} / ${item.metrics.fetch.unique}</td>
+                    <td>${item.metrics.images.total} / ${item.metrics.images.unique}</td>
+                    <td>${item.metrics.audios.total} / ${item.metrics.audios.unique}</td>
+                    <td>${item.requested}</td>
+                    <td>${item.success}</td>
+                `;
+                rowsEl.appendChild(row);
+            });
+
+            const comparablePairs = [
+                ["Personajes", "personajes-legacy", "personajes-optim"],
+                ["Precarga", "pre-carga-legacy", "pre-carga-optim"],
+                ["Capítulos", "capitulos-legacy", "capitulos-optim"],
+                ["Prefetch", "line-prefetch-legacy", "line-prefetch-optim"],
+                ["Fondos", "fondos-legacy", "fondos-optim"],
+                ["Audio loop", "sonido-loop-legacy", "sonido-loop-optim"],
+                ["Audio ID", "sonido-id-legacy", "sonido-id-optim"],
+            ];
+            const byKey = (key) => results.find((item) => item.scenario === key);
+            const comparisonLines = comparablePairs.map(([label, beforeKey, afterKey]) => {
+                const before = byKey(beforeKey);
+                const after = byKey(afterKey);
+                if (before?.status !== "ok" || after?.status !== "ok") return `${label}: comparación incompleta`;
+                return `${label}: ${formatNumber(before.elapsedMs)} → ${formatNumber(after.elapsedMs)} (${formatImprovement(before.elapsedMs, after.elapsedMs)})`;
+            });
+            document.getElementById("benchmark-summary").innerHTML = `
+                <p><strong>${passed}/${checks.length} criterios aprobados.</strong> Los tiempos usan latencia simulada; PASS/FAIL se apoya en invariantes repetibles.</p>
+                <ul>${comparisonLines.map((line) => `<li>${line}</li>`).join("")}</ul>
+            `;
+
+            const report = {
+                generatedAt: new Date().toISOString(),
+                config,
+                summary: { passed, failed, total: checks.length, elapsedMs: Number(totalElapsedMs.toFixed(2)) },
+                checks,
+                scenarios: results,
+                diagnostics,
+            };
+            document.getElementById("detail").textContent = JSON.stringify(report, null, 2);
+            try {
+                localStorage.setItem("illo_test_results_v1", JSON.stringify(report));
+            } catch (_) {}
+        }
+
+        function initReturnButton() {
+            const params = new URLSearchParams(location.search);
+            const returnTo = params.get("returnTo");
+            const returnLink = document.getElementById("return-link");
+            if (!returnTo) return;
+            const url = new URL(returnTo, location.href);
+            returnLink.href = url.href;
+            returnLink.textContent = "Volver a Tests";
+            document.getElementById("return-target").textContent = "La configuración llegó desde el catálogo de Tests.";
+        }
+
+        document.getElementById("run-btn").addEventListener("click", async () => {
+            const btn = document.getElementById("run-btn");
+            const config = readConfigFromInputs();
+            const started = performance.now();
+            btn.disabled = true;
+            btn.textContent = "Ejecutando…";
+
+            renderScenarioText(config);
+            try {
+                const results = await runAllScenarios(config);
+                const diagnostics = await runFunctionalDiagnostics(config);
+                renderEnhancedResults(results, diagnostics, config, performance.now() - started);
+            } catch (error) {
+                document.getElementById("benchmark-summary").textContent = `Error ejecutando el test: ${error.message || error}`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Ejecutar suite completa";
+            }
+        });
+
+        document.getElementById("clear-btn").addEventListener("click", () => {
+            document.getElementById("scenario").textContent = "";
+            document.getElementById("benchmark-summary").textContent = "";
+            document.getElementById("rows").innerHTML = "";
+            document.getElementById("detail").textContent = "";
+            document.getElementById("checks").innerHTML = "<p>Ejecuta la suite para obtener resultados.</p>";
+            document.getElementById("passed-count").textContent = "0";
+            document.getElementById("failed-count").textContent = "0";
+            document.getElementById("total-time").textContent = "—";
+        });
+
+        (function initializeFromQuery() {
+            const config = parseConfigFromQuery();
+            setInputsFromConfig(config);
+            initReturnButton();
+            renderScenarioText(config);
+        }());
+    </script>
+</body>
+</html>

@@ -17,9 +17,7 @@ window.MinigameLifeDisplay = Object.freeze({
 
     renderRepeated(element, remaining, maximum, heart = '❤') {
         const state = this.prepare(element, remaining, maximum);
-        element.textContent = state.condensed
-            ? `${heart} × ${state.current}`
-            : heart.repeat(state.current);
+        element.textContent = state.condensed ? `${heart} × ${state.current}` : heart.repeat(state.current);
     },
 
     renderSlots(element, remaining, maximum, heart = '❤') {
@@ -31,10 +29,11 @@ window.MinigameLifeDisplay = Object.freeze({
 
         const slots = state.max > 5 ? state.current : state.max;
         const lost = Math.max(0, slots - state.current);
-        element.innerHTML = Array.from({ length: slots }, (_, index) =>
-            `<span class="ss-heart${index < lost ? ' ss-lost' : ''}">${heart}</span>`
+        element.innerHTML = Array.from(
+            { length: slots },
+            (_, index) => `<span class="ss-heart${index < lost ? ' ss-lost' : ''}">${heart}</span>`,
         ).join('');
-    }
+    },
 });
 
 class VisualNovelEngine {
@@ -53,9 +52,8 @@ class VisualNovelEngine {
         this._setTypingPaused = null;
         this._lastDialogEmotionKey = null;
         this._lineTextDurationOverride = null;
-        this._textSegmenter = typeof Intl.Segmenter === 'function'
-            ? new Intl.Segmenter(undefined, { granularity: 'grapheme' })
-            : null;
+        this._textSegmenter =
+            typeof Intl.Segmenter === 'function' ? new Intl.Segmenter(undefined, { granularity: 'grapheme' }) : null;
         this.textSpeedPreset = 2;
         this.typingSpeed = 50;
         this.lastChapterName = null;
@@ -92,14 +90,34 @@ class VisualNovelEngine {
         // minijuegos cambian sprites muchas veces por segundo; conservar tanto la
         // URL como el Image evita nuevas consultas y nuevas decodificaciones.
         this.assetUrlCache = new Map();
+        this.fetchJsonCache = new Map();
+        this.fetchJsonInFlight = new Map();
+        this.chapterLoadPromises = new Map();
+        this.characterLoadPromises = new Map();
+        this.chapterLinePrefetchPromises = new Map();
         this.imagePreloadCache = new Map();
         this.preloadedImages = new Map();
+        this.audioPreloadCache = new Map();
+        this.loopedAudioByPath = new Map();
+        this.audioShortPool = new Map();
+        this.maxAudioPoolPerSource = 3;
+        this.characterKeyCache = new Map();
         this.blinkIntermediateManifest = null;
         this.blinkIntermediatePromise = null;
         this.layerBlinkManifest = null;
         this.layerBlinkPromise = null;
         this.whiteHaloManifest = null;
         this.whiteHaloPromise = null;
+        this._backgroundElement = null;
+    }
+
+    _getBackgroundElement() {
+        if (this._backgroundElement && this._backgroundElement.isConnected) {
+            return this._backgroundElement;
+        }
+
+        this._backgroundElement = document.getElementById('background');
+        return this._backgroundElement;
     }
 
     // Añade un objeto al inventario (sin duplicar). Persiste entre capítulos.
@@ -128,18 +146,58 @@ class VisualNovelEngine {
         if (this._setTypingPaused) this._setTypingPaused(this.textPaused);
     }
 
-    async loadChapter(chapterName) {
-        try {
-            const response = await fetch(`chapters/${chapterName}.json?v=${Date.now()}`, {
-                cache: 'no-store'
-            });
+    async fetchJson(path, options = {}) {
+        const { allow404 = false, fallback } = options;
+
+        const requestPath = this.cacheBustAsset(path);
+        if (this.fetchJsonCache.has(requestPath)) {
+            return this.fetchJsonCache.get(requestPath);
+        }
+
+        const inFlight = this.fetchJsonInFlight.get(requestPath);
+        if (inFlight) {
+            return inFlight;
+        }
+
+        const request = (async () => {
+            const response = await fetch(requestPath, { cache: 'no-store' });
             if (!response.ok) {
+                if (allow404 && response.status === 404) return null;
                 throw new Error(`HTTP ${response.status}`);
             }
-            const chapter = await response.json();
+            return response.json();
+        })();
+        this.fetchJsonInFlight.set(requestPath, request);
 
-            const isNewChapter = this.lastChapterName !== chapterName;
-            this.lastChapterName = chapterName;
+        try {
+            const data = await request;
+            const resolved = data === undefined ? fallback : data;
+            if (data !== undefined || fallback !== undefined) {
+                this.fetchJsonCache.set(requestPath, resolved);
+            }
+            return resolved;
+        } catch (error) {
+            if (fallback === undefined) throw error;
+            return fallback;
+        } finally {
+            this.fetchJsonInFlight.delete(requestPath);
+        }
+    }
+
+    async loadChapter(chapterName) {
+        const normalizedChapterName = String(chapterName);
+        const inFlight = this.chapterLoadPromises.get(normalizedChapterName);
+        if (inFlight) return inFlight;
+
+        const request = (async () => {
+            const chapter = await this.fetchJson(`chapters/${normalizedChapterName}.json`, {
+                allow404: true,
+                fallback: null,
+            });
+            if (!chapter) return null;
+
+            const isNewChapter = this.lastChapterName !== normalizedChapterName;
+            this.lastChapterName = normalizedChapterName;
 
             this.currentChapter = chapter;
             this.currentScene = 0;
@@ -154,83 +212,241 @@ class VisualNovelEngine {
             // verdad entre capítulos es storyPressure. Al cargar una escena se
             // recupera la presión acumulada en vez de olvidar las decisiones.
             this.storyDelay = this.storyPressure;
+            this.prefetchLineAssets(chapter, 0, 0);
 
             if (isNewChapter) {
                 await this.playChapterIntro(chapter);
             }
 
             return chapter;
+        })();
+
+        this.chapterLoadPromises.set(normalizedChapterName, request);
+        try {
+            return await request;
         } catch (error) {
-            console.error(`Error cargando capítulo ${chapterName}:`, error);
+            console.error(`Error cargando capítulo ${normalizedChapterName}:`, error);
             return null;
+        } finally {
+            this.chapterLoadPromises.delete(normalizedChapterName);
         }
     }
 
+    _extractLinePrefetchTargets(line) {
+        const targets = {
+            characters: new Set(),
+            images: new Set(),
+            audios: new Set(),
+        };
+
+        if (!line || typeof line !== 'object') return targets;
+
+        const addCharacter = (value) => {
+            if (!value || typeof value !== 'string') return;
+            const key = this.getCharacterKey(value);
+            if (!key || !/[a-z0-9]/i.test(key)) return;
+            targets.characters.add(key);
+        };
+        const addImage = (value) => {
+            if (typeof value !== 'string' || !value.trim()) return;
+            targets.images.add(value.trim());
+        };
+        const addAudio = (value) => {
+            if (typeof value !== 'string' || !value.trim()) return;
+            targets.audios.add(value.trim());
+        };
+
+        addCharacter(line.character);
+        addCharacter(line.speakingAs);
+        addImage(line.portrait);
+        addImage(line.background);
+
+        const inspectAction = (action) => {
+            if (!action || typeof action !== 'object') return;
+            const value = action.value;
+            const path = action.path;
+            switch (action.type) {
+                case 'setBackground':
+                    addImage(value);
+                    break;
+                case 'showCG':
+                    addImage(path || value);
+                    break;
+                case 'showCharacter':
+                    addCharacter(action.character);
+                    break;
+                case 'playSound':
+                    addAudio(path || value);
+                    break;
+                default:
+                    break;
+            }
+        };
+
+        for (const action of line.actions || []) {
+            inspectAction(action);
+        }
+        for (const action of line.afterActions || []) {
+            inspectAction(action);
+        }
+        return targets;
+    }
+
+    async _prefetchLineAssetsFromTargets(targets) {
+        const loads = [];
+        for (const key of targets.characters) {
+            loads.push(this.loadCharacter(key).catch(() => null));
+        }
+        if (targets.images.size > 0) {
+            loads.push(this.preloadImages([...targets.images]));
+        }
+        for (const path of targets.audios) {
+            loads.push(this.preloadAudio(path).catch(() => null));
+        }
+        await Promise.allSettled(loads);
+    }
+
+    prefetchLineAssets(chapter, sceneIndex = 0, lineIndex = 0) {
+        const activeChapter = chapter || this.currentChapter;
+        if (!activeChapter?.scenes) return Promise.resolve();
+
+        const scenes = activeChapter.scenes;
+        const normalizedSceneIndex = Number(sceneIndex);
+        const normalizedLineIndex = Number(lineIndex);
+        if (
+            !Number.isInteger(normalizedSceneIndex) ||
+            !Number.isInteger(normalizedLineIndex) ||
+            normalizedSceneIndex < 0 ||
+            normalizedLineIndex < 0
+        ) {
+            return Promise.resolve();
+        }
+
+        const scene = scenes[normalizedSceneIndex];
+        if (!scene || !scene.lines) return Promise.resolve();
+        const line = scene.lines[normalizedLineIndex];
+        if (!line) return Promise.resolve();
+
+        const chapterName = activeChapter.id || this.lastChapterName || `chapter-${normalizedSceneIndex}`;
+        const prefetchKey = `line:${chapterName}:${normalizedSceneIndex}:${normalizedLineIndex}`;
+        const inFlight = this.chapterLinePrefetchPromises.get(prefetchKey);
+        if (inFlight) return inFlight;
+
+        const targets = this._extractLinePrefetchTargets(line);
+        const request = this._prefetchLineAssetsFromTargets(targets);
+        this.chapterLinePrefetchPromises.set(prefetchKey, request);
+
+        const clean = () => {
+            const current = this.chapterLinePrefetchPromises.get(prefetchKey);
+            if (current === request) this.chapterLinePrefetchPromises.delete(prefetchKey);
+        };
+        request.then(clean).catch(clean);
+        return request;
+    }
+
+    prefetchNextLineAssets() {
+        if (!this.currentChapter?.scenes) return Promise.resolve();
+
+        let sceneIndex = Number(this.currentScene);
+        // nextLine() ya ha movido currentLine al siguiente destino cuando llama
+        // a este método. Sumar uno otra vez saltaba la línea inmediata y
+        // precargaba dos posiciones por delante.
+        let lineIndex = Number(this.currentLine);
+        if (!Number.isInteger(sceneIndex) || !Number.isInteger(lineIndex)) return Promise.resolve();
+
+        const scenes = this.currentChapter.scenes;
+        let scene = scenes[sceneIndex];
+        if (!scene?.lines) return Promise.resolve();
+        if (lineIndex >= scene.lines.length) {
+            sceneIndex += 1;
+            lineIndex = 0;
+            scene = scenes[sceneIndex];
+        }
+
+        if (!scene?.lines || lineIndex >= scene.lines.length) return Promise.resolve();
+        return this.prefetchLineAssets(this.currentChapter, sceneIndex, lineIndex);
+    }
+
     async loadCharacter(characterName) {
-        try {
-            const characterKey = this.getCharacterKey(characterName);
-            const response = await fetch(`characters/${characterKey}.json?v=${Date.now()}`, {
-                cache: 'no-store'
+        const characterKey = this.getCharacterKey(characterName);
+        if (this.characters[characterKey]) return this.characters[characterKey];
+
+        const inFlight = this.characterLoadPromises.get(characterKey);
+        if (inFlight) return inFlight;
+
+        const request = (async () => {
+            const character = await this.fetchJson(`characters/${characterKey}.json`, {
+                allow404: true,
+                fallback: null,
             });
-            const character = await response.json();
+            if (!character) return null;
+
             const [intermediates, layerBlinks, whiteHaloCopies] = await Promise.all([
                 this.loadBlinkIntermediateManifest(),
                 this.loadLayerBlinkManifest(),
-                this.loadWhiteHaloManifest()
+                this.loadWhiteHaloManifest(),
             ]);
             this.applyWhiteHaloCopies(characterKey, character, whiteHaloCopies);
             this.applyBlinkIntermediateFrames(characterKey, character, intermediates);
             this.applyWhiteHaloAnimationFrames(characterKey, character, whiteHaloCopies);
             this.applyLayerBlinkFrames(characterKey, character, layerBlinks);
             this.characters[characterKey] = character;
+            this.characterKeyCache.set(characterKey, characterKey);
+            if (character?.name) {
+                this.characterKeyCache.set(this._normalizeLookupKey(character.name), characterKey);
+            }
+            if (Array.isArray(character?.aliases)) {
+                character.aliases.forEach((alias) => {
+                    this.characterKeyCache.set(this._normalizeLookupKey(alias), characterKey);
+                });
+            }
             return character;
+        })();
+
+        this.characterLoadPromises.set(characterKey, request);
+        try {
+            return await request;
         } catch (error) {
             console.error(`Error cargando personaje ${characterName}:`, error);
             return null;
+        } finally {
+            this.characterLoadPromises.delete(characterKey);
         }
     }
-
     async loadBlinkIntermediateManifest() {
         if (this.blinkIntermediateManifest) return this.blinkIntermediateManifest;
         if (!this.blinkIntermediatePromise) {
-            this.blinkIntermediatePromise = fetch(
-                `assets/metadata/blink_eye_intermediates.json?v=${this.assetStamp}`,
-                { cache: 'no-store' }
-            ).then(response => response.ok ? response.json() : { poses: {} })
-                .catch(error => {
-                    console.warn('No se pudieron cargar los intermedios oculares:', error);
-                    return { poses: {} };
-                });
+            this.blinkIntermediatePromise = this.fetchJson('assets/metadata/blink_eye_intermediates.json', {
+                fallback: { poses: {} },
+            }).catch((error) => {
+                console.warn('No se pudieron cargar los intermedios oculares:', error);
+                return { poses: {} };
+            });
         }
         this.blinkIntermediateManifest = await this.blinkIntermediatePromise;
         return this.blinkIntermediateManifest;
     }
-
     async loadWhiteHaloManifest() {
         if (this.whiteHaloManifest) return this.whiteHaloManifest;
         if (!this.whiteHaloPromise) {
-            this.whiteHaloPromise = fetch(
-                `assets/metadata/sprite_white_halo_cleaned.json?v=${this.assetStamp}`,
-                { cache: 'no-store' }
-            ).then(response => response.ok ? response.json() : { sprites: {} })
-                .catch(error => {
-                    console.warn('No se pudo cargar el índice de sprites limpios:', error);
-                    return { sprites: {} };
-                });
+            this.whiteHaloPromise = this.fetchJson('assets/metadata/sprite_white_halo_cleaned.json', {
+                fallback: { sprites: {} },
+            }).catch((error) => {
+                console.warn('No se pudo cargar el índice de sprites limpios:', error);
+                return { sprites: {} };
+            });
         }
         this.whiteHaloManifest = await this.whiteHaloPromise;
         return this.whiteHaloManifest;
     }
-
     applyWhiteHaloCopies(characterKey, character, manifest) {
         if (!character?.poses || !manifest?.sprites) return;
-        Object.keys(character.poses).forEach(pose => {
+        Object.keys(character.poses).forEach((pose) => {
             const entry = manifest.sprites[`${characterKey}.${pose}`];
             if (!entry?.cleaned) return;
             const current = character.poses[pose];
-            character.poses[pose] = current && typeof current === 'object'
-                ? { ...current, src: entry.cleaned }
-                : entry.cleaned;
+            character.poses[pose] =
+                current && typeof current === 'object' ? { ...current, src: entry.cleaned } : entry.cleaned;
         });
     }
 
@@ -242,13 +458,11 @@ class VisualNovelEngine {
             if (!replacements || typeof replacements !== 'object') return;
             const frames = Array.isArray(config) ? config : config?.frames;
             if (!Array.isArray(frames)) return;
-            const replaceFrame = frame => {
+            const replaceFrame = (frame) => {
                 const source = this.animationFramePath(character, frame);
                 const cleaned = replacements[source];
                 if (!cleaned) return frame;
-                return frame && typeof frame === 'object'
-                    ? { ...frame, src: cleaned }
-                    : cleaned;
+                return frame && typeof frame === 'object' ? { ...frame, src: cleaned } : cleaned;
             };
             if (Array.isArray(config)) animations[pose] = frames.map(replaceFrame);
             else config.frames = frames.map(replaceFrame);
@@ -258,54 +472,54 @@ class VisualNovelEngine {
     async loadLayerBlinkManifest() {
         if (this.layerBlinkManifest) return this.layerBlinkManifest;
         if (!this.layerBlinkPromise) {
-            const load = path => fetch(`${path}?v=${this.assetStamp}`, { cache: 'no-store' })
-                .then(response => response.ok ? response.json() : {});
+            const load = (path) => this.fetchJson(path, { fallback: {} });
             this.layerBlinkPromise = Promise.all([
                 load('assets/metadata/blink_eye_region_previews.json'),
                 load('assets/metadata/blink_eye_clean_offsets_manual.json'),
-                load('assets/metadata/blink_eye_pixel_edits.json')
-            ]).then(([previews, offsets, edits]) => {
-                const poses = {};
-                Object.entries(previews.poses || {}).forEach(([id, pose]) => {
-                    const half = edits.edits?.saved?.[id]?.half || pose.half;
-                    const closed = edits.edits?.saved?.[id]?.closed || pose.closed || pose.blinks?.[0];
-                    const crop = pose.crop;
-                    const canvas = pose.sourceCanvas;
-                    if (!pose.sourceBase || !half || !closed || !crop || !canvas) return;
-                    const transform = offsets.offsets?.[id] || {};
-                    poses[id] = {
-                        base: pose.sourceBase,
-                        crop,
-                        canvas,
-                        half,
-                        closed,
-                        offsets: {
-                            half: transform.half || [0, 0],
-                            closed: transform.closed || [0, 0],
-                            halfScale: transform.halfScale || [1, 1],
-                            closedScale: transform.closedScale || [1, 1]
-                        },
-                        frames: [
-                            { state: 'half', src: half, duration: 65 },
-                            { state: 'closed', src: closed, duration: 95 },
-                            { state: 'half', src: half, duration: 65 }
-                        ]
-                    };
+                load('assets/metadata/blink_eye_pixel_edits.json'),
+            ])
+                .then(([previews, offsets, edits]) => {
+                    const poses = {};
+                    Object.entries(previews.poses || {}).forEach(([id, pose]) => {
+                        const half = edits.edits?.saved?.[id]?.half || pose.half;
+                        const closed = edits.edits?.saved?.[id]?.closed || pose.closed || pose.blinks?.[0];
+                        const crop = pose.crop;
+                        const canvas = pose.sourceCanvas;
+                        if (!pose.sourceBase || !half || !closed || !crop || !canvas) return;
+                        const transform = offsets.offsets?.[id] || {};
+                        poses[id] = {
+                            base: pose.sourceBase,
+                            crop,
+                            canvas,
+                            half,
+                            closed,
+                            offsets: {
+                                half: transform.half || [0, 0],
+                                closed: transform.closed || [0, 0],
+                                halfScale: transform.halfScale || [1, 1],
+                                closedScale: transform.closedScale || [1, 1],
+                            },
+                            frames: [
+                                { state: 'half', src: half, duration: 65 },
+                                { state: 'closed', src: closed, duration: 95 },
+                                { state: 'half', src: half, duration: 65 },
+                            ],
+                        };
+                    });
+                    return { poses };
+                })
+                .catch((error) => {
+                    console.warn('No se pudieron cargar las capas oculares runtime:', error);
+                    return { poses: {} };
                 });
-                return { poses };
-            }).catch(error => {
-                console.warn('No se pudieron cargar las capas oculares runtime:', error);
-                return { poses: {} };
-            });
         }
         this.layerBlinkManifest = await this.layerBlinkPromise;
         return this.layerBlinkManifest;
     }
-
     applyLayerBlinkFrames(characterKey, character, manifest) {
         if (!manifest?.poses || !character?.poses) return;
         character.layerBlinks = character.layerBlinks || {};
-        Object.keys(character.poses).forEach(pose => {
+        Object.keys(character.poses).forEach((pose) => {
             const config = manifest.poses[`${characterKey}.${pose}`];
             if (config) character.layerBlinks[pose] = config;
         });
@@ -323,15 +537,14 @@ class VisualNovelEngine {
             if (!half) return;
             const frames = Array.isArray(config) ? config : config?.frames;
             if (!Array.isArray(frames) || !frames.length) return;
-            const sources = frames.map(frame => this.animationFramePath(character, frame));
-            if (sources.some(source => source === half) || sources.some(source => /blink[_-]half/i.test(source || ''))) {
+            const sources = frames.map((frame) => this.animationFramePath(character, frame));
+            if (
+                sources.some((source) => source === half) ||
+                sources.some((source) => /blink[_-]half/i.test(source || ''))
+            ) {
                 return;
             }
-            const sequence = [
-                { src: half, duration: 65 },
-                ...frames,
-                { src: half, duration: 65 }
-            ];
+            const sequence = [{ src: half, duration: 65 }, ...frames, { src: half, duration: 65 }];
             if (Array.isArray(config)) animations[pose] = sequence;
             else config.frames = sequence;
         });
@@ -369,8 +582,7 @@ class VisualNovelEngine {
             let best = null;
             for (const key of Object.keys(line.byRescueCount)) {
                 const threshold = parseInt(key, 10);
-                if (!isNaN(threshold) && threshold <= count &&
-                    (best === null || threshold > best)) {
+                if (!isNaN(threshold) && threshold <= count && (best === null || threshold > best)) {
                     best = threshold;
                 }
             }
@@ -400,7 +612,15 @@ class VisualNovelEngine {
                 this.setBackground(action.value, action);
                 break;
             case 'showCharacter':
-                await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter, action.offsetY, action.scale);
+                await this.showCharacter(
+                    action.character,
+                    action.position,
+                    action.pose,
+                    action.flipped,
+                    action.enter,
+                    action.offsetY,
+                    action.scale,
+                );
                 break;
             case 'hideCharacter':
                 this.hideCharacter(action.character, action.position, action.exit);
@@ -457,7 +677,7 @@ class VisualNovelEngine {
                     loop: action.loop || false,
                     autoPlay: action.autoPlay !== false,
                     id: action.id,
-                    fadeIn: action.fadeIn || 0
+                    fadeIn: action.fadeIn || 0,
                 };
                 this.playSound(soundPath, soundOptions);
                 break;
@@ -482,9 +702,7 @@ class VisualNovelEngine {
             case 'setTextDuration':
             case 'textDuration':
                 this.setLineTextDuration(
-                    action.duration != null ? action.duration
-                    : action.ms != null ? action.ms
-                    : action.value
+                    action.duration != null ? action.duration : action.ms != null ? action.ms : action.value,
                 );
                 break;
             case 'waitForClick':
@@ -503,7 +721,7 @@ class VisualNovelEngine {
                 this.storyPressure = this.storyDelay;
                 break;
             case 'addDelay':
-                this.storyDelay += (action.value || 0);
+                this.storyDelay += action.value || 0;
                 this.storyPressure = this.storyDelay;
                 break;
             case 'goToScene':
@@ -532,7 +750,7 @@ class VisualNovelEngine {
             case 'vignette':
             case 'vigneta':
                 if (window.Juice) {
-                    const s = (action.value != null) ? action.value : action.strength;
+                    const s = action.value != null ? action.value : action.strength;
                     window.Juice.vignette(s, action.duration);
                 }
                 break;
@@ -566,7 +784,10 @@ class VisualNovelEngine {
     // se reanuda al terminar. Se puede saltar con clic / Esc / Enter / Espacio.
     playVideo(action = {}) {
         const src = action.path || action.value || action.src;
-        if (!src) { console.warn('playVideo: falta la ruta del vídeo'); return Promise.resolve(); }
+        if (!src) {
+            console.warn('playVideo: falta la ruta del vídeo');
+            return Promise.resolve();
+        }
 
         const audioCrossfade = Math.max(0, Number(action.audioCrossfade) || 0);
         const holdLastFrame = Math.max(0, Number(action.holdLastFrame) || 0);
@@ -595,7 +816,7 @@ class VisualNovelEngine {
 
         this.isWaitingForInput = false;
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'cutscene-overlay';
 
@@ -630,11 +851,15 @@ class VisualNovelEngine {
                 const target = Math.max(0, Math.min(1, base * this.volFactor(kind)));
                 if (duration <= 0) {
                     audio.volume = target;
-                    try { audio.play().catch(() => {}); } catch (e) {}
+                    try {
+                        audio.play().catch(() => {});
+                    } catch (e) {}
                     return;
                 }
                 audio.volume = 0;
-                try { audio.play().catch(() => {}); } catch (e) {}
+                try {
+                    audio.play().catch(() => {});
+                } catch (e) {}
                 const startedAt = Date.now();
                 audio._fadeInterval = setInterval(() => {
                     const progress = Math.min((Date.now() - startedAt) / duration, 1);
@@ -695,12 +920,17 @@ class VisualNovelEngine {
                     const resumeFade = naturalEnd ? audioCrossfade : Math.min(audioCrossfade, 350);
                     beginAudioCrossfade(resumeFade);
                 }
-                try { video.pause(); } catch (e) {}
+                try {
+                    video.pause();
+                } catch (e) {}
 
                 const hold = naturalEnd ? holdLastFrame : 0;
                 const fade = naturalEnd ? visualFadeOut : Math.min(visualFadeOut, 150);
                 setTimeout(() => {
-                    if (fade <= 0) { cleanup(); return; }
+                    if (fade <= 0) {
+                        cleanup();
+                        return;
+                    }
                     overlay.style.transition = `opacity ${fade}ms ease`;
                     overlay.style.opacity = '0';
                     setTimeout(cleanup, fade + 30);
@@ -723,7 +953,9 @@ class VisualNovelEngine {
             // Autoplay puede fallar si el navegador exige gesto: ofrecer clic para arrancar.
             const p = video.play();
             if (p && p.catch) {
-                p.catch(() => { skipHint.textContent = 'Clic para reproducir ▶'; });
+                p.catch(() => {
+                    skipHint.textContent = 'Clic para reproducir ▶';
+                });
             }
         });
     }
@@ -743,7 +975,7 @@ class VisualNovelEngine {
         clearTimeout(this._bgSwapTimer);
         this._bgSwapTimer = null;
         this.currentBackgroundPath = null;
-        const bg = document.getElementById('background');
+        const bg = this._getBackgroundElement();
         const bgB = document.getElementById('background-b');
         if (bg) bg.style.backgroundImage = '';
         if (bgB) {
@@ -756,9 +988,7 @@ class VisualNovelEngine {
     jumpToScene(target) {
         let sceneIndex;
         if (typeof target === 'string') {
-            sceneIndex = this.currentChapter.scenes.findIndex(
-                scene => scene.title === target
-            );
+            sceneIndex = this.currentChapter.scenes.findIndex((scene) => scene.title === target);
         } else {
             sceneIndex = target;
         }
@@ -794,7 +1024,7 @@ class VisualNovelEngine {
             const map = action[prop];
             const thresholds = Object.keys(map)
                 .map(Number)
-                .filter(n => n <= this.storyDelay)
+                .filter((n) => n <= this.storyDelay)
                 .sort((a, b) => a - b);
             if (thresholds.length > 0) {
                 const key = thresholds[thresholds.length - 1];
@@ -822,66 +1052,69 @@ class VisualNovelEngine {
         });
 
         try {
-        await Promise.race([cancelacion, (async () => {
-        switch (action.game) {
-            case 'furrielvaExplore':
-                await this.playFurrielvaExploreMinigame(action);
-                break;
-            case 'chiliHarvest':
-            case 'guindillas':
-                await this.playChiliHarvestMinigame(action);
-                break;
-            case 'ketchupBoss':
-            case 'ketchup':
-                await this.playKetchupBossMinigame(action);
-                break;
-            case 'ecchi':
-                await this.playEcchiMinigame(action);
-                break;
-            case 'paloma':
-                await this.playPalomaMinigame(action);
-                break;
-            case 'runa':
-                await this.playRunaMinigame(action);
-                break;
-            case 'runeChanneling':
-            case 'rune_channeling':
-            case 'canalizacionRunas':
-                await this.playRuneChannelingMinigame(action);
-                break;
-            case 'gatos':
-                await this.playGatosMinigame(action);
-                break;
-            case 'vocalecho':
-                await this.playVocalEchoMinigame(action);
-                break;
-            case 'rhythm':
-                await this.playRhythmMinigame(action);
-                break;
-            case 'battle':
-                await this.playBattleMinigame(action);
-                break;
-            case 'credits':
-            case 'creditos':
-                await this.playCreditsMinigame(action);
-                break;
-            case 'chase':
-                await this.playChaseMinigame(action);
-                break;
-            case 'eduvuelo':
-                await this.playEduVueloMinigame(action);
-                break;
-            default:
-                console.warn(`Minijuego desconocido: ${action.game}`);
-        }
-        })()]);
+            await Promise.race([
+                cancelacion,
+                (async () => {
+                    switch (action.game) {
+                        case 'furrielvaExplore':
+                            await this.playFurrielvaExploreMinigame(action);
+                            break;
+                        case 'chiliHarvest':
+                        case 'guindillas':
+                            await this.playChiliHarvestMinigame(action);
+                            break;
+                        case 'ketchupBoss':
+                        case 'ketchup':
+                            await this.playKetchupBossMinigame(action);
+                            break;
+                        case 'ecchi':
+                            await this.playEcchiMinigame(action);
+                            break;
+                        case 'paloma':
+                            await this.playPalomaMinigame(action);
+                            break;
+                        case 'runa':
+                            await this.playRunaMinigame(action);
+                            break;
+                        case 'runeChanneling':
+                        case 'rune_channeling':
+                        case 'canalizacionRunas':
+                            await this.playRuneChannelingMinigame(action);
+                            break;
+                        case 'gatos':
+                            await this.playGatosMinigame(action);
+                            break;
+                        case 'vocalecho':
+                            await this.playVocalEchoMinigame(action);
+                            break;
+                        case 'rhythm':
+                            await this.playRhythmMinigame(action);
+                            break;
+                        case 'battle':
+                            await this.playBattleMinigame(action);
+                            break;
+                        case 'credits':
+                        case 'creditos':
+                            await this.playCreditsMinigame(action);
+                            break;
+                        case 'chase':
+                            await this.playChaseMinigame(action);
+                            break;
+                        case 'eduvuelo':
+                            await this.playEduVueloMinigame(action);
+                            break;
+                        default:
+                            console.warn(`Minijuego desconocido: ${action.game}`);
+                    }
+                })(),
+            ]);
         } catch (e) {
             if (!e || !e.minijuegoCancelado) throw e;
             // Se salió del minijuego desde los botones de arriba: limpiar los
             // restos que pudieran quedar y seguir como si nada.
-            document.querySelectorAll(
-                '.minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame'
-            ).forEach(o => o.remove());
+            document
+                .querySelectorAll('.minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame')
+                .forEach((o) => o.remove());
             // La música y los efectos del minijuego no se van con el overlay.
             // Quien nos ha sacado (otra escena, retroceder, menú) repinta luego
             // su propio ambiente sonoro.
@@ -907,141 +1140,215 @@ class VisualNovelEngine {
     // primer desplazamiento parte de la Iglesia del Rocío.
     playFurrielvaExploreMinigame(options = {}) {
         this.isWaitingForInput = false;
-        const background = options.background ||
-            'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp';
+        const background =
+            options.background || 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp';
         const samuPortrait = 'assets/images/characters/samu/samu_thinking.webp';
-        const samuFrames = [1, 2, 3, 4, 5, 7].map(n =>
-            `assets/images/characters/samu/ketchup/${n}.webp`);
+        const samuFrames = [1, 2, 3, 4, 5, 7].map((n) => `assets/images/characters/samu/ketchup/${n}.webp`);
         const church = {
             id: 'iglesia',
             label: 'Iglesia del Rocío',
-            destination: [50, 55.2]
+            destination: [50, 55.2],
         };
         const locations = [
             {
-                id: 'plaza', label: 'Plaza del Rocío', area: 'zone-plaza',
-                route: 'M500 276 C420 230 340 155 220 135', destination: [22, 27],
+                id: 'plaza',
+                label: 'Plaza del Rocío',
+                area: 'zone-plaza',
+                route: 'M500 276 C420 230 340 155 220 135',
+                destination: [22, 27],
                 background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_plaza_investigacion_v1_4k.webp',
                 npc: 'TADEO TRUFA',
                 color: '#e98245',
                 portrait: 'assets/images/characters/furrielva/tadeo_trufa_v1.webp',
                 opening: [
-                    { speaker: 'TADEO TRUFA', text: 'Genial... otra entrega tarde. Como vuelvan a cortarme la avenida esos camiones rojos, el jefe me descuenta el viaje.' },
-                    { speaker: 'SAMU', text: 'Perdona, no quería meterme, pero ¿has dicho camiones rojos? Me he encontrado esta botella. ¿Reconoces la etiqueta de Kingdom Ketchup?' },
-                    { speaker: 'TADEO TRUFA', text: 'No conozco ese nombre. Pero si es una fábrica, esos camiones son lo más raro que ha pasado por aquí. ¿Qué necesitas saber?' }
+                    {
+                        speaker: 'TADEO TRUFA',
+                        text: 'Genial... otra entrega tarde. Como vuelvan a cortarme la avenida esos camiones rojos, el jefe me descuenta el viaje.',
+                    },
+                    {
+                        speaker: 'SAMU',
+                        text: 'Perdona, no quería meterme, pero ¿has dicho camiones rojos? Me he encontrado esta botella. ¿Reconoces la etiqueta de Kingdom Ketchup?',
+                    },
+                    {
+                        speaker: 'TADEO TRUFA',
+                        text: 'No conozco ese nombre. Pero si es una fábrica, esos camiones son lo más raro que ha pasado por aquí. ¿Qué necesitas saber?',
+                    },
                 ],
                 choices: [
                     {
                         label: 'Preguntar por los camiones rojos',
                         dialogue: [
                             { speaker: 'SAMU', text: '¿Hacia dónde van cuando salen de la plaza?' },
-                            { speaker: 'TADEO TRUFA', text: 'Al anochecer toman la carretera industrial. Sin matrícula, sin empresa; sólo una corona encima de un tomate.' },
+                            {
+                                speaker: 'TADEO TRUFA',
+                                text: 'Al anochecer toman la carretera industrial. Sin matrícula, sin empresa; sólo una corona encima de un tomate.',
+                            },
                             // La plaza tampoco tiene por qué ser la primera parada.
                             {
                                 speaker: 'SAMU',
-                                text: ({ clues }) => clues <= 1
-                                    ? 'Edu mencionó ketchup. Esa corona puede ser la primera pista de verdad.'
-                                    : `Edu mencionó ketchup. Esa corona encaja con ${clues === 2 ? 'la pista que ya llevo' : 'todo lo que ya llevo apuntado'}.`
-                            }
+                                text: ({ clues }) =>
+                                    clues <= 1
+                                        ? 'Edu mencionó ketchup. Esa corona puede ser la primera pista de verdad.'
+                                        : `Edu mencionó ketchup. Esa corona encaja con ${clues === 2 ? 'la pista que ya llevo' : 'todo lo que ya llevo apuntado'}.`,
+                            },
                         ],
-                        lore: 'Los camiones rojos sin matrícula siguen la carretera industrial y llevan una corona sobre un tomate.'
+                        lore: 'Los camiones rojos sin matrícula siguen la carretera industrial y llevan una corona sobre un tomate.',
                     },
                     {
                         label: 'Preguntar por sus rutas',
                         dialogue: [
                             { speaker: 'SAMU', text: '¿Tus mapas de reparto no señalan de dónde vienen?' },
-                            { speaker: 'TADEO TRUFA', text: 'Los nuevos no. Lo extraño es que mi libreta antigua sí marca una nave al final de esa carretera, aunque ahora la calle tiene otro nombre.' },
-                            { speaker: 'SAMU', text: 'O sea, el sitio estaba antes de que el mapa decidiera olvidarlo.' }
+                            {
+                                speaker: 'TADEO TRUFA',
+                                text: 'Los nuevos no. Lo extraño es que mi libreta antigua sí marca una nave al final de esa carretera, aunque ahora la calle tiene otro nombre.',
+                            },
+                            {
+                                speaker: 'SAMU',
+                                text: 'O sea, el sitio estaba antes de que el mapa decidiera olvidarlo.',
+                            },
                         ],
-                        lore: 'La libreta antigua de Tadeo conserva una nave al final de la carretera industrial, aunque la calle haya cambiado de nombre.'
-                    }
-                ]
+                        lore: 'La libreta antigua de Tadeo conserva una nave al final de la carretera industrial, aunque la calle haya cambiado de nombre.',
+                    },
+                ],
             },
             {
-                id: 'comercio', label: 'Zona comercial', area: 'zone-commerce',
-                route: 'M500 276 C430 330 350 375 245 360', destination: [25, 72],
+                id: 'comercio',
+                label: 'Zona comercial',
+                area: 'zone-commerce',
+                route: 'M500 276 C430 330 350 375 245 360',
+                destination: [25, 72],
                 background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_zona_comercial_v1_4k.webp',
                 npc: 'LÍA LINCE',
                 color: '#c878dc',
                 portrait: 'assets/images/characters/furrielva/lia_lince_v1.webp',
                 opening: [
-                    { speaker: 'LÍA LINCE', text: 'Fantástico. Seis cajas que nadie ha pedido, un proveedor sin dirección y una promoción que no existe. ¿Dónde se supone que meto yo todo esto?' },
-                    { speaker: 'SAMU', text: 'Eh... perdona. No quería escuchar, pero ¿has dicho que el proveedor no tiene dirección?' },
-                    { speaker: 'LÍA LINCE', text: '¡Ah! No te había visto. Sí, han aparecido esta mañana. ¿Tú también vienes a reclamarme algo?' },
-                    { speaker: 'SAMU', text: 'Al contrario. Busco Kingdom Ketchup y Furry Maps se niega a mostrarme dónde está.' },
-                    { speaker: 'LÍA LINCE', text: 'Pues las cajas llevan una corona con tomate y las palabras «Kingdom Ketchup». Parece que los dos buscamos al mismo fantasma.' }
+                    {
+                        speaker: 'LÍA LINCE',
+                        text: 'Fantástico. Seis cajas que nadie ha pedido, un proveedor sin dirección y una promoción que no existe. ¿Dónde se supone que meto yo todo esto?',
+                    },
+                    {
+                        speaker: 'SAMU',
+                        text: 'Eh... perdona. No quería escuchar, pero ¿has dicho que el proveedor no tiene dirección?',
+                    },
+                    {
+                        speaker: 'LÍA LINCE',
+                        text: '¡Ah! No te había visto. Sí, han aparecido esta mañana. ¿Tú también vienes a reclamarme algo?',
+                    },
+                    {
+                        speaker: 'SAMU',
+                        text: 'Al contrario. Busco Kingdom Ketchup y Furry Maps se niega a mostrarme dónde está.',
+                    },
+                    {
+                        speaker: 'LÍA LINCE',
+                        text: 'Pues las cajas llevan una corona con tomate y las palabras «Kingdom Ketchup». Parece que los dos buscamos al mismo fantasma.',
+                    },
                 ],
                 choices: [
                     {
                         label: 'Examinar las cajas',
                         dialogue: [
                             { speaker: 'SAMU', text: '¿Puedo mirar la etiqueta de envío?' },
-                            { speaker: 'LÍA LINCE', text: 'Adelante. Sólo trae un lote, K-K/03, y una ruta de recogida hacia la salida industrial.' },
-                            { speaker: 'SAMU', text: 'K-K. No es precisamente una firma discreta.' }
+                            {
+                                speaker: 'LÍA LINCE',
+                                text: 'Adelante. Sólo trae un lote, K-K/03, y una ruta de recogida hacia la salida industrial.',
+                            },
+                            { speaker: 'SAMU', text: 'K-K. No es precisamente una firma discreta.' },
                         ],
-                        lore: 'Las cajas de Kingdom Ketchup usan el lote K-K/03 y regresan por una ruta hacia la salida industrial.'
+                        lore: 'Las cajas de Kingdom Ketchup usan el lote K-K/03 y regresan por una ruta hacia la salida industrial.',
                     },
                     {
                         label: 'Revisar el albarán',
                         dialogue: [
-                            { speaker: 'SAMU', text: '¿Y el albarán? A veces queda una dirección en la letra pequeña.' },
-                            { speaker: 'LÍA LINCE', text: 'Dirección, ninguna. Pero mira los comercios: El Jarrón, Noche y Mercaguasa. Ayer tenían otros nombres; hoy hasta los recibos antiguos aparecen corregidos.' },
-                            { speaker: 'SAMU', text: 'Vale... esto ya no es una campaña publicitaria normal.' }
+                            {
+                                speaker: 'SAMU',
+                                text: '¿Y el albarán? A veces queda una dirección en la letra pequeña.',
+                            },
+                            {
+                                speaker: 'LÍA LINCE',
+                                text: 'Dirección, ninguna. Pero mira los comercios: El Jarrón, Noche y Mercaguasa. Ayer tenían otros nombres; hoy hasta los recibos antiguos aparecen corregidos.',
+                            },
+                            { speaker: 'SAMU', text: 'Vale... esto ya no es una campaña publicitaria normal.' },
                         ],
-                        lore: 'Los nombres de las tiendas y hasta sus recibos antiguos han cambiado sin que Lía los modificara.'
-                    }
-                ]
+                        lore: 'Los nombres de las tiendas y hasta sus recibos antiguos han cambiado sin que Lía los modificara.',
+                    },
+                ],
             },
             {
-                id: 'callejon', label: 'Callejón de servicio', area: 'zone-alley',
-                route: 'M500 276 C565 215 635 150 730 135', destination: [73, 27],
+                id: 'callejon',
+                label: 'Callejón de servicio',
+                area: 'zone-alley',
+                route: 'M500 276 C565 215 635 150 730 135',
+                destination: [73, 27],
                 background: 'assets/images/backgrounds/chapter2/furrielva/furrielva_callejon_tuberias_v1_4k.webp',
                 npc: 'RULO MAPACHE',
                 color: '#55b9c8',
                 portrait: 'assets/images/characters/furrielva/rulo_mapache_v1.webp',
                 opening: [
-                    { speaker: 'RULO MAPACHE', text: 'Presión en la línea siete, calor en la acometida... y el plano insiste en que aquí no hay ninguna nave. Claro que sí, plano. Lo que tú digas.' },
+                    {
+                        speaker: 'RULO MAPACHE',
+                        text: 'Presión en la línea siete, calor en la acometida... y el plano insiste en que aquí no hay ninguna nave. Claro que sí, plano. Lo que tú digas.',
+                    },
                     { speaker: 'SAMU', text: 'Perdona... ¿estás discutiendo con un mapa?' },
-                    { speaker: 'RULO MAPACHE', text: 'Con un mapa no. Con el gracioso que lo actualizó. Hay una instalación consumiendo media red y, según esto, sólo existe un solar vacío.' },
-                    { speaker: 'SAMU', text: 'Estoy buscando una fábrica que tampoco aparece en Furry Maps. Kingdom Ketchup.' },
-                    { speaker: 'RULO MAPACHE', text: 'Entonces puede que tu fábrica y mi tubería fantasma sean el mismo problema.' }
+                    {
+                        speaker: 'RULO MAPACHE',
+                        text: 'Con un mapa no. Con el gracioso que lo actualizó. Hay una instalación consumiendo media red y, según esto, sólo existe un solar vacío.',
+                    },
+                    {
+                        speaker: 'SAMU',
+                        text: 'Estoy buscando una fábrica que tampoco aparece en Furry Maps. Kingdom Ketchup.',
+                    },
+                    {
+                        speaker: 'RULO MAPACHE',
+                        text: 'Entonces puede que tu fábrica y mi tubería fantasma sean el mismo problema.',
+                    },
                 ],
                 choices: [
                     {
                         label: 'Seguir la tubería marcada',
                         dialogue: [
                             { speaker: 'SAMU', text: '¿Puedes saber adónde llega por la presión?' },
-                            { speaker: 'RULO MAPACHE', text: 'Sale bajo tierra y reaparece en el límite industrial, justo debajo del solar que el mapa deja en blanco.' },
+                            {
+                                speaker: 'RULO MAPACHE',
+                                text: 'Sale bajo tierra y reaparece en el límite industrial, justo debajo del solar que el mapa deja en blanco.',
+                            },
                             // El callejón puede ser la primera, segunda o tercera zona visitada,
                             // así que la frase se ajusta a las pistas reunidas hasta ese momento.
                             {
                                 speaker: 'SAMU',
-                                text: ({ clues }) => clues <= 1
-                                    ? 'Primera pista y ya apunta a ese solar. A ver si las demás coinciden.'
-                                    : `${clues === 2 ? 'Dos pistas, el mismo lugar. Ya no parece una casualidad.' : 'Tres pistas, el mismo lugar. Demasiada casualidad.'} `
-                            }
+                                text: ({ clues }) =>
+                                    clues <= 1
+                                        ? 'Primera pista y ya apunta a ese solar. A ver si las demás coinciden.'
+                                        : `${clues === 2 ? 'Dos pistas, el mismo lugar. Ya no parece una casualidad.' : 'Tres pistas, el mismo lugar. Demasiada casualidad.'} `,
+                            },
                         ],
-                        lore: 'La conducción reaparece bajo el solar vacío del límite industrial.'
+                        lore: 'La conducción reaparece bajo el solar vacío del límite industrial.',
                     },
                     {
                         label: 'Preguntar por el fallo del mapa',
                         dialogue: [
                             { speaker: 'SAMU', text: '¿Qué ocurre cuando acercas el mapa a esa parcela?' },
-                            { speaker: 'RULO MAPACHE', text: 'Ruido, bandas de colores y vuelta al solar vacío. Siempre la misma zona, incluso sin conexión.' },
-                            { speaker: 'SAMU', text: 'Entonces no es cobertura. Hay algo ahí y el mapa no consigue enseñarlo.' }
+                            {
+                                speaker: 'RULO MAPACHE',
+                                text: 'Ruido, bandas de colores y vuelta al solar vacío. Siempre la misma zona, incluso sin conexión.',
+                            },
+                            {
+                                speaker: 'SAMU',
+                                text: 'Entonces no es cobertura. Hay algo ahí y el mapa no consigue enseñarlo.',
+                            },
                         ],
-                        lore: 'El mapa falla siempre sobre la misma parcela, incluso sin conexión a la red.'
-                    }
-                ]
-            }
+                        lore: 'El mapa falla siempre sobre la misma parcela, incluso sin conexión a la red.',
+                    },
+                ],
+            },
         ];
 
         this.preloadImages([
-            background, samuPortrait,
+            background,
+            samuPortrait,
             ...samuFrames,
-            ...locations.flatMap(location => [location.background, location.portrait])
+            ...locations.flatMap((location) => [location.background, location.portrait]),
         ]);
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay furrielva-explore';
             overlay.innerHTML = `
@@ -1060,7 +1367,7 @@ class VisualNovelEngine {
                                 <path></path>
                             </svg>
                             <div class="furrielva-landmark"><span aria-hidden="true">◆</span>Iglesia del Rocío</div>
-                            ${locations.map(location => `<button class="furrielva-zone ${location.area}" data-location="${location.id}" disabled><b>${location.label}</b><small>Seleccionar zona</small></button>`).join('')}
+                            ${locations.map((location) => `<button class="furrielva-zone ${location.area}" data-location="${location.id}" disabled><b>${location.label}</b><small>Seleccionar zona</small></button>`).join('')}
                             <div class="furrielva-kingdom-lock" aria-label="Zona no disponible"><span>UBICACIÓN INESTABLE</span><i></i><i></i><i></i></div>
                             <img class="furrielva-mini-samu" alt="Samu recorriendo la ruta" src="${this.cacheBustAsset(samuFrames[0])}">
                             <div class="furrielva-tour" aria-live="polite">
@@ -1098,20 +1405,29 @@ class VisualNovelEngine {
             const routePath = routeSvg.querySelector('path');
             const miniSamu = overlay.querySelector('.furrielva-mini-samu');
             const kingdomLock = overlay.querySelector('.furrielva-kingdom-lock');
-            const swallow = e => e.stopPropagation();
+            const swallow = (e) => e.stopPropagation();
             overlay.addEventListener('click', swallow);
 
             let tourIndex = 0;
             let pendingLocation = null;
             const tourLines = [
-                { id: 'plaza', text: 'Esta botella vacía lleva el nombre de Kingdom Ketchup. La plaza está llena de repartidores; alguno reconocerá la etiqueta o sabrá de dónde ha salido.' },
-                { id: 'comercio', text: 'Si nadie reconoce el nombre, probaré en la zona comercial. Los comercios conocen a casi todos los repartidores y proveedores de la ciudad.' },
-                { id: 'callejon', text: 'Y ese callejón de servicio parece comunicar con las instalaciones de la ciudad. Quizá algún trabajador municipal sepa qué hay detrás del fallo del mapa.' }
+                {
+                    id: 'plaza',
+                    text: 'Esta botella vacía lleva el nombre de Kingdom Ketchup. La plaza está llena de repartidores; alguno reconocerá la etiqueta o sabrá de dónde ha salido.',
+                },
+                {
+                    id: 'comercio',
+                    text: 'Si nadie reconoce el nombre, probaré en la zona comercial. Los comercios conocen a casi todos los repartidores y proveedores de la ciudad.',
+                },
+                {
+                    id: 'callejon',
+                    text: 'Y ese callejón de servicio parece comunicar con las instalaciones de la ciudad. Quizá algún trabajador municipal sepa qué hay detrás del fallo del mapa.',
+                },
             ];
 
-            const zoneButton = id => overlay.querySelector(`[data-location="${id}"]`);
+            const zoneButton = (id) => overlay.querySelector(`[data-location="${id}"]`);
             const setTourStep = () => {
-                overlay.querySelectorAll('.furrielva-zone').forEach(zone => zone.classList.remove('is-tour-focus'));
+                overlay.querySelectorAll('.furrielva-zone').forEach((zone) => zone.classList.remove('is-tour-focus'));
                 const step = tourLines[tourIndex];
                 zoneButton(step.id)?.classList.add('is-tour-focus');
                 tourText.textContent = step.text;
@@ -1119,12 +1435,14 @@ class VisualNovelEngine {
             };
 
             const finishTour = () => {
-                overlay.querySelectorAll('.furrielva-zone').forEach(zone => {
+                overlay.querySelectorAll('.furrielva-zone').forEach((zone) => {
                     zone.classList.remove('is-tour-focus');
                     zone.disabled = false;
                 });
                 tour.classList.add('is-leaving');
-                setTimeout(() => { tour.hidden = true; }, 280);
+                setTimeout(() => {
+                    tour.hidden = true;
+                }, 280);
                 card.textContent = 'Pasa el cursor por una zona y elige por dónde empezar.';
             };
 
@@ -1147,7 +1465,7 @@ class VisualNovelEngine {
                 map.classList.remove('is-travelling');
             };
 
-            const renderLocation = location => {
+            const renderLocation = (location) => {
                 locationScene.hidden = false;
                 locationScene.style.setProperty('--location-bg', `url('${this.cacheBustAsset(location.background)}')`);
                 const portrait = locationScene.querySelector('.furrielva-npc-portrait');
@@ -1156,13 +1474,14 @@ class VisualNovelEngine {
                 const speaker = locationScene.querySelector('strong');
                 const text = locationScene.querySelector('p');
                 const choices = locationScene.querySelector('.furrielva-location-choices');
-                const setSpeaker = name => {
+                const setSpeaker = (name) => {
                     speaker.textContent = name;
-                    const color = name === 'SAMU'
-                        ? ((this.characters.samu && this.characters.samu.color) || 'red')
-                        : name === location.npc
-                            ? location.color
-                            : '#55d8c6';
+                    const color =
+                        name === 'SAMU'
+                            ? (this.characters.samu && this.characters.samu.color) || 'red'
+                            : name === location.npc
+                              ? location.color
+                              : '#55d8c6';
                     speaker.style.color = this.readableNameColor(color);
                 };
 
@@ -1179,7 +1498,8 @@ class VisualNovelEngine {
                         locationScene.classList.remove('is-leaving');
                         resetRoute();
                         if (visited.size === locations.length) revealKingdom();
-                        else card.textContent = `Pista conseguida en ${location.label}. Quedan ${locations.length - visited.size}.`;
+                        else
+                            card.textContent = `Pista conseguida en ${location.label}. Quedan ${locations.length - visited.size}.`;
                     }, 420);
                 };
 
@@ -1190,33 +1510,46 @@ class VisualNovelEngine {
                         setSpeaker(line.speaker);
                         // Una línea puede ser texto fijo o una función que recibe el
                         // número de pistas conseguidas contando la zona actual.
-                        text.textContent = typeof line.text === 'function'
-                            ? line.text({ clues: visited.size + 1, total: locations.length })
-                            : line.text;
+                        text.textContent =
+                            typeof line.text === 'function'
+                                ? line.text({ clues: visited.size + 1, total: locations.length })
+                                : line.text;
                         choices.innerHTML = `<button type="button" data-continue>${index === lines.length - 1 ? 'Continuar' : 'Siguiente'}</button>`;
-                        choices.querySelector('[data-continue]').addEventListener('click', () => {
-                            index += 1;
-                            if (index < lines.length) showCurrent();
-                            else onComplete();
-                        }, { once: true });
+                        choices.querySelector('[data-continue]').addEventListener(
+                            'click',
+                            () => {
+                                index += 1;
+                                if (index < lines.length) showCurrent();
+                                else onComplete();
+                            },
+                            { once: true },
+                        );
                     };
                     showCurrent();
                 };
 
                 const showChoices = () => {
-                    choices.innerHTML = location.choices.map((choice, index) =>
-                        `<button type="button" data-choice="${index}">${choice.label}</button>`).join('');
-                    choices.querySelectorAll('[data-choice]').forEach(button => {
-                        button.addEventListener('click', () => {
-                            const choice = location.choices[Number(button.dataset.choice)];
-                            lore.push({ location: location.id, text: choice.lore });
-                            showDialogue(choice.dialogue, () => {
-                                setSpeaker('PISTA REGISTRADA');
-                                text.textContent = choice.lore;
-                                choices.innerHTML = '<button type="button" data-return-map>Volver a Furry Maps</button>';
-                                choices.querySelector('[data-return-map]').addEventListener('click', returnToMap, { once: true });
-                            });
-                        }, { once: true });
+                    choices.innerHTML = location.choices
+                        .map((choice, index) => `<button type="button" data-choice="${index}">${choice.label}</button>`)
+                        .join('');
+                    choices.querySelectorAll('[data-choice]').forEach((button) => {
+                        button.addEventListener(
+                            'click',
+                            () => {
+                                const choice = location.choices[Number(button.dataset.choice)];
+                                lore.push({ location: location.id, text: choice.lore });
+                                showDialogue(choice.dialogue, () => {
+                                    setSpeaker('PISTA REGISTRADA');
+                                    text.textContent = choice.lore;
+                                    choices.innerHTML =
+                                        '<button type="button" data-return-map>Volver a Furry Maps</button>';
+                                    choices
+                                        .querySelector('[data-return-map]')
+                                        .addEventListener('click', returnToMap, { once: true });
+                                });
+                            },
+                            { once: true },
+                        );
                     });
                 };
 
@@ -1239,18 +1572,18 @@ class VisualNovelEngine {
                 const deltaY = endY - startY;
                 const distance = Math.max(1, Math.hypot(deltaX, deltaY));
                 const side = from.id.localeCompare(to.id) < 0 ? 1 : -1;
-                const bend = Math.min(70, Math.max(28, distance * .14)) * side;
+                const bend = Math.min(70, Math.max(28, distance * 0.14)) * side;
                 const normalX = -deltaY / distance;
                 const normalY = deltaX / distance;
-                const point = value => Math.round(value * 10) / 10;
-                const control1X = startX + deltaX * .33 + normalX * bend;
-                const control1Y = startY + deltaY * .33 + normalY * bend;
-                const control2X = startX + deltaX * .67 + normalX * bend;
-                const control2Y = startY + deltaY * .67 + normalY * bend;
+                const point = (value) => Math.round(value * 10) / 10;
+                const control1X = startX + deltaX * 0.33 + normalX * bend;
+                const control1Y = startY + deltaY * 0.33 + normalY * bend;
+                const control2X = startX + deltaX * 0.67 + normalX * bend;
+                const control2Y = startY + deltaY * 0.67 + normalY * bend;
                 return `M${point(startX)} ${point(startY)} C${point(control1X)} ${point(control1Y)} ${point(control2X)} ${point(control2Y)} ${point(endX)} ${point(endY)}`;
             };
 
-            const animateRoute = location => {
+            const animateRoute = (location) => {
                 confirm.hidden = true;
                 const departure = currentLocation;
                 routePath.setAttribute('d', routeBetween(departure, location));
@@ -1265,7 +1598,7 @@ class VisualNovelEngine {
                 const duration = 2600;
                 const started = performance.now();
                 let currentFrame = -1;
-                const move = now => {
+                const move = (now) => {
                     if (!overlay.isConnected) return;
                     const progress = Math.min(1, (now - started) / duration);
                     const point = routePath.getPointAtLength(length * progress);
@@ -1292,9 +1625,10 @@ class VisualNovelEngine {
                 requestAnimationFrame(move);
             };
 
-            const askForRoute = location => {
+            const askForRoute = (location) => {
                 pendingLocation = location;
-                confirm.querySelector('p').textContent = `La ruta partirá desde ${currentLocation.label} hasta ${location.label}.`;
+                confirm.querySelector('p').textContent =
+                    `La ruta partirá desde ${currentLocation.label} hasta ${location.label}.`;
                 confirm.hidden = false;
                 confirm.querySelector('[data-confirm="yes"]').focus();
             };
@@ -1310,7 +1644,7 @@ class VisualNovelEngine {
                 animateRoute(location);
             });
 
-            locations.forEach(location => {
+            locations.forEach((location) => {
                 const button = zoneButton(location.id);
                 button.addEventListener('mouseenter', () => {
                     if (!button.disabled) card.textContent = `${location.label}: pulsa para consultar la ruta.`;
@@ -1326,22 +1660,27 @@ class VisualNovelEngine {
                 kingdomLock.classList.add('is-revealing');
                 setTimeout(() => {
                     kingdomLock.classList.add('is-revealed');
-                    card.innerHTML = '<strong>SAMU:</strong> Ahí estás. La fábrica sí estaba aquí; alguna interferencia la borraba del mapa. Kingdom Ketchup… voy para allá.';
+                    card.innerHTML =
+                        '<strong>SAMU:</strong> Ahí estás. La fábrica sí estaba aquí; alguna interferencia la borraba del mapa. Kingdom Ketchup… voy para allá.';
                     const finish = document.createElement('button');
                     finish.type = 'button';
                     finish.className = 'furrielva-finish';
                     finish.textContent = 'Marcar Kingdom Ketchup como destino';
                     card.appendChild(finish);
-                    finish.addEventListener('click', () => {
-                        map.classList.add('is-final-route');
-                        finish.disabled = true;
-                        setTimeout(() => {
-                            overlay.removeEventListener('click', swallow);
-                            overlay.remove();
-                            this.lastMinigameResult = { explored: true, clues: visited.size, lore };
-                            resolve(true);
-                        }, 1050);
-                    }, { once: true });
+                    finish.addEventListener(
+                        'click',
+                        () => {
+                            map.classList.add('is-final-route');
+                            finish.disabled = true;
+                            setTimeout(() => {
+                                overlay.removeEventListener('click', swallow);
+                                overlay.remove();
+                                this.lastMinigameResult = { explored: true, clues: visited.size, lore };
+                                resolve(true);
+                            }, 1050);
+                        },
+                        { once: true },
+                    );
                 }, 1700);
             };
         });
@@ -1375,7 +1714,7 @@ class VisualNovelEngine {
             const map = options[prop];
             const thresholds = Object.keys(map)
                 .map(Number)
-                .filter(n => n <= this.storyDelay)
+                .filter((n) => n <= this.storyDelay)
                 .sort((a, b) => a - b);
             if (thresholds.length > 0) {
                 const key = thresholds[thresholds.length - 1];
@@ -1390,7 +1729,7 @@ class VisualNovelEngine {
         if (diapason && this.hasItem('diapason') && options.useInventory !== false) {
             const previos = Array.isArray(options.startItems) ? options.startItems : [];
             options = Object.assign({}, options, {
-                startItems: [...previos, diapason]
+                startItems: [...previos, diapason],
             });
         }
 
@@ -1430,7 +1769,7 @@ class VisualNovelEngine {
         this.isWaitingForInput = false;
         const collected = await this.runChiliHarvestRound(options);
         const hasChiliBox = this.hasItem('caja_guindillas');
-        const boxBonus = hasChiliBox ? (Number(options.boxBonus) || 12) : 0;
+        const boxBonus = hasChiliBox ? Number(options.boxBonus) || 12 : 0;
 
         this.gameState.chiliCollected = collected;
         this.gameState.neitChiliBonus = boxBonus;
@@ -1455,11 +1794,15 @@ class VisualNovelEngine {
         const speedMult = Number(options.speedMult) || 1.25;
         const chiliChance = options.chiliChance !== undefined ? Number(options.chiliChance) : 0.72;
         const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.webp');
-        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
-        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp');
+        const ketchupIcon = this.cacheBustAsset(
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp',
+        );
+        const corruptIcon = this.cacheBustAsset(
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp',
+        );
         const playerIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/samu_player.webp');
         const factoryBackground = this.cacheBustAsset(
-            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp'
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp',
         );
 
         this.preloadImages([
@@ -1470,10 +1813,10 @@ class VisualNovelEngine {
             'assets/images/characters/edu/edu_picante_wide_transparent.webp',
             'assets/images/characters/samu/samu_charred_closed.webp',
             'assets/images/characters/samu/samu_charred_whiteeyes.webp',
-            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp'
+            'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp',
         ]);
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay chili-harvest-minigame';
             overlay.innerHTML = `
@@ -1504,34 +1847,36 @@ class VisualNovelEngine {
             let lastTime = null;
             const startTime = performance.now();
 
-            const updateHud = remaining => {
+            const updateHud = (remaining) => {
                 scoreEl.textContent = String(score);
                 timerEl.textContent = `${Math.max(0, Math.ceil(remaining / 1000))} s`;
                 powerFill.style.width = `${Math.min(100, (score / powerGoal) * 100)}%`;
             };
-            const updatePlayer = () => { player.style.left = `${playerX * 100}%`; };
+            const updatePlayer = () => {
+                player.style.left = `${playerX * 100}%`;
+            };
             updatePlayer();
             updateHud(duration);
 
             let moveLeft = false;
             let moveRight = false;
-            const keyDown = event => {
+            const keyDown = (event) => {
                 const key = event.key.toLowerCase();
                 if (key === 'arrowleft' || key === 'a') moveLeft = true;
                 if (key === 'arrowright' || key === 'd') moveRight = true;
                 if (key.startsWith('arrow')) event.preventDefault();
             };
-            const keyUp = event => {
+            const keyUp = (event) => {
                 const key = event.key.toLowerCase();
                 if (key === 'arrowleft' || key === 'a') moveLeft = false;
                 if (key === 'arrowright' || key === 'd') moveRight = false;
             };
-            const mouseMove = event => {
+            const mouseMove = (event) => {
                 const rect = fieldRect();
                 playerX = Math.max(0.04, Math.min(0.96, (event.clientX - rect.left) / rect.width));
                 updatePlayer();
             };
-            const swallowClick = event => event.stopPropagation();
+            const swallowClick = (event) => event.stopPropagation();
             document.addEventListener('keydown', keyDown);
             document.addEventListener('keyup', keyUp);
             field.addEventListener('mousemove', mouseMove);
@@ -1546,8 +1891,8 @@ class VisualNovelEngine {
             const spawnItem = () => {
                 const good = Math.random() < chiliChance;
                 const corrupt = !good && Math.random() < 0.45;
-                const type = good ? 'chili' : (corrupt ? 'corrupt' : 'ketchup');
-                const icon = good ? chiliIcon : (corrupt ? corruptIcon : ketchupIcon);
+                const type = good ? 'chili' : corrupt ? 'corrupt' : 'ketchup';
+                const icon = good ? chiliIcon : corrupt ? corruptIcon : ketchupIcon;
                 const el = document.createElement('div');
                 el.className = `mg-item mg-item-${type}`;
                 el.innerHTML = `<img src="${icon}" alt="${good ? 'guindilla' : 'botella de ketchup'}" draggable="false">`;
@@ -1569,7 +1914,7 @@ class VisualNovelEngine {
                 if (!running) return;
                 running = false;
                 detachControls();
-                items.forEach(item => item.el.remove());
+                items.forEach((item) => item.el.remove());
                 items = [];
                 const result = document.createElement('div');
                 result.className = 'minigame-result';
@@ -1581,11 +1926,11 @@ class VisualNovelEngine {
                 }, 1200);
             };
 
-            const loop = time => {
+            const loop = (time) => {
                 if (!running || !overlay.isConnected) {
                     running = false;
                     detachControls();
-                    items.forEach(item => item.el.remove());
+                    items.forEach((item) => item.el.remove());
                     items = [];
                     return;
                 }
@@ -1611,7 +1956,7 @@ class VisualNovelEngine {
                     const item = items[index];
                     item.y += item.speed * dt;
                     item.el.style.top = `${item.y * 100}%`;
-                    const caught = item.y >= 0.80 && item.y <= 0.98 && Math.abs(item.x - playerX) < 0.075;
+                    const caught = item.y >= 0.8 && item.y <= 0.98 && Math.abs(item.x - playerX) < 0.075;
                     if (caught) {
                         if (item.good) {
                             score++;
@@ -1652,7 +1997,7 @@ class VisualNovelEngine {
         const bossOptions = Object.assign({}, options, {
             spicePower: Number(this.gameState.chiliPower) || 0,
             maxSpicePower: Number(this.gameState.chiliPowerMax) || Number(options.maxSpicePower) || 40,
-            hasChiliBox: this.hasItem('caja_guindillas')
+            hasChiliBox: this.hasItem('caja_guindillas'),
         });
 
         // Se repite hasta ganar; al perder solo se puede reintentar
@@ -1674,17 +2019,21 @@ class VisualNovelEngine {
     // Implementación histórica del recolector, conservada temporalmente para
     // compatibilidad con pruebas antiguas; la historia usa chiliHarvest.
     runKetchupRound(options = {}) {
-        const goal = options.goal || 10;          // ketchups necesarios para ganar
-        const maxHits = options.maxHits || 3;     // golpes de guindilla permitidos
-        const duration = options.duration || 0;   // 0 = sin límite de tiempo
+        const goal = options.goal || 10; // ketchups necesarios para ganar
+        const maxHits = options.maxHits || 3; // golpes de guindilla permitidos
+        const duration = options.duration || 0; // 0 = sin límite de tiempo
         const spawnRate = options.spawnRate || 1.0; // multiplicador de frecuencia de aparición
         const speedMult = options.speedMult || 1.0; // multiplicador de velocidad de caída
         const chiliChance = options.chiliChance !== undefined ? options.chiliChance : 0.6;
         const showExtraInfo = options.showExtraInfo || false; // mostrar info de debug/test
         const phase1Goal = Math.min(goal - 2, options.phase1Goal || Math.ceil(goal * 0.3));
         const phase2Goal = Math.min(goal - 1, options.phase2Goal || Math.ceil(goal * 0.68));
-        const ketchupIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp');
-        const corruptIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp');
+        const ketchupIcon = this.cacheBustAsset(
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_gold.webp',
+        );
+        const corruptIcon = this.cacheBustAsset(
+            'assets/images/minigames/chapter2/ketchup/kingdom_ketchup_bottle_corrupted.webp',
+        );
         const capIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/golden_cap.webp');
         const chiliIcon = this.cacheBustAsset('assets/images/minigames/chapter2/ketchup/chili_v2.webp');
         this.preloadImages([
@@ -1693,11 +2042,11 @@ class VisualNovelEngine {
             'assets/images/minigames/chapter2/ketchup/golden_cap.webp',
             'assets/images/minigames/chapter2/ketchup/chili_v2.webp',
             'assets/images/backgrounds/chapter2/kingdom_ketchup/kingdom_ketchup_production_floor_corrupted_v2_4k.webp',
-            'assets/images/minigames/chapter2/common/samu_player.webp'
+            'assets/images/minigames/chapter2/common/samu_player.webp',
         ]);
         const musicTrack = options.music;
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             // Reproducir música del minijuego (si se proporciona)
             let musicAudio = null;
             if (musicTrack) {
@@ -1743,13 +2092,13 @@ class VisualNovelEngine {
             renderLives();
             let playerX = 0.5; // posición horizontal normalizada (0..1)
             const playerW = 0.12; // ancho del jugador relativo al campo
-            let items = [];     // { el, x, y, speed, type }
+            let items = []; // { el, x, y, speed, type }
             let running = true;
             let spawnTimer = 0;
             let lastTime = null;
             let phase = 1;
 
-            const setPhase = next => {
+            const setPhase = (next) => {
                 if (next === phase) return;
                 phase = next;
                 overlay.classList.remove('ketchup-phase-1', 'ketchup-phase-2', 'ketchup-phase-3');
@@ -1757,7 +2106,7 @@ class VisualNovelEngine {
                 const labels = {
                     1: ['FASE 1 · REACTIVA LA LÍNEA', 'Reactiva la línea de embotellado'],
                     2: ['FASE 2 · DESCOMPRIME', 'Separa las botellas limpias de la corrupción'],
-                    3: ['FASE 3 · LIBERA A EDU', '¡Los Ketchlings lanzan tapones dorados!']
+                    3: ['FASE 3 · LIBERA A EDU', '¡Los Ketchlings lanzan tapones dorados!'],
                 };
                 phaseEl.textContent = labels[phase][0];
                 phaseBanner.textContent = labels[phase][1];
@@ -1806,7 +2155,12 @@ class VisualNovelEngine {
                 el.className = `mg-item mg-item-${type}`;
                 const img = document.createElement('img');
                 const icons = { chili: chiliIcon, ketchup: ketchupIcon, corrupt: corruptIcon, cap: capIcon };
-                const labels = { chili: 'guindilla', ketchup: 'botella limpia', corrupt: 'botella corrupta', cap: 'tapón dorado' };
+                const labels = {
+                    chili: 'guindilla',
+                    ketchup: 'botella limpia',
+                    corrupt: 'botella corrupta',
+                    cap: 'tapón dorado',
+                };
                 img.src = icons[type];
                 img.alt = labels[type];
                 img.draggable = false;
@@ -1821,7 +2175,7 @@ class VisualNovelEngine {
                     x,
                     y: -0.1,
                     speed: speedBase,
-                    type
+                    type,
                 });
             };
 
@@ -1843,12 +2197,15 @@ class VisualNovelEngine {
                 result.textContent = won ? '¡Banquete de ketchup!' : '¡Demasiado picante!';
                 overlay.appendChild(result);
 
-                setTimeout(() => {
-                    // Quitar el bloqueo de clics justo antes de eliminar el overlay
-                    overlay.removeEventListener('click', swallowClick, true);
-                    overlay.remove();
-                    resolve(won);
-                }, won ? 1500 : 800);
+                setTimeout(
+                    () => {
+                        // Quitar el bloqueo de clics justo antes de eliminar el overlay
+                        overlay.removeEventListener('click', swallowClick, true);
+                        overlay.remove();
+                        resolve(won);
+                    },
+                    won ? 1500 : 800,
+                );
             };
 
             const startTime = performance.now();
@@ -1856,9 +2213,12 @@ class VisualNovelEngine {
             const loop = (time) => {
                 // Si nos han sacado del minijuego desde los botones de arriba,
                 // su overlay ya no está en el documento: parar el bucle.
-                if (!running || !overlay.isConnected) { running = false; return; }
+                if (!running || !overlay.isConnected) {
+                    running = false;
+                    return;
+                }
                 // Límite de tiempo opcional (nuestro): duration 0 = sin límite
-                if (duration > 0 && (time - startTime) >= duration) {
+                if (duration > 0 && time - startTime >= duration) {
                     return cleanup(score >= goal);
                 }
                 if (lastTime === null) lastTime = time;
@@ -1885,9 +2245,8 @@ class VisualNovelEngine {
                     it.el.style.top = `${it.y * 100}%`;
 
                     // Colisión con el jugador (zona inferior del campo)
-                    const hitboxWidth = (it.type === 'chili' || it.type === 'corrupt') ? 0.045 : playerW;
-                    const caught = it.y >= 0.82 && it.y <= 0.98 &&
-                        Math.abs(it.x - playerX) < hitboxWidth;
+                    const hitboxWidth = it.type === 'chili' || it.type === 'corrupt' ? 0.045 : playerW;
+                    const caught = it.y >= 0.82 && it.y <= 0.98 && Math.abs(it.x - playerX) < hitboxWidth;
 
                     if (caught) {
                         if (it.type === 'ketchup' || it.type === 'cap') {
@@ -2023,7 +2382,7 @@ class VisualNovelEngine {
             ' ### ### ### ### ### ',
             '                     ',
             ' ### ### ### ### ### ',
-            '                     '
+            '                     ',
         ];
     }
 
@@ -2033,7 +2392,7 @@ class VisualNovelEngine {
     // Resuelve con true (sobreviviste 'survive' s) o false (te pillaron).
     runGatosRound(options = {}) {
         const surviveMs = (options.survive || 60) * 1000; // tiempo a aguantar
-        const catCount = options.cats || 3;               // nº de gatos perseguidores
+        const catCount = options.cats || 3; // nº de gatos perseguidores
         const catIcon = this.cacheBustAsset('assets/images/minigames/chapter2/common/gato.webp');
         // Velocidades en CELDAS por segundo. Samu debe ir más rápido que los
         // gatos para poder escapar por las calles.
@@ -2043,7 +2402,7 @@ class VisualNovelEngine {
         // --- Construir el mapa del laberinto ---
         const map = VisualNovelEngine.GATOS_MAZE;
         const rows = map.length;
-        const cols = Math.max(...map.map(r => r.length));
+        const cols = Math.max(...map.map((r) => r.length));
         const isWall = (c, r) => {
             if (r < 0 || r >= rows || c < 0 || c >= cols) return true;
             const row = map[r];
@@ -2051,7 +2410,7 @@ class VisualNovelEngine {
         };
         const isStreet = (c, r) => !isWall(c, r);
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay gatos-minigame';
             overlay.innerHTML = `
@@ -2088,7 +2447,8 @@ class VisualNovelEngine {
             // a Samu y a los gatos en calles conocidas.
             const centerStreet = () => {
                 // buscar la calle transitable más cercana al centro
-                const cc = Math.floor(cols / 2), cr = Math.floor(rows / 2);
+                const cc = Math.floor(cols / 2),
+                    cr = Math.floor(rows / 2);
                 for (let rad = 0; rad < Math.max(rows, cols); rad++) {
                     for (let dr = -rad; dr <= rad; dr++) {
                         for (let dc = -rad; dc <= rad; dc++) {
@@ -2099,8 +2459,9 @@ class VisualNovelEngine {
                 return { c: 1, r: 1 };
             };
             const start = centerStreet();
-            let pcx = start.c + 0.5, pcy = start.r + 0.5; // centro de celda
-            let pdir = { x: 0, y: 0 };   // dirección actual
+            let pcx = start.c + 0.5,
+                pcy = start.r + 0.5; // centro de celda
+            let pdir = { x: 0, y: 0 }; // dirección actual
             let wantDir = { x: 0, y: 0 }; // dirección deseada (se aplica al poder)
 
             // Convertir celda (col,fila con decimales) a % dentro del campo
@@ -2117,21 +2478,29 @@ class VisualNovelEngine {
             // Gatos en las esquinas (calles del borde), lo más lejos posible
             const snapStreet = (c, r) => {
                 if (isStreet(c, r)) return { c, r };
-                const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
-                for (const [dc, dr] of dirs) if (isStreet(c+dc, r+dr)) return { c: c+dc, r: r+dr };
+                const dirs = [
+                    [1, 0],
+                    [-1, 0],
+                    [0, 1],
+                    [0, -1],
+                ];
+                for (const [dc, dr] of dirs) if (isStreet(c + dc, r + dr)) return { c: c + dc, r: r + dr };
                 return { c, r };
             };
             // Cada gato arranca en una esquina, que es también su "rincón" de
             // dispersión (scatter). Las esquinas se reparten para rodear a Samu.
             const catStarts = [
-                { c: 1, r: 1 }, { c: cols - 2, r: rows - 2 },
-                { c: cols - 2, r: 1 }, { c: 1, r: rows - 2 },
-                { c: Math.floor(cols / 2), r: 1 }, { c: Math.floor(cols / 2), r: rows - 2 }
-            ].map(p => snapStreet(p.c, p.r));
+                { c: 1, r: 1 },
+                { c: cols - 2, r: rows - 2 },
+                { c: cols - 2, r: 1 },
+                { c: 1, r: rows - 2 },
+                { c: Math.floor(cols / 2), r: 1 },
+                { c: Math.floor(cols / 2), r: rows - 2 },
+            ].map((p) => snapStreet(p.c, p.r));
             const catImages = [
                 this.cacheBustAsset('assets/images/minigames/shared/choices/me-perdonas.webp'),
                 this.cacheBustAsset('assets/images/minigames/shared/choices/te-perdono.webp'),
-                this.cacheBustAsset('assets/images/minigames/shared/choices/no-te-perdono.webp')
+                this.cacheBustAsset('assets/images/minigames/shared/choices/no-te-perdono.webp'),
             ];
             const cats = [];
             for (let i = 0; i < catCount; i++) {
@@ -2145,11 +2514,19 @@ class VisualNovelEngine {
                 el.appendChild(catImg);
                 placeEntity(el, s.c + 0.5, s.r + 0.5);
                 field.appendChild(el);
-                cats.push({ el, cx: s.c + 0.5, cy: s.r + 0.5, dir: { x: 0, y: 0 },
-                    wantDir: { x: 0, y: 0 }, lastCell: null, home: s, role: i });
+                cats.push({
+                    el,
+                    cx: s.c + 0.5,
+                    cy: s.r + 0.5,
+                    dir: { x: 0, y: 0 },
+                    wantDir: { x: 0, y: 0 },
+                    lastCell: null,
+                    home: s,
+                    role: i,
+                });
             }
-            const clampCell = (c, r) => snapStreet(
-                Math.max(0, Math.min(cols - 1, c)), Math.max(0, Math.min(rows - 1, r)));
+            const clampCell = (c, r) =>
+                snapStreet(Math.max(0, Math.min(cols - 1, c)), Math.max(0, Math.min(rows - 1, r)));
 
             // BFS por las calles: devuelve el primer paso (dirección) desde
             // 'from' hacia 'to'. Si no hay camino, {x:0,y:0}.
@@ -2159,13 +2536,22 @@ class VisualNovelEngine {
                 const q = [[from.c, from.r]];
                 const prev = new Map();
                 prev.set(key(from.c, from.r), null);
-                const dirs = [[1,0],[-1,0],[0,1],[0,-1]];
+                const dirs = [
+                    [1, 0],
+                    [-1, 0],
+                    [0, 1],
+                    [0, -1],
+                ];
                 let found = false;
                 while (q.length) {
                     const [c, r] = q.shift();
-                    if (c === to.c && r === to.r) { found = true; break; }
+                    if (c === to.c && r === to.r) {
+                        found = true;
+                        break;
+                    }
                     for (const [dc, dr] of dirs) {
-                        const nc = c + dc, nr = r + dr;
+                        const nc = c + dc,
+                            nr = r + dr;
                         if (isWall(nc, nr)) continue;
                         const k = key(nc, nr);
                         if (prev.has(k)) continue;
@@ -2180,7 +2566,10 @@ class VisualNovelEngine {
                 while (true) {
                     const p = prev.get(key(cur[0], cur[1]));
                     if (!p) break;
-                    if (p[0] === from.c && p[1] === from.r) { step = cur; break; }
+                    if (p[0] === from.c && p[1] === from.r) {
+                        step = cur;
+                        break;
+                    }
                     cur = p;
                 }
                 return { x: Math.sign(step[0] - from.c), y: Math.sign(step[1] - from.r) };
@@ -2209,28 +2598,32 @@ class VisualNovelEngine {
                 result.className = 'minigame-result';
                 result.textContent = won ? '¡Escapaste de Micaela Michis!' : '¡Un gato te ha pillado!';
                 overlay.appendChild(result);
-                setTimeout(() => {
-                    overlay.removeEventListener('click', swallowClick, true);
-                    overlay.remove();
-                    resolve(won);
-                }, won ? 1500 : 800);
+                setTimeout(
+                    () => {
+                        overlay.removeEventListener('click', swallowClick, true);
+                        overlay.remove();
+                        resolve(won);
+                    },
+                    won ? 1500 : 800,
+                );
             };
 
             // ¿Está una entidad alineada al centro de su celda? (para poder girar)
             const atCenter = (v) => Math.abs(v - (Math.floor(v) + 0.5)) < 0.08;
             // ¿Se puede avanzar en 'dir' desde el centro de la celda (cc,cr)?
-            const canGo = (cc, cr, dir) => dir.x === 0 && dir.y === 0
-                ? false
-                : isStreet(Math.floor(cc) + dir.x, Math.floor(cr) + dir.y);
+            const canGo = (cc, cr, dir) =>
+                dir.x === 0 && dir.y === 0 ? false : isStreet(Math.floor(cc) + dir.x, Math.floor(cr) + dir.y);
 
             // Mover una entidad por la rejilla: solo gira cuando está centrada en
             // una celda y la nueva dirección es calle. Devuelve nueva {cx,cy,dir}.
             const moveGrid = (cx, cy, dir, want, speed, dt) => {
-                const cCol = Math.floor(cx), cRow = Math.floor(cy);
+                const cCol = Math.floor(cx),
+                    cRow = Math.floor(cy);
                 // Intentar aplicar la dirección deseada al estar centrado
                 if (want && (want.x !== dir.x || want.y !== dir.y)) {
                     if (atCenter(cx) && atCenter(cy) && canGo(cx, cy, want)) {
-                        cx = cCol + 0.5; cy = cRow + 0.5;
+                        cx = cCol + 0.5;
+                        cy = cRow + 0.5;
                         dir = { ...want };
                     }
                 }
@@ -2258,14 +2651,19 @@ class VisualNovelEngine {
             const loop = (time) => {
                 // Nos han sacado desde los botones de arriba: su overlay ya no
                 // está en el documento, así que el bucle se para solo.
-                if (!running || !overlay.isConnected) { running = false; return; }
+                if (!running || !overlay.isConnected) {
+                    running = false;
+                    return;
+                }
                 if (lastTime === null) lastTime = time;
                 const dt = Math.min((time - lastTime) / 1000, 0.05);
                 lastTime = time;
 
                 // --- Mover a Samu ---
                 const pr = moveGrid(pcx, pcy, pdir, wantDir, playerSpeed, dt);
-                pcx = pr.cx; pcy = pr.cy; pdir = pr.dir;
+                pcx = pr.cx;
+                pcy = pr.cy;
+                pdir = pr.dir;
                 placeEntity(player, pcx, pcy);
 
                 // --- Mover los gatos (persecución BFS por calles) ---
@@ -2275,13 +2673,14 @@ class VisualNovelEngine {
                 // ventanas de escape; si todos apuntaran a Samu lo acorralarían
                 // siempre y el juego sería imposible.
                 const elapsed = time - startTime;
-                const scatter = (Math.floor(elapsed / 1000) % 8) < 3; // 3s scatter cada 8s
+                const scatter = Math.floor(elapsed / 1000) % 8 < 3; // 3s scatter cada 8s
                 const playerCell = { c: Math.floor(pcx), r: Math.floor(pcy) };
                 for (const cat of cats) {
                     // Recalcula su rumbo al llegar al centro de una celda nueva
                     // (una intersección): así gira justo donde toca. El BFS sobre
                     // ~180 celdas es barato a esta frecuencia.
-                    const cellC = Math.floor(cat.cx), cellR = Math.floor(cat.cy);
+                    const cellC = Math.floor(cat.cx),
+                        cellR = Math.floor(cat.cy);
                     const centered = atCenter(cat.cx) && atCenter(cat.cy);
                     const newCell = !cat.lastCell || cellC !== cat.lastCell.c || cellR !== cat.lastCell.r;
                     const stopped = cat.dir.x === 0 && cat.dir.y === 0;
@@ -2291,7 +2690,7 @@ class VisualNovelEngine {
                         if (scatter) {
                             target = cat.home;
                         } else if (cat.role === 0) {
-                            target = playerCell;                                   // caza directa
+                            target = playerCell; // caza directa
                         } else if (cat.role === 1) {
                             // emboscar: apunta 4 celdas por delante de Samu
                             target = clampCell(playerCell.c + pdir.x * 4, playerCell.r + pdir.y * 4);
@@ -2304,7 +2703,9 @@ class VisualNovelEngine {
                         cat.lastCell = { c: cellC, r: cellR };
                     }
                     const cr = moveGrid(cat.cx, cat.cy, cat.dir, cat.wantDir, catSpeed, dt);
-                    cat.cx = cr.cx; cat.cy = cr.cy; cat.dir = cr.dir;
+                    cat.cx = cr.cx;
+                    cat.cy = cr.cy;
+                    cat.dir = cr.dir;
                     placeEntity(cat.el, cat.cx, cat.cy);
 
                     // Colisión: misma celda / muy cerca
@@ -2343,13 +2744,13 @@ class VisualNovelEngine {
     // Una ronda del minijuego de reacción. Resuelve true (ganada) o false (perdida).
     // Clica 🍑 antes de que desaparezcan; NO cliques 💋 (trampas).
     runEcchiRound(options = {}) {
-        const goal = options.goal || 12;          // aciertos para ganar
+        const goal = options.goal || 12; // aciertos para ganar
         const maxMisses = options.maxMisses || 3; // fallos permitidos
         const lifetime = options.lifetime || 1100; // ms que dura cada objetivo
 
         this.isWaitingForInput = false;
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay ecchi-minigame';
             overlay.innerHTML = `
@@ -2369,12 +2770,7 @@ class VisualNovelEngine {
             let score = 0;
             let misses = 0;
             const renderLives = () => {
-                window.MinigameLifeDisplay.renderRepeated(
-                    livesEl,
-                    Math.max(0, maxMisses - misses),
-                    maxMisses,
-                    '💔'
-                );
+                window.MinigameLifeDisplay.renderRepeated(livesEl, Math.max(0, maxMisses - misses), maxMisses, '💔');
             };
             renderLives();
             let running = true;
@@ -2407,7 +2803,10 @@ class VisualNovelEngine {
             const spawnTarget = () => {
                 // Si nos han sacado desde los botones de arriba, el overlay ya
                 // no está en el documento: cortar la cadena de spawns.
-                if (!running || !overlay.isConnected) { running = false; return; }
+                if (!running || !overlay.isConnected) {
+                    running = false;
+                    return;
+                }
 
                 const isTrap = Math.random() < 0.35; // 35% trampas 💋
                 const target = document.createElement('div');
@@ -2450,7 +2849,7 @@ class VisualNovelEngine {
                 if (!running) return;
                 running = false;
                 clearTimeout(spawnTimeout);
-                activeTargets.forEach(t => t.remove());
+                activeTargets.forEach((t) => t.remove());
                 activeTargets.clear();
                 overlay.removeEventListener('click', swallowClick, true);
 
@@ -2459,10 +2858,13 @@ class VisualNovelEngine {
                 result.textContent = won ? '¡Resististe la tentación! 😎' : '¡Caíste! 💔';
                 overlay.appendChild(result);
 
-                setTimeout(() => {
-                    overlay.remove();
-                    resolve(won);
-                }, won ? 1500 : 800);
+                setTimeout(
+                    () => {
+                        overlay.remove();
+                        resolve(won);
+                    },
+                    won ? 1500 : 800,
+                );
             };
 
             spawnTarget();
@@ -2481,7 +2883,7 @@ class VisualNovelEngine {
                 flashMs: Math.round((options.flashMs || 600) * 1.4),
                 gapMs: Math.round((options.gapMs || 250) * 1.25),
                 rounds: Math.max(1, (options.rounds || 5) - 1),
-                diapason: true
+                diapason: true,
             });
         }
 
@@ -2498,14 +2900,14 @@ class VisualNovelEngine {
     // Una partida de memoria: repite la secuencia de palomas que se ilumina.
     // La secuencia crece cada nivel hasta completar `rounds`. Resuelve true/false.
     runPalomaRound(options = {}) {
-        const rounds = options.rounds || 5;      // niveles para ganar
-        const flashMs = options.flashMs || 600;  // duración de cada destello
-        const gapMs = options.gapMs || 250;      // pausa entre destellos
+        const rounds = options.rounds || 5; // niveles para ganar
+        const flashMs = options.flashMs || 600; // duración de cada destello
+        const gapMs = options.gapMs || 250; // pausa entre destellos
         const palomas = ['🕊️', '🐦', '🦤', '🦆']; // cuatro palomas distintas
 
         this.isWaitingForInput = false;
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay paloma-minigame';
             overlay.innerHTML = `
@@ -2514,9 +2916,13 @@ class VisualNovelEngine {
                     <span class="mg-status">Observa...</span>
                 </div>
                 <div class="paloma-grid" id="paloma-grid">
-                    ${palomas.map((p, i) => `
+                    ${palomas
+                        .map(
+                            (p, i) => `
                         <button class="paloma-pad" data-index="${i}">${p}</button>
-                    `).join('')}
+                    `,
+                        )
+                        .join('')}
                 </div>
                 <div class="minigame-instructions">${options.diapason ? '🔉 El Diapasón de Plata afina las palomas: van más lentas. ' : ''}Memoriza la secuencia de palomas y repítela.</div>
             `;
@@ -2538,7 +2944,7 @@ class VisualNovelEngine {
             let acceptingInput = false;
             let level = 0;
 
-            const wait = (ms) => new Promise(r => setTimeout(r, ms));
+            const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
             const flashPad = async (idx) => {
                 pads[idx].classList.add('paloma-active');
@@ -2556,10 +2962,13 @@ class VisualNovelEngine {
                 result.textContent = won ? '¡Memoria de paloma! 🕊️🎉' : '¡Secuencia incorrecta! 🐦';
                 overlay.appendChild(result);
 
-                setTimeout(() => {
-                    overlay.remove();
-                    resolve(won);
-                }, won ? 1500 : 800);
+                setTimeout(
+                    () => {
+                        overlay.remove();
+                        resolve(won);
+                    },
+                    won ? 1500 : 800,
+                );
             };
 
             const playSequence = async () => {
@@ -2641,12 +3050,12 @@ class VisualNovelEngine {
             { image: 'assets/images/minigames/shared/runes/runa_samu.webp', label: 'Magia de Samu' },
             { image: 'assets/images/minigames/shared/runes/runa_edu.webp', label: 'Prisa de Edu' },
             { image: 'assets/images/minigames/shared/runes/runa_tony.webp', label: 'Purificación de Seraphyna' },
-            { image: 'assets/images/minigames/shared/runes/runa_jose.webp', label: 'Fuerza de José' }
+            { image: 'assets/images/minigames/shared/runes/runa_jose.webp', label: 'Fuerza de José' },
         ];
 
         this.isWaitingForInput = false;
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay runa-minigame';
             overlay.innerHTML = `
@@ -2655,12 +3064,16 @@ class VisualNovelEngine {
                     <span class="mg-status">Observa...</span>
                 </div>
                 <div class="runa-grid" id="runa-grid">
-                    ${runas.map((runa, i) => `
+                    ${runas
+                        .map(
+                            (runa, i) => `
                         <button class="runa-pad" data-index="${i}" aria-label="${runa.label}">
                             <img class="runa-icon" src="${this.cacheBustAsset(runa.image)}" alt="${runa.label}">
                             <span class="runa-label">${runa.label}</span>
                         </button>
-                    `).join('')}
+                    `,
+                        )
+                        .join('')}
                 </div>
                 <div class="minigame-instructions">Memoriza la secuencia de runas y repítela en el mismo orden.</div>
             `;
@@ -2677,14 +3090,12 @@ class VisualNovelEngine {
             overlay.addEventListener('click', swallowClick, true);
 
             let sequence = [];
-            let requiredRunes = Array.from({ length: pads.length }, (_, i) => i).sort(
-                () => Math.random() - 0.5
-            );
+            let requiredRunes = Array.from({ length: pads.length }, (_, i) => i).sort(() => Math.random() - 0.5);
             let inputIndex = 0;
             let acceptingInput = false;
             let level = 0;
 
-            const wait = (ms) => new Promise(r => setTimeout(r, ms));
+            const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
             const flashPad = async (idx) => {
                 pads[idx].classList.add('runa-active');
@@ -2702,10 +3113,13 @@ class VisualNovelEngine {
                 result.textContent = won ? '¡Las runas aceptan la secuencia!' : '¡Secuencia incorrecta!';
                 overlay.appendChild(result);
 
-                setTimeout(() => {
-                    overlay.remove();
-                    resolve(won);
-                }, won ? 1500 : 800);
+                setTimeout(
+                    () => {
+                        overlay.remove();
+                        resolve(won);
+                    },
+                    won ? 1500 : 800,
+                );
             };
 
             const playSequence = async () => {
@@ -2726,9 +3140,7 @@ class VisualNovelEngine {
                 level++;
                 scoreEl.textContent = `Nivel ${level} / ${rounds}`;
                 const nextRune =
-                    requiredRunes.length > 0
-                        ? requiredRunes.pop()
-                        : Math.floor(Math.random() * pads.length);
+                    requiredRunes.length > 0 ? requiredRunes.pop() : Math.floor(Math.random() * pads.length);
                 sequence.push(nextRune);
                 await playSequence();
             };
@@ -2784,8 +3196,8 @@ class VisualNovelEngine {
     runVocalEchoRound(options = {}) {
         const rounds = options.rounds || 4;
         const startLength = options.startLength || 3;
-        const speed = options.speed || 1.0;            // >1 = Tony canta más rápido
-        const strictTempo = !!options.strictTempo;     // exigir repetir sin dormirse
+        const speed = options.speed || 1.0; // >1 = Tony canta más rápido
+        const strictTempo = !!options.strictTempo; // exigir repetir sin dormirse
         const flashMs = Math.max(170, Math.round(520 / speed));
         const gapMs = Math.max(80, Math.round(240 / speed));
 
@@ -2794,17 +3206,20 @@ class VisualNovelEngine {
             { freq: 523.25, label: '🎵', color: '#ff4fa3' }, // C5 magenta
             { freq: 587.33, label: '🎶', color: '#4fd0ff' }, // D5 cian
             { freq: 659.25, label: '🎵', color: '#b04fff' }, // E5 morado
-            { freq: 783.99, label: '🎶', color: '#ff8cf0' }  // G5 rosa
+            { freq: 783.99, label: '🎶', color: '#ff8cf0' }, // G5 rosa
         ];
 
         this.isWaitingForInput = false;
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             let audioCtx = null;
             const ensureAudio = () => {
                 if (!audioCtx) {
-                    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-                    catch (e) { audioCtx = null; }
+                    try {
+                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    } catch (e) {
+                        audioCtx = null;
+                    }
                 }
                 if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
                 return audioCtx;
@@ -2819,8 +3234,10 @@ class VisualNovelEngine {
                 gain.gain.setValueAtTime(0.0001, ctx.currentTime);
                 gain.gain.exponentialRampToValueAtTime(0.28, ctx.currentTime + 0.02);
                 gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.start(); osc.stop(ctx.currentTime + dur + 0.03);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start();
+                osc.stop(ctx.currentTime + dur + 0.03);
             };
 
             const overlay = document.createElement('div');
@@ -2831,9 +3248,13 @@ class VisualNovelEngine {
                     <span class="mg-status">Escucha a Tony...</span>
                 </div>
                 <div class="vocalecho-grid" id="vocalecho-grid">
-                    ${pads.map((p, i) => `
+                    ${pads
+                        .map(
+                            (p, i) => `
                         <button class="vocalecho-pad" data-index="${i}" style="--pad-color:${p.color}">${p.label}</button>
-                    `).join('')}
+                    `,
+                        )
+                        .join('')}
                 </div>
                 <div class="minigame-instructions">🎤 Repite la melodía de Tony: pulsa las notas en el mismo orden.</div>
             `;
@@ -2844,7 +3265,9 @@ class VisualNovelEngine {
             const statusEl = overlay.querySelector('.mg-status');
             const padEls = Array.from(overlay.querySelectorAll('.vocalecho-pad'));
 
-            const swallowClick = (e) => { if (!e.target.closest('.vocalecho-pad')) e.stopPropagation(); };
+            const swallowClick = (e) => {
+                if (!e.target.closest('.vocalecho-pad')) e.stopPropagation();
+            };
             overlay.addEventListener('click', swallowClick, true);
 
             let sequence = [];
@@ -2853,7 +3276,7 @@ class VisualNovelEngine {
             let level = 0;
             let turnStart = 0;
 
-            const wait = (ms) => new Promise(r => setTimeout(r, ms));
+            const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
             const flashPad = async (idx, withSound = true) => {
                 padEls[idx].classList.add('vocalecho-active');
@@ -2870,7 +3293,13 @@ class VisualNovelEngine {
                 result.className = 'minigame-result';
                 result.textContent = won ? '¡Dúo perfecto! 🎤✨' : '¡Se rompió la melodía! 🎶💔';
                 overlay.appendChild(result);
-                setTimeout(() => { overlay.remove(); resolve(won); }, won ? 1500 : 800);
+                setTimeout(
+                    () => {
+                        overlay.remove();
+                        resolve(won);
+                    },
+                    won ? 1500 : 800,
+                );
             };
 
             const playSequence = async () => {
@@ -2878,7 +3307,9 @@ class VisualNovelEngine {
                 statusEl.textContent = 'Escucha a Tony...';
                 grid.classList.add('vocalecho-locked');
                 await wait(450);
-                for (const idx of sequence) { await flashPad(idx, true); }
+                for (const idx of sequence) {
+                    await flashPad(idx, true);
+                }
                 grid.classList.remove('vocalecho-locked');
                 statusEl.textContent = strictTempo ? '¡Tu turno! (a tiempo)' : '¡Tu turno!';
                 inputIndex = 0;
@@ -2910,7 +3341,10 @@ class VisualNovelEngine {
                             acceptingInput = false;
                             if (strictTempo) {
                                 const budget = sequence.length * (flashMs + gapMs) * 1.8 + 1200;
-                                if (performance.now() - turnStart > budget) { finish(false); return; }
+                                if (performance.now() - turnStart > budget) {
+                                    finish(false);
+                                    return;
+                                }
                             }
                             if (level >= rounds) {
                                 finish(true);
@@ -2942,7 +3376,9 @@ class VisualNovelEngine {
         // Asegurar que el avatar (p.ej. samu) está cargado para resolver bien las
         // rutas de sus poses (si no, el avatar saldría vacío / con 404).
         const avKey = this.getCharacterKey(options.avatar || 'samu');
-        if (!this.characters[avKey]) { await this.loadCharacter(avKey); }
+        if (!this.characters[avKey]) {
+            await this.loadCharacter(avKey);
+        }
         let won = false;
         while (!won) {
             won = await this.runRhythmRound(options);
@@ -2958,18 +3394,18 @@ class VisualNovelEngine {
         const lanes = Math.max(3, Math.min(6, options.lanes || 4));
         const hitWindowMs = options.hitWindowMs || 140;
         const minAccuracy = options.minAccuracy || 0.6;
-        const totalNotes = options.totalNotes || 40;      // notas de la tanda (más largo)
-        const travelMs = options.travelMs || 1500;        // lo que tarda en caer
+        const totalNotes = options.totalNotes || 40; // notas de la tanda (más largo)
+        const travelMs = options.travelMs || 1500; // lo que tarda en caer
         const perfectWindowMs = options.perfectWindowMs || hitWindowMs * 0.45; // ventana PERFECT (resto GOOD)
 
         // Sincronización musical: las notas caen sobre la rejilla de beats de la
         // canción y el reloj lo marca el propio audio (audio.currentTime), así
         // los toques van al ritmo. Si no hay audio, se usa un reloj interno.
         const beatMs = 60000 / bpm;
-        const beatOffsetMs = options.beatOffsetMs || 0;    // primer golpe de la canción
-        const beatStep = options.beatStep || 1;            // beats entre nota y nota (0.5 = corcheas)
-        const audioEl = options.audio ||
-            (options.audioId ? (this.audioInstances && this.audioInstances[options.audioId]) : null);
+        const beatOffsetMs = options.beatOffsetMs || 0; // primer golpe de la canción
+        const beatStep = options.beatStep || 1; // beats entre nota y nota (0.5 = corcheas)
+        const audioEl =
+            options.audio || (options.audioId ? this.audioInstances && this.audioInstances[options.audioId] : null);
 
         // Efectos de sonido (sintetizados, volumen bajo). Se pueden desactivar
         // con sfx:false y ajustar con sfxVolume.
@@ -2983,13 +3419,12 @@ class VisualNovelEngine {
         // redescargar ni disparar 404 repetidos.
         const avatarKey = this.getCharacterKey(options.avatar || 'samu');
         const avatarChar = this.characters[avatarKey] || {};
-        const aPose = (name, fallback) =>
-            this.cacheBustAsset((avatarChar.poses && avatarChar.poses[name]) || fallback);
+        const aPose = (name, fallback) => this.cacheBustAsset((avatarChar.poses && avatarChar.poses[name]) || fallback);
         const avatarPoses = {
-            idle:    aPose('neutral',    `assets/images/characters/${avatarKey}/${avatarKey}.png`),
-            perfect: aPose('happy',      `assets/images/characters/${avatarKey}/${avatarKey}_happy.png`),
-            good:    aPose('determined', `assets/images/characters/${avatarKey}/${avatarKey}_determined.png`),
-            miss:    aPose('worried',    `assets/images/characters/${avatarKey}/${avatarKey}_worried.png`)
+            idle: aPose('neutral', `assets/images/characters/${avatarKey}/${avatarKey}.png`),
+            perfect: aPose('happy', `assets/images/characters/${avatarKey}/${avatarKey}_happy.png`),
+            good: aPose('determined', `assets/images/characters/${avatarKey}/${avatarKey}_determined.png`),
+            miss: aPose('worried', `assets/images/characters/${avatarKey}/${avatarKey}_worried.png`),
         };
 
         // Teclas por carril según número de carriles
@@ -2997,23 +3432,23 @@ class VisualNovelEngine {
             3: ['D', 'F', 'J'],
             4: ['D', 'F', 'J', 'K'],
             5: ['D', 'F', 'G', 'J', 'K'],
-            6: ['S', 'D', 'F', 'J', 'K', 'L']
+            6: ['S', 'D', 'F', 'J', 'K', 'L'],
         };
         const keys = keySets[lanes];
         const laneColors = ['#ff4fa3', '#4fd0ff', '#b04fff', '#ff8cf0', '#7cffb2', '#ffd166'];
 
         // Objetos especiales estilo osu!: sliders (mantener) y spinners (machacar)
-        const sliderChance = options.sliderChance || 0;   // prob. de que una nota sea slider
-        const sliderBeats = options.sliderBeats || 2;     // longitud del slider en beats
-        const spinnerCount = options.spinnerCount || 0;   // nº de spinners en la tanda
-        const spinnerTaps = options.spinnerTaps || 14;    // toques necesarios para el spinner
-        const spinnerBeats = options.spinnerBeats || 3;   // duración del spinner en beats
+        const sliderChance = options.sliderChance || 0; // prob. de que una nota sea slider
+        const sliderBeats = options.sliderBeats || 2; // longitud del slider en beats
+        const spinnerCount = options.spinnerCount || 0; // nº de spinners en la tanda
+        const spinnerTaps = options.spinnerTaps || 14; // toques necesarios para el spinner
+        const spinnerBeats = options.spinnerBeats || 3; // duración del spinner en beats
 
         // Horario de notas: cada nota (o su cabeza) debe CRUZAR la línea en su beat.
         const schedule = [];
         const spinnerAt = new Set();
         for (let s = 1; s <= spinnerCount; s++) {
-            spinnerAt.add(Math.floor(totalNotes * s / (spinnerCount + 1)));
+            spinnerAt.add(Math.floor((totalNotes * s) / (spinnerCount + 1)));
         }
         let beatCursor = 0;
         for (let i = 0; i < totalNotes; i++) {
@@ -3024,7 +3459,13 @@ class VisualNovelEngine {
                 beatCursor += spinnerBeats + beatStep * 2;
             } else if (Math.random() < sliderChance) {
                 const durMs = sliderBeats * beatMs;
-                schedule.push({ type: 'slider', hitMs, endMs: hitMs + durMs, durMs, lane: Math.floor(Math.random() * lanes) });
+                schedule.push({
+                    type: 'slider',
+                    hitMs,
+                    endMs: hitMs + durMs,
+                    durMs,
+                    lane: Math.floor(Math.random() * lanes),
+                });
                 beatCursor += sliderBeats + beatStep;
             } else {
                 schedule.push({ type: 'tap', hitMs, lane: Math.floor(Math.random() * lanes) });
@@ -3034,7 +3475,7 @@ class VisualNovelEngine {
 
         this.isWaitingForInput = false;
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay rhythm-minigame';
             overlay.innerHTML = `
@@ -3050,16 +3491,24 @@ class VisualNovelEngine {
                 <div class="rhythm-stage">
                     <div class="rhythm-field" id="rhythm-field">
                         <div class="rhythm-grid"></div>
-                        ${Array.from({ length: lanes }).map((_, i) => `
+                        ${Array.from({ length: lanes })
+                            .map(
+                                (_, i) => `
                             <div class="rhythm-lane" data-lane="${i}" style="--lane-color:${laneColors[i]}"></div>
-                        `).join('')}
+                        `,
+                            )
+                            .join('')}
                         <div class="rhythm-hitline" id="rhythm-hitline"></div>
                     </div>
                 </div>
                 <div class="rhythm-keys">
-                    ${Array.from({ length: lanes }).map((_, i) => `
+                    ${Array.from({ length: lanes })
+                        .map(
+                            (_, i) => `
                         <button class="rhythm-key" data-lane="${i}" style="--lane-color:${laneColors[i]}">${keys[i]}</button>
-                    `).join('')}
+                    `,
+                        )
+                        .join('')}
                 </div>
                 <div class="minigame-instructions">🎧 Pulsa ${keys.join(' · ')} (o toca las teclas) cuando la nota llegue a la línea.</div>
             `;
@@ -3075,24 +3524,26 @@ class VisualNovelEngine {
             const laneEls = Array.from(overlay.querySelectorAll('.rhythm-lane'));
             const keyEls = Array.from(overlay.querySelectorAll('.rhythm-key'));
 
-            const swallow = (e) => { e.stopPropagation(); };
+            const swallow = (e) => {
+                e.stopPropagation();
+            };
             overlay.addEventListener('click', swallow, true);
 
             // Geometría del campo
             const fieldH = () => field.clientHeight;
-            const hitY = () => fieldH() * 0.82;              // línea de acierto (px)
+            const hitY = () => fieldH() * 0.82; // línea de acierto (px)
             overlay.querySelector('#rhythm-hitline').style.top = '82%';
 
-            let notes = [];       // { el, lane, hitMs, type, hit, ... }
-            let spawnedIdx = 0;   // índice de la próxima nota del horario
-            let judged = 0;       // notas resueltas (hit o miss)
+            let notes = []; // { el, lane, hitMs, type, hit, ... }
+            let spawnedIdx = 0; // índice de la próxima nota del horario
+            let judged = 0; // notas resueltas (hit o miss)
             let hits = 0;
             let combo = 0;
             let running = true;
             let ticker = null;
             let activeSpinner = null; // spinner en curso (captura los toques)
             let startTime = performance.now();
-            let cuentaTimer = null;   // temporizador de la cuenta atrás previa
+            let cuentaTimer = null; // temporizador de la cuenta atrás previa
 
             // Reloj maestro en ms: si hay audio sonando, manda audio.currentTime
             // (los toques van al ritmo de la canción); si no, reloj interno.
@@ -3108,14 +3559,18 @@ class VisualNovelEngine {
             const ensureSfx = () => {
                 if (!sfxOn) return null;
                 if (!sfxCtx) {
-                    try { sfxCtx = new (window.AudioContext || window.webkitAudioContext)(); }
-                    catch (e) { sfxCtx = null; }
+                    try {
+                        sfxCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    } catch (e) {
+                        sfxCtx = null;
+                    }
                 }
                 if (sfxCtx && sfxCtx.state === 'suspended') sfxCtx.resume();
                 return sfxCtx;
             };
             const beep = (freq, dur, delay, type, vol) => {
-                const ctx = ensureSfx(); if (!ctx) return;
+                const ctx = ensureSfx();
+                if (!ctx) return;
                 const t = ctx.currentTime + (delay || 0);
                 const osc = ctx.createOscillator();
                 const g = ctx.createGain();
@@ -3124,14 +3579,26 @@ class VisualNovelEngine {
                 g.gain.setValueAtTime(0.0001, t);
                 g.gain.exponentialRampToValueAtTime((vol || 0.1) * sfxVol, t + 0.008);
                 g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-                osc.connect(g); g.connect(ctx.destination);
-                osc.start(t); osc.stop(t + dur + 0.02);
+                osc.connect(g);
+                g.connect(ctx.destination);
+                osc.start(t);
+                osc.stop(t + dur + 0.02);
             };
             const sfx = {
-                perfect: () => { beep(1046, 0.09, 0, 'triangle', 0.12); beep(1568, 0.10, 0.05, 'triangle', 0.10); },
-                good:    () => { beep(784, 0.10, 0, 'triangle', 0.10); },
-                miss:    () => { beep(196, 0.14, 0, 'sawtooth', 0.08); },
-                break:   () => { beep(392, 0.09, 0, 'square', 0.08); beep(174, 0.16, 0.06, 'square', 0.08); }
+                perfect: () => {
+                    beep(1046, 0.09, 0, 'triangle', 0.12);
+                    beep(1568, 0.1, 0.05, 'triangle', 0.1);
+                },
+                good: () => {
+                    beep(784, 0.1, 0, 'triangle', 0.1);
+                },
+                miss: () => {
+                    beep(196, 0.14, 0, 'sawtooth', 0.08);
+                },
+                break: () => {
+                    beep(392, 0.09, 0, 'square', 0.08);
+                    beep(174, 0.16, 0.06, 'square', 0.08);
+                },
             };
 
             const updateHud = () => {
@@ -3168,11 +3635,12 @@ class VisualNovelEngine {
             // Texto de juicio (PERFECT / GOOD / ✕) sobre la línea del carril
             const JUDGE = {
                 perfect: { t: 'PERFECT', c: '#4fe8ff' },
-                good:    { t: 'GOOD',    c: '#7cffb2' },
-                miss:    { t: '✕',       c: '#ff466b' }
+                good: { t: 'GOOD', c: '#7cffb2' },
+                miss: { t: '✕', c: '#ff466b' },
             };
             const showJudgment = (lane, kind) => {
-                const info = JUDGE[kind]; if (!info) return;
+                const info = JUDGE[kind];
+                if (!info) return;
                 const j = document.createElement('div');
                 j.className = 'rhythm-judge neon-font rj-' + kind;
                 j.textContent = info.t;
@@ -3223,10 +3691,13 @@ class VisualNovelEngine {
                 if (!running) return;
                 running = false;
                 if (ticker) clearInterval(ticker);
-                if (cuentaTimer) { clearTimeout(cuentaTimer); cuentaTimer = null; }
+                if (cuentaTimer) {
+                    clearTimeout(cuentaTimer);
+                    cuentaTimer = null;
+                }
                 overlay.removeEventListener('click', swallow, true);
                 document.removeEventListener('keydown', onKey);
-                notes.forEach(n => n.el.remove());
+                notes.forEach((n) => n.el.remove());
                 notes = [];
                 const acc = totalNotes ? Math.round((hits / totalNotes) * 100) : 0;
                 // Registrar el resultado (para líneas con "showIf" después)
@@ -3237,12 +3708,20 @@ class VisualNovelEngine {
                     ? `¡Abriste paso! 🎉 Precisión ${acc}%`
                     : `¡Te absorbió el trance! 🌀 Precisión ${acc}%`;
                 overlay.appendChild(result);
-                setTimeout(() => { overlay.remove(); resolve(won); }, won ? 1600 : 900);
+                setTimeout(
+                    () => {
+                        overlay.remove();
+                        resolve(won);
+                    },
+                    won ? 1600 : 900,
+                );
             };
 
             // Acierto de nota normal (o resolución con éxito de cabeza/cola)
             const resolveHit = (lane, perfect) => {
-                hits++; judged++; combo++;
+                hits++;
+                judged++;
+                combo++;
                 sfx[perfect ? 'perfect' : 'good']();
                 flashLane(lane, 'rhythm-lane-good');
                 burst(lane, perfect ? 15 : 8);
@@ -3279,17 +3758,25 @@ class VisualNovelEngine {
 
             const judgeHit = (lane) => {
                 if (!running) return;
-                if (activeSpinner) { spinnerTap(); flashKey(lane); return; }
+                if (activeSpinner) {
+                    spinnerTap();
+                    flashKey(lane);
+                    return;
+                }
                 flashLane(lane, 'rhythm-lane-press');
                 flashKey(lane);
                 const now = nowMs();
                 // nota del carril más cercana en el tiempo (tap o cabeza de slider)
-                let best = null, bestDt = Infinity;
+                let best = null,
+                    bestDt = Infinity;
                 for (const n of notes) {
                     if (n.lane !== lane || n.hit || n.type === 'spinner') continue;
                     if (n.type === 'slider' && n.headHit) continue;
                     const dt = Math.abs(now - n.hitMs);
-                    if (dt < bestDt) { bestDt = dt; best = n; }
+                    if (dt < bestDt) {
+                        bestDt = dt;
+                        best = n;
+                    }
                 }
                 if (best && bestDt <= hitWindowMs) {
                     const perfect = bestDt <= perfectWindowMs;
@@ -3308,7 +3795,7 @@ class VisualNovelEngine {
                         resolveHit(lane, perfect);
                     }
                 } else {
-                    if (combo > 0) sfx.break();   // pulsación en vano que corta la racha
+                    if (combo > 0) sfx.break(); // pulsación en vano que corta la racha
                     combo = 0;
                     pulseHitline(false);
                     updateHud();
@@ -3335,8 +3822,12 @@ class VisualNovelEngine {
                 const lane = keys.indexOf((e.key || '').toUpperCase());
                 if (lane === -1) return;
                 e.preventDefault();
-                if (activeSpinner) { spinnerTap(); flashKey(lane); return; }
-                if (!e.repeat) judgeHit(lane);   // ignorar auto-repetición (mantener slider)
+                if (activeSpinner) {
+                    spinnerTap();
+                    flashKey(lane);
+                    return;
+                }
+                if (!e.repeat) judgeHit(lane); // ignorar auto-repetición (mantener slider)
             };
             const onKeyUp = (e) => {
                 if (!overlay.isConnected) return soltarTeclas();
@@ -3346,11 +3837,20 @@ class VisualNovelEngine {
             document.addEventListener('keydown', onKey);
             document.addEventListener('keyup', onKeyUp);
             laneEls.forEach((laneEl, i) => {
-                laneEl.addEventListener('click', (e) => { e.stopPropagation(); judgeHit(i); });
+                laneEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    judgeHit(i);
+                });
             });
             keyEls.forEach((keyEl, i) => {
-                keyEl.addEventListener('pointerdown', (e) => { e.stopPropagation(); judgeHit(i); });
-                keyEl.addEventListener('pointerup', (e) => { e.stopPropagation(); releaseLane(i); });
+                keyEl.addEventListener('pointerdown', (e) => {
+                    e.stopPropagation();
+                    judgeHit(i);
+                });
+                keyEl.addEventListener('pointerup', (e) => {
+                    e.stopPropagation();
+                    releaseLane(i);
+                });
             });
 
             // Crea el elemento DOM de una entrada del horario según su tipo
@@ -3361,19 +3861,43 @@ class VisualNovelEngine {
                     el.innerHTML =
                         '<div class="rhythm-spinner-ring"></div>' +
                         '<div class="rhythm-spinner-label">¡MACHACA!</div>' +
-                        '<div class="rhythm-spinner-count">0 / ' + s.required + '</div>' +
+                        '<div class="rhythm-spinner-count">0 / ' +
+                        s.required +
+                        '</div>' +
                         '<div class="rhythm-spinner-bar"><div class="rhythm-spinner-fill"></div></div>' +
                         '<div class="rhythm-spinner-timerbar"><div class="rhythm-spinner-timer"></div></div>';
                     overlay.appendChild(el);
-                    notes.push({ el, type: 'spinner', hitMs: s.hitMs, endMs: s.endMs, required: s.required, taps: 0, hit: false, active: false,
-                        ring: el.querySelector('.rhythm-spinner-ring'), fill: el.querySelector('.rhythm-spinner-fill'),
-                        count: el.querySelector('.rhythm-spinner-count'), timer: el.querySelector('.rhythm-spinner-timer') });
+                    notes.push({
+                        el,
+                        type: 'spinner',
+                        hitMs: s.hitMs,
+                        endMs: s.endMs,
+                        required: s.required,
+                        taps: 0,
+                        hit: false,
+                        active: false,
+                        ring: el.querySelector('.rhythm-spinner-ring'),
+                        fill: el.querySelector('.rhythm-spinner-fill'),
+                        count: el.querySelector('.rhythm-spinner-count'),
+                        timer: el.querySelector('.rhythm-spinner-timer'),
+                    });
                 } else if (s.type === 'slider') {
                     const el = document.createElement('div');
                     el.className = 'rhythm-note rhythm-slider';
                     el.style.background = laneColors[s.lane];
                     laneEls[s.lane].appendChild(el);
-                    notes.push({ el, type: 'slider', lane: s.lane, hitMs: s.hitMs, endMs: s.endMs, durMs: s.durMs, hit: false, headHit: false, holding: false, headPerfect: false });
+                    notes.push({
+                        el,
+                        type: 'slider',
+                        lane: s.lane,
+                        hitMs: s.hitMs,
+                        endMs: s.endMs,
+                        durMs: s.durMs,
+                        hit: false,
+                        headHit: false,
+                        holding: false,
+                        headPerfect: false,
+                    });
                 } else {
                     const el = document.createElement('div');
                     el.className = 'rhythm-note';
@@ -3392,7 +3916,10 @@ class VisualNovelEngine {
                 // solos al no volver a pedir cuadro.
                 if (!running || !overlay.isConnected) {
                     running = false;
-                    if (ticker) { clearInterval(ticker); ticker = null; }
+                    if (ticker) {
+                        clearInterval(ticker);
+                        ticker = null;
+                    }
                     return;
                 }
                 const now = nowMs();
@@ -3407,7 +3934,11 @@ class VisualNovelEngine {
                     if (n.hit) continue;
 
                     if (n.type === 'spinner') {
-                        if (!n.active && now >= n.hitMs) { n.active = true; activeSpinner = n; n.el.classList.add('rhythm-spinner-active'); }
+                        if (!n.active && now >= n.hitMs) {
+                            n.active = true;
+                            activeSpinner = n;
+                            n.el.classList.add('rhythm-spinner-active');
+                        }
                         if (n.active) {
                             const total = n.endMs - n.hitMs;
                             if (n.timer) n.timer.style.width = `${Math.max(0, (n.endMs - now) / total) * 100}%`;
@@ -3417,15 +3948,22 @@ class VisualNovelEngine {
                                 judged++;
                                 if (n.taps >= n.required) {
                                     const pf = n.taps >= n.required * 1.4;
-                                    hits++; combo++;
+                                    hits++;
+                                    combo++;
                                     sfx[pf ? 'perfect' : 'good']();
-                                    showJudgment(0, pf ? 'perfect' : 'good'); setAvatar(pf ? 'perfect' : 'good');
-                                    pulseCombo(); if (combo > 0 && combo % 10 === 0) showComboMilestone();
+                                    showJudgment(0, pf ? 'perfect' : 'good');
+                                    setAvatar(pf ? 'perfect' : 'good');
+                                    pulseCombo();
+                                    if (combo > 0 && combo % 10 === 0) showComboMilestone();
                                 } else {
-                                    sfx.miss(); combo = 0; showJudgment(0, 'miss'); setAvatar('miss');
+                                    sfx.miss();
+                                    combo = 0;
+                                    showJudgment(0, 'miss');
+                                    setAvatar('miss');
                                 }
                                 n.el.classList.add('rhythm-spinner-done');
-                                const sEl = n.el; setTimeout(() => sEl.remove(), 260);
+                                const sEl = n.el;
+                                setTimeout(() => sEl.remove(), 260);
                                 updateHud();
                             }
                         }
@@ -3435,16 +3973,26 @@ class VisualNovelEngine {
                         n.el.style.height = `${barLen}px`;
                         n.el.style.top = `${headTop - barLen}px`;
                         if (now >= n.endMs) {
-                            n.hit = true; judged++;
+                            n.hit = true;
+                            judged++;
                             const success = n.headHit && n.holding;
                             if (success) {
-                                hits++; combo++;
+                                hits++;
+                                combo++;
                                 sfx[n.headPerfect ? 'perfect' : 'good']();
-                                showJudgment(n.lane, n.headPerfect ? 'perfect' : 'good'); setAvatar(n.headPerfect ? 'perfect' : 'good');
-                                burst(n.lane, n.headPerfect ? 15 : 8); flashLane(n.lane, 'rhythm-lane-good'); pulseCombo(); pulseHitline(true);
+                                showJudgment(n.lane, n.headPerfect ? 'perfect' : 'good');
+                                setAvatar(n.headPerfect ? 'perfect' : 'good');
+                                burst(n.lane, n.headPerfect ? 15 : 8);
+                                flashLane(n.lane, 'rhythm-lane-good');
+                                pulseCombo();
+                                pulseHitline(true);
                                 if (combo > 0 && combo % 10 === 0) showComboMilestone();
                             } else {
-                                sfx.miss(); combo = 0; showJudgment(n.lane, 'miss'); setAvatar('miss'); flashLane(n.lane, 'rhythm-lane-miss');
+                                sfx.miss();
+                                combo = 0;
+                                showJudgment(n.lane, 'miss');
+                                setAvatar('miss');
+                                flashLane(n.lane, 'rhythm-lane-miss');
                             }
                             if (keyEls[n.lane]) keyEls[n.lane].classList.remove('rhythm-key-hold');
                             n.el.remove();
@@ -3452,19 +4000,25 @@ class VisualNovelEngine {
                         } else if (!n.headHit && now > n.hitMs + hitWindowMs) {
                             n.el.classList.add('rhythm-slider-missed');
                         }
-                    } else { // tap
+                    } else {
+                        // tap
                         const prog = Math.min(1.15, 1 - (n.hitMs - now) / travelMs);
                         n.el.style.top = `${prog * y}px`;
                         if (now > n.hitMs + hitWindowMs) {
-                            n.hit = true; n.el.classList.add('rhythm-note-miss'); n.el.remove();
-                            judged++; combo = 0;
+                            n.hit = true;
+                            n.el.classList.add('rhythm-note-miss');
+                            n.el.remove();
+                            judged++;
+                            combo = 0;
                             sfx.miss();
-                            flashLane(n.lane, 'rhythm-lane-miss'); showJudgment(n.lane, 'miss'); setAvatar('miss');
+                            flashLane(n.lane, 'rhythm-lane-miss');
+                            showJudgment(n.lane, 'miss');
+                            setAvatar('miss');
                             updateHud();
                         }
                     }
                 }
-                notes = notes.filter(n => !n.hit);
+                notes = notes.filter((n) => !n.hit);
 
                 checkEnd();
             };
@@ -3484,7 +4038,9 @@ class VisualNovelEngine {
                 // Reiniciar la canción en CADA ronda: si no, tras perder seguiría
                 // avanzando y las notas nuevas nacerían fuera de tiempo.
                 if (audioEl) {
-                    try { audioEl.currentTime = 0; } catch (e) {}
+                    try {
+                        audioEl.currentTime = 0;
+                    } catch (e) {}
                     const _p = audioEl.play();
                     if (_p && _p.catch) _p.catch(() => {});
                 }
@@ -3496,15 +4052,19 @@ class VisualNovelEngine {
             cartel.innerHTML =
                 '<div class="rhythm-countdown-num"></div>' +
                 '<div class="rhythm-countdown-hint">Prepara los dedos: <b>' +
-                keys.join(' · ') + '</b></div>';
+                keys.join(' · ') +
+                '</b></div>';
             overlay.appendChild(cartel);
-            keyEls.forEach(k => k.classList.add('rhythm-key-ready'));
+            keyEls.forEach((k) => k.classList.add('rhythm-key-ready'));
 
             const pasos = ['5', '4', '3', '2', '1', '¡YA!'];
             let paso = 0;
             const numEl = cartel.querySelector('.rhythm-countdown-num');
             const tictac = () => {
-                if (!running || !overlay.isConnected) { running = false; return; }
+                if (!running || !overlay.isConnected) {
+                    running = false;
+                    return;
+                }
                 if (paso < pasos.length) {
                     numEl.textContent = pasos[paso];
                     numEl.classList.remove('rhythm-countdown-pop');
@@ -3518,7 +4078,7 @@ class VisualNovelEngine {
                     cuentaTimer = setTimeout(tictac, ultimo ? 500 : 900);
                 } else {
                     cartel.remove();
-                    keyEls.forEach(k => k.classList.remove('rhythm-key-ready'));
+                    keyEls.forEach((k) => k.classList.remove('rhythm-key-ready'));
                     cuentaTimer = null;
                     arrancar();
                 }
@@ -3540,71 +4100,81 @@ class VisualNovelEngine {
                 goal: options.distance || 60,
                 speed: options.speed || 6,
                 maxHits: options.maxHits || 3,
-                playerFrames: ['coche_v2_0', 'coche_v2_1', 'coche_v2_2',
-                               'coche_v2_3', 'coche_v2_4', 'coche_v2_5'],
-                playerHeight: 0.19, playerRatio: 1.55,
+                playerFrames: ['coche_v2_0', 'coche_v2_1', 'coche_v2_2', 'coche_v2_3', 'coche_v2_4', 'coche_v2_5'],
+                playerHeight: 0.19,
+                playerRatio: 1.55,
                 // Huella sobre el asfalto (centro y radios relativos al sprite).
                 // La imagen puede solaparse con otra por perspectiva sin chocar.
-                playerFootprint: { x: 0.50, y: 0.83, rx: 0.39, ry: 0.07 },
-                xMin: 0.03, xMax: 0.80,
-                yMin: 0.65, yMax: 0.92,
+                playerFootprint: { x: 0.5, y: 0.83, rx: 0.39, ry: 0.07 },
+                xMin: 0.03,
+                xMax: 0.8,
+                yMin: 0.65,
+                yMax: 0.92,
                 bgFar: 'carretera_loop_fondo_sin_luna_v2',
                 bgNear: 'carretera_loop_v2',
                 moon: 'carretera_luna_v2',
-                moonStartX: 0.82, moonEndX: 0.20,
-                moonStartY: 0.22, moonEndY: 0.12,
+                moonStartX: 0.82,
+                moonEndX: 0.2,
+                moonStartY: 0.22,
+                moonEndY: 0.12,
                 obstacles: [
                     {
                         name: 'obs_bidon_v2_0',
-                        frames: ['obs_bidon_v2_0', 'obs_bidon_v2_1',
-                                 'obs_bidon_v2_2', 'obs_bidon_v2_3'],
-                        frameMs: 0.11, h: 0.105, ratio: 0.691,
-                        footprint: { x: 0.50, y: 0.89, rx: 0.30, ry: 0.08 }
+                        frames: ['obs_bidon_v2_0', 'obs_bidon_v2_1', 'obs_bidon_v2_2', 'obs_bidon_v2_3'],
+                        frameMs: 0.11,
+                        h: 0.105,
+                        ratio: 0.691,
+                        footprint: { x: 0.5, y: 0.89, rx: 0.3, ry: 0.08 },
                     },
                     {
                         name: 'obs_valla_v2_0',
-                        frames: ['obs_valla_v2_0', 'obs_valla_v2_1',
-                                 'obs_valla_v2_2', 'obs_valla_v2_3'],
-                        frameMs: 0.16, h: 0.29, ratio: 0.976,
-                        yMin: 0.68, yMax: 0.79,
+                        frames: ['obs_valla_v2_0', 'obs_valla_v2_1', 'obs_valla_v2_2', 'obs_valla_v2_3'],
+                        frameMs: 0.16,
+                        h: 0.29,
+                        ratio: 0.976,
+                        yMin: 0.68,
+                        yMax: 0.79,
                         // Tres apoyos a distinta profundidad: la valla serpentea
                         // hacia el fondo y corta buena parte del ancho de la vía.
                         footprints: [
                             { x: 0.47, y: 0.82, rx: 0.39, ry: 0.035 },
-                            { x: 0.51, y: 0.49, rx: 0.22, ry: 0.030 },
-                            { x: 0.51, y: 0.25, rx: 0.15, ry: 0.025 }
-                        ]
+                            { x: 0.51, y: 0.49, rx: 0.22, ry: 0.03 },
+                            { x: 0.51, y: 0.25, rx: 0.15, ry: 0.025 },
+                        ],
                     },
                     {
                         name: 'obs_rocas_v2_0',
-                        frames: ['obs_rocas_v2_0', 'obs_rocas_v2_1',
-                                 'obs_rocas_v2_2', 'obs_rocas_v2_3'],
-                        frameMs: 0.12, h: 0.095, ratio: 2.00,
-                        footprint: { x: 0.50, y: 0.73, rx: 0.44, ry: 0.09 }
+                        frames: ['obs_rocas_v2_0', 'obs_rocas_v2_1', 'obs_rocas_v2_2', 'obs_rocas_v2_3'],
+                        frameMs: 0.12,
+                        h: 0.095,
+                        ratio: 2.0,
+                        footprint: { x: 0.5, y: 0.73, rx: 0.44, ry: 0.09 },
                     },
                     {
                         name: 'obs_cable_v2_0',
-                        frames: ['obs_cable_v2_0', 'obs_cable_v2_1',
-                                 'obs_cable_v2_2', 'obs_cable_v2_3'],
-                        frameMs: 0.085, h: 0.085, ratio: 1.946,
-                        footprint: { x: 0.50, y: 0.62, rx: 0.44, ry: 0.20 }
-                    }
+                        frames: ['obs_cable_v2_0', 'obs_cable_v2_1', 'obs_cable_v2_2', 'obs_cable_v2_3'],
+                        frameMs: 0.085,
+                        h: 0.085,
+                        ratio: 1.946,
+                        footprint: { x: 0.5, y: 0.62, rx: 0.44, ry: 0.2 },
+                    },
                 ],
                 enemies: [
                     ['meme_bob_v2_0', 'meme_bob_v2_1', 'meme_bob_v2_2', 'meme_bob_v2_3'],
                     ['meme_knucles_v2_0', 'meme_knucles_v2_1', 'meme_knucles_v2_2', 'meme_knucles_v2_3'],
                     ['meme_pepe_v2_0', 'meme_pepe_v2_1', 'meme_pepe_v2_2', 'meme_pepe_v2_3'],
-                    ['meme_troll_v2_0', 'meme_troll_v2_1', 'meme_troll_v2_2', 'meme_troll_v2_3']
+                    ['meme_troll_v2_0', 'meme_troll_v2_1', 'meme_troll_v2_2', 'meme_troll_v2_3'],
                 ],
                 collectible: null,
                 // Knobs de dificultad/QA con passthrough (igual que en eduvuelo:
                 // si no se reenvían, los valores del JSON se ignoran en silencio)
                 spawnMs: options.spawnMs,
-                graceMs: options.graceMs, hitGraceMs: options.hitGraceMs,
+                graceMs: options.graceMs,
+                hitGraceMs: options.hitGraceMs,
                 debugHitboxes: !!options.debugHitboxes,
                 title: '🏎️ Conduce con el RATÓN o WASD/FLECHAS. Muévete por toda la carretera y esquiva las embestidas.',
                 winMsg: '¡Los habéis perdío en la rotonda! 🏁',
-                loseMsg: '¡Os han embestido! 🏍️'
+                loseMsg: '¡Os han embestido! 🏍️',
             });
             if (!won) {
                 await this.showMinigameRetry('¡Os han pillado los memes! 🏍️');
@@ -3628,11 +4198,11 @@ class VisualNovelEngine {
                 maxHits: options.maxHits || 3,
                 spawnMs: options.spawnMs != null ? options.spawnMs : 620,
                 hangChance: options.hangChance != null ? options.hangChance : 0.26,
-                riserChance: options.riserChance != null ? options.riserChance : 0.20,
+                riserChance: options.riserChance != null ? options.riserChance : 0.2,
                 hangMin: options.hangMin != null ? options.hangMin : 0.28,
                 hangMax: options.hangMax != null ? options.hangMax : 0.62,
                 fallerChance: options.fallerChance != null ? options.fallerChance : 0.28,
-                fallerVy: options.fallerVy != null ? options.fallerVy : 0.30,
+                fallerVy: options.fallerVy != null ? options.fallerVy : 0.3,
                 speakerChance: options.speakerChance != null ? options.speakerChance : 0.19,
                 gustChance: options.gustChance != null ? options.gustChance : 0.11,
                 collectChance: options.collectChance != null ? options.collectChance : 0.29,
@@ -3643,10 +4213,10 @@ class VisualNovelEngine {
                 dashCost: options.dashCost != null ? options.dashCost : 52,
                 dashDuration: options.dashDuration != null ? options.dashDuration : 0.36,
                 difficultyRamp: options.difficultyRamp != null ? options.difficultyRamp : 0.32,
-                corridorMin: options.corridorMin != null ? options.corridorMin : 0.20,
+                corridorMin: options.corridorMin != null ? options.corridorMin : 0.2,
                 graceMs: options.graceMs != null ? options.graceMs : 900,
                 hitGraceMs: options.hitGraceMs != null ? options.hitGraceMs : 900,
-                debugHitboxes: !!options.debugHitboxes
+                debugHitboxes: !!options.debugHitboxes,
             });
             if (!won) {
                 await this.showMinigameRetry('¡Se te han escapado las partituras! ⚡');
@@ -3670,11 +4240,11 @@ class VisualNovelEngine {
             'assets/images/minigames/chapter3/sprites/edu_fly_v3_4.webp',
             'assets/images/minigames/chapter3/sprites/edu_fly_v3_5.webp',
             'assets/images/minigames/chapter3/sprites/edu_fly_v3_6.webp',
-            'assets/images/minigames/chapter3/sprites/edu_fly_v3_7.webp'
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_7.webp',
         ];
         const DASH_FRAMES = [
             'assets/images/minigames/chapter3/sprites/edu_fly_v3_dash_0.webp',
-            'assets/images/minigames/chapter3/sprites/edu_fly_v3_dash_1.webp'
+            'assets/images/minigames/chapter3/sprites/edu_fly_v3_dash_1.webp',
         ];
         const PLAYER_FRAMES = [...FLIGHT_FRAMES, ...DASH_FRAMES];
         const asset = (path) => `url('${this.cacheBustAsset(path)}')`;
@@ -3686,14 +4256,14 @@ class VisualNovelEngine {
             SP + 'aire_foco_v2.webp',
             SP + 'aire_altavoz_v2.webp',
             SP + 'partitura_v2.webp',
-            SP + 'aire_cable_v3.webp'
+            SP + 'aire_cable_v3.webp',
         ]);
 
         const goal = Math.max(1, cfg.goal || 16);
         const maxHits = Math.max(1, cfg.maxHits || 3);
         const baseSpeed = Math.max(2, cfg.speed || 6);
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay edu-flight-minigame';
             overlay.innerHTML = `
@@ -3759,7 +4329,7 @@ class VisualNovelEngine {
             const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
             const fieldW = () => stage.clientWidth || 1;
             const fieldH = () => stage.clientHeight || 1;
-            const yMin = 0.10;
+            const yMin = 0.1;
             const yMax = 0.88;
             const homeX = 0.115;
             const dashX = 0.245;
@@ -3780,7 +4350,7 @@ class VisualNovelEngine {
             let frameClock = 0;
             let wasDashing = false;
             let playerX = homeX;
-            let playerY = 0.50;
+            let playerY = 0.5;
             let previousPlayerY = playerY;
             let collisionPreviousPlayerX = playerX;
             let collisionPreviousPlayerY = playerY;
@@ -3823,12 +4393,7 @@ class VisualNovelEngine {
                 } catch (error) {}
             };
 
-            const showCallout = (
-                text,
-                tone = 'good',
-                duration = 720,
-                priority = 0
-            ) => {
+            const showCallout = (text, tone = 'good', duration = 720, priority = 0) => {
                 const now = performance.now();
                 if (now < calloutUntil && priority < calloutPriority) return;
                 calloutEl.textContent = text;
@@ -3844,16 +4409,14 @@ class VisualNovelEngine {
                 const width = fieldH() * 0.245 * 0.78;
                 const height = fieldH() * 0.245;
                 return {
-                    left: x * fieldW() + width * 0.30,
-                    right: x * fieldW() + width * 1.10,
+                    left: x * fieldW() + width * 0.3,
+                    right: x * fieldW() + width * 1.1,
                     top: y * fieldH() - height * 0.12,
-                    bottom: y * fieldH() + height * 0.38
+                    bottom: y * fieldH() + height * 0.38,
                 };
             };
 
-            const rectsOverlap = (a, b) =>
-                a.left < b.right && a.right > b.left &&
-                a.top < b.bottom && a.bottom > b.top;
+            const rectsOverlap = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
 
             const playerShapeAt = (y = playerY, x = playerX) => {
                 const rect = playerRect(y, x);
@@ -3862,7 +4425,7 @@ class VisualNovelEngine {
                     cx: (rect.left + rect.right) / 2,
                     cy: (rect.top + rect.bottom) / 2,
                     rx: (rect.right - rect.left) / 2,
-                    ry: (rect.bottom - rect.top) / 2
+                    ry: (rect.bottom - rect.top) / 2,
                 };
             };
 
@@ -3874,18 +4437,16 @@ class VisualNovelEngine {
                 const sx = object.hitScaleX != null ? object.hitScaleX : 0.58;
                 const sy = object.hitScaleY != null ? object.hitScaleY : 0.58;
                 return {
-                    left: x - width * sx / 2,
-                    right: x + width * sx / 2,
-                    top: y - height * sy / 2,
-                    bottom: y + height * sy / 2
+                    left: x - (width * sx) / 2,
+                    right: x + (width * sx) / 2,
+                    top: y - (height * sy) / 2,
+                    bottom: y + (height * sy) / 2,
                 };
             };
 
             const objectShapeAt = (object, x, y) => {
-                const width = object.el.offsetWidth *
-                    (object.hitScaleX != null ? object.hitScaleX : 0.58);
-                const height = object.el.offsetHeight *
-                    (object.hitScaleY != null ? object.hitScaleY : 0.58);
+                const width = object.el.offsetWidth * (object.hitScaleX != null ? object.hitScaleX : 0.58);
+                const height = object.el.offsetHeight * (object.hitScaleY != null ? object.hitScaleY : 0.58);
                 const cx = x * fieldW();
                 const cy = y * fieldH();
                 if (object.type === 'cable') {
@@ -3894,7 +4455,7 @@ class VisualNovelEngine {
                         left: cx - width / 2,
                         right: cx + width / 2,
                         top: cy - height / 2,
-                        bottom: cy + height / 2
+                        bottom: cy + height / 2,
                     };
                 }
                 return {
@@ -3902,17 +4463,15 @@ class VisualNovelEngine {
                     cx,
                     cy,
                     rx: width / 2,
-                    ry: height / 2
+                    ry: height / 2,
                 };
             };
 
             const ellipseRectOverlap = (ellipse, rect, forgiveness = 1) => {
                 const closestX = clamp(ellipse.cx, rect.left, rect.right);
                 const closestY = clamp(ellipse.cy, rect.top, rect.bottom);
-                const dx = (ellipse.cx - closestX) /
-                    Math.max(1, ellipse.rx * forgiveness);
-                const dy = (ellipse.cy - closestY) /
-                    Math.max(1, ellipse.ry * forgiveness);
+                const dx = (ellipse.cx - closestX) / Math.max(1, ellipse.rx * forgiveness);
+                const dy = (ellipse.cy - closestY) / Math.max(1, ellipse.ry * forgiveness);
                 return dx * dx + dy * dy < 1;
             };
 
@@ -3924,10 +4483,8 @@ class VisualNovelEngine {
                 if (a.kind === 'rect' && b.kind === 'ellipse') {
                     return ellipseRectOverlap(b, a, forgiveness);
                 }
-                const dx = (a.cx - b.cx) /
-                    Math.max(1, (a.rx + b.rx) * forgiveness);
-                const dy = (a.cy - b.cy) /
-                    Math.max(1, (a.ry + b.ry) * forgiveness);
+                const dx = (a.cx - b.cx) / Math.max(1, (a.rx + b.rx) * forgiveness);
+                const dy = (a.cy - b.cy) / Math.max(1, (a.ry + b.ry) * forgiveness);
                 return dx * dx + dy * dy < 1;
             };
 
@@ -3937,45 +4494,26 @@ class VisualNovelEngine {
             const sweptObjectCollision = (object) => {
                 const objectTravelX = (object.x - object.previousX) * fieldW();
                 const objectTravelY = (object.y - object.previousY) * fieldH();
-                const playerTravelX =
-                    (playerX - collisionPreviousPlayerX) * fieldW();
-                const playerTravelY =
-                    (playerY - collisionPreviousPlayerY) * fieldH();
-                const relativeTravel = Math.hypot(
-                    objectTravelX - playerTravelX,
-                    objectTravelY - playerTravelY
-                );
+                const playerTravelX = (playerX - collisionPreviousPlayerX) * fieldW();
+                const playerTravelY = (playerY - collisionPreviousPlayerY) * fieldH();
+                const relativeTravel = Math.hypot(objectTravelX - playerTravelX, objectTravelY - playerTravelY);
                 const currentPlayer = playerShapeAt();
-                const stepSize = Math.max(
-                    8,
-                    Math.min(currentPlayer.rx, currentPlayer.ry) * 0.45
-                );
+                const stepSize = Math.max(8, Math.min(currentPlayer.rx, currentPlayer.ry) * 0.45);
                 const steps = clamp(Math.ceil(relativeTravel / stepSize), 1, 8);
-                const forgiveness = object.type === 'score' ? 1.06 :
-                    object.type === 'gust' ? 0.96 : 0.80;
+                const forgiveness = object.type === 'score' ? 1.06 : object.type === 'gust' ? 0.96 : 0.8;
                 for (let step = 0; step <= steps; step++) {
                     const t = step / steps;
-                    const objectX =
-                        object.previousX + (object.x - object.previousX) * t;
-                    const objectY =
-                        object.previousY + (object.y - object.previousY) * t;
-                    const sampledPlayerX = collisionPreviousPlayerX +
-                        (playerX - collisionPreviousPlayerX) * t;
-                    const sampledPlayerY = collisionPreviousPlayerY +
-                        (playerY - collisionPreviousPlayerY) * t;
-                    const sampledPlayer =
-                        playerShapeAt(sampledPlayerY, sampledPlayerX);
-                    const sampledObject =
-                        objectShapeAt(object, objectX, objectY);
-                    if (shapesOverlap(
-                        sampledPlayer,
-                        sampledObject,
-                        forgiveness
-                    )) {
+                    const objectX = object.previousX + (object.x - object.previousX) * t;
+                    const objectY = object.previousY + (object.y - object.previousY) * t;
+                    const sampledPlayerX = collisionPreviousPlayerX + (playerX - collisionPreviousPlayerX) * t;
+                    const sampledPlayerY = collisionPreviousPlayerY + (playerY - collisionPreviousPlayerY) * t;
+                    const sampledPlayer = playerShapeAt(sampledPlayerY, sampledPlayerX);
+                    const sampledObject = objectShapeAt(object, objectX, objectY);
+                    if (shapesOverlap(sampledPlayer, sampledObject, forgiveness)) {
                         return {
                             t,
                             player: sampledPlayer,
-                            object: sampledObject
+                            object: sampledObject,
                         };
                     }
                 }
@@ -3988,16 +4526,14 @@ class VisualNovelEngine {
                 playerX += (wantedX - playerX) * 0.24;
                 const verticalDelta = playerY - previousPlayerY;
                 const bank = clamp(verticalDelta * 620, -13, 13);
-                playerEl.style.left = (playerX * 100) + '%';
-                playerEl.style.top = (playerY * 100) + '%';
+                playerEl.style.left = playerX * 100 + '%';
+                playerEl.style.top = playerY * 100 + '%';
                 playerEl.style.setProperty('--fly-bank', bank.toFixed(2) + 'deg');
                 playerEl.classList.toggle('is-dashing', dashing);
-                playerDebugEl.style.left = (playerRect().left / fieldW() * 100) + '%';
-                playerDebugEl.style.top = (playerRect().top / fieldH() * 100) + '%';
-                playerDebugEl.style.width =
-                    ((playerRect().right - playerRect().left) / fieldW() * 100) + '%';
-                playerDebugEl.style.height =
-                    ((playerRect().bottom - playerRect().top) / fieldH() * 100) + '%';
+                playerDebugEl.style.left = (playerRect().left / fieldW()) * 100 + '%';
+                playerDebugEl.style.top = (playerRect().top / fieldH()) * 100 + '%';
+                playerDebugEl.style.width = ((playerRect().right - playerRect().left) / fieldW()) * 100 + '%';
+                playerDebugEl.style.height = ((playerRect().bottom - playerRect().top) / fieldH()) * 100 + '%';
                 previousPlayerY = playerY;
             };
 
@@ -4008,20 +4544,16 @@ class VisualNovelEngine {
                 comboEl.parentElement.classList.toggle('is-hot', multiplier >= 3);
                 energyEl.style.width = clamp(energy, 0, 100) + '%';
                 energyWrap.classList.toggle('is-ready', energy >= (cfg.dashCost || 42));
-                progressEl.style.width = clamp(collected / goal * 100, 0, 100) + '%';
-                window.MinigameLifeDisplay.renderSlots(
-                    livesEl,
-                    Math.max(0, maxHits - hits),
-                    maxHits
-                );
+                progressEl.style.width = clamp((collected / goal) * 100, 0, 100) + '%';
+                window.MinigameLifeDisplay.renderSlots(livesEl, Math.max(0, maxHits - hits), maxHits);
             };
 
             const addParticleBurst = (x, y, color = '#4fd0ff', amount = 8) => {
                 for (let index = 0; index < amount; index++) {
                     const particle = document.createElement('i');
                     particle.className = 'fly-particle';
-                    particle.style.left = (x * 100) + '%';
-                    particle.style.top = (y * 100) + '%';
+                    particle.style.left = x * 100 + '%';
+                    particle.style.top = y * 100 + '%';
                     particle.style.color = color;
                     particle.style.setProperty('--px', `${(Math.random() - 0.5) * 110}px`);
                     particle.style.setProperty('--py', `${(Math.random() - 0.5) * 90}px`);
@@ -4036,37 +4568,36 @@ class VisualNovelEngine {
                 object.el.remove();
             };
 
-            const shapeBounds = (shape) => shape.kind === 'rect' ? shape : ({
-                left: shape.cx - shape.rx,
-                right: shape.cx + shape.rx,
-                top: shape.cy - shape.ry,
-                bottom: shape.cy + shape.ry
-            });
+            const shapeBounds = (shape) =>
+                shape.kind === 'rect'
+                    ? shape
+                    : {
+                          left: shape.cx - shape.rx,
+                          right: shape.cx + shape.rx,
+                          top: shape.cy - shape.ry,
+                          bottom: shape.cy + shape.ry,
+                      };
 
             const visibleShapeFraction = (shape) => {
                 const bounds = shapeBounds(shape);
                 const width = Math.max(1, bounds.right - bounds.left);
                 const height = Math.max(1, bounds.bottom - bounds.top);
-                const visibleWidth = Math.max(0,
-                    Math.min(bounds.right, fieldW()) - Math.max(bounds.left, 0));
-                const visibleHeight = Math.max(0,
-                    Math.min(bounds.bottom, fieldH()) - Math.max(bounds.top, 0));
-                return visibleWidth * visibleHeight / (width * height);
+                const visibleWidth = Math.max(0, Math.min(bounds.right, fieldW()) - Math.max(bounds.left, 0));
+                const visibleHeight = Math.max(0, Math.min(bounds.bottom, fieldH()) - Math.max(bounds.top, 0));
+                return (visibleWidth * visibleHeight) / (width * height);
             };
 
             const showImpactDebug = (object, collision) => {
                 if (!cfg.debugHitboxes) return;
-                const rect = shapeBounds(
-                    collision?.object || objectShapeAt(object, object.x, object.y)
-                );
+                const rect = shapeBounds(collision?.object || objectShapeAt(object, object.x, object.y));
                 const marker = document.createElement('div');
                 marker.className = 'fly-impact-debug';
                 marker.classList.toggle('is-ellipse', object.type !== 'cable');
                 marker.textContent = object.type.toUpperCase();
-                marker.style.left = (rect.left / fieldW() * 100) + '%';
-                marker.style.top = (rect.top / fieldH() * 100) + '%';
-                marker.style.width = ((rect.right - rect.left) / fieldW() * 100) + '%';
-                marker.style.height = ((rect.bottom - rect.top) / fieldH() * 100) + '%';
+                marker.style.left = (rect.left / fieldW()) * 100 + '%';
+                marker.style.top = (rect.top / fieldH()) * 100 + '%';
+                marker.style.width = ((rect.right - rect.left) / fieldW()) * 100 + '%';
+                marker.style.height = ((rect.bottom - rect.top) / fieldH()) * 100 + '%';
                 stage.appendChild(marker);
                 setTimeout(() => marker.remove(), 8000);
             };
@@ -4077,13 +4608,9 @@ class VisualNovelEngine {
                     object.warning.remove();
                     object.warning = null;
                 }
-                const bounds = shapeBounds(
-                    collision?.object || objectShapeAt(object, object.x, object.y)
-                );
-                object.el.style.left =
-                    (((bounds.left + bounds.right) / 2) / fieldW() * 100) + '%';
-                object.el.style.top =
-                    (((bounds.top + bounds.bottom) / 2) / fieldH() * 100) + '%';
+                const bounds = shapeBounds(collision?.object || objectShapeAt(object, object.x, object.y));
+                object.el.style.left = ((bounds.left + bounds.right) / 2 / fieldW()) * 100 + '%';
+                object.el.style.top = ((bounds.top + bounds.bottom) / 2 / fieldH()) * 100 + '%';
                 object.el.classList.add('is-impacting');
                 setTimeout(() => object.el.classList.add('is-impact-fading'), 160);
                 setTimeout(() => object.el.remove(), 650);
@@ -4097,10 +4624,10 @@ class VisualNovelEngine {
                 debug.innerHTML = `<span>${label}</span>`;
                 const sx = object.hitScaleX != null ? object.hitScaleX : 0.58;
                 const sy = object.hitScaleY != null ? object.hitScaleY : 0.58;
-                debug.style.left = ((1 - sx) * 50) + '%';
-                debug.style.top = ((1 - sy) * 50) + '%';
-                debug.style.width = (sx * 100) + '%';
-                debug.style.height = (sy * 100) + '%';
+                debug.style.left = (1 - sx) * 50 + '%';
+                debug.style.top = (1 - sy) * 50 + '%';
+                debug.style.width = sx * 100 + '%';
+                debug.style.height = sy * 100 + '%';
                 object.el.appendChild(debug);
             };
 
@@ -4108,8 +4635,8 @@ class VisualNovelEngine {
                 const el = document.createElement('div');
                 el.className = `fly-object fly-${spec.type}`;
                 if (spec.image) el.style.backgroundImage = asset(spec.image);
-                el.style.width = (spec.width * 100) + '%';
-                el.style.height = (spec.height * 100) + '%';
+                el.style.width = spec.width * 100 + '%';
+                el.style.height = spec.height * 100 + '%';
                 stage.appendChild(el);
                 const object = {
                     el,
@@ -4128,13 +4655,11 @@ class VisualNovelEngine {
                     hitScaleX: spec.hitScaleX,
                     hitScaleY: spec.hitScaleY,
                     warning: spec.warning || null,
-                    push: spec.push || 0
+                    push: spec.push || 0,
                 };
-                el.style.left = (object.x * 100) + '%';
-                el.style.top = (object.y * 100) + '%';
-                makeDebugBox(object,
-                    spec.type === 'score' ? 'PARTITURA' :
-                    spec.type === 'gust' ? 'RÁFAGA' : 'PELIGRO');
+                el.style.left = object.x * 100 + '%';
+                el.style.top = object.y * 100 + '%';
+                makeDebugBox(object, spec.type === 'score' ? 'PARTITURA' : spec.type === 'gust' ? 'RÁFAGA' : 'PELIGRO');
                 objects.push(object);
                 return object;
             };
@@ -4143,18 +4668,14 @@ class VisualNovelEngine {
                 const min = cfg.hangMin != null ? cfg.hangMin : 0.25;
                 const max = cfg.hangMax != null ? cfg.hangMax : 0.58;
                 const requested = min + Math.random() * Math.max(0, max - min);
-                const corridor = cfg.corridorMin != null ? cfg.corridorMin : 0.20;
+                const corridor = cfg.corridorMin != null ? cfg.corridorMin : 0.2;
                 const length = Math.min(requested, 1 - corridor - 0.12);
                 const el = document.createElement('div');
                 el.className = `fly-object fly-cable fly-cable-${side}`;
                 const cableAspect = 222 / 1477;
-                const width = clamp(
-                    length * fieldH() / fieldW() * cableAspect * 1.45,
-                    0.032,
-                    0.060
-                );
-                el.style.width = (width * 100) + '%';
-                el.style.height = (length * 100) + '%';
+                const width = clamp(((length * fieldH()) / fieldW()) * cableAspect * 1.45, 0.032, 0.06);
+                el.style.width = width * 100 + '%';
+                el.style.height = length * 100 + '%';
                 const cableSprite = document.createElement('img');
                 cableSprite.className = 'fly-cable-sprite';
                 cableSprite.alt = '';
@@ -4181,10 +4702,10 @@ class VisualNovelEngine {
                     hitScaleX: 0.62,
                     hitScaleY: 0.92,
                     warning: null,
-                    push: 0
+                    push: 0,
                 };
                 el.style.left = '108%';
-                el.style.top = (y * 100) + '%';
+                el.style.top = y * 100 + '%';
                 makeDebugBox(object, 'CABLE');
                 objects.push(object);
                 cableSprite.onload = () => {
@@ -4202,24 +4723,24 @@ class VisualNovelEngine {
             };
 
             const createSpotlight = (progress) => {
-                const targetY = 0.20 + Math.random() * 0.52;
+                const targetY = 0.2 + Math.random() * 0.52;
                 const warning = document.createElement('div');
                 warning.className = 'fly-warning fly-warning-focus';
-                warning.style.top = (targetY * 100) + '%';
+                warning.style.top = targetY * 100 + '%';
                 warning.textContent = 'FOCO';
                 stage.appendChild(warning);
                 makeObject({
                     type: 'spotlight',
                     image: SP + 'aire_foco_v2.webp',
                     width: 0.085,
-                    height: 0.20,
-                    x: 1.10,
+                    height: 0.2,
+                    x: 1.1,
                     y: -0.08,
                     vx: 0.88 + progress * 0.12,
-                    vy: (cfg.fallerVy != null ? cfg.fallerVy : 0.28) + 0.08 + progress * 0.10,
+                    vy: (cfg.fallerVy != null ? cfg.fallerVy : 0.28) + 0.08 + progress * 0.1,
                     hitScaleX: 0.52,
                     hitScaleY: 0.64,
-                    warning
+                    warning,
                 });
             };
 
@@ -4227,7 +4748,7 @@ class VisualNovelEngine {
                 const y = 0.18 + Math.random() * 0.64;
                 const warning = document.createElement('div');
                 warning.className = 'fly-warning fly-warning-speaker';
-                warning.style.top = (y * 100) + '%';
+                warning.style.top = y * 100 + '%';
                 warning.textContent = 'PULSO';
                 stage.appendChild(warning);
                 const speaker = makeObject({
@@ -4240,7 +4761,7 @@ class VisualNovelEngine {
                     vx: 1.08 + progress * 0.14,
                     hitScaleX: 0.63,
                     hitScaleY: 0.64,
-                    warning
+                    warning,
                 });
                 const ring = document.createElement('i');
                 ring.className = 'fly-sonic-ring';
@@ -4249,7 +4770,7 @@ class VisualNovelEngine {
 
             const createGust = () => {
                 const y = 0.24 + Math.random() * 0.52;
-                const push = y < 0.50 ? 0.18 : -0.18;
+                const push = y < 0.5 ? 0.18 : -0.18;
                 const gust = makeObject({
                     type: 'gust',
                     width: 0.16,
@@ -4259,7 +4780,7 @@ class VisualNovelEngine {
                     vx: 0.76,
                     hitScaleX: 0.78,
                     hitScaleY: 0.82,
-                    push
+                    push,
                 });
                 gust.el.dataset.direction = push > 0 ? 'down' : 'up';
                 gust.el.innerHTML += '<i></i><i></i><i></i>';
@@ -4269,13 +4790,11 @@ class VisualNovelEngine {
                 const min = Math.max(1, cfg.phraseMin || 1);
                 const max = Math.max(min, cfg.phraseMax || 2);
                 const remaining = goal - collected;
-                const count = Math.min(remaining,
-                    min + Math.floor(Math.random() * (max - min + 1)));
-                const center = 0.20 + Math.random() * 0.60;
+                const count = Math.min(remaining, min + Math.floor(Math.random() * (max - min + 1)));
+                const center = 0.2 + Math.random() * 0.6;
                 const arc = Math.random() < 0.5 ? -1 : 1;
                 for (let index = 0; index < count; index++) {
-                    const offset = count === 1 ? 0 :
-                        (index - (count - 1) / 2) * 0.12 * arc;
+                    const offset = count === 1 ? 0 : (index - (count - 1) / 2) * 0.12 * arc;
                     makeObject({
                         type: 'score',
                         image: SP + 'partitura_v2.webp',
@@ -4285,7 +4804,7 @@ class VisualNovelEngine {
                         y: clamp(center + offset, yMin + 0.03, yMax - 0.03),
                         vx: 0.94 + progress * 0.08,
                         hitScaleX: 0.76,
-                        hitScaleY: 0.72
+                        hitScaleY: 0.72,
                     });
                 }
                 hazardsSincePhrase = 0;
@@ -4295,7 +4814,8 @@ class VisualNovelEngine {
                 const progress = clamp(collected / goal, 0, 1);
                 spawnNumber++;
                 const collectEvery = Math.max(1, cfg.collectEvery || 3);
-                const needsPhrase = hazardsSincePhrase >= collectEvery ||
+                const needsPhrase =
+                    hazardsSincePhrase >= collectEvery ||
                     Math.random() < (cfg.collectChance != null ? cfg.collectChance : 0.34);
                 if (needsPhrase) {
                     createPhrase(progress);
@@ -4305,10 +4825,8 @@ class VisualNovelEngine {
                 hazardsSincePhrase++;
                 // Se rebaja el peso del lado recién usado para que los cables
                 // alternen con naturalidad sin convertirlo en un patrón fijo.
-                const hang = Math.max(0, cfg.hangChance || 0) *
-                    (lastCableSide === 'top' ? 0.55 : 1.15);
-                const rise = Math.max(0, cfg.riserChance || 0) *
-                    (lastCableSide === 'bottom' ? 0.55 : 1.15);
+                const hang = Math.max(0, cfg.hangChance || 0) * (lastCableSide === 'top' ? 0.55 : 1.15);
+                const rise = Math.max(0, cfg.riserChance || 0) * (lastCableSide === 'bottom' ? 0.55 : 1.15);
                 const focus = Math.max(0, cfg.fallerChance || 0);
                 const speaker = Math.max(0, cfg.speakerChance || 0);
                 const gust = Math.max(0, cfg.gustChance || 0);
@@ -4345,8 +4863,7 @@ class VisualNovelEngine {
                 addParticleBurst(object.x, object.y, '#ffd166', 10);
                 removeObject(object);
                 beep(880 + multiplier * 70, 0.08, { type: 'triangle', volume: 0.065 });
-                beep(1320 + multiplier * 90, 0.08,
-                    { type: 'triangle', volume: 0.045, delay: 0.045 });
+                beep(1320 + multiplier * 90, 0.08, { type: 'triangle', volume: 0.045, delay: 0.045 });
                 showCallout(multiplier >= 3 ? `¡CADENA x${multiplier}!` : 'PARTITURA', 'good');
                 updateHud();
                 if (collected >= goal) finish(true);
@@ -4355,11 +4872,10 @@ class VisualNovelEngine {
             const destroyWithDash = (object) => {
                 flightScore += object.type === 'speaker' ? 220 : 120;
                 energy = Math.min(100, energy + 5);
-                addParticleBurst(object.x, object.y,
-                    object.type === 'speaker' ? '#ff4fa3' : '#4fd0ff', 12);
+                addParticleBurst(object.x, object.y, object.type === 'speaker' ? '#ff4fa3' : '#4fd0ff', 12);
                 showCallout(object.type === 'speaker' ? '¡CONTRAPULSO!' : '¡ATRAVESADO!', 'dash');
                 beep(220, 0.11, { type: 'square', volume: 0.055 });
-                beep(740, 0.10, { type: 'sawtooth', volume: 0.045, delay: 0.03 });
+                beep(740, 0.1, { type: 'sawtooth', volume: 0.045, delay: 0.03 });
                 removeObject(object);
             };
 
@@ -4380,14 +4896,9 @@ class VisualNovelEngine {
                 const debugNames = {
                     cable: 'CABLE',
                     spotlight: 'FOCO',
-                    speaker: 'ALTAVOZ'
+                    speaker: 'ALTAVOZ',
                 };
-                showCallout(
-                    `¡IMPACTO: ${debugNames[object.type] || object.type.toUpperCase()}!`,
-                    'bad',
-                    1100,
-                    3
-                );
+                showCallout(`¡IMPACTO: ${debugNames[object.type] || object.type.toUpperCase()}!`, 'bad', 1100, 3);
                 beep(145, 0.19, { type: 'sawtooth', volume: 0.085 });
                 keepImpactObjectVisible(object, collision);
                 updateHud();
@@ -4398,8 +4909,7 @@ class VisualNovelEngine {
                 if (object.passed || object.type === 'score' || object.type === 'gust') return;
                 const rect = objectRect(object);
                 const player = playerRect();
-                const verticalGap = Math.max(0,
-                    Math.max(rect.top - player.bottom, player.top - rect.bottom));
+                const verticalGap = Math.max(0, Math.max(rect.top - player.bottom, player.top - rect.bottom));
                 if (verticalGap <= fieldH() * 0.055) {
                     object.passed = true;
                     nearMisses++;
@@ -4430,15 +4940,14 @@ class VisualNovelEngine {
                 invulnerableUntil = Math.max(invulnerableUntil, dashUntil);
                 dashFrameIndex = 0;
                 frameClock = 0;
-                playerEl.style.backgroundImage =
-                    playerFrameAsset(DASH_FRAMES[0]);
+                playerEl.style.backgroundImage = playerFrameAsset(DASH_FRAMES[0]);
                 playerEl.classList.remove('dash-pop');
                 void playerEl.offsetWidth;
                 playerEl.classList.add('dash-pop');
                 addParticleBurst(playerX + 0.02, playerY, '#4fd0ff', 10);
                 showCallout('¡IMPULSO!', 'dash', 420);
                 beep(360, 0.12, { type: 'sawtooth', volume: 0.055 });
-                beep(760, 0.10, { type: 'triangle', volume: 0.045, delay: 0.04 });
+                beep(760, 0.1, { type: 'triangle', volume: 0.045, delay: 0.04 });
                 updateHud();
             };
 
@@ -4465,8 +4974,7 @@ class VisualNovelEngine {
             const keys = {};
             const onKey = (event) => {
                 const key = (event.key || '').toLowerCase();
-                if ((key === 'p' || key === 'escape') &&
-                    event.type === 'keydown' && !event.repeat) {
+                if ((key === 'p' || key === 'escape') && event.type === 'keydown' && !event.repeat) {
                     event.preventDefault();
                     setPaused(!paused);
                     return;
@@ -4492,12 +5000,12 @@ class VisualNovelEngine {
             document.addEventListener('keydown', onKey);
             document.addEventListener('keyup', onKey);
             overlay.addEventListener('click', swallow, true);
-            pauseBtn.addEventListener('click', event => {
+            pauseBtn.addEventListener('click', (event) => {
                 event.preventDefault();
                 event.stopPropagation();
                 setPaused(!paused);
             });
-            resumeBtn.addEventListener('click', event => {
+            resumeBtn.addEventListener('click', (event) => {
                 event.preventDefault();
                 event.stopPropagation();
                 setPaused(false);
@@ -4518,8 +5026,13 @@ class VisualNovelEngine {
                 running = false;
                 cleanup();
                 const rank = won
-                    ? (hits === 0 && maxCombo >= 8 ? 'S' :
-                        hits <= 1 ? 'A' : hits < maxHits - 1 ? 'B' : 'C')
+                    ? hits === 0 && maxCombo >= 8
+                        ? 'S'
+                        : hits <= 1
+                          ? 'A'
+                          : hits < maxHits - 1
+                            ? 'B'
+                            : 'C'
                     : '—';
                 this.lastMinigameResult = {
                     hits,
@@ -4529,7 +5042,7 @@ class VisualNovelEngine {
                     comboMax: maxCombo,
                     nearMisses,
                     score: flightScore,
-                    rank
+                    rank,
                 };
                 const result = document.createElement('div');
                 result.className = 'minigame-result fly-result';
@@ -4538,10 +5051,13 @@ class VisualNovelEngine {
                       `<small>${flightScore.toLocaleString('es-ES')} pts · cadena ${maxCombo}</small>`
                     : `<span>¡EDU HA CAÍDO!</span><strong>INTÉNTALO DE NUEVO</strong>`;
                 overlay.appendChild(result);
-                resultTimer = setTimeout(() => {
-                    overlay.remove();
-                    resolve(won);
-                }, won ? 1700 : 1050);
+                resultTimer = setTimeout(
+                    () => {
+                        overlay.remove();
+                        resolve(won);
+                    },
+                    won ? 1700 : 1050,
+                );
             };
 
             const updateCountdown = (dt) => {
@@ -4554,8 +5070,7 @@ class VisualNovelEngine {
                     countdownEl.classList.remove('ss-count-pop');
                     void countdownEl.offsetWidth;
                     countdownEl.classList.add('ss-count-pop');
-                    beep(index === steps.length - 1 ? 980 : 520, 0.08,
-                        { type: 'square', volume: 0.04 });
+                    beep(index === steps.length - 1 ? 980 : 520, 0.08, { type: 'square', volume: 0.04 });
                 }
                 if (countdownTime >= steps.length * 0.48) {
                     started = true;
@@ -4589,8 +5104,7 @@ class VisualNovelEngine {
                 const dashing = now < dashUntil;
                 if (wasDashing && !dashing) {
                     frameIndex = (frameIndex + 1) % FLIGHT_FRAMES.length;
-                    playerEl.style.backgroundImage =
-                        playerFrameAsset(FLIGHT_FRAMES[frameIndex]);
+                    playerEl.style.backgroundImage = playerFrameAsset(FLIGHT_FRAMES[frameIndex]);
                     frameClock = 0;
                 }
                 wasDashing = dashing;
@@ -4600,23 +5114,19 @@ class VisualNovelEngine {
                 if (frameClock >= frameDuration) {
                     frameClock = 0;
                     if (dashing) {
-                        dashFrameIndex =
-                            (dashFrameIndex + 1) % DASH_FRAMES.length;
-                        playerEl.style.backgroundImage =
-                            playerFrameAsset(DASH_FRAMES[dashFrameIndex]);
+                        dashFrameIndex = (dashFrameIndex + 1) % DASH_FRAMES.length;
+                        playerEl.style.backgroundImage = playerFrameAsset(DASH_FRAMES[dashFrameIndex]);
                     } else {
                         frameIndex = (frameIndex + 1) % FLIGHT_FRAMES.length;
-                        playerEl.style.backgroundImage =
-                            playerFrameAsset(FLIGHT_FRAMES[frameIndex]);
+                        playerEl.style.backgroundImage = playerFrameAsset(FLIGHT_FRAMES[frameIndex]);
                     }
                 }
 
                 energy = Math.min(100, energy + (cfg.energyRegen || 10) * dt);
                 const progress = clamp(collected / goal, 0, 1);
                 const ramp = 1 + progress * (cfg.difficultyRamp || 0.24);
-                const velocity = (0.30 + baseSpeed * 0.035) * ramp;
-                const spawnDelay = Math.max(330,
-                    (cfg.spawnMs || 680) * (1 - progress * 0.20));
+                const velocity = (0.3 + baseSpeed * 0.035) * ramp;
+                const spawnDelay = Math.max(330, (cfg.spawnMs || 680) * (1 - progress * 0.2));
 
                 spawnClock += dt * 1000;
                 if (spawnClock >= spawnDelay) {
@@ -4643,23 +5153,19 @@ class VisualNovelEngine {
                     } else if (object.type === 'speaker') {
                         object.y = object.baseY + Math.sin(object.age * 5.4) * 0.026;
                     }
-                    object.el.style.left = (object.x * 100) + '%';
-                    object.el.style.top = (object.y * 100) + '%';
+                    object.el.style.left = object.x * 100 + '%';
+                    object.el.style.top = object.y * 100 + '%';
                     if (object.warning && object.x <= 0.99) {
                         object.warning.remove();
                         object.warning = null;
                     }
 
-                    const visibleFraction = visibleShapeFraction(
-                        objectShapeAt(object, object.x, object.y)
-                    );
-                    if (object.visualReady !== false &&
-                        visibleFraction >= 0.18) object.enteredViewport = true;
-                    const collision = object.visualReady !== false &&
-                        object.enteredViewport &&
-                        visibleFraction >= 0.10
-                        ? sweptObjectCollision(object)
-                        : null;
+                    const visibleFraction = visibleShapeFraction(objectShapeAt(object, object.x, object.y));
+                    if (object.visualReady !== false && visibleFraction >= 0.18) object.enteredViewport = true;
+                    const collision =
+                        object.visualReady !== false && object.enteredViewport && visibleFraction >= 0.1
+                            ? sweptObjectCollision(object)
+                            : null;
                     const collided = !!collision;
                     if (object.type === 'score' && collided) {
                         collectScore(object);
@@ -4670,7 +5176,7 @@ class VisualNovelEngine {
                         object.passed = true;
                         targetY = clamp(targetY + object.push, yMin, yMax);
                         showCallout(object.push > 0 ? 'RÁFAGA ↓' : 'RÁFAGA ↑', 'near');
-                        beep(300, 0.10, { type: 'sine', volume: 0.03 });
+                        beep(300, 0.1, { type: 'sine', volume: 0.03 });
                         continue;
                     }
                     if (object.type !== 'score' && object.type !== 'gust' && collided) {
@@ -4687,9 +5193,8 @@ class VisualNovelEngine {
                     if (object.y > 1.22 || object.x < -0.22) removeObject(object);
                 }
 
-                objects = objects.filter(object => !object.taken);
-                playerEl.style.opacity =
-                    (now < blinkUntil && Math.floor(now / 105) % 2 === 0) ? '0.30' : '1';
+                objects = objects.filter((object) => !object.taken);
+                playerEl.style.opacity = now < blinkUntil && Math.floor(now / 105) % 2 === 0 ? '0.30' : '1';
                 if (calloutUntil && now >= calloutUntil) {
                     calloutEl.classList.remove('is-visible');
                     calloutUntil = 0;
@@ -4729,22 +5234,19 @@ class VisualNovelEngine {
         // que la imagen y se ve un hueco en blanco. Los cables y focos antiguos
         // pertenecen solo al modo fly: chase no debe descargar esos PNG de 2 MB.
         await this.preloadImages([
-            ...(cfg.playerFrames || []).map(n => SP + n + '.webp'),
-            ...(cfg.obstacles || []).flatMap(spriteNames).map(n => SP + n + '.webp'),
-            ...(cfg.enemies || []).flat().map(n => SP + n + '.webp'),
-            ...(cfg.collectible || []).map(n => SP + n + '.webp'),
-            ...(isFly ? (cfg.fallerFrames || ['aire_foco', 'aire_foco_on']) : [])
-                .map(n => SP + n + '.webp'),
-            ...(isFly ? ['aire_cable_cap', 'aire_cable_body', 'aire_cable_tip'] : [])
-                .map(n => SP + n + '.webp'),
-            ...[cfg.bgFar, cfg.bgNear, cfg.backdrop, cfg.moon]
-                .filter(Boolean).map(n => CAP + n + '.webp')
+            ...(cfg.playerFrames || []).map((n) => SP + n + '.webp'),
+            ...(cfg.obstacles || []).flatMap(spriteNames).map((n) => SP + n + '.webp'),
+            ...(cfg.enemies || []).flat().map((n) => SP + n + '.webp'),
+            ...(cfg.collectible || []).map((n) => SP + n + '.webp'),
+            ...(isFly ? cfg.fallerFrames || ['aire_foco', 'aire_foco_on'] : []).map((n) => SP + n + '.webp'),
+            ...(isFly ? ['aire_cable_cap', 'aire_cable_body', 'aire_cable_tip'] : []).map((n) => SP + n + '.webp'),
+            ...[cfg.bgFar, cfg.bgNear, cfg.backdrop, cfg.moon].filter(Boolean).map((n) => CAP + n + '.webp'),
         ]);
         const speed = cfg.speed || 6;
         const maxHits = cfg.maxHits || 3;
         const goal = cfg.goal || 60;
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay sidescroller-minigame ' + (isFly ? 'ss-fly' : 'ss-chase');
             overlay.innerHTML = `
@@ -4793,8 +5295,8 @@ class VisualNovelEngine {
             if (bgNearEl && cfg.bgNear) bgNearEl.style.backgroundImage = url(cfg.bgNear, CAP);
             if (moonEl && cfg.moon) {
                 moonEl.style.backgroundImage = url(cfg.moon, CAP);
-                moonEl.style.left = ((cfg.moonStartX != null ? cfg.moonStartX : 0.82) * 100) + '%';
-                moonEl.style.top = ((cfg.moonStartY != null ? cfg.moonStartY : 0.22) * 100) + '%';
+                moonEl.style.left = (cfg.moonStartX != null ? cfg.moonStartX : 0.82) * 100 + '%';
+                moonEl.style.top = (cfg.moonStartY != null ? cfg.moonStartY : 0.22) * 100 + '%';
             }
             // Telón estático opcional (no hace scroll): ambienta sin costuras de loop
             if (cfg.backdrop) {
@@ -4809,7 +5311,7 @@ class VisualNovelEngine {
             // Banda de juego (0..1). Chase usa toda la calzada en dos dimensiones;
             // vuelo conserva el desplazamiento vertical con X fija.
             const xMin = cfg.xMin != null ? cfg.xMin : 0.03;
-            const xMax = cfg.xMax != null ? cfg.xMax : 0.80;
+            const xMax = cfg.xMax != null ? cfg.xMax : 0.8;
             const yMin = cfg.yMin != null ? cfg.yMin : 0.09;
             const yMax = cfg.yMax != null ? cfg.yMax : 0.91;
 
@@ -4818,23 +5320,21 @@ class VisualNovelEngine {
             const sizePlayer = () => {
                 const h = fieldH() * pFrac;
                 playerEl.style.height = h + 'px';
-                playerEl.style.width = (h * pRatio) + 'px';
+                playerEl.style.width = h * pRatio + 'px';
             };
             playerEl.style.backgroundImage = url(cfg.playerFrames[0]);
             sizePlayer();
             let playerX = isFly ? 0.12 : Math.max(xMin, Math.min(xMax, 0.12));
             let targetX = playerX;
-            let playerY = (yMin + yMax) / 2, targetY = playerY;
+            let playerY = (yMin + yMax) / 2,
+                targetY = playerY;
             const playerFootprint = !isFly ? cfg.playerFootprint : null;
-            const playerHitboxes = cfg.playerHitboxes || [
-                { x: 0.25, y: 0.25, w: 0.50, h: 0.50 }
-            ];
+            const playerHitboxes = cfg.playerHitboxes || [{ x: 0.25, y: 0.25, w: 0.5, h: 0.5 }];
             const createDebugBoxes = (count, type, label, footprint = false) => {
                 if (!cfg.debugHitboxes) return [];
                 return Array.from({ length: count }, (_, index) => {
                     const box = document.createElement('div');
-                    box.className = `ss-debug-hitbox ss-debug-${type}` +
-                        (footprint ? ' ss-debug-footprint' : '');
+                    box.className = `ss-debug-hitbox ss-debug-${type}` + (footprint ? ' ss-debug-footprint' : '');
                     box.innerHTML = `<span>${label}${count > 1 ? ` ${index + 1}` : ''}</span>`;
                     stage.appendChild(box);
                     return box;
@@ -4842,8 +5342,10 @@ class VisualNovelEngine {
             };
             const playerDebugBoxes = createDebugBoxes(
                 playerFootprint ? 1 : playerHitboxes.length,
-                'player-hitbox', playerFootprint ? 'HUELLA COCHE' : 'EDU',
-                !!playerFootprint);
+                'player-hitbox',
+                playerFootprint ? 'HUELLA COCHE' : 'EDU',
+                !!playerFootprint,
+            );
             const paintDebugRect = (el, left, top, right, bottom) => {
                 if (!el) return;
                 el.style.left = left + 'px';
@@ -4852,23 +5354,27 @@ class VisualNovelEngine {
                 el.style.height = Math.max(0, bottom - top) + 'px';
             };
             const rectsFromDefs = (defs, left, top, width, height) =>
-                defs.map(def => ({
+                defs.map((def) => ({
                     left: left + def.x * width,
                     top: top + def.y * height,
                     right: left + (def.x + def.w) * width,
-                    bottom: top + (def.y + def.h) * height
+                    bottom: top + (def.y + def.h) * height,
                 }));
             const footprintFromDef = (def, left, top, width, height) => ({
                 cx: left + def.x * width,
                 cy: top + def.y * height,
                 rx: def.rx * width,
-                ry: def.ry * height
+                ry: def.ry * height,
             });
             const paintDebugFootprint = (el, footprint) => {
                 if (!el || !footprint) return;
-                paintDebugRect(el,
-                    footprint.cx - footprint.rx, footprint.cy - footprint.ry,
-                    footprint.cx + footprint.rx, footprint.cy + footprint.ry);
+                paintDebugRect(
+                    el,
+                    footprint.cx - footprint.rx,
+                    footprint.cy - footprint.ry,
+                    footprint.cx + footprint.rx,
+                    footprint.cy + footprint.ry,
+                );
             };
             const paintDebugRects = (elements, rects) => {
                 elements.forEach((el, index) => {
@@ -4877,13 +5383,10 @@ class VisualNovelEngine {
                 });
             };
             const removeDebugBoxes = (elements) => {
-                (elements || []).forEach(el => el.remove());
+                (elements || []).forEach((el) => el.remove());
             };
-            const rectsOverlap = (a, b) =>
-                a.left < b.right && a.right > b.left &&
-                a.top < b.bottom && a.bottom > b.top;
-            const anyRectsOverlap = (first, second) =>
-                first.some(a => second.some(b => rectsOverlap(a, b)));
+            const rectsOverlap = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+            const anyRectsOverlap = (first, second) => first.some((a) => second.some((b) => rectsOverlap(a, b)));
             // Distancia mínima entre las trayectorias relativas de dos elipses.
             // Además de trabajar en el plano del asfalto, el barrido evita que
             // un objeto rápido atraviese el coche entre dos fotogramas.
@@ -4894,27 +5397,28 @@ class VisualNovelEngine {
                 const startY = (aPrev.cy - bPrev.cy) / sumRy;
                 const endX = (aNow.cx - bNow.cx) / sumRx;
                 const endY = (aNow.cy - bNow.cy) / sumRy;
-                const dx = endX - startX, dy = endY - startY;
+                const dx = endX - startX,
+                    dy = endY - startY;
                 const lengthSq = dx * dx + dy * dy;
-                const t = lengthSq > 0
-                    ? Math.max(0, Math.min(1, -(startX * dx + startY * dy) / lengthSq))
-                    : 0;
+                const t = lengthSq > 0 ? Math.max(0, Math.min(1, -(startX * dx + startY * dy) / lengthSq)) : 0;
                 const nearestX = startX + dx * t;
                 const nearestY = startY + dy * t;
                 return nearestX * nearestX + nearestY * nearestY <= 1;
             };
             const getPlayerRects = () => {
-                const fw = fieldW(), fh = fieldH();
-                const pw = playerEl.offsetWidth, ph = playerEl.offsetHeight;
-                return rectsFromDefs(playerHitboxes,
-                    playerX * fw, playerY * fh - ph / 2, pw, ph);
+                const fw = fieldW(),
+                    fh = fieldH();
+                const pw = playerEl.offsetWidth,
+                    ph = playerEl.offsetHeight;
+                return rectsFromDefs(playerHitboxes, playerX * fw, playerY * fh - ph / 2, pw, ph);
             };
             const getPlayerFootprint = () => {
                 if (!playerFootprint) return null;
-                const fw = fieldW(), fh = fieldH();
-                const pw = playerEl.offsetWidth, ph = playerEl.offsetHeight;
-                return footprintFromDef(playerFootprint,
-                    playerX * fw, playerY * fh - ph / 2, pw, ph);
+                const fw = fieldW(),
+                    fh = fieldH();
+                const pw = playerEl.offsetWidth,
+                    ph = playerEl.offsetHeight;
+                return footprintFromDef(playerFootprint, playerX * fw, playerY * fh - ph / 2, pw, ph);
             };
             const updatePlayerDebug = () => {
                 if (!playerDebugBoxes.length) return;
@@ -4929,15 +5433,16 @@ class VisualNovelEngine {
             // si pasa por encima, el coche queda delante (efecto pseudo-3D).
             const zByY = (y) => Math.round(y * 100) + 10;
             const setPlayerPosition = () => {
-                playerEl.style.left = (playerX * 100) + '%';
-                playerEl.style.top = (playerY * 100) + '%';
+                playerEl.style.left = playerX * 100 + '%';
+                playerEl.style.top = playerY * 100 + '%';
                 const footprint = getPlayerFootprint();
                 playerEl.style.zIndex = zByY(footprint ? footprint.cy / fieldH() : playerY);
                 updatePlayerDebug();
             };
             setPlayerPosition();
 
-            let frameIdx = 0, frameT = 0;
+            let frameIdx = 0,
+                frameT = 0;
             const animatePlayer = (dt) => {
                 frameT += dt;
                 if (frameT >= (isFly ? 0.11 : 0.085)) {
@@ -4963,10 +5468,14 @@ class VisualNovelEngine {
                 if (!paused) last = performance.now();
             };
             pauseBtn.addEventListener('click', (e) => {
-                e.preventDefault(); e.stopPropagation(); setPaused(!paused);
+                e.preventDefault();
+                e.stopPropagation();
+                setPaused(!paused);
             });
             resumeBtn.addEventListener('click', (e) => {
-                e.preventDefault(); e.stopPropagation(); setPaused(false);
+                e.preventDefault();
+                e.stopPropagation();
+                setPaused(false);
             });
 
             const onMove = (e) => {
@@ -5000,27 +5509,40 @@ class VisualNovelEngine {
                 }
                 if (['arrowup', 'w', 'arrowdown', 's', 'arrowleft', 'a', 'arrowright', 'd'].includes(k)) {
                     e.preventDefault();
-                    keys[k] = (e.type === 'keydown');
+                    keys[k] = e.type === 'keydown';
                 }
             };
             document.addEventListener('keydown', onKey);
             document.addEventListener('keyup', onKey);
 
             let objs = [];
-            let ultimoCable = null;   // para no cerrar el pasillo con dos cables
-            let ultimoModo = null;    // para no encadenar partituras seguidas
-            let ultimoRoadY = null;   // evita zigzags extremos imposibles de leer
+            let ultimoCable = null; // para no cerrar el pasillo con dos cables
+            let ultimoModo = null; // para no encadenar partituras seguidas
+            let ultimoRoadY = null; // evita zigzags extremos imposibles de leer
             let ultimoEnemigoMs = -Infinity;
             let nextEnemySide = Math.random() < 0.5 ? 'rear' : 'front';
             const spawnObj = () => {
                 if (!running) return;
                 const el = document.createElement('div');
                 el.className = 'ss-obj';
-                let name, kind, hFrac, wRatio, hitX = null, hitY = null, hitboxes = null;
-                let footprint = null, footprints = null, frameDuration = null;
+                let name,
+                    kind,
+                    hFrac,
+                    wRatio,
+                    hitX = null,
+                    hitY = null,
+                    hitboxes = null;
+                let footprint = null,
+                    footprints = null,
+                    frameDuration = null;
                 let y = yMin + Math.random() * (yMax - yMin);
-                let vy = 0, isHang = false, largoCable = 0;
-                let spawnX = 1.08, direction = -1, phase = null, warning = null;
+                let vy = 0,
+                    isHang = false,
+                    largoCable = 0;
+                let spawnX = 1.08,
+                    direction = -1,
+                    phase = null,
+                    warning = null;
                 let enemySide = null;
                 const roll = Math.random();
 
@@ -5028,11 +5550,11 @@ class VisualNovelEngine {
                 //  - "hang": cable que cuelga del TECHO estirándose hasta una altura
                 //    aleatoria (deja hueco por debajo para esquivar).
                 //  - "faller": foco que CAE desde arriba mientras avanza (movimiento real).
-                const hangC = isFly ? (cfg.hangChance || 0) : 0;
-                const riseC = isFly ? (cfg.riserChance || 0) : 0;
-                const fallC = isFly ? (cfg.fallerChance || 0) : 0;
+                const hangC = isFly ? cfg.hangChance || 0 : 0;
+                const riseC = isFly ? cfg.riserChance || 0 : 0;
+                const fallC = isFly ? cfg.fallerChance || 0 : 0;
                 const collC = cfg.collectible ? (cfg.collectChance != null ? cfg.collectChance : 0.55) : 0;
-                const enemyC = (cfg.enemies && cfg.enemies.length) ? 0.20 : 0;
+                const enemyC = cfg.enemies && cfg.enemies.length ? 0.2 : 0;
                 // Ruleta en orden: colgante / cayente / partitura / enemigo / estático.
                 // Sin estáticos configurados (modo vuelo), el resto se reparte entre
                 // colgantes y cayentes: nada flota porque sí.
@@ -5048,8 +5570,11 @@ class VisualNovelEngine {
                 // Las motos activas son más peligrosas que los obstáculos normales.
                 // Se espacian para que nunca formen una pinza aleatoria entre ambos
                 // sentidos de circulación.
-                if (!isFly && mode === 'enemy' &&
-                    (ultimoModo === 'enemy' || performance.now() - ultimoEnemigoMs < 1350)) {
+                if (
+                    !isFly &&
+                    mode === 'enemy' &&
+                    (ultimoModo === 'enemy' || performance.now() - ultimoEnemigoMs < 1350)
+                ) {
                     mode = cfg.obstacles && cfg.obstacles.length ? 'static' : 'enemy';
                 }
 
@@ -5057,14 +5582,18 @@ class VisualNovelEngine {
                 // el azar las encadenaba de tres en tres y el tramo se quedaba sin
                 // peligros. Si toca repetir, ese turno pasa a ser un obstáculo.
                 if (mode === 'collect' && ultimoModo === 'collect') {
-                    mode = isFly ? ['hang', 'riser', 'faller'][Math.floor(Math.random() * 3)]
-                                 : (cfg.obstacles && cfg.obstacles.length ? 'static' : 'enemy');
+                    mode = isFly
+                        ? ['hang', 'riser', 'faller'][Math.floor(Math.random() * 3)]
+                        : cfg.obstacles && cfg.obstacles.length
+                          ? 'static'
+                          : 'enemy';
                 }
                 ultimoModo = mode;
                 if (mode === 'hang' || mode === 'riser') {
-                    kind = 'obstacle'; isHang = true;
+                    kind = 'obstacle';
+                    isHang = true;
                     const hMin = cfg.hangMin != null ? cfg.hangMin : 0.25;
-                    const hMax = cfg.hangMax != null ? cfg.hangMax : 0.60;
+                    const hMax = cfg.hangMax != null ? cfg.hangMax : 0.6;
                     let largo = hMin + Math.random() * (hMax - hMin);
 
                     // Un cable del techo y otro del suelo que coincidan pueden
@@ -5080,9 +5609,9 @@ class VisualNovelEngine {
                     // aparición y aparición hay 0.14): la mediana se quedaba en 0.44
                     // y solo el 21% pasaba de 0.60. A 0.20 sube al 29% sin que dos
                     // cables opuestos lleguen nunca a cerrar el paso.
-                    const CERCA = 0.20;
+                    const CERCA = 0.2;
                     let ocupadoEnfrente = 0;
-                    objs.forEach(o => {
+                    objs.forEach((o) => {
                         if (!o.isHang || o.hangMode === mode) return;
                         if (Math.abs(o.x - 1.05) > CERCA) return;
                         ocupadoEnfrente = Math.max(ocupadoEnfrente, o.hangLargo || 0);
@@ -5105,8 +5634,8 @@ class VisualNovelEngine {
                     // se quedaba fuera de pantalla: colgaba la mitad de lo que decía
                     // su longitud, y el desfase crecía cuanto más largo era. Por eso
                     // las alturas aleatorias no cuadraban con la colisión.
-                    y = (mode === 'hang') ? (largo / 2) : (1 - largo / 2);
-                    el.style.top = (y * 100) + '%';
+                    y = mode === 'hang' ? largo / 2 : 1 - largo / 2;
+                    el.style.top = y * 100 + '%';
 
                     // Cable en 3 piezas: soporte fijo + tramo recto estirable + punta
                     // pelada fija. Así el largo aleatorio no deforma el dibujo.
@@ -5115,12 +5644,16 @@ class VisualNovelEngine {
                     // El que sube del suelo es el mismo cable del revés: el soporte
                     // abajo y la punta pelada mirando al cielo.
                     if (mode === 'riser') tramo.style.transform = 'scaleY(-1)';
-                    const capH = w * (160 / 200), tipH = w * (221 / 200);
-                    [['aire_cable_cap', capH + 'px', '0 0 auto'],
-                     ['aire_cable_body', 'auto', '1 1 auto'],
-                     ['aire_cable_tip', tipH + 'px', '0 0 auto']].forEach(([piece, ph, flex]) => {
+                    const capH = w * (160 / 200),
+                        tipH = w * (221 / 200);
+                    [
+                        ['aire_cable_cap', capH + 'px', '0 0 auto'],
+                        ['aire_cable_body', 'auto', '1 1 auto'],
+                        ['aire_cable_tip', tipH + 'px', '0 0 auto'],
+                    ].forEach(([piece, ph, flex]) => {
                         const seg = document.createElement('div');
-                        seg.style.cssText = `width:100%;height:${ph};flex:${flex};` +
+                        seg.style.cssText =
+                            `width:100%;height:${ph};flex:${flex};` +
                             `background-image:${url(piece)};background-size:100% 100%;background-repeat:no-repeat;`;
                         tramo.appendChild(seg);
                     });
@@ -5129,30 +5662,39 @@ class VisualNovelEngine {
                     kind = 'obstacle';
                     el._frames = cfg.fallerFrames || ['aire_foco', 'aire_foco_on'];
                     name = el._frames[0];
-                    hFrac = 0.16; wRatio = 0.7;
+                    hFrac = 0.16;
+                    wRatio = 0.7;
                     y = 0.02;
                     vy = (cfg.fallerVy != null ? cfg.fallerVy : 0.26) + Math.random() * 0.16;
                 } else if (mode === 'collect') {
-                    kind = 'collect'; name = cfg.collectible[0];
-                    el.classList.add('ss-collect'); hFrac = 0.12; wRatio = 1.05;
+                    kind = 'collect';
+                    name = cfg.collectible[0];
+                    el.classList.add('ss-collect');
+                    hFrac = 0.12;
+                    wRatio = 1.05;
                 } else if (mode === 'enemy') {
                     kind = 'enemy';
                     const en = cfg.enemies[Math.floor(Math.random() * cfg.enemies.length)];
-                    el._frames = en; name = en[0];
-                    hFrac = 0.18; wRatio = 1.75;
-                    footprint = { x: 0.50, y: 0.82, rx: 0.44, ry: 0.07 };
+                    el._frames = en;
+                    name = en[0];
+                    hFrac = 0.18;
+                    wRatio = 1.75;
+                    footprint = { x: 0.5, y: 0.82, rx: 0.44, ry: 0.07 };
                     const fromRear = nextEnemySide === 'rear';
                     nextEnemySide = fromRear ? 'front' : 'rear';
                     if (fromRear) {
                         enemySide = 'rear';
                         el.classList.add('ss-enemy', 'ss-enemy-rear', 'ss-enemy-stalk');
-                        y = Math.max(yMin, Math.min(yMax,
-                            playerY + (Math.random() - 0.5) * 0.10));
-                        spawnX = -0.16; direction = 1; phase = 'stalk';
+                        y = Math.max(yMin, Math.min(yMax, playerY + (Math.random() - 0.5) * 0.1));
+                        spawnX = -0.16;
+                        direction = 1;
+                        phase = 'stalk';
                     } else {
                         enemySide = 'front';
                         el.classList.add('ss-enemy', 'ss-enemy-front', 'ss-enemy-approach');
-                        spawnX = 1.16; direction = -1; phase = 'front';
+                        spawnX = 1.16;
+                        direction = -1;
+                        phase = 'front';
                     }
                     ultimoEnemigoMs = performance.now();
                 } else {
@@ -5163,15 +5705,14 @@ class VisualNovelEngine {
                         el._frames = spec.frames;
                         frameDuration = spec.frameMs || null;
                     }
-                    hFrac = typeof spec === 'string' ? 0.14 : (spec.h || 0.14);
-                    wRatio = typeof spec === 'string' ? 1.1 : (spec.ratio || 1.1);
-                    hitX = typeof spec === 'string' ? 0.52 : (spec.hitX || 0.52);
-                    hitY = typeof spec === 'string' ? 0.52 : (spec.hitY || 0.52);
-                    hitboxes = typeof spec === 'string' ? null : (spec.hitboxes || null);
-                    footprint = typeof spec === 'string'
-                        ? { x: 0.50, y: 0.78, rx: 0.30, ry: 0.09 }
-                        : (spec.footprint || null);
-                    footprints = typeof spec === 'string' ? null : (spec.footprints || null);
+                    hFrac = typeof spec === 'string' ? 0.14 : spec.h || 0.14;
+                    wRatio = typeof spec === 'string' ? 1.1 : spec.ratio || 1.1;
+                    hitX = typeof spec === 'string' ? 0.52 : spec.hitX || 0.52;
+                    hitY = typeof spec === 'string' ? 0.52 : spec.hitY || 0.52;
+                    hitboxes = typeof spec === 'string' ? null : spec.hitboxes || null;
+                    footprint =
+                        typeof spec === 'string' ? { x: 0.5, y: 0.78, rx: 0.3, ry: 0.09 } : spec.footprint || null;
+                    footprints = typeof spec === 'string' ? null : spec.footprints || null;
                     if (typeof spec !== 'string' && spec.yMin != null && spec.yMax != null) {
                         y = spec.yMin + Math.random() * (spec.yMax - spec.yMin);
                     }
@@ -5187,79 +5728,106 @@ class VisualNovelEngine {
                 if (hFrac) {
                     const h = fieldH() * hFrac;
                     el.style.height = h + 'px';
-                    el.style.width = (h * wRatio) + 'px';
+                    el.style.width = h * wRatio + 'px';
                 }
-                if (!isHang) el.style.top = (y * 100) + '%';
-                el.style.left = (spawnX * 100) + '%';
+                if (!isHang) el.style.top = y * 100 + '%';
+                el.style.left = spawnX * 100 + '%';
                 stage.appendChild(el);
                 const footprintDefs = footprints || (footprint ? [footprint] : null);
                 if (footprintDefs && footprintDefs.length) {
-                    const initialFootprints = footprintDefs.map(def => footprintFromDef(def,
-                        spawnX * fieldW() - el.offsetWidth / 2,
-                        y * fieldH() - el.offsetHeight / 2,
-                        el.offsetWidth, el.offsetHeight));
-                    const nearestFootprint = initialFootprints.reduce(
-                        (nearest, current) => current.cy > nearest.cy ? current : nearest);
+                    const initialFootprints = footprintDefs.map((def) =>
+                        footprintFromDef(
+                            def,
+                            spawnX * fieldW() - el.offsetWidth / 2,
+                            y * fieldH() - el.offsetHeight / 2,
+                            el.offsetWidth,
+                            el.offsetHeight,
+                        ),
+                    );
+                    const nearestFootprint = initialFootprints.reduce((nearest, current) =>
+                        current.cy > nearest.cy ? current : nearest,
+                    );
                     el.style.zIndex = zByY(nearestFootprint.cy / fieldH());
                 } else {
                     el.style.zIndex = zByY(y);
                 }
                 if (kind === 'enemy' && !isFly) {
                     warning = document.createElement('div');
-                    warning.className = 'ss-threat-indicator' +
-                        (enemySide === 'front' ? ' ss-threat-front' : '');
+                    warning.className = 'ss-threat-indicator' + (enemySide === 'front' ? ' ss-threat-front' : '');
                     warning.textContent = enemySide === 'front' ? 'MOTO ⚠' : '⚠ MOTO';
-                    warning.style.top = (y * 100) + '%';
+                    warning.style.top = y * 100 + '%';
                     stage.appendChild(warning);
                 }
                 const fallbackHitbox = {
-                    x: (1 - (hitX != null ? hitX :
-                        (kind === 'collect' ? 0.75 : (isHang ? 0.42 : 0.52)))) / 2,
-                    y: (1 - (hitY != null ? hitY :
-                        (kind === 'collect' ? 0.75 : (isHang ? 0.86 : 0.52)))) / 2,
-                    w: hitX != null ? hitX :
-                        (kind === 'collect' ? 0.75 : (isHang ? 0.42 : 0.52)),
-                    h: hitY != null ? hitY :
-                        (kind === 'collect' ? 0.75 : (isHang ? 0.86 : 0.52))
+                    x: (1 - (hitX != null ? hitX : kind === 'collect' ? 0.75 : isHang ? 0.42 : 0.52)) / 2,
+                    y: (1 - (hitY != null ? hitY : kind === 'collect' ? 0.75 : isHang ? 0.86 : 0.52)) / 2,
+                    w: hitX != null ? hitX : kind === 'collect' ? 0.75 : isHang ? 0.42 : 0.52,
+                    h: hitY != null ? hitY : kind === 'collect' ? 0.75 : isHang ? 0.86 : 0.52,
                 };
                 const collisionDefs = hitboxes || [fallbackHitbox];
                 const usesFootprint = !isFly && !!(footprintDefs && footprintDefs.length);
-                const debugLabel = kind === 'enemy'
-                    ? (enemySide === 'front' ? 'HUELLA MOTO FRENTE' : 'HUELLA MOTO DETRÁS')
-                    : (kind === 'collect' ? 'COLECCIONABLE' :
-                        (usesFootprint ? 'HUELLA OBSTÁCULO' : 'OBSTÁCULO'));
+                const debugLabel =
+                    kind === 'enemy'
+                        ? enemySide === 'front'
+                            ? 'HUELLA MOTO FRENTE'
+                            : 'HUELLA MOTO DETRÁS'
+                        : kind === 'collect'
+                          ? 'COLECCIONABLE'
+                          : usesFootprint
+                            ? 'HUELLA OBSTÁCULO'
+                            : 'OBSTÁCULO';
                 const debugBoxes = createDebugBoxes(
                     usesFootprint ? footprintDefs.length : collisionDefs.length,
-                    kind, debugLabel, usesFootprint);
+                    kind,
+                    debugLabel,
+                    usesFootprint,
+                );
                 // hangMode/hangLargo los usa el guardián del pasillo al generar el
                 // siguiente cable: necesita saber de qué lado viene cada uno y
                 // cuánto ocupa para no cerrar el paso.
                 objs.push({
-                    el, x: spawnX, y, kind, vy, isHang, taken: false,
-                    frameT: 0, frameIdx: 0, direction, phase, age: 0, warning,
-                    hitX, hitY, hitboxes: collisionDefs,
-                    footprints: footprintDefs, prevFootprints: null, frameDuration,
-                    enemySide, debugBoxes,
+                    el,
+                    x: spawnX,
+                    y,
+                    kind,
+                    vy,
+                    isHang,
+                    taken: false,
+                    frameT: 0,
+                    frameIdx: 0,
+                    direction,
+                    phase,
+                    age: 0,
+                    warning,
+                    hitX,
+                    hitY,
+                    hitboxes: collisionDefs,
+                    footprints: footprintDefs,
+                    prevFootprints: null,
+                    frameDuration,
+                    enemySide,
+                    debugBoxes,
                     hangMode: isHang ? mode : null,
-                    hangLargo: isHang ? largoCable : 0
+                    hangLargo: isHang ? largoCable : 0,
                 });
             };
 
-            let hits = 0, collected = 0, dist = 0, running = true;
+            let hits = 0,
+                collected = 0,
+                dist = 0,
+                running = true;
             const updateHud = () => {
-                if (isFly) { scoreEl.textContent = `🎼 ${collected} / ${goal}`; statusEl.textContent = 'Recoge'; }
-                else {
-                    const pct = Math.max(0, Math.min(100, Math.round(dist / goal * 100)));
+                if (isFly) {
+                    scoreEl.textContent = `🎼 ${collected} / ${goal}`;
+                    statusEl.textContent = 'Recoge';
+                } else {
+                    const pct = Math.max(0, Math.min(100, Math.round((dist / goal) * 100)));
                     scoreEl.textContent = `🏁 ${pct}%`;
                     statusEl.textContent = `${Math.max(0, Math.ceil(goal - dist))} m`;
                 }
                 const progress = Math.max(0, Math.min(1, isFly ? collected / goal : dist / goal));
-                progressEl.style.width = (progress * 100) + '%';
-                window.MinigameLifeDisplay.renderSlots(
-                    livesEl,
-                    Math.max(0, maxHits - hits),
-                    maxHits
-                );
+                progressEl.style.width = progress * 100 + '%';
+                window.MinigameLifeDisplay.renderSlots(livesEl, Math.max(0, maxHits - hits), maxHits);
             };
             updateHud();
 
@@ -5268,18 +5836,23 @@ class VisualNovelEngine {
                 try {
                     if (!sctx) sctx = new (window.AudioContext || window.webkitAudioContext)();
                     if (sctx.state === 'suspended') sctx.resume();
-                    const o = sctx.createOscillator(), g = sctx.createGain(), n = sctx.currentTime + (t || 0);
-                    o.type = v && v.type || 'sine';
+                    const o = sctx.createOscillator(),
+                        g = sctx.createGain(),
+                        n = sctx.currentTime + (t || 0);
+                    o.type = (v && v.type) || 'sine';
                     o.frequency.value = f;
                     g.gain.setValueAtTime(0.0001, n);
                     g.gain.exponentialRampToValueAtTime((v && v.vol) || 0.07, n + 0.01);
                     g.gain.exponentialRampToValueAtTime(0.0001, n + d);
                     o.connect(g).connect(sctx.destination);
-                    o.start(n); o.stop(n + d + 0.02);
+                    o.start(n);
+                    o.stop(n + d + 0.02);
                 } catch (e) {}
             };
 
-            let spawnTimer = null, raf = null, countdownTimers = [];
+            let spawnTimer = null,
+                raf = null,
+                countdownTimers = [];
             const finish = (won) => {
                 if (!running) return;
                 running = false;
@@ -5291,7 +5864,7 @@ class VisualNovelEngine {
                 document.removeEventListener('keydown', onKey);
                 document.removeEventListener('keyup', onKey);
                 overlay.removeEventListener('click', swallow, true);
-                objs.forEach(o => {
+                objs.forEach((o) => {
                     o.el.remove();
                     if (o.warning) o.warning.remove();
                     removeDebugBoxes(o.debugBoxes);
@@ -5304,38 +5877,52 @@ class VisualNovelEngine {
                 overlay.appendChild(result);
                 // Registrar cómo fue la partida (para líneas con "showIf" después)
                 this.lastMinigameResult = { hits, maxHits, collected, goal };
-                setTimeout(() => { overlay.remove(); resolve(won); }, won ? 1500 : 950);
+                setTimeout(
+                    () => {
+                        overlay.remove();
+                        resolve(won);
+                    },
+                    won ? 1500 : 950,
+                );
             };
 
             // Chase tiene una cuenta atrás real, así que ya no necesita empezar
             // parpadeando. Vuelo conserva su gracia inicial histórica.
-            let invulnUntil = performance.now() +
-                (isFly ? (cfg.graceMs != null ? cfg.graceMs : 1200) : 0);
+            let invulnUntil = performance.now() + (isFly ? (cfg.graceMs != null ? cfg.graceMs : 1200) : 0);
             let blinkUntil = isFly ? invulnUntil : 0;
             const hitPlayer = () => {
-                hits++; updateHud();
+                hits++;
+                updateHud();
                 invulnUntil = performance.now() + (cfg.hitGraceMs != null ? cfg.hitGraceMs : 800);
                 blinkUntil = invulnUntil;
-                playerEl.classList.remove('ss-hurt'); void playerEl.offsetWidth; playerEl.classList.add('ss-hurt');
-                stage.classList.remove('ss-hit'); void stage.offsetWidth; stage.classList.add('ss-hit');
+                playerEl.classList.remove('ss-hurt');
+                void playerEl.offsetWidth;
+                playerEl.classList.add('ss-hurt');
+                stage.classList.remove('ss-hit');
+                void stage.offsetWidth;
+                stage.classList.add('ss-hit');
                 beep(150, 0.18, 0, { type: 'sawtooth', vol: 0.08 });
                 if (hits >= maxHits) finish(false);
             };
             const grab = (o) => {
-                collected++; o.taken = true; o.el.classList.add('ss-taken');
+                collected++;
+                o.taken = true;
+                o.el.classList.add('ss-taken');
                 if (o.warning) o.warning.remove();
                 removeDebugBoxes(o.debugBoxes);
                 if (cfg.collectible && cfg.collectible[1]) o.el.style.backgroundImage = url(cfg.collectible[1]);
                 beep(880, 0.09, 0, { type: 'triangle', vol: 0.08 });
                 beep(1320, 0.09, 0.05, { type: 'triangle', vol: 0.06 });
                 updateHud();
-                const el = o.el; setTimeout(() => el.remove(), 320);
+                const el = o.el;
+                setTimeout(() => el.remove(), 320);
                 if (collected >= goal) finish(true);
             };
 
-            let bgX = 0, prevPlayerFootprint = null;
+            let bgX = 0,
+                prevPlayerFootprint = null;
             const roadPxPerSec = speed * 55;
-            const objSpeed = 0.12 + speed * 0.055;   // vuelo y objetos sin carretera
+            const objSpeed = 0.12 + speed * 0.055; // vuelo y objetos sin carretera
             const distRate = speed * 0.62;
             const baseSpawnMs = cfg.spawnMs != null ? cfg.spawnMs : Math.max(480, 1150 - speed * 75);
             let started = isFly;
@@ -5349,13 +5936,15 @@ class VisualNovelEngine {
                 const spacingFactor = isFly ? 1 : Math.max(1, objSpeed / roadSpeed);
                 // El primer tercio da más aire; al final llega gradualmente al
                 // ritmo configurado por storyDelay, sin un muro de dificultad.
-                const delay = isFly ? baseSpawnMs :
-                    baseSpawnMs * spacingFactor * (1.18 - runProgress * 0.18);
-                spawnTimer = setTimeout(() => {
-                    if (!running) return;
-                    if (started && !paused) spawnObj();
-                    scheduleSpawn();
-                }, paused ? 120 : delay);
+                const delay = isFly ? baseSpawnMs : baseSpawnMs * spacingFactor * (1.18 - runProgress * 0.18);
+                spawnTimer = setTimeout(
+                    () => {
+                        if (!running) return;
+                        if (started && !paused) spawnObj();
+                        scheduleSpawn();
+                    },
+                    paused ? 120 : delay,
+                );
             };
 
             if (isFly) {
@@ -5381,8 +5970,7 @@ class VisualNovelEngine {
                     countdownEl.classList.remove('ss-count-pop');
                     void countdownEl.offsetWidth;
                     countdownEl.classList.add('ss-count-pop');
-                    beep(index === countdownSteps.length - 1 ? 980 : 520, 0.08, 0,
-                        { type: 'square', vol: 0.045 });
+                    beep(index === countdownSteps.length - 1 ? 980 : 520, 0.08, 0, { type: 'square', vol: 0.045 });
                     countdownTimers.push(setTimeout(() => runCountdownStep(index + 1), 430));
                 };
                 runCountdownStep(0);
@@ -5391,7 +5979,8 @@ class VisualNovelEngine {
             const tick = () => {
                 if (!running) return;
                 const now = performance.now();
-                const dt = Math.min(0.05, (now - last) / 1000); last = now;
+                const dt = Math.min(0.05, (now - last) / 1000);
+                last = now;
 
                 if (paused) {
                     playerEl.style.setProperty('--ss-steer', '0deg');
@@ -5419,28 +6008,29 @@ class VisualNovelEngine {
                 }
 
                 bgX -= roadPxPerSec * dt;
-                if (bgFarEl) bgFarEl.style.backgroundPositionX = (bgX * 0.22) + 'px';
+                if (bgFarEl) bgFarEl.style.backgroundPositionX = bgX * 0.22 + 'px';
                 if (bgNearEl) bgNearEl.style.backgroundPositionX = bgX + 'px';
 
                 if (!isFly) {
                     dist += distRate * dt;
-                    if (dist >= goal) { finish(true); return; }
+                    if (dist >= goal) {
+                        finish(true);
+                        return;
+                    }
                 }
                 if (moonEl && !isFly) {
                     const moonProgress = Math.max(0, Math.min(1, dist / goal));
-                    const easedMoonProgress = moonProgress * moonProgress *
-                        (3 - 2 * moonProgress);
+                    const easedMoonProgress = moonProgress * moonProgress * (3 - 2 * moonProgress);
                     const startX = cfg.moonStartX != null ? cfg.moonStartX : 0.82;
-                    const endX = cfg.moonEndX != null ? cfg.moonEndX : 0.20;
+                    const endX = cfg.moonEndX != null ? cfg.moonEndX : 0.2;
                     const startY = cfg.moonStartY != null ? cfg.moonStartY : 0.22;
                     const endY = cfg.moonEndY != null ? cfg.moonEndY : 0.12;
-                    moonEl.style.left =
-                        ((startX + (endX - startX) * easedMoonProgress) * 100) + '%';
-                    moonEl.style.top =
-                        ((startY + (endY - startY) * easedMoonProgress) * 100) + '%';
+                    moonEl.style.left = (startX + (endX - startX) * easedMoonProgress) * 100 + '%';
+                    moonEl.style.top = (startY + (endY - startY) * easedMoonProgress) * 100 + '%';
                 }
 
-                const fw = fieldW(), fh = fieldH();
+                const fw = fieldW(),
+                    fh = fieldH();
                 const currentPlayerFootprint = getPlayerFootprint();
                 const playerRects = isFly ? getPlayerRects() : [];
                 if (currentPlayerFootprint) {
@@ -5454,20 +6044,23 @@ class VisualNovelEngine {
                     if (!isFly && o.kind === 'enemy') {
                         o.age += dt;
                         if (o.phase === 'stalk') {
-                            o.x += (0.10 + speed * 0.008) * dt;
+                            o.x += (0.1 + speed * 0.008) * dt;
                             o.y += (playerY - o.y) * Math.min(1, dt * 2.8);
                             o.y = Math.max(yMin, Math.min(yMax, o.y));
-                            o.el.style.top = (o.y * 100) + '%';
-                            if (o.warning) o.warning.style.top = (o.y * 100) + '%';
+                            o.el.style.top = o.y * 100 + '%';
+                            if (o.warning) o.warning.style.top = o.y * 100 + '%';
                             if (o.age >= 0.85) {
                                 o.phase = 'charge';
                                 o.el.classList.remove('ss-enemy-stalk');
                                 o.el.classList.add('ss-enemy-charge');
-                                if (o.warning) { o.warning.remove(); o.warning = null; }
+                                if (o.warning) {
+                                    o.warning.remove();
+                                    o.warning = null;
+                                }
                                 beep(720, 0.09, 0, { type: 'sawtooth', vol: 0.045 });
                             }
                         } else if (o.phase === 'charge') {
-                            o.x += (0.34 + speed * 0.030) * dt;
+                            o.x += (0.34 + speed * 0.03) * dt;
                         } else {
                             // La moto frontal suma su propia marcha al movimiento
                             // del asfalto: se acerca más deprisa que un obstáculo
@@ -5486,11 +6079,11 @@ class VisualNovelEngine {
                     } else {
                         o.x -= objSpeed * dt;
                     }
-                    o.el.style.left = (o.x * 100) + '%';
+                    o.el.style.left = o.x * 100 + '%';
                     // Focos que CAEN (y cualquier objeto con velocidad vertical)
                     if (o.vy) {
                         o.y += o.vy * dt;
-                        o.el.style.top = (o.y * 100) + '%';
+                        o.el.style.top = o.y * 100 + '%';
                         o.el.style.zIndex = zByY(o.y);
                         if (o.y > 1.15) {
                             o.taken = true;
@@ -5503,44 +6096,49 @@ class VisualNovelEngine {
                     // Animación por frames para cualquier objeto que las tenga
                     if (o.el._frames && o.el._frames.length > 1) {
                         o.frameT += dt;
-                        const frameDuration = o.frameDuration ||
-                            (o.kind === 'enemy' ? 0.095 : 0.14);
+                        const frameDuration = o.frameDuration || (o.kind === 'enemy' ? 0.095 : 0.14);
                         if (o.frameT >= frameDuration) {
                             o.frameT = 0;
                             o.frameIdx = (o.frameIdx + 1) % o.el._frames.length;
                             o.el.style.backgroundImage = url(o.el._frames[o.frameIdx]);
                         }
                     }
-                    const ow = o.el.offsetWidth, oh = o.el.offsetHeight;
-                    const ocx = o.x * fw, ocy = o.y * fh;
+                    const ow = o.el.offsetWidth,
+                        oh = o.el.offsetHeight;
+                    const ocx = o.x * fw,
+                        ocy = o.y * fh;
                     let collided = false;
-                    if (!isFly && currentPlayerFootprint &&
-                        o.footprints && o.footprints.length) {
-                        const currentObjectFootprints = o.footprints.map(def =>
-                            footprintFromDef(def, ocx - ow / 2, ocy - oh / 2, ow, oh));
-                        const nearestFootprint = currentObjectFootprints.reduce(
-                            (nearest, current) => current.cy > nearest.cy ? current : nearest);
+                    if (!isFly && currentPlayerFootprint && o.footprints && o.footprints.length) {
+                        const currentObjectFootprints = o.footprints.map((def) =>
+                            footprintFromDef(def, ocx - ow / 2, ocy - oh / 2, ow, oh),
+                        );
+                        const nearestFootprint = currentObjectFootprints.reduce((nearest, current) =>
+                            current.cy > nearest.cy ? current : nearest,
+                        );
                         o.el.style.zIndex = zByY(nearestFootprint.cy / fh);
                         currentObjectFootprints.forEach((current, index) =>
-                            paintDebugFootprint(o.debugBoxes[index], current));
+                            paintDebugFootprint(o.debugBoxes[index], current),
+                        );
                         collided = currentObjectFootprints.some((current, index) =>
                             sweptFootprintsOverlap(
                                 prevPlayerFootprint || currentPlayerFootprint,
                                 currentPlayerFootprint,
                                 (o.prevFootprints && o.prevFootprints[index]) || current,
-                                current));
+                                current,
+                            ),
+                        );
                         o.prevFootprints = currentObjectFootprints;
                     } else {
-                        const objectRects = rectsFromDefs(
-                            o.hitboxes, ocx - ow / 2, ocy - oh / 2, ow, oh);
+                        const objectRects = rectsFromDefs(o.hitboxes, ocx - ow / 2, ocy - oh / 2, ow, oh);
                         paintDebugRects(o.debugBoxes, objectRects);
                         collided = anyRectsOverlap(playerRects, objectRects);
                     }
-                    const dangerous = o.kind !== 'enemy' ||
-                        o.phase === 'charge' || o.phase === 'front' || isFly;
+                    const dangerous = o.kind !== 'enemy' || o.phase === 'charge' || o.phase === 'front' || isFly;
                     if (dangerous && collided) {
-                        if (o.kind === 'collect') { grab(o); if (!running) return; }
-                        else if (now >= invulnUntil) {
+                        if (o.kind === 'collect') {
+                            grab(o);
+                            if (!running) return;
+                        } else if (now >= invulnUntil) {
                             o.taken = true;
                             o.el.remove();
                             if (o.warning) o.warning.remove();
@@ -5552,7 +6150,7 @@ class VisualNovelEngine {
                     }
                 }
                 prevPlayerFootprint = currentPlayerFootprint;
-                objs = objs.filter(o => {
+                objs = objs.filter((o) => {
                     const inBounds = o.direction > 0 ? o.x < 1.28 : o.x > -0.25;
                     if (!inBounds && o.warning) o.warning.remove();
                     if (!inBounds) removeDebugBoxes(o.debugBoxes);
@@ -5560,7 +6158,7 @@ class VisualNovelEngine {
                 });
 
                 // Parpadeo del jugador mientras dura la invulnerabilidad
-                playerEl.style.opacity = (now < blinkUntil && Math.floor(now / 120) % 2 === 0) ? '0.35' : '1';
+                playerEl.style.opacity = now < blinkUntil && Math.floor(now / 120) % 2 === 0 ? '0.35' : '1';
 
                 updateHud();
             };
@@ -5570,7 +6168,10 @@ class VisualNovelEngine {
             // `overlay.isConnected`: si nos sacan desde los botones de arriba, el
             // overlay se borra y el bucle tiene que pararse solo.
             const loop = () => {
-                if (!running || !overlay.isConnected) { running = false; return; }
+                if (!running || !overlay.isConnected) {
+                    running = false;
+                    return;
+                }
                 tick();
                 if (running) raf = requestAnimationFrame(loop);
             };
@@ -5583,18 +6184,19 @@ class VisualNovelEngine {
     ensureSceneLayers() {
         const gc = document.getElementById('game-container');
         if (!gc) return {};
+        const bg = this._getBackgroundElement();
         let bgB = document.getElementById('background-b');
         if (!bgB) {
             bgB = document.createElement('div');
             bgB.id = 'background-b';
             bgB.className = 'background background-b';
-            const bg = document.getElementById('background');
             // Heredar el etalonaje vigente: Juice puede haberlo aplicado antes
             // de que esta segunda capa existiera.
             if (bg) {
-                bgB.style.filter = (window.Juice && typeof window.Juice.currentGrade === 'function')
-                    ? window.Juice.currentGrade()
-                    : (bg.style.filter || getComputedStyle(bg).filter || 'none');
+                bgB.style.filter =
+                    window.Juice && typeof window.Juice.currentGrade === 'function'
+                        ? window.Juice.currentGrade()
+                        : bg.style.filter || getComputedStyle(bg).filter || 'none';
             }
             if (bg && bg.nextSibling) gc.insertBefore(bgB, bg.nextSibling);
             else gc.appendChild(bgB);
@@ -5619,8 +6221,12 @@ class VisualNovelEngine {
     // Cambia el fondo con CROSSFADE suave (400 ms) usando una segunda capa.
     // Con { cut: true } se comporta como antes (corte seco intencionado).
     setBackground(imagePath, opts = {}) {
-        const bg = document.getElementById('background');
         const nextBackgroundPath = imagePath || null;
+        if (imagePath) {
+            this.preloadImages([imagePath]);
+        }
+        const bg = this._getBackgroundElement();
+        if (!bg) return;
         if (this.currentBackgroundPath !== nextBackgroundPath) {
             this.removeAllCharacters();
         }
@@ -5635,12 +6241,18 @@ class VisualNovelEngine {
             clearTimeout(this._bgSwapTimer);
             this._bgSwapTimer = null;
             const bPrev = document.getElementById('background-b');
-            if (bPrev) { bPrev.style.transition = 'none'; bPrev.style.opacity = '0'; }
+            if (bPrev) {
+                bPrev.style.transition = 'none';
+                bPrev.style.opacity = '0';
+            }
             bg.style.backgroundImage = url;
             return;
         }
         const { bgB } = this.ensureSceneLayers();
-        if (!bgB) { bg.style.backgroundImage = url; return; }
+        if (!bgB) {
+            bg.style.backgroundImage = url;
+            return;
+        }
         // Pintar el nuevo fondo en la capa B y fundirla por encima
         bgB.style.transition = 'none';
         bgB.style.opacity = '0';
@@ -5648,9 +6260,10 @@ class VisualNovelEngine {
         // `style.filter` no representa necesariamente el estado narrativo.
         // Juice conserva ese estado explícitamente para que B nunca entre con
         // `filter: none` durante el primer fotograma del crossfade.
-        bgB.style.filter = (window.Juice && typeof window.Juice.currentGrade === 'function')
-            ? window.Juice.currentGrade()
-            : (bg.style.filter || getComputedStyle(bg).filter || 'none');
+        bgB.style.filter =
+            window.Juice && typeof window.Juice.currentGrade === 'function'
+                ? window.Juice.currentGrade()
+                : bg.style.filter || getComputedStyle(bg).filter || 'none';
         bgB.style.backgroundImage = url;
         // Forzar reflow para que la transición arranque desde 0
         void bgB.offsetWidth;
@@ -5664,16 +6277,16 @@ class VisualNovelEngine {
             bgB.style.opacity = '0';
         }, dur + 60);
     }
-
-    // Fundido de escena: { to:"black"|color, duration } o { from:"black", duration }.
-    // Devuelve una promesa que espera el final del fundido.
     fadeScene(action = {}) {
         const { fader } = this.ensureSceneLayers();
         if (!fader) return Promise.resolve();
         const dur = action.duration != null ? action.duration : 800;
-        const color = (typeof action.to === 'string' && action.to !== 'black') ? action.to
-                    : (typeof action.from === 'string' && action.from !== 'black') ? action.from
-                    : '#000';
+        const color =
+            typeof action.to === 'string' && action.to !== 'black'
+                ? action.to
+                : typeof action.from === 'string' && action.from !== 'black'
+                  ? action.from
+                  : '#000';
         fader.style.background = color;
         const goingDark = action.from == null; // "to" (u omitido) = oscurecer
         // Cada acción declara su propio punto de partida. Es imprescindible al
@@ -5685,12 +6298,12 @@ class VisualNovelEngine {
         fader.style.transition = `opacity ${dur}ms ease`;
         fader.style.opacity = goingDark ? '1' : '0';
         fader.style.pointerEvents = goingDark ? 'auto' : 'none';
-        return new Promise(r => setTimeout(r, dur + 40));
+        return new Promise((r) => setTimeout(r, dur + 40));
     }
 
     // Ken Burns del fondo: zoom/paneo lento. Se resetea al cambiar de fondo.
     bgPan(action = {}) {
-        const bg = document.getElementById('background');
+        const bg = this._getBackgroundElement();
         if (!bg) return;
         if (action.reset) {
             bg.style.transition = 'none';
@@ -5699,8 +6312,10 @@ class VisualNovelEngine {
         }
         const zf = action.zoomFrom != null ? action.zoomFrom : 1.05;
         const zt = action.zoomTo != null ? action.zoomTo : 1.0;
-        const xf = action.xFrom || 0, xt = action.xTo || 0;
-        const yf = action.yFrom || 0, yt = action.yTo || 0;
+        const xf = action.xFrom || 0,
+            xt = action.xTo || 0;
+        const yf = action.yFrom || 0,
+            yt = action.yTo || 0;
         const dur = action.duration != null ? action.duration : 6000;
         if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         bg.style.transition = 'none';
@@ -5734,7 +6349,7 @@ class VisualNovelEngine {
         cg.style.transition = `opacity ${duration}ms ease`;
         cg.style.opacity = '1';
         cg.classList.add('cg-visible');
-        await new Promise(r => setTimeout(r, duration + 40));
+        await new Promise((r) => setTimeout(r, duration + 40));
     }
 
     hideCG(duration = 500) {
@@ -5758,6 +6373,10 @@ class VisualNovelEngine {
         }
         const cached = this.assetUrlCache.get(path);
         if (cached) return cached;
+        if (path.includes('?v=')) {
+            this.assetUrlCache.set(path, path);
+            return path;
+        }
         const separator = path.includes('?') ? '&' : '?';
         const resolved = `${path}${separator}v=${this.assetStamp}`;
         this.assetUrlCache.set(path, resolved);
@@ -5769,54 +6388,72 @@ class VisualNovelEngine {
     // exactamente la misma descarga y la misma decodificación en memoria.
     preloadImages(paths) {
         const uniquePaths = [...new Set((paths || []).filter(Boolean))];
-        return Promise.all(uniquePaths.map(path => {
-            const src = this.cacheBustAsset(path);
-            const cached = this.imagePreloadCache.get(src);
-            if (cached) return cached;
+        return Promise.all(
+            uniquePaths.map((path) => {
+                const src = this.cacheBustAsset(path);
+                const preloaded = this.preloadedImages.get(src);
+                if (preloaded) return Promise.resolve(preloaded);
+                const cached = this.imagePreloadCache.get(src);
+                if (cached) return cached;
 
-            const img = new Image();
-            img.decoding = 'async';
-            const pending = new Promise(resolve => {
-                img.onload = async () => {
-                    try {
-                        if (img.decode) await img.decode();
-                    } catch (error) {
-                        // onload ya garantiza una imagen utilizable; decode puede
-                        // rechazarse si el navegador la había decodificado antes.
-                    }
-                    this.preloadedImages.set(src, img);
-                    resolve(img);
-                };
-                img.onerror = () => {
-                    // Un fallo transitorio debe poder reintentarse en la próxima
-                    // entrada al minijuego, no quedar memorizado toda la sesión.
-                    this.imagePreloadCache.delete(src);
-                    resolve(null);
-                };
-                img.src = src;
-            });
-            this.imagePreloadCache.set(src, pending);
-            return pending;
-        }));
+                const img = new Image();
+                img.decoding = 'async';
+                const pending = new Promise((resolve) => {
+                    img.onload = async () => {
+                        try {
+                            if (img.decode) await img.decode();
+                        } catch (error) {
+                            // onload ya garantiza una imagen utilizable; decode puede
+                            // rechazarse si el navegador la había decodificado antes.
+                        }
+                        this.preloadedImages.set(src, img);
+                        resolve(img);
+                    };
+                    img.onerror = () => {
+                        // Un fallo transitorio debe poder reintentarse en la próxima
+                        // entrada al minijuego, no quedar memorizado toda la sesión.
+                        this.imagePreloadCache.delete(src);
+                        resolve(null);
+                    };
+                    img.src = src;
+                });
+                this.imagePreloadCache.set(src, pending);
+                return pending;
+            }),
+        );
     }
 
-    getCharacterKey(characterName) {
-        const norm = (s) => String(s || '')
+    _normalizeLookupKey(value) {
+        return String(value || '')
             .normalize('NFD')
             .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase();
-        const key = norm(characterName);
+    }
+
+    getCharacterKey(characterName) {
+        const key = this._normalizeLookupKey(characterName);
+        if (!key) return key;
+        const cachedKey = this.characterKeyCache.get(key);
+        if (cachedKey) return cachedKey;
+        if (this.characters[key]) {
+            this.characterKeyCache.set(key, key);
+            return key;
+        }
         // Alias por nombre visible: un speaker como "Micaela Michis" no es
         // clave de fichero, pero s\u00ed el "name" de micaela.json \u2014 resolverlo ah\u00ed en
         // vez de intentar un fetch de "micaela michis.json" (404 seguro).
         // Tambi\u00e9n se aceptan "aliases" del JSON del personaje (p. ej. tony.json
         // declara ["Seraphyna"]: su nombre art\u00edstico resalta SU sprite).
-        if (!this.characters[key]) {
-            for (const k in this.characters) {
-                const c = this.characters[k];
-                if (!c) continue;
-                if (norm(c.name) === key) return k;
-                if (Array.isArray(c.aliases) && c.aliases.some(a => norm(a) === key)) return k;
+        for (const k in this.characters) {
+            const c = this.characters[k];
+            if (!c) continue;
+            if (this._normalizeLookupKey(c.name) === key) {
+                this.characterKeyCache.set(key, k);
+                return k;
+            }
+            if (Array.isArray(c.aliases) && c.aliases.some((a) => this._normalizeLookupKey(a) === key)) {
+                this.characterKeyCache.set(key, k);
+                return k;
             }
         }
         return key;
@@ -5824,11 +6461,12 @@ class VisualNovelEngine {
 
     getCharacterPoseImage(character, pose) {
         if (!character) return null;
-        const selected = character.poses && character.poses[pose] != null
-            ? character.poses[pose]
-            : (character.poses && character.poses[character.defaultPose] != null)
-            ? character.poses[character.defaultPose]
-            : character.image || character.poses?.neutral;
+        const selected =
+            character.poses && character.poses[pose] != null
+                ? character.poses[pose]
+                : character.poses && character.poses[character.defaultPose] != null
+                  ? character.poses[character.defaultPose]
+                  : character.image || character.poses?.neutral;
         if (typeof selected === 'string') return selected;
         if (selected && typeof selected === 'object') {
             return selected.src || selected.image || selected.frames?.[0]?.src || selected.frames?.[0] || null;
@@ -5846,7 +6484,7 @@ class VisualNovelEngine {
         const nextImage = `url('${nextPoseSrc}')`;
         clearTimeout(charElement._poseTransitionTimer);
         charElement._poseTransitionTimer = null;
-        charElement.querySelectorAll(':scope > .character-pose-ghost').forEach(ghost => ghost.remove());
+        charElement.querySelectorAll(':scope > .character-pose-ghost').forEach((ghost) => ghost.remove());
         charElement.classList.remove('pose-transitioning');
         delete charElement.dataset.poseTransition;
         charElement.style.backgroundImage = nextImage;
@@ -5906,13 +6544,9 @@ class VisualNovelEngine {
     }
 
     animationFramePath(character, frame) {
-        const value = frame && typeof frame === 'object'
-            ? (frame.src || frame.image || frame.pose)
-            : frame;
+        const value = frame && typeof frame === 'object' ? frame.src || frame.image || frame.pose : frame;
         if (!value) return null;
-        return character.poses?.[value]
-            ? this.getCharacterPoseImage(character, value)
-            : value;
+        return character.poses?.[value] ? this.getCharacterPoseImage(character, value) : value;
     }
 
     animationDelay(value, fallback = 2400) {
@@ -5933,18 +6567,20 @@ class VisualNovelEngine {
         const character = this.characters[characterKey];
         const config = character?.animations?.[pose] || character?.poseAnimations?.[pose];
         const layerConfig = character?.layerBlinks?.[pose];
-        const reducedMotion = (window.Juice && typeof window.Juice.isReduced === 'function'
-            && window.Juice.isReduced()) || (window.matchMedia &&
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        const reducedMotion =
+            (window.Juice && typeof window.Juice.isReduced === 'function' && window.Juice.isReduced()) ||
+            (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
         if ((!config && !layerConfig) || reducedMotion) return;
 
         const sourceFrames = layerConfig?.frames || (Array.isArray(config) ? config : config.frames);
         if (!Array.isArray(sourceFrames) || !sourceFrames.length) return;
-        const frames = sourceFrames.map(frame => ({
-            src: this.animationFramePath(character, frame),
-            duration: frame && typeof frame === 'object' ? Number(frame.duration) : NaN,
-            state: frame && typeof frame === 'object' ? frame.state : null
-        })).filter(frame => frame.src);
+        const frames = sourceFrames
+            .map((frame) => ({
+                src: this.animationFramePath(character, frame),
+                duration: frame && typeof frame === 'object' ? Number(frame.duration) : NaN,
+                state: frame && typeof frame === 'object' ? frame.state : null,
+            }))
+            .filter((frame) => frame.src);
         if (!frames.length) return;
 
         const basePoseImage = this.getCharacterPoseImage(character, pose);
@@ -5956,16 +6592,22 @@ class VisualNovelEngine {
             frames,
             layerConfig,
             timer: null,
-            cancelled: false
+            cancelled: false,
         };
         this._characterFrameAnimations.set(position, entry);
 
         const stillOwnsSlot = () => {
             const element = document.getElementById(`character-${position}`);
-            return element && element.classList.contains('active') &&
+            return (
+                element &&
+                element.classList.contains('active') &&
                 element.getAttribute('data-character') === characterKey &&
-                element.dataset.pose === String(pose).toLowerCase().replace(/[^a-z0-9_-]/g, '') &&
-                this._characterFrameAnimations.get(position) === entry;
+                element.dataset.pose ===
+                    String(pose)
+                        .toLowerCase()
+                        .replace(/[^a-z0-9_-]/g, '') &&
+                this._characterFrameAnimations.get(position) === entry
+            );
         };
 
         const scheduleBurst = () => {
@@ -5975,7 +6617,7 @@ class VisualNovelEngine {
             }
             const wait = this.animationDelay(
                 config?.delayRange || config?.idleRange || config?.loopDelay || [1800, 4200],
-                Number(config?.delayMs) || 2400
+                Number(config?.delayMs) || 2400,
             );
             entry.timer = setTimeout(playFrame, wait);
         };
@@ -5990,9 +6632,10 @@ class VisualNovelEngine {
             const frame = frames[index];
             if (layerConfig) this.applyCharacterEyeLayerFrame(element, layerConfig, frame);
             else this.applyCharacterAnimationFrame(element, frame.src);
-            const duration = Number.isFinite(frame.duration) && frame.duration > 0
-                ? frame.duration
-                : Math.max(40, Number(config?.frameMs) || 85);
+            const duration =
+                Number.isFinite(frame.duration) && frame.duration > 0
+                    ? frame.duration
+                    : Math.max(40, Number(config?.frameMs) || 85);
             index += 1;
             if (index < frames.length) {
                 entry.timer = setTimeout(playFrame, duration);
@@ -6013,7 +6656,7 @@ class VisualNovelEngine {
             }, duration);
         };
 
-        this.preloadImages(frames.map(frame => frame.src)).then(() => {
+        this.preloadImages(frames.map((frame) => frame.src)).then(() => {
             if (this._characterFrameAnimations.get(position) === entry) scheduleBurst();
         });
     }
@@ -6042,7 +6685,7 @@ class VisualNovelEngine {
         const portraits = {
             edu: 'assets/images/characters/humans/edu_humano_sprite.webp',
             tony: 'assets/images/characters/humans/tony_humano_sprite.webp',
-            jose: 'assets/images/characters/humans/jose_humano_sprite.webp'
+            jose: 'assets/images/characters/humans/jose_humano_sprite.webp',
         };
         return portraits[characterKey] || null;
     }
@@ -6051,7 +6694,7 @@ class VisualNovelEngine {
         const revealAt = {
             edu: { chapter: 2, scene: 16, line: 4 },
             tony: { chapter: 3, scene: 13, line: 5 },
-            jose: { chapter: 4, scene: 2, line: 4 }
+            jose: { chapter: 4, scene: 2, line: 4 },
         };
         const reveal = revealAt[characterKey];
         if (!reveal) return true;
@@ -6063,7 +6706,15 @@ class VisualNovelEngine {
         return this.currentLine >= reveal.line;
     }
 
-    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null, offsetY = null, scale = null) {
+    async showCharacter(
+        characterName,
+        position = 'left',
+        pose = 'neutral',
+        flipped = false,
+        enter = null,
+        offsetY = null,
+        scale = null,
+    ) {
         const characterKey = this.getCharacterKey(characterName);
         let character = this.characters[characterKey];
         if (!character) {
@@ -6119,8 +6770,13 @@ class VisualNovelEngine {
             // Entrada animada opcional ("right"/"left"/"bottom"/"fade"). Usa la
             // propiedad CSS `translate` (independiente de transform, no pisa el flip).
             if (enter) {
-                const cls = `char-enter-${['right','left','bottom','fade'].includes(enter) ? enter : 'fade'}`;
-                charElement.classList.remove('char-enter-right','char-enter-left','char-enter-bottom','char-enter-fade');
+                const cls = `char-enter-${['right', 'left', 'bottom', 'fade'].includes(enter) ? enter : 'fade'}`;
+                charElement.classList.remove(
+                    'char-enter-right',
+                    'char-enter-left',
+                    'char-enter-bottom',
+                    'char-enter-fade',
+                );
                 void charElement.offsetWidth;
                 charElement.classList.add(cls);
                 clearTimeout(charElement._enterTimer);
@@ -6136,7 +6792,7 @@ class VisualNovelEngine {
                 character: characterKey,
                 pose,
                 flipped: !!flipped,
-                hidden: false
+                hidden: false,
             };
             this.startCharacterFrameAnimation(characterKey, position, pose);
         }
@@ -6168,21 +6824,22 @@ class VisualNovelEngine {
     // (el transform se reserva para el flip scaleX y el escalado por personaje).
     layoutCharacters() {
         const order = ['left', 'center', 'right'];
-        const active = order.filter(p => {
+        const active = [];
+        order.forEach((p) => {
             const el = document.getElementById(`character-${p}`);
-            return el && el.classList.contains('active')
-                && !el.classList.contains('character-hidden');
+            if (el && el.classList.contains('active') && !el.classList.contains('character-hidden')) {
+                active.push({ position: p, element: el });
+            }
         });
         const N = active.length;
         if (N === 0) return;
         const W = 50; // ancho fijo de cada personaje (%), igual que el CSS base
-        active.forEach((p, i) => {
-            const el = document.getElementById(`character-${p}`);
+        active.forEach(({ element }, i) => {
             const cx = ((2 * i + 1) / (2 * N)) * 100; // centro de su franja (%)
-            el.style.left = `${cx}%`;
-            el.style.right = 'auto';
-            el.style.width = `${W}%`;
-            el.style.marginLeft = `${-W / 2}%`;
+            element.style.left = `${cx}%`;
+            element.style.right = 'auto';
+            element.style.width = `${W}%`;
+            element.style.marginLeft = `${-W / 2}%`;
         });
     }
 
@@ -6222,9 +6879,9 @@ class VisualNovelEngine {
         if (!position || !poses.length) return;
 
         this.stopCharacterPoseAnimation(characterKey, position);
-        const reducedMotion = (window.Juice && typeof window.Juice.isReduced === 'function'
-            && window.Juice.isReduced()) || (window.matchMedia &&
-            window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        const reducedMotion =
+            (window.Juice && typeof window.Juice.isReduced === 'function' && window.Juice.isReduced()) ||
+            (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
         if (reducedMotion) {
             // Las secuencias son animación real basada en temporizadores; el
             // media query CSS no puede detenerlas. Dejamos un fotograma legible.
@@ -6235,16 +6892,14 @@ class VisualNovelEngine {
         const frameMs = Math.max(90, Number(action.frameMs || action.duration) || 360);
         const loop = action.loop !== false;
         const pingPong = !!action.pingPong && poses.length > 2;
-        const sequence = pingPong
-            ? [...poses, ...poses.slice(1, -1).reverse()]
-            : [...poses];
+        const sequence = pingPong ? [...poses, ...poses.slice(1, -1).reverse()] : [...poses];
         let index = 0;
 
         const entry = {
             character: characterKey,
             position,
             untilAdvance: action.untilAdvance !== false,
-            timer: null
+            timer: null,
         };
         const tick = () => {
             const element = document.getElementById(`character-${position}`);
@@ -6293,7 +6948,9 @@ class VisualNovelEngine {
         const previousPose = charElement.dataset.pose;
         if (previousPose) charElement.classList.remove(`pose-${previousPose}`);
         if (pose) {
-            const limpia = String(pose).toLowerCase().replace(/[^a-z0-9_-]/g, '');
+            const limpia = String(pose)
+                .toLowerCase()
+                .replace(/[^a-z0-9_-]/g, '');
             if (limpia) {
                 charElement.classList.add(`pose-${limpia}`);
                 charElement.dataset.pose = limpia;
@@ -6333,17 +6990,15 @@ class VisualNovelEngine {
 
         const startFall = () => {
             // El hueco puede haber cambiado de personaje durante el retardo.
-            if (!charElement.classList.contains('active') ||
-                charElement.dataset.character !== characterKey) return;
+            if (!charElement.classList.contains('active') || charElement.dataset.character !== characterKey) return;
 
             charElement.style.setProperty('--anime-fall-duration', `${duration}ms`);
             void charElement.offsetWidth;
             charElement.classList.add('character-anime-fall');
 
-            this.playSound(
-                options.sound || 'assets/audio/sfx/sfx_caida_anime_edu.mp3',
-                { volume: options.volume !== undefined ? options.volume : 0.82 }
-            );
+            this.playSound(options.sound || 'assets/audio/sfx/sfx_caida_anime_edu.mp3', {
+                volume: options.volume !== undefined ? options.volume : 0.82,
+            });
 
             charElement._animeFallImpactTimer = setTimeout(() => {
                 if (window.Juice) window.Juice.shake(4, 170);
@@ -6365,9 +7020,7 @@ class VisualNovelEngine {
         charElement._animeFallImpactTimer = null;
         charElement._animeFallEndTimer = null;
         charElement.classList.remove('character-anime-fall');
-        [
-            '--anime-fall-duration'
-        ].forEach(property => charElement.style.removeProperty(property));
+        ['--anime-fall-duration'].forEach((property) => charElement.style.removeProperty(property));
     }
 
     triggerCharacterGlitch(characterName, position, duration = 1350) {
@@ -6426,7 +7079,7 @@ class VisualNovelEngine {
     }
 
     clearAdvanceBoundCharacterEffects() {
-        document.querySelectorAll('.dialogue-glitch-loop').forEach(element => {
+        document.querySelectorAll('.dialogue-glitch-loop').forEach((element) => {
             element.classList.remove('dialogue-glitch-loop');
         });
         for (const [position, entry] of this._characterPoseAnimations) {
@@ -6462,7 +7115,7 @@ class VisualNovelEngine {
         const fullPath = this.cacheBustAsset(videoPath);
         if (video.src !== fullPath && !video.src.endsWith(videoPath)) {
             video.src = fullPath;
-            video.play().catch(e => console.warn('Error auto-playing character video:', e));
+            video.play().catch((e) => console.warn('Error auto-playing character video:', e));
         }
     }
 
@@ -6478,19 +7131,29 @@ class VisualNovelEngine {
         this.stopCharacterFrameAnimation(position, false);
         if (this.stageCharacters) delete this.stageCharacters[position];
 
-        ['_exitTimer', '_enterTimer', '_poseTransitionTimer', '_contactGlitchTimer', '_fullSignalGlitchTimer']
-            .forEach(timerKey => {
+        ['_exitTimer', '_enterTimer', '_poseTransitionTimer', '_contactGlitchTimer', '_fullSignalGlitchTimer'].forEach(
+            (timerKey) => {
                 clearTimeout(charElement[timerKey]);
                 charElement[timerKey] = null;
-            });
+            },
+        );
 
         [...charElement.classList]
-            .filter(className => className.startsWith('pose-') ||
-                className.startsWith('char-enter-') ||
-                ['active', 'speaking', 'char-exit-fade', 'contact-glitch',
-                    'full-signal-glitch', 'dialogue-glitch-loop',
-                    'character-hidden'].includes(className))
-            .forEach(className => charElement.classList.remove(className));
+            .filter(
+                (className) =>
+                    className.startsWith('pose-') ||
+                    className.startsWith('char-enter-') ||
+                    [
+                        'active',
+                        'speaking',
+                        'char-exit-fade',
+                        'contact-glitch',
+                        'full-signal-glitch',
+                        'dialogue-glitch-loop',
+                        'character-hidden',
+                    ].includes(className),
+            )
+            .forEach((className) => charElement.classList.remove(className));
 
         charElement.style.backgroundImage = '';
         charElement.style.removeProperty('--contact-glitch-duration');
@@ -6500,8 +7163,8 @@ class VisualNovelEngine {
         delete charElement.dataset.poseSrc;
         delete charElement.dataset.frameSrc;
         delete charElement.dataset.poseTransition;
-        charElement.querySelectorAll(':scope > .character-pose-ghost').forEach(ghost => ghost.remove());
-        charElement.querySelectorAll(':scope > .character-eye-layer').forEach(layer => layer.remove());
+        charElement.querySelectorAll(':scope > .character-pose-ghost').forEach((ghost) => ghost.remove());
+        charElement.querySelectorAll(':scope > .character-eye-layer').forEach((layer) => layer.remove());
 
         const videoContainer = charElement.querySelector('.character-video-container');
         if (videoContainer) {
@@ -6568,7 +7231,7 @@ class VisualNovelEngine {
     //   que se mostró; si además se da position, solo quita si coincide).
     // - position (sin characterName): vacía directamente ese hueco (left/right/center).
     // Si no se indica ninguno, no hace nada.
-    removeCharacter(characterName, position, exit = null) {
+    removeCharacter(characterName, position, exit = null, suppressLayout = false) {
         const clearSlot = (pos) => {
             const el = document.getElementById(`character-${pos}`);
             if (!el) return;
@@ -6604,24 +7267,30 @@ class VisualNovelEngine {
                 if (this.characterPositions[k] === position) delete this.characterPositions[k];
             }
         }
-        this.layoutCharacters();
+        if (!suppressLayout) {
+            this.layoutCharacters();
+        }
     }
 
     // Todo cambio real de fondo inaugura una composición nueva. Vaciar los
     // tres huecos mediante removeCharacter evita que un sprite, una animación
     // o una pose oculta sobrevivan accidentalmente desde el fondo anterior.
     removeAllCharacters() {
-        ['left', 'center', 'right'].forEach(position => {
-            this.removeCharacter(null, position);
+        ['left', 'center', 'right'].forEach((position) => {
+            this.removeCharacter(null, position, null, true);
         });
+        this.layoutCharacters();
         this.speakingCharacter = null;
         this.speakingPosition = null;
     }
 
     focusCharacter(characterName, position) {
         const charElement = document.getElementById(`character-${position}`);
-        if (charElement && charElement.classList.contains('active')
-            && !charElement.classList.contains('character-hidden')) {
+        if (
+            charElement &&
+            charElement.classList.contains('active') &&
+            !charElement.classList.contains('character-hidden')
+        ) {
             charElement.classList.add('speaking');
         }
     }
@@ -6643,7 +7312,7 @@ class VisualNovelEngine {
         // con blanco lo convertía en lavanda (rgb(166,166,255)), alejándose del
         // color declarado. Se traduce a un azul celeste legible y saturado.
         const readableNamedColors = {
-            blue: '#4da3ff'
+            blue: '#4da3ff',
         };
         const inputColor = readableNamedColors[color.trim().toLowerCase()] || color;
         // Resolver cualquier formato CSS a RGB usando el canvas como parser.
@@ -6651,7 +7320,7 @@ class VisualNovelEngine {
             this._colorParser = document.createElement('canvas').getContext('2d');
         }
         const ctx = this._colorParser;
-        ctx.fillStyle = '#000';       // reset (si el color es inválido, queda este)
+        ctx.fillStyle = '#000'; // reset (si el color es inválido, queda este)
         ctx.fillStyle = inputColor;
         const resolved = ctx.fillStyle; // normalizado a #rrggbb o rgba(...)
         let r, g, b;
@@ -6662,7 +7331,9 @@ class VisualNovelEngine {
         } else {
             const m = resolved.match(/\d+/g);
             if (!m || m.length < 3) return '#ffcc00';
-            r = +m[0]; g = +m[1]; b = +m[2];
+            r = +m[0];
+            g = +m[1];
+            b = +m[2];
         }
         const lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
         if (lum < 0.55) {
@@ -6674,13 +7345,139 @@ class VisualNovelEngine {
         return `rgb(${r}, ${g}, ${b})`;
     }
 
+    // Preload suave de un path de audio. Sirve para deducir decodificación y
+    // URL antes del primer play; la promesa queda en caché y reutiliza esa
+    // precarga para siguientes llamadas del mismo source.
+    preloadAudio(path) {
+        const src = this.cacheBustAsset(path);
+        const cached = this.audioPreloadCache.get(src);
+        if (cached) return cached;
+
+        const audio = new Audio();
+        audio.preload = 'auto';
+        const ready = new Promise((resolve) => {
+            const done = () => {
+                audio.removeEventListener('canplaythrough', done);
+                audio.removeEventListener('loadeddata', done);
+                audio.removeEventListener('error', fail);
+                resolve();
+            };
+            const fail = () => {
+                this.audioPreloadCache.delete(src);
+                audio.removeEventListener('canplaythrough', done);
+                audio.removeEventListener('loadeddata', done);
+                audio.removeEventListener('error', fail);
+                resolve();
+            };
+            audio.addEventListener('canplaythrough', done);
+            audio.addEventListener('loadeddata', done);
+            audio.addEventListener('error', fail);
+            audio.src = src;
+            if (audio.readyState >= 2) {
+                done();
+            }
+        });
+
+        this.audioPreloadCache.set(src, ready);
+        return ready;
+    }
+
+    _audioPoolKey(soundPath) {
+        const normalized = String(soundPath || '')
+            .replace(/\\/g, '/')
+            .toLowerCase();
+        return `__short_by_path:${normalized}`;
+    }
+
+    _acquireShortAudioFromPool(poolKey) {
+        const pool = this.audioShortPool.get(poolKey);
+        if (!pool || pool.length === 0) return null;
+
+        while (pool.length > 0) {
+            const candidate = pool.pop();
+            if (!candidate) continue;
+            if (!candidate.paused || candidate._stopping) continue;
+            return candidate;
+        }
+
+        if (pool.length === 0) this.audioShortPool.delete(poolKey);
+        return null;
+    }
+
+    _releaseShortAudioToPool(audio, poolKey) {
+        if (!audio || !poolKey) return;
+
+        if (audio._fadeInterval) {
+            clearInterval(audio._fadeInterval);
+            audio._fadeInterval = null;
+        }
+
+        try {
+            audio.pause();
+        } catch (error) {}
+        try {
+            audio.currentTime = 0;
+        } catch (error) {}
+        audio.volume = 0;
+
+        const pool = this.audioShortPool.get(poolKey) || [];
+        const maxPoolSize = Number.isFinite(this.maxAudioPoolPerSource)
+            ? Math.max(0, Math.floor(this.maxAudioPoolPerSource))
+            : 3;
+        if (pool.length >= maxPoolSize) {
+            try {
+                audio.removeAttribute('src');
+            } catch (error) {}
+            try {
+                audio.load();
+            } catch (error) {}
+            return;
+        }
+
+        audio._poolKey = poolKey;
+        audio._pooled = true;
+        pool.push(audio);
+        this.audioShortPool.set(poolKey, pool);
+    }
+
+    _drainAudioShortPool() {
+        for (const pool of this.audioShortPool.values()) {
+            for (const audio of pool) {
+                try {
+                    if (audio._fadeInterval) {
+                        clearInterval(audio._fadeInterval);
+                        audio._fadeInterval = null;
+                    }
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.removeAttribute('src');
+                    audio.load();
+                } catch (error) {}
+            }
+        }
+        this.audioShortPool.clear();
+    }
+
+    _snapshotForHistory(value) {
+        if (value === undefined || value === null) return value;
+        if (typeof structuredClone === 'function') {
+            try {
+                return structuredClone(value);
+            } catch (error) {}
+        }
+        try {
+            return JSON.parse(JSON.stringify(value));
+        } catch (error) {
+            return value;
+        }
+    }
+
     // Factor de volumen del panel de Configuración (0..1, persistido).
     volFactor(kind) {
         const raw = localStorage.getItem(kind === 'music' ? 'illo_vol_music' : 'illo_vol_sfx');
         const v = parseFloat(raw);
         return isNaN(v) ? 1 : Math.max(0, Math.min(1, v));
     }
-
     // Reaplicar los ajustes de volumen a todo lo que esté sonando (los fades
     // en curso se dejan terminar con su objetivo antiguo; caso raro y breve).
     applyVolumeSettings() {
@@ -6690,48 +7487,93 @@ class VisualNovelEngine {
         };
         apply(this.currentMusic);
         for (const id in this.audioInstances) apply(this.audioInstances[id]);
+        for (const audio of this.loopedAudioByPath.values()) apply(audio);
     }
 
     playSound(soundPath, options = {}) {
-        const {
-            volume = 1.0,
-            loop = false,
-            autoPlay = true,
-            id = null,
-            fadeIn = 0
-        } = options;
+        const { volume = 1.0, loop = false, autoPlay = true, id = null, fadeIn = 0 } = options;
+        const resolvedSoundPath = this.cacheBustAsset(soundPath);
+        const explicitSoundId = id != null ? String(id) : null;
+        const explicitSoundIdKey = explicitSoundId ? explicitSoundId.toLowerCase() : null;
+        const normalizedSoundPath = String(resolvedSoundPath || '')
+            .replace(/\\/g, '/')
+            .toLowerCase();
+        const soundId = explicitSoundIdKey || '';
+        const isMusic =
+            loop ||
+            normalizedSoundPath.includes('/audio/music/') ||
+            ['bg_music', 'music'].includes(soundId) ||
+            soundId.startsWith('menu');
+        const loopPoolKey = !explicitSoundIdKey && loop ? `__looped_by_path:${normalizedSoundPath}` : null;
+        const loopPool = loopPoolKey ? this.loopedAudioByPath.get(loopPoolKey) : null;
+        const shortPoolKey =
+            !explicitSoundIdKey && !loop && !isMusic && normalizedSoundPath
+                ? this._audioPoolKey(normalizedSoundPath)
+                : null;
 
         // Toda escena declara su propia música para que se pueda saltar directo a
         // ella (petición de José). Eso significa repetir la MISMA pista escena
         // tras escena, así que declararla no puede reiniciarla: si ya suena ese
         // id con esa misma ruta, se deja correr y solo se ajusta el volumen.
-        if (id) {
-            const sonando = this.audioInstances[id];
-            if (sonando && sonando._srcPath === soundPath && !sonando._stopping && !sonando.ended && !sonando.paused) {
+        if (explicitSoundIdKey) {
+            const sonando = this.audioInstances[explicitSoundIdKey];
+            if (sonando && sonando._srcPath === resolvedSoundPath && !sonando._stopping && !sonando.ended) {
                 sonando._baseVol = volume;
                 sonando.loop = loop;
                 if (!sonando._fadeInterval) {
                     const f = this.volFactor(sonando._volKind || 'music');
                     sonando.volume = Math.max(0, Math.min(1, volume * f));
                 }
+                if (autoPlay && sonando.paused) {
+                    sonando.play().catch(() => {});
+                }
                 return sonando;
             }
+        } else if (
+            loopPoolKey &&
+            loopPool &&
+            loopPool._srcPath === resolvedSoundPath &&
+            !loopPool._stopping &&
+            !loopPool.ended
+        ) {
+            loopPool._baseVol = volume;
+            if (!loopPool._fadeInterval) {
+                const f = this.volFactor(loopPool._volKind || 'music');
+                loopPool.volume = Math.max(0, Math.min(1, volume * f));
+            }
+            if (autoPlay && loopPool.paused) {
+                loopPool.play().catch(() => {});
+            }
+            return loopPool;
         }
 
-        const audio = new Audio(soundPath);
-        audio._srcPath = soundPath;
+        this.preloadAudio(resolvedSoundPath).catch(() => {});
+
+        const pooledAudio = this._acquireShortAudioFromPool(shortPoolKey);
+        const audio = pooledAudio || (shortPoolKey ? new Audio() : new Audio(resolvedSoundPath));
+        if (shortPoolKey) {
+            audio._pooled = true;
+            audio._poolKey = shortPoolKey;
+            audio._stopping = false;
+            try {
+                audio.src = resolvedSoundPath;
+            } catch (_) {}
+            if (audio._fadeInterval) {
+                clearInterval(audio._fadeInterval);
+                audio._fadeInterval = null;
+            }
+            audio._ended = false;
+        }
+        audio._srcPath = resolvedSoundPath;
         audio.preload = 'auto';
         // Música = bucles y pistas del menú; el resto cuenta como efecto.
-        const normalizedSoundPath = String(soundPath || '').replace(/\\/g, '/').toLowerCase();
-        const soundId = String(id || '').toLowerCase();
-        const isMusic = loop || normalizedSoundPath.includes('/audio/music/') ||
-            ['bg_music', 'music'].includes(soundId) || soundId.startsWith('menu');
         const volKind = isMusic ? 'music' : 'sfx';
         audio._baseVol = volume;
         audio._volKind = volKind;
         const factor = this.volFactor(volKind);
         audio.volume = Math.max(0, Math.min(1, volume * factor)); // Clamp 0-1
         audio.loop = loop;
+        audio._poolKey = shortPoolKey || null;
 
         // Si es música (loop), guardar como música actual
         if (loop) {
@@ -6739,27 +7581,47 @@ class VisualNovelEngine {
         }
 
         // Rastrear por ID si se proporciona.
-        if (id) {
+        if (explicitSoundIdKey) {
             // Si ya había un audio con este id, DESVANECERLO antes de reemplazarlo.
             // Si no, el track viejo queda huérfano (sin referencia) sonando en
             // bucle para siempre y se solapa con el nuevo (por eso las músicas
             // "no se paraban" al cambiar de escena). Un fade corto evita cortes
             // secos y, si el nuevo entra con fadeIn, queda un crossfade limpio.
-            const prev = this.audioInstances[id];
+            const prev = this.audioInstances[explicitSoundIdKey];
             if (prev && prev !== audio) {
                 this.fadeOutAndStop(prev, 350);
             }
-            this.audioInstances[id] = audio;
+            this.audioInstances[explicitSoundIdKey] = audio;
+        } else if (loopPoolKey) {
+            if (loopPool) this.loopedAudioByPath.delete(loopPoolKey);
+            this.loopedAudioByPath.set(loopPoolKey, audio);
         }
 
         // Si el navegador no puede cargar o decodificar una pista, no dejar su
         // referencia averiada bloqueando futuros intentos con el mismo ID.
-        audio.addEventListener('error', () => {
-            console.error(`No se pudo cargar el audio: ${soundPath}`, audio.error || 'error desconocido');
-            this.forgetAudio(audio);
-        }, { once: true });
+        audio.addEventListener(
+            'error',
+            () => {
+                console.error(`No se pudo cargar el audio: ${soundPath}`, audio.error || 'error desconocido');
+                this.forgetAudio(audio);
+                if (audio._poolKey) {
+                    this._releaseShortAudioToPool(audio, audio._poolKey);
+                }
+            },
+            { once: true },
+        );
         if (!loop) {
-            audio.addEventListener('ended', () => this.forgetAudio(audio), { once: true });
+            audio.addEventListener(
+                'ended',
+                () => {
+                    if (audio._poolKey) {
+                        this._releaseShortAudioToPool(audio, audio._poolKey);
+                        return;
+                    }
+                    this.forgetAudio(audio);
+                },
+                { once: true },
+            );
         }
 
         // Fade in si se especifica. El intervalo se guarda en audio._fadeInterval
@@ -6773,17 +7635,19 @@ class VisualNovelEngine {
             audio._fadeInterval = setInterval(() => {
                 const progress = Math.min((Date.now() - startTime) / fadeIn, 1);
                 audio.volume = targetVolume * progress;
-                if (progress >= 1) { clearInterval(audio._fadeInterval); audio._fadeInterval = null; }
+                if (progress >= 1) {
+                    clearInterval(audio._fadeInterval);
+                    audio._fadeInterval = null;
+                }
             }, 20);
         }
 
         if (autoPlay) {
-            audio.play().catch(e => console.log('Error reproduciendo sonido:', e));
+            audio.play().catch((e) => console.log('Error reproduciendo sonido:', e));
         }
 
         return audio;
     }
-
     // Elimina únicamente las referencias que todavía apuntan a este elemento.
     // El audio puede continuar su fade con una referencia local, pero una nueva
     // acción con el mismo ID debe poder crear y arrancar otra pista enseguida.
@@ -6792,6 +7656,9 @@ class VisualNovelEngine {
         if (this.currentMusic === audio) this.currentMusic = null;
         for (const [id, instance] of Object.entries(this.audioInstances || {})) {
             if (instance === audio) delete this.audioInstances[id];
+        }
+        for (const [path, instance] of this.loopedAudioByPath.entries()) {
+            if (instance === audio) this.loopedAudioByPath.delete(path);
         }
     }
 
@@ -6804,10 +7671,21 @@ class VisualNovelEngine {
         this.forgetAudio(audio);
         // Al terminar se libera el src: el elemento descartado no debe seguir
         // reteniendo su conexión de streaming (límite de 6 por host).
-        const release = (a) => { try { a.removeAttribute('src'); a.load(); } catch (e) {} };
-        if (audio._fadeInterval) { clearInterval(audio._fadeInterval); audio._fadeInterval = null; }
+        const release = (a) => {
+            try {
+                a.removeAttribute('src');
+                a.load();
+            } catch (e) {}
+        };
+        if (audio._fadeInterval) {
+            clearInterval(audio._fadeInterval);
+            audio._fadeInterval = null;
+        }
         if (ms <= 0 || audio.paused) {
-            try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+            try {
+                audio.pause();
+                audio.currentTime = 0;
+            } catch (e) {}
             release(audio);
             return;
         }
@@ -6819,7 +7697,10 @@ class VisualNovelEngine {
             if (progress >= 1) {
                 clearInterval(audio._fadeInterval);
                 audio._fadeInterval = null;
-                try { audio.pause(); audio.currentTime = 0; } catch (e) {}
+                try {
+                    audio.pause();
+                    audio.currentTime = 0;
+                } catch (e) {}
                 release(audio);
             }
         }, 20);
@@ -6827,10 +7708,11 @@ class VisualNovelEngine {
 
     stopSound(audioOrId, fadeOut = 0) {
         let audio = audioOrId;
+        const soundKey = typeof audioOrId === 'string' ? audioOrId.toLowerCase() : null;
 
         // Si es string, buscar por ID
         if (typeof audioOrId === 'string') {
-            audio = this.audioInstances[audioOrId];
+            audio = soundKey ? this.audioInstances[soundKey] : null;
             // Parar una cama que todavía no llegó a arrancar es una operación
             // idempotente (pasa al entrar/salir rápido del menú). No ensuciar la
             // consola: los fallos reales de carga ya se notifican en playSound.
@@ -6848,14 +7730,26 @@ class VisualNovelEngine {
         // largas. Estos elementos nunca se reutilizan (cada playSound crea uno).
         const kill = (a) => {
             if (!a) return;
-            if (a._fadeInterval) { clearInterval(a._fadeInterval); a._fadeInterval = null; }
-            try { a.pause(); a.currentTime = 0; } catch (e) {}
-            try { a.removeAttribute('src'); a.load(); } catch (e) {}
+            if (a._fadeInterval) {
+                clearInterval(a._fadeInterval);
+                a._fadeInterval = null;
+            }
+            try {
+                a.pause();
+                a.currentTime = 0;
+            } catch (e) {}
+            try {
+                a.removeAttribute('src');
+                a.load();
+            } catch (e) {}
         };
         kill(this.currentMusic);
         this.currentMusic = null;
         for (const id in this.audioInstances) kill(this.audioInstances[id]);
         this.audioInstances = {};
+        for (const audio of this.loopedAudioByPath.values()) kill(audio);
+        this.loopedAudioByPath.clear();
+        this._drainAudioShortPool();
         // También los beds WebAudio de juice.js (heartbeat/rumble): "parar todo"
         // tiene que significar TODO, o un latido huérfano se cuela en la
         // siguiente escena.
@@ -6864,9 +7758,10 @@ class VisualNovelEngine {
 
     pauseSound(audioOrId) {
         let audio = audioOrId;
+        const soundKey = typeof audioOrId === 'string' ? audioOrId.toLowerCase() : null;
 
         if (typeof audioOrId === 'string') {
-            audio = this.audioInstances[audioOrId];
+            audio = soundKey ? this.audioInstances[soundKey] : null;
         }
 
         if (audio) {
@@ -6876,21 +7771,23 @@ class VisualNovelEngine {
 
     resumeSound(audioOrId) {
         let audio = audioOrId;
+        const soundKey = typeof audioOrId === 'string' ? audioOrId.toLowerCase() : null;
 
         if (typeof audioOrId === 'string') {
-            audio = this.audioInstances[audioOrId];
+            audio = soundKey ? this.audioInstances[soundKey] : null;
         }
 
         if (audio) {
-            audio.play().catch(e => console.log('Error reanudando sonido:', e));
+            audio.play().catch((e) => console.log('Error reanudando sonido:', e));
         }
     }
 
     setVolume(audioOrId, volume) {
         let audio = audioOrId;
+        const soundKey = typeof audioOrId === 'string' ? audioOrId.toLowerCase() : null;
 
         if (typeof audioOrId === 'string') {
-            audio = this.audioInstances[audioOrId];
+            audio = soundKey ? this.audioInstances[soundKey] : null;
         }
 
         if (audio) {
@@ -6903,11 +7800,11 @@ class VisualNovelEngine {
     }
 
     wait(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+        return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     waitForActionClick() {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const clickHandler = () => {
                 document.removeEventListener('click', clickHandler);
                 resolve();
@@ -6928,23 +7825,50 @@ class VisualNovelEngine {
             .toLowerCase()
             .trim();
         const aliases = {
-            fear: 'fear', miedo: 'fear', scared: 'fear', afraid: 'fear', terrified: 'fear',
-            anger: 'anger', angry: 'anger', agresividad: 'anger', aggressive: 'anger',
-            enfado: 'anger', enfadado: 'anger', furia: 'anger', furious: 'anger',
-            sadness: 'sadness', sad: 'sadness', tristeza: 'sadness', triste: 'sadness',
-            joy: 'joy', alegria: 'joy', alegre: 'joy', felicidad: 'joy',
-            surprise: 'surprise', surprised: 'surprise', sorpresa: 'surprise', sorprendido: 'surprise',
-            nervous: 'nervous', nervousness: 'nervous', nervios: 'nervous', nervioso: 'nervous',
-            whisper: 'whisper', susurro: 'whisper', susurrando: 'whisper',
-            scream: 'scream', grito: 'scream', alarido: 'scream', shout: 'scream',
-            estridente: 'scream'
+            fear: 'fear',
+            miedo: 'fear',
+            scared: 'fear',
+            afraid: 'fear',
+            terrified: 'fear',
+            anger: 'anger',
+            angry: 'anger',
+            agresividad: 'anger',
+            aggressive: 'anger',
+            enfado: 'anger',
+            enfadado: 'anger',
+            furia: 'anger',
+            furious: 'anger',
+            sadness: 'sadness',
+            sad: 'sadness',
+            tristeza: 'sadness',
+            triste: 'sadness',
+            joy: 'joy',
+            alegria: 'joy',
+            alegre: 'joy',
+            felicidad: 'joy',
+            surprise: 'surprise',
+            surprised: 'surprise',
+            sorpresa: 'surprise',
+            sorprendido: 'surprise',
+            nervous: 'nervous',
+            nervousness: 'nervous',
+            nervios: 'nervous',
+            nervioso: 'nervous',
+            whisper: 'whisper',
+            susurro: 'whisper',
+            susurrando: 'whisper',
+            scream: 'scream',
+            grito: 'scream',
+            alarido: 'scream',
+            shout: 'scream',
+            estridente: 'scream',
         };
         return aliases[key] || null;
     }
 
     resolveDialogEmotion(line, speakerName) {
-        const hasExplicitEmotion = line.emotion !== undefined ||
-            line.emocion !== undefined || line.textEffect !== undefined;
+        const hasExplicitEmotion =
+            line.emotion !== undefined || line.emocion !== undefined || line.textEffect !== undefined;
 
         // Las animaciones son momentos de énfasis, no el estado normal del
         // diálogo. Si el JSON no pide ninguna, la línea permanece estática.
@@ -6954,7 +7878,9 @@ class VisualNovelEngine {
 
         if (line.textAnimation !== undefined) {
             const animation = line.textAnimation;
-            const normalized = String(animation ?? '').toLowerCase().trim();
+            const normalized = String(animation ?? '')
+                .toLowerCase()
+                .trim();
             if (animation === false || ['none', 'normal', 'neutral', 'ninguna'].includes(normalized)) {
                 return null;
             }
@@ -6965,7 +7891,9 @@ class VisualNovelEngine {
 
         if (hasExplicitEmotion) {
             const value = line.emotion ?? line.emocion ?? line.textEffect;
-            const normalized = String(value ?? '').toLowerCase().trim();
+            const normalized = String(value ?? '')
+                .toLowerCase()
+                .trim();
             if (value === false || ['none', 'normal', 'neutral', 'ninguna'].includes(normalized)) {
                 return null;
             }
@@ -6980,28 +7908,41 @@ class VisualNovelEngine {
 
         const pose = speaker.dataset.pose || '';
         const poseEmotions = {
-            alarmed: 'fear', worried: 'fear', preocupado: 'fear', scared: 'fear',
-            terrified: 'fear', error: 'fear', sospecha: 'fear',
-            angry: 'anger', enfadado: 'anger', crazy: 'anger', picado: 'anger',
-            aggressive: 'anger', furious: 'anger',
-            sad: 'sadness', bua: 'sadness', derrumbe: 'sadness', herido: 'sadness',
+            alarmed: 'fear',
+            worried: 'fear',
+            preocupado: 'fear',
+            scared: 'fear',
+            terrified: 'fear',
+            error: 'fear',
+            sospecha: 'fear',
+            angry: 'anger',
+            enfadado: 'anger',
+            crazy: 'anger',
+            picado: 'anger',
+            aggressive: 'anger',
+            furious: 'anger',
+            sad: 'sadness',
+            bua: 'sadness',
+            derrumbe: 'sadness',
+            herido: 'sadness',
             crying: 'sadness',
-            contento: 'joy', riendo: 'joy', giggle: 'joy',
-            clapping: 'joy', saludando: 'joy',
-            surprised: 'surprise', shocked: 'surprise', curious: 'surprise',
-            embarrassed: 'nervous'
+            contento: 'joy',
+            riendo: 'joy',
+            giggle: 'joy',
+            clapping: 'joy',
+            saludando: 'joy',
+            surprised: 'surprise',
+            shocked: 'surprise',
+            curious: 'surprise',
+            embarrassed: 'nervous',
         };
         return poseEmotions[pose] || null;
     }
 
     limitRepeatedDialogEmotion(line, requestedEmotion) {
         const emotionCharacter = this.getCharacterKey(line.character);
-        const emotionKey = requestedEmotion
-            ? `${emotionCharacter}:${requestedEmotion}`
-            : null;
-        const effectiveEmotion = emotionKey === this._lastDialogEmotionKey
-            ? null
-            : requestedEmotion;
+        const emotionKey = requestedEmotion ? `${emotionCharacter}:${requestedEmotion}` : null;
+        const effectiveEmotion = emotionKey === this._lastDialogEmotionKey ? null : requestedEmotion;
         this._lastDialogEmotionKey = emotionKey;
         return effectiveEmotion;
     }
@@ -7012,16 +7953,18 @@ class VisualNovelEngine {
     splitTextGraphemes(value = '') {
         const text = String(value || '');
         return this._textSegmenter
-            ? Array.from(this._textSegmenter.segment(text), part => part.segment)
+            ? Array.from(this._textSegmenter.segment(text), (part) => part.segment)
             : Array.from(text);
     }
 
     getTextSpeedMultiplier(line = {}) {
-        return line.textSpeed === 'slow' ? 2.2
-             : line.textSpeed === 'fast' ? 0.45
-             : (typeof line.textSpeed === 'number' && Number.isFinite(line.textSpeed))
-             ? Math.max(0, line.textSpeed)
-             : 1;
+        return line.textSpeed === 'slow'
+            ? 2.2
+            : line.textSpeed === 'fast'
+              ? 0.45
+              : typeof line.textSpeed === 'number' && Number.isFinite(line.textSpeed)
+                ? Math.max(0, line.textSpeed)
+                : 1;
     }
 
     getTextPunctuationPause(character) {
@@ -7036,9 +7979,7 @@ class VisualNovelEngine {
     getTextCharacterDelay(character, line = {}, baseDelay = this.typingSpeed) {
         const safeBase = Math.max(0, Number(baseDelay) || 0);
         const speedMultiplier = this.getTextSpeedMultiplier(line);
-        return (
-            safeBase + this.getTextPunctuationPause(character) * (safeBase / 50)
-        ) * speedMultiplier;
+        return (safeBase + this.getTextPunctuationPause(character) * (safeBase / 50)) * speedMultiplier;
     }
 
     getExplicitTextDuration(line = {}) {
@@ -7072,7 +8013,7 @@ class VisualNovelEngine {
                     speedMultiplier,
                     typingSpeedMs: this.typingSpeed,
                     isInstant: exactDurationMs === 0,
-                    finishOnLastCharacter: true
+                    finishOnLastCharacter: true,
                 };
             }
 
@@ -7090,16 +8031,16 @@ class VisualNovelEngine {
                     speedMultiplier,
                     typingSpeedMs: this.typingSpeed,
                     isInstant: exactDurationMs === 0,
-                    finishOnLastCharacter: true
+                    finishOnLastCharacter: true,
                 };
             }
 
             const rhythmWeights = graphemes
                 .slice(0, -1)
-                .map(character => 50 + this.getTextPunctuationPause(character));
+                .map((character) => 50 + this.getTextPunctuationPause(character));
             const totalWeight = rhythmWeights.reduce((sum, weight) => sum + weight, 0);
             const scale = totalWeight > 0 ? exactDurationMs / totalWeight : 0;
-            const delaysAfter = rhythmWeights.map(weight => weight * scale);
+            const delaysAfter = rhythmWeights.map((weight) => weight * scale);
             delaysAfter.push(0);
             return {
                 graphemes,
@@ -7111,13 +8052,11 @@ class VisualNovelEngine {
                 speedMultiplier,
                 typingSpeedMs: this.typingSpeed,
                 isInstant: exactDurationMs === 0,
-                finishOnLastCharacter: true
+                finishOnLastCharacter: true,
             };
         }
 
-        const delaysAfter = graphemes.map(character =>
-            this.getTextCharacterDelay(character, line)
-        );
+        const delaysAfter = graphemes.map((character) => this.getTextCharacterDelay(character, line));
         const visibleDurationMs = delaysAfter
             .slice(0, Math.max(0, delaysAfter.length - 1))
             .reduce((sum, delay) => sum + delay, 0);
@@ -7132,7 +8071,7 @@ class VisualNovelEngine {
             speedMultiplier,
             typingSpeedMs: this.typingSpeed,
             isInstant: this.typingSpeed <= 0 || speedMultiplier <= 0,
-            finishOnLastCharacter: false
+            finishOnLastCharacter: false,
         };
     }
 
@@ -7145,9 +8084,7 @@ class VisualNovelEngine {
     // Se reinicia al comenzar cada línea para que nunca se filtre a la siguiente.
     setLineTextDuration(duration) {
         const parsed = Number(duration);
-        this._lineTextDurationOverride = Number.isFinite(parsed) && parsed >= 0
-            ? parsed
-            : null;
+        this._lineTextDurationOverride = Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
         if (this._lineTextDurationOverride === null) {
             console.warn('setTextDuration requiere milisegundos mayores o iguales que 0');
         }
@@ -7177,22 +8114,16 @@ class VisualNovelEngine {
         const identityName = this.getCharacterKey(line.character);
         const speakerName = this.getCharacterKey(line.speakingAs || line.character);
         const speakerPosition = this.characterPositions[speakerName];
-        const speakerElement = speakerPosition
-            ? document.getElementById(`character-${speakerPosition}`)
-            : null;
+        const speakerElement = speakerPosition ? document.getElementById(`character-${speakerPosition}`) : null;
         const identityPosition = this.characterPositions[identityName];
-        const portraitElement = identityPosition
-            ? document.getElementById(`character-${identityPosition}`)
-            : null;
+        const portraitElement = identityPosition ? document.getElementById(`character-${identityPosition}`) : null;
         const humanPortrait = this.humanDialogPortrait(identityName);
-        const useHumanPortrait = Boolean(
-            humanPortrait && !this.isFurryIdentityRevealed(identityName)
-        );
+        const useHumanPortrait = Boolean(humanPortrait && !this.isFurryIdentityRevealed(identityName));
         const requestedDialogEmotion = this.resolveDialogEmotion(line, speakerName);
         const dialogEmotion = this.limitRepeatedDialogEmotion(line, requestedDialogEmotion);
-        const emotionClasses = [
-            'fear', 'anger', 'sadness', 'joy', 'surprise', 'nervous', 'whisper', 'scream'
-        ].map(emotion => `dialog-emotion-${emotion}`);
+        const emotionClasses = ['fear', 'anger', 'sadness', 'joy', 'surprise', 'nervous', 'whisper', 'scream'].map(
+            (emotion) => `dialog-emotion-${emotion}`,
+        );
         dialogText.classList.remove(...emotionClasses);
         if (dialogEmotion) dialogText.classList.add(`dialog-emotion-${dialogEmotion}`);
         if (speakerCursor) {
@@ -7201,8 +8132,12 @@ class VisualNovelEngine {
                 speakerCursor._returnTimer = null;
             }
             speakerCursor.classList.remove(
-                'is-typing', 'is-waiting', 'is-following-text',
-                'is-returning', 'has-portrait', 'uses-human-portrait'
+                'is-typing',
+                'is-waiting',
+                'is-following-text',
+                'is-returning',
+                'has-portrait',
+                'uses-human-portrait',
             );
             speakerCursor.style.removeProperty('--cursor-follow-x');
             speakerCursor.style.removeProperty('--cursor-follow-y');
@@ -7223,24 +8158,20 @@ class VisualNovelEngine {
 
             if (!speakerCursorPortrait) return;
             if (speakerCursor) {
-                speakerCursor.dataset.pose = portraitElement?.dataset.pose
-                    || (data && data.defaultPose)
-                    || 'neutral';
+                speakerCursor.dataset.pose = portraitElement?.dataset.pose || (data && data.defaultPose) || 'neutral';
             }
             let portraitImage = useHumanPortrait
                 ? `url('${this.cacheBustAsset(humanPortrait)}')`
-                : (portraitElement?.style.backgroundImage || '');
+                : portraitElement?.style.backgroundImage || '';
             if (!portraitImage || portraitImage === 'none') {
                 const poses = data && data.poses;
                 const defaultPose = data && data.defaultPose;
-                const fallbackPose = poses && (
-                    (defaultPose && poses[defaultPose] && defaultPose) ||
-                    (poses.neutral && 'neutral') ||
-                    Object.keys(poses)[0]
-                );
-                const portraitPath = fallbackPose
-                    ? this.getCharacterPoseImage(data, fallbackPose)
-                    : null;
+                const fallbackPose =
+                    poses &&
+                    ((defaultPose && poses[defaultPose] && defaultPose) ||
+                        (poses.neutral && 'neutral') ||
+                        Object.keys(poses)[0]);
+                const portraitPath = fallbackPose ? this.getCharacterPoseImage(data, fallbackPose) : null;
                 if (portraitPath) {
                     portraitImage = `url('${this.cacheBustAsset(portraitPath)}')`;
                 }
@@ -7260,16 +8191,21 @@ class VisualNovelEngine {
             applySpeakerIdentity(null); // dorado por defecto mientras carga
             const nm = line.character;
             this.loadCharacter(identityName)
-                .then(d => {
-                    if (d) { if (characterName.textContent === nm) applySpeakerIdentity(d); }
-                    else { this._charColorMissing.add(identityName); }
+                .then((d) => {
+                    if (d) {
+                        if (characterName.textContent === nm) applySpeakerIdentity(d);
+                    } else {
+                        this._charColorMissing.add(identityName);
+                    }
                 })
-                .catch(() => { this._charColorMissing.add(identityName); });
+                .catch(() => {
+                    this._charColorMissing.add(identityName);
+                });
         }
 
         // Limpiar el estado "speaking" de TODOS los huecos (incluido center,
         // que antes se olvidaba: por eso el del centro no se apagaba al hablar otro).
-        ['left', 'center', 'right'].forEach(pos => {
+        ['left', 'center', 'right'].forEach((pos) => {
             const elem = document.getElementById(`character-${pos}`);
             if (elem) elem.classList.remove('speaking');
         });
@@ -7310,7 +8246,7 @@ class VisualNovelEngine {
         const text = line.text;
         const textTiming = this.calculateTextTiming(line);
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             let charIndex = 0;
             let timeoutId = null;
             let finished = false;
@@ -7328,7 +8264,7 @@ class VisualNovelEngine {
             // Escribir por grafemas evita partir emojis o caracteres compuestos.
             const splitText = (value) => this.splitTextGraphemes(value);
             let textOffset = 0;
-            const typingUnits = textTiming.graphemes.map(value => {
+            const typingUnits = textTiming.graphemes.map((value) => {
                 textOffset += value.length;
                 return { value, end: textOffset };
             });
@@ -7343,13 +8279,14 @@ class VisualNovelEngine {
                 brandRanges.push({
                     start: brandMatch.index,
                     end: brandMatch.index + brandMatch[0].length,
-                    className: brandMatch[0] === 'OMG'
-                        ? 'dialog-brand-omg'
-                        : brandMatch[0] === 'CLos'
-                        ? 'dialog-brand-clos'
-                        : brandMatch[0] === 'Incel'
-                        ? 'dialog-brand-incel'
-                        : 'dialog-brand-simsong'
+                    className:
+                        brandMatch[0] === 'OMG'
+                            ? 'dialog-brand-omg'
+                            : brandMatch[0] === 'CLos'
+                              ? 'dialog-brand-clos'
+                              : brandMatch[0] === 'Incel'
+                                ? 'dialog-brand-incel'
+                                : 'dialog-brand-simsong',
                 });
             }
 
@@ -7374,21 +8311,21 @@ class VisualNovelEngine {
                     const anchorRect = printAnchor.getBoundingClientRect();
                     // El hueco fijo del encabezado no se transforma con el marco:
                     // es una referencia estable incluso cuando el bocadillo crece
-                    // hacia arriba o cambia de lÃ­nea durante la escritura.
+                    // hacia arriba o cambia de línea durante la escritura.
                     const cursorHomeRect = speakerCursorSlot.getBoundingClientRect();
                     const layoutScaleX = cursorHomeRect.width / (speakerCursorSlot.offsetWidth || 58);
                     const layoutScaleY = cursorHomeRect.height / (speakerCursorSlot.offsetHeight || 58);
                     const targetX = anchorRect.left + 18;
-                    const targetY = anchorRect.top + (anchorRect.height / 2);
-                    const homeX = cursorHomeRect.left + (cursorHomeRect.width / 2);
-                    const homeY = cursorHomeRect.top + (cursorHomeRect.height / 2);
+                    const targetY = anchorRect.top + anchorRect.height / 2;
+                    const homeX = cursorHomeRect.left + cursorHomeRect.width / 2;
+                    const homeY = cursorHomeRect.top + cursorHomeRect.height / 2;
                     speakerCursor.style.setProperty(
                         '--cursor-follow-x',
-                        `${(targetX - homeX) / (layoutScaleX || 1)}px`
+                        `${(targetX - homeX) / (layoutScaleX || 1)}px`,
                     );
                     speakerCursor.style.setProperty(
                         '--cursor-follow-y',
-                        `${(targetY - homeY) / (layoutScaleY || 1)}px`
+                        `${(targetY - homeY) / (layoutScaleY || 1)}px`,
                     );
                     speakerCursor.classList.remove('is-returning', 'is-waiting');
                     speakerCursor.classList.add('is-following-text');
@@ -7419,20 +8356,17 @@ class VisualNovelEngine {
             const createLetter = (character, index) => {
                 const letter = document.createElement('span');
                 letter.className = 'dialog-letter';
-                const waveProgress = typingUnits.length > 1
-                    ? index / (typingUnits.length - 1)
-                    : 0;
-                const letterDelay = dialogEmotion === 'surprise'
-                    // Una sola ola recorre la frase completa. El desfase
-                    // antiguo reiniciaba el ciclo cada 14 caracteres y
-                    // dividía visualmente el diálogo en bloques.
-                    ? -(waveProgress * 0.95)
-                    : -((index % 14) * 0.035);
+                const waveProgress = typingUnits.length > 1 ? index / (typingUnits.length - 1) : 0;
+                const letterDelay =
+                    dialogEmotion === 'surprise'
+                        ? // Una sola ola recorre la frase completa. El desfase
+                          // antiguo reiniciaba el ciclo cada 14 caracteres y
+                          // dividía visualmente el diálogo en bloques.
+                          -(waveProgress * 0.95)
+                        : -((index % 14) * 0.035);
                 letter.style.setProperty('--letter-delay', `${letterDelay}s`);
                 if (dialogEmotion === 'scream') {
-                    const progress = typingUnits.length > 1
-                        ? index / (typingUnits.length - 1)
-                        : 1;
+                    const progress = typingUnits.length > 1 ? index / (typingUnits.length - 1) : 1;
                     // Crecimiento en curva: el inicio permanece pequeño y
                     // el final explota hasta casi llenar la caja de diálogo.
                     const fontSize = 12 + 56 * Math.pow(progress, 2.05);
@@ -7531,9 +8465,7 @@ class VisualNovelEngine {
                 let cursor = renderedLength;
                 let cursorParent = dialogText;
                 while (cursor < length) {
-                    const brand = brandRanges.find(range =>
-                        cursor >= range.start && cursor < range.end
-                    );
+                    const brand = brandRanges.find((range) => cursor >= range.start && cursor < range.end);
                     if (brand) {
                         if (!brand.element) {
                             brand.element = document.createElement('span');
@@ -7546,7 +8478,7 @@ class VisualNovelEngine {
                         continue;
                     }
 
-                    const nextBrand = brandRanges.find(range => range.start > cursor);
+                    const nextBrand = brandRanges.find((range) => range.start > cursor);
                     const end = Math.min(length, nextBrand ? nextBrand.start : length);
                     cursorParent = appendText(dialogText, text.slice(cursor, end));
                     cursor = end;
@@ -7638,9 +8570,8 @@ class VisualNovelEngine {
                 if (typingPaused) return;
                 if (
                     this.fastForward ||
-                    (textTiming.exactDurationMs === null && (
-                        this.typingSpeed <= 0 || this.getTextSpeedMultiplier(line) <= 0
-                    ))
+                    (textTiming.exactDurationMs === null &&
+                        (this.typingSpeed <= 0 || this.getTextSpeedMultiplier(line) <= 0))
                 ) {
                     finishTyping();
                     return;
@@ -7671,9 +8602,10 @@ class VisualNovelEngine {
                         return;
                     }
 
-                    const delay = textTiming.exactDurationMs !== null
-                        ? (textTiming.delaysAfter[unitIndex] || 0)
-                        : this.getTextCharacterDelay(ch, line);
+                    const delay =
+                        textTiming.exactDurationMs !== null
+                            ? textTiming.delaysAfter[unitIndex] || 0
+                            : this.getTextCharacterDelay(ch, line);
                     scheduleTypeChar(delay);
                 } else {
                     finishTyping();
@@ -7707,12 +8639,12 @@ class VisualNovelEngine {
     registerCall(scene) {
         if (!scene || !scene.title) return;
         const title = scene.title;
-        if (title.includes("Llamada a Edu") && !this.completedCalls.includes("edu")) {
-            this.completedCalls.push("edu");
-        } else if (title.includes("Llamada a Tony") && !this.completedCalls.includes("tony")) {
-            this.completedCalls.push("tony");
-        } else if (title.includes("Llamada a José") && !this.completedCalls.includes("jose")) {
-            this.completedCalls.push("jose");
+        if (title.includes('Llamada a Edu') && !this.completedCalls.includes('edu')) {
+            this.completedCalls.push('edu');
+        } else if (title.includes('Llamada a Tony') && !this.completedCalls.includes('tony')) {
+            this.completedCalls.push('tony');
+        } else if (title.includes('Llamada a José') && !this.completedCalls.includes('jose')) {
+            this.completedCalls.push('jose');
         }
     }
 
@@ -7720,16 +8652,16 @@ class VisualNovelEngine {
     isCallChoiceCompleted(choice) {
         if (!choice.nextScene || typeof choice.nextScene !== 'string') return false;
         const target = choice.nextScene;
-        if (target.includes("Llamada a Edu")) return this.completedCalls.includes("edu");
-        if (target.includes("Llamada a Tony")) return this.completedCalls.includes("tony");
-        if (target.includes("Llamada a José")) return this.completedCalls.includes("jose");
+        if (target.includes('Llamada a Edu')) return this.completedCalls.includes('edu');
+        if (target.includes('Llamada a Tony')) return this.completedCalls.includes('tony');
+        if (target.includes('Llamada a José')) return this.completedCalls.includes('jose');
         return false;
     }
 
     // Indica si una opción es una llamada a un amigo (destino de escena de llamada)
     isCallChoice(choice) {
         if (!choice || !choice.nextScene || typeof choice.nextScene !== 'string') return false;
-        return choice.nextScene.includes("Llamada a");
+        return choice.nextScene.includes('Llamada a');
     }
 
     // Regla del teléfono: Samu solo puede completar una llamada "real" por cada
@@ -7750,7 +8682,7 @@ class VisualNovelEngine {
         // - ocultar las llamadas ya realizadas
         // - ocultar "Investigar más" hasta completar las 3 llamadas
         // - ocultar rescates de personajes ya rescatados
-        const availableChoices = choices.filter(choice => {
+        const availableChoices = choices.filter((choice) => {
             if (this.isCallChoiceCompleted(choice)) return false;
             if (choice.requireAllCalls && this.completedCalls.length < 3) return false;
             if (choice.rescueTarget && this.rescued.includes(choice.rescueTarget)) return false;
@@ -7758,7 +8690,7 @@ class VisualNovelEngine {
             return true;
         });
 
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             // Se guarda el resolvedor para poder ABORTAR la elección desde fuera
             // (menú de escenas / retroceder). Sin esto, una pantalla de elección
             // deja el bucle esperando para siempre y no hay manera de salir de
@@ -7810,8 +8742,8 @@ class VisualNovelEngine {
             const hits = r.hits != null ? r.hits : 0;
             const maxHits = r.maxHits != null ? r.maxHits : 3;
             const acc = r.accuracy != null ? r.accuracy : null;
-            const clean = (acc != null) ? acc >= 0.9 : hits === 0;
-            const close = (acc != null) ? false : hits >= maxHits - 1;
+            const clean = acc != null ? acc >= 0.9 : hits === 0;
+            const close = acc != null ? false : hits >= maxHits - 1;
             if (cond.result === 'clean' && !clean) return false;
             if (cond.result === 'close' && !(close && !clean)) return false;
             if (cond.result === 'normal' && (clean || hits >= maxHits - 1)) return false;
@@ -7841,6 +8773,10 @@ class VisualNovelEngine {
             line = this.getCurrentLine();
         }
         if (!line) return false;
+
+        // Arrancar de forma anticipada la línea activa, útil para saltos de
+        // escena inmediatos y para no bloquear el siguiente tick.
+        void this.prefetchLineAssets(this.currentChapter, this.currentScene, this.currentLine);
 
         // Las acciones de una línea pueden fijar su duración, pero el valor no
         // debe heredarse accidentalmente por el siguiente diálogo.
@@ -7879,18 +8815,22 @@ class VisualNovelEngine {
             // o sale a la anterior. Se pone a cero al entrar en cada escena.
             this.sceneAdvances++;
             const resolvedLine = this.resolveConsequenceLine(line);
-            const durationOverride = resolvedLine.textDuration != null
-                ? resolvedLine.textDuration
-                : this._lineTextDurationOverride;
-            await this.displayDialog(durationOverride == null
-                ? resolvedLine
-                : Object.assign({}, resolvedLine, { textDuration: durationOverride }));
+            const durationOverride =
+                resolvedLine.textDuration != null ? resolvedLine.textDuration : this._lineTextDurationOverride;
+            await this.displayDialog(
+                durationOverride == null
+                    ? resolvedLine
+                    : Object.assign({}, resolvedLine, { textDuration: durationOverride }),
+            );
         }
 
         // jumpToScene ya dejó currentScene/currentLine apuntando al destino. Si
         // además había diálogo, el bucle esperará el clic normal antes de pedir
         // la línea 0 de la escena nueva; si no lo había, continuará al instante.
-        if (jumpedDuringActions) return true;
+        if (jumpedDuringActions) {
+            void this.prefetchNextLineAssets();
+            return true;
+        }
 
         // Acciones que deben ocurrir justo cuando termina de escribirse el
         // diálogo. A diferencia de un `delay` fijo, también quedan sincronizadas
@@ -7900,6 +8840,7 @@ class VisualNovelEngine {
                 await this.executeAction(action);
                 if (this.pendingSceneJump) {
                     this.pendingSceneJump = false;
+                    void this.prefetchNextLineAssets();
                     return true;
                 }
             }
@@ -7915,7 +8856,7 @@ class VisualNovelEngine {
             this.history.push({
                 scene: this.currentScene,
                 line: this.currentLine,
-                choice: selectedChoice.text
+                choice: selectedChoice.text,
             });
 
             // Si la elección define una ruta de capítulo, guardarla para
@@ -7950,14 +8891,12 @@ class VisualNovelEngine {
                 // la llamada real.
                 let targetTitle = selectedChoice.nextScene;
                 if (this.isCallChoice(selectedChoice) && !this.canMakeRealCall()) {
-                    targetTitle = selectedChoice.offCoverageScene || "Escena: Fuera de cobertura";
+                    targetTitle = selectedChoice.offCoverageScene || 'Escena: Fuera de cobertura';
                 }
 
                 // Si el destino es un string (título), buscar la escena por título
                 if (typeof targetTitle === 'string') {
-                    const sceneIndex = this.currentChapter.scenes.findIndex(
-                        scene => scene.title === targetTitle
-                    );
+                    const sceneIndex = this.currentChapter.scenes.findIndex((scene) => scene.title === targetTitle);
                     this.currentScene = sceneIndex !== -1 ? sceneIndex : 0;
                 } else {
                     // Si es un número, usarlo directamente
@@ -7975,6 +8914,8 @@ class VisualNovelEngine {
                 // que la escena de la decisión es la anterior y vuelve a ella.
                 this.recordSceneEntry();
 
+                this.prefetchLineAssets(this.currentChapter, this.currentScene, this.currentLine);
+                void this.prefetchNextLineAssets();
                 return true;
             } else if (selectedChoice.nextLine !== undefined) {
                 this.currentLine = selectedChoice.nextLine;
@@ -7984,6 +8925,8 @@ class VisualNovelEngine {
         } else {
             this.currentLine++;
         }
+
+        void this.prefetchNextLineAssets();
 
         // Verificar si hemos llegado al final de la escena
         if (this.currentLine >= scene.lines.length) {
@@ -8023,9 +8966,7 @@ class VisualNovelEngine {
                 clearTimeout(speakerCursor._returnTimer);
                 speakerCursor._returnTimer = null;
             }
-            speakerCursor.classList.remove(
-                'is-typing', 'is-waiting', 'is-following-text', 'is-returning'
-            );
+            speakerCursor.classList.remove('is-typing', 'is-waiting', 'is-following-text', 'is-returning');
             speakerCursor.style.removeProperty('--cursor-follow-x');
             speakerCursor.style.removeProperty('--cursor-follow-y');
         }
@@ -8069,22 +9010,38 @@ class VisualNovelEngine {
 
     // Foto del progreso al entrar en una escena. Se llama desde nextLine().
     captureSceneStageState() {
-        const audio = Object.entries(this.audioInstances || {})
-            .filter(([, instance]) => instance && !instance._stopping && !instance.ended)
-            .map(([id, instance]) => ({
+        const audio = [];
+        const seen = new Set();
+        const addAudio = (id, instance) => {
+            if (!instance || !instance._srcPath || instance._stopping || instance.ended) return;
+            if (seen.has(instance)) return;
+            seen.add(instance);
+            audio.push({
                 id,
                 path: instance._srcPath,
                 volume: instance._baseVol != null ? instance._baseVol : 1,
-                loop: !!instance.loop
-            }))
-            .filter(item => item.path);
+                loop: !!instance.loop,
+            });
+        };
+        Object.entries(this.audioInstances || {}).forEach(([id, instance]) => addAudio(id, instance));
+        for (const instance of this.loopedAudioByPath.values()) {
+            addAudio(null, instance);
+        }
+        const characters = {};
+        for (const [position, visual] of Object.entries(this.stageCharacters || {})) {
+            if (!visual || !visual.character) continue;
+            characters[position] = {
+                character: visual.character,
+                pose: visual.pose || 'neutral',
+                flipped: !!visual.flipped,
+                hidden: !!visual.hidden,
+            };
+        }
         return {
             background: this.currentBackgroundPath,
-            characters: JSON.parse(JSON.stringify(this.stageCharacters || {})),
+            characters,
             audio,
-            juice: window.Juice && typeof window.Juice.snapshot === 'function'
-                ? window.Juice.snapshot()
-                : null
+            juice: window.Juice && typeof window.Juice.snapshot === 'function' ? window.Juice.snapshot() : null,
         };
     }
 
@@ -8097,7 +9054,7 @@ class VisualNovelEngine {
                 visual.character,
                 position,
                 visual.pose || 'neutral',
-                !!visual.flipped
+                !!visual.flipped,
             );
             if (visual.hidden) {
                 Promise.resolve(restoredCharacter).then(() => {
@@ -8110,7 +9067,7 @@ class VisualNovelEngine {
                 id: sound.id,
                 volume: sound.volume,
                 loop: sound.loop,
-                fadeIn: 180
+                fadeIn: 180,
             });
         }
         if (snapshot.juice && window.Juice && typeof window.Juice.restore === 'function') {
@@ -8127,14 +9084,14 @@ class VisualNovelEngine {
         this.sceneHistory.push({
             chapter: this.lastChapterName,
             scene: this.currentScene,
-            gameState: JSON.parse(JSON.stringify(this.gameState || {})),
+            gameState: this._snapshotForHistory(this.gameState || {}),
             rescued: [...this.rescued],
             completedCalls: [...this.completedCalls],
             inventory: [...this.inventory],
             storyDelay: this.storyDelay,
             storyPressure: this.storyPressure,
             stage: this.captureSceneStageState(),
-            nextChapter: this.nextChapter
+            nextChapter: this.nextChapter,
         });
         // No hace falta guardar el capítulo entero: con 40 escenas vamos sobrados
         if (this.sceneHistory.length > 60) this.sceneHistory.shift();
@@ -8160,7 +9117,7 @@ class VisualNovelEngine {
         this.hideDialog();
         this.clearAdvanceBoundCharacterEffects();
 
-        ['character-left', 'character-right', 'character-center'].forEach(id => {
+        ['character-left', 'character-right', 'character-center'].forEach((id) => {
             const el = document.getElementById(id);
             if (el) {
                 this.clearCharacterAnimeFall(el);
@@ -8174,7 +9131,7 @@ class VisualNovelEngine {
                     'character-hidden',
                     'char-exit-fade',
                     'contact-glitch',
-                    'full-signal-glitch'
+                    'full-signal-glitch',
                 );
                 el.style.removeProperty('--contact-glitch-duration');
                 el.style.removeProperty('--full-glitch-duration');
@@ -8182,8 +9139,10 @@ class VisualNovelEngine {
 
                 const videoContainer = el.querySelector('.character-video-container');
                 if (videoContainer) {
-                    videoContainer.querySelectorAll('video').forEach(video => {
-                        try { video.pause(); } catch (e) {}
+                    videoContainer.querySelectorAll('video').forEach((video) => {
+                        try {
+                            video.pause();
+                        } catch (e) {}
                     });
                     videoContainer.remove();
                 }
@@ -8218,7 +9177,7 @@ class VisualNovelEngine {
             }
         }
 
-        const bg = document.getElementById('background');
+        const bg = this._getBackgroundElement();
         if (bg) bg.style.backgroundImage = '';
         this.currentBackgroundPath = null;
 
@@ -8253,20 +9212,21 @@ class VisualNovelEngine {
         }
 
         const choices = document.getElementById('choices-container');
-        if (choices) { choices.classList.remove('active'); choices.innerHTML = ''; }
+        if (choices) {
+            choices.classList.remove('active');
+            choices.innerHTML = '';
+        }
     }
 
     // Devuelve el progreso a la foto guardada al entrar en una escena.
     restoreSceneSnapshot(foto) {
         if (!foto) return;
-        this.gameState = JSON.parse(JSON.stringify(foto.gameState || {}));
+        this.gameState = this._snapshotForHistory(foto.gameState || {});
         this.rescued = [...foto.rescued];
         this.completedCalls = [...foto.completedCalls];
         this.inventory = [...foto.inventory];
         this.storyDelay = foto.storyDelay;
-        this.storyPressure = foto.storyPressure != null
-            ? foto.storyPressure
-            : foto.storyDelay;
+        this.storyPressure = foto.storyPressure != null ? foto.storyPressure : foto.storyDelay;
         this.nextChapter = foto.nextChapter;
     }
 
@@ -8322,13 +9282,12 @@ class VisualNovelEngine {
     sceneList() {
         if (!this.currentChapter) return [];
         const hist = this.sceneHistory || [];
-        return (this.currentChapter.scenes || [])
-            .map((s, i) => ({
-                index: i,
-                title: s.title || `Escena ${i + 1}`,
-                actual: i === this.currentScene,
-                visitada: hist.some(h => h.scene === i)
-            }));
+        return (this.currentChapter.scenes || []).map((s, i) => ({
+            index: i,
+            title: s.title || `Escena ${i + 1}`,
+            actual: i === this.currentScene,
+            visitada: hist.some((h) => h.scene === i),
+        }));
     }
 
     chapterTitle() {
@@ -8350,9 +9309,7 @@ class VisualNovelEngine {
     saltarAEscena(destino) {
         if (!this.currentChapter) return false;
         const escenas = this.currentChapter.scenes || [];
-        const i = (typeof destino === 'string')
-            ? escenas.findIndex(s => s.title === destino)
-            : destino;
+        const i = typeof destino === 'string' ? escenas.findIndex((s) => s.title === destino) : destino;
         if (!(i >= 0 && i < escenas.length)) {
             console.warn('saltarAEscena: escena no encontrada:', destino);
             return false;
@@ -8439,7 +9396,7 @@ class VisualNovelEngine {
         if (window.Juice) window.Juice.reset();
 
         // Limpiar fondo
-        const bg = document.getElementById('background');
+        const bg = this._getBackgroundElement();
         if (bg) bg.style.backgroundImage = '';
 
         if (this._bgSwapTimer) {
@@ -8525,7 +9482,7 @@ class VisualNovelEngine {
         gameContainer.appendChild(chapterOverlay);
 
         // Esperar a que la animación se complete
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             setTimeout(() => {
                 chapterOverlay.classList.add('fade-out');
                 setTimeout(() => {
@@ -8557,7 +9514,7 @@ class VisualNovelEngine {
         gameContainer.appendChild(endOverlay);
 
         // Esperar a que hagan click en Continuar
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const continueBtn = document.getElementById('continue-btn');
             continueBtn.addEventListener('click', () => {
                 continueBtn.disabled = true;

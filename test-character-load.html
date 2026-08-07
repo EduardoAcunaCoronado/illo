@@ -359,8 +359,9 @@
         function summarizeFetches(fetchLog) {
             const total = fetchLog.length;
             const unique = new Set(fetchLog).size;
-            const charFetches = fetchLog.filter((url) => url.includes("/characters/")).length;
-            const uniqueCharacterFetches = new Set(fetchLog.filter((url) => url.includes("/characters/"))).size;
+            const characterUrls = fetchLog.filter((url) => /(^|\/)characters\//.test(url));
+            const charFetches = characterUrls.length;
+            const uniqueCharacterFetches = new Set(characterUrls).size;
             return {
                 total,
                 unique,

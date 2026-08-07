@@ -584,7 +584,7 @@
         };
 
         function musicOn() { return document.getElementById('tp-music-on').checked; }
-        function battleDebugStatsOn() { return document.getElementById('tp-battle-debug-stats').checked; }
+        function battleDebugStatsOn() { return document.getElementById('tp-battle-debug-stats')?.checked ?? false; }
         function openHitboxEditor(gameId) {
             window.open('hitbox-editor.html?game=' + encodeURIComponent(gameId), '_blank');
         }
@@ -922,8 +922,8 @@
             });
         }
 
-        function getBattleHp() {
-            const input = document.getElementById('battle-hp');
+        function getBattleHp(enemy = 'ballerina_capuchina') {
+            const input = document.getElementById(`hp-${enemy}`);
             const hp = input ? parseInt(input.value, 10) : NaN;
             return Number.isFinite(hp) && hp > 0 ? hp : undefined;
         }
@@ -947,7 +947,7 @@
             return runTest('Battle', async () => {
                 startMusic(BATTLE_MUSIC[enemy] || 'shared/brainrot_theme.mp3');
                 const options = { game: 'battle', enemy, debugStats: battleDebugStatsOn() };
-                const enemyHp = getBattleHp();
+                const enemyHp = getBattleHp(enemy);
                 if (enemyHp) options.enemyHp = enemyHp;
                 const won = await engine.playBattleMinigame(options);
                 return {
@@ -1030,7 +1030,7 @@
                 id: 'battle', icon: '⚔️', title: 'Battle', chapter: 'Capítulos 4–5', category: 'Combate',
                 description: 'Selecciona un enemigo, ajusta sus HP y ejecuta el sistema de combate por turnos.',
                 modes: [], defaultMode: null, actionLabel: 'Iniciar combate',
-                run: () => launchBattle(document.getElementById('battle-enemy').value),
+                run: () => launchBattle('ballerina_capuchina'),
             },
             {
                 id: 'furrielva', icon: '🗺️', title: 'Investigación de Furrielva', chapter: 'Capítulo 2', category: 'Herramientas',
@@ -1243,7 +1243,7 @@
                 case 'chili': return { game: entry.id, mode: activeMode, ...getChiliOptions(activeMode) };
                 case 'ketchupBoss': return { game: entry.id, mode: activeMode, ...getZipOptions(activeMode) };
                 case 'rune': return { game: entry.id, mode: activeMode, ...RUNE_CHANNELING[activeMode] };
-                case 'battle': return { game: entry.id, enemy: document.getElementById('battle-enemy').value, enemyHp: getBattleHp(), debugStats: battleDebugStatsOn() };
+                case 'battle': return { game: entry.id, enemy: 'ballerina_capuchina', enemyHp: getBattleHp('ballerina_capuchina'), debugStats: battleDebugStatsOn() };
                 case 'furrielva': return { game: entry.id, background: 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp' };
                 default: return { game: entry.id };
             }
@@ -1259,8 +1259,10 @@
         }
 
         function syncBattleHp() {
-            const enemy = document.getElementById('battle-enemy').value;
-            document.getElementById('battle-hp').value = BATTLE_DEFAULT_HP[enemy];
+            Object.entries(BATTLE_DEFAULT_HP).forEach(([enemy, hp]) => {
+                const input = document.getElementById(`hp-${enemy}`);
+                if (input) input.value = hp;
+            });
         }
 
         async function runSelectedGame() {
@@ -1274,7 +1276,7 @@
         editHitboxEl.addEventListener('click', () => openHitboxEditor('ketchupBoss'));
         document.getElementById('tp-reset').addEventListener('click', resetActiveOptions);
         document.getElementById('tp-copy-config').addEventListener('click', copyEffectiveConfig);
-        document.getElementById('battle-enemy').addEventListener('change', syncBattleHp);
+        document.getElementById('battle-enemy')?.addEventListener('change', syncBattleHp);
 
         const initialUrl = new URL(window.location.href);
         const requestedGame = initialUrl.searchParams.get('game');

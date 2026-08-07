@@ -107,7 +107,7 @@ desde Configuración.
 | **♪** | Vuelve a reproducir el tema principal del menú. |
 | **Tools** | Comprueba y abre el centro local de herramientas gráficas del puerto 8011. Si está apagado, conserva el menú y muestra cómo iniciarlo. |
 | **Minijuegos** | Abre `minijuegos_test.html` en el mismo servidor del juego para lanzar cada prueba por separado. |
-| **Tests** | Abre el selector de pruebas internas. Permite elegir el test y sus parámetros (por ejemplo repeticiones o caso con 404) antes de abrirlo. |
+| **Tests** | Acceso local de desarrollo junto a Tools y Minijuegos. Abre `tests.html`, donde se elige una prueba, se ajustan sus parámetros y se consulta el último resultado guardado. |
 
 Estos accesos aparecen como iconos SVG en la esquina superior derecha cuando
 el repositorio se ejecuta en local o mediante Electron de desarrollo. Se
@@ -119,12 +119,18 @@ automáticamente el puerto interno elegido por la aplicación; Tools se inicia
 bajo demanda desde el proceso principal. En navegador, `start.bat` levanta
 juego y Tools juntos.
 
-Para entrar en **Tests**:
+Para entrar en **Tests** (sólo repositorio local o Electron de desarrollo):
 
-1. Pulsa **Tests** desde el menÃº principal.
-2. Selecciona el test deseado.
-3. Ajusta parÃ¡metros si los tiene (repeticiones, banderas y casos especiales).
-4. Pulsa **Abrir test** para lanzar la prueba con esos valores.
+1. Pulsa el acceso **Tests** de la esquina superior derecha del menú principal.
+2. En la pantalla de pruebas, selecciona el test deseado.
+3. Ajusta los parámetros si los tiene (repeticiones, casos 404 y bloque).
+4. Pulsa **Configurar y abrir** para lanzar la prueba con esos valores.
+5. En la pantalla de test:
+   - Usa **Volver a Tests** para regresar al catálogo.
+   - El botón **Menú principal** regresa al juego.
+   - La suite de rendimiento muestra PASS/FAIL por criterio, evidencia numérica, tabla antes/después y un informe JSON.
+   - Si un escenario falla, se marca como error y los demás continúan para conservar resultados parciales.
+   - El catálogo recuerda el resumen de la última ejecución correcta mediante `localStorage`.
 
 En **Tools > Restaurador de frames de Samu**, **Rectángulo global** (`G`) permite
 arrastrar una zona del frame actual y, tras confirmarla, recuperar esa misma zona
@@ -387,11 +393,32 @@ notarización requieren credenciales externas; se explican en la referencia.
 | `credits-minigame.js` | Créditos interactivos. |
 | `minijuegos_test.html` | Panel de QA de minijuegos: catálogo, modos, opciones contextuales, ejecución aislada y regreso al menú. |
 | `test-character-load.html` | Test de carga de personajes con parametros de repeticion y caso inexistente. |
+| `test-runtime-load-bench.html` | Suite determinista de regresión con trece criterios PASS/FAIL, comparación antes/después, errores aislados e informe JSON para personajes, capítulos, fondos, prefetch, audio, alias, layout, historial y URLs de assets. |
 | `chapters/*.json` | Guion ejecutable: capítulos, escenas, líneas, elecciones y acciones. |
 | `characters/*.json` | Nombre visible, color, poses y animaciones de cada personaje. |
 | `assets/metadata/*.json` | Galería, capas oculares, offsets, ediciones y copias limpias. |
 | `electron/` | Ventana segura, servidor interno con Range, ajustes persistentes e IPC limitado. |
 | `scripts/` | Validación, galería, optimización y herramientas gráficas. |
+
+## Rendimiento y pruebas de regresión (desarrollo)
+
+- En `engine.js` se ha afinado el runtime para reducir trabajo redundante en cargas:
+  - `preloadImages()` reutiliza imágenes ya decodificadas (`preloadedImages`) para evitar recrear objetos `Image` cuando el asset ya está listo.
+  - `removeAllCharacters()` limpia los 3 huecos sin recalcular layout en cada hueco; el ajuste de composición se realiza una sola vez por lote.
+  - `applyVolumeSettings()` actualiza también los bucles cacheados por ruta (`loopedAudioByPath`), no solo el canal actual o los IDs.
+  - `setBackground()` memoriza el nodo de fondo principal en caché de instancia para evitar consultas DOM repetitivas durante cambios rápidos de escena.
+- `game.js`:
+  - `loadAvailableChapters()` detecta `chapterN` en lotes con `Promise.all` para reducir latencia y sigue parando al primer hueco o capítulo con `isFinal: true`.
+  - `loadAllCharacters()` usa la lista deduplicada de personajes y omite llamadas de precarga para fichas que ya están en memoria durante la misma sesión; así evita trabajo innecesario entre reinicios de partida sin perder robustez.
+- `engine.js`:
+  - `loadChapter()` dispara el prefetch de activos de la primera línea del capítulo para evitar cargas en el primer frame visible.
+  - `nextLine()` dispara prefetch de la línea activa y prefetch de la siguiente línea de destino (incluyendo paso de escena), sin bloquear la interacción del jugador.
+  - `prefetchLineAssets()` deduplica peticiones en vuelo por línea (personaje, fondo, audio) para que una misma secuencia repetida no replique fetch/decodificación.
+- `test-runtime-load-bench.html` verifica el antes/después desde **Tests** con parámetros por URL y mocks deterministas de red, `Image` y `Audio`.
+  - Sus trece criterios cubren caché de personajes, precarga paralela, JSON/capítulos, prefetch de la línea inmediata, fondos/imágenes, audio en loop, audio por ID, JSON en vuelo, alias de personaje, layout agrupado, snapshot profundo, pool de SFX y URL estable de assets.
+  - `line-prefetch-legacy` frente a `line-prefetch-optim` comprueba que la línea inmediata anticipa JSON, imágenes y audio; no usa sólo milisegundos como criterio.
+  - Cada escenario se aísla: un error queda registrado y el resto sigue. El informe completo se muestra como JSON y el resumen se guarda en `illo_test_results_v1` para el catálogo.
+  - Los valores predeterminados usan dos repeticiones para que las diferencias de caché y reutilización sean visibles sin tocar parámetros.
 
 Orden de scripts, basado en los `window.*` globales: `p5-effects.js` → módulo de
 batalla → `ketchup-hitboxes.js` → `hitbox-debugger.js` → módulos de
@@ -436,7 +463,7 @@ memory/                       contexto auxiliar, no manual canónico
 | Añadir una escena o elección | El JSON del capítulo | Títulos únicos, destinos y estado al retroceder. |
 | Añadir un capítulo | `chapters/chapterN.json` con N consecutivo | Encadenado, selector y pantalla final. |
 | Cambiar una pose o nombre visible | `characters/<clave>.json` | Todas las referencias y galería. |
-| Crear selector de tests | `game.js`, `index.html`, `styles.css` | `TESTS_CATALOG`, panel de pruebas y parametros de URL. |
+| Crear selector de tests | `game.js`, `tests.html`, `index.html` | `TESTS_CATALOG`, pantalla de pruebas y parámetros de URL. |
 | Añadir un sprite | `assets/images/characters/...` + ficha | Alfa, tamaño, copia limpia y parpadeo. |
 | Añadir parpadeo | Centro ocular, capas y metadatos | Preview, offsets, animación y fallback. |
 | Cambiar fondo o CG | `assets/images/backgrounds` o `cg` + acción del capítulo | Primer frame de escena, transición y galería. |

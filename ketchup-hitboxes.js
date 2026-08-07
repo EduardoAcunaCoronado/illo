@@ -132,8 +132,7 @@
         return target;
     };
 
-    const createEffective = (storedConfig = readStoredConfig()) =>
-        applyStoredConfig(cloneDefaults(), storedConfig);
+    const createEffective = (storedConfig = readStoredConfig()) => applyStoredConfig(cloneDefaults(), storedConfig);
 
     const subscribe = (listener) => {
         const onStorage = (event) => {
