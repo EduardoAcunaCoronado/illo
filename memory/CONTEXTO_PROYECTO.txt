@@ -911,14 +911,16 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   movidas como ruta configurada -> WebP runtime -> original de `workbench`,
   consultando `asset_optimization_manifest.json`; no necesita reiniciarse tras
   reorganizar u optimizar assets.
-  Cada elipse se mueve, achata, ensancha y gira por separado. Las 17 cajas previas
-  fueron migradas a dos elipses editables con esquema v2. El modo `--build` no puede usar
+  Cada elipse se mueve, achata, ensancha y gira por separado. Las 130 poses activas
+  tienen una región confirmada. `Sugerir desde fuentes` calcula una propuesta por
+  diferencia exacta, pero no la persiste hasta `Guardar región`; las 17 cajas previas
+  se conservaron como regiones elípticas editables con esquema v2. El modo `--build` no puede usar
   detección automática: falla antes de escribir si falta una región confirmada.
   Una zona puede ser ocular (`include`) o de protección (`exclude`): estas últimas
   preservan pelo, cejas, gafas y accesorios desde el sprite original. Cada zona
   guarda además un suavizado interior de 0 a 32 px y el editor ofrece el modo
   `Máscara` para revisar inclusiones azules y protecciones rojas. Las 34 zonas
-  existentes se migraron como `include` con suavizado 0 para no cambiar su aspecto.
+  históricas se migraron como `include` con suavizado 0 para no cambiar su aspecto.
   Al guardar una región también se exportan PNG transparentes del original, del
   intermedio semicerrado y de cada frame final en
   `assets/images/characters/eye_region_previews/`. Todas las variantes
@@ -927,8 +929,8 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   y ofrece tres descargas. `--build-previews` reconstruye en lote estos archivos sin
   tocar los sprites fuente. El borde usa supersampling con reducción `BOX` para no
   introducir el halo exterior de `LANCZOS`; después se anulan residuos de alfa por
-  debajo de 8/255. Las 17 poses marcadas actuales ya tienen sus tres previews
-  homogéneas y se regeneraron con esta máscara limpia.
+  debajo de 8/255. Las 130 poses activas ya tienen sus tres previews homogéneas y
+  se regeneraron con esta máscara limpia.
   Cuando cambia el arte completo de una pose, los ojos antiguos se registran
   contra el lienzo nuevo y se recompone sólo la región ocular; base, semicerrado
   y cerrado deben compartir dimensiones y alfa. El manifiesto lo marca como
@@ -1106,10 +1108,22 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   100% y 500%, centrado progresivamente en la región ocular, mediante botones,
   deslizador, `+`/`−`/`0` o `Ctrl`/`Cmd`+rueda. Es sólo una ayuda de vista y no altera
   los offsets ni escalas guardados. La barra `Ubicaciones` abre en el Explorador la carpeta
-  del sprite base, la de los ojos del origen visible o la del JSON de offsets;
+  del sprite base, la de los ojos del origen visible, la del JSON de offsets o la
+  salida de producción;
   `/api/alignment-locations` sólo consulta las rutas y `/api/reveal-path` limita
-  la apertura a esos destinos conocidos dentro del proyecto. No conectar al juego hasta disponer de las bases
-  sin ojos que preparará el usuario.
+  la apertura a esos destinos conocidos dentro del proyecto.
+  `Publicar pose` y `Publicar todas` esperan los offsets pendientes y hornean los
+  recortes guardados, escalas, desplazamientos y retoques persistidos. Escriben
+  exactamente `eyes_base.webp`, `eyes_half.webp` y `eyes_closed.webp` por pose en
+  `assets/images/characters/eye_layers_production/`, sin copiar el sprite completo,
+  y actualizan `assets/metadata/blink_eye_layers_production.json`. Los parches
+  conservan píxeles locales suficientes para cubrir el ojo de la base, así que la
+  publicación normal no necesita una base sin ojos. Hay 130 poses, 390 capas y 0
+  bases duplicadas; las 13 aperturas inversas conservan el nombre técnico `closed`
+  y se distinguen con `blinkDirection: opening`. `npm run build:eye-layers`
+  reproduce la publicación y `npm run validate:eye-layers` comprueba archivos,
+  dimensiones, transparencia, localidad, estados y ausencia de duplicados sin
+  ejecutar el juego. El publicador no reescribe `characters/*.json`.
   Cada panel tiene ahora un editor de píxeles accesible con `✎`: ofrece borrador
   alfa, herramienta `Dedo`, cuentagotas sobre la composición visible y pinceles
   sólido, translúcido y suave con selector de color/opacidad, además de tamaño y fuerza,
@@ -1147,10 +1161,11 @@ ANIMACIÓN, ESTADO Y AUDIO DE LA REVISIÓN
   solo 34 poses sin ojos animables (siluetas, móviles, formas amorfas, caras
   tapadas y gafas opacas). El compositor es
   `scripts/compose_character_blink.py` y requiere máscaras oculares explícitas.
-  Las 17 poses manuales de 3C/Airi ya usan en `engine.js` y en la galería la
-  variante ligera `sprite base → recorte half → recorte closed → half → base`.
-  Los parches respetan crop, offsets, escalas y las ediciones PNG de origen
-  `saved`; cualquier pose sin recortes mantiene el fallback de sprite completo.
+  Las 130 poses activas ya usan en `engine.js` y en la galería la variante ligera
+  `sprite base → recorte half → recorte closed → half → base`. Los parches
+  respetan crop, offsets, escalas y las ediciones PNG de origen `saved`; los cinco
+  parpadeos del ePod legado, fuera del canon activo, mantienen el fallback de
+  sprite completo.
   `animateCharacter`/`characterAnimation`/`poseSequence` quedan para recorrer
   poses narrativas distintas y aceptan frameMs, loop, pingPong, untilAdvance e
   immediate. Avanzar, ocultar, cambiar escena o resetear cancela timers.

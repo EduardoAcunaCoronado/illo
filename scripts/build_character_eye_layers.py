@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
-"""Convierte parpadeos de sprite completo en capas oculares ligeras.
+"""Marca, alinea y publica parpadeos como capas oculares ligeras.
 
-Cada pose animada se divide en un cuerpo sin la región ocular, una capa con
-los ojos originales y una capa por frame de parpadeo. El cuerpo nunca cambia
-durante la animación. Los sprites completos generados se usan solo como fuente
-de los ojos y pueden retirarse después de validar la migración.
+La salida de producción conserva como único sprite completo la pose base ya
+existente. Los estados abierto, semicerrado y cerrado se publican como WebP
+transparentes del mismo lienzo y se componen sobre esa referencia.
 """
 
 from __future__ import annotations
@@ -54,6 +53,12 @@ MANUAL_OFFSETS_PATH = ROOT / "assets" / "metadata" / "blink_eye_offsets_manual.j
 CLEAN_OFFSETS_PATH = ROOT / "assets" / "metadata" / "blink_eye_clean_offsets_manual.json"
 PIXEL_EDITS_METADATA_PATH = ROOT / "assets" / "metadata" / "blink_eye_pixel_edits.json"
 PIXEL_EDITS_ROOT = ROOT / "assets" / "images" / "characters" / "eye_layer_edits"
+PRODUCTION_EYE_METADATA_PATH = (
+    ROOT / "assets" / "metadata" / "blink_eye_layers_production.json"
+)
+PRODUCTION_EYE_ROOT = (
+    ROOT / "assets" / "images" / "characters" / "eye_layers_production"
+)
 WHITE_HALO_METADATA_PATH = ROOT / "assets" / "metadata" / "sprite_white_halo_cleaned.json"
 WHITE_HALO_ROOT = ROOT / "assets" / "images" / "characters" / "sprite_halo_cleaned"
 OPTIMIZATION_MANIFEST_PATH = (
@@ -1844,6 +1849,94 @@ def editor_jobs(refresh: bool = False) -> list[dict[str, Any]]:
     ]
 
 
+def suggest_eye_regions(job_id: str) -> list[dict[str, float]]:
+    """Propone elipses desde los píxeles que cambian entre los tres estados.
+
+    La sugerencia no se persiste. El editor la presenta para revisión y sólo
+    `POST /api/region` la convierte en una región manual confirmada.
+    """
+    job = next((entry for entry in editor_jobs() if entry["id"] == job_id), None)
+    if not job:
+        raise ValueError("Pose desconocida")
+
+    with Image.open(ROOT / job["baseSrc"]).convert("RGBA") as image:
+        base = np.asarray(image, dtype=np.int16)
+        canvas_size = image.size
+        foreground = foreground_box(image)
+
+    sources = [job.get("halfSrc"), *(job.get("frameSrcs") or [])]
+    changed = np.zeros(base.shape[:2], dtype=bool)
+    for source in dict.fromkeys(str(value) for value in sources if value):
+        source_path = ROOT / source
+        if not source_path.is_file():
+            continue
+        with Image.open(source_path).convert("RGBA") as image:
+            if image.size != canvas_size:
+                raise ValueError(
+                    f"{job_id} no comparte lienzo con {source_path.name}"
+                )
+            alternate = np.asarray(image, dtype=np.int16)
+        visible = (base[:, :, 3] > 0) | (alternate[:, :, 3] > 0)
+        changed |= np.any(base != alternate, axis=2) & visible
+
+    ys, xs = np.where(changed)
+    if not len(xs):
+        raise ValueError("Las fuentes no contienen cambios oculares detectables")
+
+    subject_width = max(1, foreground[2] - foreground[0])
+    point_x = xs.astype(np.float64)
+    centers = np.quantile(point_x, [0.25, 0.75])
+    labels = np.zeros(len(point_x), dtype=np.uint8)
+    for _ in range(16):
+        labels = (
+            np.abs(point_x - centers[1]) < np.abs(point_x - centers[0])
+        ).astype(np.uint8)
+        updated = centers.copy()
+        for index in (0, 1):
+            values = point_x[labels == index]
+            if len(values):
+                updated[index] = float(values.mean())
+        if np.allclose(updated, centers, atol=0.05):
+            break
+        centers = updated
+
+    counts = np.bincount(labels, minlength=2)
+    separation = abs(float(centers[1] - centers[0]))
+    split_is_useful = (
+        min(counts) >= max(24, round(len(xs) * 0.1))
+        and separation >= max(8.0, subject_width * 0.055)
+    )
+    groups = [labels == index for index in (0, 1)] if split_is_useful else [np.ones(len(xs), dtype=bool)]
+
+    width, height = canvas_size
+    regions: list[dict[str, float]] = []
+    margin = max(3.0, max(width, height) * 0.0035)
+    for group in groups:
+        group_x = xs[group].astype(np.float64)
+        group_y = ys[group].astype(np.float64)
+        x1, x2 = float(group_x.min()), float(group_x.max())
+        y1, y2 = float(group_y.min()), float(group_y.max())
+        cx, cy = (x1 + x2) / 2.0, (y1 + y2) / 2.0
+        rx = max(4.0, (x2 - x1 + 1) / 2.0 + margin)
+        ry = max(4.0, (y2 - y1 + 1) / 2.0 + margin)
+        distance = np.sqrt(((group_x - cx) / rx) ** 2 + ((group_y - cy) / ry) ** 2)
+        expansion = max(1.0, float(distance.max()) * 1.015)
+        rx = min(width / 2.0, rx * expansion)
+        ry = min(height / 2.0, ry * expansion)
+        regions.append(
+            {
+                "cx": round(cx / width, 6),
+                "cy": round(cy / height, 6),
+                "rx": round(rx / width, 6),
+                "ry": round(ry / height, 6),
+                "rotation": 0.0,
+                "mode": "include",
+                "feather": 0.0,
+            }
+        )
+    return sorted(regions, key=lambda region: region["cx"])
+
+
 def base_sprite_jobs(refresh: bool = False) -> list[dict[str, Any]]:
     """Lista todas las poses base editables, tengan o no parpadeo configurado."""
     global _BASE_SPRITE_INVENTORY_CACHE
@@ -2169,42 +2262,9 @@ def export_saved_eye_preview_gif(
     canvas_size = (int(canvas.get("width", 0)), int(canvas.get("height", 0)))
     if min(canvas_size) <= 0:
         raise ValueError("El lienzo de los recortes no es válido")
-    crop = pose.get("crop") or {}
-    crop_origin = (int(crop.get("x", 0)), int(crop.get("y", 0)))
-    transforms = validate_clean_pose_offsets(
-        load_clean_offsets().get(
-            job_id, default_clean_pose_transform()
-        )
-    )
-
-    def full_layer(path: str, state: str) -> Image.Image:
-        with Image.open(ROOT / path).convert("RGBA") as source:
-            layer = source.copy()
-        result = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
-        offset = transforms[state]
-        scale = transforms[f"{state}Scale"]
-        target = (
-            max(1, round(layer.width * scale[0])),
-            max(1, round(layer.height * scale[1])),
-        )
-        if target != layer.size:
-            layer = layer.resize(target, Image.Resampling.LANCZOS)
-        result.alpha_composite(
-            layer,
-            (
-                round(crop_origin[0] + offset[0] - (layer.width - crop["width"]) / 2),
-                round(crop_origin[1] + offset[1] - (layer.height - crop["height"]) / 2),
-            ),
-        )
-        return result
-
-    open_eyes = full_layer(edited_eye_layer_path(job_id, "saved", "open"), "open")
-    half_path = edited_eye_layer_path(job_id, "saved", "half")
-    closed_path = edited_eye_layer_path(job_id, "saved", "closed")
-    if not half_path or not closed_path:
-        raise ValueError("La pose no tiene recortes de parpadeo")
-    half_eyes = full_layer(str(half_path), "half")
-    closed_eyes = full_layer(str(closed_path), "closed")
+    open_eyes = saved_eye_layer_full_canvas(job_id, "open", pose)
+    half_eyes = saved_eye_layer_full_canvas(job_id, "half", pose)
+    closed_eyes = saved_eye_layer_full_canvas(job_id, "closed", pose)
     eye_sequence = [open_eyes, half_eyes, closed_eyes, half_eyes, open_eyes]
     durations = [700, 65, 95, 65, 650]
 
@@ -2397,6 +2457,9 @@ def alignment_locations(job_id: str, source_kind: str) -> dict[str, dict[str, An
         "base": base_path,
         "eyes": eyes_path,
         "results": CLEAN_OFFSETS_PATH.resolve(),
+        "production": (
+            PRODUCTION_EYE_ROOT / job_id.split(".", 1)[0] / slug(job_id.split(".", 1)[1])
+        ).resolve(),
     }
     locations: dict[str, dict[str, Any]] = {}
     for kind, target in targets.items():
@@ -2555,6 +2618,22 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                     }
                 )
             except (ValueError, FileNotFoundError, KeyError, OSError) as error:
+                self.send_json(
+                    {"ok": False, "error": str(error)}, HTTPStatus.BAD_REQUEST
+                )
+            return
+        if request.path == "/api/suggest-region":
+            try:
+                query = parse_qs(request.query)
+                self.send_json(
+                    {
+                        "ok": True,
+                        "regions": suggest_eye_regions(
+                            str(query.get("id", [""])[0])
+                        ),
+                    }
+                )
+            except (ValueError, FileNotFoundError, OSError) as error:
                 self.send_json(
                     {"ok": False, "error": str(error)}, HTTPStatus.BAD_REQUEST
                 )
@@ -2726,6 +2805,7 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
         if self.path not in {
             "/api/region", "/api/offset", "/api/clean-offset", "/api/clean-base",
             "/api/reveal-path", "/api/eye-layer-edit", "/api/white-halo-clean",
+            "/api/publish-eye-layers",
             "/api/white-halo-topological", "/api/reveal-white-halo-source",
             "/api/white-halo-export", "/api/white-halo-protection",
             "/api/white-halo-review"
@@ -2763,6 +2843,10 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                     payload.get("image"),
                 )
                 self.send_json(result)
+                return
+            if self.path == "/api/publish-eye-layers":
+                requested_id = job_id or None
+                self.send_json(publish_production_eye_layers(requested_id))
                 return
             if self.path == "/api/white-halo-clean":
                 force_ack = payload.get("force")
@@ -3393,6 +3477,290 @@ def save_webp(image: Image.Image, path: Path) -> None:
         temporary.unlink(missing_ok=True)
 
 
+def save_production_eye_metadata(metadata: dict[str, Any]) -> None:
+    PRODUCTION_EYE_METADATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temporary = PRODUCTION_EYE_METADATA_PATH.with_suffix(".json.tmp")
+    temporary.write_text(
+        json.dumps(metadata, ensure_ascii=False, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    temporary.replace(PRODUCTION_EYE_METADATA_PATH)
+
+
+def saved_eye_layer_full_canvas(
+    job_id: str, state: str, pose: dict[str, Any] | None = None
+) -> Image.Image:
+    """Aplica los ajustes de la herramienta y devuelve una capa RGBA completa."""
+    if state not in {"open", "half", "closed"}:
+        raise ValueError("El estado ocular no es vÃ¡lido")
+    pose = pose or load_eye_region_previews().get(job_id)
+    if not isinstance(pose, dict):
+        raise ValueError(f"{job_id} no tiene recortes oculares guardados")
+    canvas = pose.get("sourceCanvas") or {}
+    canvas_size = (int(canvas.get("width", 0)), int(canvas.get("height", 0)))
+    crop = pose.get("crop") or {}
+    crop_size = (int(crop.get("width", 0)), int(crop.get("height", 0)))
+    crop_origin = (int(crop.get("x", 0)), int(crop.get("y", 0)))
+    if min(*canvas_size, *crop_size) <= 0:
+        raise ValueError(f"{job_id} tiene un lienzo o recorte invÃ¡lido")
+
+    layer_path = edited_eye_layer_path(job_id, "saved", state)
+    with Image.open(ROOT / layer_path).convert("RGBA") as source:
+        layer = source.copy()
+    # Las ediciones antiguas pueden conservar el tamaño de un recorte previo.
+    # La herramienta siempre las presenta ajustadas al crop vigente; se replica
+    # esa normalización antes de aplicar el estirado y el desplazamiento.
+    if layer.size != crop_size:
+        layer = layer.resize(crop_size, Image.Resampling.LANCZOS)
+    transforms = validate_clean_pose_offsets(
+        load_clean_offsets().get(job_id, default_clean_pose_transform())
+    )
+    offset = transforms[state]
+    scale = transforms[f"{state}Scale"]
+    target = (
+        max(1, round(layer.width * scale[0])),
+        max(1, round(layer.height * scale[1])),
+    )
+    if target != layer.size:
+        layer = layer.resize(target, Image.Resampling.LANCZOS)
+    result = Image.new("RGBA", canvas_size, (0, 0, 0, 0))
+    result.alpha_composite(
+        layer,
+        (
+            round(crop_origin[0] + offset[0] - (layer.width - crop_size[0]) / 2),
+            round(crop_origin[1] + offset[1] - (layer.height - crop_size[1]) / 2),
+        ),
+    )
+    return result
+
+
+def production_layer_metrics(layer: Image.Image) -> dict[str, Any]:
+    rgba = np.asarray(layer.convert("RGBA"), dtype=np.uint8)
+    visible = rgba[:, :, 3] > 0
+    ys, xs = np.where(visible)
+    if not len(xs):
+        raise ValueError("La capa ocular estÃ¡ vacÃ­a")
+    bounds = [
+        int(xs.min()),
+        int(ys.min()),
+        int(xs.max()) + 1,
+        int(ys.max()) + 1,
+    ]
+    return {
+        "alphaPixels": int(visible.sum()),
+        "alphaRatio": round(float(visible.mean()), 8),
+        "bounds": bounds,
+        "boundsRatio": round(
+            ((bounds[2] - bounds[0]) * (bounds[3] - bounds[1]))
+            / (layer.width * layer.height),
+            8,
+        ),
+    }
+
+
+def publish_production_eye_layers(job_id: str | None = None) -> dict[str, Any]:
+    """Publica base/referencia + tres capas, sin duplicar el sprite completo."""
+    jobs = {entry["id"]: entry for entry in editor_jobs(refresh=True)}
+    selected_ids = [job_id] if job_id else sorted(jobs)
+    if job_id and job_id not in jobs:
+        raise ValueError("Pose desconocida")
+    regions = load_manual_regions()
+    previews = load_eye_region_previews()
+    missing = [
+        entry_id
+        for entry_id in selected_ids
+        if entry_id not in regions or entry_id not in previews
+    ]
+    if missing:
+        raise ValueError(
+            f"Faltan regiones o recortes guardados para {len(missing)} poses: "
+            + ", ".join(missing[:8])
+        )
+
+    if job_id and PRODUCTION_EYE_METADATA_PATH.is_file():
+        metadata = json.loads(PRODUCTION_EYE_METADATA_PATH.read_text(encoding="utf-8"))
+    else:
+        metadata = {
+            "version": 1,
+            "composition": "sourceBase + one transparent eye layer",
+            "states": ["base", "half", "closed"],
+            "closedStateMayBeOpening": True,
+            "poses": {},
+        }
+    metadata.setdefault("poses", {})
+    pixel_edits = load_pixel_edits().get("saved") or {}
+    intermediates = load_eye_intermediates()
+    published: list[str] = []
+
+    for entry_id in selected_ids:
+        job = jobs[entry_id]
+        pose = previews[entry_id]
+        source_base = require_asset_reference(job["baseSrc"])
+        with Image.open(ROOT / source_base).convert("RGBA") as base:
+            canvas_size = base.size
+        expected_canvas = pose.get("sourceCanvas") or {}
+        if canvas_size != (
+            int(expected_canvas.get("width", 0)),
+            int(expected_canvas.get("height", 0)),
+        ):
+            raise ValueError(f"{entry_id} no comparte lienzo con su sprite base")
+
+        character, pose_name = entry_id.split(".", 1)
+        output_dir = PRODUCTION_EYE_ROOT / character / slug(pose_name)
+        output_paths = {
+            "open": output_dir / "eyes_base.webp",
+            "half": output_dir / "eyes_half.webp",
+            "closed": output_dir / "eyes_closed.webp",
+        }
+        layer_paths: dict[str, str] = {}
+        metrics: dict[str, Any] = {}
+        source_layers: dict[str, str] = {}
+        edits_baked: dict[str, bool] = {}
+        for state, output_path in output_paths.items():
+            source_layers[state] = source_eye_layer_path(entry_id, "saved", state)
+            edited_path = edited_eye_layer_path(entry_id, "saved", state)
+            edits_baked[state] = edited_path != source_layers[state]
+            layer = saved_eye_layer_full_canvas(entry_id, state, pose)
+            save_webp(layer, output_path)
+            layer_paths[state] = relative(output_path)
+            metrics[state] = production_layer_metrics(layer)
+
+        transforms = validate_clean_pose_offsets(
+            load_clean_offsets().get(entry_id, default_clean_pose_transform())
+        )
+        metadata["poses"][entry_id] = {
+            "sourceBase": source_base,
+            "eyesBase": layer_paths["open"],
+            "eyesHalf": layer_paths["half"],
+            "eyesClosed": layer_paths["closed"],
+            "canvas": {"width": canvas_size[0], "height": canvas_size[1]},
+            "crop": pose.get("crop"),
+            "regions": validate_manual_regions(regions[entry_id]),
+            "transformsBaked": transforms,
+            "pixelEditsBaked": edits_baked,
+            "sourceLayers": source_layers,
+            "blinkDirection": (intermediates.get(entry_id) or {}).get(
+                "direction", "closing"
+            ),
+            "metrics": metrics,
+        }
+        published.append(entry_id)
+
+    metadata["poseCount"] = len(metadata["poses"])
+    metadata["poses"] = dict(sorted(metadata["poses"].items()))
+    save_production_eye_metadata(metadata)
+    return {
+        "ok": True,
+        "published": len(published),
+        "poseCount": metadata["poseCount"],
+        "manifest": relative(PRODUCTION_EYE_METADATA_PATH),
+        "root": relative(PRODUCTION_EYE_ROOT),
+    }
+
+
+def validate_production_eye_layers() -> dict[str, Any]:
+    if not PRODUCTION_EYE_METADATA_PATH.is_file():
+        raise FileNotFoundError("TodavÃ­a no existe el manifiesto ocular de producciÃ³n")
+    metadata = json.loads(PRODUCTION_EYE_METADATA_PATH.read_text(encoding="utf-8"))
+    poses = metadata.get("poses") or {}
+    expected_ids = {entry["id"] for entry in editor_jobs(refresh=True)}
+    if set(poses) != expected_ids:
+        missing = sorted(expected_ids - set(poses))
+        extra = sorted(set(poses) - expected_ids)
+        raise ValueError(
+            f"El manifiesto no coincide con las poses: faltan {missing[:5]}, sobran {extra[:5]}"
+        )
+
+    referenced_files: set[Path] = set()
+    state_keys = ("eyesBase", "eyesHalf", "eyesClosed")
+    totals = {"poses": len(poses), "layers": 0, "alphaPixels": 0}
+    for entry_id, pose in poses.items():
+        base_path = ROOT / require_asset_reference(pose.get("sourceBase"))
+        if PRODUCTION_EYE_ROOT.resolve() in base_path.resolve().parents:
+            raise ValueError(f"{entry_id} duplica el sprite base en la salida ocular")
+        with Image.open(base_path).convert("RGBA") as base:
+            canvas_size = base.size
+        hashes: set[str] = set()
+        for key in state_keys:
+            layer_path = ROOT / require_asset_reference(pose.get(key))
+            try:
+                layer_path.resolve().relative_to(PRODUCTION_EYE_ROOT.resolve())
+            except ValueError as error:
+                raise ValueError(f"{entry_id}.{key} queda fuera de producciÃ³n") from error
+            referenced_files.add(layer_path.resolve())
+            with Image.open(layer_path).convert("RGBA") as layer:
+                if layer.size != canvas_size:
+                    raise ValueError(f"{entry_id}.{key} no comparte lienzo con la base")
+                rgba = np.asarray(layer, dtype=np.uint8)
+                if np.any(rgba[rgba[:, :, 3] == 0, :3]):
+                    raise ValueError(f"{entry_id}.{key} conserva RGB oculto")
+                metrics = production_layer_metrics(layer)
+                if metrics["alphaRatio"] > 0.20 or metrics["boundsRatio"] > 0.32:
+                    raise ValueError(
+                        f"{entry_id}.{key} ocupa demasiado lienzo para ser una capa ocular"
+                    )
+                totals["alphaPixels"] += metrics["alphaPixels"]
+                hashes.add(hashlib.sha256(rgba.tobytes()).hexdigest())
+            totals["layers"] += 1
+        if len(hashes) < 2:
+            raise ValueError(f"{entry_id} no contiene estados oculares distintos")
+
+    actual_files = {path.resolve() for path in PRODUCTION_EYE_ROOT.rglob("*.webp")}
+    if actual_files != referenced_files:
+        extras = sorted(str(path) for path in actual_files - referenced_files)
+        missing = sorted(str(path) for path in referenced_files - actual_files)
+        raise ValueError(
+            f"Los WebP no coinciden con el manifiesto: extras={extras[:3]}, faltan={missing[:3]}"
+        )
+    totals["fullSpritesDuplicated"] = 0
+    totals["ok"] = True
+    return totals
+
+
+def write_production_qa_sheets(qa_dir: Path) -> int:
+    """Genera base, semicerrado y cerrado mediante la composiciÃ³n publicada."""
+    validation = validate_production_eye_layers()
+    metadata = json.loads(PRODUCTION_EYE_METADATA_PATH.read_text(encoding="utf-8"))
+    qa_dir.mkdir(parents=True, exist_ok=True)
+    tiles: list[Image.Image] = []
+    for entry_id, pose in (metadata.get("poses") or {}).items():
+        with Image.open(ROOT / pose["sourceBase"]).convert("RGBA") as source:
+            base = source.copy()
+        composites = [base]
+        for key in ("eyesHalf", "eyesClosed"):
+            with Image.open(ROOT / pose[key]).convert("RGBA") as source:
+                layer = source.copy()
+            composed = base.copy()
+            composed.alpha_composite(layer)
+            composites.append(composed)
+        tile = Image.new("RGB", (900, 350), (4, 3, 14))
+        draw = ImageDraw.Draw(tile)
+        draw.text((10, 7), entry_id, fill=(255, 255, 255))
+        for index, composite in enumerate(composites):
+            scale = min(1.0, 280 / max(composite.size))
+            target = (
+                max(1, round(composite.width * scale)),
+                max(1, round(composite.height * scale)),
+            )
+            preview = composite.resize(target, Image.Resampling.LANCZOS)
+            panel = Image.new("RGBA", (300, 300), (4, 3, 14, 255))
+            panel.alpha_composite(
+                preview, ((300 - preview.width) // 2, (300 - preview.height) // 2)
+            )
+            tile.paste(panel.convert("RGB"), (index * 300, 25))
+        for index, label in enumerate(("base", "half", "closed")):
+            draw.text((index * 300 + 10, 332), label, fill=(255, 209, 102))
+        tiles.append(tile)
+    for start in range(0, len(tiles), 4):
+        sheet = Image.new("RGB", (900, 1400), (4, 3, 14))
+        for index, tile in enumerate(tiles[start : start + 4]):
+            sheet.paste(tile, (0, index * 350))
+        sheet.save(
+            qa_dir / f"eye_layers_{start // 4 + 1:02d}.jpg", quality=92
+        )
+    return int(validation["poses"])
+
+
 def variant_name(source: str, index: int) -> str:
     stem = Path(source).stem.lower()
     for name in ("half", "closed", "open"):
@@ -3554,6 +3922,21 @@ def main() -> None:
         action="store_true",
         help="Guarda recortes oculares PNG de igual resolución para cada pose marcada",
     )
+    parser.add_argument(
+        "--publish-production",
+        action="store_true",
+        help="Publica tres capas oculares transparentes por pose sin duplicar la base",
+    )
+    parser.add_argument(
+        "--validate-production",
+        action="store_true",
+        help="Valida el manifiesto y los WebP oculares de producciÃ³n",
+    )
+    parser.add_argument(
+        "--production-qa-dir",
+        type=Path,
+        help="Genera hojas QA componiendo la base con las capas publicadas",
+    )
     parser.add_argument("--serve", action="store_true", help="Abre el editor manual local")
     parser.add_argument("--port", type=int, default=8011, help="Puerto del editor manual")
     parser.add_argument(
@@ -3588,9 +3971,35 @@ def main() -> None:
     if args.build or args.build_manual:
         metadata = build_layers(jobs, args.write_characters and args.build)
         print(f"Capas: {len(metadata['poses'])} poses -> {LAYER_ROOT}")
-    if not args.qa_dir and not args.build and not args.build_manual and not args.build_previews:
+    if args.publish_production:
+        result = publish_production_eye_layers()
+        print(
+            f"ProducciÃ³n ocular: {result['published']} poses -> {PRODUCTION_EYE_ROOT}"
+        )
+    if args.validate_production:
+        result = validate_production_eye_layers()
+        print(
+            f"ProducciÃ³n ocular vÃ¡lida: {result['poses']} poses, "
+            f"{result['layers']} capas, {result['fullSpritesDuplicated']} bases duplicadas"
+        )
+    if args.production_qa_dir:
+        pose_count = write_production_qa_sheets(args.production_qa_dir.resolve())
+        print(
+            f"QA producciÃ³n: {pose_count} poses -> {args.production_qa_dir.resolve()}"
+        )
+    if not any(
+        (
+            args.qa_dir,
+            args.build,
+            args.build_manual,
+            args.build_previews,
+            args.publish_production,
+            args.validate_production,
+            args.production_qa_dir,
+        )
+    ):
         parser.error(
-            "indica --serve, --qa-dir, --build-previews, --build-manual y/o --build"
+            "indica --serve, una acciÃ³n de marcado o una acciÃ³n de producciÃ³n"
         )
 
 

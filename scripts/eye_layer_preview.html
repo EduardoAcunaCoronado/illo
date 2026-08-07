@@ -73,6 +73,7 @@
     #download-hq { border-color:rgba(125,242,177,.55); color:var(--green); }
     #download-full { border-color:rgba(79,208,255,.45); color:var(--cyan); }
     #download-eyes { border-color:rgba(255,79,163,.4); color:#ff8dc4; }
+    #publish-pose,#publish-all { border-color:rgba(125,242,177,.55); color:var(--green); }
     .locationbar {
       display:flex; align-items:center; justify-content:center; gap:8px; min-width:0; padding:7px 16px;
       border-bottom:1px solid var(--line); background:rgba(125,242,177,.035);
@@ -269,6 +270,8 @@
         <label>Parpadeo <select id="blink-frame" aria-label="Fotograma de parpadeo"></select></label>
         <a id="clean-base-link" class="button" href="/clean-base">✎ Limpiar pose base</a>
         <button id="preview-animation" type="button">▶ Ver animación</button>
+        <button id="publish-pose" type="button">✓ Publicar pose</button>
+        <button id="publish-all" type="button">✓ Publicar todas</button>
         <a id="download-hq" class="button" href="#" download>↓ Animación HQ (APNG)</a>
         <a id="download-full" class="button" href="#" download>↓ GIF sprite completo</a>
         <a id="download-eyes" class="button" href="#" download>↓ Sólo ojos</a>
@@ -279,6 +282,7 @@
         <button type="button" data-location="base">📁 Sprite base</button>
         <button type="button" data-location="eyes">👁 Ojos utilizados</button>
         <button type="button" data-location="results">💾 Guardado X/Y</button>
+        <button type="button" data-location="production">📦 Capas de producción</button>
         <span id="location-state">Selecciona una ubicación para abrirla</span>
       </div>
       <div id="workspace" class="workspace">
@@ -1373,6 +1377,29 @@
       return results.every(Boolean);
     }
 
+    async function publishEyes(publishAll=false) {
+      const entry=current();if(!entry)return;
+      if(sourceMode!=='saved'){
+        globalState.textContent='La producción se publica desde Recortes guardados';
+        sourceModeSelect.value='saved';rebuildPoses(entry.id);return;
+      }
+      if(publishAll&&!window.confirm('¿Publicar las tres capas transparentes de todas las poses revisadas?'))return;
+      if(!await flushPendingOffsets())return;
+      const buttons=[document.getElementById('publish-pose'),document.getElementById('publish-all')];
+      buttons.forEach(button=>button.disabled=true);
+      globalState.textContent=publishAll?'Publicando todas las capas…':'Publicando la pose…';
+      try{
+        const response=await fetch('/api/publish-eye-layers',{
+          method:'POST',headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(publishAll?{}:{id:entry.id})
+        });
+        const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo publicar');
+        globalState.textContent=`Publicadas ${result.published} pose(s) · ${result.poseCount} en el manifiesto`;
+        refreshLocations();
+      }catch(error){globalState.textContent=error.message;}
+      finally{buttons.forEach(button=>button.disabled=false);}
+    }
+
     async function navigateSafely(target) {
       if(pixelEditor?.dirty&&!window.confirm('Hay pintura sin guardar en la capa ocular. ¿Salir y descartarla?'))return;
       if(!await flushPendingOffsets()){
@@ -1409,6 +1436,8 @@
     sourceModeSelect.addEventListener('change',()=>{closeAnimationPreview();rebuildPoses(current()?.id);});
     blinkFrameSelect.addEventListener('change',updateBlinkFrame);
     document.getElementById('preview-animation').addEventListener('click',openAnimationPreview);
+    document.getElementById('publish-pose').addEventListener('click',()=>publishEyes(false));
+    document.getElementById('publish-all').addEventListener('click',()=>publishEyes(true));
     document.getElementById('close-animation').addEventListener('click',closeAnimationPreview);
     document.getElementById('toggle-animation').addEventListener('click',toggleAnimationPreview);
     document.getElementById('restart-animation').addEventListener('click',restartAnimationPreview);

@@ -43,6 +43,7 @@ class VisualNovelEngine {
         this.currentScene = 0;
         this.currentLine = 0;
         this.characters = {};
+        this.characterLoadPromises = new Map();
         this.chapters = {};
         this.gameState = {};
         this.history = [];
@@ -167,27 +168,45 @@ class VisualNovelEngine {
     }
 
     async loadCharacter(characterName) {
-        try {
-            const characterKey = this.getCharacterKey(characterName);
-            const response = await fetch(`characters/${characterKey}.json?v=${Date.now()}`, {
-                cache: 'no-store'
-            });
-            const character = await response.json();
-            const [intermediates, layerBlinks, whiteHaloCopies] = await Promise.all([
-                this.loadBlinkIntermediateManifest(),
-                this.loadLayerBlinkManifest(),
-                this.loadWhiteHaloManifest()
-            ]);
-            this.applyWhiteHaloCopies(characterKey, character, whiteHaloCopies);
-            this.applyBlinkIntermediateFrames(characterKey, character, intermediates);
-            this.applyWhiteHaloAnimationFrames(characterKey, character, whiteHaloCopies);
-            this.applyLayerBlinkFrames(characterKey, character, layerBlinks);
-            this.characters[characterKey] = character;
-            return character;
-        } catch (error) {
-            console.error(`Error cargando personaje ${characterName}:`, error);
-            return null;
+        const characterKey = this.getCharacterKey(characterName);
+        const cachedCharacter = this.characters[characterKey];
+        if (cachedCharacter) return cachedCharacter;
+
+        if (this.characterLoadPromises.has(characterKey)) {
+            return this.characterLoadPromises.get(characterKey);
         }
+
+        const loadPromise = (async () => {
+            try {
+                const response = await fetch(`characters/${characterKey}.json?v=${Date.now()}`, {
+                    cache: 'no-store'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const character = await response.json();
+                const [intermediates, layerBlinks, whiteHaloCopies] = await Promise.all([
+                    this.loadBlinkIntermediateManifest(),
+                    this.loadLayerBlinkManifest(),
+                    this.loadWhiteHaloManifest()
+                ]);
+
+                this.applyWhiteHaloCopies(characterKey, character, whiteHaloCopies);
+                this.applyBlinkIntermediateFrames(characterKey, character, intermediates);
+                this.applyWhiteHaloAnimationFrames(characterKey, character, whiteHaloCopies);
+                this.applyLayerBlinkFrames(characterKey, character, layerBlinks);
+                this.characters[characterKey] = character;
+                return character;
+            } catch (error) {
+                console.error(`Error cargando personaje ${characterName}:`, error);
+                return null;
+            }
+        })();
+
+        this.characterLoadPromises.set(characterKey, loadPromise);
+        return loadPromise.finally(() => this.characterLoadPromises.delete(characterKey));
     }
 
     async loadBlinkIntermediateManifest() {

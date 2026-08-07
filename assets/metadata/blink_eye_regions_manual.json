@@ -380,6 +380,2208 @@
         "mode": "include",
         "feather": 6.0
       }
+    ],
+    "carlos.neutral": [
+      {
+        "cx": 0.391711,
+        "cy": 0.281027,
+        "rx": 0.06844,
+        "ry": 0.05366,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.561943,
+        "cy": 0.273538,
+        "rx": 0.082076,
+        "ry": 0.056186,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.alarmed": [
+      {
+        "cx": 0.479492,
+        "cy": 0.22998,
+        "rx": 0.081963,
+        "ry": 0.109844,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.61084,
+        "cy": 0.222168,
+        "rx": 0.088408,
+        "ry": 0.109114,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.angry": [
+      {
+        "cx": 0.191895,
+        "cy": 0.235352,
+        "rx": 0.078617,
+        "ry": 0.062692,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.320801,
+        "cy": 0.235677,
+        "rx": 0.078136,
+        "ry": 0.064133,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.bua": [
+      {
+        "cx": 0.431152,
+        "cy": 0.276367,
+        "rx": 0.117432,
+        "ry": 0.135533,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.596191,
+        "cy": 0.27832,
+        "rx": 0.118251,
+        "ry": 0.137607,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.clapping": [
+      {
+        "cx": 0.412109,
+        "cy": 0.272461,
+        "rx": 0.09157,
+        "ry": 0.108802,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.539551,
+        "cy": 0.272461,
+        "rx": 0.090887,
+        "ry": 0.108777,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.determined": [
+      {
+        "cx": 0.36377,
+        "cy": 0.217122,
+        "rx": 0.073061,
+        "ry": 0.065335,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.48877,
+        "cy": 0.214844,
+        "rx": 0.076751,
+        "ry": 0.064429,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.embarrassed": [
+      {
+        "cx": 0.40625,
+        "cy": 0.292247,
+        "rx": 0.106563,
+        "ry": 0.082027,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.557381,
+        "cy": 0.292465,
+        "rx": 0.1092,
+        "ry": 0.08239,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.epic": [
+      {
+        "cx": 0.300719,
+        "cy": 0.263252,
+        "rx": 0.075548,
+        "ry": 0.101284,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.405751,
+        "cy": 0.266397,
+        "rx": 0.075086,
+        "ry": 0.105614,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.facepalm": [
+      {
+        "cx": 0.490234,
+        "cy": 0.311523,
+        "rx": 0.077904,
+        "ry": 0.108231,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.59668,
+        "cy": 0.310547,
+        "rx": 0.07471,
+        "ry": 0.108738,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.happy": [
+      {
+        "cx": 0.382324,
+        "cy": 0.238607,
+        "rx": 0.069703,
+        "ry": 0.056885,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.529785,
+        "cy": 0.236003,
+        "rx": 0.082065,
+        "ry": 0.059475,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.human": [
+      {
+        "cx": 0.436866,
+        "cy": 0.108512,
+        "rx": 0.064275,
+        "ry": 0.026011,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.529312,
+        "cy": 0.102593,
+        "rx": 0.056188,
+        "ry": 0.02125,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.neutral": [
+      {
+        "cx": 0.391113,
+        "cy": 0.272461,
+        "rx": 0.1242,
+        "ry": 0.100347,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.567383,
+        "cy": 0.268229,
+        "rx": 0.126252,
+        "ry": 0.096332,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.picado": [
+      {
+        "cx": 0.716542,
+        "cy": 0.706786,
+        "rx": 0.075476,
+        "ry": 0.120185,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.820865,
+        "cy": 0.706786,
+        "rx": 0.07606,
+        "ry": 0.120222,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.picante": [
+      {
+        "cx": 0.673046,
+        "cy": 0.239234,
+        "rx": 0.098241,
+        "ry": 0.147421,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.805423,
+        "cy": 0.239234,
+        "rx": 0.088342,
+        "ry": 0.14696,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.riku": [
+      {
+        "cx": 0.380781,
+        "cy": 0.253987,
+        "rx": 0.070008,
+        "ry": 0.095704,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.478868,
+        "cy": 0.253987,
+        "rx": 0.071121,
+        "ry": 0.095761,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.sad": [
+      {
+        "cx": 0.350098,
+        "cy": 0.220703,
+        "rx": 0.077103,
+        "ry": 0.064753,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.473633,
+        "cy": 0.220378,
+        "rx": 0.08079,
+        "ry": 0.063495,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.shocked": [
+      {
+        "cx": 0.479492,
+        "cy": 0.22998,
+        "rx": 0.081963,
+        "ry": 0.109844,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.61084,
+        "cy": 0.222168,
+        "rx": 0.088408,
+        "ry": 0.109114,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.surprised": [
+      {
+        "cx": 0.375977,
+        "cy": 0.198242,
+        "rx": 0.069458,
+        "ry": 0.059227,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.505371,
+        "cy": 0.198242,
+        "rx": 0.075471,
+        "ry": 0.065399,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.thinking": [
+      {
+        "cx": 0.437988,
+        "cy": 0.265137,
+        "rx": 0.099647,
+        "ry": 0.104307,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.580811,
+        "cy": 0.268555,
+        "rx": 0.104571,
+        "ry": 0.109562,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.worried": [
+      {
+        "cx": 0.409912,
+        "cy": 0.263672,
+        "rx": 0.082868,
+        "ry": 0.107335,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.53833,
+        "cy": 0.263672,
+        "rx": 0.084992,
+        "ry": 0.107731,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.zip_happy": [
+      {
+        "cx": 0.384694,
+        "cy": 0.223633,
+        "rx": 0.130867,
+        "ry": 0.080642,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.566327,
+        "cy": 0.223307,
+        "rx": 0.133716,
+        "ry": 0.081185,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.zip_surprised": [
+      {
+        "cx": 0.376531,
+        "cy": 0.209961,
+        "rx": 0.137555,
+        "ry": 0.085734,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.563265,
+        "cy": 0.209961,
+        "rx": 0.136135,
+        "ry": 0.085683,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "edu.zip_worried": [
+      {
+        "cx": 0.421079,
+        "cy": 0.283203,
+        "rx": 0.107285,
+        "ry": 0.100501,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.571283,
+        "cy": 0.283203,
+        "rx": 0.11227,
+        "ry": 0.100718,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "elion_husk.angry": [
+      {
+        "cx": 0.429538,
+        "cy": 0.106257,
+        "rx": 0.068233,
+        "ry": 0.034446,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.533822,
+        "cy": 0.102593,
+        "rx": 0.065888,
+        "ry": 0.032015,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "elion_husk.neutral": [
+      {
+        "cx": 0.432356,
+        "cy": 0.104848,
+        "rx": 0.064461,
+        "ry": 0.035119,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.531567,
+        "cy": 0.101747,
+        "rx": 0.061942,
+        "ry": 0.032205,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "elion_husk.shadow": [
+      {
+        "cx": 0.434047,
+        "cy": 0.104002,
+        "rx": 0.05266,
+        "ry": 0.026048,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.527621,
+        "cy": 0.101466,
+        "rx": 0.054914,
+        "ry": 0.02633,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "elion_husk.smirk": [
+      {
+        "cx": 0.428974,
+        "cy": 0.10513,
+        "rx": 0.069469,
+        "ry": 0.036731,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.533822,
+        "cy": 0.102029,
+        "rx": 0.06898,
+        "ry": 0.034166,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "gorila.sospecha": [
+      {
+        "cx": 0.436592,
+        "cy": 0.1175,
+        "rx": 0.090463,
+        "ry": 0.054829,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.582563,
+        "cy": 0.114286,
+        "rx": 0.09328,
+        "ry": 0.056904,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.alarmed": [
+      {
+        "cx": 0.439576,
+        "cy": 0.196464,
+        "rx": 0.100839,
+        "ry": 0.153802,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.583026,
+        "cy": 0.195481,
+        "rx": 0.105403,
+        "ry": 0.155356,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.angry": [
+      {
+        "cx": 0.429428,
+        "cy": 0.310904,
+        "rx": 0.105949,
+        "ry": 0.147823,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.574723,
+        "cy": 0.310413,
+        "rx": 0.102223,
+        "ry": 0.14768,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.determined": [
+      {
+        "cx": 0.446956,
+        "cy": 0.23723,
+        "rx": 0.09942,
+        "ry": 0.14483,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.589022,
+        "cy": 0.238212,
+        "rx": 0.10459,
+        "ry": 0.143655,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.embarrassed": [
+      {
+        "cx": 0.408672,
+        "cy": 0.269646,
+        "rx": 0.109803,
+        "ry": 0.139022,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.562269,
+        "cy": 0.269155,
+        "rx": 0.109678,
+        "ry": 0.137645,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.epic": [
+      {
+        "cx": 0.428044,
+        "cy": 0.253438,
+        "rx": 0.096535,
+        "ry": 0.144021,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.564576,
+        "cy": 0.252947,
+        "rx": 0.098752,
+        "ry": 0.143432,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.facepalm": [
+      {
+        "cx": 0.410517,
+        "cy": 0.293222,
+        "rx": 0.082799,
+        "ry": 0.116761,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.524446,
+        "cy": 0.292731,
+        "rx": 0.080385,
+        "ry": 0.116642,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.happy": [
+      {
+        "cx": 0.462177,
+        "cy": 0.202358,
+        "rx": 0.090734,
+        "ry": 0.127355,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.592712,
+        "cy": 0.201375,
+        "rx": 0.095525,
+        "ry": 0.127547,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.human": [
+      {
+        "cx": 0.409808,
+        "cy": 0.119504,
+        "rx": 0.052096,
+        "ry": 0.020129,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.501691,
+        "cy": 0.111612,
+        "rx": 0.051532,
+        "ry": 0.021256,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.neutral": [
+      {
+        "cx": 0.470046,
+        "cy": 0.203831,
+        "rx": 0.093316,
+        "ry": 0.132254,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.598618,
+        "cy": 0.201866,
+        "rx": 0.091396,
+        "ry": 0.13354,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.sad": [
+      {
+        "cx": 0.485701,
+        "cy": 0.27947,
+        "rx": 0.106702,
+        "ry": 0.134809,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.633303,
+        "cy": 0.277014,
+        "rx": 0.100907,
+        "ry": 0.133066,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.serious": [
+      {
+        "cx": 0.45203,
+        "cy": 0.205305,
+        "rx": 0.097425,
+        "ry": 0.141322,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.587638,
+        "cy": 0.205305,
+        "rx": 0.097425,
+        "ry": 0.141322,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.shocked": [
+      {
+        "cx": 0.428506,
+        "cy": 0.266699,
+        "rx": 0.105838,
+        "ry": 0.173222,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.585793,
+        "cy": 0.267682,
+        "rx": 0.118514,
+        "ry": 0.173709,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.surprised": [
+      {
+        "cx": 0.426199,
+        "cy": 0.239194,
+        "rx": 0.089351,
+        "ry": 0.150526,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.551199,
+        "cy": 0.238212,
+        "rx": 0.090406,
+        "ry": 0.149903,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.thinking": [
+      {
+        "cx": 0.425738,
+        "cy": 0.260314,
+        "rx": 0.110345,
+        "ry": 0.134229,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.58441,
+        "cy": 0.261297,
+        "rx": 0.1149,
+        "ry": 0.133679,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "jose.worried": [
+      {
+        "cx": 0.41559,
+        "cy": 0.265717,
+        "rx": 0.10056,
+        "ry": 0.14419,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.562269,
+        "cy": 0.266208,
+        "rx": 0.108427,
+        "ry": 0.140353,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "ketchling.bottler": [
+      {
+        "cx": 0.364258,
+        "cy": 0.273763,
+        "rx": 0.090297,
+        "ry": 0.076671,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.521973,
+        "cy": 0.274414,
+        "rx": 0.090557,
+        "ry": 0.079243,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "ketchling.cook": [
+      {
+        "cx": 0.364746,
+        "cy": 0.274089,
+        "rx": 0.090714,
+        "ry": 0.081372,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.521484,
+        "cy": 0.276367,
+        "rx": 0.090838,
+        "ry": 0.079246,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "ketchling.determined": [
+      {
+        "cx": 0.364258,
+        "cy": 0.273763,
+        "rx": 0.090297,
+        "ry": 0.076671,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.521973,
+        "cy": 0.274414,
+        "rx": 0.090557,
+        "ry": 0.079243,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "ketchling.happy": [
+      {
+        "cx": 0.364746,
+        "cy": 0.274089,
+        "rx": 0.090714,
+        "ry": 0.081372,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.521484,
+        "cy": 0.276367,
+        "rx": 0.090838,
+        "ry": 0.079246,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "ketchling.mechanic": [
+      {
+        "cx": 0.370605,
+        "cy": 0.261068,
+        "rx": 0.076393,
+        "ry": 0.059156,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.512695,
+        "cy": 0.263346,
+        "rx": 0.077027,
+        "ry": 0.060792,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "ketchling.neutral": [
+      {
+        "cx": 0.366699,
+        "cy": 0.264323,
+        "rx": 0.082545,
+        "ry": 0.063588,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.514648,
+        "cy": 0.264974,
+        "rx": 0.083665,
+        "ry": 0.065314,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "ketchling.security": [
+      {
+        "cx": 0.366699,
+        "cy": 0.264323,
+        "rx": 0.082545,
+        "ry": 0.063588,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.514648,
+        "cy": 0.264974,
+        "rx": 0.083665,
+        "ry": 0.065314,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "ketchling.worried": [
+      {
+        "cx": 0.370605,
+        "cy": 0.261068,
+        "rx": 0.076393,
+        "ry": 0.059156,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.512695,
+        "cy": 0.263346,
+        "rx": 0.077027,
+        "ry": 0.060792,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "micaela.crazy": [
+      {
+        "cx": 0.41448,
+        "cy": 0.440445,
+        "rx": 0.082359,
+        "ry": 0.067961,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.527697,
+        "cy": 0.432592,
+        "rx": 0.073629,
+        "ry": 0.063785,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "micaela.neutral": [
+      {
+        "cx": 0.388184,
+        "cy": 0.212565,
+        "rx": 0.073164,
+        "ry": 0.060141,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.503906,
+        "cy": 0.206055,
+        "rx": 0.075787,
+        "ry": 0.061817,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "neit.neutral": [
+      {
+        "cx": 0.421123,
+        "cy": 0.231455,
+        "rx": 0.093972,
+        "ry": 0.072548,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.570856,
+        "cy": 0.231455,
+        "rx": 0.0985,
+        "ry": 0.079676,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "nexo.angry": [
+      {
+        "cx": 0.393066,
+        "cy": 0.340873,
+        "rx": 0.085095,
+        "ry": 0.080764,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.584961,
+        "cy": 0.337698,
+        "rx": 0.097675,
+        "ry": 0.079786,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "nexo.happy": [
+      {
+        "cx": 0.393066,
+        "cy": 0.340873,
+        "rx": 0.085095,
+        "ry": 0.080764,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.584961,
+        "cy": 0.337698,
+        "rx": 0.097675,
+        "ry": 0.079786,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "nexo.neutral": [
+      {
+        "cx": 0.393066,
+        "cy": 0.340873,
+        "rx": 0.085095,
+        "ry": 0.080764,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.584961,
+        "cy": 0.337698,
+        "rx": 0.097675,
+        "ry": 0.079786,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "nexo.sad": [
+      {
+        "cx": 0.393066,
+        "cy": 0.340873,
+        "rx": 0.085095,
+        "ry": 0.080764,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.584961,
+        "cy": 0.337698,
+        "rx": 0.097675,
+        "ry": 0.079786,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "nexo.surprised": [
+      {
+        "cx": 0.393066,
+        "cy": 0.340873,
+        "rx": 0.085095,
+        "ry": 0.080764,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.584961,
+        "cy": 0.337698,
+        "rx": 0.097675,
+        "ry": 0.079786,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "paloma.churrera": [
+      {
+        "cx": 0.78418,
+        "cy": 0.259277,
+        "rx": 0.05477,
+        "ry": 0.046469,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "paloma.neutral": [
+      {
+        "cx": 0.787109,
+        "cy": 0.200195,
+        "rx": 0.05184,
+        "ry": 0.046957,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.alarmed": [
+      {
+        "cx": 0.497559,
+        "cy": 0.213867,
+        "rx": 0.044516,
+        "ry": 0.039145,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.615723,
+        "cy": 0.213379,
+        "rx": 0.038656,
+        "ry": 0.040609,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.angry": [
+      {
+        "cx": 0.480957,
+        "cy": 0.205566,
+        "rx": 0.054281,
+        "ry": 0.038656,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.588379,
+        "cy": 0.204102,
+        "rx": 0.055199,
+        "ry": 0.037821,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.bua": [
+      {
+        "cx": 0.484863,
+        "cy": 0.426758,
+        "rx": 0.042217,
+        "ry": 0.035503,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.545898,
+        "cy": 0.42627,
+        "rx": 0.042809,
+        "ry": 0.034878,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.charred_blink": [
+      {
+        "cx": 0.472089,
+        "cy": 0.205343,
+        "rx": 0.050162,
+        "ry": 0.047325,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.566587,
+        "cy": 0.207735,
+        "rx": 0.059584,
+        "ry": 0.051383,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.clapping": [
+      {
+        "cx": 0.586426,
+        "cy": 0.302734,
+        "rx": 0.071341,
+        "ry": 0.109898,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.727539,
+        "cy": 0.303223,
+        "rx": 0.129904,
+        "ry": 0.111841,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.curious": [
+      {
+        "cx": 0.427734,
+        "cy": 0.238281,
+        "rx": 0.102358,
+        "ry": 0.10357,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.579427,
+        "cy": 0.257812,
+        "rx": 0.091485,
+        "ry": 0.096243,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.determined": [
+      {
+        "cx": 0.514648,
+        "cy": 0.224609,
+        "rx": 0.04891,
+        "ry": 0.035238,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.632324,
+        "cy": 0.224121,
+        "rx": 0.049398,
+        "ry": 0.036703,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.embarrassed": [
+      {
+        "cx": 0.634277,
+        "cy": 0.273438,
+        "rx": 0.049298,
+        "ry": 0.072935,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.704102,
+        "cy": 0.273438,
+        "rx": 0.049961,
+        "ry": 0.073642,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.happy": [
+      {
+        "cx": 0.449707,
+        "cy": 0.190918,
+        "rx": 0.060099,
+        "ry": 0.039582,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.558105,
+        "cy": 0.188965,
+        "rx": 0.060816,
+        "ry": 0.038361,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.human": [
+      {
+        "cx": 0.435175,
+        "cy": 0.11274,
+        "rx": 0.048068,
+        "ry": 0.02207,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.503946,
+        "cy": 0.106539,
+        "rx": 0.041386,
+        "ry": 0.016747,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.neutral": [
+      {
+        "cx": 0.450195,
+        "cy": 0.197754,
+        "rx": 0.053793,
+        "ry": 0.039633,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.561523,
+        "cy": 0.197266,
+        "rx": 0.05477,
+        "ry": 0.039145,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.sad": [
+      {
+        "cx": 0.475098,
+        "cy": 0.276855,
+        "rx": 0.08629,
+        "ry": 0.101775,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.632324,
+        "cy": 0.275879,
+        "rx": 0.089887,
+        "ry": 0.103703,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.shocked": [
+      {
+        "cx": 0.541016,
+        "cy": 0.168457,
+        "rx": 0.056723,
+        "ry": 0.06307,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.649414,
+        "cy": 0.152832,
+        "rx": 0.038168,
+        "ry": 0.046469,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.surprised": [
+      {
+        "cx": 0.437012,
+        "cy": 0.239746,
+        "rx": 0.076428,
+        "ry": 0.085474,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.563965,
+        "cy": 0.243652,
+        "rx": 0.076415,
+        "ry": 0.087397,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.thinking": [
+      {
+        "cx": 0.464844,
+        "cy": 0.229004,
+        "rx": 0.050863,
+        "ry": 0.03768,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.580078,
+        "cy": 0.226074,
+        "rx": 0.044027,
+        "ry": 0.038656,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.valla": [
+      {
+        "cx": 0.46875,
+        "cy": 0.159668,
+        "rx": 0.073928,
+        "ry": 0.067583,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.585449,
+        "cy": 0.158691,
+        "rx": 0.071289,
+        "ry": 0.06901,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "samu.worried": [
+      {
+        "cx": 0.432589,
+        "cy": 0.220984,
+        "rx": 0.056741,
+        "ry": 0.039944,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.575682,
+        "cy": 0.221368,
+        "rx": 0.055462,
+        "ry": 0.04001,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.conduciendo": [
+      {
+        "cx": 0.527516,
+        "cy": 0.25,
+        "rx": 0.06316,
+        "ry": 0.128185,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.613994,
+        "cy": 0.25,
+        "rx": 0.06206,
+        "ry": 0.12809,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.despedida": [
+      {
+        "cx": 0.392444,
+        "cy": 0.197143,
+        "rx": 0.067384,
+        "ry": 0.104109,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.484,
+        "cy": 0.196071,
+        "rx": 0.065183,
+        "ry": 0.103915,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.estornudo_1": [
+      {
+        "cx": 0.254419,
+        "cy": 0.426598,
+        "rx": 0.047836,
+        "ry": 0.085873,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.317674,
+        "cy": 0.42502,
+        "rx": 0.044656,
+        "ry": 0.085459,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.estornudo_4": [
+      {
+        "cx": 0.400465,
+        "cy": 0.382794,
+        "rx": 0.112525,
+        "ry": 0.104348,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.548837,
+        "cy": 0.384373,
+        "rx": 0.092422,
+        "ry": 0.102878,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.herido": [
+      {
+        "cx": 0.301399,
+        "cy": 0.193133,
+        "rx": 0.124556,
+        "ry": 0.096266,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.482517,
+        "cy": 0.190451,
+        "rx": 0.121651,
+        "ry": 0.099435,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.mesa": [
+      {
+        "cx": 0.35056,
+        "cy": 0.268854,
+        "rx": 0.082299,
+        "ry": 0.094144,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.490095,
+        "cy": 0.266405,
+        "rx": 0.083643,
+        "ry": 0.098409,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.neutral": [
+      {
+        "cx": 0.199725,
+        "cy": 0.147143,
+        "rx": 0.050507,
+        "ry": 0.085368,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.268939,
+        "cy": 0.146429,
+        "rx": 0.050047,
+        "ry": 0.086301,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.preocupado": [
+      {
+        "cx": 0.35289,
+        "cy": 0.14154,
+        "rx": 0.112927,
+        "ry": 0.090238,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.512259,
+        "cy": 0.144794,
+        "rx": 0.110793,
+        "ry": 0.100674,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.riendo": [
+      {
+        "cx": 0.463434,
+        "cy": 0.14479,
+        "rx": 0.112486,
+        "ry": 0.116815,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.617647,
+        "cy": 0.143788,
+        "rx": 0.109569,
+        "ry": 0.115996,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "santi.saludando": [
+      {
+        "cx": 0.336151,
+        "cy": 0.153259,
+        "rx": 0.084719,
+        "ry": 0.119761,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.451235,
+        "cy": 0.153259,
+        "rx": 0.081503,
+        "ry": 0.120256,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "sebas.neutral": [
+      {
+        "cx": 0.502868,
+        "cy": 0.202102,
+        "rx": 0.083069,
+        "ry": 0.083745,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.631453,
+        "cy": 0.199677,
+        "rx": 0.082245,
+        "ry": 0.091795,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.alarmed": [
+      {
+        "cx": 0.407919,
+        "cy": 0.251727,
+        "rx": 0.072245,
+        "ry": 0.053834,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.550645,
+        "cy": 0.252417,
+        "rx": 0.076541,
+        "ry": 0.05704,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.angry": [
+      {
+        "cx": 0.470703,
+        "cy": 0.248047,
+        "rx": 0.071091,
+        "ry": 0.095883,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.585449,
+        "cy": 0.249023,
+        "rx": 0.069483,
+        "ry": 0.097126,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.balada": [
+      {
+        "cx": 0.489254,
+        "cy": 0.252857,
+        "rx": 0.102998,
+        "ry": 0.06879,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.656764,
+        "cy": 0.253571,
+        "rx": 0.102456,
+        "ry": 0.069726,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.cantando": [
+      {
+        "cx": 0.450431,
+        "cy": 0.231429,
+        "rx": 0.076372,
+        "ry": 0.078703,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.572845,
+        "cy": 0.232143,
+        "rx": 0.076918,
+        "ry": 0.080106,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.derrumbe": [
+      {
+        "cx": 0.535156,
+        "cy": 0.351237,
+        "rx": 0.073192,
+        "ry": 0.059218,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.657227,
+        "cy": 0.352539,
+        "rx": 0.072744,
+        "ry": 0.057427,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.determined": [
+      {
+        "cx": 0.459729,
+        "cy": 0.295455,
+        "rx": 0.065041,
+        "ry": 0.063338,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.576954,
+        "cy": 0.298644,
+        "rx": 0.071083,
+        "ry": 0.071083,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.embarrassed": [
+      {
+        "cx": 0.436924,
+        "cy": 0.256906,
+        "rx": 0.084083,
+        "ry": 0.058006,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.576888,
+        "cy": 0.258978,
+        "rx": 0.082407,
+        "ry": 0.058375,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.eyeroll": [
+      {
+        "cx": 0.455801,
+        "cy": 0.284185,
+        "rx": 0.088729,
+        "ry": 0.064556,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.599908,
+        "cy": 0.285912,
+        "rx": 0.085662,
+        "ry": 0.06618,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.flirt": [
+      {
+        "cx": 0.558932,
+        "cy": 0.264848,
+        "rx": 0.056865,
+        "ry": 0.07896,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.638122,
+        "cy": 0.26692,
+        "rx": 0.05841,
+        "ry": 0.075828,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.giggle": [
+      {
+        "cx": 0.439687,
+        "cy": 0.282804,
+        "rx": 0.087623,
+        "ry": 0.06124,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.593002,
+        "cy": 0.28453,
+        "rx": 0.08666,
+        "ry": 0.061326,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.happy": [
+      {
+        "cx": 0.484863,
+        "cy": 0.250488,
+        "rx": 0.087533,
+        "ry": 0.099943,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.627441,
+        "cy": 0.255859,
+        "rx": 0.087313,
+        "ry": 0.105218,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.human": [
+      {
+        "cx": 0.400225,
+        "cy": 0.090192,
+        "rx": 0.04661,
+        "ry": 0.022,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.465614,
+        "cy": 0.082864,
+        "rx": 0.039131,
+        "ry": 0.01562,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.neutral": [
+      {
+        "cx": 0.496582,
+        "cy": 0.27124,
+        "rx": 0.082314,
+        "ry": 0.098419,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.629395,
+        "cy": 0.273682,
+        "rx": 0.080666,
+        "ry": 0.102744,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.sad": [
+      {
+        "cx": 0.414274,
+        "cy": 0.222089,
+        "rx": 0.077428,
+        "ry": 0.123451,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.535486,
+        "cy": 0.214514,
+        "rx": 0.083963,
+        "ry": 0.11568,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.shocked": [
+      {
+        "cx": 0.440186,
+        "cy": 0.239502,
+        "rx": 0.092432,
+        "ry": 0.134622,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.588623,
+        "cy": 0.225342,
+        "rx": 0.105834,
+        "ry": 0.145719,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.surprised": [
+      {
+        "cx": 0.47807,
+        "cy": 0.288278,
+        "rx": 0.065162,
+        "ry": 0.102453,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.588915,
+        "cy": 0.29067,
+        "rx": 0.068934,
+        "ry": 0.113414,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.thinking": [
+      {
+        "cx": 0.525819,
+        "cy": 0.252857,
+        "rx": 0.100437,
+        "ry": 0.065166,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.695844,
+        "cy": 0.254643,
+        "rx": 0.099838,
+        "ry": 0.068435,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tony.worried": [
+      {
+        "cx": 0.450957,
+        "cy": 0.277911,
+        "rx": 0.076033,
+        "ry": 0.074141,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.572568,
+        "cy": 0.2811,
+        "rx": 0.076723,
+        "ry": 0.08194,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tralalelo_tralala.neutral": [
+      {
+        "cx": 0.226887,
+        "cy": 0.449956,
+        "rx": 0.068998,
+        "ry": 0.142039,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.320187,
+        "cy": 0.450392,
+        "rx": 0.066605,
+        "ry": 0.141243,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "tung_tung_tung_sahur.neutral": [
+      {
+        "cx": 0.484863,
+        "cy": 0.175781,
+        "rx": 0.080681,
+        "ry": 0.083537,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.599121,
+        "cy": 0.161133,
+        "rx": 0.08036,
+        "ry": 0.083894,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "zip.angry": [
+      {
+        "cx": 0.411344,
+        "cy": 0.277143,
+        "rx": 0.098908,
+        "ry": 0.067031,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.576542,
+        "cy": 0.267857,
+        "rx": 0.098993,
+        "ry": 0.072435,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
+    ],
+    "zip.neutral": [
+      {
+        "cx": 0.389706,
+        "cy": 0.181094,
+        "rx": 0.088402,
+        "ry": 0.031381,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      },
+      {
+        "cx": 0.563419,
+        "cy": 0.179766,
+        "rx": 0.10035,
+        "ry": 0.032709,
+        "rotation": 0.0,
+        "mode": "include",
+        "feather": 0.0
+      }
     ]
   }
 }

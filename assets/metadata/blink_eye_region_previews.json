@@ -45,7 +45,7 @@
         "width": 1024,
         "height": 1260
       },
-      "updatedAt": "2026-08-03T01:16:28.497600+00:00"
+      "updatedAt": "2026-08-07T12:16:15.006278+00:00"
     },
     "3c.happy": {
       "sourceBase": "assets/images/characters/others/3c_happy.webp",
@@ -91,7 +91,7 @@
         "width": 1131,
         "height": 1391
       },
-      "updatedAt": "2026-08-03T01:16:28.694574+00:00"
+      "updatedAt": "2026-08-07T12:16:15.189681+00:00"
     },
     "3c.neutral": {
       "sourceBase": "assets/images/characters/others/3c.webp",
@@ -137,7 +137,7 @@
         "width": 1024,
         "height": 1260
       },
-      "updatedAt": "2026-08-03T01:16:28.851863+00:00"
+      "updatedAt": "2026-08-07T12:16:15.335989+00:00"
     },
     "3c.sad": {
       "sourceBase": "assets/images/characters/others/3c.webp",
@@ -183,7 +183,7 @@
         "width": 1024,
         "height": 1260
       },
-      "updatedAt": "2026-08-03T01:16:29.012220+00:00"
+      "updatedAt": "2026-08-07T12:16:15.489924+00:00"
     },
     "3c.surprised": {
       "sourceBase": "assets/images/characters/others/3c.webp",
@@ -229,7 +229,7 @@
         "width": 1024,
         "height": 1260
       },
-      "updatedAt": "2026-08-03T01:16:29.170875+00:00"
+      "updatedAt": "2026-08-07T12:16:15.648650+00:00"
     },
     "airi.angry": {
       "sourceBase": "assets/images/characters/airi/airi_angry.webp",
@@ -263,19 +263,19 @@
           "feather": 0.0
         }
       ],
-      "width": 179,
-      "height": 86,
+      "width": 175,
+      "height": 82,
       "crop": {
-        "x": 223,
-        "y": 181,
-        "width": 179,
-        "height": 86
+        "x": 225,
+        "y": 183,
+        "width": 175,
+        "height": 82
       },
       "sourceCanvas": {
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:26:16.626837+00:00"
+      "updatedAt": "2026-08-07T12:16:15.727895+00:00"
     },
     "airi.bua": {
       "sourceBase": "assets/images/characters/airi/airi_bua.webp",
@@ -321,7 +321,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:29.328678+00:00"
+      "updatedAt": "2026-08-07T12:16:15.813065+00:00"
     },
     "airi.determined": {
       "sourceBase": "assets/images/characters/airi/airi_determined.webp",
@@ -367,7 +367,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:29.401341+00:00"
+      "updatedAt": "2026-08-07T12:16:15.889269+00:00"
     },
     "airi.embarrassed": {
       "sourceBase": "assets/images/characters/airi/airi_embarrased.webp",
@@ -413,7 +413,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:29.481353+00:00"
+      "updatedAt": "2026-08-07T12:16:15.961655+00:00"
     },
     "airi.happy": {
       "sourceBase": "assets/images/characters/airi/airi_happy.webp",
@@ -459,7 +459,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:29.568209+00:00"
+      "updatedAt": "2026-08-07T12:16:16.047715+00:00"
     },
     "airi.neutral": {
       "sourceBase": "assets/images/characters/airi/airi.webp",
@@ -505,7 +505,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:29.652338+00:00"
+      "updatedAt": "2026-08-07T12:16:16.127419+00:00"
     },
     "airi.pray": {
       "sourceBase": "assets/images/characters/airi/airi_pray.webp",
@@ -551,7 +551,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:29.731269+00:00"
+      "updatedAt": "2026-08-07T12:16:16.198693+00:00"
     },
     "airi.sad": {
       "sourceBase": "assets/images/characters/airi/airi_sad.webp",
@@ -597,7 +597,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:29.811523+00:00"
+      "updatedAt": "2026-08-07T12:16:16.278777+00:00"
     },
     "airi.surprised": {
       "sourceBase": "assets/images/characters/airi/airi_surprised.webp",
@@ -643,7 +643,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:29.902716+00:00"
+      "updatedAt": "2026-08-07T12:16:16.371402+00:00"
     },
     "airi.thinking": {
       "sourceBase": "assets/images/characters/airi/airi_thinking.webp",
@@ -689,7 +689,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:29.977354+00:00"
+      "updatedAt": "2026-08-07T12:16:16.452035+00:00"
     },
     "airi.worried": {
       "sourceBase": "assets/images/characters/airi/airi_worried.webp",
@@ -735,7 +735,7 @@
         "width": 646,
         "height": 879
       },
-      "updatedAt": "2026-08-03T01:16:30.067263+00:00"
+      "updatedAt": "2026-08-07T12:16:16.539132+00:00"
     },
     "airi_adult.neutral": {
       "sourceBase": "assets/images/characters/airi_adult/airi_adult_no_3d_cg.webp",
@@ -781,7 +781,7 @@
         "width": 738,
         "height": 898
       },
-      "updatedAt": "2026-08-03T01:16:30.152132+00:00"
+      "updatedAt": "2026-08-07T12:16:16.620091+00:00"
     },
     "andres.neutral": {
       "sourceBase": "assets/images/characters/andres/andres.webp",
@@ -827,7 +827,7 @@
         "width": 1122,
         "height": 1402
       },
-      "updatedAt": "2026-08-03T11:34:42.135886+00:00"
+      "updatedAt": "2026-08-07T12:16:16.831302+00:00"
     },
     "ballerina_capuchina.neutral": {
       "sourceBase": "assets/images/characters/ballerina_capuchina.webp",
@@ -873,7 +873,5123 @@
         "width": 793,
         "height": 936
       },
-      "updatedAt": "2026-08-03T11:37:03.458689+00:00"
+      "updatedAt": "2026-08-07T12:16:16.969037+00:00"
+    },
+    "carlos.neutral": {
+      "sourceBase": "assets/images/characters/carlos/carlos.webp",
+      "sourceFrames": [
+        "assets/images/characters/carlos/animations/blinks/carlos_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/carlos/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/carlos/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/carlos/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/carlos/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/carlos/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.391711,
+          "cy": 0.281027,
+          "rx": 0.06844,
+          "ry": 0.05366,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.561943,
+          "cy": 0.273538,
+          "rx": 0.082076,
+          "ry": 0.056186,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 383,
+      "height": 188,
+      "crop": {
+        "x": 351,
+        "y": 293,
+        "width": 383,
+        "height": 188
+      },
+      "sourceCanvas": {
+        "width": 1122,
+        "height": 1402
+      },
+      "updatedAt": "2026-08-07T12:16:17.503740+00:00"
+    },
+    "edu.alarmed": {
+      "sourceBase": "assets/images/characters/edu/edu_shocked.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_alarmed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/alarmed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/alarmed/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/alarmed/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/alarmed/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/alarmed/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.479492,
+          "cy": 0.22998,
+          "rx": 0.081963,
+          "ry": 0.109844,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.61084,
+          "cy": 0.222168,
+          "rx": 0.088408,
+          "ry": 0.109114,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 326,
+      "height": 249,
+      "crop": {
+        "x": 399,
+        "y": 107,
+        "width": 326,
+        "height": 249
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:17.847623+00:00"
+    },
+    "edu.angry": {
+      "sourceBase": "assets/images/characters/edu/edu_angry.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_angry_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/angry/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/angry/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/angry/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/angry/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/angry/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.191895,
+          "cy": 0.235352,
+          "rx": 0.078617,
+          "ry": 0.062692,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.320801,
+          "cy": 0.235677,
+          "rx": 0.078136,
+          "ry": 0.064133,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 318,
+      "height": 222,
+      "crop": {
+        "x": 103,
+        "y": 251,
+        "width": 318,
+        "height": 222
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:18.185838+00:00"
+    },
+    "edu.bua": {
+      "sourceBase": "assets/images/characters/edu/edu_bua.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_bua_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/bua/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/bua/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/bua/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/bua/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/bua/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.431152,
+          "cy": 0.276367,
+          "rx": 0.117432,
+          "ry": 0.135533,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.596191,
+          "cy": 0.27832,
+          "rx": 0.118251,
+          "ry": 0.137607,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 427,
+      "height": 298,
+      "crop": {
+        "x": 313,
+        "y": 136,
+        "width": 427,
+        "height": 298
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:18.698991+00:00"
+    },
+    "edu.clapping": {
+      "sourceBase": "assets/images/characters/edu/edu_clapping.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_clapping_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/clapping/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/clapping/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/clapping/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/clapping/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/clapping/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.412109,
+          "cy": 0.272461,
+          "rx": 0.09157,
+          "ry": 0.108802,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.539551,
+          "cy": 0.272461,
+          "rx": 0.090887,
+          "ry": 0.108777,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 334,
+      "height": 240,
+      "crop": {
+        "x": 320,
+        "y": 159,
+        "width": 334,
+        "height": 240
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:19.103025+00:00"
+    },
+    "edu.determined": {
+      "sourceBase": "assets/images/characters/edu/edu_determined.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_determined_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/determined/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/determined/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/determined/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/determined/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/determined/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.36377,
+          "cy": 0.217122,
+          "rx": 0.073061,
+          "ry": 0.065335,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.48877,
+          "cy": 0.214844,
+          "rx": 0.076751,
+          "ry": 0.064429,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 307,
+      "height": 227,
+      "crop": {
+        "x": 285,
+        "y": 219,
+        "width": 307,
+        "height": 227
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:19.424937+00:00"
+    },
+    "edu.embarrassed": {
+      "sourceBase": "assets/images/characters/edu/edu_embarrassed.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_embarrassed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/embarrassed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/embarrassed/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/embarrassed/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/embarrassed/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/embarrassed/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.40625,
+          "cy": 0.292247,
+          "rx": 0.106563,
+          "ry": 0.082027,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.557381,
+          "cy": 0.292465,
+          "rx": 0.1092,
+          "ry": 0.08239,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 718,
+      "height": 415,
+      "crop": {
+        "x": 538,
+        "y": 464,
+        "width": 718,
+        "height": 415
+      },
+      "sourceCanvas": {
+        "width": 1856,
+        "height": 2296
+      },
+      "updatedAt": "2026-08-07T12:16:20.984070+00:00"
+    },
+    "edu.epic": {
+      "sourceBase": "assets/images/characters/edu/edu_epic.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_epic_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/epic/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/epic/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/epic/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/epic/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/epic/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.300719,
+          "cy": 0.263252,
+          "rx": 0.075548,
+          "ry": 0.101284,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.405751,
+          "cy": 0.266397,
+          "rx": 0.075086,
+          "ry": 0.105614,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 342,
+      "height": 257,
+      "crop": {
+        "x": 271,
+        "y": 168,
+        "width": 342,
+        "height": 257
+      },
+      "sourceCanvas": {
+        "width": 1252,
+        "height": 1113
+      },
+      "updatedAt": "2026-08-07T12:16:21.451159+00:00"
+    },
+    "edu.facepalm": {
+      "sourceBase": "assets/images/characters/edu/edu_facepalm.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_facepalm_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/facepalm/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/facepalm/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/facepalm/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/facepalm/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/facepalm/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.490234,
+          "cy": 0.311523,
+          "rx": 0.077904,
+          "ry": 0.108231,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.59668,
+          "cy": 0.310547,
+          "rx": 0.07471,
+          "ry": 0.108738,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 282,
+      "height": 240,
+      "crop": {
+        "x": 414,
+        "y": 198,
+        "width": 282,
+        "height": 240
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:21.762541+00:00"
+    },
+    "edu.happy": {
+      "sourceBase": "assets/images/characters/edu/edu_happy.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_happy_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/happy/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/happy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/happy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/happy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/happy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.382324,
+          "cy": 0.238607,
+          "rx": 0.069703,
+          "ry": 0.056885,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.529785,
+          "cy": 0.236003,
+          "rx": 0.082065,
+          "ry": 0.059475,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 331,
+      "height": 207,
+      "crop": {
+        "x": 308,
+        "y": 259,
+        "width": 331,
+        "height": 207
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:22.121711+00:00"
+    },
+    "edu.human": {
+      "sourceBase": "assets/images/characters/humans/edu_humano_sprite.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_human_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/human/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/human/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/human/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/human/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/human/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.436866,
+          "cy": 0.108512,
+          "rx": 0.064275,
+          "ry": 0.026011,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.529312,
+          "cy": 0.102593,
+          "rx": 0.056188,
+          "ry": 0.02125,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 218,
+      "height": 123,
+      "crop": {
+        "x": 316,
+        "y": 130,
+        "width": 218,
+        "height": 123
+      },
+      "sourceCanvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "updatedAt": "2026-08-07T12:16:22.306646+00:00"
+    },
+    "edu.neutral": {
+      "sourceBase": "assets/images/characters/edu/Edu.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/edu_neutral_blink_half.webp",
+        "assets/images/characters/edu/animations/edu_neutral_blink_closed.webp",
+        "assets/images/characters/edu/animations/edu_neutral_blink_half.webp"
+      ],
+      "sourceHalf": "assets/images/characters/edu/animations/edu_neutral_blink_half.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/neutral/eyes_blink_02.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/neutral/eyes_blink_01.png",
+        "assets/images/characters/eye_region_previews/edu/neutral/eyes_blink_02.png",
+        "assets/images/characters/eye_region_previews/edu/neutral/eyes_blink_03.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.391113,
+          "cy": 0.272461,
+          "rx": 0.1242,
+          "ry": 0.100347,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.567383,
+          "cy": 0.268229,
+          "rx": 0.126252,
+          "ry": 0.096332,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 462,
+      "height": 333,
+      "crop": {
+        "x": 261,
+        "y": 252,
+        "width": 462,
+        "height": 333
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:23.742514+00:00"
+    },
+    "edu.picado": {
+      "sourceBase": "assets/images/characters/edu/edu_picado.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_picado_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/picado/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/picado/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/picado/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/picado/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/picado/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.716542,
+          "cy": 0.706786,
+          "rx": 0.075476,
+          "ry": 0.120185,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.820865,
+          "cy": 0.706786,
+          "rx": 0.07606,
+          "ry": 0.120222,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 331,
+      "height": 359,
+      "crop": {
+        "x": 760,
+        "y": 810,
+        "width": 331,
+        "height": 359
+      },
+      "sourceCanvas": {
+        "width": 1203,
+        "height": 1400
+      },
+      "updatedAt": "2026-08-07T12:16:24.085198+00:00"
+    },
+    "edu.picante": {
+      "sourceBase": "assets/images/characters/edu/edu_picante_wide_transparent.webp",
+      "sourceFrames": [
+        "assets/images/characters/eye_intermediate_sources/edu/picante/eyes_half_source.webp",
+        "assets/images/characters/edu/animations/blinks/edu_picante_blink_closed.webp",
+        "assets/images/characters/eye_intermediate_sources/edu/picante/eyes_half_source.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/picante/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/picante/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/picante/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/picante/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/picante/eyes_blink_01.png",
+        "assets/images/characters/eye_region_previews/edu/picante/eyes_blink_02.png",
+        "assets/images/characters/eye_region_previews/edu/picante/eyes_blink_03.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.673046,
+          "cy": 0.239234,
+          "rx": 0.098241,
+          "ry": 0.147421,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.805423,
+          "cy": 0.239234,
+          "rx": 0.088342,
+          "ry": 0.14696,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 421,
+      "height": 390,
+      "crop": {
+        "x": 710,
+        "y": 105,
+        "width": 421,
+        "height": 390
+      },
+      "sourceCanvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "updatedAt": "2026-08-07T12:16:24.811467+00:00"
+    },
+    "edu.riku": {
+      "sourceBase": "assets/images/characters/edu/edu_riku.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_riku_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/riku/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/riku/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/riku/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/riku/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/riku/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.380781,
+          "cy": 0.253987,
+          "rx": 0.070008,
+          "ry": 0.095704,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.478868,
+          "cy": 0.253987,
+          "rx": 0.071121,
+          "ry": 0.095761,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 321,
+      "height": 261,
+      "crop": {
+        "x": 379,
+        "y": 188,
+        "width": 321,
+        "height": 261
+      },
+      "sourceCanvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "updatedAt": "2026-08-07T12:16:25.340234+00:00"
+    },
+    "edu.sad": {
+      "sourceBase": "assets/images/characters/edu/edu_sad.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_sad_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/sad/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/sad/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/sad/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/sad/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/sad/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.350098,
+          "cy": 0.220703,
+          "rx": 0.077103,
+          "ry": 0.064753,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.473633,
+          "cy": 0.220378,
+          "rx": 0.08079,
+          "ry": 0.063495,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 313,
+      "height": 224,
+      "crop": {
+        "x": 267,
+        "y": 227,
+        "width": 313,
+        "height": 224
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:25.697316+00:00"
+    },
+    "edu.shocked": {
+      "sourceBase": "assets/images/characters/edu/edu_shocked.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_alarmed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/alarmed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/shocked/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/shocked/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/shocked/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/shocked/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.479492,
+          "cy": 0.22998,
+          "rx": 0.081963,
+          "ry": 0.109844,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.61084,
+          "cy": 0.222168,
+          "rx": 0.088408,
+          "ry": 0.109114,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 326,
+      "height": 249,
+      "crop": {
+        "x": 399,
+        "y": 107,
+        "width": 326,
+        "height": 249
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:26.035989+00:00"
+    },
+    "edu.surprised": {
+      "sourceBase": "assets/images/characters/edu/edu_surprised.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_surprised_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/surprised/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/surprised/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/surprised/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/surprised/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/surprised/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.375977,
+          "cy": 0.198242,
+          "rx": 0.069458,
+          "ry": 0.059227,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.505371,
+          "cy": 0.198242,
+          "rx": 0.075471,
+          "ry": 0.065399,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 306,
+      "height": 225,
+      "crop": {
+        "x": 301,
+        "y": 192,
+        "width": 306,
+        "height": 225
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:26.397505+00:00"
+    },
+    "edu.thinking": {
+      "sourceBase": "assets/images/characters/edu/edu_thinking.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_thinking_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/thinking/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/thinking/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/thinking/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/thinking/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/thinking/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.437988,
+          "cy": 0.265137,
+          "rx": 0.099647,
+          "ry": 0.104307,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.580811,
+          "cy": 0.268555,
+          "rx": 0.104571,
+          "ry": 0.109562,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 744,
+      "height": 482,
+      "crop": {
+        "x": 676,
+        "y": 309,
+        "width": 744,
+        "height": 482
+      },
+      "sourceCanvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "updatedAt": "2026-08-07T12:16:28.259403+00:00"
+    },
+    "edu.worried": {
+      "sourceBase": "assets/images/characters/edu/edu_worried.webp",
+      "sourceFrames": [
+        "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp",
+        "assets/images/characters/edu/animations/blinks/edu_worried_blink_closed.webp",
+        "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/worried/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/worried/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/worried/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/worried/eyes_blink_01.png",
+        "assets/images/characters/eye_region_previews/edu/worried/eyes_blink_02.png",
+        "assets/images/characters/eye_region_previews/edu/worried/eyes_blink_03.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.409912,
+          "cy": 0.263672,
+          "rx": 0.082868,
+          "ry": 0.107335,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.53833,
+          "cy": 0.263672,
+          "rx": 0.084992,
+          "ry": 0.107731,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 640,
+      "height": 474,
+      "crop": {
+        "x": 653,
+        "y": 303,
+        "width": 640,
+        "height": 474
+      },
+      "sourceCanvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "updatedAt": "2026-08-07T12:16:31.461606+00:00"
+    },
+    "edu.zip_happy": {
+      "sourceBase": "assets/images/characters/edu/chapter2/edu_zip_happy.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_zip_happy_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/zip_happy/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/zip_happy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/zip_happy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/zip_happy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/zip_happy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.384694,
+          "cy": 0.223633,
+          "rx": 0.130867,
+          "ry": 0.080642,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.566327,
+          "cy": 0.223307,
+          "rx": 0.133716,
+          "ry": 0.081185,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 244,
+      "height": 274,
+      "crop": {
+        "x": 112,
+        "y": 206,
+        "width": 244,
+        "height": 274
+      },
+      "sourceCanvas": {
+        "width": 490,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:31.799035+00:00"
+    },
+    "edu.zip_surprised": {
+      "sourceBase": "assets/images/characters/edu/chapter2/edu_zip_surprised.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_zip_surprised_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/zip_surprised/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/zip_surprised/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/zip_surprised/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/zip_surprised/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/zip_surprised/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.376531,
+          "cy": 0.209961,
+          "rx": 0.137555,
+          "ry": 0.085734,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.563265,
+          "cy": 0.209961,
+          "rx": 0.136135,
+          "ry": 0.085683,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 250,
+      "height": 289,
+      "crop": {
+        "x": 105,
+        "y": 178,
+        "width": 250,
+        "height": 289
+      },
+      "sourceCanvas": {
+        "width": 490,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:32.139515+00:00"
+    },
+    "edu.zip_worried": {
+      "sourceBase": "assets/images/characters/edu/chapter2/edu_zip_worried.webp",
+      "sourceFrames": [
+        "assets/images/characters/edu/animations/blinks/edu_zip_worried_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/edu/zip_worried/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/edu/zip_worried/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/edu/zip_worried/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/edu/zip_worried/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/edu/zip_worried/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.421079,
+          "cy": 0.283203,
+          "rx": 0.107285,
+          "ry": 0.100501,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.571283,
+          "cy": 0.283203,
+          "rx": 0.11227,
+          "ry": 0.100718,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 396,
+      "height": 446,
+      "crop": {
+        "x": 292,
+        "y": 357,
+        "width": 396,
+        "height": 446
+      },
+      "sourceCanvas": {
+        "width": 982,
+        "height": 2048
+      },
+      "updatedAt": "2026-08-07T12:16:33.124500+00:00"
+    },
+    "elion_husk.angry": {
+      "sourceBase": "assets/images/characters/elion_husk/elion_husk_angry.webp",
+      "sourceFrames": [
+        "assets/images/characters/elion_husk/animations/blinks/elion_angry_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/elion_husk/angry/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/elion_husk/angry/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/elion_husk/angry/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/elion_husk/angry/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/elion_husk/angry/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.429538,
+          "cy": 0.106257,
+          "rx": 0.068233,
+          "ry": 0.034446,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.533822,
+          "cy": 0.102593,
+          "rx": 0.065888,
+          "ry": 0.032015,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 240,
+      "height": 153,
+      "crop": {
+        "x": 306,
+        "y": 111,
+        "width": 240,
+        "height": 153
+      },
+      "sourceCanvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "updatedAt": "2026-08-07T12:16:33.366068+00:00"
+    },
+    "elion_husk.neutral": {
+      "sourceBase": "assets/images/characters/elion_husk/elion_husk_neutral.webp",
+      "sourceFrames": [
+        "assets/images/characters/elion_husk/animations/blinks/elion_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/elion_husk/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/elion_husk/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/elion_husk/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/elion_husk/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/elion_husk/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.432356,
+          "cy": 0.104848,
+          "rx": 0.064461,
+          "ry": 0.035119,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.531567,
+          "cy": 0.101747,
+          "rx": 0.061942,
+          "ry": 0.032205,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 229,
+      "height": 154,
+      "crop": {
+        "x": 312,
+        "y": 109,
+        "width": 229,
+        "height": 154
+      },
+      "sourceCanvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "updatedAt": "2026-08-07T12:16:33.599364+00:00"
+    },
+    "elion_husk.shadow": {
+      "sourceBase": "assets/images/characters/elion_husk/elion_husk_shadow.webp",
+      "sourceFrames": [
+        "assets/images/characters/elion_husk/animations/blinks/elion_shadow_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/elion_husk/shadow/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/elion_husk/shadow/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/elion_husk/shadow/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/elion_husk/shadow/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/elion_husk/shadow/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.434047,
+          "cy": 0.104002,
+          "rx": 0.05266,
+          "ry": 0.026048,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.527621,
+          "cy": 0.101466,
+          "rx": 0.054914,
+          "ry": 0.02633,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 207,
+      "height": 126,
+      "crop": {
+        "x": 324,
+        "y": 119,
+        "width": 207,
+        "height": 126
+      },
+      "sourceCanvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "updatedAt": "2026-08-07T12:16:33.768921+00:00"
+    },
+    "elion_husk.smirk": {
+      "sourceBase": "assets/images/characters/elion_husk/elion_husk_smirk.webp",
+      "sourceFrames": [
+        "assets/images/characters/elion_husk/animations/blinks/elion_smirk_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/elion_husk/smirk/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/elion_husk/smirk/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/elion_husk/smirk/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/elion_husk/smirk/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/elion_husk/smirk/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.428974,
+          "cy": 0.10513,
+          "rx": 0.069469,
+          "ry": 0.036731,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.533822,
+          "cy": 0.102029,
+          "rx": 0.06898,
+          "ry": 0.034166,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 245,
+      "height": 160,
+      "crop": {
+        "x": 304,
+        "y": 106,
+        "width": 245,
+        "height": 160
+      },
+      "sourceCanvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "updatedAt": "2026-08-07T12:16:34.007860+00:00"
+    },
+    "gorila.sospecha": {
+      "sourceBase": "assets/images/characters/gorila/gorila_sospecha.webp",
+      "sourceFrames": [
+        "assets/images/characters/gorila/animations/blinks/gorila_sospecha_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/gorila/sospecha/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/gorila/sospecha/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/gorila/sospecha/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/gorila/sospecha/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/gorila/sospecha/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.436592,
+          "cy": 0.1175,
+          "rx": 0.090463,
+          "ry": 0.054829,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.582563,
+          "cy": 0.114286,
+          "rx": 0.09328,
+          "ry": 0.056904,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 272,
+      "height": 184,
+      "crop": {
+        "x": 251,
+        "y": 69,
+        "width": 272,
+        "height": 184
+      },
+      "sourceCanvas": {
+        "width": 757,
+        "height": 1400
+      },
+      "updatedAt": "2026-08-07T12:16:34.183899+00:00"
+    },
+    "jose.alarmed": {
+      "sourceBase": "assets/images/characters/jose/jose_alarmed.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_alarmed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/alarmed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/alarmed/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/alarmed/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/alarmed/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/alarmed/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.439576,
+          "cy": 0.196464,
+          "rx": 0.100839,
+          "ry": 0.153802,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.583026,
+          "cy": 0.195481,
+          "rx": 0.105403,
+          "ry": 0.155356,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 398,
+      "height": 336,
+      "crop": {
+        "x": 358,
+        "y": 31,
+        "width": 398,
+        "height": 336
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:34.876593+00:00"
+    },
+    "jose.angry": {
+      "sourceBase": "assets/images/characters/jose/jose_angry.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_angry_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/angry/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/angry/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/angry/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/angry/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/angry/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.429428,
+          "cy": 0.310904,
+          "rx": 0.105949,
+          "ry": 0.147823,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.574723,
+          "cy": 0.310413,
+          "rx": 0.102223,
+          "ry": 0.14768,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 402,
+      "height": 320,
+      "crop": {
+        "x": 341,
+        "y": 156,
+        "width": 402,
+        "height": 320
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:35.417039+00:00"
+    },
+    "jose.determined": {
+      "sourceBase": "assets/images/characters/jose/jose_determined.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_determined_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/determined/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/determined/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/determined/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/determined/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/determined/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.446956,
+          "cy": 0.23723,
+          "rx": 0.09942,
+          "ry": 0.14483,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.589022,
+          "cy": 0.238212,
+          "rx": 0.10459,
+          "ry": 0.143655,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 394,
+      "height": 313,
+      "crop": {
+        "x": 367,
+        "y": 85,
+        "width": 394,
+        "height": 313
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:36.038341+00:00"
+    },
+    "jose.embarrassed": {
+      "sourceBase": "assets/images/characters/jose/jose_embarrassed.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_embarrassed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/embarrassed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/embarrassed/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/embarrassed/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/embarrassed/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/embarrassed/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.408672,
+          "cy": 0.269646,
+          "rx": 0.109803,
+          "ry": 0.139022,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.562269,
+          "cy": 0.269155,
+          "rx": 0.109678,
+          "ry": 0.137645,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 424,
+      "height": 303,
+      "crop": {
+        "x": 314,
+        "y": 123,
+        "width": 424,
+        "height": 303
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:36.675253+00:00"
+    },
+    "jose.epic": {
+      "sourceBase": "assets/images/characters/jose/jose_epic.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_epic_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/epic/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/epic/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/epic/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/epic/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/epic/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.428044,
+          "cy": 0.253438,
+          "rx": 0.096535,
+          "ry": 0.144021,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.564576,
+          "cy": 0.252947,
+          "rx": 0.098752,
+          "ry": 0.143432,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 379,
+      "height": 312,
+      "crop": {
+        "x": 350,
+        "y": 102,
+        "width": 379,
+        "height": 312
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:37.212697+00:00"
+    },
+    "jose.facepalm": {
+      "sourceBase": "assets/images/characters/jose/jose_facepalm.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_facepalm_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/facepalm/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/facepalm/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/facepalm/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/facepalm/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/facepalm/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.410517,
+          "cy": 0.293222,
+          "rx": 0.082799,
+          "ry": 0.116761,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.524446,
+          "cy": 0.292731,
+          "rx": 0.080385,
+          "ry": 0.116642,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 319,
+      "height": 257,
+      "crop": {
+        "x": 346,
+        "y": 170,
+        "width": 319,
+        "height": 257
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:37.632858+00:00"
+    },
+    "jose.happy": {
+      "sourceBase": "assets/images/characters/jose/jose_happy.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_happy_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/happy/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/happy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/happy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/happy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/happy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.462177,
+          "cy": 0.202358,
+          "rx": 0.090734,
+          "ry": 0.127355,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.592712,
+          "cy": 0.201375,
+          "rx": 0.095525,
+          "ry": 0.127547,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 363,
+      "height": 279,
+      "crop": {
+        "x": 393,
+        "y": 66,
+        "width": 363,
+        "height": 279
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:37.951715+00:00"
+    },
+    "jose.human": {
+      "sourceBase": "assets/images/characters/humans/jose_humano_sprite.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_human_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/human/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/human/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/human/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/human/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/human/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.409808,
+          "cy": 0.119504,
+          "rx": 0.052096,
+          "ry": 0.020129,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.501691,
+          "cy": 0.111612,
+          "rx": 0.051532,
+          "ry": 0.021256,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 202,
+      "height": 116,
+      "crop": {
+        "x": 303,
+        "y": 146,
+        "width": 202,
+        "height": 116
+      },
+      "sourceCanvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "updatedAt": "2026-08-07T12:16:38.108218+00:00"
+    },
+    "jose.neutral": {
+      "sourceBase": "assets/images/characters/jose/jose.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.470046,
+          "cy": 0.203831,
+          "rx": 0.093316,
+          "ry": 0.132254,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.598618,
+          "cy": 0.201866,
+          "rx": 0.091396,
+          "ry": 0.13354,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 359,
+      "height": 292,
+      "crop": {
+        "x": 399,
+        "y": 60,
+        "width": 359,
+        "height": 292
+      },
+      "sourceCanvas": {
+        "width": 1085,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:38.529250+00:00"
+    },
+    "jose.sad": {
+      "sourceBase": "assets/images/characters/jose/jose_sad.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_sad_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/sad/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/sad/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/sad/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/sad/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/sad/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.485701,
+          "cy": 0.27947,
+          "rx": 0.106702,
+          "ry": 0.134809,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.633303,
+          "cy": 0.277014,
+          "rx": 0.100907,
+          "ry": 0.133066,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 404,
+      "height": 294,
+      "crop": {
+        "x": 401,
+        "y": 137,
+        "width": 404,
+        "height": 294
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:38.964331+00:00"
+    },
+    "jose.serious": {
+      "sourceBase": "assets/images/characters/jose/jose_serious.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_serious_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/serious/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/serious/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/serious/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/serious/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/serious/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.45203,
+          "cy": 0.205305,
+          "rx": 0.097425,
+          "ry": 0.141322,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.587638,
+          "cy": 0.205305,
+          "rx": 0.097425,
+          "ry": 0.141322,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 377,
+      "height": 306,
+      "crop": {
+        "x": 375,
+        "y": 56,
+        "width": 377,
+        "height": 306
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:39.434713+00:00"
+    },
+    "jose.shocked": {
+      "sourceBase": "assets/images/characters/jose/jose_shocked.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_shocked_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/shocked/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/shocked/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/shocked/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/shocked/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/shocked/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.428506,
+          "cy": 0.266699,
+          "rx": 0.105838,
+          "ry": 0.173222,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.585793,
+          "cy": 0.267682,
+          "rx": 0.118514,
+          "ry": 0.173709,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 433,
+      "height": 373,
+      "crop": {
+        "x": 340,
+        "y": 86,
+        "width": 433,
+        "height": 373
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:40.181270+00:00"
+    },
+    "jose.surprised": {
+      "sourceBase": "assets/images/characters/jose/jose_surprised.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_surprised_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/surprised/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/surprised/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/surprised/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/surprised/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/surprised/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.426199,
+          "cy": 0.239194,
+          "rx": 0.089351,
+          "ry": 0.150526,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.551199,
+          "cy": 0.238212,
+          "rx": 0.090406,
+          "ry": 0.149903,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 349,
+      "height": 326,
+      "crop": {
+        "x": 356,
+        "y": 80,
+        "width": 349,
+        "height": 326
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:40.813092+00:00"
+    },
+    "jose.thinking": {
+      "sourceBase": "assets/images/characters/jose/jose_thinking.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_thinking_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/thinking/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/thinking/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/thinking/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/thinking/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/thinking/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.425738,
+          "cy": 0.260314,
+          "rx": 0.110345,
+          "ry": 0.134229,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.58441,
+          "cy": 0.261297,
+          "rx": 0.1149,
+          "ry": 0.133679,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 436,
+      "height": 293,
+      "crop": {
+        "x": 332,
+        "y": 119,
+        "width": 436,
+        "height": 293
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:41.451825+00:00"
+    },
+    "jose.worried": {
+      "sourceBase": "assets/images/characters/jose/jose_worried.webp",
+      "sourceFrames": [
+        "assets/images/characters/jose/animations/blinks/jose_worried_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/jose/worried/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/jose/worried/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/jose/worried/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/jose/worried/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/jose/worried/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.41559,
+          "cy": 0.265717,
+          "rx": 0.10056,
+          "ry": 0.14419,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.562269,
+          "cy": 0.266208,
+          "rx": 0.108427,
+          "ry": 0.140353,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 405,
+      "height": 313,
+      "crop": {
+        "x": 332,
+        "y": 114,
+        "width": 405,
+        "height": 313
+      },
+      "sourceCanvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "updatedAt": "2026-08-07T12:16:42.078522+00:00"
+    },
+    "ketchling.bottler": {
+      "sourceBase": "assets/images/characters/ketchling/ketchling_bottler.webp",
+      "sourceFrames": [
+        "assets/images/characters/ketchling/animations/blinks/ketchling_bottler_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/ketchling/bottler/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/ketchling/bottler/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/ketchling/bottler/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/ketchling/bottler/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/ketchling/bottler/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.364258,
+          "cy": 0.273763,
+          "rx": 0.090297,
+          "ry": 0.076671,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.521973,
+          "cy": 0.274414,
+          "rx": 0.090557,
+          "ry": 0.079243,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 372,
+      "height": 269,
+      "crop": {
+        "x": 268,
+        "y": 287,
+        "width": 372,
+        "height": 269
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:42.645674+00:00"
+    },
+    "ketchling.cook": {
+      "sourceBase": "assets/images/characters/ketchling/ketchling_cook.webp",
+      "sourceFrames": [
+        "assets/images/characters/ketchling/animations/blinks/ketchling_cook_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/ketchling/cook/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/ketchling/cook/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/ketchling/cook/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/ketchling/cook/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/ketchling/cook/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.364746,
+          "cy": 0.274089,
+          "rx": 0.090714,
+          "ry": 0.081372,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.521484,
+          "cy": 0.276367,
+          "rx": 0.090838,
+          "ry": 0.079246,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 372,
+      "height": 275,
+      "crop": {
+        "x": 268,
+        "y": 284,
+        "width": 372,
+        "height": 275
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:43.240950+00:00"
+    },
+    "ketchling.determined": {
+      "sourceBase": "assets/images/characters/ketchling/ketchling_bottler.webp",
+      "sourceFrames": [
+        "assets/images/characters/ketchling/animations/blinks/ketchling_bottler_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/ketchling/bottler/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/ketchling/determined/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/ketchling/determined/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/ketchling/determined/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/ketchling/determined/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.364258,
+          "cy": 0.273763,
+          "rx": 0.090297,
+          "ry": 0.076671,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.521973,
+          "cy": 0.274414,
+          "rx": 0.090557,
+          "ry": 0.079243,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 372,
+      "height": 269,
+      "crop": {
+        "x": 268,
+        "y": 287,
+        "width": 372,
+        "height": 269
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:43.804433+00:00"
+    },
+    "ketchling.happy": {
+      "sourceBase": "assets/images/characters/ketchling/ketchling_cook.webp",
+      "sourceFrames": [
+        "assets/images/characters/ketchling/animations/blinks/ketchling_cook_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/ketchling/cook/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/ketchling/happy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/ketchling/happy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/ketchling/happy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/ketchling/happy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.364746,
+          "cy": 0.274089,
+          "rx": 0.090714,
+          "ry": 0.081372,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.521484,
+          "cy": 0.276367,
+          "rx": 0.090838,
+          "ry": 0.079246,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 372,
+      "height": 275,
+      "crop": {
+        "x": 268,
+        "y": 284,
+        "width": 372,
+        "height": 275
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:44.391734+00:00"
+    },
+    "ketchling.mechanic": {
+      "sourceBase": "assets/images/characters/ketchling/ketchling_mechanic.webp",
+      "sourceFrames": [
+        "assets/images/characters/ketchling/animations/blinks/ketchling_mechanic_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/ketchling/mechanic/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/ketchling/mechanic/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/ketchling/mechanic/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/ketchling/mechanic/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/ketchling/mechanic/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.370605,
+          "cy": 0.261068,
+          "rx": 0.076393,
+          "ry": 0.059156,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.512695,
+          "cy": 0.263346,
+          "rx": 0.077027,
+          "ry": 0.060792,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 327,
+      "height": 212,
+      "crop": {
+        "x": 289,
+        "y": 298,
+        "width": 327,
+        "height": 212
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:44.840381+00:00"
+    },
+    "ketchling.neutral": {
+      "sourceBase": "assets/images/characters/ketchling/ketchling_security.webp",
+      "sourceFrames": [
+        "assets/images/characters/ketchling/animations/blinks/ketchling_security_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/ketchling/security/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/ketchling/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/ketchling/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/ketchling/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/ketchling/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.366699,
+          "cy": 0.264323,
+          "rx": 0.082545,
+          "ry": 0.063588,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.514648,
+          "cy": 0.264974,
+          "rx": 0.083665,
+          "ry": 0.065314,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 347,
+      "height": 226,
+      "crop": {
+        "x": 278,
+        "y": 294,
+        "width": 347,
+        "height": 226
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:45.279208+00:00"
+    },
+    "ketchling.security": {
+      "sourceBase": "assets/images/characters/ketchling/ketchling_security.webp",
+      "sourceFrames": [
+        "assets/images/characters/ketchling/animations/blinks/ketchling_security_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/ketchling/security/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/ketchling/security/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/ketchling/security/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/ketchling/security/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/ketchling/security/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.366699,
+          "cy": 0.264323,
+          "rx": 0.082545,
+          "ry": 0.063588,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.514648,
+          "cy": 0.264974,
+          "rx": 0.083665,
+          "ry": 0.065314,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 347,
+      "height": 226,
+      "crop": {
+        "x": 278,
+        "y": 294,
+        "width": 347,
+        "height": 226
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:45.715806+00:00"
+    },
+    "ketchling.worried": {
+      "sourceBase": "assets/images/characters/ketchling/ketchling_mechanic.webp",
+      "sourceFrames": [
+        "assets/images/characters/ketchling/animations/blinks/ketchling_mechanic_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/ketchling/mechanic/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/ketchling/worried/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/ketchling/worried/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/ketchling/worried/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/ketchling/worried/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.370605,
+          "cy": 0.261068,
+          "rx": 0.076393,
+          "ry": 0.059156,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.512695,
+          "cy": 0.263346,
+          "rx": 0.077027,
+          "ry": 0.060792,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 327,
+      "height": 212,
+      "crop": {
+        "x": 289,
+        "y": 298,
+        "width": 327,
+        "height": 212
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:46.176769+00:00"
+    },
+    "micaela.crazy": {
+      "sourceBase": "assets/images/characters/others/micaela_crazy.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/micaela_crazy_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/micaela/crazy/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/micaela/crazy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/micaela/crazy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/micaela/crazy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/micaela/crazy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.41448,
+          "cy": 0.440445,
+          "rx": 0.082359,
+          "ry": 0.067961,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.527697,
+          "cy": 0.432592,
+          "rx": 0.073629,
+          "ry": 0.063785,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 302,
+      "height": 238,
+      "crop": {
+        "x": 329,
+        "y": 551,
+        "width": 302,
+        "height": 238
+      },
+      "sourceCanvas": {
+        "width": 1029,
+        "height": 1528
+      },
+      "updatedAt": "2026-08-07T12:16:46.510837+00:00"
+    },
+    "micaela.neutral": {
+      "sourceBase": "assets/images/characters/others/micaela.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/micaela_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/micaela/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/micaela/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/micaela/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/micaela/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/micaela/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.388184,
+          "cy": 0.212565,
+          "rx": 0.073164,
+          "ry": 0.060141,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.503906,
+          "cy": 0.206055,
+          "rx": 0.075787,
+          "ry": 0.061817,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 296,
+      "height": 222,
+      "crop": {
+        "x": 310,
+        "y": 209,
+        "width": 296,
+        "height": 222
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:46.885792+00:00"
+    },
+    "neit.neutral": {
+      "sourceBase": "assets/images/characters/others/neit.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/neit_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/neit/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/neit/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/neit/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/neit/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/neit/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.421123,
+          "cy": 0.231455,
+          "rx": 0.093972,
+          "ry": 0.072548,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.570856,
+          "cy": 0.231455,
+          "rx": 0.0985,
+          "ry": 0.079676,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 407,
+      "height": 247,
+      "crop": {
+        "x": 356,
+        "y": 201,
+        "width": 407,
+        "height": 247
+      },
+      "sourceCanvas": {
+        "width": 1122,
+        "height": 1402
+      },
+      "updatedAt": "2026-08-07T12:16:47.414679+00:00"
+    },
+    "nexo.angry": {
+      "sourceBase": "assets/images/characters/others/nexo.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/nexo/angry/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/nexo/angry/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/nexo/angry/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/nexo/angry/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.393066,
+          "cy": 0.340873,
+          "rx": 0.085095,
+          "ry": 0.080764,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.584961,
+          "cy": 0.337698,
+          "rx": 0.097675,
+          "ry": 0.079786,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 405,
+      "height": 228,
+      "crop": {
+        "x": 305,
+        "y": 314,
+        "width": 405,
+        "height": 228
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "updatedAt": "2026-08-07T12:16:47.842583+00:00"
+    },
+    "nexo.happy": {
+      "sourceBase": "assets/images/characters/others/nexo.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/nexo/happy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/nexo/happy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/nexo/happy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/nexo/happy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.393066,
+          "cy": 0.340873,
+          "rx": 0.085095,
+          "ry": 0.080764,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.584961,
+          "cy": 0.337698,
+          "rx": 0.097675,
+          "ry": 0.079786,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 405,
+      "height": 228,
+      "crop": {
+        "x": 305,
+        "y": 314,
+        "width": 405,
+        "height": 228
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "updatedAt": "2026-08-07T12:16:48.265390+00:00"
+    },
+    "nexo.neutral": {
+      "sourceBase": "assets/images/characters/others/nexo.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/nexo/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/nexo/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/nexo/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/nexo/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.393066,
+          "cy": 0.340873,
+          "rx": 0.085095,
+          "ry": 0.080764,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.584961,
+          "cy": 0.337698,
+          "rx": 0.097675,
+          "ry": 0.079786,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 405,
+      "height": 228,
+      "crop": {
+        "x": 305,
+        "y": 314,
+        "width": 405,
+        "height": 228
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "updatedAt": "2026-08-07T12:16:48.690990+00:00"
+    },
+    "nexo.sad": {
+      "sourceBase": "assets/images/characters/others/nexo.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/nexo/sad/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/nexo/sad/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/nexo/sad/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/nexo/sad/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.393066,
+          "cy": 0.340873,
+          "rx": 0.085095,
+          "ry": 0.080764,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.584961,
+          "cy": 0.337698,
+          "rx": 0.097675,
+          "ry": 0.079786,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 405,
+      "height": 228,
+      "crop": {
+        "x": 305,
+        "y": 314,
+        "width": 405,
+        "height": 228
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "updatedAt": "2026-08-07T12:16:49.108827+00:00"
+    },
+    "nexo.surprised": {
+      "sourceBase": "assets/images/characters/others/nexo.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/nexo_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/nexo/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/nexo/surprised/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/nexo/surprised/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/nexo/surprised/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/nexo/surprised/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.393066,
+          "cy": 0.340873,
+          "rx": 0.085095,
+          "ry": 0.080764,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.584961,
+          "cy": 0.337698,
+          "rx": 0.097675,
+          "ry": 0.079786,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 405,
+      "height": 228,
+      "crop": {
+        "x": 305,
+        "y": 314,
+        "width": 405,
+        "height": 228
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1260
+      },
+      "updatedAt": "2026-08-07T12:16:49.529404+00:00"
+    },
+    "paloma.churrera": {
+      "sourceBase": "assets/images/characters/others/paloma_churrera.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/paloma_churrera_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/paloma/churrera/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/paloma/churrera/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/paloma/churrera/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/paloma/churrera/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/paloma/churrera/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.78418,
+          "cy": 0.259277,
+          "rx": 0.05477,
+          "ry": 0.046469,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 130,
+      "height": 113,
+      "crop": {
+        "x": 738,
+        "y": 209,
+        "width": 130,
+        "height": 113
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:49.636865+00:00"
+    },
+    "paloma.neutral": {
+      "sourceBase": "assets/images/characters/others/paloma.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/paloma_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/paloma/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/paloma/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/paloma/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/paloma/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/paloma/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.787109,
+          "cy": 0.200195,
+          "rx": 0.05184,
+          "ry": 0.046957,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 124,
+      "height": 114,
+      "crop": {
+        "x": 744,
+        "y": 148,
+        "width": 124,
+        "height": 114
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:49.753009+00:00"
+    },
+    "samu.alarmed": {
+      "sourceBase": "assets/images/characters/samu/samu_alarmed.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_alarmed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/alarmed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/alarmed/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/alarmed/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/alarmed/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/alarmed/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.497559,
+          "cy": 0.213867,
+          "rx": 0.044516,
+          "ry": 0.039145,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.615723,
+          "cy": 0.213379,
+          "rx": 0.038656,
+          "ry": 0.040609,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 224,
+      "height": 101,
+      "crop": {
+        "x": 455,
+        "y": 168,
+        "width": 224,
+        "height": 101
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:49.907402+00:00"
+    },
+    "samu.angry": {
+      "sourceBase": "assets/images/characters/samu/samu_angry.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_angry_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/angry/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/angry/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/angry/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/angry/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/angry/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.480957,
+          "cy": 0.205566,
+          "rx": 0.054281,
+          "ry": 0.038656,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.588379,
+          "cy": 0.204102,
+          "rx": 0.055199,
+          "ry": 0.037821,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 240,
+      "height": 97,
+      "crop": {
+        "x": 428,
+        "y": 162,
+        "width": 240,
+        "height": 97
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:50.061475+00:00"
+    },
+    "samu.bua": {
+      "sourceBase": "assets/images/characters/samu/samu_bua.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_bua_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/bua/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/bua/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/bua/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/bua/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/bua/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.484863,
+          "cy": 0.426758,
+          "rx": 0.042217,
+          "ry": 0.035503,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.545898,
+          "cy": 0.42627,
+          "rx": 0.042809,
+          "ry": 0.034878,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 166,
+      "height": 90,
+      "crop": {
+        "x": 445,
+        "y": 392,
+        "width": 166,
+        "height": 90
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:50.213272+00:00"
+    },
+    "samu.charred_blink": {
+      "sourceBase": "assets/images/characters/samu/samu_charred_whiteeyes.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/samu_charred_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/charred_blink/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/charred_blink/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/charred_blink/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/charred_blink/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/charred_blink/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.472089,
+          "cy": 0.205343,
+          "rx": 0.050162,
+          "ry": 0.047325,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.566587,
+          "cy": 0.207735,
+          "rx": 0.059584,
+          "ry": 0.051383,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 277,
+      "height": 149,
+      "crop": {
+        "x": 519,
+        "y": 186,
+        "width": 277,
+        "height": 149
+      },
+      "sourceCanvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "updatedAt": "2026-08-07T12:16:50.597219+00:00"
+    },
+    "samu.clapping": {
+      "sourceBase": "assets/images/characters/samu/samu_clapping.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_clapping_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/clapping/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/clapping/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/clapping/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/clapping/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/clapping/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.586426,
+          "cy": 0.302734,
+          "rx": 0.071341,
+          "ry": 0.109898,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.727539,
+          "cy": 0.303223,
+          "rx": 0.129904,
+          "ry": 0.111841,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 368,
+      "height": 247,
+      "crop": {
+        "x": 519,
+        "y": 187,
+        "width": 368,
+        "height": 247
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:50.852884+00:00"
+    },
+    "samu.curious": {
+      "sourceBase": "assets/images/characters/samu/samu_curious.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_curious_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/curious/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/curious/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/curious/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/curious/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/curious/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.427734,
+          "cy": 0.238281,
+          "rx": 0.102358,
+          "ry": 0.10357,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.579427,
+          "cy": 0.257812,
+          "rx": 0.091485,
+          "ry": 0.096243,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 283,
+      "height": 242,
+      "crop": {
+        "x": 241,
+        "y": 129,
+        "width": 283,
+        "height": 242
+      },
+      "sourceCanvas": {
+        "width": 768,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:51.272012+00:00"
+    },
+    "samu.determined": {
+      "sourceBase": "assets/images/characters/samu/samu_determined.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_determined_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/determined/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/determined/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/determined/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/determined/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/determined/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.514648,
+          "cy": 0.224609,
+          "rx": 0.04891,
+          "ry": 0.035238,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.632324,
+          "cy": 0.224121,
+          "rx": 0.049398,
+          "ry": 0.036703,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 239,
+      "height": 93,
+      "crop": {
+        "x": 468,
+        "y": 183,
+        "width": 239,
+        "height": 93
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:51.445343+00:00"
+    },
+    "samu.embarrassed": {
+      "sourceBase": "assets/images/characters/samu/samu_embarrassed.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_embarrassed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/embarrassed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/embarrassed/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/embarrassed/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/embarrassed/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/embarrassed/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.634277,
+          "cy": 0.273438,
+          "rx": 0.049298,
+          "ry": 0.072935,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.704102,
+          "cy": 0.273438,
+          "rx": 0.049961,
+          "ry": 0.073642,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 190,
+      "height": 168,
+      "crop": {
+        "x": 591,
+        "y": 196,
+        "width": 190,
+        "height": 168
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:51.624193+00:00"
+    },
+    "samu.happy": {
+      "sourceBase": "assets/images/characters/samu/samu_happy.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_happy_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/happy/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/happy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/happy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/happy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/happy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.449707,
+          "cy": 0.190918,
+          "rx": 0.060099,
+          "ry": 0.039582,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.558105,
+          "cy": 0.188965,
+          "rx": 0.060816,
+          "ry": 0.038361,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 252,
+      "height": 99,
+      "crop": {
+        "x": 390,
+        "y": 146,
+        "width": 252,
+        "height": 99
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:51.800173+00:00"
+    },
+    "samu.human": {
+      "sourceBase": "assets/images/characters/humans/samu_humano_sprite.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_human_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/human/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/human/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/human/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/human/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/human/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.435175,
+          "cy": 0.11274,
+          "rx": 0.048068,
+          "ry": 0.02207,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.503946,
+          "cy": 0.106539,
+          "rx": 0.041386,
+          "ry": 0.016747,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 169,
+      "height": 109,
+      "crop": {
+        "x": 329,
+        "y": 145,
+        "width": 169,
+        "height": 109
+      },
+      "sourceCanvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "updatedAt": "2026-08-07T12:16:51.959754+00:00"
+    },
+    "samu.neutral": {
+      "sourceBase": "assets/images/characters/samu/Samu.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
+        "assets/images/characters/samu/animations/samu_neutral_blink_closed.webp",
+        "assets/images/characters/samu/animations/samu_neutral_blink_half.webp"
+      ],
+      "sourceHalf": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/neutral/eyes_blink_02.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/neutral/eyes_blink_01.png",
+        "assets/images/characters/eye_region_previews/samu/neutral/eyes_blink_02.png",
+        "assets/images/characters/eye_region_previews/samu/neutral/eyes_blink_03.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.450195,
+          "cy": 0.197754,
+          "rx": 0.053793,
+          "ry": 0.039633,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.561523,
+          "cy": 0.197266,
+          "rx": 0.05477,
+          "ry": 0.039145,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 243,
+      "height": 99,
+      "crop": {
+        "x": 397,
+        "y": 153,
+        "width": 243,
+        "height": 99
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:52.238096+00:00"
+    },
+    "samu.sad": {
+      "sourceBase": "assets/images/characters/samu/samu_sad.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_sad_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/sad/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/sad/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/sad/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/sad/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/sad/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.475098,
+          "cy": 0.276855,
+          "rx": 0.08629,
+          "ry": 0.101775,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.632324,
+          "cy": 0.275879,
+          "rx": 0.089887,
+          "ry": 0.103703,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 358,
+      "height": 229,
+      "crop": {
+        "x": 390,
+        "y": 168,
+        "width": 358,
+        "height": 229
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:52.872474+00:00"
+    },
+    "samu.shocked": {
+      "sourceBase": "assets/images/characters/samu/samu_shocked.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_shocked_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/shocked/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/shocked/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/shocked/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/shocked/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/shocked/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.541016,
+          "cy": 0.168457,
+          "rx": 0.056723,
+          "ry": 0.06307,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.649414,
+          "cy": 0.152832,
+          "rx": 0.038168,
+          "ry": 0.046469,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 226,
+      "height": 147,
+      "crop": {
+        "x": 487,
+        "y": 99,
+        "width": 226,
+        "height": 147
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:53.079494+00:00"
+    },
+    "samu.surprised": {
+      "sourceBase": "assets/images/characters/samu/samu_surprised.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_surprised_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/surprised/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/surprised/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/surprised/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/surprised/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/surprised/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.437012,
+          "cy": 0.239746,
+          "rx": 0.076428,
+          "ry": 0.085474,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.563965,
+          "cy": 0.243652,
+          "rx": 0.076415,
+          "ry": 0.087397,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 303,
+      "height": 198,
+      "crop": {
+        "x": 361,
+        "y": 149,
+        "width": 303,
+        "height": 198
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:53.517076+00:00"
+    },
+    "samu.thinking": {
+      "sourceBase": "assets/images/characters/samu/samu_thinking.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_thinking_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/thinking/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/thinking/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/thinking/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/thinking/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/thinking/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.464844,
+          "cy": 0.229004,
+          "rx": 0.050863,
+          "ry": 0.03768,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.580078,
+          "cy": 0.226074,
+          "rx": 0.044027,
+          "ry": 0.038656,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 233,
+      "height": 99,
+      "crop": {
+        "x": 415,
+        "y": 183,
+        "width": 233,
+        "height": 99
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:53.678146+00:00"
+    },
+    "samu.valla": {
+      "sourceBase": "assets/images/characters/samu/samu_valla.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_valla_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/samu/valla/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/valla/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/valla/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/valla/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/valla/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.46875,
+          "cy": 0.159668,
+          "rx": 0.073928,
+          "ry": 0.067583,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.585449,
+          "cy": 0.158691,
+          "rx": 0.071289,
+          "ry": 0.06901,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 285,
+      "height": 159,
+      "crop": {
+        "x": 396,
+        "y": 83,
+        "width": 285,
+        "height": 159
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:53.947718+00:00"
+    },
+    "samu.worried": {
+      "sourceBase": "assets/images/characters/samu/samu_worried.webp",
+      "sourceFrames": [
+        "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+        "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp",
+        "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp"
+      ],
+      "sourceHalf": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+      "original": "assets/images/characters/eye_region_previews/samu/worried/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/samu/worried/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/samu/worried/eyes_blink_02.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/samu/worried/eyes_blink_01.png",
+        "assets/images/characters/eye_region_previews/samu/worried/eyes_blink_02.png",
+        "assets/images/characters/eye_region_previews/samu/worried/eyes_blink_03.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.432589,
+          "cy": 0.220984,
+          "rx": 0.056741,
+          "ry": 0.039944,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.575682,
+          "cy": 0.221368,
+          "rx": 0.055462,
+          "ry": 0.04001,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 330,
+      "height": 126,
+      "crop": {
+        "x": 444,
+        "y": 225,
+        "width": 330,
+        "height": 126
+      },
+      "sourceCanvas": {
+        "width": 1209,
+        "height": 1301
+      },
+      "updatedAt": "2026-08-07T12:16:54.419640+00:00"
+    },
+    "santi.conduciendo": {
+      "sourceBase": "assets/images/characters/santi/santi_conduciendo.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_conduciendo_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/conduciendo/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/conduciendo/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/conduciendo/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/conduciendo/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/conduciendo/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.527516,
+          "cy": 0.25,
+          "rx": 0.06316,
+          "ry": 0.128185,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.613994,
+          "cy": 0.25,
+          "rx": 0.06206,
+          "ry": 0.12809,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 290,
+      "height": 284,
+      "crop": {
+        "x": 580,
+        "y": 114,
+        "width": 290,
+        "height": 284
+      },
+      "sourceCanvas": {
+        "width": 1272,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:54.710802+00:00"
+    },
+    "santi.despedida": {
+      "sourceBase": "assets/images/characters/santi/santi_despedida.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_despedida_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/despedida/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/despedida/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/despedida/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/despedida/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/despedida/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.392444,
+          "cy": 0.197143,
+          "rx": 0.067384,
+          "ry": 0.104109,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.484,
+          "cy": 0.196071,
+          "rx": 0.065183,
+          "ry": 0.103915,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 275,
+      "height": 315,
+      "crop": {
+        "x": 354,
+        "y": 118,
+        "width": 275,
+        "height": 315
+      },
+      "sourceCanvas": {
+        "width": 1125,
+        "height": 1400
+      },
+      "updatedAt": "2026-08-07T12:16:55.019588+00:00"
+    },
+    "santi.estornudo_1": {
+      "sourceBase": "assets/images/characters/santi/santi_est_0.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_estornudo_1_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/estornudo_1/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/estornudo_1/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/estornudo_1/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/estornudo_1/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/estornudo_1/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.254419,
+          "cy": 0.426598,
+          "rx": 0.047836,
+          "ry": 0.085873,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.317674,
+          "cy": 0.42502,
+          "rx": 0.044656,
+          "ry": 0.085459,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 188,
+      "height": 240,
+      "crop": {
+        "x": 212,
+        "y": 420,
+        "width": 188,
+        "height": 240
+      },
+      "sourceCanvas": {
+        "width": 1075,
+        "height": 1267
+      },
+      "updatedAt": "2026-08-07T12:16:55.246432+00:00"
+    },
+    "santi.estornudo_4": {
+      "sourceBase": "assets/images/characters/santi/santi_est_3.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_estornudo_4_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/estornudo_4/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/estornudo_4/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/estornudo_4/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/estornudo_4/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/estornudo_4/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.400465,
+          "cy": 0.382794,
+          "rx": 0.112525,
+          "ry": 0.104348,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.548837,
+          "cy": 0.384373,
+          "rx": 0.092422,
+          "ry": 0.102878,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 401,
+      "height": 286,
+      "crop": {
+        "x": 299,
+        "y": 342,
+        "width": 401,
+        "height": 286
+      },
+      "sourceCanvas": {
+        "width": 1075,
+        "height": 1267
+      },
+      "updatedAt": "2026-08-07T12:16:55.430651+00:00"
+    },
+    "santi.herido": {
+      "sourceBase": "assets/images/characters/santi/santi_herido.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_herido_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/herido/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/herido/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/herido/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/herido/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/herido/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.301399,
+          "cy": 0.193133,
+          "rx": 0.124556,
+          "ry": 0.096266,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.482517,
+          "cy": 0.190451,
+          "rx": 0.121651,
+          "ry": 0.099435,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 322,
+      "height": 203,
+      "crop": {
+        "x": 118,
+        "y": 76,
+        "width": 322,
+        "height": 203
+      },
+      "sourceCanvas": {
+        "width": 715,
+        "height": 932
+      },
+      "updatedAt": "2026-08-07T12:16:55.577559+00:00"
+    },
+    "santi.mesa": {
+      "sourceBase": "assets/images/characters/santi/santi_mesa.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_mesa_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/mesa/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/mesa/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/mesa/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/mesa/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/mesa/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.35056,
+          "cy": 0.268854,
+          "rx": 0.082299,
+          "ry": 0.094144,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.490095,
+          "cy": 0.266405,
+          "rx": 0.083643,
+          "ry": 0.098409,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 374,
+      "height": 220,
+      "crop": {
+        "x": 302,
+        "y": 162,
+        "width": 374,
+        "height": 220
+      },
+      "sourceCanvas": {
+        "width": 1161,
+        "height": 1021
+      },
+      "updatedAt": "2026-08-07T12:16:55.828960+00:00"
+    },
+    "santi.neutral": {
+      "sourceBase": "assets/images/characters/santi/santi.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.199725,
+          "cy": 0.147143,
+          "rx": 0.050507,
+          "ry": 0.085368,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.268939,
+          "cy": 0.146429,
+          "rx": 0.050047,
+          "ry": 0.086301,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 272,
+      "height": 266,
+      "crop": {
+        "x": 204,
+        "y": 72,
+        "width": 272,
+        "height": 266
+      },
+      "sourceCanvas": {
+        "width": 1452,
+        "height": 1400
+      },
+      "updatedAt": "2026-08-07T12:16:56.243631+00:00"
+    },
+    "santi.preocupado": {
+      "sourceBase": "assets/images/characters/santi/santi_preocupado.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_preocupado_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/preocupado/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/preocupado/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/preocupado/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/preocupado/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/preocupado/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.35289,
+          "cy": 0.14154,
+          "rx": 0.112927,
+          "ry": 0.090238,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.512259,
+          "cy": 0.144794,
+          "rx": 0.110793,
+          "ry": 0.100674,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 235,
+      "height": 203,
+      "crop": {
+        "x": 129,
+        "y": 32,
+        "width": 235,
+        "height": 203
+      },
+      "sourceCanvas": {
+        "width": 571,
+        "height": 922
+      },
+      "updatedAt": "2026-08-07T12:16:56.349299+00:00"
+    },
+    "santi.riendo": {
+      "sourceBase": "assets/images/characters/santi/santi_riendo.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_riendo_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/riendo/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/riendo/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/riendo/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/riendo/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/riendo/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.463434,
+          "cy": 0.14479,
+          "rx": 0.112486,
+          "ry": 0.116815,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.617647,
+          "cy": 0.143788,
+          "rx": 0.109569,
+          "ry": 0.115996,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 254,
+      "height": 251,
+      "crop": {
+        "x": 212,
+        "y": 19,
+        "width": 254,
+        "height": 251
+      },
+      "sourceCanvas": {
+        "width": 629,
+        "height": 998
+      },
+      "updatedAt": "2026-08-07T12:16:56.484454+00:00"
+    },
+    "santi.saludando": {
+      "sourceBase": "assets/images/characters/santi/santi_saludando.webp",
+      "sourceFrames": [
+        "assets/images/characters/santi/animations/blinks/santi_saludando_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/santi/saludando/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/santi/saludando/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/santi/saludando/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/santi/saludando/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/santi/saludando/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.336151,
+          "cy": 0.153259,
+          "rx": 0.084719,
+          "ry": 0.119761,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.451235,
+          "cy": 0.153259,
+          "rx": 0.081503,
+          "ry": 0.120256,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 233,
+      "height": 253,
+      "crop": {
+        "x": 185,
+        "y": 24,
+        "width": 233,
+        "height": 253
+      },
+      "sourceCanvas": {
+        "width": 769,
+        "height": 982
+      },
+      "updatedAt": "2026-08-07T12:16:56.622083+00:00"
+    },
+    "sebas.neutral": {
+      "sourceBase": "assets/images/characters/sebas/sebas.webp",
+      "sourceFrames": [
+        "assets/images/characters/sebas/animations/blinks/sebas_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/sebas/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/sebas/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/sebas/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/sebas/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/sebas/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.502868,
+          "cy": 0.202102,
+          "rx": 0.083069,
+          "ry": 0.083745,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.631453,
+          "cy": 0.199677,
+          "rx": 0.082245,
+          "ry": 0.091795,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 328,
+      "height": 248,
+      "crop": {
+        "x": 429,
+        "y": 123,
+        "width": 328,
+        "height": 248
+      },
+      "sourceCanvas": {
+        "width": 1046,
+        "height": 1237
+      },
+      "updatedAt": "2026-08-07T12:16:57.176194+00:00"
+    },
+    "tony.alarmed": {
+      "sourceBase": "assets/images/characters/tony/tony_alarmed.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_alarmed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/alarmed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/alarmed/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/alarmed/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/alarmed/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/alarmed/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.407919,
+          "cy": 0.251727,
+          "rx": 0.072245,
+          "ry": 0.053834,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.550645,
+          "cy": 0.252417,
+          "rx": 0.076541,
+          "ry": 0.05704,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 342,
+      "height": 191,
+      "crop": {
+        "x": 352,
+        "y": 270,
+        "width": 342,
+        "height": 191
+      },
+      "sourceCanvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "updatedAt": "2026-08-07T12:16:57.639931+00:00"
+    },
+    "tony.angry": {
+      "sourceBase": "assets/images/characters/tony/tony_angry.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_angry_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/angry/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/angry/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/angry/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/angry/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/angry/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.470703,
+          "cy": 0.248047,
+          "rx": 0.071091,
+          "ry": 0.095883,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.585449,
+          "cy": 0.249023,
+          "rx": 0.069483,
+          "ry": 0.097126,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 278,
+      "height": 216,
+      "crop": {
+        "x": 401,
+        "y": 147,
+        "width": 278,
+        "height": 216
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:16:58.058400+00:00"
+    },
+    "tony.balada": {
+      "sourceBase": "assets/images/characters/tony/tony_balada.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_balada_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/balada/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/balada/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/balada/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/balada/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/balada/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.489254,
+          "cy": 0.252857,
+          "rx": 0.102998,
+          "ry": 0.06879,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.656764,
+          "cy": 0.253571,
+          "rx": 0.102456,
+          "ry": 0.069726,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 318,
+      "height": 218,
+      "crop": {
+        "x": 294,
+        "y": 246,
+        "width": 318,
+        "height": 218
+      },
+      "sourceCanvas": {
+        "width": 791,
+        "height": 1400
+      },
+      "updatedAt": "2026-08-07T12:16:58.515794+00:00"
+    },
+    "tony.cantando": {
+      "sourceBase": "assets/images/characters/tony/tony_cantando.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_cantando_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/cantando/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/cantando/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/cantando/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/cantando/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/cantando/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.450431,
+          "cy": 0.231429,
+          "rx": 0.076372,
+          "ry": 0.078703,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.572845,
+          "cy": 0.232143,
+          "rx": 0.076918,
+          "ry": 0.080106,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 343,
+      "height": 248,
+      "crop": {
+        "x": 422,
+        "y": 201,
+        "width": 343,
+        "height": 248
+      },
+      "sourceCanvas": {
+        "width": 1160,
+        "height": 1400
+      },
+      "updatedAt": "2026-08-07T12:16:58.932986+00:00"
+    },
+    "tony.derrumbe": {
+      "sourceBase": "assets/images/characters/tony/tony_derrumbe.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_derrumbe_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/derrumbe/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/derrumbe/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/derrumbe/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/derrumbe/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/derrumbe/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.535156,
+          "cy": 0.351237,
+          "rx": 0.073192,
+          "ry": 0.059218,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.657227,
+          "cy": 0.352539,
+          "rx": 0.072744,
+          "ry": 0.057427,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 299,
+      "height": 207,
+      "crop": {
+        "x": 461,
+        "y": 436,
+        "width": 299,
+        "height": 207
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:16:59.276840+00:00"
+    },
+    "tony.determined": {
+      "sourceBase": "assets/images/characters/tony/tony_determined.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_determined_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/determined/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/determined/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/determined/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/determined/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/determined/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.459729,
+          "cy": 0.295455,
+          "rx": 0.065041,
+          "ry": 0.063338,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.576954,
+          "cy": 0.298644,
+          "rx": 0.071083,
+          "ry": 0.071083,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 339,
+      "height": 199,
+      "crop": {
+        "x": 484,
+        "y": 275,
+        "width": 339,
+        "height": 199
+      },
+      "sourceCanvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "updatedAt": "2026-08-07T12:16:59.752901+00:00"
+    },
+    "tony.embarrassed": {
+      "sourceBase": "assets/images/characters/tony/tony_embarrassed.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_embarrassed_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/embarrassed/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/embarrassed/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/embarrassed/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/embarrassed/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/embarrassed/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.436924,
+          "cy": 0.256906,
+          "rx": 0.084083,
+          "ry": 0.058006,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.576888,
+          "cy": 0.258978,
+          "rx": 0.082407,
+          "ry": 0.058375,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 357,
+      "height": 196,
+      "crop": {
+        "x": 371,
+        "y": 276,
+        "width": 357,
+        "height": 196
+      },
+      "sourceCanvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "updatedAt": "2026-08-07T12:17:00.216260+00:00"
+    },
+    "tony.eyeroll": {
+      "sourceBase": "assets/images/characters/tony/tony_eyeroll.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_eyeroll_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/eyeroll/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/eyeroll/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/eyeroll/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/eyeroll/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/eyeroll/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.455801,
+          "cy": 0.284185,
+          "rx": 0.088729,
+          "ry": 0.064556,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.599908,
+          "cy": 0.285912,
+          "rx": 0.085662,
+          "ry": 0.06618,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 371,
+      "height": 216,
+      "crop": {
+        "x": 386,
+        "y": 306,
+        "width": 371,
+        "height": 216
+      },
+      "sourceCanvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "updatedAt": "2026-08-07T12:17:00.777104+00:00"
+    },
+    "tony.flirt": {
+      "sourceBase": "assets/images/characters/tony/tony_flirt.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_flirt_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/flirt/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/flirt/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/flirt/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/flirt/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/flirt/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.558932,
+          "cy": 0.264848,
+          "rx": 0.056865,
+          "ry": 0.07896,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.638122,
+          "cy": 0.26692,
+          "rx": 0.05841,
+          "ry": 0.075828,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 236,
+      "height": 253,
+      "crop": {
+        "x": 533,
+        "y": 257,
+        "width": 236,
+        "height": 253
+      },
+      "sourceCanvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "updatedAt": "2026-08-07T12:17:01.231437+00:00"
+    },
+    "tony.giggle": {
+      "sourceBase": "assets/images/characters/tony/tony_giggle.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_giggle_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/giggle/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/giggle/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/giggle/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/giggle/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/giggle/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.439687,
+          "cy": 0.282804,
+          "rx": 0.087623,
+          "ry": 0.06124,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.593002,
+          "cy": 0.28453,
+          "rx": 0.08666,
+          "ry": 0.061326,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 381,
+      "height": 205,
+      "crop": {
+        "x": 370,
+        "y": 308,
+        "width": 381,
+        "height": 205
+      },
+      "sourceCanvas": {
+        "width": 1086,
+        "height": 1448
+      },
+      "updatedAt": "2026-08-07T12:17:01.799049+00:00"
+    },
+    "tony.happy": {
+      "sourceBase": "assets/images/characters/tony/tony_happy.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_happy_blink_open.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/happy/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/happy/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/happy/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/happy/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/happy/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.484863,
+          "cy": 0.250488,
+          "rx": 0.087533,
+          "ry": 0.099943,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.627441,
+          "cy": 0.255859,
+          "rx": 0.087313,
+          "ry": 0.105218,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 342,
+      "height": 232,
+      "crop": {
+        "x": 398,
+        "y": 146,
+        "width": 342,
+        "height": 232
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "updatedAt": "2026-08-07T12:17:02.135819+00:00"
+    },
+    "tony.human": {
+      "sourceBase": "assets/images/characters/humans/tony_humano_sprite.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_human_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/human/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/human/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/human/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/human/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/human/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.400225,
+          "cy": 0.090192,
+          "rx": 0.04661,
+          "ry": 0.022,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.465614,
+          "cy": 0.082864,
+          "rx": 0.039131,
+          "ry": 0.01562,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 163,
+      "height": 109,
+      "crop": {
+        "x": 299,
+        "y": 105,
+        "width": 163,
+        "height": 109
+      },
+      "sourceCanvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "updatedAt": "2026-08-07T12:17:02.309333+00:00"
+    },
+    "tony.neutral": {
+      "sourceBase": "assets/images/characters/tony/Tony.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.496582,
+          "cy": 0.27124,
+          "rx": 0.082314,
+          "ry": 0.098419,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.629395,
+          "cy": 0.273682,
+          "rx": 0.080666,
+          "ry": 0.102744,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 639,
+      "height": 453,
+      "crop": {
+        "x": 832,
+        "y": 334,
+        "width": 639,
+        "height": 453
+      },
+      "sourceCanvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "updatedAt": "2026-08-07T12:17:03.722441+00:00"
+    },
+    "tony.sad": {
+      "sourceBase": "assets/images/characters/tony/tony_sad.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_sad_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/sad/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/sad/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/sad/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/sad/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/sad/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.414274,
+          "cy": 0.222089,
+          "rx": 0.077428,
+          "ry": 0.123451,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.535486,
+          "cy": 0.214514,
+          "rx": 0.083963,
+          "ry": 0.11568,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 375,
+      "height": 331,
+      "crop": {
+        "x": 412,
+        "y": 113,
+        "width": 375,
+        "height": 331
+      },
+      "sourceCanvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "updatedAt": "2026-08-07T12:17:04.594416+00:00"
+    },
+    "tony.shocked": {
+      "sourceBase": "assets/images/characters/tony/tony_shocked.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_shocked_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/shocked/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/shocked/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/shocked/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/shocked/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/shocked/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.440186,
+          "cy": 0.239502,
+          "rx": 0.092432,
+          "ry": 0.134622,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.588623,
+          "cy": 0.225342,
+          "rx": 0.105834,
+          "ry": 0.145719,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 743,
+      "height": 636,
+      "crop": {
+        "x": 696,
+        "y": 147,
+        "width": 743,
+        "height": 636
+      },
+      "sourceCanvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "updatedAt": "2026-08-07T12:17:06.536079+00:00"
+    },
+    "tony.surprised": {
+      "sourceBase": "assets/images/characters/tony/tony_surprised.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_surprised_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/surprised/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/surprised/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/surprised/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/surprised/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/surprised/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.47807,
+          "cy": 0.288278,
+          "rx": 0.065162,
+          "ry": 0.102453,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.588915,
+          "cy": 0.29067,
+          "rx": 0.068934,
+          "ry": 0.113414,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 328,
+      "height": 305,
+      "crop": {
+        "x": 507,
+        "y": 212,
+        "width": 328,
+        "height": 305
+      },
+      "sourceCanvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "updatedAt": "2026-08-07T12:17:07.210537+00:00"
+    },
+    "tony.thinking": {
+      "sourceBase": "assets/images/characters/tony/tony_thinking.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_thinking_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/thinking/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/thinking/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/thinking/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/thinking/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/thinking/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.525819,
+          "cy": 0.252857,
+          "rx": 0.100437,
+          "ry": 0.065166,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.695844,
+          "cy": 0.254643,
+          "rx": 0.099838,
+          "ry": 0.068435,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 317,
+      "height": 215,
+      "crop": {
+        "x": 326,
+        "y": 249,
+        "width": 317,
+        "height": 215
+      },
+      "sourceCanvas": {
+        "width": 794,
+        "height": 1400
+      },
+      "updatedAt": "2026-08-07T12:17:07.470149+00:00"
+    },
+    "tony.worried": {
+      "sourceBase": "assets/images/characters/tony/tony_worried.webp",
+      "sourceFrames": [
+        "assets/images/characters/tony/animations/blinks/tony_worried_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tony/worried/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tony/worried/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tony/worried/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tony/worried/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tony/worried/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.450957,
+          "cy": 0.277911,
+          "rx": 0.076033,
+          "ry": 0.074141,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.572568,
+          "cy": 0.2811,
+          "rx": 0.076723,
+          "ry": 0.08194,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 365,
+      "height": 227,
+      "crop": {
+        "x": 460,
+        "y": 239,
+        "width": 365,
+        "height": 227
+      },
+      "sourceCanvas": {
+        "width": 1254,
+        "height": 1254
+      },
+      "updatedAt": "2026-08-07T12:17:08.079567+00:00"
+    },
+    "tralalelo_tralala.neutral": {
+      "sourceBase": "assets/images/characters/tralalelo_tralala.webp",
+      "sourceFrames": [
+        "assets/images/characters/eye_intermediate_sources/tralalelo_tralala/neutral/eyes_half_source.webp",
+        "assets/images/characters/animations/blinks/tralalelo_neutral_blink_closed.webp",
+        "assets/images/characters/eye_intermediate_sources/tralalelo_tralala/neutral/eyes_half_source.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tralalelo_tralala/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tralalelo_tralala/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tralalelo_tralala/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tralalelo_tralala/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tralalelo_tralala/neutral/eyes_blink_01.png",
+        "assets/images/characters/eye_region_previews/tralalelo_tralala/neutral/eyes_blink_02.png",
+        "assets/images/characters/eye_region_previews/tralalelo_tralala/neutral/eyes_blink_03.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.226887,
+          "cy": 0.449956,
+          "rx": 0.068998,
+          "ry": 0.142039,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.320187,
+          "cy": 0.450392,
+          "rx": 0.066605,
+          "ry": 0.141243,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 289,
+      "height": 346,
+      "crop": {
+        "x": 177,
+        "y": 344,
+        "width": 289,
+        "height": 346
+      },
+      "sourceCanvas": {
+        "width": 1179,
+        "height": 1149
+      },
+      "updatedAt": "2026-08-07T12:17:09.115227+00:00"
+    },
+    "tung_tung_tung_sahur.neutral": {
+      "sourceBase": "assets/images/characters/tung_tung_tung_sahur.webp",
+      "sourceFrames": [
+        "assets/images/characters/eye_intermediate_sources/tung_tung_tung_sahur/neutral/eyes_half_source.webp",
+        "assets/images/characters/animations/blinks/tung_neutral_blink_closed.webp",
+        "assets/images/characters/eye_intermediate_sources/tung_tung_tung_sahur/neutral/eyes_half_source.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/tung_tung_tung_sahur/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/tung_tung_tung_sahur/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/tung_tung_tung_sahur/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/tung_tung_tung_sahur/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/tung_tung_tung_sahur/neutral/eyes_blink_01.png",
+        "assets/images/characters/eye_region_previews/tung_tung_tung_sahur/neutral/eyes_blink_02.png",
+        "assets/images/characters/eye_region_previews/tung_tung_tung_sahur/neutral/eyes_blink_03.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.484863,
+          "cy": 0.175781,
+          "rx": 0.080681,
+          "ry": 0.083537,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.599121,
+          "cy": 0.161133,
+          "rx": 0.08036,
+          "ry": 0.083894,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 307,
+      "height": 305,
+      "crop": {
+        "x": 401,
+        "y": 106,
+        "width": 307,
+        "height": 305
+      },
+      "sourceCanvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "updatedAt": "2026-08-07T12:17:09.504967+00:00"
+    },
+    "zip.angry": {
+      "sourceBase": "assets/images/characters/others/zip_angry.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/zip_angry_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/zip/angry/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/zip/angry/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/zip/angry/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/zip/angry/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/zip/angry/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.411344,
+          "cy": 0.277143,
+          "rx": 0.098908,
+          "ry": 0.067031,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.576542,
+          "cy": 0.267857,
+          "rx": 0.098993,
+          "ry": 0.072435,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 353,
+      "height": 231,
+      "crop": {
+        "x": 272,
+        "y": 262,
+        "width": 353,
+        "height": 231
+      },
+      "sourceCanvas": {
+        "width": 908,
+        "height": 1400
+      },
+      "updatedAt": "2026-08-07T12:17:09.804586+00:00"
+    },
+    "zip.neutral": {
+      "sourceBase": "assets/images/characters/others/zip.webp",
+      "sourceFrames": [
+        "assets/images/characters/others/animations/blinks/zip_neutral_blink_closed.webp"
+      ],
+      "sourceHalf": "assets/images/characters/eye_intermediate_sources/zip/neutral/eyes_half_source.webp",
+      "original": "assets/images/characters/eye_region_previews/zip/neutral/eyes_original.png",
+      "half": "assets/images/characters/eye_region_previews/zip/neutral/eyes_half.png",
+      "closed": "assets/images/characters/eye_region_previews/zip/neutral/eyes_blink_01.png",
+      "blinks": [
+        "assets/images/characters/eye_region_previews/zip/neutral/eyes_blink_01.png"
+      ],
+      "regions": [
+        {
+          "cx": 0.389706,
+          "cy": 0.181094,
+          "rx": 0.088402,
+          "ry": 0.031381,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        },
+        {
+          "cx": 0.563419,
+          "cy": 0.179766,
+          "rx": 0.10035,
+          "ry": 0.032709,
+          "rotation": 0.0,
+          "mode": "include",
+          "feather": 0.0
+        }
+      ],
+      "width": 229,
+      "height": 155,
+      "crop": {
+        "x": 148,
+        "y": 261,
+        "width": 229,
+        "height": 155
+      },
+      "sourceCanvas": {
+        "width": 544,
+        "height": 1883
+      },
+      "updatedAt": "2026-08-07T12:17:10.005912+00:00"
     }
   }
 }

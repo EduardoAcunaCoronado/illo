@@ -84,6 +84,19 @@ Para las herramientas oculares y de limpieza, ejecuta
 npm run tools:eyes
 ```
 
+Dentro del flujo ocular, primero se confirman las regiones y después se alinean
+las capas. La publicación reproducible y su comprobación de archivos se ejecutan
+con:
+
+```powershell
+npm run build:eye-layers
+npm run validate:eye-layers
+```
+
+El resultado conserva cada sprite completo únicamente como base y genera tres
+parches transparentes por pose (`eyes_base`, `eyes_half` y `eyes_closed`) en
+`assets/images/characters/eye_layers_production/`.
+
 Abre <http://localhost:8011/tools>. También puedes entrar con el icono **Tools**
 del menú principal; el icono **Minijuegos** abre el lanzador de pruebas en el
 mismo servidor que el juego. Estos dos accesos son de desarrollo: sólo aparecen
