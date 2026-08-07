@@ -5,7 +5,7 @@ El script sólo procesa rutas de imagen que aparecen de forma explícita en el
 código o en los manifiestos. Los recursos construidos dinámicamente se dejan
 intactos hasta que su cargador pueda migrarse de forma controlada.
 
-Los originales se mueven a ``workbench/originals/runtime/assets/...`` y cada
+Los originales se mueven a ``workbench/assets/...`` y cada
 conversión queda registrada en un manifiesto JSON que permite localizar y
 restaurar la fuente exacta.
 """
@@ -27,8 +27,8 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "assets"
-ORIGINALS = ROOT / "workbench" / "originals" / "runtime"
-MANIFEST = ROOT / "workbench" / "optimization" / "asset_optimization_manifest.json"
+ORIGINALS = ROOT / "workbench"
+MANIFEST = ROOT / "workbench" / "assets" / "metadata" / "asset_optimization_manifest.json"
 IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg"}
 TEXT_SUFFIXES = {
     ".bat",
@@ -184,11 +184,17 @@ def save_manifest(payload: dict[str, Any]) -> None:
 def recover_unregistered_conversions(payload: dict[str, Any]) -> int:
     """Reconstruye entradas si el proceso terminó tras mover un original."""
     recovered = 0
-    if not ORIGINALS.is_dir():
+    mirrored_assets = ORIGINALS / "assets"
+    if not mirrored_assets.is_dir():
         return recovered
     conversions = payload.setdefault("conversions", {})
-    for backup in ORIGINALS.rglob("*"):
+    for backup in mirrored_assets.rglob("*"):
         if not backup.is_file() or backup.suffix.lower() not in IMAGE_SUFFIXES:
+            continue
+        if any(
+            marker in backup.stem.lower()
+            for marker in ("_master", "_source", "_reference", "_original")
+        ):
             continue
         source_relative_path = backup.relative_to(ORIGINALS)
         source = ROOT / source_relative_path

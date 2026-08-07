@@ -18,6 +18,7 @@
         "audit:assets": "python scripts/optimize_runtime_assets.py",
         "optimize:assets": "python scripts/optimize_runtime_assets.py --apply --media",
         "validate:content": "node scripts/validate_game_content.mjs",
+        "validate:workbench": "python scripts/validate_workbench_mirror.py",
         "format:js": "prettier --write \"**/*.js\"",
         "check:js": "prettier --check \"**/*.js\""
     },

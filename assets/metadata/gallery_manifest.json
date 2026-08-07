@@ -1,6 +1,6 @@
 {
-  "version": "gallery-2026-08-04-3",
-  "generatedAt": "2026-08-04",
+  "version": "gallery-2026-08-06-3",
+  "generatedAt": "2026-08-06",
   "title": "Galería de Project AI.ri: Transfurmados",
   "description": "Arte canónico, ilustraciones promocionales y extras animados.",
   "categories": [
@@ -36,8 +36,8 @@
     "backgrounds": 63,
     "videos": 1,
     "all": 107,
-    "characterPoses": 157,
-    "animatedCharacterPoses": 129
+    "characterPoses": 165,
+    "animatedCharacterPoses": 130
   },
   "items": [
     {
@@ -1103,7 +1103,7 @@
     {
       "id": "char-ciervo-neutral",
       "title": "Ciervo",
-      "description": "Diseño canónico de Ciervo con 2 poses disponibles.",
+      "description": "Diseño canónico de Ciervo con 10 poses disponibles.",
       "type": "image",
       "category": "characters",
       "src": "assets/images/characters/ciervo/ciervo_neutral.webp",
@@ -1127,12 +1127,92 @@
         {
           "id": "seated",
           "key": "seated",
-          "label": "Seated",
+          "label": "Sentado",
           "type": "image",
           "src": "assets/images/characters/ciervo/ciervo_seated.webp",
-          "alt": "Ciervo, pose seated.",
+          "alt": "Ciervo, pose sentado.",
           "spoiler": false,
           "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated.webp"
+        },
+        {
+          "id": "seated-surprised",
+          "key": "seated_surprised",
+          "label": "Sentado, sorprendido",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated_surprised.webp",
+          "alt": "Ciervo, pose sentado, sorprendido.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated-surprised.webp"
+        },
+        {
+          "id": "seated-happy",
+          "key": "seated_happy",
+          "label": "Sentado, feliz",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated_happy.webp",
+          "alt": "Ciervo, pose sentado, feliz.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated-happy.webp"
+        },
+        {
+          "id": "seated-happy-closed",
+          "key": "seated_happy_closed",
+          "label": "Sentado, feliz con ojos cerrados",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated_happy_closed.webp",
+          "alt": "Ciervo, pose sentado, feliz con ojos cerrados.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated-happy-closed.webp"
+        },
+        {
+          "id": "seated-playful",
+          "key": "seated_playful",
+          "label": "Sentado, picarón",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated_playful.webp",
+          "alt": "Ciervo, pose sentado, picarón.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated-playful.webp"
+        },
+        {
+          "id": "seated-blushing",
+          "key": "seated_blushing",
+          "label": "Sentado, ruborizado",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated_blushing.webp",
+          "alt": "Ciervo, pose sentado, ruborizado.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated-blushing.webp"
+        },
+        {
+          "id": "seated-suspicious",
+          "key": "seated_suspicious",
+          "label": "Sentado, sospechando",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated_suspicious.webp",
+          "alt": "Ciervo, pose sentado, sospechando.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated-suspicious.webp"
+        },
+        {
+          "id": "seated-curious",
+          "key": "seated_curious",
+          "label": "Sentado, curioso",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated_curious.webp",
+          "alt": "Ciervo, pose sentado, curioso.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated-curious.webp"
+        },
+        {
+          "id": "seated-worried",
+          "key": "seated_worried",
+          "label": "Sentado, preocupado",
+          "type": "image",
+          "src": "assets/images/characters/ciervo/ciervo_seated_worried.webp",
+          "alt": "Ciervo, pose sentado, preocupado.",
+          "spoiler": false,
+          "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral--pose-seated-worried.webp"
         }
       ],
       "thumbnail": "assets/images/gallery/thumbnails/char-ciervo-neutral.webp"
@@ -3711,9 +3791,30 @@
           "key": "worried",
           "label": "Preocupado",
           "type": "image",
-          "src": "assets/images/characters/samu/samu_worried_v2.webp",
+          "src": "assets/images/characters/samu/samu_worried.webp",
           "alt": "Samu, pose preocupado.",
           "spoiler": false,
+          "animation": {
+            "frames": [
+              {
+                "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+                "duration": 65
+              },
+              {
+                "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp",
+                "duration": 95
+              },
+              {
+                "src": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+                "duration": 65
+              }
+            ],
+            "delayRange": [
+              1800,
+              4200
+            ],
+            "loop": true
+          },
           "thumbnail": "assets/images/gallery/thumbnails/char-samu--pose-worried.webp"
         },
         {

@@ -6,7 +6,7 @@
   <title>Editor de halo blanco — Project AI.ri</title>
   <style>
     :root{color-scheme:dark;--bg:#070612;--panel:#100d22;--panel2:#17132c;--line:#32294e;--text:#f7f4ff;--muted:#aaa3be;--cyan:#4de8c2;--gold:#ffd166;--pink:#ff66b7}
-    *{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font:13px/1.4 Inter,system-ui,sans-serif}button,input,select{font:inherit}
+    *{box-sizing:border-box}[hidden]{display:none!important}html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font:13px/1.4 Inter,system-ui,sans-serif}button,input,select{font:inherit}
     body{display:grid;grid-template-rows:auto 1fr;overflow:hidden;background:radial-gradient(circle at 30% -20%,#201841 0,transparent 40rem),var(--bg)}
     header{display:flex;align-items:center;gap:18px;padding:15px 18px;border-bottom:1px solid var(--line);background:#0d0a1bdd;backdrop-filter:blur(12px)}
     h1{margin:0;font-size:20px}.eyebrow{color:var(--cyan);font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase}.help{margin-left:8px;color:var(--muted)}
@@ -14,7 +14,7 @@
     .help-icon{display:inline-grid;place-items:center;flex:0 0 auto;width:19px;height:19px;padding:0;border:1px solid #61567b;border-radius:50%;color:#dcd3f5;background:#211a36;font-size:11px;font-weight:950;line-height:1;cursor:help}.help-icon:hover,.help-icon:focus-visible{border-color:var(--cyan);color:var(--cyan);outline:none;box-shadow:0 0 0 3px #4de8c222}
     .tooltip{position:fixed;z-index:1000;width:max-content;max-width:min(340px,calc(100vw - 24px));padding:9px 11px;border:1px solid #66568d;border-radius:9px;color:#f8f5ff;background:#171128f5;box-shadow:0 12px 34px #000b;font-size:12px;line-height:1.45;pointer-events:none;white-space:normal}.tooltip[hidden]{display:none}.tooltip strong{display:block;margin-bottom:3px;color:var(--cyan)}
     header a{margin-left:auto}.app{min-height:0;display:grid;grid-template-columns:245px 1fr}.sidebar{display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:#0d0a1b}
-    .search-row{display:flex;align-items:center;gap:6px;margin:12px}.search{min-width:0;flex:1;margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);outline:none}.search:focus{border-color:var(--cyan)}
+    .free-open{display:grid;gap:6px;margin:12px 12px 0}.free-open .button{width:100%;border-color:#42bb9f;background:#12372f}.free-open small{color:var(--muted);text-align:center}.search-row{display:flex;align-items:center;gap:6px;margin:12px}.search{min-width:0;flex:1;margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--text);outline:none}.search:focus{border-color:var(--cyan)}
     .list{overflow:auto;padding:0 7px 12px}.job{display:block;width:100%;padding:10px;border:0;border-radius:10px;color:var(--text);background:transparent;text-align:left;cursor:pointer}.job:hover,.job.active{background:#1c1732}.job.active{outline:1px solid var(--cyan)}
     .job strong{display:block}.job small{color:var(--muted)}.saved{float:right;color:var(--cyan);font-size:9px;font-weight:900}.saved.forced{color:#ff7a9e}.empty{padding:20px;color:var(--muted);text-align:center}
     main{min-width:0;min-height:0;display:grid;grid-template-rows:auto auto auto 1fr}.toolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:#0d0a1bcc}
@@ -40,6 +40,7 @@
   </header>
   <div class="app">
     <aside class="sidebar">
+      <div class="free-open"><button id="openFreeImage" class="button">＋ Abrir cualquier imagen…</button><input id="freeImageFile" class="base-file" type="file" accept="image/*,.avif,.bmp,.gif,.jpeg,.jpg,.png,.svg,.webp"><small>También puedes arrastrarla al lienzo</small></div>
       <div class="search-row"><input id="search" class="search" type="search" placeholder="Buscar personaje o pose…"></div>
       <div id="jobs" class="list"><div class="empty">Cargando sprites…</div></div>
     </aside>
@@ -56,7 +57,7 @@
         <section class="tool-section cleanup">
           <div class="tool-title"><b>2</b>Limpieza principal <span>define el contorno que debe conservarse</span></div>
           <div class="tool-controls">
-            <div class="group"><button id="cleanTopological" class="button magic">✦ Limpieza segura (recomendada)</button><span class="base-badge">FUENTE PROTEGIDO</span></div>
+            <div class="group"><button id="cleanTopological" class="button magic">✦ Limpieza segura (recomendada)</button><span id="topologicalBadge" class="base-badge">FUENTE PROTEGIDO</span></div>
             <div class="group"><button id="pickBarrier" class="button">◉ Cuentagotas tope</button><span id="barrierSwatch" class="swatch" aria-hidden="true"></span><span id="barrierColorValue" class="value">Auto</span><label for="colorTolerance">Margen</label><input id="colorTolerance" type="range" min="0" max="180" value="48"><span id="colorToleranceValue" class="value">48</span><button id="clearBarrier" class="button">Automático</button></div>
             <div class="group"><label for="darkBarrier">Borde oscuro</label><input id="darkBarrier" type="range" min="20" max="180" value="92"><span id="darkBarrierValue" class="value">92</span><label for="barrierAlpha">Solidez</label><input id="barrierAlpha" type="range" min="16" max="255" value="190"><span id="barrierAlphaValue" class="value">190</span><label for="edgePeel">Pelado</label><input id="edgePeel" type="range" min="0" max="3" value="0"><span id="edgePeelValue" class="value">0 px</span><label for="haloReach">Alcance</label><input id="haloReach" type="range" min="1" max="30" value="10"><span id="haloReachValue" class="value">10 px</span><button id="cleanExterior" class="button">Limpieza por umbral (avanzada)</button></div>
           </div>
@@ -76,21 +77,21 @@
             <div class="group"><label for="zoom">Zoom</label><input id="zoom" type="range" min="25" max="500" value="100"><span id="zoomValue" class="value">100%</span><button id="fit" class="button">Ajustar</button></div>
             <div class="group"><label for="background">Fondo</label><select id="background"><option value="checker">Damero</option><option value="dark">Negro</option><option value="white">Blanco</option><option value="magenta">Magenta</option></select></div>
             <div class="group"><button id="diagnoseProtection" class="button" disabled>⌖ Comprobar detalle</button><button id="toggleProtection" class="button" disabled>👁 Ver zonas</button><button id="repairProtection" class="button magic" disabled>↥ Restaurar protegidos</button><span id="protectionCount" class="protection-count">Sin comprobar</span></div>
-            <div class="group"><button id="reset" class="button danger">Restaurar base</button><button id="download" class="button" disabled>↓ Descargar WebP actual</button></div><div class="group save-actions"><button id="save" class="button primary">Guardar copia</button><button id="forceSave" class="button force" disabled>Guardar de todos modos</button></div><div id="reviewGroup" class="group" hidden><button id="approveReview" class="button approve" disabled>✓ Marcar como LIMPIO</button></div>
+            <div class="group"><button id="reset" class="button danger">Restaurar base</button><button id="download" class="button" disabled>↓ Descargar WebP actual</button></div><div id="saveGroup" class="group save-actions"><button id="save" class="button primary">Guardar copia</button><button id="forceSave" class="button force" disabled>Guardar de todos modos</button></div><div id="reviewGroup" class="group" hidden><button id="approveReview" class="button approve" disabled>✓ Marcar como LIMPIO</button></div>
             <div class="save-destination"><strong>Guardar copia escribirá en</strong><code id="saveDestination" title="Selecciona una pose">Selecciona una pose</code><small id="saveThumbnails">También generará miniaturas de 156×156 y 480×270.</small></div>
           </div>
         </section>
       </div>
-      <div class="notice"><strong>Consejo:</strong> empieza con «Limpieza segura»: reconstruye el resultado desde el fuente protegido y no puede atravesar tinta ni relleno. Guardar copia nunca modifica el fuente. Navega con Espacio/Alt + arrastrar o el botón central.<button id="compare" class="button">Ver base</button><span id="status">Selecciona una pose</span></div>
+      <div class="notice"><strong>Consejo:</strong> empieza con «Limpieza segura»: reconstruye el resultado desde el original y no puede atravesar tinta ni relleno. Una imagen libre sólo se descarga y nunca se escribe en el proyecto. Navega con Espacio/Alt + arrastrar o el botón central.<button id="compare" class="button">Ver base</button><span id="status">Selecciona una pose o abre una imagen</span></div>
       <details class="tutorial" open>
         <summary>Guía rápida de limpieza <span>flujo recomendado y elección de herramienta</span></summary>
         <div class="tutorial-body">
           <div class="steps">
-            <div class="step"><strong>Elige o recupera la base</strong>Empieza desde el fuente, la copia guardada o arrastra aquí un respaldo PNG/WebP de idéntica resolución.</div>
+            <div class="step"><strong>Elige o abre una imagen</strong>Usa una pose del proyecto, pulsa «Abrir cualquier imagen» o arrastra un archivo compatible con el navegador.</div>
             <div class="step"><strong>Marca el límite</strong>Usa el cuentagotas sobre el contorno bueno. Ajusta Margen color y Solidez sólo si hace falta.</div>
-            <div class="step"><strong>Limpieza principal</strong>Pulsa «Limpieza segura». Se regenera desde el fuente protegido y conserva relleno, color y tinta antes de retirar el halo.</div>
+            <div class="step"><strong>Limpieza principal</strong>Pulsa «Limpieza segura». Se regenera desde el original protegido y conserva relleno, color y tinta antes de retirar el halo.</div>
             <div class="step"><strong>Remata residuos</strong>Usa las pasadas automáticas; reserva «Borrar» para restos puntuales y «Restaurar» para corregir.</div>
-            <div class="step"><strong>Comprueba y guarda</strong>Usa «Comprobar detalle». Si el rosa es daño real, restaura esos píxeles; si corresponde a un suavizado intencional y no aparece morado, revisa el resultado y usa la excepción roja.</div>
+            <div class="step"><strong>Comprueba y termina</strong>Usa «Comprobar detalle». En una imagen libre descarga el WebP; en una pose guarda la copia validada.</div>
           </div>
           <div class="decision">
             <h3>¿Qué botón debo usar?</h3>
@@ -104,12 +105,12 @@
             <code>Aviso protegido</code><span>«Ver zonas» marca cada píxel afectado y «Restaurar protegidos» recupera únicamente esos puntos desde el original canónico.</span>
             <code>Suavizado intencional</code><span>Si has comparado el borde, el rosa es deliberado y no existe expansión morada, «Guardar de todos modos» conserva el resultado y lo marca como REVISAR.</span>
             <code>Revisión terminada</code><span>Con la copia guardada visible y sin cambios pendientes, «Marcar como LIMPIO» registra tu aprobación sin alterar sus píxeles ni borrar la advertencia histórica.</span>
-            <code>Resultado final</code><span>«Guardar copia» y la excepción roja actualizan sólo los derivados runtime; nunca sobrescriben el sprite fuente original.</span>
+            <code>Resultado final</code><span>Una imagen libre usa «Descargar WebP actual»; una pose usa «Guardar copia». Ninguna ruta sobrescribe el original.</span>
           </div>
         </div>
       </details>
       <div id="viewport" class="viewport">
-        <div id="dropHint" class="drop-hint">Suelta aquí tu respaldo PNG o WebP<small>Debe pertenecer a la pose seleccionada y conservar su resolución exacta.</small></div>
+        <div id="dropHint" class="drop-hint">Suelta aquí cualquier imagen<small>Se abrirá como trabajo independiente y el original permanecerá intacto.</small></div>
         <div id="stage" class="stage checker"><canvas id="canvas"></canvas><canvas id="original" class="original"></canvas><canvas id="protectionOverlay" class="protection-overlay"></canvas></div>
       </div>
     </main>
@@ -125,9 +126,10 @@
     const protectedSourceBuffer=document.createElement('canvas'),protectedSourceBufferCtx=protectedSourceBuffer.getContext('2d',{willReadFrequently:true});
     const state={jobs:[],job:null,canvasJobId:null,drawing:false,last:null,zoom:1,undo:[],redo:[],loading:false,loadVersion:0,baseLoadVersion:0,canvasRevision:0,pickingBarrier:false,barrierColor:null,tool:'clean',hasRestoreSource:false,hasProtectedSource:false,baseKind:'source',baseLabel:'Sprite fuente',localBaseImage:null,localBaseLabel:'',dirty:false,canvasSavedAt:null,spaceDown:false,panning:false,panPointer:null,panStart:null,dropDepth:0,protectionReport:null,protectionVisible:false};
     const helpText={
+      openFreeImage:['Abre cualquier imagen como trabajo independiente.','Acepta los formatos de imagen que pueda decodificar tu navegador, conserva la resolución original y no escribe nada en el proyecto. Las imágenes animadas o multipágina se rasterizan usando el fotograma o página que muestre el navegador.'],
       search:['Filtra la lista de sprites.','Escribe parte del nombre del personaje o de la pose. Sólo cambia la lista visible: no modifica ni guarda ningún archivo.'],
       workBase:['Selecciona la imagen inicial de esta sesión.','Puedes trabajar desde el sprite fuente protegido, desde la última copia limpia registrada o desde un archivo local. Restaurar base y Ver base utilizarán esta elección; Guardar siempre escribe la copia.'],
-      chooseBaseFile:['Recupera un respaldo PNG o WebP como base de trabajo.','El archivo debe tener exactamente la misma resolución que la pose seleccionada. También puedes arrastrarlo sobre el lienzo. Se conserva en memoria y queda marcado como trabajo pendiente hasta que pulses Guardar copia.'],
+      chooseBaseFile:['Recupera un respaldo PNG o WebP como base de trabajo.','El archivo debe tener exactamente la misma resolución que la pose seleccionada. Se conserva en memoria y queda marcado como trabajo pendiente hasta que pulses Guardar copia. Para abrir una imagen independiente usa el botón de la barra lateral o arrástrala al lienzo.'],
       eraseTool:['Activa el pincel que elimina halos claros.','El modo Limpiar conserva el comportamiento del pincel original: sólo reduce el alfa de blancos, grises neutros o halos azulados aceptados por Tolerancia.'],
       hardEraseTool:['Activa un borrador sin filtro de color.','El modo Borrar vuelve transparente cualquier píxel bajo el trazo. Tamaño define el diámetro, Fuerza controla cuánto alfa elimina y el borde se suaviza automáticamente. Úsalo para restos puntuales y apóyate en Restaurar si te pasas.'],
       restoreTool:['Activa el pincel que recupera píxeles eliminados.','Pinta de vuelta únicamente la zona recorrida usando la fuente elegida en Desde. Tamaño y Fuerza controlan la restauración, y cada trazo puede deshacerse.'],
@@ -140,7 +142,7 @@
       cleanLightExterior:['Elimina únicamente blancos claros conectados al fondo.','Es una pasada final segura para residuos blancos o grises claros: utiliza Tolerancia y Alcance, recorre las ocho direcciones y nunca atraviesa líneas negras ni zonas de color. La operación completa puede deshacerse.'],
       alphaResidue:['Fija el alfa máximo considerado residuo exterior.','Los píxeles conectados a la transparencia con una opacidad igual o inferior a este valor podrán eliminarse sin importar su color. Empieza entre 32 y 48 y súbelo sólo si todavía ves una costura moteada.'],
       cleanAlphaExterior:['Elimina píxeles exteriores débilmente transparentes.','Limpia restos negros, blancos, azules o de cualquier RGB cuando su alfa no supera Alfa residual. No puede atravesar píxeles más opacos, utiliza Alcance y registra toda la pasada como un único cambio reversible.'],
-      cleanTopological:['Regenera una limpieza segura desde el fuente protegido.','Confirma primero una banda clara conectada al exterior, protege el relleno, el color y la tinta ligados al interior y avanza sólo en cuatro direcciones. No reutiliza una copia ya erosionada y toda la operación puede deshacerse.'],
+      cleanTopological:['Regenera una limpieza segura desde el original protegido.','Confirma primero una banda clara conectada al exterior, protege el relleno, el color y la tinta ligados al interior y avanza sólo en cuatro direcciones. En una imagen opaca también prepara el fondo blanco claro conectado al borde. No reutiliza una copia ya erosionada y toda la operación puede deshacerse.'],
       cleanSpecks:['Elimina pequeñas islas separadas; úsalo como opción avanzada.','Busca componentes visibles de hasta 64 píxeles que no pertenezcan a la isla principal. Un brillo, lágrima o accesorio diminuto también puede cumplir esa condición: revisa el resultado ampliado y usa Deshacer si desaparece un detalle legítimo.'],
       edgeSmooth:['Controla la intensidad del antialias interior del perímetro.','Mezcla el alfa actual con una cobertura suavizada de 3×3 píxeles, pero sólo hacia dentro: nunca crea píxeles fuera de la silueta. Empieza entre 30% y 40%; varias aplicaciones acumulan el efecto.'],
       smoothEdges:['Suaviza los dientes de sierra sin expandir el dibujo.','Sólo reduce el alfa de píxeles ya visibles que tocan transparencia. Nunca inventa color ni alfa fuera de la silueta actual, no altera el interior y toda la operación puede deshacerse.'],
@@ -168,6 +170,7 @@
       compare:['Muestra temporalmente la base elegida.','Mantén pulsado el botón para superponer la Base de trabajo y compararla con el resultado que estás editando.']
     };
     const url=path=>path.startsWith('data:')?path:path+(path.includes('?')?'&':'?')+'v='+Date.now();
+    const escapeHtml=value=>String(value).replace(/[&<>"']/g,character=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
     const setStatus=(message,error=false)=>{$('status').textContent=message;$('status').style.color=error?'#ff7aa9':'var(--cyan)'};
     const loadImage=src=>new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=url(src)});
     const readFileAsDataUrl=file=>new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(reader.error||new Error('No se pudo leer el archivo'));reader.readAsDataURL(file)});
@@ -211,8 +214,9 @@
       state.protectionReport={jobId,revision,result,image};state.protectionVisible=!!result.overlay&&show;$('stage').classList.toggle('show-protection',state.protectionVisible);updateProtectionControls();return true;
     }
     async function requestProtectionDiagnostic(repair=false){
-      if(!hasActiveCanvas())throw new Error('Selecciona y carga primero una pose');
-      const jobId=state.job.id,revision=state.canvasRevision,image=snapshot(),response=await fetch('/api/white-halo-protection',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:jobId,image,repair})}),result=await response.json();
+      if(!hasActiveCanvas())throw new Error('Selecciona una pose o abre una imagen');
+      const jobId=state.job.id,revision=state.canvasRevision,image=snapshot(),payload={id:jobId,image,repair};if(state.job.localOnly)payload.source=state.job.source;
+      const response=await fetch('/api/white-halo-protection',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)}),result=await response.json();
       if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo comprobar el detalle protegido');
       if(state.job?.id!==jobId||state.canvasRevision!==revision)return null;
       return{jobId,revision,result,image};
@@ -239,14 +243,15 @@
     }
     async function downloadCurrentCanvas(){
       if(state.loading){setStatus('Espera a que termine la carga actual',true);return}
-      if(!hasActiveCanvas()){setStatus('Selecciona y carga primero una pose',true);return}
-      const targetJob=state.job,targetLoadVersion=state.loadVersion,filename=targetJob.destination?.downloadName||`${targetJob.id.replace(/[^a-z0-9_-]+/gi,'_')}_lienzo.webp`,frozen=document.createElement('canvas');
+      if(!hasActiveCanvas()){setStatus('Selecciona una pose o abre una imagen',true);return}
+      const targetJob=state.job,targetLoadVersion=state.loadVersion,defaultFilename=targetJob.destination?.downloadName||'imagen_halo_limpio.webp',frozen=document.createElement('canvas');
       frozen.width=canvas.width;frozen.height=canvas.height;frozen.getContext('2d').drawImage(canvas,0,0);
       $('download').disabled=true;setStatus('Preparando WebP lossless…');
       try{
-        const response=await fetch('/api/white-halo-export',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:targetJob.id,image:frozen.toDataURL('image/png')})});
+        const payload={id:targetJob.id,image:frozen.toDataURL('image/png')};if(targetJob.localOnly)payload.filename=targetJob.originalFileName||targetJob.pose;
+        const response=await fetch('/api/white-halo-export',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
         if(!response.ok){let message='No se pudo preparar el WebP';try{message=(await response.json()).error||message}catch{}throw new Error(message)}
-        const blob=await response.blob();if(blob.type!=='image/webp')throw new Error('El servidor no devolvió un WebP válido');
+        const disposition=response.headers.get('Content-Disposition')||'',match=disposition.match(/filename="?([^";]+)"?/i),filename=match?.[1]||defaultFilename,blob=await response.blob();if(blob.type!=='image/webp')throw new Error('El servidor no devolvió un WebP válido');
         const objectUrl=URL.createObjectURL(blob),link=document.createElement('a');link.href=objectUrl;link.download=filename;link.hidden=true;document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),1000);
         if(state.job?.id===targetJob.id&&state.loadVersion===targetLoadVersion)setStatus(`WebP descargado: ${filename} · respaldo lossless sin registrar`);
       }catch(error){if(state.job?.id===targetJob.id&&state.loadVersion===targetLoadVersion)setStatus(error.message||'No se pudo descargar el WebP',true)}finally{if(state.job?.id===targetJob.id&&state.loadVersion===targetLoadVersion)$('download').disabled=false}
@@ -261,19 +266,19 @@
 
     function renderList(){
       const query=$('search').value.trim().toLowerCase();
-      const visible=state.jobs.filter(j=>`${j.characterName} ${j.character} ${j.pose}`.toLowerCase().includes(query));
+      const visible=state.jobs.filter(j=>`${j.characterName} ${j.character} ${j.pose} ${j.originalFileName||''}`.toLowerCase().includes(query));
       $('jobs').innerHTML=visible.length?'':'<div class="empty">No hay coincidencias</div>';
-      for(const job of visible){const button=document.createElement('button'),review=savedReviewState(job),needsReview=review.forced&&!review.approved;button.className='job'+(state.job?.id===job.id?' active':'');button.innerHTML=`${job.saved?`<span class="saved${needsReview?' forced':''}">${needsReview?'REVISAR':'LIMPIO'}</span>`:''}<strong>${job.characterName}</strong><small>${job.pose} · ${job.width}×${job.height}</small>`;const badge=button.querySelector('.saved');if(badge)badge.title=review.approved?`Limpio tras revisión manual · ${review.validation?.review?.reviewedAt||''}`:needsReview?'Guardado excepcional pendiente de revisión':'Guardado sin excepción pendiente';button.onclick=()=>selectJob(job);$('jobs').append(button)}
+      for(const job of visible){const button=document.createElement('button'),review=savedReviewState(job),needsReview=review.forced&&!review.approved;button.className='job'+(state.job?.id===job.id?' active':'');button.innerHTML=`${job.localOnly?'<span class="saved">LIBRE</span>':job.saved?`<span class="saved${needsReview?' forced':''}">${needsReview?'REVISAR':'LIMPIO'}</span>`:''}<strong>${escapeHtml(job.characterName)}</strong><small>${escapeHtml(job.pose)} · ${job.width}×${job.height}</small>`;const badge=button.querySelector('.saved');if(badge&&!job.localOnly)badge.title=review.approved?`Limpio tras revisión manual · ${review.validation?.review?.reviewedAt||''}`:needsReview?'Guardado excepcional pendiente de revisión':'Guardado sin excepción pendiente';button.onclick=()=>selectJob(job);$('jobs').append(button)}
     }
     function renderBarrierColor(){const swatch=$('barrierSwatch'),value=$('barrierColorValue'),sampled=!!state.barrierColor;$('darkBarrier').disabled=sampled;$('edgePeel').disabled=sampled;if(sampled){const [r,g,b]=state.barrierColor,hex='#'+[r,g,b].map(channel=>channel.toString(16).padStart(2,'0')).join('').toUpperCase();swatch.classList.add('sampled');swatch.style.setProperty('--sample-color',`rgb(${r} ${g} ${b})`);value.textContent=hex}else{swatch.classList.remove('sampled');swatch.style.removeProperty('--sample-color');value.textContent='Auto'}}
     function updateBaseControls(){
-      const selector=$('workBase'),savedOption=selector.querySelector('option[value="saved"]'),localOption=selector.querySelector('option[value="local"]'),protectedRestoreOption=$('restoreSource').querySelector('option[value="protected"]'),source=state.job?.source||'',viewSource=$('viewProtectedSource'),revealSource=$('revealProtectedSource'),destination=state.job?.destination;
+      const selector=$('workBase'),savedOption=selector.querySelector('option[value="saved"]'),localOption=selector.querySelector('option[value="local"]'),protectedRestoreOption=$('restoreSource').querySelector('option[value="protected"]'),source=state.job?.source||'',isFree=!!state.job?.localOnly,viewSource=$('viewProtectedSource'),revealSource=$('revealProtectedSource'),destination=state.job?.destination;
       savedOption.disabled=!state.job?.saved?.cleaned;localOption.disabled=!state.localBaseImage;selector.value=state.baseKind;
       protectedRestoreOption.disabled=!state.hasProtectedSource;
-      viewSource.href=source?'/'+source.replace(/^\/+/, ''):'#';viewSource.title=source;viewSource.setAttribute('aria-disabled',source?'false':'true');viewSource.tabIndex=source?0:-1;revealSource.disabled=!source;revealSource.title=source;
-      const saveTarget=destination?.cleaned||'Selecciona una pose';$('saveDestination').textContent=saveTarget;$('saveDestination').title=saveTarget;
-      $('saveThumbnails').textContent=destination?'También generará miniaturas de 156×156 y 480×270.':'Al guardar también se crearán las dos miniaturas.';$('saveThumbnails').title=destination?`${destination.thumbnail}\n${destination.galleryThumbnail}`:'';$('download').disabled=!hasActiveCanvas();
-      const names={source:'FUENTE PROTEGIDO',saved:'COPIA GUARDADA',local:'COPIA LOCAL'};$('baseBadge').textContent=names[state.baseKind]||'FUENTE PROTEGIDO';
+      viewSource.href=source&&!isFree?'/'+source.replace(/^\/+/, ''):'#';viewSource.title=isFree?'Usa «Ver base» para comparar el original importado':source;viewSource.setAttribute('aria-disabled',source&&!isFree?'false':'true');viewSource.tabIndex=source&&!isFree?0:-1;revealSource.disabled=!source||isFree;revealSource.title=isFree?'La imagen libre permanece en memoria':source;
+      const saveTarget=isFree?'Sólo descarga: no escribe en el proyecto':destination?.cleaned||'Selecciona una pose o abre una imagen';$('saveDestination').textContent=saveTarget;$('saveDestination').title=saveTarget;
+      $('saveThumbnails').textContent=isFree?'El WebP lossless conservará la resolución y la transparencia del lienzo.':destination?'También generará miniaturas de 156×156 y 480×270.':'Al guardar también se crearán las dos miniaturas.';$('saveThumbnails').title=destination?`${destination.thumbnail}\n${destination.galleryThumbnail}`:'';$('download').disabled=!hasActiveCanvas();$('saveGroup').hidden=isFree;
+      const names={source:isFree?'ORIGINAL IMPORTADO':'FUENTE PROTEGIDO',saved:'COPIA GUARDADA',local:'COPIA LOCAL'};$('baseBadge').textContent=names[state.baseKind]||'FUENTE PROTEGIDO';$('topologicalBadge').textContent=isFree?'ORIGINAL IMPORTADO':'FUENTE PROTEGIDO';
       updateProtectionControls();
     }
     async function loadProtectedRestoreSource(targetJob=state.job,loadVersion=state.loadVersion){
@@ -289,7 +294,7 @@
       canvas.width=original.width=protectionOverlay.width=image.naturalWidth;canvas.height=original.height=protectionOverlay.height=image.naturalHeight;
       originalCtx.clearRect(0,0,original.width,original.height);originalCtx.drawImage(image,0,0);
       ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(image,0,0);
-      state.canvasJobId=targetJob?.id||null;state.baseKind=kind;state.baseLabel=label;state.undo=[];state.redo=[];state.canvasRevision++;state.dirty=kind==='local';state.canvasSavedAt=kind==='saved'?targetJob?.saved?.updatedAt||null:null;state.hasRestoreSource=false;captureRestoreSource(false);clearProtectionReport();updateHistory();updateBaseControls();applyZoom();requestAnimationFrame(fitView);setStatus(kind==='local'?`Respaldo recuperado: ${label} · pendiente de validar y guardar`:`Base cargada: ${label}`);
+      state.canvasJobId=targetJob?.id||null;state.baseKind=kind;state.baseLabel=label;state.undo=[];state.redo=[];state.canvasRevision++;state.dirty=kind==='local'||!!targetJob?.localOnly;state.canvasSavedAt=kind==='saved'?targetJob?.saved?.updatedAt||null:null;state.hasRestoreSource=false;captureRestoreSource(false);clearProtectionReport();updateHistory();updateBaseControls();applyZoom();requestAnimationFrame(fitView);setStatus(targetJob?.localOnly?`Imagen libre cargada: ${targetJob.originalFileName} · edita y descarga el WebP`:kind==='local'?`Respaldo recuperado: ${label} · pendiente de validar y guardar`:`Base cargada: ${label}`);
     }
     async function switchWorkingBase(kind,{confirmDirty=true,targetJob=state.job,loadVersion=state.loadVersion,baseLoadVersion=state.baseLoadVersion}={}){
       if(!targetJob)return false;
@@ -302,7 +307,7 @@
         if(!state.localBaseImage)throw new Error('Primero elige un archivo local');
         image=state.localBaseImage;label=state.localBaseLabel||'copia local elegida';
       }else{
-        kind='source';image=await loadImage(targetJob.source);label='sprite fuente protegido';
+        kind='source';image=await loadImage(targetJob.source);label=targetJob.localOnly?'original importado':'sprite fuente protegido';
       }
       if(state.job?.id!==targetJob.id||state.loadVersion!==loadVersion||state.baseLoadVersion!==baseLoadVersion)return false;
       applyBaseImage(image,kind,label,targetJob);return true;
@@ -391,9 +396,10 @@
     async function applyTopologicalCleanup(){
       if(!hasActiveCanvas()||state.loading)return;
       const targetJob=state.job,loadVersion=state.loadVersion,baseLoadVersion=state.baseLoadVersion;
-      state.loading=true;$('cleanTopological').disabled=true;setStatus('Reconstruyendo desde el fuente protegido…');
+      state.loading=true;$('cleanTopological').disabled=true;setStatus(state.job.localOnly?'Analizando el original importado…':'Reconstruyendo desde el fuente protegido…');
       try{
-        const response=await fetch('/api/white-halo-topological',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:targetJob.id})});
+        const payload={id:targetJob.id};if(targetJob.localOnly)payload.source=targetJob.source;
+        const response=await fetch('/api/white-halo-topological',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
         const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo generar la limpieza segura');
         const preview=await loadImage(result.image);
         if(state.job?.id!==targetJob.id||state.loadVersion!==loadVersion||state.baseLoadVersion!==baseLoadVersion||!hasActiveCanvas())return;
@@ -401,7 +407,8 @@
         if(protection.lostReliableFillPixels||protection.lostProtectedPixels)throw new Error('La vista previa no superó la protección de relleno y tinta');
         pushUndo();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(preview,0,0);
         const removed=result.metrics?.removedPixels||0;
-        setStatus(`Limpieza segura aplicada desde el fuente · ${removed.toLocaleString('es-ES')} píxeles de halo retirados · tinta protegida intacta`);
+        const prepared=result.automatic?.preparedOpaqueExteriorPixels||0;
+        setStatus(`Limpieza segura aplicada · ${(removed+prepared).toLocaleString('es-ES')} píxeles exteriores retirados · tinta protegida intacta${prepared?' · fondo blanco opaco preparado':''}`);
       }catch(error){if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion)setStatus(error.message||'No se pudo generar la limpieza segura',true)}finally{if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion)state.loading=false;$('cleanTopological').disabled=false;updateProtectionControls()}
     }
     function removeExteriorHalo(){
@@ -504,7 +511,17 @@
     $('size').oninput=()=>{$('sizeValue').textContent=$('size').value+' px'};$('tolerance').oninput=()=>{$('toleranceValue').textContent=$('tolerance').value};$('strength').oninput=()=>{$('strengthValue').textContent=$('strength').value+'%'};$('alphaResidue').oninput=()=>{$('alphaResidueValue').textContent=$('alphaResidue').value};$('edgeSmooth').oninput=()=>{$('edgeSmoothValue').textContent=$('edgeSmooth').value+'%'};$('colorTolerance').oninput=()=>{$('colorToleranceValue').textContent=$('colorTolerance').value};$('darkBarrier').oninput=()=>{$('darkBarrierValue').textContent=$('darkBarrier').value};$('barrierAlpha').oninput=()=>{$('barrierAlphaValue').textContent=$('barrierAlpha').value};$('edgePeel').oninput=()=>{$('edgePeelValue').textContent=$('edgePeel').value+' px'};$('haloReach').oninput=()=>{$('haloReachValue').textContent=$('haloReach').value+' px'};
     $('zoom').oninput=()=>setZoom(+$('zoom').value);$('fit').onclick=fitView;$('background').onchange=()=>{const stage=$('stage');for(const name of ['checker','dark','white','magenta'])stage.classList.remove(name);stage.classList.add($('background').value);stage.classList.toggle('picking',state.pickingBarrier);stage.classList.toggle('show-protection',state.protectionVisible)};$('search').oninput=renderList;$('undo').onclick=undo;$('redo').onclick=redo;
     $('workBase').onchange=async event=>{if(state.loading){updateBaseControls();setStatus('Espera a que termine la carga actual',true);return}const requested=event.target.value,loadVersion=state.loadVersion,baseLoadVersion=++state.baseLoadVersion;try{state.loading=true;await switchWorkingBase(requested,{loadVersion,baseLoadVersion})}catch(error){if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion){setStatus(error.message||'No se pudo cambiar la base',true);updateBaseControls()}}finally{if(state.loadVersion===loadVersion&&state.baseLoadVersion===baseLoadVersion)state.loading=false;updateProtectionControls()}};
-    $('chooseBaseFile').onclick=()=>{if(state.loading)setStatus('Espera a que termine la carga actual',true);else if(state.job)$('baseFile').click();else setStatus('Selecciona primero una pose',true)};
+    $('chooseBaseFile').onclick=()=>{if(state.loading)setStatus('Espera a que termine la carga actual',true);else if(state.job)$('baseFile').click();else setStatus('Selecciona primero una pose o abre una imagen',true)};
+    async function openFreeImage(file){
+      if(!file)return false;if(state.loading){setStatus('Espera a que termine la carga actual',true);return false}const discardConfirmed=state.dirty;if(discardConfirmed&&!window.confirm('Hay cambios sin guardar. ¿Quieres descartarlos y abrir esta imagen?'))return false;
+      const extension=file.name.split('.').pop()?.toLowerCase(),known=['avif','bmp','gif','jpeg','jpg','png','svg','webp'].includes(extension),supported=file.type.startsWith('image/')||known;if(!supported){setStatus('El archivo elegido no parece ser una imagen compatible',true);return false}
+      try{
+        state.loading=true;const source=await readFileAsDataUrl(file),image=await loadImage(source);if(!image.naturalWidth||!image.naturalHeight)throw new Error('La imagen no tiene dimensiones válidas');
+        const job={id:`free-${Date.now()}-${Math.random().toString(36).slice(2)}`,character:'imagen-libre',characterName:'Imagen libre',pose:file.name,originalFileName:file.name,source,width:image.naturalWidth,height:image.naturalHeight,localOnly:true};state.jobs=state.jobs.filter(entry=>!entry.localOnly);state.jobs.unshift(job);if(discardConfirmed)state.dirty=false;state.loading=false;await selectJob(job);return true;
+      }catch(error){state.loading=false;setStatus(error.message||'El navegador no pudo abrir esta imagen',true);return false}
+    }
+    $('openFreeImage').onclick=()=>{if(state.loading)setStatus('Espera a que termine la carga actual',true);else $('freeImageFile').click()};
+    $('freeImageFile').onchange=async event=>{const file=event.target.files?.[0];try{await openFreeImage(file)}finally{event.target.value=''}};
     async function importLocalBaseFile(file){
       const targetJob=state.job,loadVersion=state.loadVersion;if(!file||!targetJob){setStatus('Selecciona primero la pose a la que pertenece el respaldo',true);return false}if(state.loading){setStatus('Espera a que termine la carga actual',true);return false}
       const extension=file.name.split('.').pop()?.toLowerCase(),supported=['png','webp'].includes(extension)||['image/png','image/webp'].includes(file.type);if(!supported){setStatus('El respaldo debe ser PNG o WebP para conservar la transparencia',true);return false}
@@ -524,7 +541,7 @@
     $('viewport').addEventListener('dragenter',event=>{if(!droppedFiles(event).length&&!event.dataTransfer?.types?.includes('Files'))return;event.preventDefault();state.dropDepth++;$('viewport').classList.add('drop-active')});
     $('viewport').addEventListener('dragover',event=>{if(!event.dataTransfer?.types?.includes('Files'))return;event.preventDefault();event.dataTransfer.dropEffect='copy';$('viewport').classList.add('drop-active')});
     $('viewport').addEventListener('dragleave',event=>{if(!event.dataTransfer?.types?.includes('Files'))return;state.dropDepth=Math.max(0,state.dropDepth-1);if(!state.dropDepth)$('viewport').classList.remove('drop-active')});
-    $('viewport').addEventListener('drop',async event=>{const files=droppedFiles(event);if(!files.length)return;event.preventDefault();leaveFileDrop();if(files.length>1)setStatus('Se usará únicamente el primer archivo soltado');await importLocalBaseFile(files[0])});
+    $('viewport').addEventListener('drop',async event=>{const files=droppedFiles(event);if(!files.length)return;event.preventDefault();leaveFileDrop();if(files.length>1)setStatus('Se usará únicamente el primer archivo soltado');await openFreeImage(files[0])});
     window.addEventListener('dragover',event=>{if(event.dataTransfer?.types?.includes('Files'))event.preventDefault()});
     window.addEventListener('drop',event=>{if(event.dataTransfer?.types?.includes('Files'))event.preventDefault()});
     $('eraseTool').onclick=()=>setTool('clean');$('hardEraseTool').onclick=()=>setTool('erase');$('restoreTool').onclick=()=>setTool('restore');$('restoreSource').onchange=()=>{if(state.tool==='restore'){const labels={before:'el estado anterior',protected:'el sprite original protegido',base:'la base de trabajo actual'};setStatus(`Pincel restaurador: recuperará desde ${labels[$('restoreSource').value]}`)}};
@@ -539,6 +556,7 @@
     $('reset').onclick=()=>{if(state.loading||!hasActiveCanvas())return;pushUndo();ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(original,0,0);setStatus(`Base restaurada en el lienzo: ${state.baseLabel}`)};$('download').onclick=downloadCurrentCanvas;
     async function saveWhiteHaloCopy(force=false){
       if(state.loading){setStatus('Espera a que termine la operación actual',true);return}if(!hasActiveCanvas()){setStatus('La base de esta pose todavía no está disponible',true);return}
+      if(state.job.localOnly){setStatus('Las imágenes libres no se escriben en el proyecto: usa «Descargar WebP actual»',true);return}
       const targetJob=state.job,loadVersion=state.loadVersion,revision=state.canvasRevision;let image=null,forceAck=null;
       if(force){
         const current=currentProtectionReport(),lost=current?.result?.metrics?.lostProtectedPixels||0,expanded=current?.result?.metrics?.expandedPixels||0,fingerprint=current?.result?.forceSave?.diagnosticFingerprint;

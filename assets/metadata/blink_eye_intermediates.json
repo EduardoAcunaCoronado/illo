@@ -963,15 +963,15 @@
     },
     "samu.neutral": {
       "base": "assets/images/characters/samu/Samu.webp",
-      "target": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
+      "target": "assets/images/characters/samu/animations/samu_neutral_blink_closed.webp",
       "direction": "closing",
       "canvas": {
         "width": 1024,
         "height": 1024
       },
-      "status": "existing",
+      "status": "official-v2",
       "half": "assets/images/characters/samu/animations/samu_neutral_blink_half.webp",
-      "method": "existing-frame"
+      "method": "imagegen-eye-region-composite"
     },
     "samu.happy": {
       "base": "assets/images/characters/samu/samu_happy.webp",
@@ -981,7 +981,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/happy/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -993,7 +993,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/sad/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1005,7 +1005,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/angry/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1017,7 +1017,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/surprised/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1029,7 +1029,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/alarmed/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1041,7 +1041,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/bua/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1053,7 +1053,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/clapping/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1065,7 +1065,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/determined/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1077,7 +1077,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/embarrassed/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1089,7 +1089,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/shocked/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1101,7 +1101,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/thinking/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1113,7 +1113,7 @@
         "width": 1024,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/valla/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1125,7 +1125,7 @@
         "width": 768,
         "height": 1024
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/curious/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1137,7 +1137,7 @@
         "width": 1254,
         "height": 1254
       },
-      "status": "generated",
+      "status": "official-v2",
       "half": "assets/images/characters/eye_intermediate_sources/samu/charred_blink/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
     },
@@ -1548,7 +1548,19 @@
       "status": "generated",
       "half": "assets/images/characters/eye_intermediate_sources/zip/angry/eyes_half_source.webp",
       "method": "imagegen-eye-region-composite"
+    },
+    "samu.worried": {
+      "base": "assets/images/characters/samu/samu_worried.webp",
+      "target": "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp",
+      "direction": "closing",
+      "canvas": {
+        "width": 1209,
+        "height": 1301
+      },
+      "status": "official-v2",
+      "half": "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp",
+      "method": "imagegen-eye-region-composite"
     }
   },
-  "updatedAt": "2026-08-04T18:45:00+02:00"
+  "updatedAt": "2026-08-05T16:44:10.833639+00:00"
 }

@@ -53,7 +53,7 @@ proyecto/
 ├── characters/
 ├── chapters/
 ├── assets/                   ← Runtime y salidas de herramientas
-└── workbench/                ← Fuentes, originales y archivo
+└── workbench/                ← Espejo de la raíz para maestros y originales
 ```
 
 ## Convenciones
@@ -63,8 +63,10 @@ proyecto/
 3. **Mantener limpio:** Eliminar archivos innecesarios
 4. **Memoria:** Actualizar memory/ con cambios importantes
 5. **Entrega:** Declarar impacto documental en cada PR
-6. **Conservación:** `workbench/` se versiona completo con Git normal. Se
-   excluye del paquete de Electron, pero nunca del repositorio.
+6. **Conservación:** `workbench/` se versiona completo con Git normal, replica
+   rutas de la raíz (`workbench/assets/...`, `workbench/characters/...`) y no
+   almacena QA, candidatos, rechazados ni archivos paralelos. Se excluye del
+   paquete de Electron, pero nunca del repositorio.
 
 Narradora es 3C. Nexo es su auxiliar de continuidad y sustituye a ePod en el
 canon activo. Ambos deben tener voz propia y una forma original de romper la

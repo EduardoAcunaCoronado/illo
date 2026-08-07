@@ -380,6 +380,7 @@ def collect_referenced_art(used_ids: set[str]) -> list[dict[str, Any]]:
 def pose_label(pose_key: str) -> str:
     labels = {
         "neutral": "Neutral",
+        "seated": "Sentado",
         "happy": "Feliz",
         "sad": "Triste",
         "angry": "Enfadado",
@@ -403,6 +404,14 @@ def pose_label(pose_key: str) -> str:
         "zip_happy": "Zip feliz",
         "zip_surprised": "Zip sorprendido",
         "zip_worried": "Zip preocupado",
+        "seated_surprised": "Sentado, sorprendido",
+        "seated_happy": "Sentado, feliz",
+        "seated_happy_closed": "Sentado, feliz con ojos cerrados",
+        "seated_playful": "Sentado, picarón",
+        "seated_blushing": "Sentado, ruborizado",
+        "seated_suspicious": "Sentado, sospechando",
+        "seated_curious": "Sentado, curioso",
+        "seated_worried": "Sentado, preocupado",
     }
     return labels.get(pose_key, normalize_words(pose_key))
 

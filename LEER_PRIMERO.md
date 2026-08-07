@@ -57,6 +57,7 @@ Preparación y comprobación mínima:
 ```powershell
 npm install
 npm run validate:content
+npm run validate:workbench
 npm run audit:assets
 npm start
 ```
@@ -66,7 +67,11 @@ Puntos de entrada:
 - Historia: `chapters/chapter0.json` a `chapters/chapter6.json`.
 - Personajes y poses: `characters/*.json`.
 - Runtime multimedia: `assets/`.
-- Fuentes, originales y archivo: `workbench/`.
+- Maestros y originales, con la misma estructura de la raíz: `workbench/`.
+- Storyboards del opening de Samu: `workbench/assets/video/cutscenes/prologue/opening_samu/storyboard/`
+  y `storyboardV2/`, conservados como fuentes independientes. La preparación UHD
+  no destructiva está en `storyboardV2/4k/` y se regenera con
+  `python scripts/prepare_samu_opening_storyboard_v2_4k.py --force`.
 - Orquestación y menús: `game.js`.
 - Motor y acciones: `engine.js`.
 - Interfaz: `index.html`, `styles.css` y `battle-styles.css`.
@@ -89,11 +94,25 @@ El botón comprueba primero que el servicio correcto está vivo y que correspond
 a la misma carpeta del proyecto. Si 8011 está
 apagado, mantiene abierto el menú y ofrece reintentar o copiar el comando; en
 Electron de desarrollo intenta iniciar Tools automáticamente.
+Dentro de **Juego y utilidades**, la tarjeta **Restaurador de frames de Samu**
+abre o reutiliza el editor local de los 240 fotogramas. Sus fuentes originales y
+cambiadas permanecen protegidas; las copias se guardan en la carpeta de revisados.
+Los tres botones **Elegir** permiten seleccionar las carpetas de origen de
+trabajo, originales de referencia y destino sin editar `config.json` a mano.
+**Rectángulo global** (`G`) restaura la zona marcada desde cada original en todo
+el lote, siempre sobre Revisados, y permite deshacer la última aplicación global.
+**Cubo** (`F`) rellena una zona contigua con tolerancia y se integra en `Ctrl+Z`.
+**Generar vídeo de prueba** monta los revisados guardados, completa los pendientes
+con sus frames de trabajo y abre la previsualización con el audio fuente.
+En **Eliminar halos blancos**, `Abrir cualquier imagen…` o el gesto de arrastrar
+permiten limpiar un archivo ajeno a las poses del juego; el original no se modifica
+y el resultado se entrega únicamente mediante `Descargar WebP actual`.
 
 ## Antes de entregar un cambio
 
 ```powershell
 npm run validate:content
+npm run validate:workbench
 npm run audit:assets
 npm run check:js
 ```

@@ -108,78 +108,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 483530,
+      "transparentPixels": 499270,
       "metrics": {
-        "fullyTransparentPixels": 472657,
-        "partialAlphaPixels": 10873,
-        "opaquePixels": 565046,
-        "removedPixels": 20878,
-        "reducedAlphaPixels": 29536,
+        "fullyTransparentPixels": 478203,
+        "partialAlphaPixels": 21067,
+        "opaquePixels": 549306,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 5,
-            "largestComponentPixels": 585212,
-            "detachedVisiblePixels": 11585,
-            "speckComponents": 0,
-            "speckPixels": 0
+            "visibleComponents": 70,
+            "largestComponentPixels": 560572,
+            "detachedVisiblePixels": 9801,
+            "speckComponents": 65,
+            "speckPixels": 221
           },
           "candidate": {
-            "visibleComponents": 7,
-            "largestComponentPixels": 567199,
-            "detachedVisiblePixels": 8720,
-            "speckComponents": 2,
-            "speckPixels": 3
+            "visibleComponents": 70,
+            "largestComponentPixels": 560572,
+            "detachedVisiblePixels": 9801,
+            "speckComponents": 65,
+            "speckPixels": 221
           }
         },
-        "changedVisibleRgbPixels": 12264,
-        "normalizedRetainedRgbPixels": 12264,
-        "protection": {
-          "reliableFillPixels": 485794,
-          "protectedInkPixels": 538811,
-          "protectedPixels": 538811,
-          "lostReliableFillPixels": 559,
-          "lostProtectedInkPixels": 4807,
-          "lostProtectedPixels": 4807,
-          "lostProtectedBounds": {
-            "x": 31,
-            "y": 4,
-            "width": 978,
-            "height": 1020
-          }
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T13:51:15.637798+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
-        "forced": true,
-        "warnings": [
-          {
-            "code": "lost-protected-alpha",
-            "pixels": 4807,
-            "lostReliableFillPixels": 559,
-            "lostProtectedInkPixels": 4807,
-            "bounds": {
-              "x": 31,
-              "y": 4,
-              "width": 978,
-              "height": 1020
-            }
-          }
-        ],
-        "forcedAt": "2026-08-04T13:51:15.637798+00:00",
-        "diagnosticFingerprint": "sha256:2fe5ae7405de73508eb601ffa4299ab10c3167d9ba6a3b67c545fe38c6cd1eb6",
-        "review": {
-          "status": "approved",
-          "policy": "white-halo-manual-review-v1",
-          "reviewedAt": "2026-08-04T14:14:04.071714+00:00",
-          "subjectRevision": "sha256:733f7b7e20b81dd02273c2be6d37eebfcf822fd0b498a6fb493096a31b62394b",
-          "artifactSetFingerprint": "sha256:559aad5c06f6f5681aac80d06d8f27e4d6f8c40601324d0321ef98a92ed7308a"
-        }
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_alarmed_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/alarmed/animations/samu_alarmed_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/alarmed/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/alarmed/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/alarmed/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/alarmed/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_alarmed_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/alarmed/animations/samu_alarmed_blink_closed_halo_limpio.webp"
       }
     },
     "samu.angry": {
@@ -191,46 +155,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 552231,
+      "transparentPixels": 584531,
       "metrics": {
-        "fullyTransparentPixels": 545946,
-        "partialAlphaPixels": 6285,
-        "opaquePixels": 496345,
-        "removedPixels": 13162,
-        "reducedAlphaPixels": 17419,
+        "fullyTransparentPixels": 567261,
+        "partialAlphaPixels": 17270,
+        "opaquePixels": 464045,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 3,
-            "largestComponentPixels": 515788,
-            "detachedVisiblePixels": 4,
-            "speckComponents": 2,
-            "speckPixels": 4
+            "visibleComponents": 31,
+            "largestComponentPixels": 481184,
+            "detachedVisiblePixels": 131,
+            "speckComponents": 30,
+            "speckPixels": 131
           },
           "candidate": {
-            "visibleComponents": 1,
-            "largestComponentPixels": 502630,
-            "detachedVisiblePixels": 0,
-            "speckComponents": 0,
-            "speckPixels": 0
+            "visibleComponents": 31,
+            "largestComponentPixels": 481184,
+            "detachedVisiblePixels": 131,
+            "speckComponents": 30,
+            "speckPixels": 131
           }
         },
-        "changedVisibleRgbPixels": 9492,
-        "normalizedRetainedRgbPixels": 9492,
-        "protection": {
-          "reliableFillPixels": 407328,
-          "protectedInkPixels": 472627,
-          "protectedPixels": 472627,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T13:11:32.565053+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_angry_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/angry/animations/samu_angry_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/angry/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/angry/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/angry/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/angry/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_angry_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/angry/animations/samu_angry_blink_closed_halo_limpio.webp"
+      },
+      "validation": {
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       }
     },
     "samu.bua": {
@@ -242,78 +202,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 625682,
+      "transparentPixels": 578268,
       "metrics": {
-        "fullyTransparentPixels": 615731,
-        "partialAlphaPixels": 9951,
-        "opaquePixels": 422894,
-        "removedPixels": 6812,
-        "reducedAlphaPixels": 12196,
+        "fullyTransparentPixels": 565562,
+        "partialAlphaPixels": 12706,
+        "opaquePixels": 470308,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 2,
-            "largestComponentPixels": 439656,
-            "detachedVisiblePixels": 1,
-            "speckComponents": 1,
-            "speckPixels": 1
+            "visibleComponents": 21,
+            "largestComponentPixels": 482961,
+            "detachedVisiblePixels": 53,
+            "speckComponents": 20,
+            "speckPixels": 53
           },
           "candidate": {
-            "visibleComponents": 1,
-            "largestComponentPixels": 432845,
-            "detachedVisiblePixels": 0,
-            "speckComponents": 0,
-            "speckPixels": 0
+            "visibleComponents": 21,
+            "largestComponentPixels": 482961,
+            "detachedVisiblePixels": 53,
+            "speckComponents": 20,
+            "speckPixels": 53
           }
         },
-        "changedVisibleRgbPixels": 11797,
-        "normalizedRetainedRgbPixels": 11797,
-        "protection": {
-          "reliableFillPixels": 406696,
-          "protectedInkPixels": 428433,
-          "protectedPixels": 428433,
-          "lostReliableFillPixels": 659,
-          "lostProtectedInkPixels": 1599,
-          "lostProtectedPixels": 1599,
-          "lostProtectedBounds": {
-            "x": 277,
-            "y": 53,
-            "width": 747,
-            "height": 971
-          }
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T14:18:48.703506+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
-        "forced": true,
-        "warnings": [
-          {
-            "code": "lost-protected-alpha",
-            "pixels": 1599,
-            "lostReliableFillPixels": 659,
-            "lostProtectedInkPixels": 1599,
-            "bounds": {
-              "x": 277,
-              "y": 53,
-              "width": 747,
-              "height": 971
-            }
-          }
-        ],
-        "forcedAt": "2026-08-04T14:18:48.703506+00:00",
-        "diagnosticFingerprint": "sha256:ac5f333d65698ed0069ce8c69cef89c4f1a8c9c0f4b30b795743a03f3498cf33",
-        "review": {
-          "status": "approved",
-          "policy": "white-halo-manual-review-v1",
-          "reviewedAt": "2026-08-04T14:18:53.875595+00:00",
-          "subjectRevision": "sha256:ff964905ef6f49d9f6af0f421e36b0d3b2b2c85d53c1813686da17e8a107d071",
-          "artifactSetFingerprint": "sha256:db4b4bc3998043b7fe8f882672b140957479ddc8f29b73d7896f18d958bc4a40"
-        }
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_bua_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/bua/animations/samu_bua_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/bua/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/bua/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/bua/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/bua/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_bua_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/bua/animations/samu_bua_blink_closed_halo_limpio.webp"
       }
     },
     "samu.charred_blink": {
@@ -325,50 +249,42 @@
         "width": 1254,
         "height": 1254
       },
-      "transparentPixels": 721567,
+      "transparentPixels": 824175,
       "metrics": {
-        "fullyTransparentPixels": 713706,
-        "partialAlphaPixels": 7861,
-        "opaquePixels": 850949,
+        "fullyTransparentPixels": 815962,
+        "partialAlphaPixels": 8213,
+        "opaquePixels": 748341,
         "removedPixels": 0,
         "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
             "visibleComponents": 1,
-            "largestComponentPixels": 858810,
+            "largestComponentPixels": 756554,
             "detachedVisiblePixels": 0,
             "speckComponents": 0,
             "speckPixels": 0
           },
           "candidate": {
             "visibleComponents": 1,
-            "largestComponentPixels": 858810,
+            "largestComponentPixels": 756554,
             "detachedVisiblePixels": 0,
             "speckComponents": 0,
             "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 7686,
-        "normalizedRetainedRgbPixels": 7686,
-        "protection": {
-          "reliableFillPixels": 706167,
-          "protectedInkPixels": 748996,
-          "protectedPixels": 748996,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:58:24.852300+00:00",
+      "updatedAt": "2026-08-05T12:08:00.231204+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
+        "policy": "samu-official-style-v2-import-v1",
         "forced": false,
         "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/eye_intermediate_sources/samu/charred_blink/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/charred_blink/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/charred_blink/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/charred_blink/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/samu_charred_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/charred_blink/animations/samu_charred_closed_halo_limpio.webp"
       }
     },
     "samu.charred_shake": {
@@ -380,45 +296,36 @@
         "width": 1254,
         "height": 1254
       },
-      "transparentPixels": 721567,
+      "transparentPixels": 824175,
       "metrics": {
-        "fullyTransparentPixels": 713706,
-        "partialAlphaPixels": 7861,
-        "opaquePixels": 850949,
+        "fullyTransparentPixels": 815962,
+        "partialAlphaPixels": 8213,
+        "opaquePixels": 748341,
         "removedPixels": 0,
         "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
             "visibleComponents": 1,
-            "largestComponentPixels": 858810,
+            "largestComponentPixels": 756554,
             "detachedVisiblePixels": 0,
             "speckComponents": 0,
             "speckPixels": 0
           },
           "candidate": {
             "visibleComponents": 1,
-            "largestComponentPixels": 858810,
+            "largestComponentPixels": 756554,
             "detachedVisiblePixels": 0,
             "speckComponents": 0,
             "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 7686,
-        "normalizedRetainedRgbPixels": 7686,
-        "protection": {
-          "reliableFillPixels": 706167,
-          "protectedInkPixels": 748996,
-          "protectedPixels": 748996,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:58:43.812242+00:00",
+      "updatedAt": "2026-08-05T12:08:00.231204+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
+        "policy": "samu-official-style-v2-import-v1",
         "forced": false,
         "warnings": []
       }
@@ -432,78 +339,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 607063,
+      "transparentPixels": 657218,
       "metrics": {
-        "fullyTransparentPixels": 590478,
-        "partialAlphaPixels": 16585,
-        "opaquePixels": 441513,
-        "removedPixels": 18041,
-        "reducedAlphaPixels": 26944,
+        "fullyTransparentPixels": 636195,
+        "partialAlphaPixels": 21023,
+        "opaquePixels": 391358,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 12,
-            "largestComponentPixels": 469004,
-            "detachedVisiblePixels": 7135,
-            "speckComponents": 2,
-            "speckPixels": 2
+            "visibleComponents": 46,
+            "largestComponentPixels": 407316,
+            "detachedVisiblePixels": 5065,
+            "speckComponents": 36,
+            "speckPixels": 174
           },
           "candidate": {
-            "visibleComponents": 10,
-            "largestComponentPixels": 455044,
-            "detachedVisiblePixels": 3054,
-            "speckComponents": 0,
-            "speckPixels": 0
+            "visibleComponents": 46,
+            "largestComponentPixels": 407316,
+            "detachedVisiblePixels": 5065,
+            "speckComponents": 36,
+            "speckPixels": 174
           }
         },
-        "changedVisibleRgbPixels": 19033,
-        "normalizedRetainedRgbPixels": 19033,
-        "protection": {
-          "reliableFillPixels": 289798,
-          "protectedInkPixels": 331866,
-          "protectedPixels": 331866,
-          "lostReliableFillPixels": 382,
-          "lostProtectedInkPixels": 3350,
-          "lostProtectedPixels": 3350,
-          "lostProtectedBounds": {
-            "x": 80,
-            "y": 10,
-            "width": 797,
-            "height": 1014
-          }
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:52:22.430762+00:00",
+      "updatedAt": "2026-08-05T14:04:27.170556+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
-        "forced": true,
-        "warnings": [
-          {
-            "code": "lost-protected-alpha",
-            "pixels": 3350,
-            "lostReliableFillPixels": 382,
-            "lostProtectedInkPixels": 3350,
-            "bounds": {
-              "x": 80,
-              "y": 10,
-              "width": 797,
-              "height": 1014
-            }
-          }
-        ],
-        "forcedAt": "2026-08-04T15:52:22.430762+00:00",
-        "diagnosticFingerprint": "sha256:6eef7a61b8074ef4594e13b0dcfb1498719989221774e51d4e3878bff347db53",
-        "review": {
-          "status": "approved",
-          "policy": "white-halo-manual-review-v1",
-          "reviewedAt": "2026-08-04T15:52:36.637281+00:00",
-          "subjectRevision": "sha256:9ad742b7c97ebe8e0b5ed7699b8ec3b374b95a49195f1519fdec1a065eebc62e",
-          "artifactSetFingerprint": "sha256:bc853e7d20471269f9da0fe6926cb89063a2eaf9a48eb9868c437fd58cbcf935"
-        }
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_clapping_blink_open.webp": "assets/images/characters/sprite_halo_cleaned/samu/clapping/animations/samu_clapping_blink_open_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/clapping/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/clapping/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/clapping/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/clapping/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_clapping_blink_open.webp": "assets/images/characters/sprite_halo_cleaned/samu/clapping/animations/samu_clapping_blink_open_halo_limpio.webp"
       }
     },
     "samu.curious": {
@@ -515,51 +386,42 @@
         "width": 768,
         "height": 1024
       },
-      "transparentPixels": 371599,
+      "transparentPixels": 377688,
       "metrics": {
-        "fullyTransparentPixels": 358359,
-        "partialAlphaPixels": 13240,
-        "opaquePixels": 414833,
+        "fullyTransparentPixels": 363976,
+        "partialAlphaPixels": 13712,
+        "opaquePixels": 408744,
         "removedPixels": 0,
         "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 2,
-            "largestComponentPixels": 428072,
-            "detachedVisiblePixels": 1,
-            "speckComponents": 1,
-            "speckPixels": 1
+            "visibleComponents": 24,
+            "largestComponentPixels": 422369,
+            "detachedVisiblePixels": 87,
+            "speckComponents": 23,
+            "speckPixels": 87
           },
           "candidate": {
-            "visibleComponents": 2,
-            "largestComponentPixels": 428072,
-            "detachedVisiblePixels": 1,
-            "speckComponents": 1,
-            "speckPixels": 1
+            "visibleComponents": 24,
+            "largestComponentPixels": 422369,
+            "detachedVisiblePixels": 87,
+            "speckComponents": 23,
+            "speckPixels": 87
           }
         },
-        "changedVisibleRgbPixels": 4285,
-        "normalizedRetainedRgbPixels": 4285,
-        "protection": {
-          "reliableFillPixels": 230719,
-          "protectedInkPixels": 268770,
-          "protectedPixels": 268770,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:57:59.258199+00:00",
+      "updatedAt": "2026-08-05T11:45:47.272486+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
+        "policy": "samu-official-style-v2-import-v1",
         "forced": false,
         "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_curious_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/curious/animations/samu_curious_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/curious/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/curious/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/curious/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/curious/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_curious_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/curious/animations/samu_curious_blink_closed_halo_limpio.webp"
       }
     },
     "samu.determined": {
@@ -571,78 +433,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 451504,
+      "transparentPixels": 472420,
       "metrics": {
-        "fullyTransparentPixels": 440485,
-        "partialAlphaPixels": 11019,
-        "opaquePixels": 597072,
-        "removedPixels": 14649,
-        "reducedAlphaPixels": 23347,
+        "fullyTransparentPixels": 450565,
+        "partialAlphaPixels": 21855,
+        "opaquePixels": 576156,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 4,
-            "largestComponentPixels": 621662,
-            "detachedVisiblePixels": 1078,
-            "speckComponents": 1,
-            "speckPixels": 1
+            "visibleComponents": 55,
+            "largestComponentPixels": 596742,
+            "detachedVisiblePixels": 1269,
+            "speckComponents": 52,
+            "speckPixels": 324
           },
           "candidate": {
-            "visibleComponents": 2,
-            "largestComponentPixels": 607849,
-            "detachedVisiblePixels": 242,
-            "speckComponents": 0,
-            "speckPixels": 0
+            "visibleComponents": 55,
+            "largestComponentPixels": 596742,
+            "detachedVisiblePixels": 1269,
+            "speckComponents": 52,
+            "speckPixels": 324
           }
         },
-        "changedVisibleRgbPixels": 15656,
-        "normalizedRetainedRgbPixels": 15656,
-        "protection": {
-          "reliableFillPixels": 327989,
-          "protectedInkPixels": 499646,
-          "protectedPixels": 499646,
-          "lostReliableFillPixels": 412,
-          "lostProtectedInkPixels": 2338,
-          "lostProtectedPixels": 2338,
-          "lostProtectedBounds": {
-            "x": 106,
-            "y": 27,
-            "width": 877,
-            "height": 997
-          }
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:53:33.500196+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
-        "forced": true,
-        "warnings": [
-          {
-            "code": "lost-protected-alpha",
-            "pixels": 2338,
-            "lostReliableFillPixels": 412,
-            "lostProtectedInkPixels": 2338,
-            "bounds": {
-              "x": 106,
-              "y": 27,
-              "width": 877,
-              "height": 997
-            }
-          }
-        ],
-        "forcedAt": "2026-08-04T15:53:33.500196+00:00",
-        "diagnosticFingerprint": "sha256:25087ea2afd0052e86cbcbacdd0af105b2bc1d348e8bcaa4f0f8a332141b3e79",
-        "review": {
-          "status": "approved",
-          "policy": "white-halo-manual-review-v1",
-          "reviewedAt": "2026-08-04T15:53:38.200774+00:00",
-          "subjectRevision": "sha256:f46cf596ded6f6398aff197a8e582573915be83a25deb16c3e49bfe018249ce8",
-          "artifactSetFingerprint": "sha256:ab9e5b97485ba94711ad4eefa08c3ed58cd53ee34dabdd065f55181d17d47127"
-        }
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_determined_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/determined/animations/samu_determined_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/determined/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/determined/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/determined/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/determined/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_determined_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/determined/animations/samu_determined_blink_closed_halo_limpio.webp"
       }
     },
     "samu.embarrassed": {
@@ -654,78 +480,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 605890,
+      "transparentPixels": 567230,
       "metrics": {
-        "fullyTransparentPixels": 594499,
-        "partialAlphaPixels": 11391,
-        "opaquePixels": 442686,
-        "removedPixels": 11340,
-        "reducedAlphaPixels": 18061,
+        "fullyTransparentPixels": 552123,
+        "partialAlphaPixels": 15107,
+        "opaquePixels": 481346,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 2,
-            "largestComponentPixels": 465416,
-            "detachedVisiblePixels": 1,
-            "speckComponents": 1,
-            "speckPixels": 1
+            "visibleComponents": 65,
+            "largestComponentPixels": 496252,
+            "detachedVisiblePixels": 201,
+            "speckComponents": 64,
+            "speckPixels": 201
           },
           "candidate": {
-            "visibleComponents": 1,
-            "largestComponentPixels": 454077,
-            "detachedVisiblePixels": 0,
-            "speckComponents": 0,
-            "speckPixels": 0
+            "visibleComponents": 65,
+            "largestComponentPixels": 496252,
+            "detachedVisiblePixels": 201,
+            "speckComponents": 64,
+            "speckPixels": 201
           }
         },
-        "changedVisibleRgbPixels": 13432,
-        "normalizedRetainedRgbPixels": 13432,
-        "protection": {
-          "reliableFillPixels": 279439,
-          "protectedInkPixels": 320363,
-          "protectedPixels": 320363,
-          "lostReliableFillPixels": 277,
-          "lostProtectedInkPixels": 2359,
-          "lostProtectedPixels": 2359,
-          "lostProtectedBounds": {
-            "x": 151,
-            "y": 80,
-            "width": 706,
-            "height": 944
-          }
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:54:38.311113+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
-        "forced": true,
-        "warnings": [
-          {
-            "code": "lost-protected-alpha",
-            "pixels": 2359,
-            "lostReliableFillPixels": 277,
-            "lostProtectedInkPixels": 2359,
-            "bounds": {
-              "x": 151,
-              "y": 80,
-              "width": 706,
-              "height": 944
-            }
-          }
-        ],
-        "forcedAt": "2026-08-04T15:54:38.311113+00:00",
-        "diagnosticFingerprint": "sha256:bb525a6944ab0e014a169dc5ce453347970e078945597dd23e51bc2bda80fb5d",
-        "review": {
-          "status": "approved",
-          "policy": "white-halo-manual-review-v1",
-          "reviewedAt": "2026-08-04T15:54:41.083613+00:00",
-          "subjectRevision": "sha256:84780fe0c98bbacef4bf6c8fabae3d424ad21812caf57c43edb649b73f1d0927",
-          "artifactSetFingerprint": "sha256:9700c5ce1977efcf33e42028f48d3139ca9f1eae25a64d376525bea4da2218ff"
-        }
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_embarrassed_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/embarrassed/animations/samu_embarrassed_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/embarrassed/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/embarrassed/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/embarrassed/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/embarrassed/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_embarrassed_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/embarrassed/animations/samu_embarrassed_blink_closed_halo_limpio.webp"
       }
     },
     "samu.happy": {
@@ -737,46 +527,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 551484,
+      "transparentPixels": 585342,
       "metrics": {
-        "fullyTransparentPixels": 542006,
-        "partialAlphaPixels": 9478,
-        "opaquePixels": 497092,
-        "removedPixels": 9945,
-        "reducedAlphaPixels": 15477,
+        "fullyTransparentPixels": 571916,
+        "partialAlphaPixels": 13426,
+        "opaquePixels": 463234,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 3,
-            "largestComponentPixels": 516513,
-            "detachedVisiblePixels": 2,
-            "speckComponents": 2,
-            "speckPixels": 2
+            "visibleComponents": 22,
+            "largestComponentPixels": 476572,
+            "detachedVisiblePixels": 88,
+            "speckComponents": 21,
+            "speckPixels": 88
           },
           "candidate": {
-            "visibleComponents": 1,
-            "largestComponentPixels": 506570,
-            "detachedVisiblePixels": 0,
-            "speckComponents": 0,
-            "speckPixels": 0
+            "visibleComponents": 22,
+            "largestComponentPixels": 476572,
+            "detachedVisiblePixels": 88,
+            "speckComponents": 21,
+            "speckPixels": 88
           }
         },
-        "changedVisibleRgbPixels": 20468,
-        "normalizedRetainedRgbPixels": 20468,
-        "protection": {
-          "reliableFillPixels": 268959,
-          "protectedInkPixels": 299720,
-          "protectedPixels": 299720,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T12:50:50.820505+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_happy_blink_open.webp": "assets/images/characters/sprite_halo_cleaned/samu/happy/animations/samu_happy_blink_open_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/happy/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/happy/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/happy/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/happy/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_happy_blink_open.webp": "assets/images/characters/sprite_halo_cleaned/samu/happy/animations/samu_happy_blink_open_halo_limpio.webp"
+      },
+      "validation": {
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       }
     },
     "samu.neutral": {
@@ -788,47 +574,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 650620,
+      "transparentPixels": 591597,
       "metrics": {
-        "fullyTransparentPixels": 522573,
-        "partialAlphaPixels": 128047,
-        "opaquePixels": 397956,
+        "fullyTransparentPixels": 574647,
+        "partialAlphaPixels": 16950,
+        "opaquePixels": 456979,
         "removedPixels": 0,
         "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 408,
-            "largestComponentPixels": 525364,
-            "detachedVisiblePixels": 639,
-            "speckComponents": 407,
-            "speckPixels": 639
+            "visibleComponents": 35,
+            "largestComponentPixels": 473752,
+            "detachedVisiblePixels": 177,
+            "speckComponents": 34,
+            "speckPixels": 177
           },
           "candidate": {
-            "visibleComponents": 408,
-            "largestComponentPixels": 525364,
-            "detachedVisiblePixels": 639,
-            "speckComponents": 407,
-            "speckPixels": 639
+            "visibleComponents": 35,
+            "largestComponentPixels": 473752,
+            "detachedVisiblePixels": 177,
+            "speckComponents": 34,
+            "speckPixels": 177
           }
         },
-        "changedVisibleRgbPixels": 65207,
-        "normalizedRetainedRgbPixels": 65207,
-        "protection": {
-          "reliableFillPixels": 237650,
-          "protectedInkPixels": 280447,
-          "protectedPixels": 280447,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:51:06.657853+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
+        "policy": "samu-official-style-v2-import-v1",
         "forced": false,
         "warnings": []
+      },
+      "animationFrames": {
+        "assets/images/characters/samu/animations/samu_neutral_blink_half.webp": "assets/images/characters/sprite_halo_cleaned/samu/neutral/animations/samu_neutral_blink_half_halo_limpio.webp",
+        "assets/images/characters/samu/animations/samu_neutral_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/neutral/animations/samu_neutral_blink_closed_halo_limpio.webp"
       }
     },
     "samu.sad": {
@@ -840,46 +621,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 486514,
+      "transparentPixels": 472607,
       "metrics": {
-        "fullyTransparentPixels": 479535,
-        "partialAlphaPixels": 6979,
-        "opaquePixels": 562062,
-        "removedPixels": 10102,
-        "reducedAlphaPixels": 15570,
+        "fullyTransparentPixels": 456923,
+        "partialAlphaPixels": 15684,
+        "opaquePixels": 575969,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 2,
-            "largestComponentPixels": 579142,
-            "detachedVisiblePixels": 1,
-            "speckComponents": 1,
-            "speckPixels": 1
+            "visibleComponents": 70,
+            "largestComponentPixels": 591410,
+            "detachedVisiblePixels": 243,
+            "speckComponents": 69,
+            "speckPixels": 243
           },
           "candidate": {
-            "visibleComponents": 1,
-            "largestComponentPixels": 569041,
-            "detachedVisiblePixels": 0,
-            "speckComponents": 0,
-            "speckPixels": 0
+            "visibleComponents": 70,
+            "largestComponentPixels": 591410,
+            "detachedVisiblePixels": 243,
+            "speckComponents": 69,
+            "speckPixels": 243
           }
         },
-        "changedVisibleRgbPixels": 7576,
-        "normalizedRetainedRgbPixels": 7576,
-        "protection": {
-          "reliableFillPixels": 274423,
-          "protectedInkPixels": 303170,
-          "protectedPixels": 303170,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T13:08:09.738926+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_sad_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/sad/animations/samu_sad_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/sad/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/sad/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/sad/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/sad/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_sad_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/sad/animations/samu_sad_blink_closed_halo_limpio.webp"
+      },
+      "validation": {
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       }
     },
     "samu.shocked": {
@@ -891,78 +668,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 563837,
+      "transparentPixels": 587260,
       "metrics": {
-        "fullyTransparentPixels": 542269,
-        "partialAlphaPixels": 21568,
-        "opaquePixels": 484739,
-        "removedPixels": 16387,
-        "reducedAlphaPixels": 26152,
+        "fullyTransparentPixels": 563943,
+        "partialAlphaPixels": 23317,
+        "opaquePixels": 461316,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 6,
-            "largestComponentPixels": 508729,
-            "detachedVisiblePixels": 13965,
-            "speckComponents": 2,
-            "speckPixels": 2
+            "visibleComponents": 110,
+            "largestComponentPixels": 471735,
+            "detachedVisiblePixels": 12898,
+            "speckComponents": 106,
+            "speckPixels": 256
           },
           "candidate": {
-            "visibleComponents": 4,
-            "largestComponentPixels": 494321,
-            "detachedVisiblePixels": 11986,
-            "speckComponents": 0,
-            "speckPixels": 0
+            "visibleComponents": 110,
+            "largestComponentPixels": 471735,
+            "detachedVisiblePixels": 12898,
+            "speckComponents": 106,
+            "speckPixels": 256
           }
         },
-        "changedVisibleRgbPixels": 24513,
-        "normalizedRetainedRgbPixels": 24513,
-        "protection": {
-          "reliableFillPixels": 411179,
-          "protectedInkPixels": 457771,
-          "protectedPixels": 457771,
-          "lostReliableFillPixels": 558,
-          "lostProtectedInkPixels": 2208,
-          "lostProtectedPixels": 2208,
-          "lostProtectedBounds": {
-            "x": 113,
-            "y": 57,
-            "width": 900,
-            "height": 967
-          }
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:55:49.079121+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
-        "forced": true,
-        "warnings": [
-          {
-            "code": "lost-protected-alpha",
-            "pixels": 2208,
-            "lostReliableFillPixels": 558,
-            "lostProtectedInkPixels": 2208,
-            "bounds": {
-              "x": 113,
-              "y": 57,
-              "width": 900,
-              "height": 967
-            }
-          }
-        ],
-        "forcedAt": "2026-08-04T15:55:49.079121+00:00",
-        "diagnosticFingerprint": "sha256:84d6b74caef932e3f59e4d0a5905de7a2e14c5419d2ffdac10350f2358b54e7a",
-        "review": {
-          "status": "approved",
-          "policy": "white-halo-manual-review-v1",
-          "reviewedAt": "2026-08-04T15:55:52.765060+00:00",
-          "subjectRevision": "sha256:e3241bef32cfe535d090b118126c0fb40f5ea7ac91b7a07eb5dd3c6fc1d72030",
-          "artifactSetFingerprint": "sha256:8de7064e81f6944f28690bd2998c0794dfb9ba44e4915a73569717757a337b47"
-        }
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_shocked_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/shocked/animations/samu_shocked_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/shocked/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/shocked/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/shocked/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/shocked/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_shocked_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/shocked/animations/samu_shocked_blink_closed_halo_limpio.webp"
       }
     },
     "samu.surprised": {
@@ -974,46 +715,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 556356,
+      "transparentPixels": 580582,
       "metrics": {
-        "fullyTransparentPixels": 547438,
-        "partialAlphaPixels": 8918,
-        "opaquePixels": 492220,
-        "removedPixels": 8705,
-        "reducedAlphaPixels": 15002,
+        "fullyTransparentPixels": 564328,
+        "partialAlphaPixels": 16254,
+        "opaquePixels": 467994,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 2,
-            "largestComponentPixels": 509842,
-            "detachedVisiblePixels": 1,
-            "speckComponents": 1,
-            "speckPixels": 1
+            "visibleComponents": 46,
+            "largestComponentPixels": 484153,
+            "detachedVisiblePixels": 95,
+            "speckComponents": 45,
+            "speckPixels": 95
           },
           "candidate": {
-            "visibleComponents": 932,
-            "largestComponentPixels": 499302,
-            "detachedVisiblePixels": 1836,
-            "speckComponents": 931,
-            "speckPixels": 1836
+            "visibleComponents": 46,
+            "largestComponentPixels": 484153,
+            "detachedVisiblePixels": 95,
+            "speckComponents": 45,
+            "speckPixels": 95
           }
         },
-        "changedVisibleRgbPixels": 9267,
-        "normalizedRetainedRgbPixels": 9267,
-        "protection": {
-          "reliableFillPixels": 227666,
-          "protectedInkPixels": 254090,
-          "protectedPixels": 254090,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T13:12:47.320131+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_surprised_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/surprised/animations/samu_surprised_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/surprised/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/surprised/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/surprised/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/surprised/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_surprised_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/surprised/animations/samu_surprised_blink_closed_halo_limpio.webp"
+      },
+      "validation": {
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
       }
     },
     "samu.thinking": {
@@ -1025,51 +762,42 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 635293,
+      "transparentPixels": 591481,
       "metrics": {
-        "fullyTransparentPixels": 555553,
-        "partialAlphaPixels": 79740,
-        "opaquePixels": 413283,
+        "fullyTransparentPixels": 573617,
+        "partialAlphaPixels": 17864,
+        "opaquePixels": 457095,
         "removedPixels": 0,
         "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 401,
-            "largestComponentPixels": 490510,
-            "detachedVisiblePixels": 2513,
-            "speckComponents": 397,
-            "speckPixels": 629
+            "visibleComponents": 73,
+            "largestComponentPixels": 472418,
+            "detachedVisiblePixels": 2541,
+            "speckComponents": 69,
+            "speckPixels": 191
           },
           "candidate": {
-            "visibleComponents": 401,
-            "largestComponentPixels": 490510,
-            "detachedVisiblePixels": 2513,
-            "speckComponents": 397,
-            "speckPixels": 629
+            "visibleComponents": 73,
+            "largestComponentPixels": 472418,
+            "detachedVisiblePixels": 2541,
+            "speckComponents": 69,
+            "speckPixels": 191
           }
         },
-        "changedVisibleRgbPixels": 50870,
-        "normalizedRetainedRgbPixels": 50870,
-        "protection": {
-          "reliableFillPixels": 244038,
-          "protectedInkPixels": 288278,
-          "protectedPixels": 288278,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:56:15.476991+00:00",
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
+        "policy": "samu-official-style-v2-import-v1",
         "forced": false,
         "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_thinking_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/thinking/animations/samu_thinking_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/thinking/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/thinking/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/thinking/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/thinking/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_thinking_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/thinking/animations/samu_thinking_blink_closed_halo_limpio.webp"
       }
     },
     "samu.valla": {
@@ -1081,55 +809,46 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 620838,
+      "transparentPixels": 675856,
       "metrics": {
-        "fullyTransparentPixels": 598391,
-        "partialAlphaPixels": 22447,
-        "opaquePixels": 427738,
+        "fullyTransparentPixels": 647332,
+        "partialAlphaPixels": 28524,
+        "opaquePixels": 372720,
         "removedPixels": 0,
         "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 3,
-            "largestComponentPixels": 450183,
-            "detachedVisiblePixels": 2,
-            "speckComponents": 2,
-            "speckPixels": 2
+            "visibleComponents": 1,
+            "largestComponentPixels": 401244,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
           },
           "candidate": {
-            "visibleComponents": 3,
-            "largestComponentPixels": 450183,
-            "detachedVisiblePixels": 2,
-            "speckComponents": 2,
-            "speckPixels": 2
+            "visibleComponents": 1,
+            "largestComponentPixels": 401244,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 17329,
-        "normalizedRetainedRgbPixels": 17329,
-        "protection": {
-          "reliableFillPixels": 183837,
-          "protectedInkPixels": 221434,
-          "protectedPixels": 221434,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "changedVisibleRgbPixels": 0,
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T15:56:58.094145+00:00",
+      "updatedAt": "2026-08-05T12:27:28.155303+00:00",
       "validation": {
-        "policy": "white-halo-save-v1",
+        "policy": "samu-official-style-v2-import-v1",
         "forced": false,
         "warnings": []
       },
       "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_valla_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/valla/animations/samu_valla_blink_closed_halo_limpio.webp",
-        "assets/images/characters/eye_intermediate_sources/samu/valla/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/valla/animations/eyes_half_source_halo_limpio.webp"
+        "assets/images/characters/eye_intermediate_sources/samu/valla/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/valla/animations/eyes_half_source_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_valla_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/valla/animations/samu_valla_blink_closed_halo_limpio.webp"
       }
     },
     "samu.worried": {
-      "source": "assets/images/characters/samu/samu_worried_v2.webp",
+      "source": "assets/images/characters/samu/samu_worried.webp",
       "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp",
       "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio_miniatura.webp",
       "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio_galeria.webp",
@@ -1142,16 +861,16 @@
         "fullyTransparentPixels": 651196,
         "partialAlphaPixels": 198,
         "opaquePixels": 921515,
-        "removedPixels": 22543,
-        "reducedAlphaPixels": 22741,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 0,
         "expandedPixels": 0,
         "components": {
           "source": {
-            "visibleComponents": 2,
-            "largestComponentPixels": 944253,
-            "detachedVisiblePixels": 3,
-            "speckComponents": 1,
-            "speckPixels": 3
+            "visibleComponents": 14,
+            "largestComponentPixels": 921680,
+            "detachedVisiblePixels": 33,
+            "speckComponents": 13,
+            "speckPixels": 33
           },
           "candidate": {
             "visibleComponents": 14,
@@ -1162,18 +881,18 @@
           }
         },
         "changedVisibleRgbPixels": 0,
-        "normalizedRetainedRgbPixels": 0,
-        "protection": {
-          "reliableFillPixels": 860615,
-          "protectedInkPixels": 903746,
-          "protectedPixels": 903746,
-          "lostReliableFillPixels": 0,
-          "lostProtectedInkPixels": 0,
-          "lostProtectedPixels": 0,
-          "lostProtectedBounds": null
-        }
+        "normalizedRetainedRgbPixels": 0
       },
-      "updatedAt": "2026-08-04T03:25:51.292076+00:00"
+      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
+      "animationFrames": {
+        "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp": "assets/images/characters/sprite_halo_cleaned/samu/worried/animations/samu_worried_blink_half_halo_limpio.webp",
+        "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/worried/animations/samu_worried_blink_closed_halo_limpio.webp"
+      },
+      "validation": {
+        "policy": "samu-official-style-v2-import-v1",
+        "forced": false,
+        "warnings": []
+      }
     }
   }
 }

@@ -18,13 +18,16 @@ import json
 import math
 import os
 import re
+import socket
 import subprocess
+import sys
 import tempfile
 import threading
 import time
 from datetime import datetime, timezone
 from functools import wraps
 from http import HTTPStatus
+from http.client import HTTPConnection
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from dataclasses import dataclass
 from pathlib import Path
@@ -54,14 +57,18 @@ PIXEL_EDITS_ROOT = ROOT / "assets" / "images" / "characters" / "eye_layer_edits"
 WHITE_HALO_METADATA_PATH = ROOT / "assets" / "metadata" / "sprite_white_halo_cleaned.json"
 WHITE_HALO_ROOT = ROOT / "assets" / "images" / "characters" / "sprite_halo_cleaned"
 OPTIMIZATION_MANIFEST_PATH = (
-    ROOT / "workbench" / "optimization" / "asset_optimization_manifest.json"
+    ROOT / "workbench" / "assets" / "metadata" / "asset_optimization_manifest.json"
 )
-PRESERVED_RUNTIME_ROOT = ROOT / "workbench" / "originals" / "runtime"
+PRESERVED_RUNTIME_ROOT = ROOT / "workbench"
 EDITOR_PATH = Path(__file__).with_name("eye_region_editor.html")
 PREVIEW_PATH = Path(__file__).with_name("eye_layer_preview.html")
 CLEANER_PATH = Path(__file__).with_name("eye_base_cleaner.html")
 WHITE_HALO_EDITOR_PATH = Path(__file__).with_name("sprite_white_halo_editor.html")
 TOOLS_MENU_PATH = Path(__file__).with_name("eye_tools_menu.html")
+SAMU_RESTORER_ENV = "SAMU_FRAME_RESTORER_CMD"
+SAMU_RESTORER_DEFAULT = (
+    ROOT.parent / "Restaurador_frames_Samu" / "iniciar_restaurador.cmd"
+)
 LEGACY_CHARACTER_KEYS = {"epod"}
 SUPPORTED_IMAGES = {".png", ".webp", ".jpg", ".jpeg"}
 TOOLS_SERVICE_NAME = "project-airi-eye-tools"
@@ -79,6 +86,7 @@ _EDITOR_INVENTORY_CACHE: list[dict[str, Any]] | None = None
 _BASE_SPRITE_INVENTORY_CACHE: list[dict[str, Any]] | None = None
 _ASSET_RELOCATION_CACHE: tuple[int, dict[str, list[str]]] | None = None
 _WHITE_HALO_WRITE_LOCK = threading.RLock()
+_SAMU_RESTORER_LAUNCH_LOCK = threading.Lock()
 
 
 def synchronized_white_halo_write(function):
@@ -115,6 +123,120 @@ def relative(path: Path) -> str:
     return path.relative_to(ROOT).as_posix()
 
 
+def samu_restorer_launcher() -> Path:
+    configured = os.environ.get(SAMU_RESTORER_ENV, "").strip().strip('"')
+    candidate = Path(configured).expanduser() if configured else SAMU_RESTORER_DEFAULT
+    if not candidate.is_absolute():
+        candidate = ROOT / candidate
+    return candidate.resolve()
+
+
+def samu_restorer_ports(launcher: Path) -> range:
+    preferred = 8765
+    config_path = launcher.with_name("config.json")
+    try:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+        preferred = int(config.get("port", preferred))
+    except (OSError, ValueError, TypeError, json.JSONDecodeError):
+        pass
+    return range(preferred, preferred + 20)
+
+
+def find_running_samu_restorer(launcher: Path) -> str | None:
+    for port in samu_restorer_ports(launcher):
+        probe = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        probe.settimeout(0.03)
+        try:
+            if probe.connect_ex(("127.0.0.1", port)) != 0:
+                continue
+        finally:
+            probe.close()
+
+        connection = HTTPConnection("127.0.0.1", port, timeout=0.35)
+        try:
+            connection.request("GET", "/api/config", headers={"Accept": "application/json"})
+            response = connection.getresponse()
+            server_name = response.getheader("Server", "")
+            payload = response.read(512 * 1024 + 1)
+            if (
+                response.status == HTTPStatus.OK
+                and server_name.startswith("SamuFrameRestorer/1.0")
+                and len(payload) <= 512 * 1024
+            ):
+                parsed = json.loads(payload.decode("utf-8"))
+                if isinstance(parsed.get("frames"), list):
+                    return f"http://127.0.0.1:{port}/"
+        except (OSError, ValueError, json.JSONDecodeError):
+            pass
+        finally:
+            connection.close()
+    return None
+
+
+def samu_restorer_status() -> dict[str, Any]:
+    launcher = samu_restorer_launcher()
+    app_path = launcher.with_name("app.py")
+    available = launcher.is_file() and app_path.is_file()
+    running_url = find_running_samu_restorer(launcher) if available else None
+    preferred_port = next(iter(samu_restorer_ports(launcher)))
+    return {
+        "ok": True,
+        "available": available,
+        "running": running_url is not None,
+        "url": running_url,
+        "port": preferred_port,
+        "launcher": str(launcher),
+    }
+
+
+def launch_samu_restorer() -> dict[str, Any]:
+    with _SAMU_RESTORER_LAUNCH_LOCK:
+        launcher = samu_restorer_launcher()
+        app_path = launcher.with_name("app.py")
+        if not launcher.is_file() or not app_path.is_file():
+            raise FileNotFoundError(
+                "No se encontró Restaurador_frames_Samu junto al proyecto"
+            )
+
+        running_url = find_running_samu_restorer(launcher)
+        if running_url:
+            return {"ok": True, "started": False, "url": running_url}
+
+        environment = os.environ.copy()
+        environment["SAMU_FRAME_RESTORER_NO_BROWSER"] = "1"
+        popen_options: dict[str, Any] = {
+            "cwd": str(app_path.parent),
+            "env": environment,
+        }
+        if os.name == "nt":
+            popen_options["creationflags"] = getattr(
+                subprocess, "CREATE_NEW_CONSOLE", 0
+            )
+        else:
+            popen_options.update(
+                {
+                    "start_new_session": True,
+                    "stdin": subprocess.DEVNULL,
+                    "stdout": subprocess.DEVNULL,
+                    "stderr": subprocess.DEVNULL,
+                }
+            )
+        process = subprocess.Popen([sys.executable, str(app_path)], **popen_options)
+
+        deadline = time.monotonic() + 10
+        while time.monotonic() < deadline:
+            running_url = find_running_samu_restorer(launcher)
+            if running_url:
+                return {"ok": True, "started": True, "url": running_url}
+            if process.poll() is not None:
+                break
+            time.sleep(0.1)
+
+        if process.poll() is None:
+            process.terminate()
+        raise RuntimeError("El restaurador de Samu no pudo iniciar correctamente")
+
+
 def normalized_asset_reference(value: Any) -> str | None:
     """Normaliza una ruta de proyecto sin permitir que salga del repositorio."""
     if not isinstance(value, str) or not value.strip():
@@ -131,7 +253,7 @@ def normalized_asset_reference(value: Any) -> str | None:
 def asset_relocations() -> dict[str, list[str]]:
     """Relaciona fuentes movidas con su WebP runtime y su original protegido.
 
-    La optimización mueve PNG/JPEG a ``workbench/originals/runtime``. Las
+    La optimización mueve PNG/JPEG a ``workbench/assets``. Las
     herramientas deben seguir encontrando una pose aunque un JSON antiguo o un
     cambio traído de otra rama conserve la ruta anterior.
     """
@@ -555,7 +677,52 @@ def white_halo_protection_masks(
     return reliable_fill, protected_ink, protected
 
 
-def topological_white_halo_cleanup(job_id: str) -> dict[str, Any]:
+def prepare_generic_white_exterior(
+    source_pixels: np.ndarray,
+) -> tuple[np.ndarray, int]:
+    """Vuelve transparente un fondo blanco opaco conectado al borde.
+
+    Los sprites canónicos ya incluyen alfa y no pasan por esta preparación. La
+    ruta libre la necesita para que un JPG o un PNG opaco pueda alimentar el
+    mismo limpiador topológico sin confundir el fondo blanco con el dibujo.
+    """
+
+    alpha = source_pixels[:, :, 3]
+    if np.any(alpha == 0):
+        return source_pixels, 0
+    rgb = source_pixels[:, :, :3].astype(np.float32, copy=False)
+    luminance = (
+        0.2126 * rgb[:, :, 0]
+        + 0.7152 * rgb[:, :, 1]
+        + 0.0722 * rgb[:, :, 2]
+    )
+    chroma = rgb.max(axis=2) - rgb.min(axis=2)
+    light = (luminance >= 238.0) & (chroma <= 18.0)
+    border = np.zeros_like(light, dtype=np.uint8)
+    border[0, :] = light[0, :]
+    border[-1, :] = light[-1, :]
+    border[:, 0] = light[:, 0]
+    border[:, -1] = light[:, -1]
+    if not np.any(border):
+        return source_pixels, 0
+    count, labels = cv2.connectedComponents(
+        np.ascontiguousarray(light, dtype=np.uint8), connectivity=8
+    )
+    if count <= 1:
+        return source_pixels, 0
+    exterior_labels = np.unique(labels[border > 0])
+    exterior_labels = exterior_labels[exterior_labels != 0]
+    if not len(exterior_labels):
+        return source_pixels, 0
+    exterior = np.isin(labels, exterior_labels)
+    prepared = source_pixels.copy()
+    prepared[exterior] = 0
+    return prepared, int(np.count_nonzero(exterior))
+
+
+def topological_white_halo_cleanup(
+    job_id: str, source_data_url: Any = None
+) -> dict[str, Any]:
     """Genera una vista previa segura partiendo siempre del sprite fuente.
 
     La limpieza no intenta adivinar el contorno a partir de un único umbral.
@@ -564,16 +731,26 @@ def topological_white_halo_cleanup(job_id: str) -> dict[str, Any]:
     la tinta conectada al interior se protegen antes de iniciar el recorrido.
     """
 
-    job = base_sprite_job(job_id)
-    source_path = ROOT / job["source"]
-    try:
-        with Image.open(source_path) as source_image:
-            source_image.load()
-            source_pixels = np.asarray(
-                source_image.convert("RGBA"), dtype=np.uint8
-            ).copy()
-    except OSError as error:
-        raise ValueError("No se pudo leer el sprite fuente protegido") from error
+    prepared_opaque_exterior = 0
+    if source_data_url is not None:
+        source_image = decode_canvas_image(source_data_url)
+        source_pixels = np.asarray(
+            source_image.convert("RGBA"), dtype=np.uint8
+        ).copy()
+        source_pixels, prepared_opaque_exterior = prepare_generic_white_exterior(
+            source_pixels
+        )
+    else:
+        job = base_sprite_job(job_id)
+        source_path = ROOT / job["source"]
+        try:
+            with Image.open(source_path) as source_image:
+                source_image.load()
+                source_pixels = np.asarray(
+                    source_image.convert("RGBA"), dtype=np.uint8
+                ).copy()
+        except OSError as error:
+            raise ValueError("No se pudo leer el sprite fuente protegido") from error
 
     height, width = source_pixels.shape[:2]
     alpha = source_pixels[:, :, 3]
@@ -793,6 +970,7 @@ def topological_white_halo_cleanup(job_id: str) -> dict[str, Any]:
         "metrics": metrics,
         "automatic": {
             "profile": "topological-safe-v1",
+            "preparedOpaqueExteriorPixels": prepared_opaque_exterior,
             "baseRemovedPixels": base_removed,
             "refineSteps": refine_steps,
             "finalSteps": final_steps,
@@ -843,7 +1021,10 @@ def white_halo_override_token(
 
 
 def white_halo_protection_diagnostic(
-    job_id: str, data_url: Any, repair: bool = False
+    job_id: str,
+    data_url: Any,
+    repair: bool = False,
+    source_data_url: Any = None,
 ) -> dict[str, Any]:
     """Localiza y, opcionalmente, recupera detalle protegido del original.
 
@@ -852,24 +1033,34 @@ def white_halo_protection_diagnostic(
     de un error ni duplicar la protección de tinta en JavaScript.
     """
 
-    job = base_sprite_job(job_id)
     candidate = decode_canvas_image(data_url)
-    expected = (int(job["width"]), int(job["height"]))
+    if source_data_url is not None:
+        source_image = decode_canvas_image(source_data_url)
+        expected = source_image.size
+    else:
+        job = base_sprite_job(job_id)
+        expected = (int(job["width"]), int(job["height"]))
     if candidate.size != expected:
         raise ValueError(
             f"La copia debe medir {expected[0]}×{expected[1]} px; recibido "
             f"{candidate.width}×{candidate.height} px"
         )
 
-    source_path = ROOT / job["source"]
-    try:
-        with Image.open(source_path) as source_image:
-            source_image.load()
-            source_pixels = np.asarray(
-                source_image.convert("RGBA"), dtype=np.uint8
-            ).copy()
-    except OSError as error:
-        raise ValueError("No se pudo leer el sprite fuente protegido") from error
+    if source_data_url is not None:
+        source_pixels = np.asarray(
+            source_image.convert("RGBA"), dtype=np.uint8
+        ).copy()
+        source_pixels, _ = prepare_generic_white_exterior(source_pixels)
+    else:
+        source_path = ROOT / job["source"]
+        try:
+            with Image.open(source_path) as source_image:
+                source_image.load()
+                source_pixels = np.asarray(
+                    source_image.convert("RGBA"), dtype=np.uint8
+                ).copy()
+        except OSError as error:
+            raise ValueError("No se pudo leer el sprite fuente protegido") from error
     if source_pixels.shape[:2] != (expected[1], expected[0]):
         raise ValueError(
             "Las dimensiones reales del sprite fuente no coinciden con el inventario"
@@ -981,21 +1172,28 @@ def white_halo_destination(job: dict[str, Any]) -> dict[str, str]:
     }
 
 
-def export_white_halo_webp(job_id: str, data_url: Any) -> tuple[bytes, str]:
+def export_white_halo_webp(
+    job_id: str, data_url: Any, requested_name: Any = None
+) -> tuple[bytes, str]:
     """Codifica el lienzo actual como WebP lossless sin guardar ni validarlo.
 
     La herramienta sigue enviando un PNG interno para evitar pérdidas acumuladas
     durante la edición. Este exportador sólo comprueba pose y dimensiones; así el
     usuario puede rescatar un trabajo aunque el guardado validado lo rechace.
     """
-    job = base_sprite_job(job_id)
     image = decode_canvas_image(data_url)
-    expected = (int(job["width"]), int(job["height"]))
-    if image.size != expected:
-        raise ValueError(
-            f"El sprite debe medir {expected[0]}×{expected[1]} px; recibido "
-            f"{image.width}×{image.height}"
-        )
+    if requested_name is None:
+        job = base_sprite_job(job_id)
+        expected = (int(job["width"]), int(job["height"]))
+        if image.size != expected:
+            raise ValueError(
+                f"El sprite debe medir {expected[0]}×{expected[1]} px; recibido "
+                f"{image.width}×{image.height}"
+            )
+        filename = white_halo_destination(job)["downloadName"]
+    else:
+        requested_stem = Path(str(requested_name)).stem
+        filename = f"{slug(requested_stem) or 'imagen'}_halo_limpio.webp"
     pixels = np.asarray(image.convert("RGBA"), dtype=np.uint8).copy()
     pixels[pixels[:, :, 3] == 0, :3] = 0
     encoded = io.BytesIO()
@@ -1007,7 +1205,7 @@ def export_white_halo_webp(job_id: str, data_url: Any) -> tuple[bytes, str]:
         method=6,
         exact=True,
     )
-    return encoded.getvalue(), white_halo_destination(job)["downloadName"]
+    return encoded.getvalue(), filename
 
 
 def white_halo_animation_sources(job: dict[str, Any]) -> list[str]:
@@ -2341,6 +2539,9 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                 allow_loopback_cors=True,
             )
             return
+        if request.path == "/api/samu-restorer":
+            self.send_json(samu_restorer_status())
+            return
         if request.path == "/api/alignment-locations":
             try:
                 query = parse_qs(request.query)
@@ -2509,6 +2710,19 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                     {"ok": False, "error": str(error)}, HTTPStatus.BAD_REQUEST
                 )
             return
+        if self.path == "/api/samu-restorer":
+            try:
+                self.send_json(launch_samu_restorer())
+            except FileNotFoundError as error:
+                self.send_json(
+                    {"ok": False, "error": str(error)}, HTTPStatus.NOT_FOUND
+                )
+            except (OSError, RuntimeError) as error:
+                self.send_json(
+                    {"ok": False, "error": str(error)},
+                    HTTPStatus.INTERNAL_SERVER_ERROR,
+                )
+            return
         if self.path not in {
             "/api/region", "/api/offset", "/api/clean-offset", "/api/clean-base",
             "/api/reveal-path", "/api/eye-layer-edit", "/api/white-halo-clean",
@@ -2590,7 +2804,7 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                 return
             if self.path == "/api/white-halo-export":
                 encoded, filename = export_white_halo_webp(
-                    job_id, payload.get("image")
+                    job_id, payload.get("image"), payload.get("filename")
                 )
                 self.send_download(encoded, filename)
                 return
@@ -2600,11 +2814,14 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                         job_id,
                         payload.get("image"),
                         bool(payload.get("repair", False)),
+                        payload.get("source"),
                     )
                 )
                 return
             if self.path == "/api/white-halo-topological":
-                self.send_json(topological_white_halo_cleanup(job_id))
+                self.send_json(
+                    topological_white_halo_cleanup(job_id, payload.get("source"))
+                )
                 return
             valid_ids = {job["id"] for job in editor_jobs()}
             if job_id not in valid_ids:

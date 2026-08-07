@@ -1,0 +1,376 @@
+{
+    "version":  1,
+    "character":  "samu",
+    "method":  "generated-eye-region-composite-over-approved-master",
+    "invariants":  {
+                       "preserveSourceAlpha":  true,
+                       "preservePixelsOutsideMasks":  true,
+                       "respectGeneratedAlpha":  true,
+                       "runtimeSequence":  [
+                                               "base",
+                                               "half",
+                                               "target",
+                                               "half",
+                                               "base"
+                                           ]
+                   },
+    "poses":  {
+                  "neutral":  {
+                                  "base":  "assets/images/characters/samu/Samu_master.png",
+                                  "targetState":  "closed",
+                                  "eyes":  [
+                                               "505,210,625,290",
+                                               "645,210,765,290"
+                                           ],
+                                  "feather":  2.0,
+                                  "matchRing":  6,
+                                  "frames":  {
+                                                 "half":  {
+                                                              "offsetX":  0,
+                                                              "offsetY":  0,
+                                                              "master":  "assets/images/characters/samu/animations/blinks/samu_neutral_blink_half_master.png"
+                                                          },
+                                                 "closed":  {
+                                                                "offsetX":  0,
+                                                                "offsetY":  0,
+                                                                "master":  "assets/images/characters/samu/animations/samu_neutral_blink_closed_master.png"
+                                                            }
+                                             }
+                              },
+                  "happy":  {
+                                "base":  "assets/images/characters/samu/samu_happy_master.png",
+                                "targetState":  "open",
+                                "eyes":  [
+                                             "410,165,520,225",
+                                             "515,165,625,225"
+                                         ],
+                                "feather":  2.0,
+                                "matchRing":  6,
+                                "frames":  {
+                                               "half":  {
+                                                            "offsetX":  0,
+                                                            "offsetY":  0,
+                                                            "master":  "assets/images/characters/eye_intermediate_sources/samu/happy/eyes_half_source_master.png"
+                                                        },
+                                               "open":  {
+                                                            "offsetX":  0,
+                                                            "offsetY":  0,
+                                                            "master":  "assets/images/characters/samu/animations/blinks/samu_happy_blink_open_master.png"
+                                                        }
+                                           }
+                            },
+                  "angry":  {
+                                "base":  "assets/images/characters/samu/samu_angry_master.png",
+                                "targetState":  "closed",
+                                "eyes":  [
+                                             "545,220,660,295",
+                                             "680,220,795,295"
+                                         ],
+                                "feather":  2.0,
+                                "matchRing":  6,
+                                "frames":  {
+                                               "half":  {
+                                                            "offsetX":  0,
+                                                            "offsetY":  0,
+                                                            "master":  "assets/images/characters/eye_intermediate_sources/samu/angry/eyes_half_source_master.png"
+                                                        },
+                                               "closed":  {
+                                                              "offsetX":  0,
+                                                              "offsetY":  0,
+                                                              "master":  "assets/images/characters/samu/animations/blinks/samu_angry_blink_closed_master.png"
+                                                          }
+                                           }
+                            },
+                  "determined":  {
+                                     "base":  "assets/images/characters/samu/samu_determined_master.png",
+                                     "targetState":  "closed",
+                                     "eyes":  [
+                                                  "591,248,700,318",
+                                                  "739,247,848,318"
+                                              ],
+                                     "feather":  2.0,
+                                     "matchRing":  6,
+                                     "frames":  {
+                                                    "half":  {
+                                                                 "offsetX":  0,
+                                                                 "offsetY":  0,
+                                                                 "master":  "assets/images/characters/eye_intermediate_sources/samu/determined/eyes_half_source_master.png"
+                                                             },
+                                                    "closed":  {
+                                                                   "offsetX":  0,
+                                                                   "offsetY":  0,
+                                                                   "master":  "assets/images/characters/samu/animations/blinks/samu_determined_blink_closed_master.png"
+                                                               }
+                                                }
+                                 },
+                  "thinking":  {
+                                   "base":  "assets/images/characters/samu/samu_thinking_master.png",
+                                   "targetState":  "closed",
+                                   "eyes":  [
+                                                "532,251,637,326",
+                                                "685,246,772,322"
+                                            ],
+                                   "feather":  2.0,
+                                   "matchRing":  6,
+                                   "frames":  {
+                                                  "half":  {
+                                                               "offsetX":  0,
+                                                               "offsetY":  0,
+                                                               "master":  "assets/images/characters/eye_intermediate_sources/samu/thinking/eyes_half_source_master.png"
+                                                           },
+                                                  "closed":  {
+                                                                 "offsetX":  0,
+                                                                 "offsetY":  0,
+                                                                 "master":  "assets/images/characters/samu/animations/blinks/samu_thinking_blink_closed_master.png"
+                                                             }
+                                              }
+                               },
+                  "sad":  {
+                              "base":  "assets/images/characters/samu/samu_sad_master.png",
+                              "targetState":  "closed",
+                              "eyes":  [
+                                           "420,200,555,370",
+                                           "575,200,715,370"
+                                       ],
+                              "feather":  6.0,
+                              "matchRing":  14,
+                              "frames":  {
+                                             "half":  {
+                                                          "offsetX":  0,
+                                                          "offsetY":  0,
+                                                          "master":  "assets/images/characters/eye_intermediate_sources/samu/sad/eyes_half_source_master.png"
+                                                      },
+                                             "closed":  {
+                                                            "offsetX":  0,
+                                                            "offsetY":  0,
+                                                            "master":  "assets/images/characters/samu/animations/blinks/samu_sad_blink_closed_master.png"
+                                                        }
+                                         }
+                          },
+                  "embarrassed":  {
+                                      "base":  "assets/images/characters/samu/samu_embarrassed_master.png",
+                                      "targetState":  "closed",
+                                      "eyes":  [
+                                                   "620,230,790,330",
+                                                   "790,225,955,330"
+                                               ],
+                                      "feather":  2.0,
+                                      "matchRing":  6,
+                                      "frames":  {
+                                                     "half":  {
+                                                                  "offsetX":  0,
+                                                                  "offsetY":  0,
+                                                                  "master":  "assets/images/characters/eye_intermediate_sources/samu/embarrassed/eyes_half_source_master.png"
+                                                              },
+                                                     "closed":  {
+                                                                    "offsetX":  0,
+                                                                    "offsetY":  0,
+                                                                    "master":  "assets/images/characters/samu/animations/blinks/samu_embarrassed_blink_closed_master.png"
+                                                                }
+                                                 }
+                                  },
+                  "bua":  {
+                              "base":  "assets/images/characters/samu/samu_bua_master.png",
+                              "targetState":  "closed",
+                              "eyes":  [
+                                           "560,495,735,580"
+                                       ],
+                              "feather":  2.0,
+                              "matchRing":  6,
+                              "frames":  {
+                                             "half":  {
+                                                          "offsetX":  0,
+                                                          "offsetY":  0,
+                                                          "precomposed":  true,
+                                                          "master":  "assets/images/characters/eye_intermediate_sources/samu/bua/eyes_half_source_master.png"
+                                                      },
+                                             "closed":  {
+                                                            "offsetX":  0,
+                                                            "offsetY":  0,
+                                                            "precomposed":  true,
+                                                            "master":  "assets/images/characters/samu/animations/blinks/samu_bua_blink_closed_master.png"
+                                                        }
+                                         }
+                          },
+                  "surprised":  {
+                                    "base":  "assets/images/characters/samu/samu_surprised_master.png",
+                                    "targetState":  "closed",
+                                    "eyes":  [
+                                                 "475,220,625,385",
+                                                 "610,220,780,390"
+                                             ],
+                                    "feather":  2.0,
+                                    "matchRing":  6,
+                                    "frames":  {
+                                                   "half":  {
+                                                                "offsetX":  0,
+                                                                "offsetY":  0,
+                                                                "master":  "assets/images/characters/eye_intermediate_sources/samu/surprised/eyes_half_source_master.png"
+                                                            },
+                                                   "closed":  {
+                                                                  "offsetX":  0,
+                                                                  "offsetY":  0,
+                                                                  "master":  "assets/images/characters/samu/animations/blinks/samu_surprised_blink_closed_master.png"
+                                                              }
+                                               }
+                                },
+                  "alarmed":  {
+                                  "base":  "assets/images/characters/samu/samu_alarmed_master.png",
+                                  "targetState":  "closed",
+                                  "eyes":  [
+                                               "570,210,735,360",
+                                               "720,210,890,360"
+                                           ],
+                                  "feather":  2.0,
+                                  "matchRing":  6,
+                                  "frames":  {
+                                                 "half":  {
+                                                              "offsetX":  0,
+                                                              "offsetY":  0,
+                                                              "precomposed":  true,
+                                                              "master":  "assets/images/characters/eye_intermediate_sources/samu/alarmed/eyes_half_source_master.png"
+                                                          },
+                                                 "closed":  {
+                                                                "offsetX":  0,
+                                                                "offsetY":  0,
+                                                                "precomposed":  true,
+                                                                "master":  "assets/images/characters/samu/animations/blinks/samu_alarmed_blink_closed_master.png"
+                                                            }
+                                             }
+                              },
+                  "shocked":  {
+                                  "base":  "assets/images/characters/samu/samu_shocked_master.png",
+                                  "targetState":  "closed",
+                                  "eyes":  [
+                                               "585,135,760,330",
+                                               "735,130,900,325"
+                                           ],
+                                  "feather":  2.0,
+                                  "matchRing":  6,
+                                  "frames":  {
+                                                 "half":  {
+                                                              "offsetX":  0,
+                                                              "offsetY":  0,
+                                                              "precomposed":  true,
+                                                              "master":  "assets/images/characters/eye_intermediate_sources/samu/shocked/eyes_half_source_master.png"
+                                                          },
+                                                 "closed":  {
+                                                                "offsetX":  0,
+                                                                "offsetY":  0,
+                                                                "precomposed":  true,
+                                                                "master":  "assets/images/characters/samu/animations/blinks/samu_shocked_blink_closed_master.png"
+                                                            }
+                                             }
+                              },
+                  "curious":  {
+                                  "base":  "assets/images/characters/samu/samu_curious_master.png",
+                                  "targetState":  "closed",
+                                  "eyes":  [
+                                               "275,170,390,320",
+                                               "375,185,500,345"
+                                           ],
+                                  "feather":  2.0,
+                                  "matchRing":  8,
+                                  "frames":  {
+                                                 "half":  {
+                                                              "offsetX":  0,
+                                                              "offsetY":  0,
+                                                              "master":  "assets/images/characters/eye_intermediate_sources/samu/curious/eyes_half_source_master.png"
+                                                          },
+                                                 "closed":  {
+                                                                "offsetX":  0,
+                                                                "offsetY":  0,
+                                                                "master":  "assets/images/characters/samu/animations/blinks/samu_curious_blink_closed_master.png"
+                                                            }
+                                             }
+                              },
+                  "valla":  {
+                                "base":  "assets/images/characters/samu/samu_valla_master.png",
+                                "targetState":  "closed",
+                                "eyes":  [
+                                             "520,140,680,260",
+                                             "640,135,800,260"
+                                         ],
+                                "feather":  2.0,
+                                "matchRing":  6,
+                                "frames":  {
+                                               "half":  {
+                                                            "offsetX":  0,
+                                                            "offsetY":  0,
+                                                            "master":  "assets/images/characters/eye_intermediate_sources/samu/valla/eyes_half_source_master.png"
+                                                        },
+                                               "closed":  {
+                                                              "offsetX":  0,
+                                                              "offsetY":  0,
+                                                              "master":  "assets/images/characters/samu/animations/blinks/samu_valla_blink_closed_master.png"
+                                                          }
+                                           }
+                            },
+                  "clapping":  {
+                                   "base":  "assets/images/characters/samu/samu_clapping_master.png",
+                                   "targetState":  "open",
+                                   "eyes":  [
+                                                "555,235,720,385",
+                                                "695,235,860,385"
+                                            ],
+                                   "feather":  2.0,
+                                   "matchRing":  6,
+                                   "frames":  {
+                                                  "half":  {
+                                                               "offsetX":  0,
+                                                               "offsetY":  0,
+                                                               "master":  "assets/images/characters/eye_intermediate_sources/samu/clapping/eyes_half_source_master.png"
+                                                           },
+                                                  "open":  {
+                                                               "offsetX":  0,
+                                                               "offsetY":  0,
+                                                               "master":  "assets/images/characters/samu/animations/blinks/samu_clapping_blink_open_master.png"
+                                                           }
+                                              }
+                               },
+                  "charred":  {
+                                  "base":  "assets/images/characters/samu/samu_charred_whiteeyes_master.png",
+                                  "targetState":  "closed",
+                                  "eyes":  [
+                                               "535,205,700,375",
+                                               "690,205,855,375"
+                                           ],
+                                  "feather":  2.0,
+                                  "matchRing":  6,
+                                  "frames":  {
+                                                 "half":  {
+                                                              "offsetX":  0,
+                                                              "offsetY":  0,
+                                                              "master":  "assets/images/characters/eye_intermediate_sources/samu/charred_blink/eyes_half_source_master.png"
+                                                          },
+                                                 "closed":  {
+                                                                "offsetX":  0,
+                                                                "offsetY":  0,
+                                                                "master":  "assets/images/characters/samu/samu_charred_closed_master.png"
+                                                            }
+                                             }
+                              },
+                  "worried":  {
+                                  "base":  "assets/images/characters/samu/samu_worried_master.png",
+                                  "targetState":  "closed",
+                                  "eyes":  [
+                                               "464,247,584,332",
+                                               "637,247,754,332"
+                                           ],
+                                  "feather":  2.5,
+                                  "matchRing":  12,
+                                  "frames":  {
+                                                 "half":  {
+                                                              "offsetX":  0,
+                                                              "offsetY":  0,
+                                                              "master":  "assets/images/characters/samu/animations/blinks/samu_worried_blink_half_master.png"
+                                                          },
+                                                 "closed":  {
+                                                                "offsetX":  0,
+                                                                "offsetY":  0,
+                                                                "master":  "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed_master.png"
+                                                            }
+                                             }
+                              }
+              }
+}

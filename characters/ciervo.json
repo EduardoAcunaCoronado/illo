@@ -3,7 +3,15 @@
   "color": "#c8792a",
   "poses": {
     "neutral": "assets/images/characters/ciervo/ciervo_neutral.webp",
-    "seated": "assets/images/characters/ciervo/ciervo_seated.webp"
+    "seated": "assets/images/characters/ciervo/ciervo_seated.webp",
+    "seated_surprised": "assets/images/characters/ciervo/ciervo_seated_surprised.webp",
+    "seated_happy": "assets/images/characters/ciervo/ciervo_seated_happy.webp",
+    "seated_happy_closed": "assets/images/characters/ciervo/ciervo_seated_happy_closed.webp",
+    "seated_playful": "assets/images/characters/ciervo/ciervo_seated_playful.webp",
+    "seated_blushing": "assets/images/characters/ciervo/ciervo_seated_blushing.webp",
+    "seated_suspicious": "assets/images/characters/ciervo/ciervo_seated_suspicious.webp",
+    "seated_curious": "assets/images/characters/ciervo/ciervo_seated_curious.webp",
+    "seated_worried": "assets/images/characters/ciervo/ciervo_seated_worried.webp"
   },
   "defaultPose": "neutral"
 }

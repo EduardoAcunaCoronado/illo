@@ -635,7 +635,7 @@
             engine.gameState.chiliPower = opts.spicePower;
             engine.gameState.chiliPowerMax = opts.maxSpicePower;
             engine.inventory = document.getElementById('chili-neit').checked ? ['caja_guindillas'] : [];
-            startMusic("assets/audio/sfx/zip's-shadow-waltz.mp3");
+            startMusic("assets/audio/music/chapter2/zip's-shadow-waltz.mp3");
             await engine.playKetchupBossMinigame(opts);
             stopMusic();
             resultEl.textContent = '✅ ¡Zip derrotado con ' + opts.spicePower + ' puntos de picante!';

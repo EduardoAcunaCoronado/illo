@@ -526,18 +526,20 @@ PRESENTACIÓN
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
 - Los 24 planos del concierto tienen una restauración no destructiva 4K en
-  workbench/sources/cutscenes/chapter3/opening_samu/frames_4k/: PNG RGB de 3840×2160 con caras, manos,
+  workbench/assets/video/cutscenes/chapter3/opening_tony/frames_4k/: PNG RGB de 3840×2160 con caras, manos,
   anatomía del público, enemigos, vallas y escenario reconstruidos. Samu, Edu
   y el gorila siguen su arte canónico; los primeros planos de Seraphyna fijan
-  su identidad. frame_11_embobados.png aplica además a Samu el patrón cromático
-  exacto de assets/images/characters/samu/Samu.webp. Los originales de nuevos_frames/
-  y nuevos_frames_x2/ no se modificaron.
+  su identidad. frame_11_embobados.png aplica además a Samu el diseño oficial
+  V2 y conserva sus catorce uñas visibles en rosa pálido mediante una máscara
+  ceñida que no altera pelaje, tinta, suelo ni a Edu. Los originales de
+  nuevos_frames/ y nuevos_frames_x2/ no se modificaron.
 - El opening del concierto se recompuso con esos planos en
   assets/video/cutscenes/chapter3/opening_tony.mp4: H.264 3840×2160,
   30 FPS, 117,6 s,
   audio AAC original y montaje con zooms, fundidos, fogonazos y pausa negra
-  final. opening_tony.mp4 (720p) permanece intacto; la entrega 4K ocupa menos
-  de 100 MB para poder versionarse y usarse en el juego.
+  final. La entrega 4K ocupa menos de 100 MB para poder versionarse y usarse
+  en el juego. Los 24 maestros finales están en la ruta espejo de `workbench/`;
+  los originales sustituidos se recuperan desde Git.
 - Ambos finales recorren créditos; el final luminoso encadena además la escena
   poscréditos del quinto hueco y los amigos reservados para la continuación.
 
@@ -566,7 +568,7 @@ REGLAS PARA CAMBIOS FUTUROS
   horizontal de cinco figuras coronadas y la vidriera central de cinco regentes.
   La variante de día, con la misma composición y luces prácticas atenuadas, es
   `assets/images/backgrounds/chapter2/furrielva/iglesia_furrielva_dia_v2_4k.webp`.
-  Los maestros PNG integrados viven en `workbench/sources/images/backgrounds/chapter2/furrielva/`;
+  Los maestros PNG integrados viven en `workbench/assets/images/backgrounds/chapter2/furrielva/`;
   no volver a enlazar `iglesia.png` como fondo principal del capítulo 2.
 - La investigación de Furrielva usa un móvil horizontal ficticio con **Furry
   Maps**. El mapa activo es
@@ -747,8 +749,8 @@ REORGANIZACIÓN DE ASSETS Y MÚSICA DEL CAPÍTULO 2 — 2026-08-01
 - Música se ordena por capítulo o función bajo `assets/audio/music/`; efectos
   están en `assets/audio/sfx/`. Fondos y minijuegos se agrupan por capítulo.
   Los archivos no conectados se conservan bajo `legacy/` y no son rutas activas.
-- `huelva.mp3` ya no se reproduce y se conserva como
-  `workbench/archive/audio/music/legacy/huelva_original.mp3`.
+- `huelva.mp3` ya no se reproduce ni permanece en el árbol; Git conserva su
+  historial.
 - Mapa musical del capítulo 2: escena 1 = `furrielva_despierta`; escenas
   1B/1C/1D = `el_rastro_del_tapon`; escenas 1.5/2/3/4 =
   `tres_rutas_por_furrielva`; escenas 4.5/4.6 = `el_tapon_dorado`; escenas 5–9
@@ -829,16 +831,16 @@ REVISIÓN INTEGRAL DE CANON Y PRESENTACIÓN — 2026-08-01
   núcleo cada dos turnos enemigos.
 
 GALERÍA Y RECURSOS DE LA REVISIÓN
-- `assets/metadata/gallery_manifest.json` contiene 105 entradas: 104 imágenes y
-  un vídeo; 4 wallpapers, 12 ilustraciones, 25 personajes, 63 escenarios y 1
-  vídeo. Las fichas de personaje agrupan 155 poses declaradas en
+- `assets/metadata/gallery_manifest.json` contiene 107 entradas: 106 imágenes y
+  un vídeo; 4 wallpapers, 13 ilustraciones, 26 personajes, 63 escenarios y 1
+  vídeo. Las fichas de personaje agrupan 165 poses declaradas en
   `characters/*.json`, con selector visual dentro del lightbox.
 - El material de RECURSOS_CAMBIOS_GUION incluye wallpapers de Edu, José, Samu y
   Seraphyna; key art de Elion controlando brainrot; hoja de diseño de Elion y el
-  vídeo de presentación de Samu. La galería tiene filtros, 260 miniaturas,
+  vídeo de presentación de Samu. La galería tiene filtros, 271 miniaturas,
   lightbox, selector de poses, descarga, navegación por teclado y advertencia de
   spoilers. Las formas humanas se muestran dentro de sus protagonistas y no como
-  fichas duplicadas. 130 de las 155 poses ofrecen un botón opcional de parpadeo,
+  fichas duplicadas. 130 de las 165 poses ofrecen un botón opcional de parpadeo,
   apagado por defecto; usa los frames e intervalos declarados en cada ficha y no
   aparece en poses sin animación.
 - El original narrativo del key art vive en
@@ -851,9 +853,8 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
 - Las formas humanas canónicas son las figuras completas situadas a la izquierda
   de sus hojas de diseño. Sus bases se encajan de forma uniforme en 887x1774,
   sin estirar las piernas; hojas y maestros viven en
-  `workbench/sources/images/characters/humans/<personaje>/`. Los assets deformados
-  sustituidos el 2026-08-04 quedaron archivados bajo
-  `workbench/archive/images/characters/humans/distorted_2026-08-04/`.
+  `workbench/assets/images/characters/humans/<personaje>/`. Los assets deformados
+  sustituidos el 2026-08-04 se retiraron y sólo permanecen en Git.
 - Los parpadeos humanos de Edu, Tony, José y Samu se reconstruyen sólo dentro de
   dos máscaras oculares registradas sobre la cabeza. Base, semicerrado y cerrado
   comparten exactamente el mismo alfa para impedir saltos, parches o basura fuera
@@ -900,7 +901,10 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   enlazan de vuelta al centro. En Windows, `ABRIR_EDITOR_OJOS.bat` inicia el
   servidor y abre directamente este menú.
   `/white-halo` sirve `scripts/sprite_white_halo_editor.html`, un editor separado
-  para retirar halos blancos de cualquier pose base. El pincel reduce el alfa de
+  para retirar halos blancos de cualquier pose base o imagen libre. `Abrir cualquier
+  imagen…` y el arrastre aceptan cualquier formato que el navegador pueda decodificar,
+  mantienen un único trabajo libre en memoria y sólo permiten descargar el resultado:
+  nunca crean poses, assets, miniaturas ni entradas de manifiesto. El pincel reduce el alfa de
   blancos, grises neutros y halos ligeramente azulados según tolerancia, tamaño y
   fuerza, e ignora colores y líneas oscuras. A fuerza 100%, los píxeles aceptados
   bajo el centro quedan completamente transparentes. Tiene zoom 25–500% mediante
@@ -912,11 +916,16 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   de trabajo` permite escoger el
   sprite fuente protegido, la copia limpia registrada o un respaldo PNG/WebP de
   resolución exactamente igual. El respaldo puede elegirse con
-  `Importar PNG/WebP…` o arrastrarse sobre el lienzo; recupera sus píxeles RGBA como
+  `Importar PNG/WebP…`; recupera sus píxeles RGBA como
   base pendiente de guardar, pero no el historial Deshacer/Rehacer ni los ajustes
   de la sesión anterior. Si existe una copia se usa por defecto; cambiar de base o
   de pose avisa si hay cambios sin guardar. Ver/restaurar toman esa base, mientras
-  Guardar copia sólo actualiza `sprite_halo_cleaned` y nunca el fuente. Incluye
+  Guardar copia sólo actualiza `sprite_halo_cleaned` y nunca el fuente. Arrastrar
+  abre ahora un trabajo libre, sin exigir pose ni resolución coincidente. En ese modo
+  el original importado actúa como fuente protegida para comparar, restaurar y validar;
+  si es totalmente opaco, la limpieza segura convierte primero en transparencia el
+  blanco claro conectado al borde, lo que admite fondos blancos de JPG/PNG opaco.
+  Incluye
   `Limpieza segura (recomendada)`, que siempre reconstruye desde el fuente
   protegido: confirma halo conectado al exterior, protege relleno/color/tinta,
   restaura cualquier píxel protegido alcanzado por una microabertura y rechaza
@@ -961,7 +970,7 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   amarillo sólo como localizador alrededor de ellos y morado para alfa expandido.
   Cualquier cambio del lienzo invalida el diagnóstico. `Restaurar protegidos` pide
   al mismo endpoint `repair: true`, copia exclusivamente el RGBA exacto de los
-  puntos rosas desde el fuente canónico, conserva intacto todo lo demás y forma un
+  puntos rosas desde el fuente canónico o el original importado, conserva intacto todo lo demás y forma un
   único paso deshacible; no corrige las expansiones moradas.
   Cada operación global se registra como un único paso reversible. Cada control ofrece
   tooltip breve al pasar el puntero o enfocarlo y un icono redondo `?` con ayuda
@@ -974,7 +983,7 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   actual` crea mediante el servidor local un respaldo RGBA WebP sin pérdida del
   lienzo, sin damero, zoom ni UI; no valida, no toca el manifiesto y no genera
   miniaturas, por lo que sigue rescatando el lienzo aunque falle o se pause
-  `Guardar copia`; puede reimportarse por botón o arrastre, aunque no reconstruye
+  `Guardar copia`; puede reimportarse por botón, aunque no reconstruye
   el historial. No sustituye al guardado validado. Airi, Carlos, Samu y toda salida
   nueva usan este formato. El PNG queda sólo como transporte/historial interno y
   para originales o másteres de trabajo en `workbench/`, nunca como copia limpia
@@ -1088,16 +1097,16 @@ ANIMACIÓN, ESTADO Y AUDIO DE LA REVISIÓN
 - `showCharacter`/`setPose` sustituyen el sprite de forma atómica; no existe capa
   fantasma ni se superponen dos poses. Las fichas admiten `animations` con varios
   sprites de una misma pose, duraciones por frame y espera aleatoria entre ráfagas.
-  Hay parpadeo dibujado en 134 de las 160 poses declaradas: 129 activas y las 5
-  poses del ePod legado, reemplazado por Nexo. Las 129 activas tienen intermedio
-  en `assets/metadata/blink_eye_intermediates.json`: 116 cierres y 13 aperturas
+  Hay parpadeo dibujado en 135 de las 169 poses declaradas: 130 activas y las 5
+  poses del ePod legado, reemplazado por Nexo. Las 130 activas tienen intermedio
+  en `assets/metadata/blink_eye_intermediates.json`: 117 cierres y 13 aperturas
   inversas. Todas recorren reposo/medio/extremo/medio/reposo.
   Las fuentes únicas viven en `assets/images/characters/eye_intermediate_sources/`
   y se generan/sanitizan con `scripts/build_blink_intermediates.py`; la galería y
   `engine.js` inyectan automáticamente el intermedio sin duplicarlo en las fichas.
   Los 116 assets WebP únicos viven en `animations/blinks/`, mantienen tamaño y
   alfa del sprite base y no mueven, escalan ni deforman el cuerpo. Se excluyen
-  solo 26 poses sin ojos animables (siluetas, móviles, formas amorfas, caras
+  solo 34 poses sin ojos animables (siluetas, móviles, formas amorfas, caras
   tapadas y gafas opacas). El compositor es
   `scripts/compose_character_blink.py` y requiere máscaras oculares explícitas.
   Las 17 poses manuales de 3C/Airi ya usan en `engine.js` y en la galería la
@@ -1129,14 +1138,15 @@ ANIMACIÓN, ESTADO Y AUDIO DE LA REVISIÓN
   ejecutables y exclusiones sensibles del build.
 
 OPTIMIZACIÓN Y CONSERVACIÓN DE ASSETS — 2026-08-03
-- `assets/` queda reservado para runtime y herramientas; fuentes editables van a
-  `workbench/sources/`, originales protegidos a `workbench/originals/` y versiones
-  retiradas a `workbench/archive/`. `workbench/` nunca entra en Electron Builder.
+- `assets/` queda reservado para runtime y herramientas; `workbench/` replica la
+  raíz del proyecto para maestros y originales útiles. Versiones retiradas y QA
+  se recuperan desde Git o se regeneran; `workbench/` nunca entra en Electron
+  Builder.
 - `scripts/optimize_runtime_assets.py --apply --media` convierte imágenes activas
   a WebP (sin pérdida si hay alfa; q92 para fondos/CG opacos), WAV musical a MP3
   VBR q2 y vídeo seleccionado a H.264 CRF20. Conserva el original antes de tocar
   el runtime y actualiza referencias de forma reanudable.
-- `workbench/optimization/asset_optimization_manifest.json` es la fuente de verdad
+- `workbench/assets/metadata/asset_optimization_manifest.json` es la fuente de verdad
   de las 339 imágenes y 4 medios optimizados: guarda rutas, tamaños y SHA-256.
   El estado actual ahorra 483,96 MiB; `assets/` queda en unos 828 MiB.
 - Los binarios de `workbench/` se versionan como archivos normales de Git; la
@@ -1170,7 +1180,7 @@ ILUSTRACIÓN AÉREA DE LA IGLESIA DE FURRIELVA — 2026-08-03
 - Nuevo fondo 4K `furrielva_iglesia_vista_aerea_v1_4k.webp`, con cámara aérea
   3/4, plaza, iglesia canónica y palomas; todavía no está asignado a una escena.
 - Fuente generada, máster PNG 4K y prompt reproducible se conservan en
-  `workbench/sources/images/backgrounds/chapter2/furrielva/`.
+  `workbench/assets/images/backgrounds/chapter2/furrielva/`.
 - La variante v2 reemplaza sólo los dos vitrales de la fachada con apóstoles y
   reyes furros detallados: cinco figuras en el relieve superior y una alianza
   de ciervo, zorro, lince, conejo y lobo en el ventanal central.
@@ -1184,7 +1194,7 @@ VARIANTE 4K DEL BAÑO SIN PERSONAJES — 2026-08-03
   y espejo como un escenario vacío coherente.
 - No sustituye todavía a `bathroom.webp` ni está asignado a una escena.
 - Fuente editada, máster PNG 4K y prompt reproducible se conservan en
-  `workbench/sources/images/backgrounds/chapter1/bathroom/`.
+  `workbench/assets/images/backgrounds/chapter1/bathroom/`.
 
 INTEGRACIÓN DE PAUSA, CURSOR Y ACTING — 2026-08-03
 - `Esc` activa la pausa global salvo en cinemáticas, donde conserva el salto.
@@ -1215,13 +1225,13 @@ ASSETS VISUALES INTEGRADOS DESDE MASTER — 2026-08-03
 
 POSE WORRIED V2 DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-04
 - La clave canónica sigue siendo `samu.worried`, pero ahora apunta a
-  `assets/images/characters/samu/samu_worried_v2.webp`; la pose independiente
+  `assets/images/characters/samu/samu_worried.webp`; la pose independiente
   `nervous_scratch` se eliminó. Por mantener la clave, la V2 sustituye
   automáticamente los 33 usos de historia sin editar los capítulos. El PNG
   protegido vive en
-  `workbench/originals/runtime/assets/images/characters/samu/samu_worried_v2.png`
+  `workbench/assets/images/characters/samu/samu_worried_v2.png`
   y la entrega/máster editables en
-  `workbench/sources/images/characters/samu/worried/`.
+  `workbench/assets/images/characters/samu/worried/`.
 - La copia limpia runtime es
   `assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp`;
   juego y galería la priorizan automáticamente. Sus miniaturas de 156×156 y
@@ -1229,10 +1239,9 @@ POSE WORRIED V2 DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-04
   píxeles que ampliaban el alfa, restauró 80 protegidos y el resultado final
   retira 22.543 píxeles de mate con cero expansión y cero relleno/tinta protegidos
   perdidos.
-- El parpadeo antiguo de sprite completo para `worried` se desactivó hasta crear
-  capas compatibles con V2; alternar los frames de 1024×1024 con el lienzo nuevo
-  de 1209×1301 produciría un salto visible. La animación especial `charred_shake`
-  y su fallback de movimiento reducido terminan igualmente en la copia limpia V2.
+- `worried` ya tiene capas V2 intermedia y cerrada de 1209×1301 y vuelve a
+  parpadear sin saltos de lienzo. La animación especial `charred_shake` y su
+  fallback de movimiento reducido terminan igualmente en la copia limpia V2.
 - En ejecución local, el menú principal ofrece accesos con iconos a `/tools` y
   `minijuegos_test.html`. No se muestran en una web pública ni en Electron
   empaquetado, porque son utilidades de desarrollo y no forman parte del instalador.
@@ -1254,12 +1263,116 @@ POSE WORRIED V2 DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-04
 - Los health checks tienen deadline absoluto y el servidor fuerza las conexiones
   abiertas tras una gracia breve, evitando bloqueos por respuestas o vídeos lentos.
 
-CIERVO DEL PATIO PREPARADO PARA USO FUTURO — 2026-08-04
+CIERVO DEL PATIO Y EXPRESIONES SENTADAS — actualizado 2026-08-06
 - Clave canónica `ciervo`, nombre visible `Ciervo` y ficha `characters/ciervo.json`.
-- Poses `neutral` y `seated` en `assets/images/characters/ciervo/` con nombres
-  `ciervo_neutral.webp` y `ciervo_seated.webp`; la pose sentada incluye la mecedora.
+- Poses `neutral` y `seated` en `assets/images/characters/ciervo/`; la pose sentada
+  incluye la mecedora. Se añaden `seated_surprised`, `seated_happy`,
+  `seated_happy_closed`, `seated_playful`, `seated_blushing`,
+  `seated_suspicious`, `seated_curious` y `seated_worried`, todas con mecedora.
+- `seated_blushing` reutiliza la expresión sorprendida: ojos abiertos, cejas
+  elevadas y boca entreabierta, añadiendo sólo rubor cálido en las mejillas.
+- `seated_happy` usa sonrisa abierta, mejillas elevadas y ojos alegres;
+  `seated_happy_closed` conserva esa sonrisa y cierra ambos ojos en arcos felices;
+  `seated_playful` refuerza la lectura picarona con mirada entornada, ceja
+  dominante y sonrisa ladeada.
+- `seated_suspicious` usa ojos entrecerrados hacia un lado, cejas asimétricas y
+  boca cerrada tensa. Su fuente técnica es verde, no magenta; el maestro final
+  conserva el alfa original y no toca píxeles fuera de las máscaras faciales.
+- `seated_curious` toma de `samu_curious` la mirada convergente hacia abajo y
+  hacia el hocico, las cejas interiores elevadas y la boca entreabierta, sin
+  copiar su anatomía. La mano derecha sube al mentón y la izquierda conserva la
+  taza. Usa fuente verde; fuera de las máscaras acotadas de rostro y brazo
+  derecho conserva píxeles y alfa del maestro sentado.
+- `seated_worried` es una ilustración completa de preocupación: ojos más abiertos,
+  cejas elevadas hacia el centro, boca entreabierta y mano bajo el mentón. Maestro,
+  original protegido y runtime se normalizan a 941×1672 sin recortar la figura;
+  el candidato previo se retiró.
+- Los ocho runtime expresivos `ciervo_seated_*.webp` son RGBA sin pérdida de
+  941×1672.
+  Los maestros transparentes quedan bajo
+  `workbench/assets/images/characters/ciervo/seated_*/`; los PNG protegidos se
+  conservan en `workbench/assets/images/characters/ciervo/`.
 - No está colocado en capítulos ni precargado: `showCharacter` lo cargará a demanda.
-- Maestros y originales protegidos se conservan bajo `workbench/.../ciervo/`; la
-  variante realista rechazada queda archivada fuera del runtime.
-- Galería regenerada con ambas poses. Validación: 7 capítulos, 64 escenas,
-  920 líneas, 27 personajes y 1571 referencias de assets, sin errores.
+- Maestros y originales protegidos se conservan bajo
+  `workbench/assets/images/characters/ciervo/`; la variante realista rechazada
+  se retiró y sólo permanece en Git.
+- Galería regenerada con las diez poses. Validación del 2026-08-06: 7 capítulos,
+  64 escenas, 920 líneas, 27 personajes y 1701 referencias de assets, sin errores.
+
+FUENTES VIGENTES Y WORKBENCH ESPEJO — 2026-08-06
+- `workbench/` replica la raíz del proyecto. Sólo contiene `assets/` y
+  `characters/` mientras esas sean las familias con material de trabajo; no usa
+  niveles paralelos `sources`, `originals`, `archive`, `qa` ni `optimization`.
+- Un recurso de producción conserva su misma jerarquía bajo `workbench/`. El
+  tipo se expresa en el nombre del archivo (`_master`, `_original`, referencia),
+  nunca cambiando el nombre de las carpetas de producción.
+- Las versiones retiradas y los intentos rechazados se recuperan desde Git. Las
+  hojas de contacto, máscaras de diagnóstico y otras salidas QA son temporales y
+  no se versionan dentro de `workbench/`.
+- El manifiesto de optimización está en
+  `workbench/assets/metadata/asset_optimization_manifest.json` y todas sus rutas
+  `original` apuntan ya al espejo `workbench/assets/...`.
+- Los maestros aprobados de Samu viven junto a su contraparte lógica: poses y
+  animaciones en `workbench/assets/images/characters/samu/`, intermedios oculares
+  en `workbench/assets/images/characters/eye_intermediate_sources/samu/`,
+  minijuegos en sus carpetas `workbench/assets/images/minigames/...`, y fondos,
+  CG y wallpaper en los mismos capítulos/categorías que el runtime.
+- La receta ocular consolidada es
+  `workbench/assets/metadata/samu_blink_composition.json`. No se conservan cromas,
+  candidatos, pruebas de paleta, regeneraciones rechazadas ni scripts de una sola
+  migración.
+- El opening publicado del prólogo conserva sus fuentes en
+  `workbench/assets/video/cutscenes/prologue/opening_samu/`. Sus carpetas
+  `storyboard/` y `storyboardV2/` son fuentes diferentes y deben conservar sus
+  nombres y contenidos por separado; `storyboardV2/` incluye `13_anchors/`. El
+  derivado no destructivo `storyboardV2/4k/` prepara sus recursos y proyecto con
+  `python scripts/prepare_samu_opening_storyboard_v2_4k.py --force`: escala al
+  200 % imágenes, geometrías y keyframes, convierte `4.mp4` e `Intro_Neon.mp4`
+  a UHD y reutiliza `13.mp4`, que ya es 4K. El proyecto y el render de revisión
+  3840x2160 a 30 fps viven en esa carpeta; no sustituyen el vídeo runtime.
+  `15-2.png` es RGBA sin fondo y `8.png` conserva su resolución con el bíceps
+  izquierdo de Samu corregido al tono del pecho; las copias UHD incluyen ambos
+  ajustes. `12-2.png` sitúa a la chica gato en el borde del pozo, con ambas
+  piernas hacia la izquierda, y elimina el personaje que estaba a su lado.
+  Su versión independiente para escenas está en
+  `assets/images/characters/others/gata_pozo_sentada.webp`, con maestro RGBA en
+  la ruta espejo de `workbench/`; incluye el pozo completo, con aro, laterales y
+  base visibles, y todavía no tiene
+  manifiesto ni nombre canónico en `characters/`. Tiene manos blancas de aspecto
+  felino con garras pequeñas y pies blancos hasta un poco por encima del tobillo,
+  con mocasines marrones pequeños. En la misma carpeta están sus poses
+  `gata_pozo_sentada_happy.webp` y `gata_pozo_sentada_playful.webp`, ambas
+  sentadas en el pozo, con la bebida apoyada sobre el borde izquierdo y acting
+  expresivo de brazos, además de
+  `gata_pozo_de_pie_neutral.webp`, de cuerpo entero, neutral y sin pozo. Los
+  tres modelos usan manos blancas compactas, de silueta felina, dedos
+  redondeados y garras pequeñas. Sus maestros RGBA correspondientes viven en la
+  ruta espejo de `workbench/` con el sufijo `_master.png`.
+  El CG 4K `assets/images/cg/shared/despedida_samu_ciervo_gata.webp` muestra a
+  Samu avanzando hacia cámara mientras mira atrás y saluda a la gata y al ciervo,
+  que están de pie junto al pozo en el patio floral. Su maestro vive en
+  `workbench/assets/images/cg/shared/despedida_samu_ciervo_gata_4k_master.png`;
+  todavía no está conectado a una escena ni a la galería.
+  Los 24 maestros 4K de `opening_tony.mp4` viven en
+  `workbench/assets/video/cutscenes/chapter3/opening_tony/frames_4k/`.
+- Ejecutar `npm run validate:workbench` después de mover o añadir material de
+  trabajo; el validador rechaza raíces antiguas y carpetas que no tengan espejo
+  en la raíz de producción.
+
+RESTAURADOR DE FRAMES DE SAMU — actualizado 2026-08-07
+- El editor externo `..\Restaurador_frames_Samu` permite elegir desde su interfaz
+  las tres carpetas: frames para revisar, originales de referencia y revisados.
+- Usa el selector nativo de Windows, persiste las rutas en `config.json` y recarga
+  el lote sin reiniciar. Las dos fuentes son de sólo lectura; únicamente escribe
+  PNG en la carpeta de revisados.
+- `Rectángulo global` (`G`) copia la zona seleccionada desde cada original sobre
+  todos los revisados, usa el frame de trabajo como base cuando aún no existe una
+  revisión y permite deshacer la última aplicación global durante la sesión. La
+  operación es atómica y elimina cualquier vídeo de prueba que haya quedado obsoleto.
+- `Cubo` (`F`) rellena una región contigua de cuatro vecinos con el color y la
+  opacidad actuales. La tolerancia RGBA va de 0 a 100 y cada relleno ocupa un solo
+  paso del historial local, reversible con `Ctrl+Z` antes de guardar.
+- `Generar vídeo de prueba` crea `preview_revision_samu.mp4` en revisados usando
+  el PNG revisado cuando existe y el frame de trabajo como fallback. Detecta
+  `casicasi.mp4` desde `informe_qa.json`, conserva 30 FPS y audio, y reproduce el
+  resultado dentro del editor sin modificar los frames.

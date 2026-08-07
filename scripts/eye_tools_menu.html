@@ -91,14 +91,20 @@
     .tools { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; }
     .small-card {
       display:flex; align-items:center; gap:14px; min-height:88px; padding:16px 17px; border:1px solid var(--line); border-radius:15px;
-      background:rgba(16,13,34,.78); text-decoration:none; transition:border-color .16s ease, background .16s ease, transform .16s ease;
+      color:inherit; background:rgba(16,13,34,.78); font:inherit; text-align:left; text-decoration:none; cursor:pointer;
+      transition:border-color .16s ease, background .16s ease, transform .16s ease;
     }
     .small-card:hover { border-color:rgba(154,123,255,.7); background:rgba(23,18,46,.94); transform:translateY(-2px); }
     .small-card:focus-visible { outline:3px solid var(--purple); outline-offset:2px; }
+    .small-card:disabled { cursor:not-allowed; opacity:.5; transform:none; }
     .icon { display:grid; place-items:center; flex:0 0 auto; width:42px; height:42px; border-radius:12px; color:var(--purple); background:rgba(154,123,255,.11); font-size:19px; font-weight:900; }
     .small-card strong { display:block; font-size:13px; }
     .small-card span { display:block; margin-top:2px; color:var(--muted); font-size:11px; }
     .port { margin-left:auto; color:#726b8d; font:700 9px/1 ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .samu-tool .icon { color:var(--gold); background:rgba(255,209,102,.11); }
+    .samu-tool:hover { border-color:rgba(255,209,102,.7); }
+    .tool-feedback { min-height:20px; margin:12px 2px 0; color:var(--muted); font-size:12px; }
+    .tool-feedback.error { color:#ff9ba8; }
     .note { margin:32px 0 0; padding:15px 17px; border-left:3px solid var(--cyan); color:var(--muted); background:rgba(77,232,194,.05); font-size:12px; }
     @media (max-width:900px) {
       .workflow,.tools { grid-template-columns:1fr; }
@@ -180,11 +186,13 @@
     <section class="tools" aria-label="Utilidades generales">
       <a class="small-card" href="http://localhost:8000/" data-project-path="/"><span class="icon">▶</span><span><strong>Abrir el juego</strong><span>Ejecutar Project AI.ri desde el inicio</span></span><span class="port" data-project-port>:8000</span></a>
       <a class="small-card" href="http://localhost:8000/minijuegos_test.html" data-project-path="/minijuegos_test.html"><span class="icon">◆</span><span><strong>Prueba de minijuegos</strong><span>Lanzar y revisar minijuegos por separado</span></span><span class="port" data-project-port>:8000</span></a>
+      <button class="small-card samu-tool" id="samu-restorer" type="button"><span class="icon">◫</span><span><strong>Restaurador de frames de Samu</strong><span id="samu-restorer-detail">Comprobando disponibilidad…</span></span><span class="port" id="samu-restorer-port">:8765</span></button>
       <a class="small-card" href="http://localhost:8000/generate-assets.html" data-project-path="/generate-assets.html"><span class="icon">＋</span><span><strong>Generador de assets</strong><span>Utilidad general incluida en el proyecto</span></span><span class="port" data-project-port>:8000</span></a>
       <a class="small-card" href="http://localhost:8000/create_placeholders.html" data-project-path="/create_placeholders.html"><span class="icon">▧</span><span><strong>Crear placeholders</strong><span>Generar imágenes temporales de desarrollo</span></span><span class="port" data-project-port>:8000</span></a>
       <a class="small-card" href="http://localhost:8000/menu_propuestas.html" data-project-path="/menu_propuestas.html"><span class="icon">☰</span><span><strong>Propuestas de menú</strong><span>Comparar las variantes visuales del menú</span></span><span class="port" data-project-port>:8000</span></a>
       <a class="small-card" href="http://localhost:8000/centro-control.html" data-project-path="/centro-control.html"><span class="icon">⌘</span><span><strong>Centro de control legado</strong><span>Accesos antiguos conservados en el proyecto</span></span><span class="port" data-project-port>:8000</span></a>
     </section>
+    <p class="tool-feedback" id="samu-restorer-feedback" aria-live="polite"></p>
 
     <p class="note"><strong>Los originales están protegidos.</strong> Las herramientas oculares guardan metadatos o copias nuevas; el limpiador no sobrescribe las poses base.</p>
   </main>
@@ -227,6 +235,57 @@
       return response.json();
     };
     const countEntries = value => value && typeof value === 'object' ? Object.keys(value).length : 0;
+    const samuRestorerButton = document.getElementById('samu-restorer');
+    const samuRestorerDetail = document.getElementById('samu-restorer-detail');
+    const samuRestorerPort = document.getElementById('samu-restorer-port');
+    const samuRestorerFeedback = document.getElementById('samu-restorer-feedback');
+
+    function setSamuFeedback(message, error = false) {
+      samuRestorerFeedback.textContent = message;
+      samuRestorerFeedback.classList.toggle('error', error);
+    }
+
+    async function loadSamuRestorerStatus() {
+      try {
+        const status = await safeJson('/api/samu-restorer');
+        samuRestorerButton.disabled = !status.available;
+        samuRestorerPort.textContent = `:${status.port || 8765}`;
+        samuRestorerDetail.textContent = status.running
+          ? 'Ya está abierto; pulsa para ir al editor'
+          : status.available
+            ? 'Revisar los 240 frames sin sobrescribir las fuentes'
+            : 'No se encontró la herramienta junto al proyecto';
+        if (status.available) setSamuFeedback('');
+        else setSamuFeedback(`Ruta esperada: ${status.launcher}`, true);
+      } catch (error) {
+        samuRestorerButton.disabled = false;
+        samuRestorerDetail.textContent = 'No se pudo comprobar; pulsa para reintentar';
+        setSamuFeedback(error.message || 'Error al consultar el restaurador', true);
+      }
+    }
+
+    samuRestorerButton.addEventListener('click', async () => {
+      samuRestorerButton.disabled = true;
+      samuRestorerDetail.textContent = 'Iniciando el restaurador…';
+      setSamuFeedback('Comprobando el servidor local de edición…');
+      try {
+        const response = await fetch('/api/samu-restorer', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:'{}'
+        });
+        const result = await response.json();
+        if (!response.ok || !result.ok || !result.url) throw new Error(result.error || 'No se pudo abrir el restaurador');
+        if (/\bElectron\//.test(navigator.userAgent)) window.open(result.url, '_blank');
+        else location.href = result.url;
+        samuRestorerDetail.textContent = result.started ? 'Restaurador iniciado' : 'Restaurador ya activo';
+        setSamuFeedback('Editor abierto. Originales y frames cambiados siguen protegidos.');
+      } catch (error) {
+        samuRestorerButton.disabled = false;
+        samuRestorerDetail.textContent = 'No se pudo abrir; pulsa para reintentar';
+        setSamuFeedback(error.message || 'Error al iniciar el restaurador', true);
+      }
+    });
 
     async function loadStatus() {
       const [jobsResult, offsetsResult, basesResult, layersResult] = await Promise.allSettled([
@@ -260,6 +319,8 @@
       setText('bases-card', layerCount ? `${baseCount} de ${layerCount}` : `${baseCount}`);
     }
     loadStatus();
+    loadSamuRestorerStatus();
+    window.addEventListener('focus', loadSamuRestorerStatus);
   </script>
 </body>
 </html>
