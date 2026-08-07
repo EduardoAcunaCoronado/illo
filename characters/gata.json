@@ -1,0 +1,11 @@
+{
+  "name": "Gata",
+  "color": "#997865",
+  "poses": {
+    "standing": "assets/images/characters/gata/gata_standing.webp",
+    "neutral": "assets/images/characters/gata/gata_neutral.webp",
+    "happy": "assets/images/characters/gata/gata_happy.webp",
+    "playful": "assets/images/characters/gata/gata_playful.webp"
+  },
+  "defaultPose": "neutral"
+}

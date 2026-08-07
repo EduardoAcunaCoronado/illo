@@ -128,7 +128,7 @@
             },
             {
               "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/bathroom_4k.webp"
+              "value": "assets/images/backgrounds/chapter1/bathroom.webp"
             }
           ]
         },
@@ -212,7 +212,7 @@
           "text": "Samu no puede contener su curiosidad por ver qué ha ocurrido fuera de su casa. A fin de cuentas, lo lógico dentro de esta fantasía que está viviendo es que no sea el único \"afectado\" por así decirlo.",
           "actions": [
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             }
           ]
@@ -317,7 +317,7 @@
         },
         {
           "character": "Samu",
-          "text": "¡Oh! Ya veo, Huelva a cambiado su nombre por Furrielva.",
+          "text": "¡Oh! Ya veo, Huelva ha cambiado su nombre por Furrielva.",
           "actions": [
             {
               "type": "setPose",
@@ -332,7 +332,7 @@
           "text": "Pues en Furrielva está todo tan bonito. Pero que muy bonito. Así debió ser siempre.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "samu",
               "pose": "happy",
               "position": "center"
@@ -348,6 +348,10 @@
               "character": "samu",
               "pose": "thinking",
               "position": "center"
+            },
+            {
+              "type": "goToScene",
+              "value": "Escena 3: Echar un ojo al barrio"
             }
           ]
         },
@@ -369,7 +373,7 @@
             },
             {
               "text": "Ir en dirección al puerto.",
-              "nextScene": "Escena 4: Ir en dirección al puerto"
+              "nextScene": "Escena 6: Ir en dirección al puerto"
             }
           ]
         }
@@ -413,14 +417,14 @@
               "path": "assets/audio/music/chapter1/furrielva.mp3",
               "loop": true,
               "id": "furrielva",
-              "volume": 0.5
+              "volume": 0.75
             },
             {
               "type": "playSound",
               "path": "assets/audio/sfx/chapter1/indoor-steps.mp3"
             },
             {
-              "type": "hideCharacter",
+              "type": "removeCharacter",
               "character": "samu"
             },
             { "type": "wait", "value": 2000 }
@@ -478,10 +482,10 @@
         },
         {
           "character": "Ciervo",
-          "text": "Buenas tardes. Veo que te gusta nuestro patio.",
+          "text": "Buenas tardes. Veo a un gran lobo que le gusta nuestro patio.",
           "actions": [
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "samu",
               "pose": "alarmed",
               "position": "center"
@@ -490,13 +494,14 @@
               "type": "showCharacter",
               "character": "ciervo",
               "pose": "neutral",
-              "position": "right"
+              "position": "right",
+              "scale": 1.12
             }
           ]
         },
         {
           "character": "Ciervo",
-          "text": "Podría decirte que llevamos cuidándolo durante generaciones, herencia de mis tatarabuelos y todas esas cosas pero sabes bien que esto nos ha venido de repente.",
+          "text": "Podría decirte que llevamos cuidándolo durante generaciones, herencia de mis tatarabuelos y todas esas cosas pero sabes bien que esto nos vino de repente.",
           "actions": [
             {
               "type": "setPose",
@@ -505,7 +510,7 @@
               "position": "center"
             },
             {
-              "type": "showCharacter",
+              "type": "setPose",
               "character": "ciervo",
               "pose": "neutral",
               "position": "right"
@@ -517,16 +522,20 @@
           "text": "Y he de decir que está mucho mejor ahora. ¿Qué teníamos antes en el jardín? Creo que eran un par de plantas resecas porque nos olvidábamos de regarlas."
         },
         {
-          "character": "Ciervo",
-          "text": "Con lo que favorecen al patio estas flores, esta vez sí las regaremos."
-        },
-        {
           "character": "Samu",
-          "text": "Deberíais, dan una vista y alegría increíbles."
+          "text": "Con lo que favorecen al patio todas estas flores, esta vez sí debéis regarlas. Dan una vista y alegría increíbles.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "clapping",
+              "position": "center"
+            }
+          ]
         },
         {
           "character": "Ciervo",
-          "text": "Descuida que esta vez sí lo haremos.",
+          "text": "Descuida que esta vez sí lo hacemos, o no estarían tan hermosas todas ellas.",
           "actions": [
             {
               "type": "setPose",
@@ -574,7 +583,7 @@
         },
         {
           "character": "Ciervo",
-          "text": "Hubo como una media hora de pánico generalizado.",
+          "text": "Esta mañana hubo como una media hora de pánico generalizado. Un repunte.",
           "actions": [
             {
               "type": "setPose",
@@ -590,11 +599,15 @@
         },
         {
           "character": "Ciervo",
-          "text": "Como que esos gritos que daban despertaban a la gente, que a su vez gritaban y despertaban a más gente."
+          "text": "Como que esos gritos que daban despertaban a la gente que ya estaba aquí de antes, que a su vez gritaban y despertaban a más gente."
         },
         {
           "character": "Ciervo",
-          "text": "Pero cuando ese contratiempo pasó, todos encantados. Ahora ya no se escuchan gritos, salvo el de hace un rato.",
+          "text": "La de aullidos, maullidos y otros sonidos de animales que se oían desde aquí no tiene nombre."
+        },
+        {
+          "character": "Ciervo",
+          "text": "Pero cuando ese contratiempo pasó, todos encantados de nuevo. Ahora ya no se escuchan gritos, salvo el de hace un rato.",
           "actions": [
             {
               "type": "setPose",
@@ -640,7 +653,7 @@
             {
               "type": "setPose",
               "character": "ciervo",
-              "pose": "surprised",
+              "pose": "curious",
               "position": "right"
             }
           ]
@@ -699,20 +712,27 @@
           "actions": [
             {
               "type": "showCharacter",
-              "character": "edu",
+              "character": "gata",
               "pose": "happy",
-              "position": "left"
+              "position": "left",
+              "enter": "left"
+            },
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "neutral",
+              "position": "center"
             }
           ]
         },
         {
           "character": "Gata",
-          "text": "Jamás pensé que los tendría, pero esta es la única forma decente de que mi marido tenga cuernos.",
+          "text": "Jamás pensé que se los vería, pero esta es la única forma decente de que mi marido tenga cuernos.",
           "actions": [
             {
               "type": "setPose",
-              "character": "edu",
-              "pose": "happy",
+              "character": "gata",
+              "pose": "neutral",
               "position": "left"
             }
           ]
@@ -723,8 +743,8 @@
           "actions": [
             {
               "type": "setPose",
-              "character": "edu",
-              "pose": "happy",
+              "character": "gata",
+              "pose": "playful",
               "position": "left"
             }
           ]
@@ -735,6 +755,12 @@
           "actions": [
             {
               "type": "setPose",
+              "character": "samu",
+              "pose": "worried",
+              "position": "center"
+            },
+            {
+              "type": "setPose",
               "character": "ciervo",
               "pose": "blushed",
               "position": "right"
@@ -742,14 +768,25 @@
           ]
         },
         {
+          "character": "Samu",
+          "text": "Mejor me voy yendo...",
+          "textAnimation": "whisper"
+        },
+        {
           "character": "Gata",
           "text": "Tranquilo, que estoy de broma. Tenemos que tomarnos el cambio con un poco de humor.",
           "actions": [
             {
               "type": "setPose",
-              "character": "edu",
-              "pose": "happy",
+              "character": "gata",
+              "pose": "playful",
               "position": "left"
+            },
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "neutral",
+              "position": "center"
             }
           ]
         },
@@ -767,18 +804,312 @@
           "choices": [
             {
               "text": "Quedarme a merendar.",
-              "nextScene": "Escena 4: Echar un ojo al barrio"
+              "nextScene": "Escena 4: Quedarme a merendar"
             },
             {
               "text": "Rechazar su invitación.",
-              "nextScene": "Escena 5: Ir en dirección al puerto"
+              "nextScene": "Escena 5: Rechazar su invitación"
             }
           ]
         }
       ]
     },
     {
-      "title": "Escena 4: Ir en dirección al puerto",
+      "title": "Escena 4: Quedarme a merendar",
+      "lines": [
+        {
+          "character": "Samu",
+          "text": "Nunca digo que no a una merienda.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter1/12-2.webp"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter1/furrielva.mp3",
+              "loop": true,
+              "id": "furrielva",
+              "volume": 1
+            },
+            {
+              "type": "showCharacter",
+              "character": "gata",
+              "pose": "happy",
+              "position": "left"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "pose": "happy",
+              "position": "center"
+            },
+            {
+              "type": "showCharacter",
+              "character": "ciervo",
+              "pose": "neutral",
+              "position": "right",
+              "scale": 1.12
+            }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/shared/black.png"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter1/furrielva.mp3",
+              "loop": true,
+              "id": "furrielva",
+              "volume": 0.75
+            },
+            {
+              "type": "removeCharacter",
+              "character": "gata"
+            },
+            {
+              "type": "removeCharacter",
+              "character": "samu"
+            },
+            {
+              "type": "removeCharacter",
+              "character": "ciervo"
+            },
+            { "type": "wait", "value": 1500 }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Le ofrecieron a elegir entre varias bebidas, todas buenas acompañantes de los dulces que pusieron en la mesa."
+        },
+        {
+          "character": "3C",
+          "text": "Tras un agradable rato de conversación, Samu decide que ya es hora de seguir explorando la ciudad."
+        },
+        {
+          "character": "Samu",
+          "text": "Muy rico todo, y gracias por la invitación.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter1/12-2.webp"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter1/furrielva.mp3",
+              "loop": true,
+              "id": "furrielva",
+              "volume": 1
+            },
+            {
+              "type": "showCharacter",
+              "character": "gata",
+              "pose": "standing",
+              "position": "left",
+              "enter": "left",
+              "flipped": true,
+              "scale": 1.08
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "pose": "neutral",
+              "position": "center",
+              "enter": "bottom"
+            },
+            {
+              "type": "showCharacter",
+              "character": "ciervo",
+              "pose": "standing",
+              "position": "right",
+              "enter": "right",
+              "scale": 1.12
+            }
+          ]
+        },
+        {
+          "character": "Ciervo",
+          "text": "No es nada, chaval. Cuando quieras, estás invitado."
+        },
+        {
+          "character": "Gata",
+          "text": "Espera, antes de irte dame un momento que te prepare una cosilla."
+        },
+        {
+          "character": "3C",
+          "text": "La mujer va al fondo del patio y tras un par de minutos vuelve con algo.",
+          "actions": [
+            {
+              "type": "removeCharacter",
+              "character": "gata",
+              "exit": true
+            }
+          ]
+        },
+        {
+          "character": "Gata",
+          "text": "¡Para ti! O para quien tú quieras, eso ya lo dejo a tu elección. Es un regalo de bienvenida a esta ciudad.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter1/12-2.webp"
+            },
+            {
+              "type": "playSound",
+              "path": "assets/audio/music/chapter1/furrielva.mp3",
+              "loop": true,
+              "id": "furrielva",
+              "volume": 1
+            },
+            {
+              "type": "showCharacter",
+              "character": "gata",
+              "pose": "standing",
+              "position": "left",
+              "flipped": true,
+              "scale": 1.08
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "¡Hala!",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "clapping",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "setBackground",
+              "value": "assets/images/cg/chapter1/despedida_samu_ciervo_gata.webp"
+            },
+            {
+              "type": "removeCharacter",
+              "character": "gata",
+              "exit": true
+            },
+            {
+              "type": "removeCharacter",
+              "character": "samu",
+              "exit": true
+            },
+            {
+              "type": "removeCharacter",
+              "character": "ciervo",
+              "exit": true
+            },
+            { "type": "wait", "value": 2000 }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Tras el obsequio por parte de la gata, Samu se despide agradecido de la pareja y vuelve a la calle."
+        },
+        {
+          "actions": [
+            { "type": "hideDialog" },
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/shared/black.png"
+            },
+            { "type": "wait", "value": 1500 }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Samu sigue vagando por las calles de Furrielva, esta vez sin prestar demasiada atención en ellas."
+        },
+        {
+          "character": "3C",
+          "text": "Acaba llegando sin querer a lo que parece ser la plaza principal de la ciudad.",
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter1/11.webp"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "pose": "thinking",
+              "position": "center",
+              "enter": "bottom"
+            }
+          ]
+        },
+        {
+          "character": "Samu",
+          "text": "Por lo que me han contado, las transformaciones llevan ocurriendo desde hace 33 años y hoy hubo un repunte de nuevos habitantes. La mayoría de gente por la mañana, no como yo..."
+        },
+        {
+          "character": "Samu",
+          "text": "¿Cómo es posible que aquí haya gente desde hace tanto tiempo? Recuerdo clarísimamente cómo anoche me acosté tarde siendo humano, y tras dormir, aquí estoy en forma de lobo."
+        },
+        {
+          "character": "Samu",
+          "text": "Tampoco recuerdo que casi desde mi nacimiento haya una noticia constante de desapariciones en Huelva u otras zonas como para llenar Furrielva de habitantes."
+        },
+        {
+          "character": "Samu",
+          "text": "No entiendo cómo han ido llegando tanta gente a esta ciudad."
+        },
+        {
+          "character": "Samu",
+          "text": "Y nadie ha podido volver nunca a su antiguo lugar y apariciencia, tan solo llegan más y más personas."
+        },
+        {
+          "character": "Samu",
+          "text": "Ahora mismo hay demasiadas preguntas al respecto y ninguna forma de saber qué está ocurriendo con certeza. ¿Podría... podría simplemente darme el lujazo y disfrutar por el momento de la situación?"
+        },
+        {
+          "character": "Samu",
+          "text": "..."
+        },
+        {
+          "character": "Samu",
+          "text": "Sí, por ahora me limitaré a vivir este momento y luego ya veremos.",
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "pose": "determined",
+              "position": "center"
+            }
+          ]
+        },
+        {
+          "character": "3C",
+          "text": "Fiel a sus palabras, decide no preocuparse por el momento por algo que nadie ha podido solucionar en tantos años."
+        },
+        {
+          "character": "3C",
+          "text": "Pasa un tiempo en la plaza disfrutando del ambiente acogedor y alegre que le rodea.",
+          "actions": [
+            {
+              "type": "removeCharacter",
+              "character": "samu",
+              "exit": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Escena 5: Rechazar su invitación",
+      "lines": []
+    },
+    {
+      "title": "Escena 6: Ir en dirección al puerto",
       "lines": [
         {
           "character": "Samu",
