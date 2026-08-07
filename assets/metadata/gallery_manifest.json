@@ -1,6 +1,6 @@
 {
-  "version": "gallery-2026-08-06-3",
-  "generatedAt": "2026-08-06",
+  "version": "gallery-2026-08-07-3",
+  "generatedAt": "2026-08-07",
   "title": "Galería de Project AI.ri: Transfurmados",
   "description": "Arte canónico, ilustraciones promocionales y extras animados.",
   "categories": [
@@ -36,7 +36,7 @@
     "backgrounds": 63,
     "videos": 1,
     "all": 107,
-    "characterPoses": 165,
+    "characterPoses": 164,
     "animatedCharacterPoses": 130
   },
   "items": [
@@ -2997,7 +2997,7 @@
     {
       "id": "char-iphone5",
       "title": "Móvil",
-      "description": "Diseño canónico de Móvil con 9 poses disponibles.",
+      "description": "Diseño canónico de Móvil con 8 poses disponibles.",
       "type": "image",
       "category": "characters",
       "src": "assets/images/characters/iphone5/iphone5.webp",
@@ -3023,20 +3023,10 @@
           "key": "concierto",
           "label": "Concierto",
           "type": "image",
-          "src": "assets/images/characters/iphone5/iphone5_concierto.webp",
+          "src": "assets/images/characters/iphone5/iphone5_concierto.gif",
           "alt": "Móvil, pose concierto.",
           "spoiler": false,
           "thumbnail": "assets/images/gallery/thumbnails/char-iphone5--pose-concierto.webp"
-        },
-        {
-          "id": "concierto-video",
-          "key": "concierto_video",
-          "label": "Concierto Video",
-          "type": "video",
-          "src": "assets/video/cutscenes/chapter2/mas_de_lo_que_ven_tus_ojos.mp4",
-          "alt": "Móvil, pose concierto video.",
-          "spoiler": false,
-          "thumbnail": "assets/images/gallery/thumbnails/char-iphone5--pose-concierto-video.webp"
         },
         {
           "id": "edu",

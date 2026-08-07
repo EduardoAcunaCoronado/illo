@@ -1,5 +1,5 @@
 (function () {
-  const ASSET_VERSION = '20260803-ketchup-9';
+  const ASSET_VERSION = '20260804-ketchup-14';
   const cacheBust = (path) => `${path}?v=${ASSET_VERSION}`;
   const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
   const lerp = (from, to, amount) => from + (to - from) * amount;
@@ -164,8 +164,6 @@
         let playerLives = playerMaxLives;
         let playerX = 0.5;
         let playerY = 0.86;
-        let playerVX = 0;
-        let playerVY = 0;
         let mouseTargetX = playerX;
         let mouseTargetY = playerY;
         let mouseActive = false;
@@ -175,40 +173,11 @@
         let enemyMoveTimer = 0;
         const playerW = 0.095;
         const playerH = 0.135;
-        const hitboxConfig = window.KetchupHitboxes?.createDefaults?.();
+        let hitboxConfig = window.KetchupHitboxes?.createEffective?.();
         if (!hitboxConfig) throw new Error('No se cargó ketchup-hitboxes.js antes del minijuego.');
-        try {
-          const storedHitboxes = JSON.parse(localStorage.getItem('illo_hitbox_config') || '{}').ketchupBoss || {};
-          ['player', 'shot', 'hazard', 'block'].forEach((key) => {
-            const stored = storedHitboxes[key];
-            if (!stored) return;
-            if (stored.parts) {
-              hitboxConfig[key] = {
-                parts: Object.fromEntries(
-                  Object.entries(stored.parts).filter(([, part]) => !part?.disabled),
-                ),
-              };
-              return;
-            }
-            Object.assign(hitboxConfig[key], stored);
-          });
-          Object.entries(storedHitboxes.boss?.profiles || {}).forEach(([profileId, storedProfile]) => {
-            const profile = hitboxConfig.boss.profiles[profileId];
-            if (!profile) return;
-            Object.entries(storedProfile.parts || {}).forEach(([partId, storedPart]) => {
-              if (storedPart?.disabled) {
-                delete profile.parts[partId];
-                return;
-              }
-              profile.parts[partId] = {
-                ...(profile.parts[partId] || {}),
-                ...storedPart,
-              };
-            });
-          });
-        } catch (error) {
-          console.warn('No se pudo cargar la configuracion de hitboxes.', error);
-        }
+        const unsubscribeHitboxConfig = window.KetchupHitboxes.subscribe((nextConfig) => {
+          hitboxConfig = nextConfig;
+        });
         const setBossPartConfig = (profileId, partId) => (patch) => {
           Object.assign(hitboxConfig.boss.profiles[profileId].parts[partId], patch);
         };
@@ -339,7 +308,12 @@
         };
         const updateHud = () => {
           bossFill.style.width = `${clamp(enemyHp / enemyMaxHp, 0, 1) * 100}%`;
-          livesEl.textContent = '❤️'.repeat(Math.max(0, playerLives));
+          window.MinigameLifeDisplay.renderRepeated(
+            livesEl,
+            playerLives,
+            playerMaxLives,
+            '❤️',
+          );
         };
         const renderDebugHitboxes = () => {
           if (!window.HitboxDebugger || !window.HitboxDebugger.isEnabled?.()) return;
@@ -455,8 +429,6 @@
           state.moveDown = false;
           state.shooting = false;
           state.keyboardDirection = 0;
-          playerVX = 0;
-          playerVY = 0;
           mouseActive = false;
         };
         const pointerMove = (e) => {
@@ -871,6 +843,7 @@
 
         const cleanup = (won) => {
           running = false;
+          unsubscribeHitboxConfig();
           document.removeEventListener('keydown', keyDown);
           document.removeEventListener('keyup', keyUp);
           window.removeEventListener('blur', blur);
@@ -931,29 +904,14 @@
           if (moveX !== 0 || moveY !== 0) {
             mouseActive = false;
             const moveLength = Math.hypot(moveX, moveY);
-            const targetVX = (moveX / moveLength) * moveSpeed;
-            const targetVY = (moveY / moveLength) * moveSpeed;
-            const keyboardEase = 1 - Math.pow(0.0008, dt);
-            playerVX = lerp(playerVX, targetVX, keyboardEase);
-            playerVY = lerp(playerVY, targetVY, keyboardEase);
-            playerX = clamp(playerX + playerVX * dt, playerMinX, playerMaxX);
-            playerY = clamp(playerY + playerVY * dt, playerMinY, playerMaxY);
+            playerX = clamp(playerX + (moveX / moveLength) * moveSpeed * dt, playerMinX, playerMaxX);
+            playerY = clamp(playerY + (moveY / moveLength) * moveSpeed * dt, playerMinY, playerMaxY);
             mouseTargetX = playerX;
             mouseTargetY = playerY;
           } else if (mouseActive) {
             const mouseEase = 1 - Math.pow(0.02, dt);
-            playerVX = 0;
-            playerVY = 0;
             playerX = clamp(lerp(playerX, mouseTargetX, mouseEase), playerMinX, playerMaxX);
             playerY = clamp(lerp(playerY, mouseTargetY, mouseEase), playerMinY, playerMaxY);
-          } else {
-            const stopEase = 1 - Math.pow(0.0003, dt);
-            playerVX = lerp(playerVX, 0, stopEase);
-            playerVY = lerp(playerVY, 0, stopEase);
-            if (Math.abs(playerVX) > 0.001 || Math.abs(playerVY) > 0.001) {
-              playerX = clamp(playerX + playerVX * dt, playerMinX, playerMaxX);
-              playerY = clamp(playerY + playerVY * dt, playerMinY, playerMaxY);
-            }
           }
 
           const shouldFloat = enemyHp / enemyMaxHp > 0.6;

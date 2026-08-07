@@ -300,6 +300,13 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - El clic durante el tecleo completa la línea; el siguiente avance continúa el guion.
 - El personaje que habla queda iluminado y los demás en gris. Narración/off-screen
   deja a todos atenuados. speakingAs permite resaltar un sprite distinto del nombre.
+- Si una ilustración ya integra al personaje, su hueco del escenario se mantiene
+  invisible con la pareja showCharacter + hideCharacter. showCharacter prepara
+  la pose; hideCharacter oculta el sprite sin borrar su estado y el cursor la
+  reutiliza. removeCharacter/quitarPersonaje sí vacían el hueco por completo.
+- Todo cambio real de setBackground, y clearBackground cuando había un fondo,
+  ejecuta removeCharacter sobre left, center y right. Las apariciones del nuevo
+  fondo deben declararse después de setBackground.
 - Menú de escenas: puede saltar a cualquier escena del capítulo, incluso desde una
   elección; se oculta durante un minijuego activo.
 - Retroceso: la unidad es la escena, no la línea. Restaura gameState, rescates, llamadas,
@@ -334,6 +341,9 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
   lista vacía. Menú y selector transfieren también inert, aria-hidden y foco.
 
 MINIJUEGOS USADOS POR EL GUION ACTUAL
+- Los HUD con vidas usan `window.MinigameLifeDisplay`: hasta cinco muestran
+  corazones individuales y, con seis o más vidas restantes, muestran `❤ × N`.
+  La regla cubre los motores integrados y el bullet hell modular de Zip.
 - Gatos: laberinto/supervivencia con flechas o WASD.
 - Guindillas: ronda cronometrada horizontal; cada guindilla carga el poder que
   se utilizará inmediatamente después contra Zip. Las botellas restan una.
@@ -365,6 +375,10 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   `clientWidth`/`clientHeight` del campo para no aplicar dos veces su escala
   visual; `getBoundingClientRect()` queda reservado a las coordenadas de
   puntero.
+  `KetchupHitboxes.createEffective()` es la carga única de defaults + ajustes
+  guardados para Fácil, Medio, Difícil, Flujo completo y capítulo 2. El runtime
+  se suscribe a cambios de `illo_hitbox_config`, por lo que una ronda abierta en
+  otra pestaña del mismo origen recibe el ajuste del editor sin reiniciarse.
 - Chase: coche lateral, esquivar motos/obstáculos; dificultad por storyDelay. Desde
   2026-07-30 el coche usa seis poses con distintas fases de sus ruedas originales
   y una carretera nocturna RGBA más detallada; el skyline lejano conserva un
@@ -513,15 +527,22 @@ PRESENTACIÓN
   relevo chill, botón musical y marca WildSoft. El bucle visual usa dos elementos
   `<video>` con la misma fuente: 1,36 s antes del final visible inicia la copia
   inactiva y la funde durante 1,2 s sobre la activa, que permanece opaca debajo.
-  Después intercambia y rebobina los reproductores. Al salir del menú cancela RAF,
-  temporizador y reproducción de ambas copias; el audio sigue siendo independiente.
+  Después intercambia y rebobina los reproductores. Configuración, Capítulos y
+  Galería ocultan los controles, no el fondo: el monitor continúa activo para que
+  el MP4 no termine congelado durante esos paneles. Al salir realmente del menú
+  cancela RAF, temporizador y reproducción de ambas copias; el audio sigue siendo
+  independiente.
 - Visual novel con fondos ilustrados, sprites grandes, caja de diálogo inferior,
   nombre coloreado, flecha de continuación, sonido por letra y pausas de puntuación.
 - Los supermercados de la ruta de Edu usan las marcas ficticias El Jarrón,
   Noche y Mercaguasa. Sus fondos heredados `jamon.png`, `dia.png` y
-  `mercadona.png` están unificados a 1600×900 con el estilo anime cinematográfico
-  y la iluminación cálida de las 16:00 del opening de Samu; los tres conservan
-  el portal rojo y su encuadre de gameplay.
+  `mercadona.png` están unificados a 3840×2160 con el estilo anime cinematográfico
+  y la iluminación cálida de las 16:00 del opening de Samu. Ninguno conserva un
+  portal preintegrado: El Jarrón y Noche reconstruyen sus estanterías y
+  Mercaguasa muestra una entrada rectangular acristalada, sin arco ni
+  expositores exteriores de botellas. Los tres integran detrás del cristal el
+  prop reutilizable `assets/images/props/chapter2/caja_botellas_ketchup.png`; el
+  portal narrativo aparece después al activar el tapón dorado.
 - Capítulos tienen cartela de entrada y pantalla de fin.
 - El capítulo 3 utiliza dirección más cinematográfica: fundidos, paneos, gradación,
   viñeta, CG, efectos, opening en vídeo y música sincronizada con el arco.
@@ -740,6 +761,23 @@ CORRECCIÓN 2026-07-31
   azul, Tony en rosa y José en verde. Los PNG heredados `iphone5_edu.png`,
   `iphone5_tony.png` e `iphone5_jose.png` se conservan solo como recursos antiguos
   y no deben volver a enlazarse como poses principales.
+- La pose `iphone5:concierto` enlaza un GIF autocontenido de 921×1708, 39 frames
+  y 4,82 s. El correo elimina el texto y el cartel anteriores; muestra
+  `De: ¿¿¿???`, `Para: edu@wildsoft.es` y `Fecha: Hoy, 18:00`, con el vídeo
+  promocional de Seraphyna recortado en modo `cover` para ocupar todo el interior
+  del visor de neón, incluida su curva interior suavizada. Solo la fila del
+  remitente sufre ráfagas de glitch; en los ocho frames de interferencia aparecen
+  mariposas azules de neón con aleteo y ecos cromáticos. Su fuente RGBA está en
+  `workbench/assets/images/effects/iphone5_neon_butterfly.png`.
+  El PNG RGBA maestro se conserva en
+  `workbench/assets/images/characters/iphone5/` y el MP4 fuente
+  en `assets/video/cutscenes/chapter2/mas_de_lo_que_ven_tus_ojos.mp4`; la pose ya
+  no crea una segunda capa de vídeo en runtime.
+- En la línea de 3C que describe el anuncio, replicar el patrón de la caja de
+  botellas de kétchup: ocultar ambos huecos de personaje y el diálogo, presentar
+  `iphone5_concierto.gif` como CG centrada al 82 % con fundido de 650 ms y esperar
+  5 s antes de mostrar la narración. El móvil queda iluminado y sin Edu; la línea
+  siguiente retira la CG antes de devolver a Edu a la derecha.
 
 REORGANIZACIÓN DE ASSETS Y MÚSICA DEL CAPÍTULO 2 — 2026-08-01
 - Las familias canónicas de runtime son `assets/audio`, `assets/images`,
@@ -1245,6 +1283,13 @@ POSE WORRIED V2 DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-04
 - En ejecución local, el menú principal ofrece accesos con iconos a `/tools` y
   `minijuegos_test.html`. No se muestran en una web pública ni en Electron
   empaquetado, porque son utilidades de desarrollo y no forman parte del instalador.
+- `minijuegos_test.html` es un panel de QA catálogo/detalle. Agrupa las pruebas
+  por tipo, permite buscar, guarda la última ficha/modo y admite enlaces
+  `?game=...&mode=...`. Los presets no reciben overrides numéricos: Guindillas y
+  Zip sólo habilitan esos campos en Personalizado. `MINIGAME_CATALOG` declara
+  cada ficha y `runTest()` centraliza ejecución, resultado, tiempo y limpieza.
+  Zip integra Historia como modo del catálogo y lee `ketchupBoss` directamente
+  de `chapter2.json`, además de conservar el flujo completo y el editor.
 - Las herramientas y la pantalla de pruebas vuelven mediante `?screen=menu`; el
   juego consume ese parámetro y abre directamente el menú, sin repetir advertencia
   ni introducción. `/tools` conserva el origen/puerto del juego en `gameOrigin`.
