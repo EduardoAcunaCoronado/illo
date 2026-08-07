@@ -3022,7 +3022,8 @@
           "actions": [
             {
               "type": "playVideo",
-              "path": "assets/video/cutscenes/chapter3/opening_tony.mp4"
+              "path": "assets/video/cutscenes/chapter3/opening_tony.mp4",
+              "endBackground": "assets/images/backgrounds/chapter3/fans_calmandose.webp"
             }
           ],
           "character": "",

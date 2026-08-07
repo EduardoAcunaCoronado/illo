@@ -294,7 +294,7 @@ MISTERIOS Y SEMILLAS DELIBERADAMENTE ABIERTOS
 FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - index.html monta un escenario fijo 1280×720 escalado a la ventana.
 - game.js controla menú, selector de capítulos, bucle de avance, fin de capítulo,
-  configuración de volumen, menú de escenas y retroceso por diálogo.
+  configuración de volumen, menú de escenas, Log y retroceso por diálogo.
 - engine.js interpreta JSON, acciones, diálogo con máquina de escribir, poses, sprites,
   fondos, audio, vídeo, CG, efectos, decisiones, estados y minijuegos.
 - El clic durante el tecleo completa la línea; el siguiente avance continúa el guion.
@@ -308,14 +308,63 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
   ejecuta removeCharacter sobre left, center y right. Las apariciones del nuevo
   fondo deben declararse después de setBackground.
 - Menú de escenas: puede saltar a cualquier escena del capítulo, incluso desde una
-  elección; se oculta durante un minijuego activo.
-- Retroceso: la unidad es cada diálogo realmente mostrado. `dialogueTimeline` conserva
-  hasta 1200 presentaciones con estado/escenario y un checkpoint `resume`; el cursor
-  puede cruzar capítulos. Avanzar después de retroceder recorre las instantáneas sin
-  repetir decisiones, acciones ni minijuegos. Durante un minijuego vuelve al diálogo
-  anterior; en el primer diálogo de un capítulo alcanza el último del anterior.
+  elección; se oculta durante un minijuego activo. Sólo la escena actual se
+  distingue, en dorado. No existe estado azul ni estilo de escena visitada;
+  `sceneHistory` conserva sus snapshots sin intervenir en el color del selector.
+- Log de partida: el botón superior abre un backlog cronológico agrupado por capítulo
+  y escena con hablante, texto y elecciones. `backlogEntries()` lo deriva de
+  `dialogueTimeline`, sin duplicar estado; la pose sale de `entry.stage.characters`,
+  el color del nombre de `characters/<clave>.json` y `prepareBacklogCharacters()`
+  carga fichas ausentes. Los retratos reutilizan los encuadres del cursor de diálogo
+  y `.log-list` comparte scrollbar con `.scenes-list`. `applySelectedChoice()` asocia
+  la opción a su diálogo y la poda del timeline elimina ramas descartadas. El panel
+  abre por el final, pausa el juego y permite cerrar con aspa, fondo o Escape. No se
+  serializa.
+- Retroceso contextual: `choiceRewindAnchors` deriva de `choices[].nextScene` y
+  `goToScene` el mapa decisión → objetivos/rutas/primera convergencia. Sólo
+  `saltarAEscena` crea `_pendingManualSceneJump`; la marca atraviesa waits, CG,
+  cinemáticas y minijuegos hasta copiarse y consumirse en el primer diálogo. Retroceder
+  desde ese primer momento reutiliza o inserta la decisión justo delante del destino.
+  `showRewoundTimelineEntry` reabre sus opciones; sólo al elegir poda el destino manual
+  y el futuro posterior, y `applySelectedChoice` inicia la nueva ruta como flujo vivo.
+  Retroceder permanece visible durante esa espera y, al pulsarlo, `desbloquearBucle`
+  aborta la elección sin respuesta antes de atender el salto al diálogo anterior.
+  Abrir Escenas también la cancela sin alterar el historial ni colgar el bucle.
+  En el flujo normal de esas regiones manda el diálogo real inmediatamente anterior y
+  se respeta el camino elegido, incluso si una rama aparece después de la convergencia
+  en el JSON. `_choiceFlowTargetCache` incluye además elecciones de una sola opción:
+  el reintento del Bad Ending vuelve por su recorrido real, pero no se convierte en
+  ancla de salto manual. Fuera de rutas se usa como respaldo el orden canónico
+  chapter numérico → scene → line; puede cruzar al capítulo anterior aunque no se
+  haya jugado. `showIf`
+  respeta el estado actual. Si falta una foto, `buildCanonicalStageState` reduce acciones
+  visuales/sonoras; una decisión sin foto usa `buildSceneLocalStageState` para no mezclar
+  ramas. Cada diálogo guarda `replay`: narrativa/escenario anteriores, `actions` y
+  `afterActions`. Al retroceder se recrean en orden typewriter, waits, acting y vídeos;
+  el cuadro se coloca sin transición vertical. En una restauración diálogo→diálogo,
+  `preserveDialog` mantiene el marco activo mientras `clearStage` reconstruye el
+  escenario; un `hideDialog` explícito sigue teniendo prioridad para interludios.
+  Variables, objetos, rescates, presión,
+  navegación, decisiones y minijuegos quedan protegidos. Durante un minijuego vuelve al
+  diálogo inmediatamente anterior.
+- `dialogueTimeline` conserva hasta 1200 diálogos, esperas visuales y cinemáticas reales
+  con estado/escenario y checkpoint `resume`; dentro de una ruta determina el predecesor
+  realmente jugado. Avanzar por el tramo histórico recorre sus instantáneas sin repetir
+  minijuegos; una línea con opciones reabre la bifurcación y reemplaza el tramo posterior
+  únicamente tras confirmar una elección. Una cinemática registrada se reproduce,
+  reconcilia su frame final y autoencadena sin un clic vacío. Los waits repiten SFX
+  one-shot, shake y flash
+  previos; `transientAudioInstances` permite detener primero los sonidos sin ID para que
+  no se solapen. Un `wait` o `cinematic` inmediatamente anterior y declarado en una línea
+  sin texto es también destino de Retroceder: restaura su base, repite el prefijo de
+  acciones —incluidos fondo y música— y, en vídeo, queda en el frame final. Desde ese
+  instante un nuevo retroceso busca el diálogo real anterior; la comparación canónica de
+  tuplas queda como respaldo. El alias `cutscene` se registra igual que `playVideo`.
   `sceneHistory` queda reservado al menú Escenas. La restauración reconcilia audio por
   ruta/ID: una música que ya es la correcta no se reinicia y conserva su posición.
+  La foto visual incluye fondo, bgPan, CG y telón. Los crossfades y precargas de CG
+  llevan revisión para que un callback abandonado no repinte el instante restaurado;
+  repetir un `setBackground` ya asentado no reinicia su transición ni su paneo.
 - Estados que importan:
   · rescued: orden/progreso de amigos.
   · completedCalls: vestigio del antiguo sistema de llamadas, aún soportado por engine.
@@ -557,7 +606,9 @@ PRESENTACIÓN
   30 FPS, 117,6 s,
   audio AAC original y montaje con zooms, fundidos, fogonazos y pausa negra
   final. opening_tony.mp4 (720p) permanece intacto; la entrega 4K ocupa menos
-  de 100 MB para poder versionarse y usarse en el juego.
+  de 100 MB para poder versionarse y usarse en el juego. Su `endBackground` es
+  `assets/images/backgrounds/chapter3/fans_calmandose.webp`, también al repetirla
+  desde Retroceder.
 - Ambos finales recorren créditos; el final luminoso encadena además la escena
   poscréditos del quinto hueco y los amigos reservados para la continuación.
 
@@ -678,7 +729,7 @@ REGLAS PARA CAMBIOS FUTUROS
   hacia el centro. El PNG debe conservar transparencia real.
 - La cinemática del trono termina con un crossfade configurable: 1,8 s entre su
   audio y `kingdomketchup.mp3`, 300 ms reteniendo el último frame y 600 ms de
-  fundido hacia `kingdom_ketchup_trono_video_final_4k.png`. `playVideo` admite
+  fundido hacia `kingdom_ketchup_trono_video_final_4k.webp`. `playVideo` admite
   `audioCrossfade`, `holdLastFrame`, `visualFadeOut` y `endBackground`.
 - Toda acción `playVideo` activa primero `body.cutscene-active` y limpia diálogo,
   personajes (también vídeos y efectos pendientes), CG, fondos, elecciones y
