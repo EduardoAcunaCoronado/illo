@@ -42,8 +42,20 @@ Controles esenciales:
 - Clic o toque: completar el texto actual y avanzar.
 - Mantener `Ctrl`: avance rápido; las decisiones y minijuegos no se saltan.
 - `Esc` o **Opciones**: pausa y configuración.
-- **Escenas**: volver a escenas ya visitadas del capítulo.
-- **Retroceder**: regresar al comienzo de la escena anterior.
+- **Escenas**: saltar a cualquier escena del capítulo.
+- **Log**: consultar quién dijo cada frase y qué opciones se eligieron durante la
+  ruta actual. Cada diálogo muestra a la izquierda la pose histórica del hablante
+  y colorea su nombre según la ficha del personaje. Abre por el final, pausa la
+  escena y se cierra con `Esc`, fuera del panel o con su aspa.
+- **Retroceder**: regresar al diálogo anterior. Tras un salto de **Escenas** a una
+  rama o a su convergencia vuelve primero a la decisión; durante el flujo normal
+  sigue el camino elegido, y fuera de esas rutas usa el orden capítulo → escena →
+  línea de los JSON. Cruza capítulos y conserva la ruta elegida; al llegar de nuevo
+  a una decisión muestra sus opciones y permite sustituir el recorrido posterior.
+  Recrea las acciones visuales y sonoras, texto, fondo/CG, poses, hablante y música;
+  desde un minijuego vuelve al diálogo previo sin volver a ejecutarlo. Una espera o
+  cinemática en una línea sin texto inmediatamente anterior también se recrea antes
+  de seguir atrás.
 - Una cinemática se puede saltar con clic, `Esc`, `Enter` o `Espacio`.
 
 Importante: la versión actual conserva los ajustes, pero todavía no guarda una

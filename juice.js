@@ -108,7 +108,14 @@
     // El fondo usa dos capas durante los crossfades. Mantener el etalonaje en
     // ambas evita que la imagen entrante aparezca durante unos fotogramas sin
     // contraste/tinte y produzca un destello antes de asentarse en la capa A.
-    state.bg.style.transition = 'opacity 0.8s ease, filter ' + ms + 'ms ease';
+    // El motor puede tener activo un Ken Burns mediante `transform`. Conservar
+    // esa transición evita que un cambio de etalonaje congele el paneo del fondo.
+    const transformTransition = (state.bg.style.transition || '')
+      .split(',')
+      .map(function (part) { return part.trim(); })
+      .find(function (part) { return /\btransform\b/.test(part); });
+    state.bg.style.transition = 'opacity 0.8s ease, filter ' + ms + 'ms ease' +
+      (transformTransition ? ', ' + transformTransition : '');
     state.bg.style.filter = state.gradeFilter;
     const secondaryBg = document.getElementById('background-b');
     if (secondaryBg) {

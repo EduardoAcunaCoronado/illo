@@ -899,49 +899,58 @@ body.startup-pending #menu-video-stack {
 
 /* Encuadres particulares para ilustraciones cuyo lienzo no sitÃºa la cabeza en
    el centro. Las variables mantienen la pose activa y solo corrigen el foco. */
-.speaker-cursor[data-character="paloma"] {
+.speaker-cursor[data-character="paloma"],
+.log-portrait[data-character="paloma"] {
     --cursor-portrait-size: 175% auto;
     --cursor-portrait-position: 100% 8%;
 }
 
-.speaker-cursor[data-character="santi"][data-pose="neutral"] {
+.speaker-cursor[data-character="santi"][data-pose="neutral"],
+.log-portrait[data-character="santi"][data-pose="neutral"] {
     --cursor-portrait-size: 160% auto;
     --cursor-portrait-position: 0% 3%;
 }
 
-.speaker-cursor[data-character="tralalelo_tralala"] {
+.speaker-cursor[data-character="tralalelo_tralala"],
+.log-portrait[data-character="tralalelo_tralala"] {
     --cursor-portrait-size: 130% auto;
     --cursor-portrait-position: 0% 30%;
 }
 
-.speaker-cursor[data-character="tung_tung_tung_sahur"] {
+.speaker-cursor[data-character="tung_tung_tung_sahur"],
+.log-portrait[data-character="tung_tung_tung_sahur"] {
     --cursor-portrait-size: 145% auto;
     --cursor-portrait-position: 80% 3%;
 }
 
-.speaker-cursor[data-character="gorila"] {
+.speaker-cursor[data-character="gorila"],
+.log-portrait[data-character="gorila"] {
     --cursor-portrait-size: 160% auto;
     --cursor-portrait-position: 50% 2%;
 }
 
-.speaker-cursor[data-character="airi_adult"] {
+.speaker-cursor[data-character="airi_adult"],
+.log-portrait[data-character="airi_adult"] {
     --cursor-portrait-size: 165% auto;
     --cursor-portrait-position: 50% 5%;
 }
 
-.speaker-cursor[data-character="micaela"] {
+.speaker-cursor[data-character="micaela"],
+.log-portrait[data-character="micaela"] {
     --cursor-portrait-size: 145% auto;
     --cursor-portrait-position: 50% 4%;
 }
 
-.speaker-cursor[data-character="micaela"][data-pose="crazy"] {
+.speaker-cursor[data-character="micaela"][data-pose="crazy"],
+.log-portrait[data-character="micaela"][data-pose="crazy"] {
     --cursor-portrait-size: 130% auto;
     --cursor-portrait-position: 50% 55%;
 }
 
 /* Las fichas humanas son hojas de personaje: el recorte toma el primer plano
    derecho hasta que la historia revela la identidad furry correspondiente. */
-.speaker-cursor.uses-human-portrait {
+.speaker-cursor.uses-human-portrait,
+.log-portrait.uses-human-portrait {
     --cursor-portrait-size: 170% auto;
     --cursor-portrait-position: 100% 10%;
 }
@@ -949,12 +958,14 @@ body.startup-pending #menu-video-stack {
 /* Edu y José están desplazados hacia la izquierda en sus hojas humanas. Estos
    focos centran la cabeza completa y dejan aire sobre el pelo sin alterar el
    encuadre furry. */
-.speaker-cursor.uses-human-portrait[data-character="edu"] {
+.speaker-cursor.uses-human-portrait[data-character="edu"],
+.log-portrait.uses-human-portrait[data-character="edu"] {
     --cursor-portrait-size: 170% auto;
     --cursor-portrait-position: 28% -2%;
 }
 
-.speaker-cursor.uses-human-portrait[data-character="jose"] {
+.speaker-cursor.uses-human-portrait[data-character="jose"],
+.log-portrait.uses-human-portrait[data-character="jose"] {
     --cursor-portrait-size: 170% auto;
     --cursor-portrait-position: 25% -2%;
 }
@@ -2514,7 +2525,9 @@ body.startup-pending #menu-video-stack {
 body.cutscene-active #options-btn,
 body.cutscene-active #rewind-btn,
 body.cutscene-active #scenes-btn,
+body.cutscene-active #log-btn,
 body.cutscene-active #scenes-menu,
+body.cutscene-active #log-menu,
 body.cutscene-active #pause-menu,
 body.cutscene-active #dialog-box,
 body.cutscene-active #choices-container,
@@ -6411,7 +6424,9 @@ body.game-paused #game-container > :not(.pause-menu) * {
 body.hud-hidden #options-btn,
 body.hud-hidden #rewind-btn,
 body.hud-hidden #scenes-btn,
+body.hud-hidden #log-btn,
 body.hud-hidden #scenes-menu,
+body.hud-hidden #log-menu,
 body.hud-hidden #dialog-box,
 body.hud-hidden #game-container [class*="hud"],
 body.hud-hidden #game-container .minigame-instructions,
@@ -7682,8 +7697,8 @@ body.hud-hidden #game-container .ss-pause-btn {
 /* ============================================================
    BOTÓN DE RETROCEDER (demo 25-jul-2026)
    Arriba a la derecha, discreto hasta que pasas el ratón. Vuelve al principio
-   de la escena anterior. Se oculta solo cuando no hay adónde volver, durante
-   los minijuegos y mientras hay elecciones en pantalla.
+   de la escena anterior. Se oculta solo cuando no hay adónde volver o durante
+   una cinemática; permanece disponible en elecciones y minijuegos.
    ============================================================ */
 .rewind-btn {
     position: absolute;
@@ -7757,6 +7772,210 @@ body.hud-hidden #game-container .ss-pause-btn {
 .scenes-btn:active { transform: translateY(1px); }
 .scenes-btn.hidden { display: none; }
 .scenes-icon { font-size: 15px; line-height: 1; }
+
+/* ===== Log / backlog de novela visual ===== */
+.log-btn {
+    position: absolute;
+    top: 1rem;
+    right: 264px;
+    z-index: 5200;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 13px;
+    border: 2px solid rgba(255, 204, 0, 0.55);
+    border-radius: 999px;
+    background: rgba(12, 6, 26, 0.62);
+    color: #fff0ad;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    opacity: 0.42;
+    backdrop-filter: blur(3px);
+    transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+.log-btn:hover {
+    opacity: 1;
+    transform: scale(1.05);
+    box-shadow: 0 0 16px rgba(255, 204, 0, 0.5);
+}
+.log-btn:active { transform: translateY(1px); }
+.log-btn.hidden { display: none; }
+.log-icon { font-size: 15px; line-height: 1; }
+
+.log-menu {
+    position: absolute;
+    inset: 0;
+    z-index: 5300;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5% 7%;
+    background: rgba(4, 2, 10, 0.82);
+    backdrop-filter: blur(6px);
+}
+.log-menu.hidden { display: none; }
+.log-panel {
+    width: min(780px, 90%);
+    height: min(590px, 88%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 2px solid rgba(255, 204, 0, 0.62);
+    border-radius: 16px;
+    background: linear-gradient(165deg, rgba(24, 12, 42, 0.99), rgba(8, 5, 18, 0.99));
+    box-shadow: 0 24px 75px rgba(0, 0, 0, 0.72), inset 0 0 32px rgba(255, 204, 0, 0.04);
+}
+.log-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 16px 20px 14px;
+    border-bottom: 1px solid rgba(255, 204, 0, 0.28);
+    background: rgba(8, 4, 18, 0.68);
+}
+.log-head h2 {
+    margin: 2px 0 0;
+    color: #fff5c8;
+    font-size: 24px;
+    line-height: 1;
+    letter-spacing: 0.03em;
+}
+.log-kicker {
+    color: #ffcc00;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.24em;
+}
+.log-close {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(255, 204, 0, 0.35);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    color: #d9ccec;
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1;
+    cursor: pointer;
+}
+.log-close:hover,
+.log-close:focus-visible {
+    color: #ffcc00;
+    border-color: #ffcc00;
+    outline: none;
+}
+.log-list {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    padding: 8px 22px 28px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    list-style: none;
+}
+.log-divider {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 18px 0 8px;
+    padding-bottom: 7px;
+    border-bottom: 1px solid rgba(255, 204, 0, 0.2);
+    color: #9e8bbd;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.log-divider strong {
+    color: #e9def7;
+    font-size: 12px;
+}
+.log-entry {
+    position: relative;
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    align-items: start;
+    gap: 14px;
+    margin: 0;
+    padding: 12px 14px 13px 18px;
+    border-left: 3px solid rgba(255, 204, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: linear-gradient(90deg, rgba(255, 204, 0, 0.035), transparent 46%);
+}
+.log-entry-body { min-width: 0; }
+.log-portrait {
+    --speaker-color: #ffcc00;
+    --cursor-portrait-size: 100% auto;
+    --cursor-portrait-position: center 10%;
+    position: relative;
+    width: 58px;
+    height: 58px;
+    overflow: hidden;
+    border: 2px solid color-mix(in srgb, var(--speaker-color) 78%, #fff 22%);
+    border-radius: 50%;
+    background-color: color-mix(in srgb, var(--speaker-color) 18%, #09081c);
+    background-repeat: no-repeat;
+    background-size: var(--cursor-portrait-size);
+    background-position: var(--cursor-portrait-position);
+    box-shadow: inset 0 0 13px rgba(0, 0, 0, 0.62), 0 4px 12px rgba(0, 0, 0, 0.36);
+}
+.log-portrait:not(.has-portrait)::after {
+    content: '?';
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: color-mix(in srgb, var(--speaker-color) 70%, #fff);
+    font-size: 22px;
+    font-weight: 900;
+}
+.log-speaker {
+    margin-bottom: 5px;
+    color: #ffcc00;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.log-text {
+    margin: 0;
+    color: #f4eff8;
+    font-size: 15px;
+    line-height: 1.48;
+}
+.log-choice {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    gap: 10px;
+    margin-top: 11px;
+    padding: 9px 12px;
+    border: 1px solid rgba(255, 79, 105, 0.34);
+    border-radius: 9px;
+    background: rgba(255, 79, 105, 0.09);
+}
+.log-choice span {
+    color: #ff738a;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: 0.16em;
+}
+.log-choice strong {
+    color: #fff0ad;
+    font-size: 13px;
+}
+.log-empty {
+    display: grid;
+    min-height: 100%;
+    place-items: center;
+    color: #9e8bbd;
+    text-align: center;
+}
 
 /* ===== Opciones durante la partida (mismo menú que Esc) =====
    Mismo lenguaje que los botones de retroceder y escenas, pero en la esquina
@@ -7848,17 +8067,20 @@ body.hud-hidden #game-container .ss-pause-btn {
     overflow-y: auto;
 }
 
-/* Barra de scroll: Selector de Escenas */
-.scenes-list::-webkit-scrollbar {
+/* Barra de scroll compartida: Selector de Escenas y Log */
+.scenes-list::-webkit-scrollbar,
+.log-list::-webkit-scrollbar {
     width: 10px;
 }
 
-.scenes-list::-webkit-scrollbar-track {
+.scenes-list::-webkit-scrollbar-track,
+.log-list::-webkit-scrollbar-track {
     background: rgba(79, 176, 255, 0.05);
     border-radius: 999px;
 }
 
-.scenes-list::-webkit-scrollbar-thumb {
+.scenes-list::-webkit-scrollbar-thumb,
+.log-list::-webkit-scrollbar-thumb {
     background: linear-gradient(180deg, #3a94b8, #b83a75);
     background-clip: padding-box;
     border: 2px solid transparent;
@@ -7866,7 +8088,8 @@ body.hud-hidden #game-container .ss-pause-btn {
     box-shadow: 0 0 6px rgba(79, 208, 255, 0.22);
 }
 
-.scenes-list::-webkit-scrollbar-thumb:hover {
+.scenes-list::-webkit-scrollbar-thumb:hover,
+.log-list::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(180deg, #47a9cf, #cf4788);
     background-clip: padding-box;
     box-shadow: 0 0 9px rgba(79, 208, 255, 0.3);
@@ -7874,7 +8097,8 @@ body.hud-hidden #game-container .ss-pause-btn {
 
 /* Firefox: versión estándar para scrollbar */
 @supports not selector(::-webkit-scrollbar) {
-    .scenes-list {
+    .scenes-list,
+    .log-list {
         scrollbar-width: thin;
         scrollbar-color: #b83a75 rgba(79, 208, 255, 0.05);
     }
@@ -7899,7 +8123,6 @@ body.hud-hidden #game-container .ss-pause-btn {
     text-align: right;
 }
 .scenes-title { flex: 1; }
-.scenes-item.visitada .scenes-num { color: #4fb0ff; }
 .scenes-item.actual {
     background: rgba(255, 204, 0, 0.13);
     color: #ffe27a;
@@ -7910,7 +8133,18 @@ body.hud-hidden #game-container .ss-pause-btn {
 
 @media (max-width: 700px) {
     .scenes-label { display: none; }
-    .scenes-btn { padding: 8px 10px; right: 92px; }
+    .scenes-btn { padding: 8px 10px; right: 68px; }
+    .log-label { display: none; }
+    .log-btn { padding: 8px 10px; right: 120px; }
+    .log-menu { padding: 4%; }
+    .log-panel { width: 94%; height: 90%; }
+    .log-list { padding-inline: 14px; }
+    .log-entry {
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 10px;
+        padding-inline: 10px;
+    }
+    .log-portrait { width: 48px; height: 48px; }
 }
 
 /* ============================================================
