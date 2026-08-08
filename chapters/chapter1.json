@@ -105,7 +105,7 @@
               "path": "assets/audio/sfx/chapter1/pidgeons-flying.mp3"
             },
             {
-              "type": "setPose",
+              "type": "showCharacter",
               "character": "samu",
               "pose": "shocked",
               "position": "center"
@@ -121,14 +121,14 @@
           "text": "¿¡Pero qué cojones estoy viendo!?",
           "actions": [
             {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter1/bathroom.webp"
+            },
+            {
               "type": "showCharacter",
               "character": "samu",
               "pose": "shocked",
               "position": "center"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/bathroom.webp"
             }
           ]
         },
@@ -137,7 +137,7 @@
           "text": "¡No puede ser! No puede ser. No puede ser...",
           "actions": [
             {
-              "type": "showCharacter",
+              "type": "setPose",
               "character": "samu",
               "pose": "surprised",
               "position": "center"
@@ -397,7 +397,8 @@
               "type": "showCharacter",
               "character": "samu",
               "pose": "embarrassed",
-              "position": "center"
+              "position": "center",
+              "enter": "bottom"
             }
           ]
         },
@@ -832,19 +833,22 @@
               "type": "showCharacter",
               "character": "gata",
               "pose": "happy",
-              "position": "left"
+              "position": "left",
+              "enter": "left"
             },
             {
               "type": "showCharacter",
               "character": "samu",
               "pose": "happy",
-              "position": "center"
+              "position": "center",
+              "enter": "bottom"
             },
             {
               "type": "showCharacter",
               "character": "ciervo",
               "pose": "neutral",
               "position": "right",
+              "enter": "right",
               "scale": 1.12
             }
           ]
