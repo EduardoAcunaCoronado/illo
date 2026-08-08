@@ -69,7 +69,12 @@
 
     .workspace { display: grid; grid-template-rows: 52px minmax(0,1fr); background: #070616; }
     .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--line); }
-    .mode-group { display: flex; gap: 6px; }
+    .toolbar-actions, .mode-group, .view-group { display: flex; align-items: center; gap: 6px; }
+    .toolbar-actions { min-width: 0; }
+    .view-group { padding-right: 8px; border-right: 1px solid var(--line); }
+    .zoom-btn { min-width: 30px; padding-inline: 8px; }
+    #zoom-range { width: 92px; accent-color: var(--gold); cursor: pointer; }
+    #zoom-label { min-width: 42px; color: var(--gold); font-size: 10px; font-weight: 850; text-align: center; }
     .tool-btn, .mode-btn, footer button {
       appearance: none; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px;
       background: rgba(255,255,255,.04); color: var(--muted); font-size: 11px; font-weight: 750; cursor: pointer;
@@ -80,6 +85,8 @@
     .pose-title span { color: var(--muted); font-weight: 500; }
     .canvas-shell { position: relative; min-height: 0; overflow: hidden; }
     #stage { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; }
+    #stage.pan-ready { cursor: grab; }
+    #stage.panning { cursor: grabbing; }
     .canvas-help { position: absolute; left: 16px; bottom: 14px; pointer-events: none; padding: 7px 10px; border-radius: 8px; background: rgba(5,4,15,.78); color: rgba(255,255,255,.6); font-size: 10px; backdrop-filter: blur(8px); }
 
     .inspector { overflow-y: auto; padding: 18px; border-left: 1px solid var(--line); }
@@ -144,17 +151,26 @@
     <section class="workspace">
       <div class="toolbar">
         <div id="pose-title" class="pose-title"></div>
-        <div class="mode-group" role="group" aria-label="Vista del sprite">
-          <button class="mode-btn active" data-mode="base">Original</button>
-          <button class="mode-btn" data-mode="half">Intermedio</button>
-          <button class="mode-btn" data-mode="blink">Parpadeo</button>
-          <button class="mode-btn" data-mode="compare">Comparar</button>
-          <button class="mode-btn" data-mode="mask">Máscara</button>
+        <div class="toolbar-actions">
+          <div class="view-group" role="group" aria-label="Zoom del lienzo">
+            <button id="zoom-out" class="tool-btn zoom-btn" type="button" aria-label="Alejar">−</button>
+            <input id="zoom-range" type="range" min="50" max="800" step="10" value="100" aria-label="Zoom">
+            <span id="zoom-label">100%</span>
+            <button id="zoom-in" class="tool-btn zoom-btn" type="button" aria-label="Acercar">+</button>
+            <button id="fit-view" class="tool-btn" type="button">Ajustar</button>
+          </div>
+          <div class="mode-group" role="group" aria-label="Vista del sprite">
+            <button class="mode-btn active" data-mode="base">Original</button>
+            <button class="mode-btn" data-mode="half">Intermedio</button>
+            <button class="mode-btn" data-mode="blink">Parpadeo</button>
+            <button class="mode-btn" data-mode="compare">Comparar</button>
+            <button class="mode-btn" data-mode="mask">Máscara</button>
+          </div>
         </div>
       </div>
       <div class="canvas-shell">
         <canvas id="stage"></canvas>
-        <div class="canvas-help">Mueve cada elipse · achátala con los puntos laterales · gírala desde el punto superior</div>
+        <div class="canvas-help">Rueda: zoom · Alt o botón central: mover vista · F enfocar zona · +/- acercar · 0 ajustar</div>
       </div>
     </section>
 
@@ -193,7 +209,7 @@
         <button id="apply-coords" class="primary">Aplicar valores</button>
         <button id="copy-previous">Copiar anterior</button>
         <button id="clear-region" class="danger">Limpiar todas</button>
-        <button id="center-region">Centrar vista</button>
+        <button id="center-region">Enfocar zona</button>
       </div>
     </aside>
   </main>
@@ -201,7 +217,7 @@
   <footer>
     <button id="previous">← Pose anterior</button>
     <button id="save-next" class="primary">Guardar y siguiente →</button>
-    <div class="shortcut">←/→ navegar · Espacio alternar vista · Enter guardar</div>
+    <div class="shortcut">←/→ navegar · Espacio alternar · F enfocar · +/- zoom · 0 ajustar · Enter guardar</div>
   </footer>
 
   <script>
@@ -223,8 +239,11 @@
       rx: document.getElementById('coord-rx'), ry: document.getElementById('coord-ry'),
       rotation: document.getElementById('coord-rotation'), feather: document.getElementById('coord-feather')
     };
+    const zoomRange = document.getElementById('zoom-range');
+    const zoomLabel = document.getElementById('zoom-label');
     let jobs = [], index = 0, selectedZone = 0, mode = 'base';
     let images = { base: null, half: null, blink: null }, imageRect = null, drag = null, loadingToken = 0;
+    const view = { zoom: 1, panX: 0, panY: 0 };
 
     const clamp = (value, min = 0, max = 1) => Math.max(min, Math.min(max, value));
     const current = () => jobs[index];
@@ -277,7 +296,7 @@
     }
     function loadImage(path) { return new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=assetUrl(path);}); }
     async function selectJob(nextIndex) {
-      index=(nextIndex+jobs.length)%jobs.length; selectedZone=0; drag=null;
+      index=(nextIndex+jobs.length)%jobs.length; selectedZone=0; drag=null;view.zoom=1;view.panX=0;view.panY=0;updateZoomControls();
       const job=current(), token=++loadingToken; setStatus('Cargando sprites…'); frameSelect.replaceChildren();
       job.frameSrcs.forEach((src,frameIndex)=>{const option=document.createElement('option');option.value=String(frameIndex);option.textContent=`Frame ${frameIndex+1} · ${src.split('/').pop()}`;frameSelect.appendChild(option);});
       try {
@@ -289,6 +308,34 @@
     }
     async function changeFrame(){const token=++loadingToken;try{const blink=await loadImage(current().frameSrcs[Number(frameSelect.value)]);if(token!==loadingToken)return;images.blink=blink;draw();updatePreviewExports();}catch(error){setStatus('No se pudo cargar el frame','error');}}
     function resizeCanvas(){const rect=stage.getBoundingClientRect(),dpr=window.devicePixelRatio||1;stage.width=Math.max(1,Math.round(rect.width*dpr));stage.height=Math.max(1,Math.round(rect.height*dpr));ctx.setTransform(dpr,0,0,dpr,0,0);draw();}
+    function updateZoomControls(){const percent=Math.round(view.zoom*100);zoomRange.value=String(percent);zoomLabel.textContent=`${percent}%`;}
+    function fitGeometry(zoom=view.zoom){
+      const bounds=stage.getBoundingClientRect(),width=bounds.width,height=bounds.height;
+      if(!images.base)return{width,height,w:0,h:0,x:width/2,y:height/2,scale:0};
+      const fitScale=Math.min((width-44)/images.base.width,(height-44)/images.base.height),w=images.base.width*fitScale*zoom,h=images.base.height*fitScale*zoom;
+      return{width,height,w,h,x:(width-w)/2,y:(height-h)/2,scale:fitScale*zoom};
+    }
+    function clampView(){
+      const geometry=fitGeometry(),margin=48;
+      if(!geometry.w||!geometry.h)return;
+      const minX=margin-geometry.w-geometry.x,maxX=geometry.width-margin-geometry.x,minY=margin-geometry.h-geometry.y,maxY=geometry.height-margin-geometry.y;
+      view.panX=clamp(view.panX,Math.min(minX,maxX),Math.max(minX,maxX));view.panY=clamp(view.panY,Math.min(minY,maxY),Math.max(minY,maxY));
+    }
+    function setViewZoom(nextZoom,anchor){
+      const oldRect=imageRect?{...imageRect}:null,bounds=stage.getBoundingClientRect();
+      view.zoom=clamp(nextZoom,.5,8);
+      if(oldRect&&anchor){
+        const imageX=(anchor.x-oldRect.x)/Math.max(1,oldRect.w),imageY=(anchor.y-oldRect.y)/Math.max(1,oldRect.h),geometry=fitGeometry();
+        view.panX=anchor.x-imageX*geometry.w-geometry.x;view.panY=anchor.y-imageY*geometry.h-geometry.y;
+      }
+      clampView();updateZoomControls();draw();
+    }
+    function resetView(){view.zoom=1;view.panX=0;view.panY=0;updateZoomControls();draw();}
+    function focusSelectedRegion(){
+      const shape=selected();if(!shape||!images.base){setStatus('Selecciona primero una zona ocular','error');return;}
+      const base=fitGeometry(1),diameterX=Math.max(1,shape.rx*2*base.w),diameterY=Math.max(1,shape.ry*2*base.h),target=Math.min(base.width*.46/diameterX,base.height*.42/diameterY);
+      view.zoom=clamp(target,1,8);const geometry=fitGeometry();view.panX=geometry.width/2-(geometry.x+shape.cx*geometry.w);view.panY=geometry.height/2-(geometry.y+shape.cy*geometry.h);clampView();updateZoomControls();draw();
+    }
     function checker(context,width,height,size=18){context.fillStyle='#080719';context.fillRect(0,0,width,height);context.fillStyle='#0e0c21';for(let y=0;y<height;y+=size)for(let x=(Math.floor(y/size)%2)*size;x<width;x+=size*2)context.fillRect(x,y,size,size);}
     function screenShape(shape){return{cx:imageRect.x+shape.cx*imageRect.w,cy:imageRect.y+shape.cy*imageRect.h,rx:shape.rx*imageRect.w,ry:shape.ry*imageRect.h,angle:shape.rotation*Math.PI/180};}
     function transformedPoint(shape,x,y){const s=screenShape(shape),c=Math.cos(s.angle),n=Math.sin(s.angle);return{x:s.cx+x*s.rx*c-y*s.ry*n,y:s.cy+x*s.rx*n+y*s.ry*c};}
@@ -304,14 +351,18 @@
       if(!active)return;const h=handles(shape);ctx.strokeStyle=protectedZone?'rgba(255,91,118,.7)':'rgba(255,209,102,.65)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(h.y2.x,h.y2.y);ctx.lineTo(h.rotate.x,h.rotate.y);ctx.stroke();
       for(const [name,p] of Object.entries(h)){ctx.beginPath();ctx.arc(p.x,p.y,name==='rotate'?6:5,0,Math.PI*2);ctx.fillStyle=name==='rotate'?'#ff4fa3':protectedZone?'#ff5b76':'#ffd166';ctx.fill();ctx.strokeStyle='#15102c';ctx.stroke();}
     }
-    function draw(){const bounds=stage.getBoundingClientRect(),width=bounds.width,height=bounds.height;ctx.clearRect(0,0,width,height);checker(ctx,width,height,24);if(!images.base)return;const scale=Math.min((width-44)/images.base.width,(height-44)/images.base.height),drawWidth=images.base.width*scale,drawHeight=images.base.height*scale;imageRect={x:(width-drawWidth)/2,y:(height-drawHeight)/2,w:drawWidth,h:drawHeight};ctx.globalAlpha=1;if(mode==='half')ctx.drawImage(images.half,imageRect.x,imageRect.y,imageRect.w,imageRect.h);else if(mode==='blink')ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);else{ctx.globalAlpha=mode==='mask'?.28:1;ctx.drawImage(images.base,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;if(mode==='compare'){ctx.globalAlpha=.5;ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;}}zones().forEach(drawEllipse);drawCrops();}
+    function draw(){const geometry=fitGeometry(),{width,height}=geometry;ctx.clearRect(0,0,width,height);checker(ctx,width,height,24);if(!images.base)return;clampView();imageRect={x:geometry.x+view.panX,y:geometry.y+view.panY,w:geometry.w,h:geometry.h};ctx.globalAlpha=1;if(mode==='half')ctx.drawImage(images.half,imageRect.x,imageRect.y,imageRect.w,imageRect.h);else if(mode==='blink')ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);else{ctx.globalAlpha=mode==='mask'?.28:1;ctx.drawImage(images.base,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;if(mode==='compare'){ctx.globalAlpha=.5;ctx.drawImage(images.blink,imageRect.x,imageRect.y,imageRect.w,imageRect.h);ctx.globalAlpha=1;}}zones().forEach(drawEllipse);drawCrops();}
     function pointerScreen(event){const rect=stage.getBoundingClientRect();return{x:event.clientX-rect.left,y:event.clientY-rect.top};}
     function pointerNorm(event){const p=pointerScreen(event);return{x:clamp((p.x-imageRect.x)/imageRect.w),y:clamp((p.y-imageRect.y)/imageRect.h)};}
     function localPoint(shape,point){const s=screenShape(shape),dx=point.x-s.cx,dy=point.y-s.cy,c=Math.cos(-s.angle),n=Math.sin(-s.angle);return{x:(dx*c-dy*n)/Math.max(1,s.rx),y:(dx*n+dy*c)/Math.max(1,s.ry)};}
     function hitTest(event){const point=pointerScreen(event),shape=selected();if(shape){for(const [name,p] of Object.entries(handles(shape)))if(name!=='center'&&Math.hypot(point.x-p.x,point.y-p.y)<14)return{action:name==='rotate'?'rotate':name[0]==='x'?'resize-x':'resize-y',zone:selectedZone};}for(let zoneIndex=zones().length-1;zoneIndex>=0;zoneIndex--){const local=localPoint(zones()[zoneIndex],point);if(local.x*local.x+local.y*local.y<=1)return{action:'move',zone:zoneIndex};}return{action:'new',zone:zones().length};}
-    stage.addEventListener('pointerdown',event=>{if(!imageRect)return;stage.setPointerCapture(event.pointerId);const point=pointerNorm(event),hit=hitTest(event);if(hit.action==='new'){const radiusPx=Math.max(12,Math.min(images.base.width,images.base.height)*.035);current().regions ||= [];current().regions.push({cx:point.x,cy:point.y,rx:radiusPx/images.base.width,ry:radiusPx/images.base.height,rotation:0,mode:'include',feather:6});selectedZone=current().regions.length-1;}else selectedZone=hit.zone;drag={action:hit.action,start:point,startScreen:pointerScreen(event),original:{...selected()}};renderZoneTabs();updateCoordinates();draw();});
-    stage.addEventListener('pointermove',event=>{if(!drag)return;const point=pointerNorm(event),shape=selected(),original=drag.original;if(drag.action==='new')return;if(drag.action==='move'){shape.cx=clamp(original.cx+point.x-drag.start.x);shape.cy=clamp(original.cy+point.y-drag.start.y);}else if(drag.action==='rotate'){const p=pointerScreen(event),s=screenShape(original);shape.rotation=((Math.atan2(p.y-s.cy,p.x-s.cx)*180/Math.PI+90+180)%360)-180;}else{const local=localPoint(original,pointerScreen(event));if(drag.action==='resize-x')shape.rx=clamp(Math.abs(local.x)*original.rx,.003,.5);if(drag.action==='resize-y')shape.ry=clamp(Math.abs(local.y)*original.ry,.003,.5);}updateCoordinates();draw();});
-    stage.addEventListener('pointerup',async()=>{if(!drag&&zones().length){await saveRegions(false);return;}drag=null;normalizeZones();updateCoordinates();draw();await saveRegions(false);});
+    stage.addEventListener('pointerdown',event=>{if(!imageRect)return;stage.setPointerCapture(event.pointerId);if(event.button===1||event.altKey){event.preventDefault();drag={action:'pan',startScreen:pointerScreen(event),originalPan:{x:view.panX,y:view.panY}};stage.classList.add('panning');return;}const point=pointerNorm(event),hit=hitTest(event);if(hit.action==='new'){const radiusPx=Math.max(12,Math.min(images.base.width,images.base.height)*.035);current().regions ||= [];current().regions.push({cx:point.x,cy:point.y,rx:radiusPx/images.base.width,ry:radiusPx/images.base.height,rotation:0,mode:'include',feather:6});selectedZone=current().regions.length-1;}else selectedZone=hit.zone;drag={action:hit.action,start:point,startScreen:pointerScreen(event),original:{...selected()}};renderZoneTabs();updateCoordinates();draw();});
+    stage.addEventListener('pointermove',event=>{if(!drag)return;if(drag.action==='pan'){const point=pointerScreen(event);view.panX=drag.originalPan.x+point.x-drag.startScreen.x;view.panY=drag.originalPan.y+point.y-drag.startScreen.y;clampView();draw();return;}const point=pointerNorm(event),shape=selected(),original=drag.original;if(drag.action==='new')return;if(drag.action==='move'){shape.cx=clamp(original.cx+point.x-drag.start.x);shape.cy=clamp(original.cy+point.y-drag.start.y);}else if(drag.action==='rotate'){const p=pointerScreen(event),s=screenShape(original);shape.rotation=((Math.atan2(p.y-s.cy,p.x-s.cx)*180/Math.PI+90+180)%360)-180;}else{const local=localPoint(original,pointerScreen(event));if(drag.action==='resize-x')shape.rx=clamp(Math.abs(local.x)*original.rx,.003,.5);if(drag.action==='resize-y')shape.ry=clamp(Math.abs(local.y)*original.ry,.003,.5);}updateCoordinates();draw();});
+    stage.addEventListener('pointerup',async()=>{if(drag?.action==='pan'){drag=null;stage.classList.remove('panning');draw();return;}if(!drag&&zones().length){await saveRegions(false);return;}drag=null;normalizeZones();updateCoordinates();draw();await saveRegions(false);});
+    stage.addEventListener('pointercancel',()=>{drag=null;stage.classList.remove('panning');});
+    stage.addEventListener('auxclick',event=>{if(event.button===1)event.preventDefault();});
+    stage.addEventListener('wheel',event=>{if(!images.base)return;event.preventDefault();const point=pointerScreen(event),factor=Math.exp(-event.deltaY*.0015);setViewZoom(view.zoom*factor,point);},{passive:false});
+    stage.addEventListener('dblclick',event=>{event.preventDefault();const hit=hitTest(event);if(hit.action!=='new'){selectedZone=hit.zone;renderZoneTabs();updateCoordinates();focusSelectedRegion();}});
     function normalizeZones(){current().regions=(current().regions||[]).filter(shape=>shape.rx>=.003&&shape.ry>=.003).map(shape=>({cx:+clamp(shape.cx).toFixed(6),cy:+clamp(shape.cy).toFixed(6),rx:+clamp(shape.rx,.003,.5).toFixed(6),ry:+clamp(shape.ry,.003,.5).toFixed(6),rotation:+((((shape.rotation||0)+180)%360)-180).toFixed(3),mode:shape.mode==='exclude'?'exclude':'include',feather:+clamp(Number(shape.feather)||0,0,32).toFixed(2)}));selectedZone=clamp(selectedZone,0,Math.max(0,zones().length-1));renderZoneTabs();}
     function updateCoordinates(){const shape=selected();if(!shape){Object.values(coordinateInputs).forEach(input=>input.value='');return;}coordinateInputs.x.value=(shape.cx*100).toFixed(1);coordinateInputs.y.value=(shape.cy*100).toFixed(1);coordinateInputs.rx.value=(shape.rx*100).toFixed(1);coordinateInputs.ry.value=(shape.ry*100).toFixed(1);coordinateInputs.rotation.value=shape.rotation.toFixed(1);coordinateInputs.feather.value=(shape.feather||0).toFixed(1);}
     function applyCoordinates(){const shape=selected();if(!shape){setStatus('Selecciona o añade una zona','error');return;}const values={cx:Number(coordinateInputs.x.value)/100,cy:Number(coordinateInputs.y.value)/100,rx:Number(coordinateInputs.rx.value)/100,ry:Number(coordinateInputs.ry.value)/100,rotation:Number(coordinateInputs.rotation.value),feather:Number(coordinateInputs.feather.value)};if(!Object.values(values).every(Number.isFinite)||values.rx<.003||values.ry<.003||values.feather<0||values.feather>32){setStatus('Coordenadas no válidas','error');return;}Object.assign(shape,values);normalizeZones();updateCoordinates();draw();saveRegions(false);}
@@ -332,9 +383,27 @@
     document.querySelectorAll('.mode-btn').forEach(button=>button.addEventListener('click',()=>{mode=button.dataset.mode;document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b===button));draw();}));
     document.getElementById('build-preview').addEventListener('click',async()=>{setStatus('Generando capas elípticas…');try{const response=await fetch('/api/build-preview',{method:'POST'});const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo generar');setStatus(`${result.poses} poses regeneradas`,'ok');window.location.href='/preview';}catch(error){setStatus(error.message,'error');}});
     document.getElementById('suggest-region').addEventListener('click',suggestRegions);
-    document.getElementById('search').addEventListener('input',renderList);document.getElementById('previous').addEventListener('click',()=>selectJob(index-1));document.getElementById('save-next').addEventListener('click',()=>saveRegions(true));document.getElementById('apply-coords').addEventListener('click',applyCoordinates);document.getElementById('clear-region').addEventListener('click',clearRegions);document.getElementById('center-region').addEventListener('click',draw);document.getElementById('add-zone').addEventListener('click',()=>beginAddZone('include'));document.getElementById('protect-zone').addEventListener('click',()=>beginAddZone('exclude'));document.getElementById('duplicate-zone').addEventListener('click',()=>{if(!selected())return;const copy={...selected(),cx:clamp(selected().cx+.025)};current().regions.push(copy);selectedZone=zones().length-1;renderZoneTabs();updateCoordinates();draw();saveRegions(false);});document.getElementById('delete-zone').addEventListener('click',()=>{if(!selected())return;current().regions.splice(selectedZone,1);selectedZone=Math.max(0,selectedZone-1);renderZoneTabs();updateCoordinates();draw();if(zones().length)saveRegions(false);else clearRegions();});document.getElementById('copy-previous').addEventListener('click',()=>{for(let i=index-1;i>=0;i--){if(jobs[i].character===current().character&&jobs[i].regions?.length){current().regions=cloneZones(jobs[i].regions);selectedZone=0;renderZoneTabs();updateCoordinates();draw();saveRegions(false);return;}}setStatus('No hay zonas anteriores de este personaje','error');});
+    document.getElementById('search').addEventListener('input',renderList);document.getElementById('previous').addEventListener('click',()=>selectJob(index-1));document.getElementById('save-next').addEventListener('click',()=>saveRegions(true));document.getElementById('apply-coords').addEventListener('click',applyCoordinates);document.getElementById('clear-region').addEventListener('click',clearRegions);document.getElementById('center-region').addEventListener('click',focusSelectedRegion);document.getElementById('add-zone').addEventListener('click',()=>beginAddZone('include'));document.getElementById('protect-zone').addEventListener('click',()=>beginAddZone('exclude'));document.getElementById('duplicate-zone').addEventListener('click',()=>{if(!selected())return;const copy={...selected(),cx:clamp(selected().cx+.025)};current().regions.push(copy);selectedZone=zones().length-1;renderZoneTabs();updateCoordinates();draw();saveRegions(false);});document.getElementById('delete-zone').addEventListener('click',()=>{if(!selected())return;current().regions.splice(selectedZone,1);selectedZone=Math.max(0,selectedZone-1);renderZoneTabs();updateCoordinates();draw();if(zones().length)saveRegions(false);else clearRegions();});document.getElementById('copy-previous').addEventListener('click',()=>{for(let i=index-1;i>=0;i--){if(jobs[i].character===current().character&&jobs[i].regions?.length){current().regions=cloneZones(jobs[i].regions);selectedZone=0;renderZoneTabs();updateCoordinates();draw();saveRegions(false);return;}}setStatus('No hay zonas anteriores de este personaje','error');});
+    document.getElementById('zoom-out').addEventListener('click',()=>setViewZoom(view.zoom/1.25,{x:stage.clientWidth/2,y:stage.clientHeight/2}));
+    document.getElementById('zoom-in').addEventListener('click',()=>setViewZoom(view.zoom*1.25,{x:stage.clientWidth/2,y:stage.clientHeight/2}));
+    document.getElementById('fit-view').addEventListener('click',resetView);
+    zoomRange.addEventListener('input',()=>setViewZoom(Number(zoomRange.value)/100,{x:stage.clientWidth/2,y:stage.clientHeight/2}));
     frameSelect.addEventListener('change',changeFrame);
-    window.addEventListener('keydown',event=>{if(/INPUT|SELECT/.test(document.activeElement.tagName))return;if(event.key==='ArrowLeft'){event.preventDefault();selectJob(index-1);}if(event.key==='ArrowRight'){event.preventDefault();selectJob(index+1);}if(event.key===' '){event.preventDefault();const modes=['base','half','blink','compare','mask'];mode=modes[(modes.indexOf(mode)+1)%modes.length];document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));draw();}if(event.key==='Enter'){event.preventDefault();saveRegions(true);}if(event.key==='Delete'&&selected()){event.preventDefault();document.getElementById('delete-zone').click();}});
+    window.addEventListener('keydown',event=>{
+      if(event.key==='Alt')stage.classList.add('pan-ready');
+      if(/INPUT|SELECT|BUTTON/.test(document.activeElement.tagName))return;
+      if(event.key==='ArrowLeft'){event.preventDefault();selectJob(index-1);}
+      if(event.key==='ArrowRight'){event.preventDefault();selectJob(index+1);}
+      if(event.key===' '){event.preventDefault();const modes=['base','half','blink','compare','mask'];mode=modes[(modes.indexOf(mode)+1)%modes.length];document.querySelectorAll('.mode-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));draw();}
+      if(event.key==='+'||event.key==='='){event.preventDefault();setViewZoom(view.zoom*1.25,{x:stage.clientWidth/2,y:stage.clientHeight/2});}
+      if(event.key==='-'){event.preventDefault();setViewZoom(view.zoom/1.25,{x:stage.clientWidth/2,y:stage.clientHeight/2});}
+      if(event.key==='0'){event.preventDefault();resetView();}
+      if(event.key.toLowerCase()==='f'){event.preventDefault();focusSelectedRegion();}
+      if(event.key==='Enter'){event.preventDefault();saveRegions(true);}
+      if(event.key==='Delete'&&selected()){event.preventDefault();document.getElementById('delete-zone').click();}
+    });
+    window.addEventListener('keyup',event=>{if(event.key==='Alt')stage.classList.remove('pan-ready');});
+    window.addEventListener('blur',()=>{stage.classList.remove('pan-ready','panning');if(drag?.action==='pan')drag=null;});
     new ResizeObserver(resizeCanvas).observe(stage.parentElement);
     fetch('/api/jobs',{cache:'no-store'}).then(response=>response.json()).then(data=>{jobs=data.jobs;updateProgress(data.saved);renderList();selectJob(0);}).catch(()=>setStatus('No se pudo cargar el inventario','error'));
   </script>

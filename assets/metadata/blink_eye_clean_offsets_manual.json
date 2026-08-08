@@ -11,7 +11,33 @@
         0
       ],
       "closed": [
-        -13,
+        -15,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        0.9833,
+        1.0
+      ]
+    },
+    "3c.neutral": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        0,
+        -1
+      ],
+      "closed": [
+        0,
         0
       ],
       "openScale": [
@@ -34,23 +60,23 @@
       ],
       "half": [
         4,
-        -1
+        -2
       ],
       "closed": [
         -2,
-        0
+        -1
       ],
       "openScale": [
         1.0,
         1.0
       ],
       "halfScale": [
-        1.0137,
-        1.0
+        1.041,
+        1.0291
       ],
       "closedScale": [
-        1.0192,
-        1.0
+        1.0484,
+        1.0242
       ]
     },
     "airi.bua": {
@@ -336,6 +362,266 @@
       ],
       "closedScale": [
         1.0219,
+        1.0
+      ]
+    },
+    "ballerina_capuchina.neutral": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        7,
+        0
+      ],
+      "closed": [
+        -8,
+        -4
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0315,
+        1.0532
+      ]
+    },
+    "carlos.neutral": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        0,
+        0
+      ],
+      "closed": [
+        0,
+        -2
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0224
+      ]
+    },
+    "edu.embarrassed": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        -2,
+        2
+      ],
+      "closed": [
+        -12,
+        -5
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "edu.epic": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        2,
+        -10
+      ],
+      "closed": [
+        10,
+        2
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.012,
+        1.0267
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "edu.human": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        -4,
+        -9
+      ],
+      "closed": [
+        -6,
+        -3
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        0.9966,
+        1.3169
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "edu.picado": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        0,
+        0
+      ],
+      "closed": [
+        -28,
+        -5
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "edu.picante": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        8,
+        -11
+      ],
+      "closed": [
+        10,
+        -15
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "edu.riku": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        0,
+        0
+      ],
+      "closed": [
+        -32,
+        10
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "edu.thinking": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        0,
+        0
+      ],
+      "closed": [
+        -31,
+        -2
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "edu.worried": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        22,
+        -30
+      ],
+      "closed": [
+        0,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
         1.0
       ]
     }

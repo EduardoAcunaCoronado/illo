@@ -74,6 +74,20 @@
     #download-full { border-color:rgba(79,208,255,.45); color:var(--cyan); }
     #download-eyes { border-color:rgba(255,79,163,.4); color:#ff8dc4; }
     #publish-pose,#publish-all { border-color:rgba(125,242,177,.55); color:var(--green); }
+    .publish-feedback {
+      display:none; align-items:center; gap:6px; max-width:360px; padding:6px 9px;
+      border:1px solid var(--line); border-radius:8px; background:rgba(255,255,255,.035);
+      color:var(--muted); font-size:9px; font-weight:800; line-height:1.25;
+    }
+    .publish-feedback.visible { display:inline-flex; }
+    .publish-feedback.working { border-color:rgba(255,209,102,.45); color:var(--gold); }
+    .publish-feedback.ok { border-color:rgba(125,242,177,.5); background:rgba(125,242,177,.07); color:var(--green); }
+    .publish-feedback.error { border-color:rgba(255,137,149,.55); background:rgba(255,137,149,.07); color:#ff8995; }
+    .publish-feedback.working::before {
+      content:''; width:8px; height:8px; flex:0 0 auto; border:2px solid currentColor;
+      border-right-color:transparent; border-radius:50%; animation:publish-spin .75s linear infinite;
+    }
+    @keyframes publish-spin { to { transform:rotate(360deg); } }
     .locationbar {
       display:flex; align-items:center; justify-content:center; gap:8px; min-width:0; padding:7px 16px;
       border-bottom:1px solid var(--line); background:rgba(125,242,177,.035);
@@ -113,6 +127,8 @@
     .sprite-frame { position:relative; width:100%; height:100%; max-width:100%; max-height:100%; outline:none; }
     .sprite-frame:focus { box-shadow:inset 0 0 0 2px rgba(255,209,102,.55); }
     .sprite-frame img { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; user-select:none; -webkit-user-drag:none; }
+    body.space-panning .sprite-frame, body.space-panning .sprite-frame * { cursor:grab !important; }
+    .sprite-frame.panning, .sprite-frame.panning * { cursor:grabbing !important; }
     .eye-layer { cursor:grab; touch-action:none; }
     .eye-layer.dragging { cursor:grabbing; }
     .transform-box { position:absolute; z-index:4; pointer-events:none; border:1px dashed var(--cyan); box-shadow:0 0 0 1px rgba(6,5,16,.65),0 0 12px rgba(79,208,255,.16); }
@@ -224,11 +240,35 @@
       background-image:linear-gradient(45deg,#100d25 25%,transparent 25%),linear-gradient(-45deg,#100d25 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#100d25 75%),linear-gradient(-45deg,transparent 75%,#100d25 75%);
       background-size:24px 24px; background-position:0 0,0 12px,12px -12px,-12px 0;
     }
+    .pixel-viewport.loading::after {
+      content:'Cargando y preparando la capa…'; position:absolute; left:50%; top:50%; z-index:2;
+      padding:10px 13px; border:1px solid rgba(255,209,102,.4); border-radius:9px;
+      background:rgba(16,13,37,.94); color:var(--gold); font-size:10px; font-weight:900;
+      transform:translate(-50%,-50%); box-shadow:0 8px 28px rgba(0,0,0,.4);
+    }
+    .pixel-viewport.loading #pixel-canvas { visibility:hidden; }
     #pixel-canvas { display:block; max-width:none; max-height:none; image-rendering:auto; touch-action:none; cursor:none; box-shadow:0 0 0 1px rgba(255,255,255,.14),0 10px 40px rgba(0,0,0,.4); }
     #brush-cursor { position:fixed; z-index:43; pointer-events:none; display:none; border:1px solid #fff; border-radius:50%; box-shadow:0 0 0 1px #000; transform:translate(-50%,-50%); }
     .pixel-actions { justify-content:flex-end; border-top:1px solid var(--line); border-bottom:0; }
     .pixel-actions .primary { border-color:rgba(125,242,177,.6); color:var(--green); }
-    #pixel-state { margin-right:auto; color:var(--muted); font-size:10px; }
+    #pixel-state { display:inline-flex; align-items:center; gap:7px; margin-right:auto; padding:6px 9px; border:1px solid transparent; border-radius:8px; color:var(--muted); font-size:10px; font-weight:800; }
+    #pixel-state.working { border-color:rgba(255,209,102,.45); background:rgba(255,209,102,.07); color:var(--gold); }
+    #pixel-state.ok { border-color:rgba(125,242,177,.5); background:rgba(125,242,177,.07); color:var(--green); }
+    #pixel-state.error { border-color:rgba(255,137,149,.55); background:rgba(255,137,149,.07); color:#ff8995; }
+    #pixel-state.working::before,#pixel-save.saving::before {
+      content:''; width:8px; height:8px; flex:0 0 auto; border:2px solid currentColor;
+      border-right-color:transparent; border-radius:50%; animation:publish-spin .75s linear infinite;
+    }
+    #pixel-save.saving { display:inline-flex; align-items:center; gap:7px; }
+    .pixel-dialog.saving #pixel-viewport { pointer-events:none; opacity:.72; }
+    .action-toast {
+      position:fixed; right:22px; bottom:22px; z-index:60; display:none; max-width:min(520px,calc(100vw - 44px));
+      padding:11px 14px; border:1px solid var(--line); border-radius:11px; background:#100d25;
+      box-shadow:0 14px 44px rgba(0,0,0,.55); font-size:11px; font-weight:900;
+    }
+    .action-toast.visible { display:block; }
+    .action-toast.ok { border-color:rgba(125,242,177,.58); background:#0c211b; color:var(--green); }
+    .action-toast.error { border-color:rgba(255,137,149,.58); background:#291018; color:#ff8995; }
     @media (max-width:900px) {
       main { grid-template-columns:190px minmax(0,1fr); }
       .workspace { grid-template-columns:1fr; overflow:auto; }
@@ -240,7 +280,7 @@
 <body>
   <header>
     <div class="brand"><small>Project AI.ri · herramienta ocular</small><strong>Alineación de ojos</strong></div>
-    <div class="intro"><b>Arrastra los ojos</b> para moverlos y usa los tiradores del marco para estirarlos. Mantén <b>Alt</b> al tirar para transformar ambos lados desde el centro.</div>
+    <div class="intro"><b>Arrastra los ojos</b> para moverlos y usa los tiradores del marco para estirarlos. <b>Botón central</b> o <b>Espacio + arrastre</b> desplaza cada lienzo. Mantén <b>Alt</b> al tirar para transformar ambos lados desde el centro.</div>
     <a class="button" href="/tools">☰ Herramientas</a>
     <a class="button" href="/">← Volver a marcar</a>
   </header>
@@ -272,6 +312,7 @@
         <button id="preview-animation" type="button">▶ Ver animación</button>
         <button id="publish-pose" type="button">✓ Publicar pose</button>
         <button id="publish-all" type="button">✓ Publicar todas</button>
+        <span id="publish-feedback" class="publish-feedback" role="status" aria-live="polite"></span>
         <a id="download-hq" class="button" href="#" download>↓ Animación HQ (APNG)</a>
         <a id="download-full" class="button" href="#" download>↓ GIF sprite completo</a>
         <a id="download-eyes" class="button" href="#" download>↓ Sólo ojos</a>
@@ -297,7 +338,7 @@
               <button type="button" data-zoom-in="open" aria-label="Acercar ojos abiertos">+</button>
               <button type="button" data-zoom-reset="open" aria-label="Ajustar ojos abiertos a la ventana">Ajustar</button>
             </div>
-            <div id="open-frame" class="sprite-frame" tabindex="0" data-state="open">
+            <div id="open-frame" class="sprite-frame" tabindex="0" data-state="open" title="Botón central o Espacio + arrastre para desplazar este lienzo">
               <img id="open-base" class="base-layer" alt="Pose base para ojos abiertos">
               <img id="open-eyes" class="eye-layer" alt="Capa de ojos abiertos" draggable="false">
               <div id="open-transform" class="transform-box" aria-label="Transformación de ojos abiertos">
@@ -328,7 +369,7 @@
               <button type="button" data-zoom-in="half" aria-label="Acercar ojos semicerrados">+</button>
               <button type="button" data-zoom-reset="half" aria-label="Ajustar ojos semicerrados a la ventana">Ajustar</button>
             </div>
-            <div id="half-frame" class="sprite-frame" tabindex="0" data-state="half">
+            <div id="half-frame" class="sprite-frame" tabindex="0" data-state="half" title="Botón central o Espacio + arrastre para desplazar este lienzo">
               <img id="half-base" class="base-layer" alt="Pose base para ojos semicerrados">
               <img id="half-eyes" class="eye-layer" alt="Capa de ojos semicerrados" draggable="false">
               <div id="half-transform" class="transform-box" aria-label="Transformación de ojos semicerrados">
@@ -359,7 +400,7 @@
               <button type="button" data-zoom-in="closed" aria-label="Acercar ojos cerrados">+</button>
               <button type="button" data-zoom-reset="closed" aria-label="Ajustar ojos cerrados a la ventana">Ajustar</button>
             </div>
-            <div id="closed-frame" class="sprite-frame" tabindex="0" data-state="closed">
+            <div id="closed-frame" class="sprite-frame" tabindex="0" data-state="closed" title="Botón central o Espacio + arrastre para desplazar este lienzo">
               <img id="closed-base" class="base-layer" alt="Pose base para ojos cerrados">
               <img id="closed-eyes" class="eye-layer" alt="Capa de ojos cerrados" draggable="false">
               <div id="closed-transform" class="transform-box" aria-label="Transformación de ojos cerrados">
@@ -453,7 +494,7 @@
         <canvas id="pixel-canvas"></canvas>
       </div>
       <div class="pixel-actions">
-        <span id="pixel-state">Edición no destructiva</span>
+        <span id="pixel-state" role="status" aria-live="polite">Edición no destructiva</span>
         <button id="pixel-reset" type="button">Recuperar capa fuente</button>
         <button id="pixel-cancel" type="button">Cancelar</button>
         <button id="pixel-save" class="primary" type="button">Guardar capa editada</button>
@@ -461,6 +502,7 @@
     </section>
     <div id="brush-cursor"></div>
   </div>
+  <div id="action-toast" class="action-toast" role="status" aria-live="polite"></div>
   <script>
     let assetVersion = Date.now();
     const asset = path => `/${path}?v=${assetVersion}`;
@@ -471,6 +513,9 @@
     const globalState = document.getElementById('global-state');
     const sourceModeSelect = document.getElementById('source-mode');
     const blinkFrameSelect = document.getElementById('blink-frame');
+    const publishFeedback = document.getElementById('publish-feedback');
+    const publishButtons = [document.getElementById('publish-pose'),document.getElementById('publish-all')];
+    const publishButtonLabels = {'publish-pose':'✓ Publicar pose','publish-all':'✓ Publicar todas'};
     const locationState = document.getElementById('location-state');
     const locationButtons = [...document.querySelectorAll('[data-location]')];
     const animationModal = document.getElementById('animation-modal');
@@ -481,7 +526,7 @@
     const animationSpeed = document.getElementById('animation-speed');
     const pixelModal = document.getElementById('pixel-modal');
     const pixelCanvas = document.getElementById('pixel-canvas');
-    const pixelContext = pixelCanvas.getContext('2d');
+    const pixelContext = pixelCanvas.getContext('2d',{willReadFrequently:true});
     const pixelViewport = document.getElementById('pixel-viewport');
     const brushCursor = document.getElementById('brush-cursor');
     const pixelSize = document.getElementById('pixel-size');
@@ -492,6 +537,9 @@
     const pixelOpacity = document.getElementById('pixel-opacity');
     const pixelBrushOptions = document.getElementById('pixel-brush-options');
     const pixelState = document.getElementById('pixel-state');
+    const pixelDialog = pixelModal.querySelector('.pixel-dialog');
+    const pixelSaveButton = document.getElementById('pixel-save');
+    const actionToast = document.getElementById('action-toast');
     const states = ['open','half','closed'];
     const ui = Object.fromEntries(states.map(state => [state, {
       frame:document.getElementById(`${state}-frame`),
@@ -516,6 +564,7 @@
     let savedMetadata = {poses:{}};
     let offsetPayload = {offsets:{}};
     let pixelEditMetadata = {edits:{}};
+    let whiteHaloProduction = {sprites:{}};
     let sourceMode = 'saved';
     let currentLocations = {};
     let animationTimer = null;
@@ -525,12 +574,47 @@
     let pixelEditor = null;
     let navigationApproved = false;
     const viewZoom = {open:1,half:1,closed:1};
+    const viewPan = {open:[0,0],half:[0,0],closed:[0,0]};
+    let panDrag = null;
+    let spacePanning = false;
+    let publishOperation = 0;
+    let pixelSaving = false;
+    let actionToastTimer = 0;
+    let pixelLoadOperation = 0;
+    const pixelDisabledBeforeSave = new Map();
+    const imagePromiseCache = new Map();
 
     const current = () => poses[currentIndex];
     const defaultOffsets = () => ({open:[0,0],half:[0,0],closed:[0,0],openScale:[1,1],halfScale:[1,1],closedScale:[1,1]});
     const cloneOffsets = offsets => Object.fromEntries(
       Object.entries({...defaultOffsets(),...(offsets||{})}).map(([key,value])=>[key,Array.isArray(value)?[...value]:value])
     );
+
+    function setPixelState(kind,message) {
+      pixelState.className=kind||'';
+      pixelState.textContent=message;
+    }
+
+    function showActionToast(kind,message) {
+      window.clearTimeout(actionToastTimer);
+      actionToast.className=`action-toast visible ${kind}`;
+      actionToast.textContent=message;
+      actionToastTimer=window.setTimeout(()=>{actionToast.className='action-toast';},6000);
+    }
+
+    function setPixelSaving(saving) {
+      pixelSaving=saving;pixelDialog.classList.toggle('saving',saving);
+      pixelDialog.setAttribute('aria-busy',String(saving));
+      const controls=[...pixelDialog.querySelectorAll('button,input,select')];
+      if(saving){
+        pixelDisabledBeforeSave.clear();
+        controls.forEach(control=>{pixelDisabledBeforeSave.set(control,control.disabled);control.disabled=true;});
+        pixelSaveButton.classList.add('saving');pixelSaveButton.textContent='Guardando…';
+      }else{
+        controls.forEach(control=>{control.disabled=pixelDisabledBeforeSave.get(control)??control.disabled;});
+        pixelDisabledBeforeSave.clear();pixelSaveButton.classList.remove('saving');pixelSaveButton.textContent='Guardar capa editada';
+      }
+    }
 
     function renderList() {
       const query = document.getElementById('search').value.trim().toLowerCase();
@@ -561,7 +645,8 @@
       const focusMix=Math.max(0,Math.min(1,(zoom-1)/.5));
       const focusX=width/2+(eyeBounds.x+eyeBounds.width/2-width/2)*focusMix;
       const focusY=height/2+(eyeBounds.y+eyeBounds.height/2-height/2)*focusMix;
-      return {scale,left:frameRect.width/2-focusX*scale,top:frameRect.height/2-focusY*scale,width,height};
+      const pan=viewPan[state]||[0,0];
+      return {scale,left:frameRect.width/2-focusX*scale+pan[0],top:frameRect.height/2-focusY*scale+pan[1],width,height};
     }
 
     const animationSequence = [
@@ -648,12 +733,28 @@
     }
 
     function loadImage(path) {
-      return new Promise((resolve,reject)=>{
+      const url=String(path).startsWith('data:')?path:asset(path);
+      if(imagePromiseCache.has(url))return imagePromiseCache.get(url);
+      const promise=new Promise((resolve,reject)=>{
         const image=new Image();
-        image.onload=()=>resolve(image);
-        image.onerror=()=>reject(new Error(`No se pudo cargar ${path}`));
-        image.src=String(path).startsWith('data:')?path:asset(path);
+        image.decoding='async';image.onload=()=>resolve(image);
+        image.onerror=()=>{imagePromiseCache.delete(url);reject(new Error(`No se pudo cargar ${path}`));};
+        image.src=url;
       });
+      imagePromiseCache.set(url,promise);return promise;
+    }
+
+    function preloadPose(entry) {
+      if(!entry)return;
+      [entry.data.base,entry.data.eyesOpen,entry.data.eyesHalf,...entry.data.eyeFrames]
+        .forEach(path=>{loadImage(path).catch(()=>{});});
+    }
+
+    function preloadNearbyPoses(index) {
+      preloadPose(poses[index]);
+      const run=()=>[poses[index-1],poses[index+1]].forEach(preloadPose);
+      if('requestIdleCallback'in window)window.requestIdleCallback(run,{timeout:900});
+      else window.setTimeout(run,180);
     }
 
     function pixelEditPath(id,state,source=sourceMode) {
@@ -685,7 +786,7 @@
         eyedropper:'Cuentagotas: pulsa en la imagen para tomar el color visible',
         smudge:'Dedo: arrastra y mezcla el color de la capa'
       };
-      pixelState.textContent=messages[tool]||messages.erase;
+      setPixelState('',messages[tool]||messages.erase);
     }
 
     function fitPixelCanvas() {
@@ -724,10 +825,11 @@
       const offset=entry.offsets[state]||[0,0],stretch=entry.offsets[`${state}Scale`]||[1,1];
       if(entry.data.eyeCrop){
         const crop=entry.data.eyeCrop;
+        const width=crop.width*stretch[0],height=crop.height*stretch[1];
         return {
-          left:crop.x+crop.width/2+offset[0]-layerCanvas.width*stretch[0]/2,
-          top:crop.y+crop.height/2+offset[1]-layerCanvas.height*stretch[1]/2,
-          scaleX:stretch[0],scaleY:stretch[1]
+          left:crop.x+crop.width/2+offset[0]-width/2,
+          top:crop.y+crop.height/2+offset[1]-height/2,
+          scaleX:width/layerCanvas.width,scaleY:height/layerCanvas.height
         };
       }
       const bounds=sourceEyeBounds(entry),originX=bounds.x+bounds.width/2,originY=bounds.y+bounds.height/2;
@@ -790,14 +892,14 @@
       if(!pixelEditor?.undo.length)return;
       pixelEditor.redo.push(layerSnapshot());
       await restorePixelSnapshot(pixelEditor.undo.pop());
-      pixelEditor.dirty=true;pixelState.textContent='Cambio deshecho';
+      pixelEditor.dirty=true;setPixelState('','Cambio deshecho');
     }
 
     async function redoPixelEdit() {
       if(!pixelEditor?.redo.length)return;
       pixelEditor.undo.push(layerSnapshot());
       await restorePixelSnapshot(pixelEditor.redo.pop());
-      pixelEditor.dirty=true;pixelState.textContent='Cambio rehecho';
+      pixelEditor.dirty=true;setPixelState('','Cambio rehecho');
     }
 
     function pixelPoint(event) {
@@ -866,10 +968,10 @@
 
     function pickPixelColor(event) {
       const point=pixelDisplayPoint(event),sample=pixelContext.getImageData(point.x,point.y,1,1).data;
-      if(sample[3]<8){pixelState.textContent='La zona seleccionada es transparente; elige un píxel visible';return;}
+      if(sample[3]<8){setPixelState('','La zona seleccionada es transparente; elige un píxel visible');return;}
       const hex=rgbToHex(sample[0],sample[1],sample[2]);pixelColor.value=hex;
       document.getElementById('pixel-color-value').textContent=hex;
-      setPixelTool('brush');pixelState.textContent=`Color ${hex} tomado de la composición visible`;
+      setPixelTool('brush');setPixelState('',`Color ${hex} tomado de la composición visible`);
     }
 
     function eraseSegment(from,to) {
@@ -900,7 +1002,7 @@
     }
 
     function updateBrushCursor(event) {
-      if(pixelModal.hidden)return;
+      if(pixelModal.hidden||!pixelEditor)return;
       const rect=pixelCanvas.getBoundingClientRect();
       const transform=pixelLayerTransform(),canvasScale=rect.width/pixelCanvas.width;
       const eyedropper=pixelEditor?.tool==='eyedropper';
@@ -912,13 +1014,18 @@
 
     async function openPixelEditor(state) {
       const entry=current();if(!entry)return;
-      pixelModal.hidden=false;pixelState.textContent='Cargando capa…';
+      const loadOperation=++pixelLoadOperation;
+      pixelEditor=null;pixelCanvas.width=1;pixelCanvas.height=1;
+      pixelViewport.scrollLeft=0;pixelViewport.scrollTop=0;pixelViewport.classList.add('loading');
+      pixelSaveButton.textContent='Guardar capa editada';pixelSaveButton.disabled=true;
+      pixelModal.hidden=false;setPixelState('working',`Cargando ojos ${state==='open'?'abiertos':state==='half'?'semicerrados':'cerrados'} de ${entry.id}…`);
       try{
         const [layerImage,baseImage,rawImage]=await Promise.all([
           loadImage(editorLayerPath(entry,state)),loadImage(entry.data.base),loadImage(rawEyePath(entry,state))
         ]);
-        const layerCanvas=document.createElement('canvas');layerCanvas.width=layerImage.naturalWidth;layerCanvas.height=layerImage.naturalHeight;
-        layerCanvas.getContext('2d').drawImage(layerImage,0,0);
+        if(loadOperation!==pixelLoadOperation||pixelModal.hidden)return;
+        const layerCanvas=document.createElement('canvas');layerCanvas.width=rawImage.naturalWidth;layerCanvas.height=rawImage.naturalHeight;
+        layerCanvas.getContext('2d').drawImage(layerImage,0,0,layerCanvas.width,layerCanvas.height);
         const rawCanvas=document.createElement('canvas');rawCanvas.width=rawImage.naturalWidth;rawCanvas.height=rawImage.naturalHeight;
         rawCanvas.getContext('2d').drawImage(rawImage,0,0);
         pixelCanvas.width=entry.data.canvas.width;pixelCanvas.height=entry.data.canvas.height;
@@ -926,30 +1033,41 @@
         document.getElementById('pixel-pose').textContent=`${entry.id} · ${state==='open'?'abiertos':state==='half'?'semicerrados':'cerrados'} · ${layerCanvas.width}×${layerCanvas.height}px`;
         pixelZoom.value=String(Math.round((viewZoom[state]||1)*100));setPixelTool('erase');renderPixelEditor();
         requestAnimationFrame(()=>{fitPixelCanvas();requestAnimationFrame(centerPixelEditorOnEyes);});
-        pixelState.textContent=pixelEditPath(entry.id,state)?'Capa editada cargada; el original sigue intacto':'Capa fuente cargada; el guardado será una copia aparte';
-      }catch(error){pixelState.textContent=error.message;}
+        setPixelState('',pixelEditPath(entry.id,state)?'Capa editada cargada; el original sigue intacto':'Capa fuente cargada; el guardado será una copia aparte');
+      }catch(error){setPixelState('error',error.message);}
+      finally{
+        if(loadOperation===pixelLoadOperation){pixelViewport.classList.remove('loading');pixelSaveButton.disabled=!pixelEditor;}
+      }
     }
 
     function closePixelEditor(force=false) {
+      if(pixelSaving)return;
       if(!force&&pixelEditor?.dirty&&!window.confirm('Hay cambios sin guardar. ¿Cerrar igualmente?'))return;
-      pixelModal.hidden=true;brushCursor.style.display='none';pixelEditor=null;
+      pixelLoadOperation++;pixelViewport.classList.remove('loading');pixelModal.hidden=true;brushCursor.style.display='none';pixelEditor=null;
     }
 
     async function resetPixelLayer() {
       if(!pixelEditor)return;pushPixelHistory();await restorePixelSnapshot(pixelEditor.rawSnapshot);
-      pixelEditor.dirty=true;pixelState.textContent='Capa fuente recuperada (aún sin guardar)';
+      pixelEditor.dirty=true;setPixelState('','Capa fuente recuperada (aún sin guardar)');
     }
 
     async function savePixelLayer() {
-      if(!pixelEditor)return;
-      const {entry,state}=pixelEditor;pixelState.textContent='Guardando copia editada…';
+      if(!pixelEditor||pixelSaving)return;
+      const {entry,state}=pixelEditor,stateLabel=state==='open'?'abiertos':state==='half'?'semicerrados':'cerrados';
+      let saved=false;setPixelSaving(true);setPixelState('working',`Guardando ojos ${stateLabel} de ${entry.id}…`);
       try{
         const response=await fetch('/api/eye-layer-edit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:entry.id,source:sourceMode,state,image:layerSnapshot()})});
         const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo guardar');
         pixelEditMetadata.edits[sourceMode]??={};pixelEditMetadata.edits[sourceMode][entry.id]??={};pixelEditMetadata.edits[sourceMode][entry.id][state]=result.path;
-        pixelEditor.dirty=false;assetVersion=Date.now();const id=entry.id;closePixelEditor(true);rebuildPoses(id);
+        pixelEditor.dirty=false;saved=true;assetVersion=Date.now();imagePromiseCache.clear();const id=entry.id;
+        showActionToast('ok',`✓ Capa de ojos ${stateLabel} de ${entry.id} guardada · ${publicationTime()}`);
+        setPixelSaving(false);closePixelEditor(true);rebuildPoses(id);
         globalState.textContent='Capa ocular editada guardada';
-      }catch(error){pixelState.textContent=error.message;}
+      }catch(error){setPixelState('error',`✕ No se guardó: ${error.message}`);}
+      finally{
+        if(pixelSaving)setPixelSaving(false);
+        if(!saved)pixelSaveButton.textContent='Reintentar guardado';
+      }
     }
 
     function layerScale(state) {
@@ -958,10 +1076,9 @@
 
     function sourceEyeBounds(entry=current()) {
       if(!entry)return {x:0,y:0,width:1,height:1};
-      if(entry.data.eyeCrop)return entry.data.eyeCrop;
       const width=entry.data.canvas.width,height=entry.data.canvas.height;
       const regions=(entry.data.regions||[]).filter(region=>region.mode!=='exclude');
-      if(!regions.length)return {x:0,y:0,width,height};
+      if(!regions.length)return entry.data.eyeCrop||{x:0,y:0,width,height};
       const boxes=regions.map(region=>{
         const angle=(region.rotation||0)*Math.PI/180;
         const ex=Math.sqrt((region.rx*Math.cos(angle))**2+(region.ry*Math.sin(angle))**2);
@@ -970,7 +1087,7 @@
       });
       const left=Math.min(...boxes.map(box=>box.left)),right=Math.max(...boxes.map(box=>box.right));
       const top=Math.min(...boxes.map(box=>box.top)),bottom=Math.max(...boxes.map(box=>box.bottom));
-      return {x:left,y:top,width:right-left,height:bottom-top};
+      return {x:left,y:top,width:Math.max(1,right-left),height:Math.max(1,bottom-top)};
     }
 
     function setZoom(state,percent) {
@@ -984,6 +1101,11 @@
 
     function stepZoom(state,direction) {
       setZoom(state,Number(ui[state].zoom.value)+direction*25);
+    }
+
+    function resetView(state) {
+      viewPan[state]=[0,0];
+      setZoom(state,100);
     }
 
     function applyOffset(state) {
@@ -1065,6 +1187,7 @@
     }
 
     function beginHandleResize(state,handle,event) {
+      if(event.button!==0)return;
       event.preventDefault();event.stopPropagation();event.currentTarget.setPointerCapture(event.pointerId);ui[state].frame.focus();
       const bounds=sourceEyeBounds(),offset=[...(current().offsets[state]||[0,0])],stretch=[...(current().offsets[`${state}Scale`]||[1,1])];
       const centerX=bounds.x+bounds.width/2+offset[0],centerY=bounds.y+bounds.height/2+offset[1];
@@ -1153,7 +1276,7 @@
       const rawOpen=data.original,rawHalf=data.half,rawClosed=data.closed||data.blinks?.[0];
       const closedFrames=data.closed?[data.closed]:(data.blinks||[]);
       return {
-        base:data.sourceBase,
+        base:whiteHaloProduction.sprites?.[id]?.cleaned||data.sourceBase,
         eyesOpen:pixelEditPath(id,'open')||rawOpen,
         eyesHalf:pixelEditPath(id,'half')||rawHalf,
         eyesClosed:pixelEditPath(id,'closed')||rawClosed,
@@ -1169,6 +1292,7 @@
     function normalizedCleanPose(id,data) {
       const rawOpen=data.eyesOpen,rawHalf=data.eyesHalf,rawClosed=data.eyesClosed;
       return {...data,
+        base:whiteHaloProduction.sprites?.[id]?.cleaned||data.base,
         eyesOpen:pixelEditPath(id,'open')||rawOpen,
         eyesHalf:pixelEditPath(id,'half')||rawHalf,
         eyesClosed:pixelEditPath(id,'closed')||rawClosed,
@@ -1193,7 +1317,6 @@
       document.getElementById('pose-count').textContent=`${poses.length} disponibles`;
       document.getElementById('source-state').textContent=sourceMode==='saved'?'Recortes guardados':'Capas limpias';
       if(!poses.length){document.getElementById('workspace').innerHTML='<div class="empty">No hay ojos disponibles para este origen.</div>';return;}
-      poses.forEach(entry=>[entry.data.base,entry.data.eyesOpen,entry.data.eyesHalf,...entry.data.eyeFrames].forEach(path=>{const image=new Image();image.src=asset(path);}));
       renderList();selectPose(currentIndex);
     }
 
@@ -1244,6 +1367,7 @@
       entry.data.eyeFrames.forEach((path,frameIndex)=>{const option=document.createElement('option');option.value=String(frameIndex);option.textContent=`Frame ${frameIndex+1} · ${path.split('/').pop()}`;blinkFrameSelect.appendChild(option);});
       blinkFrameSelect.value=String(entry.closedFrame||0);
       states.forEach(state => {
+        viewPan[state]=[0,0];
         ui[state].base.src = asset(entry.data.base);
         if(state==='open')ui[state].eyes.src=asset(entry.data.eyesOpen);
         if(state==='half')ui[state].eyes.src=asset(entry.data.eyesHalf);
@@ -1254,11 +1378,11 @@
       updateBlinkFrame();
       const cleanLink=document.getElementById('clean-base-link'),canClean=Boolean(cleanMetadata.poses?.[entry.id]);
       cleanLink.href=canClean?`/clean-base#${encodeURIComponent(entry.id)}`:'#';cleanLink.classList.toggle('disabled',!canClean);
-      document.getElementById('open-source-label').textContent=sourceMode==='saved'?'Recorte original guardado':'Capa ocular limpia';
-      document.getElementById('half-source-label').textContent=sourceMode==='saved'?'Recorte intermedio guardado':'Capa ocular limpia';
-      document.getElementById('closed-source-label').textContent=sourceMode==='saved'?'Recorte de parpadeo guardado':'Capa ocular limpia';
+      document.getElementById('open-source-label').textContent=sourceMode==='saved'?'Marco de zonas · recorte original':'Marco de zonas · capa limpia';
+      document.getElementById('half-source-label').textContent=sourceMode==='saved'?'Marco de zonas · recorte intermedio':'Marco de zonas · capa limpia';
+      document.getElementById('closed-source-label').textContent=sourceMode==='saved'?'Marco de zonas · recorte de parpadeo':'Marco de zonas · capa limpia';
       globalState.textContent = 'Offsets independientes';
-      renderList();refreshLocations();
+      renderList();refreshLocations();preloadNearbyPoses(index);
     }
 
     states.forEach(state => {
@@ -1270,10 +1394,43 @@
       controls.zoom.addEventListener('input', () => setZoom(state,controls.zoom.value));
       document.querySelector(`[data-zoom-out="${state}"]`).addEventListener('click',()=>stepZoom(state,-1));
       document.querySelector(`[data-zoom-in="${state}"]`).addEventListener('click',()=>stepZoom(state,1));
-      document.querySelector(`[data-zoom-reset="${state}"]`).addEventListener('click',()=>setZoom(state,100));
+      document.querySelector(`[data-zoom-reset="${state}"]`).addEventListener('click',()=>resetView(state));
       controls.eyes.addEventListener('load', () => { applyOffset(state); renderRegions(state); });
       controls.base.addEventListener('load', () => { applyOffset(state); renderRegions(state); });
+      controls.frame.addEventListener('pointerdown',event=>{
+        const wantsPan=event.button===1||(event.button===0&&spacePanning);
+        if(!wantsPan)return;
+        event.preventDefault();event.stopPropagation();
+        controls.frame.focus({preventScroll:true});
+        controls.frame.setPointerCapture(event.pointerId);
+        controls.frame.classList.add('panning');
+        panDrag={state,pointerId:event.pointerId,x:event.clientX,y:event.clientY,start:[...viewPan[state]]};
+      },{capture:true});
+      controls.frame.addEventListener('pointermove',event=>{
+        if(!panDrag||panDrag.state!==state||panDrag.pointerId!==event.pointerId)return;
+        event.preventDefault();
+        viewPan[state]=[
+          panDrag.start[0]+event.clientX-panDrag.x,
+          panDrag.start[1]+event.clientY-panDrag.y
+        ];
+        applyOffset(state);renderRegions(state);
+      });
+      const endPan=event=>{
+        if(!panDrag||panDrag.state!==state||panDrag.pointerId!==event.pointerId)return;
+        event.preventDefault();
+        controls.frame.classList.remove('panning');
+        controls.frame.releasePointerCapture?.(event.pointerId);
+        panDrag=null;
+      };
+      controls.frame.addEventListener('pointerup',endPan);
+      controls.frame.addEventListener('pointercancel',endPan);
+      controls.frame.addEventListener('lostpointercapture',event=>{
+        if(!panDrag||panDrag.state!==state||panDrag.pointerId!==event.pointerId)return;
+        controls.frame.classList.remove('panning');panDrag=null;
+      });
+      controls.frame.addEventListener('auxclick',event=>{if(event.button===1)event.preventDefault();});
       controls.eyes.addEventListener('pointerdown', event => {
+        if(event.button!==0||spacePanning)return;
         event.preventDefault();
         controls.frame.focus();
         controls.eyes.setPointerCapture(event.pointerId);
@@ -1307,7 +1464,7 @@
       controls.frame.addEventListener('keydown', event => {
         if(event.key==='+'||event.key==='='){event.preventDefault();stepZoom(state,1);return;}
         if(event.key==='-'){event.preventDefault();stepZoom(state,-1);return;}
-        if(event.key==='0'){event.preventDefault();setZoom(state,100);return;}
+        if(event.key==='0'){event.preventDefault();resetView(state);return;}
         const delta = {ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}[event.key];
         if (!delta) return;
         event.preventDefault();
@@ -1366,7 +1523,7 @@
       else if(pixelEditor.tool==='smudge')smudgeSegment(point,point);
       pixelEditor.dirty=true;renderPixelEditor();
     });
-    const endPixelStroke=event=>{if(pixelEditor?.stroke?.pointerId===event.pointerId){pixelEditor.stroke=null;pixelCanvas.releasePointerCapture?.(event.pointerId);pixelState.textContent='Cambio pendiente de guardar';}};
+    const endPixelStroke=event=>{if(pixelEditor?.stroke?.pointerId===event.pointerId){pixelEditor.stroke=null;pixelCanvas.releasePointerCapture?.(event.pointerId);setPixelState('','Cambio pendiente de guardar');}};
     pixelCanvas.addEventListener('pointerup',endPixelStroke);pixelCanvas.addEventListener('pointercancel',endPixelStroke);
 
     async function flushPendingOffsets() {
@@ -1377,17 +1534,40 @@
       return results.every(Boolean);
     }
 
+    function showPublishFeedback(kind,message) {
+      publishFeedback.className=`publish-feedback visible ${kind}`;
+      publishFeedback.textContent=message;
+      publishFeedback.title=message;
+    }
+
+    function publicationTime() {
+      return new Intl.DateTimeFormat('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(new Date());
+    }
+
+    function restorePublishButtonLabels(operation) {
+      window.setTimeout(()=>{
+        if(operation!==publishOperation)return;
+        publishButtons.forEach(button=>{button.textContent=publishButtonLabels[button.id];});
+      },2200);
+    }
+
     async function publishEyes(publishAll=false) {
       const entry=current();if(!entry)return;
       if(sourceMode!=='saved'){
         globalState.textContent='La producción se publica desde Recortes guardados';
+        showPublishFeedback('error','No se publicó: cambia el origen a Recortes guardados');
         sourceModeSelect.value='saved';rebuildPoses(entry.id);return;
       }
       if(publishAll&&!window.confirm('¿Publicar las tres capas transparentes de todas las poses revisadas?'))return;
-      if(!await flushPendingOffsets())return;
-      const buttons=[document.getElementById('publish-pose'),document.getElementById('publish-all')];
-      buttons.forEach(button=>button.disabled=true);
+      if(!await flushPendingOffsets()){
+        showPublishFeedback('error','No se publicó: no se pudieron guardar las alineaciones pendientes');
+        return;
+      }
+      const operation=++publishOperation,activeButton=publishAll?publishButtons[1]:publishButtons[0];
+      publishButtons.forEach(button=>{button.disabled=true;button.removeAttribute('aria-busy');});
+      activeButton.setAttribute('aria-busy','true');activeButton.textContent='… Publicando';
       globalState.textContent=publishAll?'Publicando todas las capas…':'Publicando la pose…';
+      showPublishFeedback('working',publishAll?'Publicando todas las poses…':`Publicando ${entry.id}…`);
       try{
         const response=await fetch('/api/publish-eye-layers',{
           method:'POST',headers:{'Content-Type':'application/json'},
@@ -1395,9 +1575,21 @@
         });
         const result=await response.json();if(!response.ok||!result.ok)throw new Error(result.error||'No se pudo publicar');
         globalState.textContent=`Publicadas ${result.published} pose(s) · ${result.poseCount} en el manifiesto`;
+        const message=publishAll
+          ?`✓ ${result.published} poses publicadas · ${result.poseCount} en producción · ${publicationTime()}`
+          :`✓ ${entry.id} publicada · 3 capas · ${result.poseCount} poses en producción · ${publicationTime()}`;
+        showPublishFeedback('ok',message);
+        activeButton.textContent=publishAll?'✓ Todas publicadas':'✓ Pose publicada';
         refreshLocations();
-      }catch(error){globalState.textContent=error.message;}
-      finally{buttons.forEach(button=>button.disabled=false);}
+      }catch(error){
+        globalState.textContent=`Error al publicar: ${error.message}`;
+        showPublishFeedback('error',`✕ No se publicó: ${error.message}`);
+        activeButton.textContent='✕ Error al publicar';
+      }
+      finally{
+        publishButtons.forEach(button=>{button.disabled=false;button.removeAttribute('aria-busy');});
+        restorePublishButtonLabels(operation);
+      }
     }
 
     async function navigateSafely(target) {
@@ -1449,12 +1641,25 @@
     });
     animationModal.addEventListener('click',event=>{if(event.target===animationModal)closeAnimationPreview();});
     window.addEventListener('keydown',event=>{
+      const typingTarget=event.target instanceof Element&&event.target.closest('input,textarea,select,button,[contenteditable="true"]');
+      if(event.code==='Space'&&!typingTarget&&pixelModal.hidden&&animationModal.hidden){
+        event.preventDefault();spacePanning=true;document.body.classList.add('space-panning');
+      }
       if(event.key==='Escape'&&!pixelModal.hidden){closePixelEditor();return;}
       if(event.key==='Escape'&&!animationModal.hidden)closeAnimationPreview();
       if(!pixelModal.hidden&&(event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='z'){event.preventDefault();event.shiftKey?redoPixelEdit():undoPixelEdit();}
       if(!pixelModal.hidden&&(event.key==='+'||event.key==='=')){event.preventDefault();stepPixelZoom(1);}
       if(!pixelModal.hidden&&event.key==='-'){event.preventDefault();stepPixelZoom(-1);}
       if(!pixelModal.hidden&&event.key==='0'){event.preventDefault();resetPixelZoom();}
+    });
+    window.addEventListener('keyup',event=>{
+      if(event.code!=='Space')return;
+      spacePanning=false;document.body.classList.remove('space-panning');
+    });
+    window.addEventListener('blur',()=>{
+      spacePanning=false;document.body.classList.remove('space-panning');
+      document.querySelectorAll('.sprite-frame.panning').forEach(frame=>frame.classList.remove('panning'));
+      panDrag=null;
     });
     locationButtons.forEach(button=>button.addEventListener('click',revealLocation));
     document.getElementById('show-regions').addEventListener('change', event => document.body.classList.toggle('show-regions',event.target.checked));
@@ -1476,9 +1681,10 @@
       fetch(`/assets/metadata/blink_eye_layers_clean.json?v=${assetVersion}`,{cache:'no-store'}).then(response=>response.ok?response.json():({poses:{}})),
       fetch(`/assets/metadata/blink_eye_region_previews.json?v=${assetVersion}`,{cache:'no-store'}).then(response=>response.ok?response.json():({poses:{}})),
       fetch('/api/clean-offsets',{cache:'no-store'}).then(response=>response.json()),
-      fetch('/api/eye-layer-edits',{cache:'no-store'}).then(response=>response.ok?response.json():({edits:{}}))
-    ]).then(([cleanPayload,savedPayload,offsets,edits]) => {
-      cleanMetadata=cleanPayload;savedMetadata=savedPayload;offsetPayload=offsets;pixelEditMetadata=edits;
+      fetch('/api/eye-layer-edits',{cache:'no-store'}).then(response=>response.ok?response.json():({edits:{}})),
+      fetch(`/assets/metadata/sprite_white_halo_production.json?v=${assetVersion}`,{cache:'no-store'}).then(response=>response.ok?response.json():({sprites:{}}))
+    ]).then(([cleanPayload,savedPayload,offsets,edits,haloProduction]) => {
+      cleanMetadata=cleanPayload;savedMetadata=savedPayload;offsetPayload=offsets;pixelEditMetadata=edits;whiteHaloProduction=haloProduction;
       if(!Object.keys(savedMetadata.poses||{}).length)sourceModeSelect.value='clean';
       rebuildPoses();
     }).catch(error => {

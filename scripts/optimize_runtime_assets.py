@@ -54,6 +54,7 @@ SKIP_PARTS = {
     "eye_layers_clean",
     "eye_region_previews",
     "sprite_halo_cleaned",
+    "sprite_halo_production",
 }
 SKIP_ROOTS = {".git", "assets", "dist", "node_modules", "workbench"}
 MEDIA_JOBS = (

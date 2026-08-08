@@ -899,10 +899,10 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   de los ojos.
 - Regenerar el catálogo/miniaturas con `scripts/build_gallery_manifest.py`; no
   mantener un inventario paralelo a mano.
-- Juego y galería cargan `sprite_white_halo_cleaned.json` y priorizan toda copia
-  limpia `<personaje>.<pose>` sobre la ruta de `characters/*.json`, manteniendo el
-  fuente como fallback. La galería aplica también las miniaturas limpias de pose y
-  tarjeta generadas por cada guardado.
+- Juego y galería cargan únicamente `sprite_white_halo_production.json` y priorizan
+  toda copia publicada `<personaje>.<pose>` sobre la ruta de `characters/*.json`,
+  manteniendo el fuente como fallback. La galería aplica también las miniaturas de
+  producción. Guardar un borrador no cambia estos consumidores hasta publicarlo.
 - La migración de parpadeos a capas oculares dispone de un editor manual servido
   por `python scripts/build_character_eye_layers.py --serve --port 8011`. Enumera
   las 130 poses animables y guarda varias máscaras elípticas normalizadas por pose
@@ -911,7 +911,11 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   movidas como ruta configurada -> WebP runtime -> original de `workbench`,
   consultando `asset_optimization_manifest.json`; no necesita reiniciarse tras
   reorganizar u optimizar assets.
-  Cada elipse se mueve, achata, ensancha y gira por separado. Las 130 poses activas
+  Cada elipse se mueve, achata, ensancha y gira por separado. El lienzo tiene zoom
+  50–800 % con deslizador, botones, rueda centrada en cursor y teclas `+`/`-`;
+  `0`/`Ajustar` encajan el sprite y `Enfocar zona`/`F` centran la elipse activa. La vista
+  ampliada se desplaza con `Alt` + arrastre o botón central sin alterar las
+  coordenadas normalizadas, y se restablece al cambiar de pose. Las 130 poses activas
   tienen una región confirmada. `Sugerir desde fuentes` calcula una propuesta por
   diferencia exacta, pero no la persiste hasta `Guardar región`; las 17 cajas previas
   se conservaron como regiones elípticas editables con esquema v2. El modo `--build` no puede usar
@@ -1014,34 +1018,38 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   único paso deshacible; no corrige las expansiones moradas.
   Cada operación global se registra como un único paso reversible. Cada control ofrece
   tooltip breve al pasar el puntero o enfocarlo y un icono redondo `?` con ayuda
-  ampliada y accesible por teclado. Nunca sobrescribe fuentes: guarda WebP RGBA
-  sin pérdida en
+  ampliada y accesible por teclado. Nunca sobrescribe fuentes: `Guardar copia`
+  crea borradores WebP RGBA sin pérdida en
   `assets/images/characters/sprite_halo_cleaned/` e índice en
   `assets/metadata/sprite_white_halo_cleaned.json`; genera además miniaturas WebP
-  de 156×156 y 480×270 consumidas por la galería. El bloque de archivo muestra la
+  de 156×156 y 480×270. El bloque de archivo muestra la
   ruta exacta del WebP y las dos miniaturas antes de guardar. `Descargar WebP
   actual` crea mediante el servidor local un respaldo RGBA WebP sin pérdida del
   lienzo, sin damero, zoom ni UI; no valida, no toca el manifiesto y no genera
   miniaturas, por lo que sigue rescatando el lienzo aunque falle o se pause
   `Guardar copia`; puede reimportarse por botón, aunque no reconstruye
-  el historial. No sustituye al guardado validado. Airi, Carlos, Samu y toda salida
-  nueva usan este formato. El PNG queda sólo como transporte/historial interno y
+  el historial. No sustituye al guardado validado ni a su publicación. Airi,
+  Carlos, Samu y toda salida nueva usan este formato. El PNG queda sólo como
+  transporte/historial interno y
   para originales o másteres de trabajo en `workbench/`, nunca como copia limpia
   runtime.
   Si una pose mantiene un parpadeo full-sprite con el mismo alfa que la base,
   Guardar copia genera también sus frames WebP con la máscara limpia y los registra
-  en `animationFrames`; motor y galería remapean tanto el intermedio como el extremo.
+  en `animationFrames`; al publicar se copian y remapean hacia producción para que
+  motor y galería sustituyan tanto el intermedio como el extremo.
   `carlos.neutral` usa esta vía para que el halo no reaparezca al parpadear. Las
   poses con capas oculares no duplican frames. `validate:content` comprueba `VP8L`,
   canal alfa y dimensiones de bases, miniaturas y frames derivados.
   `Guardar copia` ejecuta primero el preflight de protección y se pausa sin escribir
   cuando detecta rosa o morado. El endpoint de diagnóstico/reparación nunca modifica
   runtime, miniaturas ni metadatos. `Guardar de todos modos`, rojo, sólo se habilita
-  para la revisión exacta ya diagnosticada cuando hay reducción rosa pero ninguna
-  expansión morada; cualquier edición invalida su huella. Permite conservar un
-  suavizado intencional, actualiza WebP/miniaturas/frames, deja intacto el fuente y
-  marca la copia como `validation.forced: true` y `REVISAR`. Nunca omite dimensiones,
-  formato ni expansión de alfa. Con la copia persistida visible y sin cambios,
+  para la revisión exacta ya diagnosticada cuando hay reducción rosa, expansión
+  morada o ambas; cualquier edición invalida su huella. Permite conservar el
+  resultado intencional, actualiza WebP/miniaturas/frames, deja intacto el fuente y
+  marca el borrador como `validation.forced: true` y `REVISAR`. Producción no cambia
+  y la copia no se puede publicar hasta aprobarla. Registra `lost-protected-alpha`
+  y/o `expanded-alpha` según corresponda y nunca omite dimensiones ni formato. Con
+  la copia persistida visible y sin cambios,
   `Marcar como LIMPIO` aprueba la revisión sin tocar imágenes: conserva toda la
   excepción y añade `validation.review` con fecha y huellas de metadatos, WebP,
   miniaturas y frames. Si un byte cambia, la revisión queda obsoleta; un guardado
@@ -1053,7 +1061,18 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   lágrimas o accesorios pequeños legítimos.
   La propia pantalla incorpora una guía desplegable de 5 pasos y una leyenda de
   decisión síntoma→herramienta para halo completo, línea blanca, borde moteado,
-  pérdida de detalles y guardado final.
+  pérdida de detalles y guardado final. `Publicar copia` o `Publicar guardadas`
+  valida todos los derivados y copia una instantánea separada a
+  `assets/images/characters/sprite_halo_production/`, indexada por
+  `assets/metadata/sprite_white_halo_production.json`. La lista usa `BORRADOR`,
+  `REVISAR` y `PROD` y muestra feedback durante y después de publicar. Juego,
+  galería y herramienta ocular sólo leen esa instantánea al recargar. La API es
+  `POST /api/publish-white-halo`; `npm run build:halo-production` publica el lote y
+  `npm run validate:halo-production` comprueba manifiesto, formatos y dimensiones.
+  Si la página nueva queda conectada a un proceso Python antiguo, el inventario no
+  incluye `publicationState`: la UI deshabilita publicar y pide reiniciar Tools.
+  Un 404 HTML se traduce al mismo aviso y nunca vuelve a mostrarse como
+  `Unexpected token '<'`.
   La barra se organiza en cuatro paneles numerados y responsivos: Pincel manual,
   Limpieza principal, Remates y Vista/historial/archivo; usa dos columnas en ancho
   grande y una sola por debajo de 1400 px.
@@ -1096,8 +1115,10 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   opcional copia sólo el estirado a los otros estados. El JSON v3 guarda
   `openScale`, `halfScale` y `closedScale`; la ausencia de esos campos equivale a
   100%. El GIF también los usa y recorre abierto/medio/cerrado/medio/abierto.
-  Cada panel dibuja un marco tipo editor gráfico con ocho tiradores alrededor del
-  recorte: un borde deja fijo el opuesto, las esquinas alteran ambos ejes y `Alt`
+  Cada panel dibuja un marco tipo editor gráfico con ocho tiradores alrededor de la
+  unión real de las regiones `include`, sin incluir el padding transparente del
+  recorte PNG; sólo usa el `crop` como fallback para entradas antiguas sin regiones.
+  El archivo conserva su tamaño y crop. Un borde deja fijo el opuesto, las esquinas alteran ambos ejes y `Alt`
   transforma desde el centro. Los campos reflejan el gesto y se guarda al soltar.
   Los recortes se colocan usando su crop x/y, sin estirado automático, y un selector permite
   cambiar de frame cuando haya varios. El GIF ocular usa el origen visible y
@@ -1106,12 +1127,19 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   pausar/reanudar, reiniciar y elegir 0,5×, 1× o 2×, y se actualiza durante los
   retoques de alineación. Cada panel dispone de zoom visual independiente entre
   100% y 500%, centrado progresivamente en la región ocular, mediante botones,
-  deslizador, `+`/`−`/`0` o `Ctrl`/`Cmd`+rueda. Es sólo una ayuda de vista y no altera
-  los offsets ni escalas guardados. La barra `Ubicaciones` abre en el Explorador la carpeta
+  deslizador, `+`/`−`/`0` o `Ctrl`/`Cmd`+rueda. El botón central o `Espacio` más
+  arrastre izquierdo desplazan cada lienzo de forma independiente; base, ojos,
+  tiradores y regiones se mueven juntos sólo en la vista. `Ajustar` y `0` restauran
+  zoom y paneo, que no alteran offsets, escalas ni publicaciones. La barra
+  `Ubicaciones` abre en el Explorador la carpeta
   del sprite base, la de los ojos del origen visible, la del JSON de offsets o la
   salida de producción;
   `/api/alignment-locations` sólo consulta las rutas y `/api/reveal-path` limita
   la apertura a esos destinos conocidos dentro del proyecto.
+  Si un marcado nuevo cambia el tamaño del recorte, las ediciones de píxeles con
+  dimensiones antiguas se conservan pero se ignoran tanto en la mesa como al
+  publicar. La fuente vigente vuelve a usarse hasta guardar otra edición con el
+  lienzo actual; así un PNG obsoleto no reintroduce una máscara ocular anterior.
   `Publicar pose` y `Publicar todas` esperan los offsets pendientes y hornean los
   recortes guardados, escalas, desplazamientos y retoques persistidos. Escriben
   exactamente `eyes_base.webp`, `eyes_half.webp` y `eyes_closed.webp` por pose en
@@ -1123,17 +1151,33 @@ GALERÍA Y RECURSOS DE LA REVISIÓN
   y se distinguen con `blinkDirection: opening`. `npm run build:eye-layers`
   reproduce la publicación y `npm run validate:eye-layers` comprueba archivos,
   dimensiones, transparencia, localidad, estados y ausencia de duplicados sin
-  ejecutar el juego. El publicador no reescribe `characters/*.json`.
+  ejecutar el juego. El publicador no reescribe `characters/*.json`. Motor y galería
+  consumen exclusivamente ese manifiesto y los WebP de lienzo completo; previews,
+  offsets y PNG editables quedan fuera del runtime. Guardar no basta: hay que publicar
+  y recargar la sesión. Si una pose no tiene entrada publicada válida, sólo conserva
+  el fallback de sprites completos que declare su ficha. Las capas DOM de escena y
+  galería se identifican con `data-blink-source="production"` para auditar el origen.
+  La barra de publicación ofrece feedback persistente y accesible junto a los botones:
+  progreso con bloqueo de dobles envíos, éxito con pose/capas/total/hora o error legible.
   Cada panel tiene ahora un editor de píxeles accesible con `✎`: ofrece borrador
   alfa, herramienta `Dedo`, cuentagotas sobre la composición visible y pinceles
   sólido, translúcido y suave con selector de color/opacidad, además de tamaño y fuerza,
   zoom 50–800% con bloque visible `−`/deslizador/porcentaje/`+`/`Ajustar`, atajos
   `+`/`−`/`0` y `Ctrl`/`Cmd`+rueda, base conmutable y deshacer/rehacer por trazo. Los originales no se
   tocan. El editor replica el sprite completo, zoom, offset y escala del panel que
-  lo abrió, pero convierte el pincel a las coordenadas del recorte ocular. Las copias se
+  lo abrió, pero convierte el pincel a las coordenadas del recorte ocular. Las copias
+  antiguas cuyo lienzo no coincide con la fuente vigente se normalizan al abrir para
+  reproducir la misma composición que la mesa y quedar canonizadas en el siguiente
+  guardado. Las copias se
   guardan en `assets/images/characters/eye_layer_edits/`, se
   indexan en `assets/metadata/blink_eye_pixel_edits.json` y pasan a alimentar la
-  mesa, la animación y los GIF/APNG del origen correspondiente. Guardar una edición
+  mesa, la animación y los GIF/APNG del origen correspondiente. El guardado muestra
+  spinner con pose/estado, bloquea temporalmente editor y cierre para evitar dobles
+  envíos, y deja una confirmación verde con hora; los fallos mantienen el modal
+  abierto con opción de reintento. La apertura reutiliza imágenes decodificadas y
+  sustituye la precarga masiva de 130 poses por precarga ociosa de las dos vecinas;
+  el lienzo previo se oculta durante la preparación y la caché se invalida al guardar.
+  Guardar una edición
   conserva offsets, escalas y frame activo durante la reconstrucción de la pose; el
   índice local de offsets se sincroniza al persistir la alineación para evitar resets.
   El usuario puede crear esas bases progresivamente en `/clean-base`, servido por

@@ -7,7 +7,8 @@
         "closed": "assets/images/characters/eye_layer_edits/saved/airi/angry/eyes_closed.png"
       },
       "airi.bua": {
-        "half": "assets/images/characters/eye_layer_edits/saved/airi/bua/eyes_half.png"
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/bua/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/bua/eyes_closed.png"
       },
       "airi.embarrassed": {
         "half": "assets/images/characters/eye_layer_edits/saved/airi/embarrassed/eyes_half.png",
@@ -41,11 +42,79 @@
         "closed": "assets/images/characters/eye_layer_edits/saved/airi/thinking/eyes_closed.png"
       },
       "airi.worried": {
-        "half": "assets/images/characters/eye_layer_edits/saved/airi/worried/eyes_half.png"
+        "half": "assets/images/characters/eye_layer_edits/saved/airi/worried/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/airi/worried/eyes_closed.png"
       },
       "airi_adult.neutral": {
         "half": "assets/images/characters/eye_layer_edits/saved/airi_adult/neutral/eyes_half.png",
         "closed": "assets/images/characters/eye_layer_edits/saved/airi_adult/neutral/eyes_closed.png"
+      },
+      "ballerina_capuchina.neutral": {
+        "half": "assets/images/characters/eye_layer_edits/saved/ballerina_capuchina/neutral/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/ballerina_capuchina/neutral/eyes_closed.png"
+      },
+      "carlos.neutral": {
+        "half": "assets/images/characters/eye_layer_edits/saved/carlos/neutral/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/carlos/neutral/eyes_closed.png"
+      },
+      "3c.angry": {
+        "half": "assets/images/characters/eye_layer_edits/saved/3c/angry/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/3c/angry/eyes_closed.png"
+      },
+      "3c.happy": {
+        "half": "assets/images/characters/eye_layer_edits/saved/3c/happy/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/3c/happy/eyes_closed.png"
+      },
+      "3c.neutral": {
+        "half": "assets/images/characters/eye_layer_edits/saved/3c/neutral/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/3c/neutral/eyes_closed.png"
+      },
+      "andres.neutral": {
+        "half": "assets/images/characters/eye_layer_edits/saved/andres/neutral/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/andres/neutral/eyes_closed.png"
+      },
+      "edu.embarrassed": {
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/embarrassed/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/embarrassed/eyes_closed.png"
+      },
+      "edu.epic": {
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/epic/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/epic/eyes_closed.png"
+      },
+      "edu.happy": {
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/happy/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/happy/eyes_closed.png"
+      },
+      "edu.human": {
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/human/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/human/eyes_closed.png"
+      },
+      "edu.neutral": {
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/neutral/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/neutral/eyes_closed.png"
+      },
+      "edu.picado": {
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/picado/eyes_closed.png",
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/picado/eyes_half.png"
+      },
+      "edu.picante": {
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/picante/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/picante/eyes_closed.png"
+      },
+      "edu.riku": {
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/riku/eyes_closed.png"
+      },
+      "edu.sad": {
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/sad/eyes_closed.png",
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/sad/eyes_half.png"
+      },
+      "edu.thinking": {
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/thinking/eyes_closed.png",
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/thinking/eyes_half.png",
+        "open": "assets/images/characters/eye_layer_edits/saved/edu/thinking/eyes_open.png"
+      },
+      "edu.worried": {
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/worried/eyes_half.png"
       }
     }
   }

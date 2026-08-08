@@ -229,11 +229,11 @@ class VisualNovelEngine {
         if (this.whiteHaloManifest) return this.whiteHaloManifest;
         if (!this.whiteHaloPromise) {
             this.whiteHaloPromise = fetch(
-                `assets/metadata/sprite_white_halo_cleaned.json?v=${this.assetStamp}`,
+                `assets/metadata/sprite_white_halo_production.json?v=${this.assetStamp}`,
                 { cache: 'no-store' }
             ).then(response => response.ok ? response.json() : { sprites: {} })
                 .catch(error => {
-                    console.warn('No se pudo cargar el índice de sprites limpios:', error);
+                    console.warn('No se pudo cargar el índice de halos publicados:', error);
                     return { sprites: {} };
                 });
         }
@@ -277,43 +277,36 @@ class VisualNovelEngine {
     async loadLayerBlinkManifest() {
         if (this.layerBlinkManifest) return this.layerBlinkManifest;
         if (!this.layerBlinkPromise) {
-            const load = path => fetch(`${path}?v=${this.assetStamp}`, { cache: 'no-store' })
-                .then(response => response.ok ? response.json() : {});
-            this.layerBlinkPromise = Promise.all([
-                load('assets/metadata/blink_eye_region_previews.json'),
-                load('assets/metadata/blink_eye_clean_offsets_manual.json'),
-                load('assets/metadata/blink_eye_pixel_edits.json')
-            ]).then(([previews, offsets, edits]) => {
+            this.layerBlinkPromise = fetch(
+                `assets/metadata/blink_eye_layers_production.json?v=${this.assetStamp}`,
+                { cache: 'no-store' }
+            ).then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            }).then(manifest => {
                 const poses = {};
-                Object.entries(previews.poses || {}).forEach(([id, pose]) => {
-                    const half = edits.edits?.saved?.[id]?.half || pose.half;
-                    const closed = edits.edits?.saved?.[id]?.closed || pose.closed || pose.blinks?.[0];
-                    const crop = pose.crop;
-                    const canvas = pose.sourceCanvas;
-                    if (!pose.sourceBase || !half || !closed || !crop || !canvas) return;
-                    const transform = offsets.offsets?.[id] || {};
+                Object.entries(manifest.poses || {}).forEach(([id, pose]) => {
+                    const canvas = pose.canvas;
+                    const width = Number(canvas?.width);
+                    const height = Number(canvas?.height);
+                    if (!pose.sourceBase || !pose.eyesBase || !pose.eyesHalf ||
+                        !pose.eyesClosed || width <= 0 || height <= 0) return;
                     poses[id] = {
+                        source: 'production',
                         base: pose.sourceBase,
-                        crop,
-                        canvas,
-                        half,
-                        closed,
-                        offsets: {
-                            half: transform.half || [0, 0],
-                            closed: transform.closed || [0, 0],
-                            halfScale: transform.halfScale || [1, 1],
-                            closedScale: transform.closedScale || [1, 1]
-                        },
+                        baseLayer: pose.eyesBase,
+                        canvas: { width, height },
+                        blinkDirection: pose.blinkDirection || 'closing',
                         frames: [
-                            { state: 'half', src: half, duration: 65 },
-                            { state: 'closed', src: closed, duration: 95 },
-                            { state: 'half', src: half, duration: 65 }
+                            { state: 'half', src: pose.eyesHalf, duration: 65 },
+                            { state: 'closed', src: pose.eyesClosed, duration: 95 },
+                            { state: 'half', src: pose.eyesHalf, duration: 65 }
                         ]
                     };
                 });
-                return { poses };
+                return { ...manifest, source: 'production', poses };
             }).catch(error => {
-                console.warn('No se pudieron cargar las capas oculares runtime:', error);
+                console.warn('No se pudieron cargar las capas oculares publicadas:', error);
                 return { poses: {} };
             });
         }
@@ -5902,23 +5895,14 @@ class VisualNovelEngine {
             charElement.appendChild(layer);
         }
         const state = frame.state === 'closed' ? 'closed' : 'half';
-        const offset = config.offsets?.[state] || [0, 0];
-        const stretch = config.offsets?.[`${state}Scale`] || [1, 1];
-        const crop = config.crop;
         const canvas = config.canvas;
-        const width = charElement.clientWidth;
-        const height = charElement.clientHeight;
-        const contain = Math.min(width / canvas.width, height / canvas.height) || 1;
-        const imageLeft = (width - canvas.width * contain) / 2;
-        const imageTop = height - canvas.height * contain;
-        const targetWidth = crop.width * stretch[0];
-        const targetHeight = crop.height * stretch[1];
-        const targetLeft = crop.x + crop.width / 2 + offset[0] - targetWidth / 2;
-        const targetTop = crop.y + crop.height / 2 + offset[1] - targetHeight / 2;
-        layer.style.left = `${imageLeft + targetLeft * contain}px`;
-        layer.style.top = `${imageTop + targetTop * contain}px`;
-        layer.style.width = `${targetWidth * contain}px`;
-        layer.style.height = `${targetHeight * contain}px`;
+        if (!canvas?.width || !canvas?.height) return;
+        layer.style.inset = '0';
+        layer.style.width = '100%';
+        layer.style.height = '100%';
+        layer.style.objectFit = 'contain';
+        layer.style.objectPosition = getComputedStyle(charElement).backgroundPosition;
+        layer.dataset.blinkSource = config.source || 'production';
         layer.src = this.cacheBustAsset(frame.src);
         layer.hidden = false;
         charElement.dataset.eyeLayerState = state;

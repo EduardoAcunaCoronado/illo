@@ -34,8 +34,8 @@
             "speckPixels": 1
           }
         },
-        "changedVisibleRgbPixels": 8037,
-        "normalizedRetainedRgbPixels": 8037,
+        "changedVisibleRgbPixels": 2871,
+        "normalizedRetainedRgbPixels": 2871,
         "protection": {
           "reliableFillPixels": 127920,
           "protectedInkPixels": 137924,
@@ -46,7 +46,249 @@
           "lostProtectedBounds": null
         }
       },
-      "updatedAt": "2026-08-04T03:25:33.793483+00:00"
+      "updatedAt": "2026-08-07T23:32:21.310025+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": false,
+        "warnings": []
+      }
+    },
+    "airi.surprised": {
+      "source": "assets/images/characters/airi/airi_surprised.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/airi/surprised/airi_surprised_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/airi/surprised/airi_surprised_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/airi/surprised/airi_surprised_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 646,
+        "height": 879
+      },
+      "transparentPixels": 268641,
+      "metrics": {
+        "fullyTransparentPixels": 231142,
+        "partialAlphaPixels": 37499,
+        "opaquePixels": 299193,
+        "removedPixels": 3782,
+        "reducedAlphaPixels": 9985,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 340474,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 336692,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 20656,
+        "normalizedRetainedRgbPixels": 20656,
+        "protection": {
+          "reliableFillPixels": 126934,
+          "protectedInkPixels": 135219,
+          "protectedPixels": 135219,
+          "lostReliableFillPixels": 169,
+          "lostProtectedInkPixels": 290,
+          "lostProtectedPixels": 290,
+          "lostProtectedBounds": {
+            "x": 24,
+            "y": 43,
+            "width": 591,
+            "height": 836
+          }
+        }
+      },
+      "updatedAt": "2026-08-07T23:51:52.400438+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 290,
+            "lostReliableFillPixels": 169,
+            "lostProtectedInkPixels": 290,
+            "bounds": {
+              "x": 24,
+              "y": 43,
+              "width": 591,
+              "height": 836
+            }
+          }
+        ],
+        "forcedAt": "2026-08-07T23:51:52.400438+00:00",
+        "diagnosticFingerprint": "sha256:6687bfdb1ed76b073762c113e545210960c416ef89460e1e3cc1220a2a2aef2c",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-07T23:51:56.604071+00:00",
+          "subjectRevision": "sha256:61b4ab63841c0fc88657e1ee17e7ff16c03d470c2b1d942328efe8be2ad602f9",
+          "artifactSetFingerprint": "sha256:661db346e692e545b8aaae2ac056f3e81b6b19d289b50841527b50b21f60f414"
+        }
+      }
+    },
+    "andres.neutral": {
+      "source": "assets/images/characters/andres/andres.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/andres/neutral/andres_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/andres/neutral/andres_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/andres/neutral/andres_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1122,
+        "height": 1402
+      },
+      "transparentPixels": 570655,
+      "metrics": {
+        "fullyTransparentPixels": 526914,
+        "partialAlphaPixels": 43741,
+        "opaquePixels": 1002389,
+        "removedPixels": 59232,
+        "reducedAlphaPixels": 66489,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 2,
+            "largestComponentPixels": 1100202,
+            "detachedVisiblePixels": 5160,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 3,
+            "largestComponentPixels": 1045571,
+            "detachedVisiblePixels": 559,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 49681,
+        "normalizedRetainedRgbPixels": 49681,
+        "protection": {
+          "reliableFillPixels": 748168,
+          "protectedInkPixels": 852890,
+          "protectedPixels": 852890,
+          "lostReliableFillPixels": 104,
+          "lostProtectedInkPixels": 572,
+          "lostProtectedPixels": 572,
+          "lostProtectedBounds": {
+            "x": 24,
+            "y": 34,
+            "width": 1091,
+            "height": 1359
+          }
+        }
+      },
+      "updatedAt": "2026-08-07T23:53:01.116089+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 572,
+            "lostReliableFillPixels": 104,
+            "lostProtectedInkPixels": 572,
+            "bounds": {
+              "x": 24,
+              "y": 34,
+              "width": 1091,
+              "height": 1359
+            }
+          }
+        ],
+        "forcedAt": "2026-08-07T23:53:01.116089+00:00",
+        "diagnosticFingerprint": "sha256:d4819ac385b6c58e3817604f3e15d44f1dbf31677f7a3dcc2106583a15757398",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-07T23:53:03.399765+00:00",
+          "subjectRevision": "sha256:627c4b2ed7b9ec421fd051c0213364262d88a85f237a47b2e1b58b9820db4d49",
+          "artifactSetFingerprint": "sha256:3e67352f9364df9b36c8db45f39e0f18297567ca650b9a76cf5dd4cb8ae19935"
+        }
+      }
+    },
+    "ballerina_capuchina.neutral": {
+      "source": "assets/images/characters/ballerina_capuchina.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/ballerina_capuchina/neutral/ballerina_capuchina_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/ballerina_capuchina/neutral/ballerina_capuchina_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/ballerina_capuchina/neutral/ballerina_capuchina_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 793,
+        "height": 936
+      },
+      "transparentPixels": 528489,
+      "metrics": {
+        "fullyTransparentPixels": 405093,
+        "partialAlphaPixels": 123396,
+        "opaquePixels": 213759,
+        "removedPixels": 9761,
+        "reducedAlphaPixels": 17332,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 513,
+            "largestComponentPixels": 346228,
+            "detachedVisiblePixels": 688,
+            "speckComponents": 512,
+            "speckPixels": 688
+          },
+          "candidate": {
+            "visibleComponents": 3,
+            "largestComponentPixels": 337150,
+            "detachedVisiblePixels": 5,
+            "speckComponents": 2,
+            "speckPixels": 5
+          }
+        },
+        "changedVisibleRgbPixels": 72136,
+        "normalizedRetainedRgbPixels": 72136,
+        "protection": {
+          "reliableFillPixels": 292794,
+          "protectedInkPixels": 308150,
+          "protectedPixels": 308150,
+          "lostReliableFillPixels": 363,
+          "lostProtectedInkPixels": 2089,
+          "lostProtectedPixels": 2089,
+          "lostProtectedBounds": {
+            "x": 46,
+            "y": 107,
+            "width": 721,
+            "height": 829
+          }
+        }
+      },
+      "updatedAt": "2026-08-07T23:55:36.555614+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 2089,
+            "lostReliableFillPixels": 363,
+            "lostProtectedInkPixels": 2089,
+            "bounds": {
+              "x": 46,
+              "y": 107,
+              "width": 721,
+              "height": 829
+            }
+          }
+        ],
+        "forcedAt": "2026-08-07T23:55:36.555614+00:00",
+        "diagnosticFingerprint": "sha256:3d180f14d4546e1da1ac97102ae4863b2bba65f2c9dc290e1009a0f7546f46a4",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-07T23:55:38.465573+00:00",
+          "subjectRevision": "sha256:23492529ced5814999287ddda659221ae0e408a394ce36f5f103581ef000a83b",
+          "artifactSetFingerprint": "sha256:5dda5665b101b114a18e94904d94aed3620250826063f856b7da51af0b0baa7b"
+        }
+      }
     },
     "carlos.neutral": {
       "source": "assets/images/characters/carlos/carlos.webp",
@@ -97,6 +339,2139 @@
       "animationFrames": {
         "assets/images/characters/carlos/animations/blinks/carlos_neutral_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/animations/carlos_neutral_blink_closed_halo_limpio.webp",
         "assets/images/characters/eye_intermediate_sources/carlos/neutral/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/carlos/neutral/animations/eyes_half_source_halo_limpio.webp"
+      }
+    },
+    "edu.human": {
+      "source": "assets/images/characters/humans/edu_humano_sprite.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/edu/human/edu_humano_sprite_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/edu/human/edu_humano_sprite_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/edu/human/edu_humano_sprite_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "transparentPixels": 1003936,
+      "metrics": {
+        "fullyTransparentPixels": 991557,
+        "partialAlphaPixels": 12379,
+        "opaquePixels": 569602,
+        "removedPixels": 13138,
+        "reducedAlphaPixels": 20095,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 21,
+            "largestComponentPixels": 594975,
+            "detachedVisiblePixels": 144,
+            "speckComponents": 20,
+            "speckPixels": 144
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 581981,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 12899,
+        "normalizedRetainedRgbPixels": 12899,
+        "protection": {
+          "reliableFillPixels": 263030,
+          "protectedInkPixels": 303184,
+          "protectedPixels": 303184,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 1262,
+          "lostProtectedPixels": 1262,
+          "lostProtectedBounds": {
+            "x": 184,
+            "y": 35,
+            "width": 537,
+            "height": 1629
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T02:04:52.257042+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1262,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 1262,
+            "bounds": {
+              "x": 184,
+              "y": 35,
+              "width": 537,
+              "height": 1629
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T02:04:52.257042+00:00",
+        "diagnosticFingerprint": "sha256:12f9c84e67687e5640063056ec2981e8709f852d15537618a6fb77c1df85483c",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T02:04:54.634498+00:00",
+          "subjectRevision": "sha256:81ffe0635f684786abdc527aa542d9227f072cb1e1616523c2f4e97676813ab4",
+          "artifactSetFingerprint": "sha256:a1cc0953f4860ab77e2b0e407247e2ea8692cdc31807401c9eb30d0ee054ed78"
+        }
+      }
+    },
+    "edu.worried": {
+      "source": "assets/images/characters/edu/edu_worried.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/edu/worried/edu_worried_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/edu/worried/edu_worried_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/edu/worried/edu_worried_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "transparentPixels": 2549620,
+      "metrics": {
+        "fullyTransparentPixels": 2521162,
+        "partialAlphaPixels": 28458,
+        "opaquePixels": 1644684,
+        "removedPixels": 104432,
+        "reducedAlphaPixels": 131667,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 27,
+            "largestComponentPixels": 1777245,
+            "detachedVisiblePixels": 329,
+            "speckComponents": 26,
+            "speckPixels": 329
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 1673142,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 25498,
+        "normalizedRetainedRgbPixels": 25498,
+        "protection": {
+          "reliableFillPixels": 1121603,
+          "protectedInkPixels": 1235241,
+          "protectedPixels": 1235241,
+          "lostReliableFillPixels": 4543,
+          "lostProtectedInkPixels": 28406,
+          "lostProtectedPixels": 28406,
+          "lostProtectedBounds": {
+            "x": 158,
+            "y": 70,
+            "width": 1757,
+            "height": 1978
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T02:03:51.248741+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 28406,
+            "lostReliableFillPixels": 4543,
+            "lostProtectedInkPixels": 28406,
+            "bounds": {
+              "x": 158,
+              "y": 70,
+              "width": 1757,
+              "height": 1978
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T02:03:51.248741+00:00",
+        "diagnosticFingerprint": "sha256:e44571d06b8e1af56a905c2b86ef6ed59848d277f75f37c6a1e793432255588f",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T02:03:55.986644+00:00",
+          "subjectRevision": "sha256:5822b6f147a956003962968820d0970069e45ae056bda7d5ee9174c70bc07efc",
+          "artifactSetFingerprint": "sha256:b33ad670364c39fca40e101ba0f36da00dbf9224b98e99ebab69501a5ba17356"
+        }
+      }
+    },
+    "elion_husk.angry": {
+      "source": "assets/images/characters/elion_husk/elion_husk_angry.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/elion_husk/angry/elion_husk_angry_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/elion_husk/angry/elion_husk_angry_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/elion_husk/angry/elion_husk_angry_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "transparentPixels": 1039325,
+      "metrics": {
+        "fullyTransparentPixels": 1031283,
+        "partialAlphaPixels": 8042,
+        "opaquePixels": 534213,
+        "removedPixels": 4894,
+        "reducedAlphaPixels": 12822,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 3,
+            "largestComponentPixels": 547147,
+            "detachedVisiblePixels": 2,
+            "speckComponents": 2,
+            "speckPixels": 2
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 542255,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 8007,
+        "normalizedRetainedRgbPixels": 8007,
+        "protection": {
+          "reliableFillPixels": 11764,
+          "protectedInkPixels": 18040,
+          "protectedPixels": 18040,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 37,
+          "lostProtectedPixels": 37,
+          "lostProtectedBounds": {
+            "x": 579,
+            "y": 1040,
+            "width": 173,
+            "height": 176
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:01:49.030273+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 37,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 37,
+            "bounds": {
+              "x": 579,
+              "y": 1040,
+              "width": 173,
+              "height": 176
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:01:49.030273+00:00",
+        "diagnosticFingerprint": "sha256:26bb559d658affe5b97b0a725fc5dd8b4cba79f4afdc2496ba1d5ede990e30e3",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:01:50.621292+00:00",
+          "subjectRevision": "sha256:55a0ddbd1a29c6802b8ed32696136f480159c5a6d5d8b7713d6c1a19eca5bebf",
+          "artifactSetFingerprint": "sha256:15dbb03c565f001dbc522ffa96f59ccade5792b2948e04d6f9dfbb925cd003e5"
+        }
+      }
+    },
+    "elion_husk.neutral": {
+      "source": "assets/images/characters/elion_husk/elion_husk_neutral.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/elion_husk/neutral/elion_husk_neutral_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/elion_husk/neutral/elion_husk_neutral_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/elion_husk/neutral/elion_husk_neutral_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "transparentPixels": 1038534,
+      "metrics": {
+        "fullyTransparentPixels": 1030479,
+        "partialAlphaPixels": 8055,
+        "opaquePixels": 535004,
+        "removedPixels": 6917,
+        "reducedAlphaPixels": 14925,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 5,
+            "largestComponentPixels": 549969,
+            "detachedVisiblePixels": 7,
+            "speckComponents": 4,
+            "speckPixels": 7
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 543059,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 8107,
+        "normalizedRetainedRgbPixels": 8107,
+        "protection": {
+          "reliableFillPixels": 11689,
+          "protectedInkPixels": 18673,
+          "protectedPixels": 18673,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 37,
+          "lostProtectedPixels": 37,
+          "lostProtectedBounds": {
+            "x": 583,
+            "y": 1044,
+            "width": 169,
+            "height": 174
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:00:38.039006+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 37,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 37,
+            "bounds": {
+              "x": 583,
+              "y": 1044,
+              "width": 169,
+              "height": 174
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:00:38.039006+00:00",
+        "diagnosticFingerprint": "sha256:3d2bf793d3b8b9eedfeebf3fe1f93dd3cd58f1a63b4fdf285023dbb6c834398f",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:00:40.057563+00:00",
+          "subjectRevision": "sha256:4891da1cc630c3a1fa0a02286888db7f24ac0227a6241c06bc1913712dfb1a99",
+          "artifactSetFingerprint": "sha256:22739ca2368f9734357bdb581775156aee338e547b58381192a766cd08b6c130"
+        }
+      }
+    },
+    "elion_husk.shadow": {
+      "source": "assets/images/characters/elion_husk/elion_husk_shadow.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/elion_husk/shadow/elion_husk_shadow_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/elion_husk/shadow/elion_husk_shadow_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/elion_husk/shadow/elion_husk_shadow_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "transparentPixels": 1033787,
+      "metrics": {
+        "fullyTransparentPixels": 1033233,
+        "partialAlphaPixels": 554,
+        "opaquePixels": 539751,
+        "removedPixels": 3589,
+        "reducedAlphaPixels": 3589,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 543894,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 540305,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 1829,
+        "normalizedRetainedRgbPixels": 1829,
+        "protection": {
+          "reliableFillPixels": 26631,
+          "protectedInkPixels": 59670,
+          "protectedPixels": 59670,
+          "lostReliableFillPixels": 3,
+          "lostProtectedInkPixels": 45,
+          "lostProtectedPixels": 45,
+          "lostProtectedBounds": {
+            "x": 199,
+            "y": 80,
+            "width": 552,
+            "height": 1133
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:03:13.204445+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 45,
+            "lostReliableFillPixels": 3,
+            "lostProtectedInkPixels": 45,
+            "bounds": {
+              "x": 199,
+              "y": 80,
+              "width": 552,
+              "height": 1133
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:03:13.204445+00:00",
+        "diagnosticFingerprint": "sha256:75961ae619de7de0fa99eb94e222ecbb422a4f8f0237eeed22edef51f1817a68",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:03:14.941127+00:00",
+          "subjectRevision": "sha256:d8583c1a128c35a82d5d3c09443cf775876500de4f7f675f2ab1cff06763727b",
+          "artifactSetFingerprint": "sha256:55dedb9dd98aae868ef87a6a88ed8642ccc48510098e6aba549c0b52ae92e147"
+        }
+      }
+    },
+    "elion_husk.smirk": {
+      "source": "assets/images/characters/elion_husk/elion_husk_smirk.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/elion_husk/smirk/elion_husk_smirk_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/elion_husk/smirk/elion_husk_smirk_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/elion_husk/smirk/elion_husk_smirk_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "transparentPixels": 1035452,
+      "metrics": {
+        "fullyTransparentPixels": 1027012,
+        "partialAlphaPixels": 8440,
+        "opaquePixels": 538086,
+        "removedPixels": 127,
+        "reducedAlphaPixels": 5275,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 3,
+            "largestComponentPixels": 546651,
+            "detachedVisiblePixels": 2,
+            "speckComponents": 2,
+            "speckPixels": 2
+          },
+          "candidate": {
+            "visibleComponents": 4,
+            "largestComponentPixels": 546523,
+            "detachedVisiblePixels": 3,
+            "speckComponents": 3,
+            "speckPixels": 3
+          }
+        },
+        "changedVisibleRgbPixels": 9580,
+        "normalizedRetainedRgbPixels": 9580,
+        "protection": {
+          "reliableFillPixels": 12220,
+          "protectedInkPixels": 18372,
+          "protectedPixels": 18372,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 3,
+          "lostProtectedPixels": 3,
+          "lostProtectedBounds": {
+            "x": 697,
+            "y": 1186,
+            "width": 9,
+            "height": 9
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:01:18.589216+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 3,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 3,
+            "bounds": {
+              "x": 697,
+              "y": 1186,
+              "width": 9,
+              "height": 9
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:01:18.589216+00:00",
+        "diagnosticFingerprint": "sha256:b6786dd3a422a6ebe3124ff5e8f889ba5c49e09e93bf3bb37c681d9200cffe80",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:01:20.446283+00:00",
+          "subjectRevision": "sha256:4081470e384ab9687f5940b34a9dfe8c62e7ce2072712f36436ddc59c0e266dd",
+          "artifactSetFingerprint": "sha256:18f5e011d9464f9f0f7707b2371392b1f7d8eee15496d6fa4ee0387dc03c2f18"
+        }
+      }
+    },
+    "gorila.contento": {
+      "source": "assets/images/characters/gorila/gorila_contento.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/gorila/contento/gorila_contento_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/contento/gorila_contento_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/contento/gorila_contento_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1024,
+        "height": 1536
+      },
+      "transparentPixels": 1020818,
+      "metrics": {
+        "fullyTransparentPixels": 862071,
+        "partialAlphaPixels": 158747,
+        "opaquePixels": 552046,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 4869,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1115,
+            "largestComponentPixels": 709360,
+            "detachedVisiblePixels": 1433,
+            "speckComponents": 1114,
+            "speckPixels": 1433
+          },
+          "candidate": {
+            "visibleComponents": 1115,
+            "largestComponentPixels": 709360,
+            "detachedVisiblePixels": 1433,
+            "speckComponents": 1114,
+            "speckPixels": 1433
+          }
+        },
+        "changedVisibleRgbPixels": 150937,
+        "normalizedRetainedRgbPixels": 150937,
+        "protection": {
+          "reliableFillPixels": 33835,
+          "protectedInkPixels": 80564,
+          "protectedPixels": 80564,
+          "lostReliableFillPixels": 4,
+          "lostProtectedInkPixels": 30,
+          "lostProtectedPixels": 30,
+          "lostProtectedBounds": {
+            "x": 77,
+            "y": 0,
+            "width": 762,
+            "height": 1468
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:08:47.446790+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 30,
+            "lostReliableFillPixels": 4,
+            "lostProtectedInkPixels": 30,
+            "bounds": {
+              "x": 77,
+              "y": 0,
+              "width": 762,
+              "height": 1468
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:08:47.446790+00:00",
+        "diagnosticFingerprint": "sha256:d75314eb1756c50146664f46d13a26bf4227988c8d91561683c8db5b270fcd11",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:08:49.509126+00:00",
+          "subjectRevision": "sha256:b6f79dd710039f3fb2475b48facad4dc266a6071577d3f0f586a0487d5126c7d",
+          "artifactSetFingerprint": "sha256:1149a92a0026d03a136d766465cb56ae69c94447fa4be904ec2766257d13cf10"
+        }
+      }
+    },
+    "gorila.enfadado": {
+      "source": "assets/images/characters/gorila/gorila_enfadado.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/gorila/enfadado/gorila_enfadado_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/enfadado/gorila_enfadado_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/enfadado/gorila_enfadado_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 972,
+        "height": 1400
+      },
+      "transparentPixels": 742523,
+      "metrics": {
+        "fullyTransparentPixels": 733955,
+        "partialAlphaPixels": 8568,
+        "opaquePixels": 618277,
+        "removedPixels": 15902,
+        "reducedAlphaPixels": 23606,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 25,
+            "largestComponentPixels": 642670,
+            "detachedVisiblePixels": 77,
+            "speckComponents": 24,
+            "speckPixels": 77
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 626845,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 10457,
+        "normalizedRetainedRgbPixels": 10457,
+        "protection": {
+          "reliableFillPixels": 23420,
+          "protectedInkPixels": 54727,
+          "protectedPixels": 54727,
+          "lostReliableFillPixels": 9,
+          "lostProtectedInkPixels": 5238,
+          "lostProtectedPixels": 5238,
+          "lostProtectedBounds": {
+            "x": 1,
+            "y": 11,
+            "width": 964,
+            "height": 1369
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:09:35.025393+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 5238,
+            "lostReliableFillPixels": 9,
+            "lostProtectedInkPixels": 5238,
+            "bounds": {
+              "x": 1,
+              "y": 11,
+              "width": 964,
+              "height": 1369
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:09:35.025393+00:00",
+        "diagnosticFingerprint": "sha256:e2b21508d75d32cb16a7c9544edf8625de6c34d4badc06bc61f607587ac1f46a",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:09:36.693795+00:00",
+          "subjectRevision": "sha256:15bb571db70244b49aacb1d48859513a84c97175b9213115a09882b24042c270",
+          "artifactSetFingerprint": "sha256:9ee2faa2de7fa703e96f60852905b026feb73e9a81c14f755836e54f9cb5c2cc"
+        }
+      }
+    },
+    "gorila.neutral": {
+      "source": "assets/images/characters/gorila/gorila.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/gorila/neutral/gorila_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/neutral/gorila_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/neutral/gorila_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 714,
+        "height": 1400
+      },
+      "transparentPixels": 422678,
+      "metrics": {
+        "fullyTransparentPixels": 418143,
+        "partialAlphaPixels": 4535,
+        "opaquePixels": 576922,
+        "removedPixels": 13604,
+        "reducedAlphaPixels": 13667,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 4,
+            "largestComponentPixels": 595054,
+            "detachedVisiblePixels": 7,
+            "speckComponents": 3,
+            "speckPixels": 7
+          },
+          "candidate": {
+            "visibleComponents": 2,
+            "largestComponentPixels": 581453,
+            "detachedVisiblePixels": 4,
+            "speckComponents": 1,
+            "speckPixels": 4
+          }
+        },
+        "changedVisibleRgbPixels": 6982,
+        "normalizedRetainedRgbPixels": 6982,
+        "protection": {
+          "reliableFillPixels": 17921,
+          "protectedInkPixels": 43844,
+          "protectedPixels": 43844,
+          "lostReliableFillPixels": 5,
+          "lostProtectedInkPixels": 310,
+          "lostProtectedPixels": 310,
+          "lostProtectedBounds": {
+            "x": 1,
+            "y": 21,
+            "width": 711,
+            "height": 1330
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:07:17.829851+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 310,
+            "lostReliableFillPixels": 5,
+            "lostProtectedInkPixels": 310,
+            "bounds": {
+              "x": 1,
+              "y": 21,
+              "width": 711,
+              "height": 1330
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:07:17.829851+00:00",
+        "diagnosticFingerprint": "sha256:fcd388c1700b89ebe2b1646fecf63465d01918bd441c065d4e7a98f614dbe8ca",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:07:19.882077+00:00",
+          "subjectRevision": "sha256:1ea3f1cc00dec70da0aec31f82e2a8568f34826a750c41633075036ba829bb78",
+          "artifactSetFingerprint": "sha256:0ac3a8b458f7173688f7c5aa613b8685dd8dfc5c6148e64f7587ba334cf6fb1b"
+        }
+      }
+    },
+    "gorila.puerta": {
+      "source": "assets/images/characters/gorila/gorila_puerta.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/gorila/puerta/gorila_puerta_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/puerta/gorila_puerta_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/puerta/gorila_puerta_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1062,
+        "height": 1400
+      },
+      "transparentPixels": 887754,
+      "metrics": {
+        "fullyTransparentPixels": 467204,
+        "partialAlphaPixels": 420550,
+        "opaquePixels": 599046,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 5328,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 2766,
+            "largestComponentPixels": 1012226,
+            "detachedVisiblePixels": 7370,
+            "speckComponents": 2764,
+            "speckPixels": 7256
+          },
+          "candidate": {
+            "visibleComponents": 2766,
+            "largestComponentPixels": 1012226,
+            "detachedVisiblePixels": 7370,
+            "speckComponents": 2764,
+            "speckPixels": 7256
+          }
+        },
+        "changedVisibleRgbPixels": 345580,
+        "normalizedRetainedRgbPixels": 345580,
+        "protection": {
+          "reliableFillPixels": 23661,
+          "protectedInkPixels": 58033,
+          "protectedPixels": 58033,
+          "lostReliableFillPixels": 21,
+          "lostProtectedInkPixels": 58,
+          "lostProtectedPixels": 58,
+          "lostProtectedBounds": {
+            "x": 282,
+            "y": 1062,
+            "width": 780,
+            "height": 338
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:10:08.992609+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 58,
+            "lostReliableFillPixels": 21,
+            "lostProtectedInkPixels": 58,
+            "bounds": {
+              "x": 282,
+              "y": 1062,
+              "width": 780,
+              "height": 338
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:10:08.992609+00:00",
+        "diagnosticFingerprint": "sha256:d8b04e7bcc070566089fb50b4cc396f720c3f3f324ebc91c18d5a6e07328b959",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:10:11.025806+00:00",
+          "subjectRevision": "sha256:7b6b0f1151f017747ff303a2e1e6312a6ea1b0375556021fd4a604ea70686ada",
+          "artifactSetFingerprint": "sha256:1612506842f645080a4b8d074860cd4a9dfcb5b524b91db4a08c5e7d2b564fc6"
+        }
+      }
+    },
+    "gorila.sospecha": {
+      "source": "assets/images/characters/gorila/gorila_sospecha.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/gorila/sospecha/gorila_sospecha_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/sospecha/gorila_sospecha_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/gorila/sospecha/gorila_sospecha_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 757,
+        "height": 1400
+      },
+      "transparentPixels": 463579,
+      "metrics": {
+        "fullyTransparentPixels": 456720,
+        "partialAlphaPixels": 6859,
+        "opaquePixels": 596221,
+        "removedPixels": 12802,
+        "reducedAlphaPixels": 19115,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 15,
+            "largestComponentPixels": 615839,
+            "detachedVisiblePixels": 43,
+            "speckComponents": 14,
+            "speckPixels": 43
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 603080,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 10708,
+        "normalizedRetainedRgbPixels": 10708,
+        "protection": {
+          "reliableFillPixels": 21257,
+          "protectedInkPixels": 49800,
+          "protectedPixels": 49800,
+          "lostReliableFillPixels": 40,
+          "lostProtectedInkPixels": 4832,
+          "lostProtectedPixels": 4832,
+          "lostProtectedBounds": {
+            "x": 1,
+            "y": 5,
+            "width": 755,
+            "height": 1377
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:08:18.920011+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 4832,
+            "lostReliableFillPixels": 40,
+            "lostProtectedInkPixels": 4832,
+            "bounds": {
+              "x": 1,
+              "y": 5,
+              "width": 755,
+              "height": 1377
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:08:18.920011+00:00",
+        "diagnosticFingerprint": "sha256:ad2e7a97cda3be2f9413f1330308cb406d4c23a57ae7d7ef6d0c94778955909b",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:08:20.913991+00:00",
+          "subjectRevision": "sha256:5297badd43b5fd87ec6b556d55672df3bdfa2192bb8031c1b2f9e2aae7314e02",
+          "artifactSetFingerprint": "sha256:edb2a77fbd2c2c5f2b40d8aa0dd1c58393e94983a930370880f5cf636f7f8898"
+        }
+      }
+    },
+    "jose.alarmed": {
+      "source": "assets/images/characters/jose/jose_alarmed.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/alarmed/jose_alarmed_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/alarmed/jose_alarmed_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/alarmed/jose_alarmed_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 503270,
+      "metrics": {
+        "fullyTransparentPixels": 502117,
+        "partialAlphaPixels": 1153,
+        "opaquePixels": 600242,
+        "removedPixels": 38229,
+        "reducedAlphaPixels": 39382,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 5,
+            "largestComponentPixels": 626642,
+            "detachedVisiblePixels": 12982,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 12,
+            "largestComponentPixels": 566261,
+            "detachedVisiblePixels": 35134,
+            "speckComponents": 6,
+            "speckPixels": 33
+          }
+        },
+        "changedVisibleRgbPixels": 17492,
+        "normalizedRetainedRgbPixels": 17492,
+        "protection": {
+          "reliableFillPixels": 307381,
+          "protectedInkPixels": 370463,
+          "protectedPixels": 370463,
+          "lostReliableFillPixels": 545,
+          "lostProtectedInkPixels": 5481,
+          "lostProtectedPixels": 5481,
+          "lostProtectedBounds": {
+            "x": 21,
+            "y": 5,
+            "width": 1029,
+            "height": 1013
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:22:09.593813+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 5481,
+            "lostReliableFillPixels": 545,
+            "lostProtectedInkPixels": 5481,
+            "bounds": {
+              "x": 21,
+              "y": 5,
+              "width": 1029,
+              "height": 1013
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:22:09.593813+00:00",
+        "diagnosticFingerprint": "sha256:35a23d35cf2f3a4ac9b752a14f655581436e18a4597c38127818db949d9fdb07",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:22:11.193672+00:00",
+          "subjectRevision": "sha256:31b8fe5fca926b1379730d5ddc00e4c976a937f570d4f0aa41c9fe6cb739d29c",
+          "artifactSetFingerprint": "sha256:c92ffe0582c88b4992dacfcbcbbcd805045d4b3dfca45799c76f8426689e262a"
+        }
+      }
+    },
+    "jose.angry": {
+      "source": "assets/images/characters/jose/jose_angry.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/angry/jose_angry_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/angry/jose_angry_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/angry/jose_angry_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 544694,
+      "metrics": {
+        "fullyTransparentPixels": 500332,
+        "partialAlphaPixels": 44362,
+        "opaquePixels": 558818,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 622,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 603180,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 603180,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 37999,
+        "normalizedRetainedRgbPixels": 37999,
+        "protection": {
+          "reliableFillPixels": 262959,
+          "protectedInkPixels": 306658,
+          "protectedPixels": 306658,
+          "lostReliableFillPixels": 316,
+          "lostProtectedInkPixels": 380,
+          "lostProtectedPixels": 380,
+          "lostProtectedBounds": {
+            "x": 274,
+            "y": 1017,
+            "width": 601,
+            "height": 1
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:16:45.918945+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 380,
+            "lostReliableFillPixels": 316,
+            "lostProtectedInkPixels": 380,
+            "bounds": {
+              "x": 274,
+              "y": 1017,
+              "width": 601,
+              "height": 1
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:16:45.918945+00:00",
+        "diagnosticFingerprint": "sha256:8b79fad406f4ed7b135b063012fa580d9f948f599c391aaca9e32ee6dd36f1b4",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:16:47.844967+00:00",
+          "subjectRevision": "sha256:9f1c690b95fc7cca8a9b5fe04c35c5881bf72f0ef7321ba6d92a0dbe25300701",
+          "artifactSetFingerprint": "sha256:19050fa39f40af9952889015150b10863658c96c9ff7beac8c519f26736c3a76"
+        }
+      }
+    },
+    "jose.determined": {
+      "source": "assets/images/characters/jose/jose_determined.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/determined/jose_determined_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/determined/jose_determined_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/determined/jose_determined_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 486942,
+      "metrics": {
+        "fullyTransparentPixels": 477796,
+        "partialAlphaPixels": 9146,
+        "opaquePixels": 616570,
+        "removedPixels": 14044,
+        "reducedAlphaPixels": 23190,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 28,
+            "largestComponentPixels": 639666,
+            "detachedVisiblePixels": 94,
+            "speckComponents": 27,
+            "speckPixels": 94
+          },
+          "candidate": {
+            "visibleComponents": 5,
+            "largestComponentPixels": 625701,
+            "detachedVisiblePixels": 15,
+            "speckComponents": 4,
+            "speckPixels": 15
+          }
+        },
+        "changedVisibleRgbPixels": 24115,
+        "normalizedRetainedRgbPixels": 24115,
+        "protection": {
+          "reliableFillPixels": 282843,
+          "protectedInkPixels": 346820,
+          "protectedPixels": 346820,
+          "lostReliableFillPixels": 4945,
+          "lostProtectedInkPixels": 6861,
+          "lostProtectedPixels": 6861,
+          "lostProtectedBounds": {
+            "x": 58,
+            "y": 33,
+            "width": 917,
+            "height": 983
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:24:27.201982+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 6861,
+            "lostReliableFillPixels": 4945,
+            "lostProtectedInkPixels": 6861,
+            "bounds": {
+              "x": 58,
+              "y": 33,
+              "width": 917,
+              "height": 983
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:24:27.201982+00:00",
+        "diagnosticFingerprint": "sha256:3c17fe1a033cf9e5142105388b67139ede3687b6744cbaecfb2f1d45cf477103",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:24:29.039656+00:00",
+          "subjectRevision": "sha256:e69b5fabda96c95a940f5b454b94b4faca3c249dcc790cbbfe4acb4092d202da",
+          "artifactSetFingerprint": "sha256:e6a21e7237ea43abc63ee7243f5f9c69a75df3618acd6b383a1ce85c4124bb8e"
+        }
+      }
+    },
+    "jose.embarrassed": {
+      "source": "assets/images/characters/jose/jose_embarrassed.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/embarrassed/jose_embarrassed_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/embarrassed/jose_embarrassed_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/embarrassed/jose_embarrassed_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 559723,
+      "metrics": {
+        "fullyTransparentPixels": 551402,
+        "partialAlphaPixels": 8321,
+        "opaquePixels": 543789,
+        "removedPixels": 7950,
+        "reducedAlphaPixels": 16271,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 20,
+            "largestComponentPixels": 560014,
+            "detachedVisiblePixels": 46,
+            "speckComponents": 19,
+            "speckPixels": 46
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 552110,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 8627,
+        "normalizedRetainedRgbPixels": 8627,
+        "protection": {
+          "reliableFillPixels": 251814,
+          "protectedInkPixels": 310449,
+          "protectedPixels": 310449,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 2476,
+          "lostProtectedPixels": 2476,
+          "lostProtectedBounds": {
+            "x": 81,
+            "y": 35,
+            "width": 880,
+            "height": 983
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:25:28.300957+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 2476,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 2476,
+            "bounds": {
+              "x": 81,
+              "y": 35,
+              "width": 880,
+              "height": 983
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:25:28.300957+00:00",
+        "diagnosticFingerprint": "sha256:f469ee5835a10a1fc745ba644185340b6f500026281733c80c74703327ed12a8",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:25:30.007860+00:00",
+          "subjectRevision": "sha256:f82fb1b05b36b5533f140439a237a2fbe555ad975369d7b9016ec2645c4e4e81",
+          "artifactSetFingerprint": "sha256:ed45d994e170cb9e1ecde7a44029545e01c6f0594918ab553e9ee21ceff14551"
+        }
+      }
+    },
+    "jose.epic": {
+      "source": "assets/images/characters/jose/jose_epic.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/epic/jose_epic_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/epic/jose_epic_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/epic/jose_epic_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 512918,
+      "metrics": {
+        "fullyTransparentPixels": 503813,
+        "partialAlphaPixels": 9105,
+        "opaquePixels": 590594,
+        "removedPixels": 6789,
+        "reducedAlphaPixels": 15363,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 606488,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 8,
+            "largestComponentPixels": 599677,
+            "detachedVisiblePixels": 22,
+            "speckComponents": 7,
+            "speckPixels": 22
+          }
+        },
+        "changedVisibleRgbPixels": 10741,
+        "normalizedRetainedRgbPixels": 10741,
+        "protection": {
+          "reliableFillPixels": 288204,
+          "protectedInkPixels": 353687,
+          "protectedPixels": 353687,
+          "lostReliableFillPixels": 351,
+          "lostProtectedInkPixels": 3082,
+          "lostProtectedPixels": 3082,
+          "lostProtectedBounds": {
+            "x": 34,
+            "y": 35,
+            "width": 954,
+            "height": 983
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:27:55.377089+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 3082,
+            "lostReliableFillPixels": 351,
+            "lostProtectedInkPixels": 3082,
+            "bounds": {
+              "x": 34,
+              "y": 35,
+              "width": 954,
+              "height": 983
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:27:55.377089+00:00",
+        "diagnosticFingerprint": "sha256:f375f20b13f7e1f19d6d10423ec29862655ca80f87f83a549488f09bdba5b775",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:27:57.230719+00:00",
+          "subjectRevision": "sha256:b47d4a414539e8228bcd6760a4b636ee422a10e8799ae9e138cddfe5db351ae0",
+          "artifactSetFingerprint": "sha256:4e5c6deae7a832ef45ddbd9d6e2656c617deb9f95f60df3cf869c32e99ed5ae1"
+        }
+      }
+    },
+    "jose.facepalm": {
+      "source": "assets/images/characters/jose/jose_facepalm.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/facepalm/jose_facepalm_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/facepalm/jose_facepalm_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/facepalm/jose_facepalm_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 600507,
+      "metrics": {
+        "fullyTransparentPixels": 592724,
+        "partialAlphaPixels": 7783,
+        "opaquePixels": 503005,
+        "removedPixels": 7398,
+        "reducedAlphaPixels": 15181,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 7,
+            "largestComponentPixels": 518172,
+            "detachedVisiblePixels": 14,
+            "speckComponents": 6,
+            "speckPixels": 14
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 510788,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 9573,
+        "normalizedRetainedRgbPixels": 9573,
+        "protection": {
+          "reliableFillPixels": 227750,
+          "protectedInkPixels": 278930,
+          "protectedPixels": 278930,
+          "lostReliableFillPixels": 541,
+          "lostProtectedInkPixels": 2826,
+          "lostProtectedPixels": 2826,
+          "lostProtectedBounds": {
+            "x": 136,
+            "y": 42,
+            "width": 846,
+            "height": 976
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:28:48.493954+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 2826,
+            "lostReliableFillPixels": 541,
+            "lostProtectedInkPixels": 2826,
+            "bounds": {
+              "x": 136,
+              "y": 42,
+              "width": 846,
+              "height": 976
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:28:48.493954+00:00",
+        "diagnosticFingerprint": "sha256:e2633ca029e616183d82c1e3c6006275d6a30f8178d3102b2f154a34797d5297",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:28:50.774519+00:00",
+          "subjectRevision": "sha256:e906149fcd0a0517bdc3c183f7d05674375a9a5e1de5e23a0b37a985448ebf9c",
+          "artifactSetFingerprint": "sha256:cc6b8768f29fb9fd58818c65990b560c6afbd4e8832d4b8fc70582a3fc317b10"
+        }
+      }
+    },
+    "jose.happy": {
+      "source": "assets/images/characters/jose/jose_happy.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/happy/jose_happy_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/happy/jose_happy_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/happy/jose_happy_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 484203,
+      "metrics": {
+        "fullyTransparentPixels": 452383,
+        "partialAlphaPixels": 31820,
+        "opaquePixels": 619309,
+        "removedPixels": 14087,
+        "reducedAlphaPixels": 24149,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 665216,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 651129,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 54775,
+        "normalizedRetainedRgbPixels": 54775,
+        "protection": {
+          "reliableFillPixels": 314522,
+          "protectedInkPixels": 362398,
+          "protectedPixels": 362398,
+          "lostReliableFillPixels": 1673,
+          "lostProtectedInkPixels": 3714,
+          "lostProtectedPixels": 3714,
+          "lostProtectedBounds": {
+            "x": 11,
+            "y": 8,
+            "width": 961,
+            "height": 1010
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:15:19.387111+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 3714,
+            "lostReliableFillPixels": 1673,
+            "lostProtectedInkPixels": 3714,
+            "bounds": {
+              "x": 11,
+              "y": 8,
+              "width": 961,
+              "height": 1010
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:15:19.387111+00:00",
+        "diagnosticFingerprint": "sha256:a7411f7928c271fdb4e1b8b056e0ff8d2820cdd69cba136e2cbb84b019791cf6",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:15:21.261689+00:00",
+          "subjectRevision": "sha256:3a123654815b474f77c2233ef1e781ba6203fc93ecfa5f0958ea0684f284fb68",
+          "artifactSetFingerprint": "sha256:a873a1b12eed6d91ee1a5d7b491f410ae98a7b9b7b637fe2d0ab90c6e286ac43"
+        }
+      }
+    },
+    "jose.human": {
+      "source": "assets/images/characters/humans/jose_humano_sprite.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/human/jose_humano_sprite_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/human/jose_humano_sprite_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/human/jose_humano_sprite_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "transparentPixels": 1149760,
+      "metrics": {
+        "fullyTransparentPixels": 1135682,
+        "partialAlphaPixels": 14078,
+        "opaquePixels": 423778,
+        "removedPixels": 15029,
+        "reducedAlphaPixels": 22538,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 21,
+            "largestComponentPixels": 452739,
+            "detachedVisiblePixels": 146,
+            "speckComponents": 20,
+            "speckPixels": 146
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 437856,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 13025,
+        "normalizedRetainedRgbPixels": 13025,
+        "protection": {
+          "reliableFillPixels": 197672,
+          "protectedInkPixels": 210789,
+          "protectedPixels": 210789,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 1557,
+          "lostProtectedPixels": 1557,
+          "lostProtectedBounds": {
+            "x": 213,
+            "y": 38,
+            "width": 424,
+            "height": 1550
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:38:25.639064+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1557,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 1557,
+            "bounds": {
+              "x": 213,
+              "y": 38,
+              "width": 424,
+              "height": 1550
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:38:25.639064+00:00",
+        "diagnosticFingerprint": "sha256:2f61a184590dd2d3fd74d2344c626e589f4b291dc7afa7442adb6ac797dd4c13",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:38:27.345795+00:00",
+          "subjectRevision": "sha256:a7ad446a120b9f1821e3c0bb231e3e8b8597d0764d541639e8e7ebd4b2c0e402",
+          "artifactSetFingerprint": "sha256:b8cae1f2f5fa5a68741d88e3e689a17aa90b6f30e25049fb5ad567671558a6d7"
+        }
+      }
+    },
+    "jose.neutral": {
+      "source": "assets/images/characters/jose/jose.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/neutral/jose_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/neutral/jose_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/neutral/jose_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1085,
+        "height": 1018
+      },
+      "transparentPixels": 481709,
+      "metrics": {
+        "fullyTransparentPixels": 457040,
+        "partialAlphaPixels": 24669,
+        "opaquePixels": 622821,
+        "removedPixels": 19605,
+        "reducedAlphaPixels": 29677,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 667095,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 647490,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 28123,
+        "normalizedRetainedRgbPixels": 28123,
+        "protection": {
+          "reliableFillPixels": 296579,
+          "protectedInkPixels": 338113,
+          "protectedPixels": 338113,
+          "lostReliableFillPixels": 738,
+          "lostProtectedInkPixels": 3549,
+          "lostProtectedPixels": 3549,
+          "lostProtectedBounds": {
+            "x": 0,
+            "y": 6,
+            "width": 961,
+            "height": 1012
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:11:33.658428+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 3549,
+            "lostReliableFillPixels": 738,
+            "lostProtectedInkPixels": 3549,
+            "bounds": {
+              "x": 0,
+              "y": 6,
+              "width": 961,
+              "height": 1012
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:11:33.658428+00:00",
+        "diagnosticFingerprint": "sha256:ffc747592bfdf421d58c75a7dcc853b5732be83c609d83a7161354336e83d389",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:11:41.592641+00:00",
+          "subjectRevision": "sha256:91b868511af1a7a4450b23cb7b469ce90e1a15852e58673abba64d18690855c7",
+          "artifactSetFingerprint": "sha256:2940dfe33e57afa4f43d14ea9dfe29b8c9925b5892a8c212a010a48cc99d1079"
+        }
+      }
+    },
+    "jose.sad": {
+      "source": "assets/images/characters/jose/jose_sad.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/sad/jose_sad_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/sad/jose_sad_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/sad/jose_sad_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 549708,
+      "metrics": {
+        "fullyTransparentPixels": 526202,
+        "partialAlphaPixels": 23506,
+        "opaquePixels": 553804,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 1487,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 3,
+            "largestComponentPixels": 577298,
+            "detachedVisiblePixels": 12,
+            "speckComponents": 2,
+            "speckPixels": 12
+          },
+          "candidate": {
+            "visibleComponents": 3,
+            "largestComponentPixels": 577298,
+            "detachedVisiblePixels": 12,
+            "speckComponents": 2,
+            "speckPixels": 12
+          }
+        },
+        "changedVisibleRgbPixels": 16643,
+        "normalizedRetainedRgbPixels": 16643,
+        "protection": {
+          "reliableFillPixels": 255135,
+          "protectedInkPixels": 307581,
+          "protectedPixels": 307581,
+          "lostReliableFillPixels": 401,
+          "lostProtectedInkPixels": 424,
+          "lostProtectedPixels": 424,
+          "lostProtectedBounds": {
+            "x": 315,
+            "y": 1017,
+            "width": 430,
+            "height": 1
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:15:57.839440+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 424,
+            "lostReliableFillPixels": 401,
+            "lostProtectedInkPixels": 424,
+            "bounds": {
+              "x": 315,
+              "y": 1017,
+              "width": 430,
+              "height": 1
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:15:57.839440+00:00",
+        "diagnosticFingerprint": "sha256:07623b473d34b0e0b92705cedd409b4f6856ac2b9fdf6d522fef008e9dc3e9e9",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:16:19.204670+00:00",
+          "subjectRevision": "sha256:94a0cf6f77e4f4b5cf566d0d43b244cdeccdc01281d59a35d2c41c001057838b",
+          "artifactSetFingerprint": "sha256:f233c3da0a91d5bba29c4a7bf3297c8971f36430e89a6d9e9b632691a0dfe06c"
+        }
+      }
+    },
+    "jose.serious": {
+      "source": "assets/images/characters/jose/jose_serious.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/serious/jose_serious_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/serious/jose_serious_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/serious/jose_serious_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 645875,
+      "metrics": {
+        "fullyTransparentPixels": 636417,
+        "partialAlphaPixels": 9458,
+        "opaquePixels": 457637,
+        "removedPixels": 11434,
+        "reducedAlphaPixels": 18074,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 36,
+            "largestComponentPixels": 478375,
+            "detachedVisiblePixels": 154,
+            "speckComponents": 35,
+            "speckPixels": 154
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 467095,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 10891,
+        "normalizedRetainedRgbPixels": 10891,
+        "protection": {
+          "reliableFillPixels": 183091,
+          "protectedInkPixels": 228750,
+          "protectedPixels": 228750,
+          "lostReliableFillPixels": 405,
+          "lostProtectedInkPixels": 1486,
+          "lostProtectedPixels": 1486,
+          "lostProtectedBounds": {
+            "x": 186,
+            "y": 33,
+            "width": 715,
+            "height": 985
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:37:18.724750+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1486,
+            "lostReliableFillPixels": 405,
+            "lostProtectedInkPixels": 1486,
+            "bounds": {
+              "x": 186,
+              "y": 33,
+              "width": 715,
+              "height": 985
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:37:18.724750+00:00",
+        "diagnosticFingerprint": "sha256:c453d03508acaca3005a6b095fed4fde60a8330c45c879bd971c3a2d7a760162",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:37:20.607042+00:00",
+          "subjectRevision": "sha256:a449c41b004d322e8ac6775f2618f27c58716906cbf297bb3493946eaabf3da6",
+          "artifactSetFingerprint": "sha256:d4fd9f193f8220065ba737ae6f84fad23058b7d84dacb5314bac02a6c425d38b"
+        }
+      }
+    },
+    "jose.shocked": {
+      "source": "assets/images/characters/jose/jose_shocked.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/shocked/jose_shocked_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/shocked/jose_shocked_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/shocked/jose_shocked_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 555671,
+      "metrics": {
+        "fullyTransparentPixels": 542048,
+        "partialAlphaPixels": 13623,
+        "opaquePixels": 547841,
+        "removedPixels": 16848,
+        "reducedAlphaPixels": 30468,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 7,
+            "largestComponentPixels": 564926,
+            "detachedVisiblePixels": 13386,
+            "speckComponents": 2,
+            "speckPixels": 16
+          },
+          "candidate": {
+            "visibleComponents": 5,
+            "largestComponentPixels": 550384,
+            "detachedVisiblePixels": 11080,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 71729,
+        "normalizedRetainedRgbPixels": 71729,
+        "protection": {
+          "reliableFillPixels": 246271,
+          "protectedInkPixels": 310332,
+          "protectedPixels": 310332,
+          "lostReliableFillPixels": 54,
+          "lostProtectedInkPixels": 5039,
+          "lostProtectedPixels": 5039,
+          "lostProtectedBounds": {
+            "x": 28,
+            "y": 54,
+            "width": 986,
+            "height": 964
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:34:55.691502+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 5039,
+            "lostReliableFillPixels": 54,
+            "lostProtectedInkPixels": 5039,
+            "bounds": {
+              "x": 28,
+              "y": 54,
+              "width": 986,
+              "height": 964
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:34:55.691502+00:00",
+        "diagnosticFingerprint": "sha256:e8253c4c0fc55bee7a067f36207a3507c9a359753a5cfe63f0bdba74d3337941",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:34:57.314021+00:00",
+          "subjectRevision": "sha256:d1c3b2e5458a7fd15a030feac67c60ac7b145cadc2d7420973711e6662189ce7",
+          "artifactSetFingerprint": "sha256:cb0620e8fa6d76352bc01287dfbe761de43c6f2c6bb4252a6d8f5c9d55919c6a"
+        }
+      }
+    },
+    "jose.surprised": {
+      "source": "assets/images/characters/jose/jose_surprised.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/surprised/jose_surprised_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/surprised/jose_surprised_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/surprised/jose_surprised_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 521044,
+      "metrics": {
+        "fullyTransparentPixels": 482661,
+        "partialAlphaPixels": 38383,
+        "opaquePixels": 582468,
+        "removedPixels": 0,
+        "reducedAlphaPixels": 598,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 11,
+            "largestComponentPixels": 615739,
+            "detachedVisiblePixels": 5112,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 11,
+            "largestComponentPixels": 615739,
+            "detachedVisiblePixels": 5112,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 35321,
+        "normalizedRetainedRgbPixels": 35321,
+        "protection": {
+          "reliableFillPixels": 263144,
+          "protectedInkPixels": 337852,
+          "protectedPixels": 337852,
+          "lostReliableFillPixels": 400,
+          "lostProtectedInkPixels": 422,
+          "lostProtectedPixels": 422,
+          "lostProtectedBounds": {
+            "x": 270,
+            "y": 1017,
+            "width": 540,
+            "height": 1
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:17:06.829320+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 422,
+            "lostReliableFillPixels": 400,
+            "lostProtectedInkPixels": 422,
+            "bounds": {
+              "x": 270,
+              "y": 1017,
+              "width": 540,
+              "height": 1
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:17:06.829320+00:00",
+        "diagnosticFingerprint": "sha256:864595e922e40b5c884edebd0fe14e40737a4e5244b0c9965e0e68aa3ac8a3f3",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:17:08.515558+00:00",
+          "subjectRevision": "sha256:0b05596b5d05a1a9df804691393c008c976789b1d9f61d0291c74600a43d2433",
+          "artifactSetFingerprint": "sha256:49418141eb10117080661111783543ba6c7fd98472a8e78a54f9fc3bf3269ee1"
+        }
+      }
+    },
+    "jose.thinking": {
+      "source": "assets/images/characters/jose/jose_thinking.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/thinking/jose_thinking_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/thinking/jose_thinking_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/thinking/jose_thinking_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 571390,
+      "metrics": {
+        "fullyTransparentPixels": 562925,
+        "partialAlphaPixels": 8465,
+        "opaquePixels": 532122,
+        "removedPixels": 11293,
+        "reducedAlphaPixels": 19753,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 21,
+            "largestComponentPixels": 550807,
+            "detachedVisiblePixels": 1073,
+            "speckComponents": 17,
+            "speckPixels": 196
+          },
+          "candidate": {
+            "visibleComponents": 4,
+            "largestComponentPixels": 540120,
+            "detachedVisiblePixels": 467,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 10795,
+        "normalizedRetainedRgbPixels": 10795,
+        "protection": {
+          "reliableFillPixels": 247282,
+          "protectedInkPixels": 303111,
+          "protectedPixels": 303111,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 3751,
+          "lostProtectedPixels": 3751,
+          "lostProtectedBounds": {
+            "x": 137,
+            "y": 40,
+            "width": 820,
+            "height": 978
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:35:33.962956+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 3751,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 3751,
+            "bounds": {
+              "x": 137,
+              "y": 40,
+              "width": 820,
+              "height": 978
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:35:33.962956+00:00",
+        "diagnosticFingerprint": "sha256:14c48283b2d32251529ce7ea4b42632b8ecbd766577f410196a9bd11455b28aa",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:35:36.630004+00:00",
+          "subjectRevision": "sha256:ee3a592543a0c53cd9c3a56b62ea88c0fb01014d262d86f7c2eff9ff5083ba2b",
+          "artifactSetFingerprint": "sha256:f031f8c84251871cbcb3f0f7ea34cbc907ad8659643f9c148c0cc65377bf1481"
+        }
+      }
+    },
+    "jose.worried": {
+      "source": "assets/images/characters/jose/jose_worried.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/jose/worried/jose_worried_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/jose/worried/jose_worried_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/jose/worried/jose_worried_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1084,
+        "height": 1018
+      },
+      "transparentPixels": 572913,
+      "metrics": {
+        "fullyTransparentPixels": 564222,
+        "partialAlphaPixels": 8691,
+        "opaquePixels": 530599,
+        "removedPixels": 9090,
+        "reducedAlphaPixels": 17781,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 24,
+            "largestComponentPixels": 546934,
+            "detachedVisiblePixels": 1446,
+            "speckComponents": 19,
+            "speckPixels": 69
+          },
+          "candidate": {
+            "visibleComponents": 4,
+            "largestComponentPixels": 538852,
+            "detachedVisiblePixels": 438,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 12131,
+        "normalizedRetainedRgbPixels": 12131,
+        "protection": {
+          "reliableFillPixels": 238959,
+          "protectedInkPixels": 293628,
+          "protectedPixels": 293628,
+          "lostReliableFillPixels": 393,
+          "lostProtectedInkPixels": 3082,
+          "lostProtectedPixels": 3082,
+          "lostProtectedBounds": {
+            "x": 135,
+            "y": 43,
+            "width": 817,
+            "height": 975
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:36:10.194861+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 3082,
+            "lostReliableFillPixels": 393,
+            "lostProtectedInkPixels": 3082,
+            "bounds": {
+              "x": 135,
+              "y": 43,
+              "width": 817,
+              "height": 975
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:36:10.194861+00:00",
+        "diagnosticFingerprint": "sha256:3d0b8d42aee15e34acaf6d35812058d59984f3605f8c85def80ad98ff83d5811",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:36:11.878795+00:00",
+          "subjectRevision": "sha256:e4dbd1e34d8a67bb77acbd1509f54becfcde24dbe1de0cc0f3db9c9e16211d19",
+          "artifactSetFingerprint": "sha256:90e93fdcd31dfec53edf30e933a554c6e12809f796e42cb52c3100668b4d3816"
+        }
+      }
+    },
+    "paloma.churrera": {
+      "source": "assets/images/characters/others/paloma_churrera.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/paloma/churrera/paloma_churrera_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/paloma/churrera/paloma_churrera_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/paloma/churrera/paloma_churrera_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1024,
+        "height": 1024
+      },
+      "transparentPixels": 891312,
+      "metrics": {
+        "fullyTransparentPixels": 800710,
+        "partialAlphaPixels": 90602,
+        "opaquePixels": 157264,
+        "removedPixels": 3013,
+        "reducedAlphaPixels": 7270,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 200,
+            "largestComponentPixels": 250584,
+            "detachedVisiblePixels": 295,
+            "speckComponents": 199,
+            "speckPixels": 295
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 247866,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 52602,
+        "normalizedRetainedRgbPixels": 52602,
+        "protection": {
+          "reliableFillPixels": 173312,
+          "protectedInkPixels": 203765,
+          "protectedPixels": 203765,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 287,
+          "lostProtectedPixels": 287,
+          "lostProtectedBounds": {
+            "x": 132,
+            "y": 214,
+            "width": 774,
+            "height": 694
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T00:40:58.973884+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 287,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 287,
+            "bounds": {
+              "x": 132,
+              "y": 214,
+              "width": 774,
+              "height": 694
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:40:58.973884+00:00",
+        "diagnosticFingerprint": "sha256:0fe8103218e1cb29125c43b742eac616a2d15918df30628124d46c24c63fde60",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:41:00.719785+00:00",
+          "subjectRevision": "sha256:0cf20aabc1284dbe907692a0dffa349acd9fe0ba954727b443c0a5df49bfa785",
+          "artifactSetFingerprint": "sha256:988b1858b7bbba5f684977b65c2c96a300769c57c59af9f2c6f5bc59c8cd7fce"
+        }
       }
     },
     "samu.alarmed": {
@@ -202,13 +2577,13 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 578268,
+      "transparentPixels": 581681,
       "metrics": {
-        "fullyTransparentPixels": 565562,
-        "partialAlphaPixels": 12706,
-        "opaquePixels": 470308,
-        "removedPixels": 0,
-        "reducedAlphaPixels": 0,
+        "fullyTransparentPixels": 572932,
+        "partialAlphaPixels": 8749,
+        "opaquePixels": 466895,
+        "removedPixels": 7370,
+        "reducedAlphaPixels": 13184,
         "expandedPixels": 0,
         "components": {
           "source": {
@@ -219,25 +2594,57 @@
             "speckPixels": 53
           },
           "candidate": {
-            "visibleComponents": 21,
-            "largestComponentPixels": 482961,
-            "detachedVisiblePixels": 53,
-            "speckComponents": 20,
-            "speckPixels": 53
+            "visibleComponents": 1,
+            "largestComponentPixels": 475644,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 0,
-        "normalizedRetainedRgbPixels": 0
+        "changedVisibleRgbPixels": 11881,
+        "normalizedRetainedRgbPixels": 11881,
+        "protection": {
+          "reliableFillPixels": 425037,
+          "protectedInkPixels": 461607,
+          "protectedPixels": 461607,
+          "lostReliableFillPixels": 733,
+          "lostProtectedInkPixels": 2053,
+          "lostProtectedPixels": 2053,
+          "lostProtectedBounds": {
+            "x": 253,
+            "y": 26,
+            "width": 771,
+            "height": 998
+          }
+        }
       },
-      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
+      "updatedAt": "2026-08-08T00:43:19.757783+00:00",
       "validation": {
-        "policy": "samu-official-style-v2-import-v1",
-        "forced": false,
-        "warnings": []
-      },
-      "animationFrames": {
-        "assets/images/characters/eye_intermediate_sources/samu/bua/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/bua/animations/eyes_half_source_halo_limpio.webp",
-        "assets/images/characters/samu/animations/blinks/samu_bua_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/bua/animations/samu_bua_blink_closed_halo_limpio.webp"
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 2053,
+            "lostReliableFillPixels": 733,
+            "lostProtectedInkPixels": 2053,
+            "bounds": {
+              "x": 253,
+              "y": 26,
+              "width": 771,
+              "height": 998
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:43:19.757783+00:00",
+        "diagnosticFingerprint": "sha256:0f060c9550e42ed803aec904e2e44cdf1bbb0275fa0c2df5ee0de46714bd1c03",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:43:21.319806+00:00",
+          "subjectRevision": "sha256:39932109d345a3145f3c84311289ce5dbc240668a182d95ee5a08708d12c4cd3",
+          "artifactSetFingerprint": "sha256:ec9ab5fd9a58c11fa6ab17fe9288bb5a52d9b10773c2faa378f59261f0b7f1ab"
+        }
       }
     },
     "samu.charred_blink": {
@@ -339,13 +2746,13 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 657218,
+      "transparentPixels": 661543,
       "metrics": {
-        "fullyTransparentPixels": 636195,
-        "partialAlphaPixels": 21023,
-        "opaquePixels": 391358,
-        "removedPixels": 0,
-        "reducedAlphaPixels": 0,
+        "fullyTransparentPixels": 650687,
+        "partialAlphaPixels": 10856,
+        "opaquePixels": 387033,
+        "removedPixels": 14492,
+        "reducedAlphaPixels": 21320,
         "expandedPixels": 0,
         "components": {
           "source": {
@@ -356,25 +2763,57 @@
             "speckPixels": 174
           },
           "candidate": {
-            "visibleComponents": 46,
-            "largestComponentPixels": 407316,
-            "detachedVisiblePixels": 5065,
-            "speckComponents": 36,
-            "speckPixels": 174
+            "visibleComponents": 1,
+            "largestComponentPixels": 397889,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 0,
-        "normalizedRetainedRgbPixels": 0
+        "changedVisibleRgbPixels": 13052,
+        "normalizedRetainedRgbPixels": 13052,
+        "protection": {
+          "reliableFillPixels": 373476,
+          "protectedInkPixels": 391654,
+          "protectedPixels": 391654,
+          "lostReliableFillPixels": 461,
+          "lostProtectedInkPixels": 2098,
+          "lostProtectedPixels": 2098,
+          "lostProtectedBounds": {
+            "x": 138,
+            "y": 16,
+            "width": 695,
+            "height": 1008
+          }
+        }
       },
-      "updatedAt": "2026-08-05T14:04:27.170556+00:00",
+      "updatedAt": "2026-08-08T00:52:12.919673+00:00",
       "validation": {
-        "policy": "samu-official-style-v2-import-v1",
-        "forced": false,
-        "warnings": []
-      },
-      "animationFrames": {
-        "assets/images/characters/eye_intermediate_sources/samu/clapping/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/clapping/animations/eyes_half_source_halo_limpio.webp",
-        "assets/images/characters/samu/animations/blinks/samu_clapping_blink_open.webp": "assets/images/characters/sprite_halo_cleaned/samu/clapping/animations/samu_clapping_blink_open_halo_limpio.webp"
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 2098,
+            "lostReliableFillPixels": 461,
+            "lostProtectedInkPixels": 2098,
+            "bounds": {
+              "x": 138,
+              "y": 16,
+              "width": 695,
+              "height": 1008
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:52:12.919673+00:00",
+        "diagnosticFingerprint": "sha256:7b1f4f74874ee6cd008f0613e49010531691bd7dec2a620137e64b05b58050e1",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:52:14.771449+00:00",
+          "subjectRevision": "sha256:d48cc4ee7d400c3a39dd7a09aaba2868f9d9e0b7dc78e7f54f21e8fed72392ec",
+          "artifactSetFingerprint": "sha256:3a85f183cf328cb81932c5f9ea8140124387e4f572553caf0562dd28b2471b3d"
+        }
       }
     },
     "samu.curious": {
@@ -386,13 +2825,13 @@
         "width": 768,
         "height": 1024
       },
-      "transparentPixels": 377688,
+      "transparentPixels": 380652,
       "metrics": {
-        "fullyTransparentPixels": 363976,
-        "partialAlphaPixels": 13712,
-        "opaquePixels": 408744,
-        "removedPixels": 0,
-        "reducedAlphaPixels": 0,
+        "fullyTransparentPixels": 371728,
+        "partialAlphaPixels": 8924,
+        "opaquePixels": 405780,
+        "removedPixels": 7752,
+        "reducedAlphaPixels": 13309,
         "expandedPixels": 0,
         "components": {
           "source": {
@@ -403,25 +2842,57 @@
             "speckPixels": 87
           },
           "candidate": {
-            "visibleComponents": 24,
-            "largestComponentPixels": 422369,
-            "detachedVisiblePixels": 87,
-            "speckComponents": 23,
-            "speckPixels": 87
+            "visibleComponents": 1,
+            "largestComponentPixels": 414704,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 0,
-        "normalizedRetainedRgbPixels": 0
+        "changedVisibleRgbPixels": 11492,
+        "normalizedRetainedRgbPixels": 11492,
+        "protection": {
+          "reliableFillPixels": 383518,
+          "protectedInkPixels": 405305,
+          "protectedPixels": 405305,
+          "lostReliableFillPixels": 422,
+          "lostProtectedInkPixels": 1615,
+          "lostProtectedPixels": 1615,
+          "lostProtectedBounds": {
+            "x": 58,
+            "y": 17,
+            "width": 666,
+            "height": 1007
+          }
+        }
       },
-      "updatedAt": "2026-08-05T11:45:47.272486+00:00",
+      "updatedAt": "2026-08-08T01:02:25.330108+00:00",
       "validation": {
-        "policy": "samu-official-style-v2-import-v1",
-        "forced": false,
-        "warnings": []
-      },
-      "animationFrames": {
-        "assets/images/characters/eye_intermediate_sources/samu/curious/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/curious/animations/eyes_half_source_halo_limpio.webp",
-        "assets/images/characters/samu/animations/blinks/samu_curious_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/curious/animations/samu_curious_blink_closed_halo_limpio.webp"
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1615,
+            "lostReliableFillPixels": 422,
+            "lostProtectedInkPixels": 1615,
+            "bounds": {
+              "x": 58,
+              "y": 17,
+              "width": 666,
+              "height": 1007
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:02:25.330108+00:00",
+        "diagnosticFingerprint": "sha256:5702d739bf06034894dd69e387bfea61a899672525d43525fa050938355c1c12",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:02:27.069993+00:00",
+          "subjectRevision": "sha256:a62ff468af376de80b51b349fa862cfabd9a94759807ebb02b3eda4090746d9f",
+          "artifactSetFingerprint": "sha256:0d09ab47feb53c051be3b73286352be23d061e45587b962f4950bb496adca497"
+        }
       }
     },
     "samu.determined": {
@@ -527,13 +2998,13 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 585342,
+      "transparentPixels": 588598,
       "metrics": {
-        "fullyTransparentPixels": 571916,
-        "partialAlphaPixels": 13426,
-        "opaquePixels": 463234,
-        "removedPixels": 0,
-        "reducedAlphaPixels": 0,
+        "fullyTransparentPixels": 579442,
+        "partialAlphaPixels": 9156,
+        "opaquePixels": 459978,
+        "removedPixels": 7526,
+        "reducedAlphaPixels": 13482,
         "expandedPixels": 0,
         "components": {
           "source": {
@@ -544,25 +3015,136 @@
             "speckPixels": 88
           },
           "candidate": {
-            "visibleComponents": 22,
-            "largestComponentPixels": 476572,
-            "detachedVisiblePixels": 88,
-            "speckComponents": 21,
-            "speckPixels": 88
+            "visibleComponents": 1,
+            "largestComponentPixels": 469134,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 0,
-        "normalizedRetainedRgbPixels": 0
+        "changedVisibleRgbPixels": 11583,
+        "normalizedRetainedRgbPixels": 11583,
+        "protection": {
+          "reliableFillPixels": 423573,
+          "protectedInkPixels": 455437,
+          "protectedPixels": 455437,
+          "lostReliableFillPixels": 516,
+          "lostProtectedInkPixels": 1077,
+          "lostProtectedPixels": 1077,
+          "lostProtectedBounds": {
+            "x": 180,
+            "y": 55,
+            "width": 746,
+            "height": 969
+          }
+        }
       },
-      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
-      "animationFrames": {
-        "assets/images/characters/eye_intermediate_sources/samu/happy/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/happy/animations/eyes_half_source_halo_limpio.webp",
-        "assets/images/characters/samu/animations/blinks/samu_happy_blink_open.webp": "assets/images/characters/sprite_halo_cleaned/samu/happy/animations/samu_happy_blink_open_halo_limpio.webp"
-      },
+      "updatedAt": "2026-08-08T00:42:15.957153+00:00",
       "validation": {
-        "policy": "samu-official-style-v2-import-v1",
-        "forced": false,
-        "warnings": []
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1077,
+            "lostReliableFillPixels": 516,
+            "lostProtectedInkPixels": 1077,
+            "bounds": {
+              "x": 180,
+              "y": 55,
+              "width": 746,
+              "height": 969
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:42:15.957153+00:00",
+        "diagnosticFingerprint": "sha256:049e4dbe00656f8dbaba9e9bf5ab1380fcb62a049718097b999ec96fcf5691d3",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:42:18.039722+00:00",
+          "subjectRevision": "sha256:93ce7e41ad3a485350d4aa9561127be068fc125fa6443003e50401d50f3fe75e",
+          "artifactSetFingerprint": "sha256:859b259b64e8bbb021cf50da5ab6205618eaedb198665dd58d5b186c41e980de"
+        }
+      }
+    },
+    "samu.human": {
+      "source": "assets/images/characters/humans/samu_humano_sprite.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/human/samu_humano_sprite_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/human/samu_humano_sprite_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/human/samu_humano_sprite_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "transparentPixels": 983286,
+      "metrics": {
+        "fullyTransparentPixels": 971191,
+        "partialAlphaPixels": 12095,
+        "opaquePixels": 590252,
+        "removedPixels": 13593,
+        "reducedAlphaPixels": 20708,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 24,
+            "largestComponentPixels": 615769,
+            "detachedVisiblePixels": 171,
+            "speckComponents": 23,
+            "speckPixels": 171
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 602347,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 13392,
+        "normalizedRetainedRgbPixels": 13392,
+        "protection": {
+          "reliableFillPixels": 90259,
+          "protectedInkPixels": 111185,
+          "protectedPixels": 111185,
+          "lostReliableFillPixels": 22,
+          "lostProtectedInkPixels": 586,
+          "lostProtectedPixels": 586,
+          "lostProtectedBounds": {
+            "x": 174,
+            "y": 172,
+            "width": 503,
+            "height": 1541
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:04:39.067204+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 586,
+            "lostReliableFillPixels": 22,
+            "lostProtectedInkPixels": 586,
+            "bounds": {
+              "x": 174,
+              "y": 172,
+              "width": 503,
+              "height": 1541
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:04:39.067204+00:00",
+        "diagnosticFingerprint": "sha256:48f117987e755dc72abb1b6b2c3087a6d310ec3e46c7c6ecd2afe642f6537dc4",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:04:40.800352+00:00",
+          "subjectRevision": "sha256:dd3d9f899d3474e1b69fdb5d54564f2815a8a7dfb607d224685e5ceb70fe32c2",
+          "artifactSetFingerprint": "sha256:62b608d90bd617619ea8644f2dc72502a3256fff11e805cdd4cb145a87028b11"
+        }
       }
     },
     "samu.neutral": {
@@ -762,13 +3344,13 @@
         "width": 1024,
         "height": 1024
       },
-      "transparentPixels": 591481,
+      "transparentPixels": 594539,
       "metrics": {
-        "fullyTransparentPixels": 573617,
-        "partialAlphaPixels": 17864,
-        "opaquePixels": 457095,
-        "removedPixels": 0,
-        "reducedAlphaPixels": 0,
+        "fullyTransparentPixels": 583983,
+        "partialAlphaPixels": 10556,
+        "opaquePixels": 454037,
+        "removedPixels": 10366,
+        "reducedAlphaPixels": 17203,
         "expandedPixels": 0,
         "components": {
           "source": {
@@ -779,25 +3361,57 @@
             "speckPixels": 191
           },
           "candidate": {
-            "visibleComponents": 73,
-            "largestComponentPixels": 472418,
-            "detachedVisiblePixels": 2541,
-            "speckComponents": 69,
-            "speckPixels": 191
+            "visibleComponents": 4,
+            "largestComponentPixels": 462838,
+            "detachedVisiblePixels": 1755,
+            "speckComponents": 0,
+            "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 0,
-        "normalizedRetainedRgbPixels": 0
+        "changedVisibleRgbPixels": 12672,
+        "normalizedRetainedRgbPixels": 12672,
+        "protection": {
+          "reliableFillPixels": 428508,
+          "protectedInkPixels": 455517,
+          "protectedPixels": 455517,
+          "lostReliableFillPixels": 555,
+          "lostProtectedInkPixels": 2330,
+          "lostProtectedPixels": 2330,
+          "lostProtectedBounds": {
+            "x": 67,
+            "y": 6,
+            "width": 815,
+            "height": 1018
+          }
+        }
       },
-      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
+      "updatedAt": "2026-08-08T00:55:21.798115+00:00",
       "validation": {
-        "policy": "samu-official-style-v2-import-v1",
-        "forced": false,
-        "warnings": []
-      },
-      "animationFrames": {
-        "assets/images/characters/eye_intermediate_sources/samu/thinking/eyes_half_source.webp": "assets/images/characters/sprite_halo_cleaned/samu/thinking/animations/eyes_half_source_halo_limpio.webp",
-        "assets/images/characters/samu/animations/blinks/samu_thinking_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/thinking/animations/samu_thinking_blink_closed_halo_limpio.webp"
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 2330,
+            "lostReliableFillPixels": 555,
+            "lostProtectedInkPixels": 2330,
+            "bounds": {
+              "x": 67,
+              "y": 6,
+              "width": 815,
+              "height": 1018
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T00:55:21.798115+00:00",
+        "diagnosticFingerprint": "sha256:c6425d7b47b7d79085243eba14550fcf1b85fc4765dae7d4f85c1e38286a587b",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T00:55:23.494798+00:00",
+          "subjectRevision": "sha256:76f61c782b5d0bb1f3f5b09c92ee03633498e8a009629837a3694e3336921199",
+          "artifactSetFingerprint": "sha256:f86b1dba2bd85018a5cda0f125e3ae03537055750586db7c7984211dc1f9360f"
+        }
       }
     },
     "samu.valla": {
@@ -849,20 +3463,20 @@
     },
     "samu.worried": {
       "source": "assets/images/characters/samu/samu_worried.webp",
-      "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio.webp",
-      "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio_miniatura.webp",
-      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_v2_halo_limpio_galeria.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/samu/worried/samu_worried_halo_limpio_galeria.webp",
       "canvas": {
         "width": 1209,
         "height": 1301
       },
-      "transparentPixels": 651394,
+      "transparentPixels": 661133,
       "metrics": {
-        "fullyTransparentPixels": 651196,
-        "partialAlphaPixels": 198,
-        "opaquePixels": 921515,
-        "removedPixels": 0,
-        "reducedAlphaPixels": 0,
+        "fullyTransparentPixels": 651391,
+        "partialAlphaPixels": 9742,
+        "opaquePixels": 911776,
+        "removedPixels": 195,
+        "reducedAlphaPixels": 9928,
         "expandedPixels": 0,
         "components": {
           "source": {
@@ -873,25 +3487,852 @@
             "speckPixels": 33
           },
           "candidate": {
-            "visibleComponents": 14,
-            "largestComponentPixels": 921680,
-            "detachedVisiblePixels": 33,
-            "speckComponents": 13,
-            "speckPixels": 33
+            "visibleComponents": 1,
+            "largestComponentPixels": 921518,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 0,
-        "normalizedRetainedRgbPixels": 0
+        "changedVisibleRgbPixels": 12687,
+        "normalizedRetainedRgbPixels": 12687,
+        "protection": {
+          "reliableFillPixels": 858498,
+          "protectedInkPixels": 901782,
+          "protectedPixels": 901782,
+          "lostReliableFillPixels": 932,
+          "lostProtectedInkPixels": 2713,
+          "lostProtectedPixels": 2713,
+          "lostProtectedBounds": {
+            "x": 4,
+            "y": 53,
+            "width": 1099,
+            "height": 1248
+          }
+        }
       },
-      "updatedAt": "2026-08-05T07:04:18.744602+00:00",
-      "animationFrames": {
-        "assets/images/characters/samu/animations/blinks/samu_worried_blink_half.webp": "assets/images/characters/sprite_halo_cleaned/samu/worried/animations/samu_worried_blink_half_halo_limpio.webp",
-        "assets/images/characters/samu/animations/blinks/samu_worried_blink_closed.webp": "assets/images/characters/sprite_halo_cleaned/samu/worried/animations/samu_worried_blink_closed_halo_limpio.webp"
-      },
+      "updatedAt": "2026-08-08T01:01:03.588178+00:00",
       "validation": {
-        "policy": "samu-official-style-v2-import-v1",
-        "forced": false,
-        "warnings": []
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 2713,
+            "lostReliableFillPixels": 932,
+            "lostProtectedInkPixels": 2713,
+            "bounds": {
+              "x": 4,
+              "y": 53,
+              "width": 1099,
+              "height": 1248
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:01:03.588178+00:00",
+        "diagnosticFingerprint": "sha256:93a4e9db39f857fc6090155121750593f293ee93eff6a31c88c3c5a87d2613cf",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:01:05.769965+00:00",
+          "subjectRevision": "sha256:812a96b03766c71e6f88e978243cd2c4545a81a9534471bb306dfdf32c092469",
+          "artifactSetFingerprint": "sha256:7c20562a4f5cbbcd330be397866db2d7872a4d0db9a489462b8d3ae23f1b1d1a"
+        }
+      }
+    },
+    "santi.despedida": {
+      "source": "assets/images/characters/santi/santi_despedida.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/santi/despedida/santi_despedida_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/santi/despedida/santi_despedida_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/santi/despedida/santi_despedida_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1125,
+        "height": 1400
+      },
+      "transparentPixels": 1023973,
+      "metrics": {
+        "fullyTransparentPixels": 738932,
+        "partialAlphaPixels": 285041,
+        "opaquePixels": 551027,
+        "removedPixels": 36657,
+        "reducedAlphaPixels": 36657,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 941,
+            "largestComponentPixels": 870592,
+            "detachedVisiblePixels": 2133,
+            "speckComponents": 940,
+            "speckPixels": 2133
+          },
+          "candidate": {
+            "visibleComponents": 41,
+            "largestComponentPixels": 835788,
+            "detachedVisiblePixels": 280,
+            "speckComponents": 40,
+            "speckPixels": 280
+          }
+        },
+        "changedVisibleRgbPixels": 245097,
+        "normalizedRetainedRgbPixels": 245097,
+        "protection": {
+          "reliableFillPixels": 447315,
+          "protectedInkPixels": 581151,
+          "protectedPixels": 581151,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 34,
+          "lostProtectedPixels": 34,
+          "lostProtectedBounds": {
+            "x": 287,
+            "y": 105,
+            "width": 445,
+            "height": 1276
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:08:51.060953+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 34,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 34,
+            "bounds": {
+              "x": 287,
+              "y": 105,
+              "width": 445,
+              "height": 1276
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:08:51.060953+00:00",
+        "diagnosticFingerprint": "sha256:7f382904d8f5dbcd5d8200126bdbbafa652d3016287886bae94434b98962bc84",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:08:53.051773+00:00",
+          "subjectRevision": "sha256:ea836c12361e8ed4484165b72f22c70d5dc74735d60719eff2d393f849ca5448",
+          "artifactSetFingerprint": "sha256:6336ef585a6dae93acfb9e9273aa91d3c5aa97b49a80324d2bc6003b96e43863"
+        }
+      }
+    },
+    "santi.estornudo_1": {
+      "source": "assets/images/characters/santi/santi_est_0.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/santi/estornudo_1/santi_est_0_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/santi/estornudo_1/santi_est_0_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/santi/estornudo_1/santi_est_0_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1075,
+        "height": 1267
+      },
+      "transparentPixels": 1137937,
+      "metrics": {
+        "fullyTransparentPixels": 1133537,
+        "partialAlphaPixels": 4400,
+        "opaquePixels": 224088,
+        "removedPixels": 12216,
+        "reducedAlphaPixels": 12216,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 7,
+            "largestComponentPixels": 240688,
+            "detachedVisiblePixels": 16,
+            "speckComponents": 6,
+            "speckPixels": 16
+          },
+          "candidate": {
+            "visibleComponents": 36,
+            "largestComponentPixels": 228414,
+            "detachedVisiblePixels": 74,
+            "speckComponents": 35,
+            "speckPixels": 74
+          }
+        },
+        "changedVisibleRgbPixels": 2436,
+        "normalizedRetainedRgbPixels": 2436,
+        "protection": {
+          "reliableFillPixels": 73068,
+          "protectedInkPixels": 103829,
+          "protectedPixels": 103829,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 7,
+          "lostProtectedPixels": 7,
+          "lostProtectedBounds": {
+            "x": 176,
+            "y": 438,
+            "width": 217,
+            "height": 130
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:09:47.071705+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 7,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 7,
+            "bounds": {
+              "x": 176,
+              "y": 438,
+              "width": 217,
+              "height": 130
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:09:47.071705+00:00",
+        "diagnosticFingerprint": "sha256:be6732429db726334fc6ce50e54e48db06a11c2e6e4857f97fafe124122c031c",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:09:48.593668+00:00",
+          "subjectRevision": "sha256:923ca2667a916dc0d5cdb2b0b5692a1e80e3c0407e3be014946fe7000151f39e",
+          "artifactSetFingerprint": "sha256:83fa7f96b6e715b73bc155b457eb1581940d1ab7130ba877b20d04443175f367"
+        }
+      }
+    },
+    "santi.estornudo_4": {
+      "source": "assets/images/characters/santi/santi_est_3.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/santi/estornudo_4/santi_est_3_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/santi/estornudo_4/santi_est_3_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/santi/estornudo_4/santi_est_3_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1075,
+        "height": 1267
+      },
+      "transparentPixels": 1227728,
+      "metrics": {
+        "fullyTransparentPixels": 1121169,
+        "partialAlphaPixels": 106559,
+        "opaquePixels": 134297,
+        "removedPixels": 13657,
+        "reducedAlphaPixels": 19116,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 661,
+            "largestComponentPixels": 252182,
+            "detachedVisiblePixels": 2331,
+            "speckComponents": 659,
+            "speckPixels": 1214
+          },
+          "candidate": {
+            "visibleComponents": 33,
+            "largestComponentPixels": 239911,
+            "detachedVisiblePixels": 945,
+            "speckComponents": 31,
+            "speckPixels": 135
+          }
+        },
+        "changedVisibleRgbPixels": 87396,
+        "normalizedRetainedRgbPixels": 87396,
+        "protection": {
+          "reliableFillPixels": 89861,
+          "protectedInkPixels": 127346,
+          "protectedPixels": 127346,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 1032,
+          "lostProtectedPixels": 1032,
+          "lostProtectedBounds": {
+            "x": 291,
+            "y": 391,
+            "width": 495,
+            "height": 852
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:10:26.680255+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1032,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 1032,
+            "bounds": {
+              "x": 291,
+              "y": 391,
+              "width": 495,
+              "height": 852
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:10:26.680255+00:00",
+        "diagnosticFingerprint": "sha256:5b15fc31a90010df41321353bb99019ac05c1ed8e246085406c6ebe9bb5f767e",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:10:28.381204+00:00",
+          "subjectRevision": "sha256:408d42b1f76cf608600f5ebbc30d8fdd403ccb5fba7eeaad95fb8ae9977768c8",
+          "artifactSetFingerprint": "sha256:3834c4da7968bf18fad84d242284aa95522f51a95d2075c1f641e2454d552bdc"
+        }
+      }
+    },
+    "santi.neutral": {
+      "source": "assets/images/characters/santi/santi.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/santi/neutral/santi_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/santi/neutral/santi_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/santi/neutral/santi_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1452,
+        "height": 1400
+      },
+      "transparentPixels": 1438606,
+      "metrics": {
+        "fullyTransparentPixels": 1427407,
+        "partialAlphaPixels": 11199,
+        "opaquePixels": 594194,
+        "removedPixels": 19823,
+        "reducedAlphaPixels": 29701,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 30,
+            "largestComponentPixels": 625164,
+            "detachedVisiblePixels": 52,
+            "speckComponents": 29,
+            "speckPixels": 52
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 605393,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 7682,
+        "normalizedRetainedRgbPixels": 7682,
+        "protection": {
+          "reliableFillPixels": 197682,
+          "protectedInkPixels": 256314,
+          "protectedPixels": 256314,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 1113,
+          "lostProtectedPixels": 1113,
+          "lostProtectedBounds": {
+            "x": 66,
+            "y": 1,
+            "width": 727,
+            "height": 1326
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:06:51.118729+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1113,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 1113,
+            "bounds": {
+              "x": 66,
+              "y": 1,
+              "width": 727,
+              "height": 1326
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:06:51.118729+00:00",
+        "diagnosticFingerprint": "sha256:7cda973e61e96de8063c5698d78248a1da7873c11617e221c5da3f759cc16919",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:06:52.909768+00:00",
+          "subjectRevision": "sha256:c482a2c0198a401954ef928202d797bf833a92ef9a8a7f5ad7fda718a71373bd",
+          "artifactSetFingerprint": "sha256:2ed5e3875ea7678a92ab95838ca5c0e4add6800454ef2152591409d0608fdb0e"
+        }
+      }
+    },
+    "santi.preocupado": {
+      "source": "assets/images/characters/santi/santi_preocupado.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/santi/preocupado/santi_preocupado_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/santi/preocupado/santi_preocupado_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/santi/preocupado/santi_preocupado_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 571,
+        "height": 922
+      },
+      "transparentPixels": 360129,
+      "metrics": {
+        "fullyTransparentPixels": 260751,
+        "partialAlphaPixels": 99378,
+        "opaquePixels": 166333,
+        "removedPixels": 12375,
+        "reducedAlphaPixels": 18056,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 800,
+            "largestComponentPixels": 275881,
+            "detachedVisiblePixels": 2205,
+            "speckComponents": 798,
+            "speckPixels": 1018
+          },
+          "candidate": {
+            "visibleComponents": 29,
+            "largestComponentPixels": 264713,
+            "detachedVisiblePixels": 998,
+            "speckComponents": 27,
+            "speckPixels": 85
+          }
+        },
+        "changedVisibleRgbPixels": 82380,
+        "normalizedRetainedRgbPixels": 82380,
+        "protection": {
+          "reliableFillPixels": 99763,
+          "protectedInkPixels": 141009,
+          "protectedPixels": 141009,
+          "lostReliableFillPixels": 38,
+          "lostProtectedInkPixels": 1266,
+          "lostProtectedPixels": 1266,
+          "lostProtectedBounds": {
+            "x": 50,
+            "y": 1,
+            "width": 521,
+            "height": 919
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:07:48.661708+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1266,
+            "lostReliableFillPixels": 38,
+            "lostProtectedInkPixels": 1266,
+            "bounds": {
+              "x": 50,
+              "y": 1,
+              "width": 521,
+              "height": 919
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:07:48.661708+00:00",
+        "diagnosticFingerprint": "sha256:684a0489ca283d4885ba875bf5fbd8af572b10c16015ed17f7872a26febf7162",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:07:51.294047+00:00",
+          "subjectRevision": "sha256:6244970489e1321d7adf5fe7824d45e8a6261c1840f35a10c55ef99c3e87ee8f",
+          "artifactSetFingerprint": "sha256:e0a7c786eb29a4e0921fe6684063f8f4de8f88fd9b36720a87564d376ea11650"
+        }
+      }
+    },
+    "sebas.neutral": {
+      "source": "assets/images/characters/sebas/sebas.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/sebas/neutral/sebas_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/sebas/neutral/sebas_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/sebas/neutral/sebas_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1046,
+        "height": 1237
+      },
+      "transparentPixels": 542620,
+      "metrics": {
+        "fullyTransparentPixels": 531224,
+        "partialAlphaPixels": 11396,
+        "opaquePixels": 751282,
+        "removedPixels": 67493,
+        "reducedAlphaPixels": 73678,
+        "expandedPixels": 41807,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 830171,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 7,
+            "largestComponentPixels": 762662,
+            "detachedVisiblePixels": 16,
+            "speckComponents": 6,
+            "speckPixels": 16
+          }
+        },
+        "changedVisibleRgbPixels": 49485,
+        "normalizedRetainedRgbPixels": 49485,
+        "protection": {
+          "reliableFillPixels": 15081,
+          "protectedInkPixels": 20385,
+          "protectedPixels": 20385,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 104,
+          "lostProtectedPixels": 104,
+          "lostProtectedBounds": {
+            "x": 274,
+            "y": 86,
+            "width": 427,
+            "height": 408
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:46:16.831529+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 104,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 104,
+            "bounds": {
+              "x": 274,
+              "y": 86,
+              "width": 427,
+              "height": 408
+            }
+          },
+          {
+            "code": "expanded-alpha",
+            "pixels": 41807,
+            "maximumAlphaIncrease": 150
+          }
+        ],
+        "forcedAt": "2026-08-08T01:46:16.831529+00:00",
+        "diagnosticFingerprint": "sha256:b3e520a68e639439bac7fa37abbaeec31f7ff70a4f38c3c0cfb6fd26494d3067",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:48:25.608009+00:00",
+          "subjectRevision": "sha256:61ce4d01a6854ae92ad052071168b6532c74ba87916f4df091e81ae76807fbef",
+          "artifactSetFingerprint": "sha256:49c59067cc6cb9b35d837a19a648aa6a890ba4a110c768e3ffd0c3637f891896"
+        }
+      }
+    },
+    "tony.balada": {
+      "source": "assets/images/characters/tony/tony_balada.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/tony/balada/tony_balada_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/tony/balada/tony_balada_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/tony/balada/tony_balada_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 791,
+        "height": 1400
+      },
+      "transparentPixels": 362291,
+      "metrics": {
+        "fullyTransparentPixels": 347953,
+        "partialAlphaPixels": 14338,
+        "opaquePixels": 745109,
+        "removedPixels": 14933,
+        "reducedAlphaPixels": 22806,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 774380,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 759447,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 19891,
+        "normalizedRetainedRgbPixels": 19891,
+        "protection": {
+          "reliableFillPixels": 315846,
+          "protectedInkPixels": 342911,
+          "protectedPixels": 342911,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 50,
+          "lostProtectedPixels": 50,
+          "lostProtectedBounds": {
+            "x": 183,
+            "y": 721,
+            "width": 587,
+            "height": 370
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:52:11.624833+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 50,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 50,
+            "bounds": {
+              "x": 183,
+              "y": 721,
+              "width": 587,
+              "height": 370
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:52:11.624833+00:00",
+        "diagnosticFingerprint": "sha256:70bb23d2e4e6385fde2418ecf032c1e8ce687b4b0147ea967b9138a9cc1d11f7",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:52:13.321832+00:00",
+          "subjectRevision": "sha256:ce000a062ac7b6d4de452c4ad18d65faeb1af31b4213110a365fd3a690496af2",
+          "artifactSetFingerprint": "sha256:d336eea4ac911496d8396c2f694cb3b0a742be44588d8c13b25305feca22af98"
+        }
+      }
+    },
+    "tony.human": {
+      "source": "assets/images/characters/humans/tony_humano_sprite.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/tony/human/tony_humano_sprite_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/tony/human/tony_humano_sprite_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/tony/human/tony_humano_sprite_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 887,
+        "height": 1774
+      },
+      "transparentPixels": 1074710,
+      "metrics": {
+        "fullyTransparentPixels": 1064257,
+        "partialAlphaPixels": 10453,
+        "opaquePixels": 498828,
+        "removedPixels": 16778,
+        "reducedAlphaPixels": 21472,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 24,
+            "largestComponentPixels": 525882,
+            "detachedVisiblePixels": 177,
+            "speckComponents": 23,
+            "speckPixels": 177
+          },
+          "candidate": {
+            "visibleComponents": 5,
+            "largestComponentPixels": 509277,
+            "detachedVisiblePixels": 4,
+            "speckComponents": 4,
+            "speckPixels": 4
+          }
+        },
+        "changedVisibleRgbPixels": 29281,
+        "normalizedRetainedRgbPixels": 29281,
+        "protection": {
+          "reliableFillPixels": 231383,
+          "protectedInkPixels": 247383,
+          "protectedPixels": 247383,
+          "lostReliableFillPixels": 25,
+          "lostProtectedInkPixels": 1196,
+          "lostProtectedPixels": 1196,
+          "lostProtectedBounds": {
+            "x": 157,
+            "y": 37,
+            "width": 525,
+            "height": 1703
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:59:58.286758+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1196,
+            "lostReliableFillPixels": 25,
+            "lostProtectedInkPixels": 1196,
+            "bounds": {
+              "x": 157,
+              "y": 37,
+              "width": 525,
+              "height": 1703
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:59:58.286758+00:00",
+        "diagnosticFingerprint": "sha256:0c65f830b69c355308a90e905cee00c9dd7f839397f3874b3818d6777202e9ee",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T02:00:00.668994+00:00",
+          "subjectRevision": "sha256:82b3f7c7da5121f6205045cbd66b98e1549003772edd32838a62b809087ff8dc",
+          "artifactSetFingerprint": "sha256:3cd4164443cc06161f669378795ea1a584e36ed3d3d8b5a5cfad657540ab76b5"
+        }
+      }
+    },
+    "tony.shocked": {
+      "source": "assets/images/characters/tony/tony_shocked.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/tony/shocked/tony_shocked_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/tony/shocked/tony_shocked_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/tony/shocked/tony_shocked_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 2048,
+        "height": 2048
+      },
+      "transparentPixels": 2145770,
+      "metrics": {
+        "fullyTransparentPixels": 2115782,
+        "partialAlphaPixels": 29988,
+        "opaquePixels": 2048534,
+        "removedPixels": 38593,
+        "reducedAlphaPixels": 68581,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 7,
+            "largestComponentPixels": 2015140,
+            "detachedVisiblePixels": 101975,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 6,
+            "largestComponentPixels": 1982224,
+            "detachedVisiblePixels": 96298,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 24594,
+        "normalizedRetainedRgbPixels": 24594,
+        "protection": {
+          "reliableFillPixels": 892458,
+          "protectedInkPixels": 952166,
+          "protectedPixels": 952166,
+          "lostReliableFillPixels": 0,
+          "lostProtectedInkPixels": 1,
+          "lostProtectedPixels": 1,
+          "lostProtectedBounds": {
+            "x": 503,
+            "y": 1434,
+            "width": 1,
+            "height": 1
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T01:50:45.749602+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1,
+            "lostReliableFillPixels": 0,
+            "lostProtectedInkPixels": 1,
+            "bounds": {
+              "x": 503,
+              "y": 1434,
+              "width": 1,
+              "height": 1
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T01:50:45.749602+00:00",
+        "diagnosticFingerprint": "sha256:ecb8926d9ff345bf64d33f00a9cdaadd1645dab97cd46dcf0db34a06c96573c3",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T01:50:48.190803+00:00",
+          "subjectRevision": "sha256:497ffa19864cc67ec9b0a745e8b6d5b25d5e861936ff42c53ebe9ca692b81157",
+          "artifactSetFingerprint": "sha256:aba2dcfdc90ac352373bd43a99702f9025e5b33a8740b4a912501bb6d01a8d9c"
+        }
+      }
+    },
+    "tralalelo_tralala.neutral": {
+      "source": "assets/images/characters/tralalelo_tralala.webp",
+      "cleaned": "assets/images/characters/sprite_halo_cleaned/tralalelo_tralala/neutral/tralalelo_tralala_halo_limpio.webp",
+      "thumbnail": "assets/images/characters/sprite_halo_cleaned/tralalelo_tralala/neutral/tralalelo_tralala_halo_limpio_miniatura.webp",
+      "galleryThumbnail": "assets/images/characters/sprite_halo_cleaned/tralalelo_tralala/neutral/tralalelo_tralala_halo_limpio_galeria.webp",
+      "canvas": {
+        "width": 1179,
+        "height": 1149
+      },
+      "transparentPixels": 808683,
+      "metrics": {
+        "fullyTransparentPixels": 799888,
+        "partialAlphaPixels": 8795,
+        "opaquePixels": 545988,
+        "removedPixels": 8314,
+        "reducedAlphaPixels": 17088,
+        "expandedPixels": 0,
+        "components": {
+          "source": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 563097,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          },
+          "candidate": {
+            "visibleComponents": 1,
+            "largestComponentPixels": 554783,
+            "detachedVisiblePixels": 0,
+            "speckComponents": 0,
+            "speckPixels": 0
+          }
+        },
+        "changedVisibleRgbPixels": 7814,
+        "normalizedRetainedRgbPixels": 7814,
+        "protection": {
+          "reliableFillPixels": 402283,
+          "protectedInkPixels": 419980,
+          "protectedPixels": 419980,
+          "lostReliableFillPixels": 32,
+          "lostProtectedInkPixels": 1287,
+          "lostProtectedPixels": 1287,
+          "lostProtectedBounds": {
+            "x": 246,
+            "y": 4,
+            "width": 926,
+            "height": 1103
+          }
+        }
+      },
+      "updatedAt": "2026-08-08T02:01:37.017095+00:00",
+      "validation": {
+        "policy": "white-halo-save-v1",
+        "forced": true,
+        "warnings": [
+          {
+            "code": "lost-protected-alpha",
+            "pixels": 1287,
+            "lostReliableFillPixels": 32,
+            "lostProtectedInkPixels": 1287,
+            "bounds": {
+              "x": 246,
+              "y": 4,
+              "width": 926,
+              "height": 1103
+            }
+          }
+        ],
+        "forcedAt": "2026-08-08T02:01:37.017095+00:00",
+        "diagnosticFingerprint": "sha256:d9c95ebb86e6b3bd540a3a56776020f1baf24a57a20ec5990583a5619955da04",
+        "review": {
+          "status": "approved",
+          "policy": "white-halo-manual-review-v1",
+          "reviewedAt": "2026-08-08T02:01:38.933616+00:00",
+          "subjectRevision": "sha256:63f844c662f0f5c2f9499656596e143cc4b23f53635486237d49c00463b02a8e",
+          "artifactSetFingerprint": "sha256:3c50eab2e002bada4f58167efc93a72bb5f4c55a8b9e7f3a2b148388f3090f58"
+        }
       }
     }
   }

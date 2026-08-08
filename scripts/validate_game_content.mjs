@@ -597,18 +597,18 @@ const cleanSpriteFile = path.join(
   root,
   "assets",
   "metadata",
-  "sprite_white_halo_cleaned.json",
+  "sprite_white_halo_production.json",
 );
 if (fs.existsSync(cleanSpriteFile)) {
   const cleanManifest = readJson(cleanSpriteFile);
   if (cleanManifest) {
     const sprites = cleanManifest.sprites || {};
-    walkAssets(sprites, "sprite_white_halo_cleaned.json");
+    walkAssets(sprites, "sprite_white_halo_production.json");
     for (const [id, entry] of Object.entries(sprites)) {
       const separator = id.indexOf(".");
       const characterKey = separator > 0 ? id.slice(0, separator) : "";
       const pose = separator > 0 ? id.slice(separator + 1) : "";
-      const where = `sprite_white_halo_cleaned.json · ${id}`;
+      const where = `sprite_white_halo_production.json · ${id}`;
       const declaredPose = characters.get(characterKey)?.poses?.[pose];
       const declaredSource =
         typeof declaredPose === "string" ? declaredPose : declaredPose?.src;
@@ -702,8 +702,12 @@ if (fs.existsSync(cleanSpriteFile)) {
                   typeof warning === "string" ? warning : warning?.code,
                 )
               : [];
-            if (!warningCodes.includes("lost-protected-alpha")) {
-              errors.push(`${where}: la excepción no conserva lost-protected-alpha`);
+            const knownWarningCodes = new Set(["lost-protected-alpha", "expanded-alpha"]);
+            if (!warningCodes.some((code) => knownWarningCodes.has(code))) {
+              errors.push(`${where}: la excepción no conserva una advertencia conocida`);
+            }
+            if (warningCodes.some((code) => !knownWarningCodes.has(code))) {
+              errors.push(`${where}: la excepción conserva una advertencia desconocida`);
             }
           }
           if (review != null) {

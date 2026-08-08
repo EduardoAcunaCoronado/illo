@@ -17,6 +17,7 @@ import json
 import math
 import os
 import re
+import shutil
 import socket
 import subprocess
 import sys
@@ -61,6 +62,12 @@ PRODUCTION_EYE_ROOT = (
 )
 WHITE_HALO_METADATA_PATH = ROOT / "assets" / "metadata" / "sprite_white_halo_cleaned.json"
 WHITE_HALO_ROOT = ROOT / "assets" / "images" / "characters" / "sprite_halo_cleaned"
+WHITE_HALO_PRODUCTION_METADATA_PATH = (
+    ROOT / "assets" / "metadata" / "sprite_white_halo_production.json"
+)
+WHITE_HALO_PRODUCTION_ROOT = (
+    ROOT / "assets" / "images" / "characters" / "sprite_halo_production"
+)
 OPTIMIZATION_MANIFEST_PATH = (
     ROOT / "workbench" / "assets" / "metadata" / "asset_optimization_manifest.json"
 )
@@ -461,6 +468,31 @@ def save_white_halo_edits(sprites: dict[str, dict[str, Any]]) -> None:
     temporary.replace(WHITE_HALO_METADATA_PATH)
 
 
+def load_white_halo_production() -> dict[str, dict[str, Any]]:
+    if not WHITE_HALO_PRODUCTION_METADATA_PATH.is_file():
+        return {}
+    payload = json.loads(
+        WHITE_HALO_PRODUCTION_METADATA_PATH.read_text(encoding="utf-8")
+    )
+    sprites = payload.get("sprites", {})
+    return sprites if isinstance(sprites, dict) else {}
+
+
+def save_white_halo_production(sprites: dict[str, dict[str, Any]]) -> None:
+    payload = {
+        "version": 1,
+        "poseCount": len(sprites),
+        "updatedAt": datetime.now(timezone.utc).isoformat(),
+        "sprites": dict(sorted(sprites.items())),
+    }
+    WHITE_HALO_PRODUCTION_METADATA_PATH.parent.mkdir(parents=True, exist_ok=True)
+    temporary = WHITE_HALO_PRODUCTION_METADATA_PATH.with_suffix(".json.tmp")
+    temporary.write_text(
+        json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
+    )
+    temporary.replace(WHITE_HALO_PRODUCTION_METADATA_PATH)
+
+
 def source_eye_layer_path(job_id: str, source_kind: str, state: str) -> str:
     if source_kind not in {"saved", "clean"}:
         raise ValueError("El origen ocular no es válido")
@@ -492,9 +524,54 @@ def edited_eye_layer_path(job_id: str, source_kind: str, state: str) -> str:
     edits = load_pixel_edits()
     path = ((edits.get(source_kind) or {}).get(job_id) or {}).get(state)
     resolved = resolve_asset_reference(path)
-    if resolved:
+    if resolved and pixel_edit_matches_source(job_id, source_kind, state, resolved):
         return resolved
     return source_eye_layer_path(job_id, source_kind, state)
+
+
+def pixel_edit_matches_source(
+    job_id: str, source_kind: str, state: str, edit_path: str
+) -> bool:
+    """Acepta una edición sólo si conserva el lienzo de su fuente vigente."""
+    try:
+        source_path = source_eye_layer_path(job_id, source_kind, state)
+        with Image.open(ROOT / source_path) as source, Image.open(
+            ROOT / edit_path
+        ) as edited:
+            return edited.size == source.size
+    except (FileNotFoundError, OSError, ValueError):
+        return False
+
+
+def compatible_pixel_edits() -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Filtra copias obsoletas sin borrar los PNG ni su registro histórico."""
+    compatible: dict[str, Any] = {}
+    ignored: list[dict[str, Any]] = []
+    for source_kind, pose_edits in load_pixel_edits().items():
+        if not isinstance(pose_edits, dict):
+            continue
+        for job_id, state_edits in pose_edits.items():
+            if not isinstance(state_edits, dict):
+                continue
+            for state, path in state_edits.items():
+                resolved = resolve_asset_reference(path)
+                if resolved and pixel_edit_matches_source(
+                    job_id, source_kind, state, resolved
+                ):
+                    compatible.setdefault(source_kind, {}).setdefault(
+                        job_id, {}
+                    )[state] = resolved
+                else:
+                    ignored.append(
+                        {
+                            "id": job_id,
+                            "source": source_kind,
+                            "state": state,
+                            "path": path,
+                            "reason": "source-size-changed",
+                        }
+                    )
+    return compatible, ignored
 
 
 def save_pixel_edit(job_id: str, source_kind: str, state: str, data_url: Any) -> dict[str, Any]:
@@ -1085,6 +1162,11 @@ def white_halo_protection_diagnostic(
     bounds = mask_bbox(lost_protected)
     lost_pixels = int(np.count_nonzero(lost_protected))
     expanded_pixels = int(np.count_nonzero(expanded))
+    force_warnings = []
+    if lost_pixels:
+        force_warnings.append("lost-protected-alpha")
+    if expanded_pixels:
+        force_warnings.append("expanded-alpha")
 
     overlay_pixels = np.zeros_like(source_pixels)
     if lost_pixels:
@@ -1116,13 +1198,13 @@ def white_halo_protection_diagnostic(
         "repaired": False,
         "restoredPixels": 0,
         "forceSave": {
-            "allowed": bool(lost_pixels and not expanded_pixels),
-            "warnings": ["lost-protected-alpha"] if lost_pixels else [],
+            "allowed": bool(force_warnings),
+            "warnings": force_warnings,
             "diagnosticFingerprint": (
                 white_halo_override_token(
                     job_id, source_pixels, candidate_pixels
                 )
-                if lost_pixels and not expanded_pixels
+                if force_warnings
                 else None
             ),
         },
@@ -1369,13 +1451,20 @@ def save_white_halo_sprite(
     }
     expanded_pixels = int(metrics["expandedPixels"])
     lost_pixels = int(metrics["protection"]["lostProtectedPixels"])
-    forced = False
+    warning_codes = []
+    if lost_pixels:
+        warning_codes.append("lost-protected-alpha")
     if expanded_pixels:
+        warning_codes.append("expanded-alpha")
+    forced = False
+    maximum_expansion = (
+        int(np.max(alpha.astype(np.int16) - source_alpha.astype(np.int16)))
+        if expanded_pixels
+        else 0
+    )
+    if expanded_pixels and not force:
         expanded_label = "píxel" if expanded_pixels == 1 else "píxeles"
         expanded_display = f"{expanded_pixels:,}".replace(",", ".")
-        maximum_expansion = int(
-            np.max(alpha.astype(np.int16) - source_alpha.astype(np.int16))
-        )
         raise ValueError(
             "La copia limpia expande el alfa fuera del sprite fuente en "
             f"{expanded_display} {expanded_label} "
@@ -1395,7 +1484,7 @@ def save_white_halo_sprite(
             f"{lost_display} píxeles de relleno o tinta protegida{bounds_label}. "
             "Restaura el contorno y limpia únicamente el halo exterior"
         )
-    if lost_pixels and force:
+    if warning_codes and force:
         if not isinstance(override_token, str) or override_token != candidate_override_token:
             raise ValueError(
                 "El lienzo no coincide con la comprobación autorizada; "
@@ -1418,7 +1507,7 @@ def save_white_halo_sprite(
             "validation": {
                 "policy": "white-halo-save-v1",
                 "forced": forced,
-                "warnings": ["lost-protected-alpha"] if forced else [],
+                "warnings": warning_codes if forced else [],
             },
             "canvas": {"width": image.width, "height": image.height},
             "transparentPixels": transparent_pixels,
@@ -1481,25 +1570,34 @@ def save_white_halo_sprite(
         },
     }
     if forced:
+        warning_entries = []
+        if lost_pixels:
+            warning_entries.append(
+                {
+                    "code": "lost-protected-alpha",
+                    "pixels": lost_pixels,
+                    "lostReliableFillPixels": metrics["protection"][
+                        "lostReliableFillPixels"
+                    ],
+                    "lostProtectedInkPixels": metrics["protection"][
+                        "lostProtectedInkPixels"
+                    ],
+                    "bounds": metrics["protection"]["lostProtectedBounds"],
+                }
+            )
+        if expanded_pixels:
+            warning_entries.append(
+                {
+                    "code": "expanded-alpha",
+                    "pixels": expanded_pixels,
+                    "maximumAlphaIncrease": maximum_expansion,
+                }
+            )
         entry["validation"].update(
             {
                 "forcedAt": entry["updatedAt"],
                 "diagnosticFingerprint": candidate_override_token,
-                "warnings": [
-                    {
-                        "code": "lost-protected-alpha",
-                        "pixels": lost_pixels,
-                        "lostReliableFillPixels": metrics["protection"][
-                            "lostReliableFillPixels"
-                        ],
-                        "lostProtectedInkPixels": metrics["protection"][
-                            "lostProtectedInkPixels"
-                        ],
-                        "bounds": metrics["protection"][
-                            "lostProtectedBounds"
-                        ],
-                    }
-                ],
+                "warnings": warning_entries,
             }
         )
     if animation_frames:
@@ -1638,7 +1736,7 @@ def review_white_halo_sprite(
         for warning in validation.get("warnings", [])
         if isinstance(warning, (str, dict))
     }
-    if "lost-protected-alpha" not in warning_codes:
+    if not warning_codes.intersection({"lost-protected-alpha", "expanded-alpha"}):
         raise ValueError("La copia no conserva una advertencia revisable conocida")
 
     subject_revision, artifact_fingerprint = white_halo_review_fingerprints(
@@ -1683,6 +1781,160 @@ def review_white_halo_sprite(
         "assetsChanged": False,
         "reviewState": white_halo_review_state(job_id, entry),
         **entry,
+    }
+
+
+def white_halo_production_artifact_path(relative_path: str) -> tuple[Path, Path]:
+    source = (ROOT / require_asset_reference(relative_path)).resolve()
+    try:
+        suffix = source.relative_to(WHITE_HALO_ROOT.resolve())
+    except ValueError as error:
+        raise ValueError(
+            f"El derivado guardado queda fuera de sprite_halo_cleaned: {relative_path}"
+        ) from error
+    if not source.is_file():
+        raise ValueError(f"Falta el derivado guardado: {relative_path}")
+    return source, WHITE_HALO_PRODUCTION_ROOT / suffix
+
+
+def validate_lossless_rgba_webp(
+    artifact: Path, expected: tuple[int, int], label: str
+) -> None:
+    try:
+        with Image.open(artifact) as image:
+            image.load()
+            if image.format != "WEBP" or image.size != expected:
+                raise ValueError(
+                    f"{label} debe ser WebP {expected[0]}×{expected[1]}"
+                )
+            if "A" not in image.getbands():
+                raise ValueError(f"{label} debe conservar canal alfa")
+        header = artifact.read_bytes()[:16]
+        if len(header) < 16 or header[12:16] != b"VP8L":
+            raise ValueError(f"{label} debe usar WebP lossless VP8L")
+    except OSError as error:
+        raise ValueError(f"No se pudo leer {label}") from error
+
+
+def validate_white_halo_publishable(
+    job_id: str, entry: dict[str, Any]
+) -> list[tuple[str, str, Path, Path]]:
+    review_state = white_halo_review_state(job_id, entry)
+    validation = entry.get("validation")
+    forced = isinstance(validation, dict) and validation.get("forced") is True
+    if forced and review_state.get("status") != "approved":
+        raise ValueError(
+            f"{job_id} conserva una excepción sin revisión aprobada y no puede publicarse"
+        )
+    canvas = entry.get("canvas") or {}
+    width, height = int(canvas.get("width", 0)), int(canvas.get("height", 0))
+    if width <= 0 or height <= 0:
+        raise ValueError(f"{job_id} no declara un lienzo válido")
+    plan: list[tuple[str, str, Path, Path]] = []
+    for role, relative_path in white_halo_review_artifacts(entry):
+        source, destination = white_halo_production_artifact_path(relative_path)
+        expected = (width, height)
+        if role == "thumbnail":
+            expected = (156, 156)
+        elif role == "galleryThumbnail":
+            expected = (480, 270)
+        validate_lossless_rgba_webp(source, expected, f"{job_id}.{role}")
+        plan.append((role, relative_path, source, destination))
+    return plan
+
+
+def validate_white_halo_production_entries(
+    sprites: dict[str, dict[str, Any]]
+) -> dict[str, int]:
+    artifact_count = 0
+    production_root = WHITE_HALO_PRODUCTION_ROOT.resolve()
+    for job_id, entry in sprites.items():
+        if not isinstance(entry, dict):
+            raise ValueError(f"La entrada de producción {job_id} no es válida")
+        canvas = entry.get("canvas") or {}
+        width, height = int(canvas.get("width", 0)), int(canvas.get("height", 0))
+        if width <= 0 or height <= 0:
+            raise ValueError(f"{job_id} no declara un lienzo de producción válido")
+        for role, relative_path in white_halo_review_artifacts(entry):
+            artifact = (ROOT / require_asset_reference(relative_path)).resolve()
+            try:
+                artifact.relative_to(production_root)
+            except ValueError as error:
+                raise ValueError(
+                    f"{job_id}.{role} queda fuera de sprite_halo_production"
+                ) from error
+            expected = (width, height)
+            if role == "thumbnail":
+                expected = (156, 156)
+            elif role == "galleryThumbnail":
+                expected = (480, 270)
+            validate_lossless_rgba_webp(artifact, expected, f"{job_id}.{role}")
+            artifact_count += 1
+    return {"poses": len(sprites), "artifacts": artifact_count}
+
+
+def validate_white_halo_production() -> dict[str, int]:
+    if not WHITE_HALO_PRODUCTION_METADATA_PATH.is_file():
+        raise FileNotFoundError("Todavía no existe el manifiesto de halos de producción")
+    return validate_white_halo_production_entries(load_white_halo_production())
+
+
+@synchronized_white_halo_write
+def publish_white_halo_sprites(job_id: str | None = None) -> dict[str, Any]:
+    drafts = load_white_halo_edits()
+    if job_id:
+        if job_id not in drafts:
+            raise ValueError("La pose todavía no tiene una copia limpia guardada")
+        selected_ids = [job_id]
+    else:
+        selected_ids = sorted(drafts)
+        if not selected_ids:
+            raise ValueError("Todavía no hay copias limpias guardadas para publicar")
+
+    plans = {
+        entry_id: validate_white_halo_publishable(entry_id, drafts[entry_id])
+        for entry_id in selected_ids
+    }
+    production = load_white_halo_production() if job_id else {}
+    published_at = datetime.now(timezone.utc).isoformat()
+
+    for entry_id in selected_ids:
+        draft = drafts[entry_id]
+        entry = json.loads(json.dumps(draft))
+        animation_frames: dict[str, str] = {}
+        for role, _relative_path, source, destination in plans[entry_id]:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            temporary = destination.with_suffix(destination.suffix + ".tmp")
+            shutil.copy2(source, temporary)
+            temporary.replace(destination)
+            published_path = relative(destination)
+            if role.startswith("animation:"):
+                animation_frames[role.split(":", 1)[1]] = published_path
+            else:
+                entry[role] = published_path
+        if animation_frames:
+            entry["animationFrames"] = dict(sorted(animation_frames.items()))
+        else:
+            entry.pop("animationFrames", None)
+        entry["publishedAt"] = published_at
+        entry["draftUpdatedAt"] = draft.get("updatedAt")
+        entry["publication"] = {
+            "policy": "white-halo-production-v1",
+            "sourceManifest": relative(WHITE_HALO_METADATA_PATH),
+        }
+        production[entry_id] = entry
+
+    validation = validate_white_halo_production_entries(production)
+    save_white_halo_production(production)
+    return {
+        "ok": True,
+        "published": len(selected_ids),
+        "publishedArtifacts": sum(len(plan) for plan in plans.values()),
+        "poseCount": validation["poses"],
+        "artifacts": validation["artifacts"],
+        "manifest": relative(WHITE_HALO_PRODUCTION_METADATA_PATH),
+        "root": relative(WHITE_HALO_PRODUCTION_ROOT),
+        "entry": production.get(job_id) if job_id else None,
     }
 
 
@@ -1792,6 +2044,7 @@ def editor_jobs(refresh: bool = False) -> list[dict[str, Any]]:
     regions = load_manual_regions()
     previews = load_eye_region_previews()
     intermediates = load_eye_intermediates()
+    halo_production = load_white_halo_production()
     if _EDITOR_INVENTORY_CACHE is None:
         inventory: list[dict[str, Any]] = []
         for character_path in sorted(CHARACTER_DIR.glob("*.json")):
@@ -1802,6 +2055,7 @@ def editor_jobs(refresh: bool = False) -> list[dict[str, Any]]:
             poses = character.get("poses") or {}
             animations = character.get("animations") or character.get("poseAnimations") or {}
             for pose_key, base_source in poses.items():
+                job_id = f"{character_key}.{pose_key}"
                 config = animations.get(pose_key)
                 frames = animation_frames(config)
                 if not isinstance(base_source, str) or not frames:
@@ -1811,8 +2065,13 @@ def editor_jobs(refresh: bool = False) -> list[dict[str, Any]]:
                 base_source = resolve_asset_reference(base_source)
                 if not base_source:
                     continue
+                halo_entry = halo_production.get(job_id) or {}
+                published_base = halo_entry.get("cleaned")
+                if isinstance(published_base, str) and (ROOT / published_base).is_file():
+                    base_source = published_base
+                frame_replacements = halo_entry.get("animationFrames") or {}
                 frame_sources = [
-                    source
+                    frame_replacements.get(source, source)
                     for source in (
                         resolve_frame_source(character, frame) for frame in frames
                     )
@@ -1825,7 +2084,7 @@ def editor_jobs(refresh: bool = False) -> list[dict[str, Any]]:
                     width, height = image.size
                 inventory.append(
                     {
-                        "id": f"{character_key}.{pose_key}",
+                        "id": job_id,
                         "character": character_key,
                         "characterName": character.get("name") or character_key,
                         "pose": pose_key,
@@ -1943,6 +2202,7 @@ def base_sprite_jobs(refresh: bool = False) -> list[dict[str, Any]]:
     if refresh:
         _BASE_SPRITE_INVENTORY_CACHE = None
     saved = load_white_halo_edits()
+    published = load_white_halo_production()
     if _BASE_SPRITE_INVENTORY_CACHE is None:
         inventory: list[dict[str, Any]] = []
         for character_path in sorted(CHARACTER_DIR.glob("*.json")):
@@ -1980,10 +2240,20 @@ def base_sprite_jobs(refresh: bool = False) -> list[dict[str, Any]]:
     result: list[dict[str, Any]] = []
     for job in _BASE_SPRITE_INVENTORY_CACHE:
         saved_entry = saved.get(job["id"])
+        published_entry = published.get(job["id"])
+        publication_state = (
+            "current"
+            if saved_entry
+            and published_entry
+            and published_entry.get("draftUpdatedAt") == saved_entry.get("updatedAt")
+            else ("outdated" if published_entry else "unpublished")
+        )
         result.append(
             dict(
                 job,
                 saved=saved_entry,
+                published=published_entry,
+                publicationState=publication_state,
                 destination=white_halo_destination(job),
                 reviewState=white_halo_review_state(job["id"], saved_entry),
             )
@@ -2749,7 +3019,8 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
             self.send_json({"poses": load_clean_bases()})
             return
         if self.path == "/api/eye-layer-edits":
-            self.send_json({"edits": load_pixel_edits()})
+            edits, ignored = compatible_pixel_edits()
+            self.send_json({"edits": edits, "ignored": ignored})
             return
         if self.path == "/api/base-sprites":
             jobs = base_sprite_jobs(refresh=True)
@@ -2805,7 +3076,7 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
         if self.path not in {
             "/api/region", "/api/offset", "/api/clean-offset", "/api/clean-base",
             "/api/reveal-path", "/api/eye-layer-edit", "/api/white-halo-clean",
-            "/api/publish-eye-layers",
+            "/api/publish-eye-layers", "/api/publish-white-halo",
             "/api/white-halo-topological", "/api/reveal-white-halo-source",
             "/api/white-halo-export", "/api/white-halo-protection",
             "/api/white-halo-review"
@@ -2848,6 +3119,10 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                 requested_id = job_id or None
                 self.send_json(publish_production_eye_layers(requested_id))
                 return
+            if self.path == "/api/publish-white-halo":
+                requested_id = job_id or None
+                self.send_json(publish_white_halo_sprites(requested_id))
+                return
             if self.path == "/api/white-halo-clean":
                 force_ack = payload.get("force")
                 force_requested = False
@@ -2857,7 +3132,21 @@ class EyeRegionEditorHandler(SimpleHTTPRequestHandler):
                         raise ValueError(
                             "La autorización de guardado excepcional no es válida"
                         )
-                    if force_ack.get("warnings") != ["lost-protected-alpha"]:
+                    accepted_warnings = force_ack.get("warnings")
+                    known_warnings = {"lost-protected-alpha", "expanded-alpha"}
+                    if (
+                        not isinstance(accepted_warnings, list)
+                        or not accepted_warnings
+                        or any(
+                            not isinstance(warning, str)
+                            for warning in accepted_warnings
+                        )
+                        or len(set(accepted_warnings)) != len(accepted_warnings)
+                        or any(
+                            warning not in known_warnings
+                            for warning in accepted_warnings
+                        )
+                    ):
                         raise ValueError(
                             "La advertencia aceptada para el guardado excepcional no es válida"
                         )
@@ -3933,6 +4222,16 @@ def main() -> None:
         help="Valida el manifiesto y los WebP oculares de producciÃ³n",
     )
     parser.add_argument(
+        "--publish-halo-production",
+        action="store_true",
+        help="Publica las copias de halo guardadas en el runtime canónico",
+    )
+    parser.add_argument(
+        "--validate-halo-production",
+        action="store_true",
+        help="Valida el manifiesto y los WebP de halos publicados",
+    )
+    parser.add_argument(
         "--production-qa-dir",
         type=Path,
         help="Genera hojas QA componiendo la base con las capas publicadas",
@@ -3982,6 +4281,18 @@ def main() -> None:
             f"ProducciÃ³n ocular vÃ¡lida: {result['poses']} poses, "
             f"{result['layers']} capas, {result['fullSpritesDuplicated']} bases duplicadas"
         )
+    if args.publish_halo_production:
+        result = publish_white_halo_sprites()
+        print(
+            f"Producción de halos: {result['published']} poses, "
+            f"{result['artifacts']} artefactos -> {WHITE_HALO_PRODUCTION_ROOT}"
+        )
+    if args.validate_halo_production:
+        result = validate_white_halo_production()
+        print(
+            f"Producción de halos válida: {result['poses']} poses, "
+            f"{result['artifacts']} artefactos"
+        )
     if args.production_qa_dir:
         pose_count = write_production_qa_sheets(args.production_qa_dir.resolve())
         print(
@@ -3995,6 +4306,8 @@ def main() -> None:
             args.build_previews,
             args.publish_production,
             args.validate_production,
+            args.publish_halo_production,
+            args.validate_halo_production,
             args.production_qa_dir,
         )
     ):

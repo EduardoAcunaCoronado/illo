@@ -814,6 +814,14 @@ sufijo `_master.png` bajo la ruta espejo de `workbench/`. El
 asset todavía no tiene identidad canónica ni manifiesto en `characters/`, por lo
 que puede reutilizarse visualmente sin incorporarla aún al reparto o al guion.
 
+El anciano hombre paloma dispone de un sprite conceptual de pie en
+`assets/images/characters/others/anciano_paloma.webp`. Es un WebP RGBA de
+1024x1024 con colores planos, contorno negro, boina, jersey clásico y bastón;
+la ropa mantiene límites limpios y no se fusiona con el plumaje. Su maestro PNG
+está en la ruta espejo
+`workbench/assets/images/characters/others/anciano_paloma_master.png`. El asset
+no tiene todavía identidad canónica, ficha en `characters/` ni uso narrativo.
+
 El CG compartido de despedida está disponible en
 `assets/images/cg/shared/despedida_samu_ciervo_gata.webp`, con maestro 4K
 3840x2160 en
@@ -952,7 +960,7 @@ IPC de ajustes/cierre cuando el emisor no es el juego.
 | `/` | Marcador de regiones oculares | Regiones manuales y recortes abiertos/intermedios/cerrados. |
 | `/preview` | Alineación de ojos | Offsets y escalas independientes de las tres capas; preview/GIF/APNG. |
 | `/clean-base` | Limpiador de pose base | Copia sin ojos, no destructiva. |
-| `/white-halo` | Editor de halos | Copia limpia preferida por juego y galería. |
+| `/white-halo` | Editor de halos | Borrador limpio y publicación común para juego, galería y herramienta ocular. |
 | `/tools` | Menú central | Acceso a todo el flujo servido en el puerto 8011. |
 | `/api/samu-restorer` | Estado/arranque local de Samu | Reutiliza o inicia el editor externo sin aceptar rutas del navegador. |
 
@@ -963,7 +971,9 @@ Metadatos relacionados:
 - `blink_eye_clean_offsets_manual.json`: alineación abierta/media/cerrada.
 - `blink_eye_pixel_edits.json`: ediciones de borrador, dedo y pincel.
 - `blink_eye_intermediates.json`: frame medio inyectado.
-- `sprite_white_halo_cleaned.json`: copia limpia preferente por pose.
+- `sprite_white_halo_cleaned.json`: borradores limpios editables por pose.
+- `sprite_white_halo_production.json`: instantánea publicada que consumen juego,
+  galería y herramientas oculares.
 
 Scripts auxiliares:
 
@@ -1101,7 +1111,8 @@ Al modificar guion:
 | Asset no aparece | Ruta/capitalización, WebP tras optimizar y `validate:content`. |
 | Fondo negro tras salto | La escena debe declarar fondo en línea 0; revisa fundidos y cleanup. |
 | Audio no cambia | ID reutilizado, clasificación music/sfx, fade o instancia detenida. |
-| Sprite viejo pese a cambiar ficha | Manifiesto `sprite_white_halo_cleaned.json` puede sustituir la pose. |
+| Sprite viejo pese a cambiar ficha | `sprite_white_halo_production.json` puede sustituir la pose; publica el borrador correcto o retira su entrada de producción mediante el flujo del editor. |
+| `Unexpected token '<'` al publicar halos | La página se actualizó pero el proceso Python de Tools sigue siendo anterior al endpoint. Cierra Tools y vuelve a abrirlo; la interfaz nueva detecta esta incompatibilidad, deshabilita los botones y muestra `Reinicia Tools`. |
 | Ojos desplazados | Offsets independientes de abierto/medio/cerrado y edición guardada. |
 | Minijuego bloquea novela | Promise sin resolver, listener/timer vivo o aborto no implementado. |
 | Sprite animado desaparece tras el primer frame | El preload y el constructor dinámico deben usar la misma extensión; centraliza la ruta y comprueba todos los frames reales. |
@@ -5457,15 +5468,16 @@ una decisión de sesión, no un desbloqueo persistente. El catálogo y sus 271 m
 regeneran con `scripts/build_gallery_manifest.py`; no se mantiene a mano una
 segunda lista en el código.
 
-El juego y la galería consultan además
-`assets/metadata/sprite_white_halo_cleaned.json`. Cuando una entrada
-`<personaje>.<pose>` contiene una copia limpia, esta sustituye al sprite declarado
+El juego y la galería consultan exclusivamente la instantánea
+`assets/metadata/sprite_white_halo_production.json`. Cuando una entrada
+`<personaje>.<pose>` contiene una copia publicada, esta sustituye al sprite declarado
 en `characters/*.json` tanto en `showCharacter`/`setPose` como en la ficha y el
-selector de poses de la galería. Si no existe una copia válida se conserva el
+selector de poses de la galería. Si no existe una publicación válida se conserva el
 sprite fuente como fallback. El manifiesto de personajes no se reescribe y, por
 tanto, continúa siendo la fuente canónica protegida. La galería utiliza las
-miniaturas limpias de 156×156 y 480×270 generadas al guardar para evitar cargar los
-WebP completos en la cuadrícula.
+miniaturas publicadas de 156×156 y 480×270 para evitar cargar los WebP completos en
+la cuadrícula. Guardar un nuevo borrador no cambia ninguna de estas vistas hasta
+publicarlo.
 
 #### Centro de herramientas local
 
@@ -5498,7 +5510,14 @@ disponible únicamente en `http://localhost:8011/`. Presenta las 130 poses
 animables y admite varias zonas elípticas por pose, normalmente una por ojo. Cada
 elipse se puede mover, ensanchar, achatar y girar de forma independiente mediante
 tiradores o valores numéricos. También permite comparar la pose original con cada
-fotograma de parpadeo y avanzar por teclado. Las máscaras se guardan inmediatamente
+fotograma de parpadeo y avanzar por teclado. El lienzo admite zoom del 50 % al
+800 % mediante deslizador, botones, rueda sobre el punto que se quiere inspeccionar
+o las teclas `+`/`-`; `0` y `Ajustar` recuperan el encaje completo. `Enfocar zona`
+o la tecla `F`
+centra y amplía la elipse seleccionada, mientras `Alt` + arrastrar o el botón
+central desplazan la vista ampliada. El zoom y el desplazamiento son sólo de
+visualización: los tiradores siguen editando las mismas coordenadas normalizadas y
+al cambiar de pose la vista vuelve al encaje completo. Las máscaras se guardan inmediatamente
 en coordenadas normalizadas, con esquema versión 2, en
 `assets/metadata/blink_eye_regions_manual.json`. Las 17 selecciones rectangulares
 anteriores se migraron sin perder su encuadre a dos elipses editables por pose.
@@ -5610,8 +5629,13 @@ Sobre cada capa aparece además un marco de transformación con ocho tiradores,
 similar al de un editor gráfico. Los laterales mantienen fijo el borde opuesto;
 las esquinas alteran ancho y alto simultáneamente. Mantener `Alt` durante el
 arrastre transforma simétricamente desde el centro. El marco sigue el recorte,
-los campos numéricos se actualizan durante el gesto y el guardado automático se
-realiza al soltar el tirador. Arrastrar directamente los ojos continúa moviéndolos.
+pero su contorno visual se calcula con la unión geométrica de las elipses oculares
+`include`, no con el rectángulo PNG ni su margen transparente. El archivo recortado
+mantiene íntegros su `crop`, tamaño y relleno; sólo los tiradores coinciden ahora
+con lo marcado en `Regiones oculares`. Si una entrada antigua no declara regiones,
+el alineador usa el `crop` como compatibilidad. Los campos numéricos se actualizan
+durante el gesto y el guardado automático se realiza al soltar el tirador. Arrastrar
+directamente los ojos continúa moviéndolos.
 
 El selector `Origen` permite trabajar con `Recortes guardados` o con `Capas
 limpias`; los recortes son la opción predeterminada. Los PNG recortados se sitúan
@@ -5635,7 +5659,11 @@ del 100% al 500%, con botones `−`/`+`, deslizador y `Ajustar`. Al ampliar, el 
 se desplaza progresivamente hacia la región ocular para mantener los ojos visibles;
 el zoom no modifica ni guarda offsets o escalas de la capa. Con el lienzo enfocado se
 puede usar `+`, `−` y `0`, y `Ctrl`/`Cmd` más la rueda ajusta únicamente el panel bajo
-el puntero.
+el puntero. Cada lienzo se puede desplazar de forma independiente con el botón central
+del ratón o con `Espacio` más arrastre izquierdo. Este paneo mueve conjuntamente la
+base, la capa ocular, sus tiradores y las regiones sólo en la vista: no cambia los
+offsets, escalas ni archivos publicados. `Ajustar` y la tecla `0` restablecen tanto el
+zoom como el desplazamiento del panel activo.
 
 El botón `✎` de cada panel abre además un editor de píxeles para esa capa ocular.
 Incluye un borrador circular que modifica únicamente el canal alfa, una herramienta
@@ -5650,9 +5678,33 @@ y 800% respecto al encaje automático, también mediante `+`/`−`/`0` o
 `Ctrl`/`Cmd`+rueda. La base se puede mostrar u ocultar sin
 formar parte del resultado. Cada trazo entra en un historial de deshacer/rehacer y
 `Recuperar capa fuente` restaura la imagen de origen.
+El contexto 2D de composición se solicita con `willReadFrequently` porque el
+cuentagotas consulta píxeles mediante `getImageData`; así se evita la advertencia de
+Canvas y se optimizan esas lecturas sin afectar al render ni al archivo guardado.
 Al abrirse conserva el zoom del panel y compone el sprite completo con el mismo
 recorte, offset y estirado visibles en la mesa; los trazos se transforman de vuelta
-a coordenadas de la capa ocular antes de guardarse.
+a coordenadas de la capa ocular antes de guardarse. Si una copia editada conserva
+dimensiones de un recorte anterior, el editor la normaliza primero al tamaño de la
+fuente vigente, igual que la mesa y el publicador, para que la composición no cambie
+al entrar en edición y el siguiente guardado quede canonizado.
+
+`Publicar pose` y `Publicar todas` constituyen la frontera entre trabajo y runtime.
+Esperan los guardados pendientes, hornean recorte, X/Y, estirado y retoques en tres
+WebP RGBA de lienzo completo (`eyes_base.webp`, `eyes_half.webp` y
+`eyes_closed.webp`) bajo `assets/images/characters/eye_layers_production/`, y
+actualizan `assets/metadata/blink_eye_layers_production.json`. El motor del juego y
+la galería cargan exclusivamente este manifiesto y sus WebP: no consultan previews,
+offsets ni PNG editables. Por tanto, un retoque sólo llega al juego después de
+publicarlo y recargar la sesión; si falta una entrada publicada, se conserva como
+fallback la animación de sprite completo declarada por el personaje, si existe.
+Durante cada estado ocular, la capa DOM expone `data-blink-source="production"`;
+la pestaña Network debe mostrar rutas bajo `eye_layers_production/`, lo que permite
+auditar el origen sin depender de una comparación visual.
+Junto a los botones se mantiene un estado de publicación accesible: muestra el
+progreso mientras se generan las capas, desactiva ambos botones para impedir dobles
+envíos y, al terminar, conserva el éxito con pose, número de capas, total del
+manifiesto y hora, o el motivo completo del error. El botón accionado también refleja
+temporalmente el resultado.
 
 La edición es no destructiva: los PNG resultantes viven en
 `assets/images/characters/eye_layer_edits/<origen>/<personaje>/<pose>/` y se
@@ -5662,6 +5714,24 @@ exportaciones GIF/APNG usan automáticamente la copia editada cuando existe. Al
 guardar una capa, la reconstrucción necesaria para cargar su PNG conserva en memoria
 los offsets, escalas y fotograma elegidos; además, cada guardado de alineación actualiza
 la copia local del índice para que una reconstrucción posterior no restablezca los ojos.
+Si un nuevo marcado cambia el tamaño del recorte, una edición de píxeles creada con el
+lienzo anterior deja de ser compatible: el alineador y el publicador la ignoran y usan
+el recorte vigente. El PNG antiguo y su registro no se borran; al abrir el editor se
+carga la fuente actual y el siguiente guardado reemplaza la copia con las dimensiones
+correctas. Así un retoque obsoleto no puede volver a introducir una selección ocular
+más grande que las elipses recién guardadas.
+Durante el guardado, el pie del editor muestra un estado destacado con spinner, pose
+y estado ocular; herramientas, lienzo y cierre quedan temporalmente bloqueados para
+evitar cambios concurrentes y dobles envíos. Cuando el servidor confirma la escritura,
+el modal se cierra y una notificación verde mantiene durante unos segundos la capa
+guardada y la hora. Si falla, el modal permanece abierto, muestra el motivo y cambia
+el botón a `Reintentar guardado`.
+La carga del editor reutiliza promesas de imagen ya decodificadas durante la sesión.
+La mesa no precarga ya las 130 poses simultáneamente: carga la pose activa y difiere
+al tiempo ocioso sólo las dos vecinas. Al cambiar de capa se vacía el lienzo anterior
+y se identifica la pose que se está preparando, evitando mostrar contenido obsoleto
+mientras llegan la base, la capa editable y su fuente original. Un guardado invalida
+esta caché para que la siguiente apertura use el PNG recién escrito.
 
 Las descargas completas componen esos cinco estados sobre el cuerpo de la pose y
 exportan el personaje entero con transparencia. `Sólo ojos` conserva como
@@ -5915,7 +5985,7 @@ canónicas. `Descargar WebP actual` codifica el lienzo RGBA como WebP lossless,
 conserva ancho, alto y transparencia, deriva un nombre seguro terminado en
 `_halo_limpio.webp` y no modifica el archivo de entrada ni el repositorio.
 
-Para una pose canónica, `Guardar copia` ejecuta primero la misma comprobación de detalle protegido. Si
+Para una pose canónica, `Guardar copia` crea un **borrador** y ejecuta primero la misma comprobación de detalle protegido. Si
 encuentra píxeles rosas o una expansión morada, el guardado se pausa, muestra la
 superposición y no llama al flujo que escribe archivos; tras reparar o limpiar hay
 que volver a pulsarlo. Sólo cuando el preflight está limpio crea o actualiza un WebP
@@ -5924,9 +5994,9 @@ RGBA sin pérdida en
 ruta en `assets/metadata/sprite_white_halo_cleaned.json`. Al regresar a una pose
 guardada, el editor selecciona esa copia como base para continuar el retoque, pero
 el selector permite volver al fuente protegido en cualquier momento. Cada guardado
-crea también una miniatura de pose y otra de tarjeta; el juego y la galería
-priorizan automáticamente estas copias limpias sin modificar `characters/*.json`.
-El panel `Guardar copia escribirá en` enseña antes de guardar la ruta exacta del
+crea también una miniatura de pose y otra de tarjeta. El borrador no modifica el
+juego, la galería ni la herramienta ocular hasta pulsar `Publicar copia` o
+`Publicar guardadas`. El panel `Guardar borrador escribirá en` enseña antes de guardar la ruta exacta del
 WebP de la pose seleccionada y, en la ayuda de miniaturas, las dos rutas WebP
 derivadas. `Descargar WebP actual` congela el lienzo RGBA tal como está en ese
 instante y el servidor local lo codifica como WebP sin pérdida para descargarlo
@@ -5936,36 +6006,52 @@ interfaz; tampoco ejecuta la validación del servidor, actualiza el manifiesto o
 genera miniaturas. Por ello sigue rescatando siempre el lienzo aunque el preflight
 pause o el servidor rechace `Guardar copia`; el WebP resultante puede reimportarse
 con el botón de respaldo de una pose si conserva sus dimensiones, o abrirse como
-imagen libre. No sustituye al guardado validado que consumen juego y galería.
+imagen libre. No sustituye al borrador validado ni a su publicación.
+
+`Publicar copia` valida los WebP exactos del borrador seleccionado y copia base,
+miniaturas y frames de animación a
+`assets/images/characters/sprite_halo_production/<personaje>/<pose>/`. Después
+actualiza atómicamente `assets/metadata/sprite_white_halo_production.json` con
+`publishedAt`, `draftUpdatedAt` y la política `white-halo-production-v1`.
+`Publicar guardadas` realiza el mismo preflight sobre el lote entero antes de
+reemplazar el manifiesto: no deja una publicación parcial si falta un derivado o
+existe una excepción pendiente. La lista distingue `BORRADOR`, `REVISAR` y `PROD`;
+tras cada publicación la interfaz informa del número de archivos verificados. El
+juego, la galería y el editor/alineador ocular sólo consumen esta instantánea de
+producción al recargar; el editor de halos continúa abriendo el borrador para que
+pueda seguir retocándose sin afectar a los consumidores.
 
 El botón rojo `Guardar de todos modos` es una excepción explícita para suavizados
-intencionales que la máscara heurística identifica como pérdida protegida. No se
+intencionales o cambios de silueta que la máscara heurística identifica como
+pérdida protegida, expansión de alfa o ambas. No se
 habilita de antemano: primero hay que intentar `Guardar copia` o pulsar
-`Comprobar detalle`, revisar los puntos rosas sobre la imagen y confirmar que no
-existe ninguna expansión morada. La autorización queda vinculada mediante una
+`Comprobar detalle` y revisar los puntos rosas y morados sobre la imagen. La
+autorización queda vinculada mediante una
 huella al identificador de pose, al sprite fuente y a los píxeles exactos de esa
 revisión del lienzo; cualquier pincelada, Deshacer/Rehacer, cambio de base o cambio
 de pose la invalida y obliga a comprobar de nuevo.
 
 Al confirmar la excepción se conservan los píxeles y el suavizado tal como están en
-pantalla y se actualizan el WebP runtime, sus miniaturas y los frames derivados
-compatibles. El sprite fuente protegido permanece intacto. La copia se registra con
+pantalla y se actualizan el WebP de borrador, sus miniaturas y los frames derivados
+compatibles. Producción y el sprite fuente protegido permanecen intactos. La copia se registra con
 la política `white-halo-save-v1`, `validation.forced: true`, la huella del
-diagnóstico y el recuento y límites de la advertencia `lost-protected-alpha`; en la
-lista del editor aparece como `REVISAR`. Un guardado seguro posterior reemplaza esa
-marca por `validation.forced: false`. Esta excepción nunca permite dimensiones
-incorrectas, alfa expandido, archivos inválidos ni una autorización correspondiente
+diagnóstico y los datos de cada advertencia aceptada: `lost-protected-alpha` para
+la reducción rosa y `expanded-alpha` para la expansión morada; en la
+lista del editor aparece como `REVISAR` y no puede publicarse hasta aprobar la
+revisión. Un guardado seguro posterior reemplaza esa marca por
+`validation.forced: false`. Esta excepción nunca permite dimensiones
+incorrectas, archivos inválidos ni una autorización correspondiente
 a otra revisión del lienzo.
 
 Una copia `REVISAR` puede cerrarse mediante `Marcar como LIMPIO` después de cargar
 la copia guardada exacta y comprobarla sin cambios pendientes en el lienzo. La
-confirmación muestra el número de píxeles protegidos aceptados. Esta acción no
+confirmación muestra el número de píxeles protegidos reducidos y/o expandidos
+aceptados. Esta acción no
 repara, recodifica ni reescribe ningún WebP: modifica únicamente el manifiesto y
 conserva `forced`, `forcedAt`, `warnings`, métricas y huella de diagnóstico como
 trazabilidad histórica. Añade `validation.review` con política
 `white-halo-manual-review-v1`, fecha, revisión del sujeto y huella del conjunto de
-artefactos; la lista pasa a mostrar `LIMPIO` y su tooltip indica que procede de una
-revisión manual.
+artefactos; la lista pasa a mostrar `BORRADOR` y habilita su publicación.
 
 El servidor calcula la revisión sobre los metadatos de la entrada y los bytes
 exactos del WebP, ambas miniaturas y todos sus frames derivados. Si otra pestaña
@@ -5981,8 +6067,9 @@ transporte interno exacto del lienzo, el historial de edición y los originales 
 másteres de `workbench/`; no debe registrarse como salida runtime.
 Cuando una pose limpia conserva un parpadeo de sprite completo con la misma
 silueta, `Guardar copia` deriva también esos frames con exactamente la máscara alfa
-limpia y registra el mapa `animationFrames`. Motor y galería aplican ese mapa tras
-inyectar el frame intermedio, evitando que el halo reaparezca durante la animación.
+limpia y registra el mapa `animationFrames` en el borrador. Al publicar, el mapa se
+reescribe hacia la carpeta de producción; motor y galería lo aplican tras inyectar
+el frame intermedio, evitando que el halo reaparezca durante la animación.
 `carlos.neutral` usa este circuito para sus estados semicerrado y cerrado; las poses
 con capas oculares no duplican sprites completos. `validate:content` exige que base,
 miniaturas y frames derivados sean WebP lossless `VP8L`, declaren alfa y conserven
@@ -6025,6 +6112,19 @@ coincidiendo; escribe exclusivamente `validation.review` y devuelve
 `approved` y `stale`, y permite que la interfaz derive las etiquetas sin confundir
 una aprobación humana con un guardado que nunca necesitó excepción.
 
+`POST /api/publish-white-halo` recibe opcionalmente `id`: con identificador publica
+una pose y sin él reconstruye el lote completo. Rechaza borradores forzados sin
+revisión aprobada, rutas fuera de `sprite_halo_cleaned`, formatos o dimensiones
+incorrectos y derivados ausentes. La validación de producción puede repetirse sin
+escribir con `npm run validate:halo-production`; `npm run build:halo-production`
+publica todos los borradores desde consola. `validate:content` lee el manifiesto de
+producción, y `optimize_runtime_assets.py` excluye ambas carpetas de halo para no
+mutar los bytes auditados después de guardar o publicar.
+La interfaz reconoce un servidor antiguo porque `/api/base-sprites` no incluye
+`publicationState`: bloquea ambos botones y pide reiniciar Tools. Si una respuesta
+de publicación no es JSON —por ejemplo, el HTML de un 404 antiguo— también la
+convierte en ese aviso legible en vez de mostrar el error de parseo del navegador.
+
 ### Acting de personajes, transiciones y memoria de escenario
 
 `showCharacter` y `setPose` reemplazan el sprite de forma atómica: nunca crean
@@ -6037,14 +6137,16 @@ en el juego por Nexo. Todas las poses activas usan ahora cinco pasos
 los ojos cerrados la lectura se invierte (`cerrado → medio → abierto → medio →
 cerrado`). No hay movimiento corporal asociado al parpadeo.
 
-Las 17 poses de 3C y Airi que ya cuentan con recortes manuales usan además la
-composición ligera tanto en escena como en la galería: el sprite base aporta el
-reposo y los ojos iniciales; encima sólo se muestran los PNG `half`, `closed` y
-`half`, para terminar retirando la capa y revelar de nuevo el sprite base. La
-secuencia efectiva es `base → semicerrados → cerrados → semicerrados → base` y
-respeta el crop, X/Y y estirado guardados en la mesa de alineación, así como las
-copias retocadas en `blink_eye_pixel_edits.json`. Las poses aún no preparadas
-conservan automáticamente el sistema anterior de sprites completos.
+Las 130 poses activas usan la composición ocular publicada tanto en escena como en
+la galería: el sprite base aporta el reposo y los ojos iniciales; encima se muestran
+los WebP transparentes de lienzo completo `eyes_half`, `eyes_closed` y `eyes_half`,
+para terminar retirando la capa y revelar de nuevo el sprite base. La secuencia
+efectiva es `base → semicerrados → cerrados → semicerrados → base`; en las aperturas
+inversas los nombres técnicos se conservan, pero la lectura visual se invierte. Los
+offsets, escalas y retoques ya están horneados y el runtime sólo lee
+`blink_eye_layers_production.json`, nunca los archivos de trabajo de la herramienta.
+Una pose sin publicación válida conserva automáticamente el sistema anterior de
+sprites completos cuando su ficha lo declara.
 
 Las acciones `animateCharacter`, `characterAnimation` y `poseSequence` siguen
 sirviendo para encadenar **poses narrativas distintas**, hacer bucles hasta

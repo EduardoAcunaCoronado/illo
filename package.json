@@ -15,6 +15,8 @@
         "generate:character-blink": "python scripts/build_character_eye_layers.py --build",
         "build:eye-layers": "python scripts/build_character_eye_layers.py --publish-production",
         "validate:eye-layers": "python scripts/build_character_eye_layers.py --validate-production",
+        "build:halo-production": "python scripts/build_character_eye_layers.py --publish-halo-production",
+        "validate:halo-production": "python scripts/build_character_eye_layers.py --validate-halo-production",
         "tools:eyes": "python scripts/build_character_eye_layers.py --serve --port 8011",
         "build:gallery": "python scripts/build_gallery_manifest.py --no-copy",
         "audit:assets": "python scripts/optimize_runtime_assets.py",
