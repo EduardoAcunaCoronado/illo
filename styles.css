@@ -1,7 +1,14 @@
+:root {
+    --game-cursor: url('assets/images/ui/cursor_wolf_neon.png') 5 1, default;
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    /* El lobo se mantiene en todos los estados: enlaces, espera, arrastre,
+       elementos deshabilitados y minijuegos. */
+    cursor: var(--game-cursor) !important;
 }
 
 html, body {

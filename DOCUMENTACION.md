@@ -131,6 +131,11 @@ juego y Tools juntos.
 | Clic, `Esc`, `Enter` o `Espacio` en una cinemática | Salta el vídeo. |
 | `F11` en Windows/Electron | Alterna pantalla completa. En macOS se usa `Ctrl+Cmd+F`. |
 
+El puntero del juego es una cabeza de lobo de neón cyan y fucsia de 48×48 px. La
+punta superior izquierda marca el punto exacto del clic. El lobo permanece
+también sobre botones, esperas, elementos deshabilitados y minijuegos: no se
+sustituye por una mano, reloj de arena, mira u otro cursor del sistema.
+
 Las elecciones se resuelven pulsando una opción. Un clic en botones, paneles,
 galería o minijuegos no avanza accidentalmente el diálogo que queda detrás.
 
@@ -884,6 +889,15 @@ El favicon declarado en `index.html` reutiliza el asset runtime
 `assets/images/ui/wildsoft_emblema.png`. El icono de los ejecutables se mantiene
 separado en `build/icon.png`; no dupliques ninguno de los dos para cambiar la
 identidad visual.
+
+El cursor global de 48×48 px vive en
+`assets/images/ui/cursor_wolf_neon.png`; la imagen WebP entregada por el equipo se
+conserva sin modificar en
+`workbench/sources/images/ui/cursor/wolf_cursor_user_source.webp`.
+`styles.css` declara `--game-cursor` con hotspot `(5, 1)` y lo aplica en la regla
+universal con `!important`. Esa prioridad es deliberada: neutraliza `pointer`,
+`wait`, `crosshair`, `not-allowed` y `none`, incluidos estilos inline, para que el
+navegador nunca sustituya el lobo por una mano, reloj de arena u otro cursor.
 
 La pausa global y el ocultado del HUD son responsabilidades de `game.js`:
 `Esc` alterna la pausa fuera de cinemáticas, y `H`/clic derecho alternan el HUD.
