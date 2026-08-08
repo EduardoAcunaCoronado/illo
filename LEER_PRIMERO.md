@@ -53,6 +53,7 @@ Controles esenciales:
   línea de los JSON. Cruza capítulos y conserva la ruta elegida; al llegar de nuevo
   a una decisión muestra sus opciones y permite sustituir el recorrido posterior.
   Recrea las acciones visuales y sonoras, texto, fondo/CG, poses, hablante y música;
+  al avanzar otra vez por lo ya visto también conserva los `enter` declarados;
   desde un minijuego vuelve al diálogo previo sin volver a ejecutarlo. Una espera o
   cinemática en una línea sin texto inmediatamente anterior también se recrea antes
   de seguir atrás.
@@ -106,6 +107,7 @@ Electron de desarrollo intenta iniciar Tools automáticamente.
 
 ```powershell
 npm run validate:content
+npm run test:character-transitions
 npm run audit:assets
 npm run check:js
 ```

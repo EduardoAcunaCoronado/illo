@@ -176,8 +176,10 @@ En la parte superior aparecen cuando son aplicables:
   presentación. No se duplican variables, objetos,
   rescates ni retraso, y los minijuegos no se repiten. Una decisión restaurada
   espera una nueva elección en vez de seleccionar automáticamente la anterior.
-  Al avanzar de nuevo, los interludios y cinemáticas del tramo visto conservan su
-  presentación. El botón permanece disponible mientras se muestran opciones: al
+  Al avanzar de nuevo, cada diálogo vuelve a ejecutar sus acciones de presentación;
+  por tanto, las entradas de personaje respetan otra vez su `enter` original. Los
+  interludios y cinemáticas del tramo visto también conservan su presentación. El
+  botón permanece disponible mientras se muestran opciones: al
   pulsarlo, cierra la elección sin seleccionar ninguna respuesta y retrocede al
   diálogo anterior.
 
@@ -192,6 +194,10 @@ y José encuadran la cabeza completa dentro del marco circular.
 
 Cuando cambia el fondo, todos los personajes del escenario se retiran antes de
 componer la nueva imagen. Sólo reaparecen los que la escena vuelva a mostrar.
+Las entradas animadas se reproducen únicamente al pasar de no visible a visible:
+si una escena vuelve a declarar a alguien que ya estaba en pantalla, se actualiza
+su pose sin repetir la entrada. Cuando aparecen varios a la vez, cada uno conserva
+la dirección indicada por la escena.
 
 Las cinemáticas ocultan temporalmente estos botones. Durante una elección o un
 minijuego se puede abrir **Escenas**, **Log** u **Opciones**. El Log sólo pausa;
@@ -368,6 +374,7 @@ npm install                 # dependencias
 npm start                   # Electron de desarrollo
 npm run dev:web             # juego 8000 + Tools 8011, cierre conjunto
 npm run validate:content    # JSON, relaciones y assets
+npm run test:character-transitions # regresiones de personajes y `enter`
 npm run audit:assets        # conversiones pendientes, sin escribir
 npm run optimize:assets     # conserva originales y optimiza runtime
 npm run check:js            # formato JS con Prettier
@@ -918,6 +925,7 @@ Orden recomendado:
 
 ```powershell
 npm run validate:content
+npm run test:character-transitions
 npm run audit:assets
 npm run check:js
 node --check engine.js
@@ -933,10 +941,18 @@ completamente en tiempo de ejecución.
 No existe todavía una suite E2E que recorra el juego completo; la prueba manual
 proporcional al cambio es parte obligatoria de la entrega.
 
-Deuda conocida a 2026-08-03: `npm run check:js` señala formato Prettier previo
-en 11 archivos JavaScript. El comando sigue siendo útil para no ampliar la
-deuda, pero no debe afirmarse que pasa globalmente ni ejecutarse `--write` sobre
-todo el proyecto sin revisar el diff funcional resultante.
+`npm run test:character-transitions` ejecuta una prueba DOM aislada del motor y
+protege seis contratos de personajes: usar `fade` al omitir `enter`, no repetir
+la entrada para un personaje ya visible, fundir por defecto los cambios de pose
+de `showCharacter` y `setPose`, respetar `fade: false`, volver a ejecutar una
+entrada después de `hideCharacter`, mantener pura su dirección al recomponer tres
+huecos tras `removeCharacter` y reaplicarla al avanzar otra vez después de
+**Retroceder**.
+
+Deuda conocida verificada el 2026-08-07: `npm run check:js` señala formato
+Prettier previo en 16 archivos JavaScript. El comando sigue siendo útil para no
+ampliar la deuda, pero no debe afirmarse que pasa globalmente ni ejecutarse
+`--write` sobre todo el proyecto sin revisar el diff funcional resultante.
 
 Checklist antes de PR:
 
@@ -1272,12 +1288,26 @@ Parámetros:
 - `position`: `"left"`, `"center"` o `"right"` (obligatorio en los JSON)
 - `pose`: clave declarada en `poses` dentro de la ficha del personaje; por
   defecto `"neutral"`
-- `enter`: "right", "left", "bottom" o "fade" — animación de entrada (opcional)
+- `enter`: `"right"`, `"left"`, `"bottom"` o `"fade"` — animación de entrada;
+  si se omite usa `"fade"`. Un `null` explícito muestra el personaje al instante.
+- `fade`: fundido entre la pose anterior y la nueva cuando el mismo personaje ya
+  está visible. Es `true` por defecto; `false` hace el cambio inmediato. No
+  sustituye a `enter`, que sólo controla la aparición del personaje.
 - `flipped`: `true` para voltear el sprite horizontalmente (opcional)
 - `offsetY`: desplazamiento vertical del sprite, en porcentaje de su propia
   altura (opcional). Positivo = más abajo. Admite `"40%"` o `40`.
 - `scale`: tamaño del sprite sin tocar la imagen (opcional). `1` es el tamaño
   normal; `1.18` un 18% más grande; `0.7` un 30% más pequeño.
+
+`enter` sólo se ejecuta cuando el personaje pasa de no visible a visible. Si se
+omite, la nueva aparición usa un fundido y no hereda el desplazamiento horizontal
+de la recomposición del reparto. Si el mismo personaje ya está visible en ese
+hueco, un nuevo `showCharacter` actualiza pose, orientación y encuadre sin
+reiniciar la entrada. Si la pose cambia, realiza un fundido por defecto; usa
+`"fade": false` para sustituirla al instante. Después de `hideCharacter` o
+`removeCharacter`, la siguiente aparición sí puede animarse. Al incorporar varios
+personajes desde una misma línea, el reparto horizontal se aplica sin contaminar
+la dirección declarada por `enter`.
 
 `offsetY` y `scale` son **del guión, no del personaje**: el tamaño y la altura
 se deciden en cada aparición, así que el mismo personaje puede salir enorme en
@@ -1366,15 +1396,19 @@ el fundido.
 { "type": "removeCharacter", "character": "luna", "exit": true }
 ```
 
+Retirar varios huecos seguidos es seguro tanto con salida inmediata como con
+`exit`: este campo sólo decide el fundido y no es necesario para conservar la
+dirección de las entradas posteriores.
+
 > Nota: la posición de cada personaje se rastrea al llamar a `showCharacter`, así
 > que basta con indicar `character`. Si sólo se indica `position`, se actúa sobre
 > quien ocupe ese hueco.
 
 ### setPose
 
-Cambia la pose de un personaje visible mediante sustitución limpia del sprite.
-No se conserva ni se superpone la pose anterior: cada hueco contiene un único
-fotograma, también cuando entra un personaje diferente.
+Cambia la pose de un personaje visible. Por defecto funde la expresión anterior
+con la nueva; las dos capas sólo existen durante 280 ms y después queda un único
+sprite consolidado.
 
 ```json
 {
@@ -1386,7 +1420,20 @@ fotograma, también cuando entra un personaje diferente.
 ```
 
 `character` y `position` deben identificar al personaje que ya ocupa el hueco;
-`pose` acepta cualquier clave de su ficha y usa `"neutral"` si se omite.
+`pose` acepta cualquier clave de su ficha y usa `"neutral"` si se omite. `fade`
+es booleano, vale `true` por defecto y puede fijarse a `false` para un corte
+inmediato:
+
+```json
+{
+  "type": "setPose",
+  "character": "luna",
+  "position": "left",
+  "pose": "angry",
+  "fade": false
+}
+```
+
 `setPose` no carga ni muestra un personaje ausente y conserva el
 `flipped`, `scale` y `offsetY` establecidos por `showCharacter`. Por eso debe
 usarse para acting de un personaje visible; `showCharacter` se reserva para una
@@ -5871,8 +5918,12 @@ una aprobación humana con un guardado que nunca necesitó excepción.
 
 ### Acting de personajes, transiciones y memoria de escenario
 
-`showCharacter` y `setPose` reemplazan el sprite de forma atómica: nunca crean
-una copia fantasma de la expresión anterior. Las fichas pueden declarar
+`showCharacter` y `setPose` funden por defecto los cambios de pose del mismo
+personaje. `applyCharacterPoseImage()` precarga el destino, crea dos capas
+temporales durante 280 ms y `finishCharacterPoseTransition()` consolida siempre
+una sola imagen; una interrupción cancela el temporizador y limpia ambas capas.
+`fade: false` evita la transición. Las secuencias de acting desactivan el fundido
+internamente para no solapar sus fotogramas. Las fichas pueden declarar
 `animations` con varios sprites de una misma pose; esos fotogramas se precargan
 y se reproducen en secuencia sin solaparse. Hay 134 poses con parpadeo declarado:
 129 pertenecen a los personajes activos y 5 al archivo legado de ePod, sustituido
@@ -6077,8 +6128,10 @@ música, reproduce el vídeo y reconcilia su frame final, CG, telón y audio. Cu
 se recorre hacia delante autoencadena el siguiente momento igual que el flujo
 original, sin añadir una pausa vacía; cuando es el destino directo de Retroceder,
 queda en el frame final esperando avance o un nuevo retroceso. `nextLine()` usa
-`dialoguePlayback` para recorrer las entradas siguientes sin ejecutar otras
-`actions`, `afterActions` ni `minigame`. Si encuentra una línea con `choices`,
+`dialoguePlayback` para recorrer las entradas siguientes y vuelve a ejecutar sus
+`actions`/`afterActions` de presentación mediante `replayDialogueActions()`; así
+un `showCharacter` conserva `enter` también en el avance histórico. Variables,
+inventario, rescates, saltos y `minigame` siguen filtrados. Si encuentra una línea con `choices`,
 restaura esa bifurcación de forma interactiva y sólo reemplaza el futuro después
 de que el jugador elija. `updateRewindButton()` no oculta el control durante esa
 espera; una nueva petición de retroceso pasa por `desbloquearBucle()`, que llama a
