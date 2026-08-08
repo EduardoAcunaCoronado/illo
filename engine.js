@@ -191,9 +191,10 @@ class VisualNovelEngine {
         if (this._setTypingPaused) this._setTypingPaused(this.textPaused);
     }
 
-    async loadChapter(chapterName) {
+    async loadChapter(chapterName, options = {}) {
         try {
-            const response = await fetch(`chapters/${chapterName}.json?v=${Date.now()}`, {
+            const source = options.source || `chapters/${chapterName}.json`;
+            const response = await fetch(`${source}?v=${Date.now()}`, {
                 cache: 'no-store'
             });
             if (!response.ok) {
@@ -469,7 +470,7 @@ class VisualNovelEngine {
                 this.setBackground(action.value, action);
                 break;
             case 'showCharacter':
-                await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter, action.offsetY, action.scale);
+                await this.showCharacter(action.character, action.position, action.pose, action.flipped, action.enter, action.offsetY, action.scale, action.fade !== false);
                 break;
             case 'hideCharacter':
                 this.hideCharacter(action.character, action.position, action.exit);
@@ -479,7 +480,9 @@ class VisualNovelEngine {
                 this.removeCharacter(action.character, action.position, action.exit);
                 break;
             case 'setPose':
-                this.setPose(action.character, action.position, action.pose);
+                await this.setPose(action.character, action.position, action.pose, {
+                    fade: action.fade !== false
+                });
                 break;
             case 'animateCharacter':
             case 'characterAnimation':
@@ -5987,20 +5990,71 @@ class VisualNovelEngine {
         return null;
     }
 
-    // Un cambio de pose es un reemplazo limpio. La versión anterior creaba una
-    // segunda capa con el sprite viejo; si la clase de animación se retiraba
-    // antes de tiempo, esa copia quedaba visible detrás del personaje nuevo.
-    // Las animaciones reales se reproducen ahora con sprites consecutivos.
-    applyCharacterPoseImage(charElement, poseImage) {
-        if (!charElement || !poseImage) return;
-        const nextPoseSrc = this.cacheBustAsset(poseImage);
-        const nextImage = `url('${nextPoseSrc}')`;
+    // Cierra de forma atómica cualquier fundido de pose pendiente. Siempre deja
+    // una sola imagen consolidada, incluso si otra acción interrumpe la transición.
+    finishCharacterPoseTransition(charElement) {
+        if (!charElement) return;
         clearTimeout(charElement._poseTransitionTimer);
         charElement._poseTransitionTimer = null;
+        const targetSrc = charElement.dataset.poseTransition;
+        if (targetSrc) {
+            charElement.style.backgroundImage = `url('${targetSrc}')`;
+            charElement.dataset.poseSrc = targetSrc;
+        }
         charElement.querySelectorAll(':scope > .character-pose-ghost').forEach(ghost => ghost.remove());
         charElement.classList.remove('pose-transitioning');
         delete charElement.dataset.poseTransition;
-        charElement.style.backgroundImage = nextImage;
+    }
+
+    // Sustituye el sprite de la pose. Cuando `fade` está activo conserva dos
+    // capas temporales (pose anterior y nueva) durante el fundido y consolida al
+    // terminar una sola imagen de fondo. La limpieza centralizada impide que una
+    // transición interrumpida deje copias fantasma en el hueco.
+    applyCharacterPoseImage(charElement, poseImage, options = {}) {
+        if (!charElement || !poseImage) return;
+        this.finishCharacterPoseTransition(charElement);
+        const nextPoseSrc = this.cacheBustAsset(poseImage);
+        const nextImage = `url('${nextPoseSrc}')`;
+        const previousPoseSrc = charElement.dataset.frameSrc || charElement.dataset.poseSrc;
+        const previousImage = charElement.style.backgroundImage;
+        const shouldFade = options.fade !== false &&
+            previousPoseSrc && previousPoseSrc !== nextPoseSrc &&
+            previousImage && previousImage !== 'none';
+        charElement.dataset.poseTransitionMode = shouldFade ? 'fade' : 'instant';
+
+        if (shouldFade) {
+            const computed = typeof window.getComputedStyle === 'function'
+                ? window.getComputedStyle(charElement)
+                : null;
+            const configureLayer = (className, image) => {
+                const layer = document.createElement('span');
+                layer.className = `character-pose-ghost ${className}`;
+                layer.setAttribute('aria-hidden', 'true');
+                layer.style.backgroundImage = image;
+                if (computed) {
+                    layer.style.backgroundSize = computed.backgroundSize;
+                    layer.style.backgroundRepeat = computed.backgroundRepeat;
+                    layer.style.backgroundPosition = computed.backgroundPosition;
+                }
+                return layer;
+            };
+            const previousLayer = configureLayer('character-pose-old', previousImage);
+            const nextLayer = configureLayer('character-pose-new', nextImage);
+
+            charElement.style.backgroundImage = 'none';
+            charElement.appendChild(previousLayer);
+            charElement.appendChild(nextLayer);
+            charElement.classList.add('pose-transitioning');
+            charElement.dataset.poseTransition = nextPoseSrc;
+            void charElement.offsetWidth;
+            previousLayer.classList.add('pose-fade-out');
+            nextLayer.classList.add('pose-fade-in');
+            charElement._poseTransitionTimer = setTimeout(() => {
+                this.finishCharacterPoseTransition(charElement);
+            }, 340);
+        } else {
+            charElement.style.backgroundImage = nextImage;
+        }
         charElement.dataset.poseSrc = nextPoseSrc;
         delete charElement.dataset.frameSrc;
         this.hideCharacterEyeLayer(charElement);
@@ -6008,6 +6062,7 @@ class VisualNovelEngine {
 
     applyCharacterAnimationFrame(charElement, framePath) {
         if (!charElement || !framePath) return;
+        this.finishCharacterPoseTransition(charElement);
         const src = this.cacheBustAsset(framePath);
         charElement.style.backgroundImage = `url('${src}')`;
         charElement.dataset.frameSrc = src;
@@ -6217,7 +6272,7 @@ class VisualNovelEngine {
         return line >= reveal.line;
     }
 
-    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = null, offsetY = null, scale = null) {
+    async showCharacter(characterName, position = 'left', pose = 'neutral', flipped = false, enter = 'fade', offsetY = null, scale = null, fade = true) {
         const characterKey = this.getCharacterKey(characterName);
         let character = this.characters[characterKey];
         if (!character) {
@@ -6237,6 +6292,9 @@ class VisualNovelEngine {
             // reutilizarlo para evitar mappings fantasma y borrados tardíos.
             this.clearCharacterAnimeFall(charElement);
             const currentOccupant = charElement.getAttribute('data-character');
+            const wasAlreadyVisible = currentOccupant === characterKey &&
+                charElement.classList.contains('active') &&
+                !charElement.classList.contains('character-hidden');
             if (currentOccupant !== characterKey) {
                 this.resetCharacterSlotElement(charElement, position);
             } else {
@@ -6253,8 +6311,12 @@ class VisualNovelEngine {
             }
 
             const poseImage = this.getCharacterPoseImage(character, pose);
+            const shouldFadePose = fade !== false && wasAlreadyVisible;
+            if (shouldFadePose) await this.preloadImages([poseImage]);
 
-            this.applyCharacterPoseImage(charElement, poseImage);
+            this.applyCharacterPoseImage(charElement, poseImage, {
+                fade: shouldFadePose
+            });
             this.applyPoseClass(charElement, pose);
             charElement.classList.remove('character-hidden');
             charElement.classList.add('active');
@@ -6270,16 +6332,36 @@ class VisualNovelEngine {
             const characterVerticalOffset = this.resolveVerticalOffset(offsetY);
             charElement.style.transform = `${flipped ? 'scaleX(-1)' : 'scaleX(1)'} translateY(${characterVerticalOffset}) scale(${characterScale})`;
 
-            // Entrada animada opcional ("right"/"left"/"bottom"/"fade"). Usa la
-            // propiedad CSS `translate` (independiente de transform, no pisa el flip).
-            if (enter) {
+            // Entrada animada ("right"/"left"/"bottom"/"fade"). Si el guion no
+            // indica `enter`, showCharacter recibe "fade" por defecto. Un null
+            // explícito reserva la aparición instantánea para restauraciones del
+            // escenario o casos que la necesiten. Usa la propiedad CSS `translate`
+            // (independiente de transform, no pisa el flip).
+            // `enter` solo corresponde al paso de no visible a visible. Repetir
+            // showCharacter al reconstruir una escena puede actualizar pose y
+            // encuadre, pero no debe hacer entrar otra vez al mismo personaje.
+            if (!wasAlreadyVisible) {
+                clearTimeout(charElement._enterTimer);
+                charElement._enterTimer = null;
+                charElement.classList.remove(
+                    'char-enter-right',
+                    'char-enter-left',
+                    'char-enter-bottom',
+                    'char-enter-fade',
+                    'character-entering'
+                );
+            }
+            if (enter && !wasAlreadyVisible) {
                 const cls = `char-enter-${['right','left','bottom','fade'].includes(enter) ? enter : 'fade'}`;
-                charElement.classList.remove('char-enter-right','char-enter-left','char-enter-bottom','char-enter-fade');
+                // Mientras dura la entrada, layoutCharacters puede recolocar el
+                // grupo al incorporarse más personajes en la misma línea. Esta
+                // marca evita que la transición horizontal se mezcle con la
+                // dirección declarada por `enter`.
+                charElement.classList.add('character-entering');
                 void charElement.offsetWidth;
                 charElement.classList.add(cls);
-                clearTimeout(charElement._enterTimer);
                 charElement._enterTimer = setTimeout(() => {
-                    charElement.classList.remove(cls);
+                    charElement.classList.remove(cls, 'character-entering');
                     charElement._enterTimer = null;
                 }, 550);
             }
@@ -6342,7 +6424,7 @@ class VisualNovelEngine {
         });
     }
 
-    setPose(characterName, position, pose = 'neutral', options = {}) {
+    async setPose(characterName, position, pose = 'neutral', options = {}) {
         const characterKey = this.getCharacterKey(characterName);
         const character = this.characters[characterKey];
         if (!character) return;
@@ -6351,8 +6433,14 @@ class VisualNovelEngine {
         if (charElement && charElement.classList.contains('active')) {
             this.stopCharacterFrameAnimation(position, false);
             const poseImage = this.getCharacterPoseImage(character, pose);
+            const sameCharacter = charElement.getAttribute('data-character') === characterKey &&
+                !charElement.classList.contains('character-hidden');
+            const shouldFadePose = options.fade !== false && sameCharacter;
+            if (shouldFadePose) await this.preloadImages([poseImage]);
 
-            this.applyCharacterPoseImage(charElement, poseImage);
+            this.applyCharacterPoseImage(charElement, poseImage, {
+                fade: shouldFadePose
+            });
             this.applyPoseClass(charElement, pose);
 
             // Manejar video integrado si la pose tiene un video asociado (compañeros)
@@ -6384,7 +6472,10 @@ class VisualNovelEngine {
         if (reducedMotion) {
             // Las secuencias son animación real basada en temporizadores; el
             // media query CSS no puede detenerlas. Dejamos un fotograma legible.
-            this.setPose(characterKey, position, poses[0], { animateFrames: false });
+            this.setPose(characterKey, position, poses[0], {
+                animateFrames: false,
+                fade: false
+            });
             return;
         }
         this.stopCharacterFrameAnimation(position, false);
@@ -6410,7 +6501,10 @@ class VisualNovelEngine {
             }
             // Una secuencia ya aporta movimiento cuadro a cuadro. Evitamos el
             // fundido largo de expresión, que solaparía varios fotogramas.
-            this.setPose(characterKey, position, sequence[index], { animateFrames: false });
+            this.setPose(characterKey, position, sequence[index], {
+                animateFrames: false,
+                fade: false
+            });
             index += 1;
             if (index >= sequence.length) {
                 if (!loop) {
@@ -6645,7 +6739,7 @@ class VisualNovelEngine {
                 className.startsWith('char-enter-') ||
                 ['active', 'speaking', 'char-exit-fade', 'contact-glitch',
                     'full-signal-glitch', 'dialogue-glitch-loop',
-                    'character-hidden'].includes(className))
+                    'character-hidden', 'character-entering'].includes(className))
             .forEach(className => charElement.classList.remove(className));
 
         charElement.style.backgroundImage = '';
@@ -6656,6 +6750,7 @@ class VisualNovelEngine {
         delete charElement.dataset.poseSrc;
         delete charElement.dataset.frameSrc;
         delete charElement.dataset.poseTransition;
+        delete charElement.dataset.poseTransitionMode;
         charElement.querySelectorAll(':scope > .character-pose-ghost').forEach(ghost => ghost.remove());
         charElement.querySelectorAll(':scope > .character-eye-layer').forEach(layer => layer.remove());
 
@@ -8086,7 +8181,7 @@ class VisualNovelEngine {
             if (this.dialogueTimelineCursor < this.dialogueTimeline.length - 1) {
                 return this.showRewoundTimelineEntry(
                     this.dialogueTimelineCursor + 1,
-                    { recreateActions: false }
+                    { recreateActions: true }
                 );
             }
             await this.resumeAfterDialoguePlayback();
@@ -9596,14 +9691,24 @@ class VisualNovelEngine {
             const el = document.getElementById(id);
             if (el) {
                 this.clearCharacterAnimeFall(el);
+                clearTimeout(el._enterTimer);
+                clearTimeout(el._poseTransitionTimer);
                 clearTimeout(el._contactGlitchTimer);
                 clearTimeout(el._fullSignalGlitchTimer);
+                el._enterTimer = null;
+                el._poseTransitionTimer = null;
                 el._contactGlitchTimer = null;
                 el._fullSignalGlitchTimer = null;
                 el.classList.remove(
                     'active',
                     'speaking',
                     'character-hidden',
+                    'character-entering',
+                    'pose-transitioning',
+                    'char-enter-right',
+                    'char-enter-left',
+                    'char-enter-bottom',
+                    'char-enter-fade',
                     'char-exit-fade',
                     'contact-glitch',
                     'full-signal-glitch'
@@ -9611,6 +9716,13 @@ class VisualNovelEngine {
                 el.style.removeProperty('--contact-glitch-duration');
                 el.style.removeProperty('--full-glitch-duration');
                 el.style.backgroundImage = '';
+                delete el.dataset.pose;
+                delete el.dataset.poseSrc;
+                delete el.dataset.frameSrc;
+                delete el.dataset.poseTransition;
+                delete el.dataset.poseTransitionMode;
+                el.querySelectorAll(':scope > .character-pose-ghost').forEach(ghost => ghost.remove());
+                el.querySelectorAll(':scope > .character-eye-layer').forEach(layer => layer.remove());
 
                 const videoContainer = el.querySelector('.character-video-container');
                 if (videoContainer) {

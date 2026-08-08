@@ -357,6 +357,40 @@ body.startup-pending #menu-video-stack {
 .char-enter-fade   { animation: char-in-fade 0.5s ease; }
 .char-exit-fade    { transition: opacity 0.3s ease; opacity: 0 !important; }
 
+/* La composición puede pasar de uno a tres personajes mientras sus acciones
+   showCharacter se resuelven. Durante la entrada se actualiza el reparto sin
+   interpolar left/margin-left, para no sumar un desplazamiento lateral a la
+   dirección pedida por el guion. */
+.character.character-entering {
+    transition: opacity 0.4s ease, filter 0.35s ease, transform 0.25s ease;
+}
+
+/* Fundido entre dos poses del mismo personaje. Las capas son efímeras: el
+   engine consolida la nueva pose como único background al terminar. */
+.character.pose-transitioning {
+    isolation: isolate;
+}
+
+.character-pose-ghost {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: block;
+    background-size: inherit;
+    background-repeat: inherit;
+    background-position: inherit;
+    pointer-events: none;
+    will-change: opacity;
+}
+
+.character-pose-old { opacity: 1; }
+.character-pose-new { opacity: 0; }
+.character-pose-old.pose-fade-out { animation: character-pose-fade-out 0.28s ease both; }
+.character-pose-new.pose-fade-in { animation: character-pose-fade-in 0.28s ease both; }
+
+@keyframes character-pose-fade-out { from { opacity: 1; } to { opacity: 0; } }
+@keyframes character-pose-fade-in { from { opacity: 0; } to { opacity: 1; } }
+
 @keyframes char-in-right  { from { translate: 70px 0; opacity: 0; } to { translate: 0 0; opacity: 1; } }
 @keyframes char-in-left   { from { translate: -70px 0; opacity: 0; } to { translate: 0 0; opacity: 1; } }
 @keyframes char-in-bottom { from { translate: 0 60px; opacity: 0; } to { translate: 0 0; opacity: 1; } }
@@ -5057,6 +5091,28 @@ html.electron-app #menu-theme-btn { display: none; }
     box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
 }
 
+.chapter-select-btn.is-development {
+    border-color: rgba(79, 208, 255, 0.55);
+    color: #9fe8ff;
+}
+
+.chapter-select-btn.is-development small {
+    display: block;
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.chapter-select-btn.is-development:hover {
+    background: rgba(79, 208, 255, 0.12);
+    border-color: rgba(79, 208, 255, 0.85);
+    color: #d7f7ff;
+    box-shadow: 0 0 18px rgba(79, 208, 255, 0.25);
+}
+
 .chapter-selector-back {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;
@@ -5988,7 +6044,10 @@ html.electron-app #menu-theme-btn { display: none; }
 @media (prefers-reduced-motion: reduce) {
     .nm-logo, .nm-item, .nm-shortcuts, .neon-menu h1, .chapter-selector-panel, .menu-theme-btn { animation: none; }
     .nm-credit { animation: none; }
-    .char-enter-right, .char-enter-left, .char-enter-bottom, .char-enter-fade { animation: none; }
+    .char-enter-right, .char-enter-left, .char-enter-bottom, .char-enter-fade,
+    .character-pose-old.pose-fade-out, .character-pose-new.pose-fade-in { animation: none; }
+    .character-pose-old { opacity: 0; }
+    .character-pose-new { opacity: 1; }
 }
 
 @media (max-width: 760px), (max-height: 520px) {

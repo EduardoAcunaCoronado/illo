@@ -43,6 +43,10 @@ Controles esenciales:
 - Mantener `Ctrl`: avance rápido; las decisiones y minijuegos no se saltan.
 - `Esc` o **Opciones**: pausa y configuración.
 - **Escenas**: saltar a cualquier escena del capítulo.
+- En local/desarrollo, **Capítulos → QA · enter de showCharacter** abre un
+  recorrido visual para comprobar que las entradas no se repiten ni se desvían.
+  Una aparición sin `enter` usa `fade`; las direcciones indicadas prevalecen. Los
+  cambios de pose también se funden salvo que la acción declare `fade: false`.
 - **Log**: consultar quién dijo cada frase y qué opciones se eligieron durante la
   ruta actual. Cada diálogo muestra a la izquierda la pose histórica del hablante
   y colorea su nombre según la ficha del personaje. Abre por el final, pausa la
@@ -53,6 +57,7 @@ Controles esenciales:
   línea de los JSON. Cruza capítulos y conserva la ruta elegida; al llegar de nuevo
   a una decisión muestra sus opciones y permite sustituir el recorrido posterior.
   Recrea las acciones visuales y sonoras, texto, fondo/CG, poses, hablante y música;
+  al avanzar otra vez por lo ya visto también conserva los `enter` declarados;
   desde un minijuego vuelve al diálogo previo sin volver a ejecutarlo. Una espera o
   cinemática en una línea sin texto inmediatamente anterior también se recrea antes
   de seguir atrás.
@@ -106,6 +111,7 @@ Electron de desarrollo intenta iniciar Tools automáticamente.
 
 ```powershell
 npm run validate:content
+npm run test:character-transitions
 npm run audit:assets
 npm run check:js
 ```
