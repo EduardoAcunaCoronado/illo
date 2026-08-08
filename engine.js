@@ -191,10 +191,9 @@ class VisualNovelEngine {
         if (this._setTypingPaused) this._setTypingPaused(this.textPaused);
     }
 
-    async loadChapter(chapterName, options = {}) {
+    async loadChapter(chapterName) {
         try {
-            const source = options.source || `chapters/${chapterName}.json`;
-            const response = await fetch(`${source}?v=${Date.now()}`, {
+            const response = await fetch(`chapters/${chapterName}.json?v=${Date.now()}`, {
                 cache: 'no-store'
             });
             if (!response.ok) {

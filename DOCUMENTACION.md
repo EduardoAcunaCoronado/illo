@@ -108,14 +108,6 @@ desde Configuración.
 | **Tools** | Comprueba y abre el centro local de herramientas gráficas del puerto 8011. Si está apagado, conserva el menú y muestra cómo iniciarlo. |
 | **Minijuegos** | Abre `minijuegos_test.html` en el mismo servidor del juego para lanzar cada prueba por separado. |
 
-En localhost y en Electron de desarrollo, **Capítulos** añade al final una
-entrada azul llamada **QA · enter de showCharacter**. Es un recorrido guiado
-para observar entradas repetidas, reapariciones tras ocultación y grupos de tres
-personajes. También comprueba el `fade` predeterminado de los cambios de pose con
-`showCharacter` y `setPose`, su desactivación explícita y que una aparición sin
-`enter` no cruce horizontalmente la pantalla. No forma parte de los siete
-capítulos de la historia ni aparece en el instalador.
-
 Los dos accesos aparecen como iconos SVG en la esquina superior derecha cuando
 el repositorio se ejecuta en local o mediante Electron de desarrollo. Se
 ocultan en el instalador y en un hosting público porque esas utilidades no forman
@@ -917,13 +909,6 @@ formato nuevo y conservar soporte Range para audio/vídeo.
 `package.json > build.files` es una allowlist. Comprueba que incluye el nuevo
 runtime y excluye fuentes, legacy, personajes deprecados y `workbench/`.
 
-Los capítulos manuales de QA viven en `workbench/qa/chapters/`. El selector los
-descubre mediante `DEVELOPMENT_CHAPTERS` sólo cuando están habilitados los
-accesos de desarrollo. Cada entrada declara un `source` explícito y
-`playChapter()` lo entrega a `engine.loadChapter(id, { source })`; los capítulos
-canónicos siguen cargándose desde `chapters/<id>.json`. Al estar bajo
-`workbench/`, las pruebas se versionan pero quedan fuera del paquete de Electron.
-
 ```powershell
 npm run dist:dir    # inspección rápida
 npm run dist        # NSIS Windows
@@ -963,11 +948,6 @@ de `showCharacter` y `setPose`, respetar `fade: false`, volver a ejecutar una
 entrada después de `hideCharacter`, mantener pura su dirección al recomponer tres
 huecos tras `removeCharacter` y reaplicarla al avanzar otra vez después de
 **Retroceder**.
-
-Para la revisión visual equivalente, inicia el juego en local, abre
-**Capítulos** y elige **QA · enter de showCharacter**. El guion de
-`workbench/qa/chapters/show_character_enter.json` explica en pantalla qué debe
-ocurrir y ofrece repetir el caso individual o el grupal antes de finalizar.
 
 Deuda conocida verificada el 2026-08-07: `npm run check:js` señala formato
 Prettier previo en 16 archivos JavaScript. El comando sigue siendo útil para no

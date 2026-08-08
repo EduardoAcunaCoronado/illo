@@ -255,13 +255,6 @@ const developmentShortcuts = document.querySelector(".nm-shortcuts");
 const isLoopbackGame = ["localhost", "127.0.0.1", "::1", "[::1]"].includes(location.hostname);
 const canUseDevelopmentShortcuts =
   isLoopbackGame && (!window.desktopApp || window.desktopApp.isPackaged === false);
-const DEVELOPMENT_CHAPTERS = [
-  {
-    id: "qa-show-character-enter",
-    source: "workbench/qa/chapters/show_character_enter.json",
-    fallbackTitle: "QA · enter de showCharacter",
-  },
-];
 
 developmentShortcuts?.toggleAttribute("hidden", !canUseDevelopmentShortcuts);
 
@@ -2839,26 +2832,6 @@ async function loadAvailableChapters() {
       break; // error de red -> dejar de sondear
     }
   }
-  if (canUseDevelopmentShortcuts) {
-    for (const definition of DEVELOPMENT_CHAPTERS) {
-      try {
-        const response = await fetch(
-          `${definition.source}?v=${Date.now()}`,
-          { cache: "no-store" },
-        );
-        if (!response.ok) continue;
-        const chapter = await response.json();
-        AVAILABLE_CHAPTERS.push({
-          id: definition.id,
-          title: chapter.title || definition.fallbackTitle,
-          source: definition.source,
-          development: true,
-        });
-      } catch (error) {
-        console.warn("No se pudo cargar el capítulo de QA:", definition.id);
-      }
-    }
-  }
   return AVAILABLE_CHAPTERS;
 }
 
@@ -2948,12 +2921,7 @@ async function playChapter(chapterIdentifier, transitionCurtain = null) {
   currentChapterName = chapterName;
 
   // Cargar el capítulo
-  const chapterDefinition = AVAILABLE_CHAPTERS.find(
-    (entry) => entry.id === chapterName,
-  );
-  const chapter = await engine.loadChapter(chapterName, {
-    source: chapterDefinition?.source,
-  });
+  const chapter = await engine.loadChapter(chapterName);
 
   if (!chapter) {
     isGameRunning = false;
@@ -3232,9 +3200,8 @@ function showChapterSelector() {
 
   const buttonsHTML = AVAILABLE_CHAPTERS.map(
     (ch) => `
-        <button class="chapter-select-btn${ch.development ? " is-development" : ""}" data-chapter="${ch.id}">
+        <button class="chapter-select-btn" data-chapter="${ch.id}">
             <span>${ch.title}</span>
-            ${ch.development ? '<small>Prueba local · no se incluye en el juego</small>' : ""}
         </button>
     `,
   ).join("");

@@ -5091,28 +5091,6 @@ html.electron-app #menu-theme-btn { display: none; }
     box-shadow: 0 0 18px rgba(255, 209, 102, 0.25);
 }
 
-.chapter-select-btn.is-development {
-    border-color: rgba(79, 208, 255, 0.55);
-    color: #9fe8ff;
-}
-
-.chapter-select-btn.is-development small {
-    display: block;
-    margin-top: 4px;
-    color: rgba(255, 255, 255, 0.55);
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.chapter-select-btn.is-development:hover {
-    background: rgba(79, 208, 255, 0.12);
-    border-color: rgba(79, 208, 255, 0.85);
-    color: #d7f7ff;
-    box-shadow: 0 0 18px rgba(79, 208, 255, 0.25);
-}
-
 .chapter-selector-back {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;

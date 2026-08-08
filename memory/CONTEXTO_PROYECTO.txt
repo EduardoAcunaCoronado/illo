@@ -322,10 +322,6 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - Al avanzar por `dialoguePlayback` después de Retroceder, `nextLine()` solicita
   `recreateActions: true`: restaura la base anterior y reaplica las acciones de
   presentación, incluidos los `enter`, sin repetir progreso ni minijuegos.
-- `workbench/qa/chapters/show_character_enter.json` es el capítulo visual de QA
-  para ese contrato. `game.js > DEVELOPMENT_CHAPTERS` lo añade al selector sólo
-  en localhost o Electron de desarrollo; no cuenta como capítulo canónico ni se
-  incluye en el instalador.
 - Menú de escenas: puede saltar a cualquier escena del capítulo, incluso desde una
   elección; se oculta durante un minijuego activo. Sólo la escena actual se
   distingue, en dorado. No existe estado azul ni estilo de escena visitada;
