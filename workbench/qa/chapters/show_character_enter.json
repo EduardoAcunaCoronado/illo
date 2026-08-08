@@ -1,0 +1,347 @@
+{
+  "title": "QA · enter de showCharacter",
+  "developmentOnly": true,
+  "isFinal": true,
+  "scenes": [
+    {
+      "title": "Prueba 1: personaje ya visible",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter0/habitacion_neon.webp",
+              "cut": true
+            },
+            {
+              "type": "removeCharacter",
+              "position": "left"
+            },
+            {
+              "type": "removeCharacter",
+              "position": "center"
+            },
+            {
+              "type": "removeCharacter",
+              "position": "right"
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "neutral",
+              "enter": "bottom"
+            }
+          ],
+          "character": "3C",
+          "text": "PRUEBA 1. Samu debe entrar una sola vez desde abajo. Espera a que termine la animación y avanza."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy",
+              "enter": "right"
+            }
+          ],
+          "character": "3C",
+          "text": "CORRECTO: Samu no vuelve a entrar desde la derecha y la pose cambia a happy mediante un fundido."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "thinking",
+              "enter": "fade"
+            }
+          ],
+          "character": "3C",
+          "text": "Segunda comprobación con showCharacter: thinking debe fundirse desde happy porque fade es true por defecto."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "worried",
+              "fade": false
+            }
+          ],
+          "character": "3C",
+          "text": "Con showCharacter y fade false, worried debe sustituir a thinking de inmediato y sin volver a entrar."
+        },
+        {
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised"
+            }
+          ],
+          "character": "3C",
+          "text": "Prueba de setPose: surprised debe aparecer mediante fade porque no hemos desactivado la opción."
+        },
+        {
+          "actions": [
+            {
+              "type": "setPose",
+              "character": "samu",
+              "position": "left",
+              "pose": "neutral",
+              "fade": false
+            }
+          ],
+          "character": "3C",
+          "text": "CORRECTO: setPose con fade false recupera neutral de inmediato."
+        }
+      ]
+    },
+    {
+      "title": "Prueba 2: límite de escena y ocultación",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter0/habitacion_neon.webp",
+              "cut": true
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised",
+              "enter": "left"
+            }
+          ],
+          "character": "3C",
+          "text": "PRUEBA 2. Hemos cambiado de escena, pero Samu seguía visible. Sólo debe cambiar de pose; no debe entrar desde la izquierda."
+        },
+        {
+          "actions": [
+            {
+              "type": "hideCharacter",
+              "character": "samu",
+              "position": "left"
+            }
+          ],
+          "character": "3C",
+          "text": "Ahora Samu está oculto. Al avanzar sí debe considerarse una aparición nueva."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "determined",
+              "enter": "bottom"
+            }
+          ],
+          "character": "3C",
+          "text": "CORRECTO: Samu vuelve desde abajo porque antes estaba oculto."
+        },
+        {
+          "actions": [
+            {
+              "type": "removeCharacter",
+              "character": "samu"
+            }
+          ],
+          "character": "3C",
+          "text": "Hueco vaciado. La siguiente escena reproduce el caso de retirar tres personajes sin exit."
+        }
+      ]
+    },
+    {
+      "title": "Prueba 3: tres entradas simultáneas",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter0/habitacion_neon.webp",
+              "cut": true
+            },
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "neutral"
+            },
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "neutral"
+            },
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "neutral"
+            }
+          ],
+          "character": "3C",
+          "text": "PRUEBA 3. Como no indicamos enter, Samu, Tony y Edu deben aparecer sólo con fade. Ninguno debe cruzar horizontalmente la pantalla."
+        },
+        {
+          "actions": [
+            {
+              "type": "removeCharacter",
+              "position": "left"
+            },
+            {
+              "type": "removeCharacter",
+              "position": "center"
+            },
+            {
+              "type": "removeCharacter",
+              "position": "right"
+            }
+          ],
+          "character": "3C",
+          "text": "Los tres se han retirado de inmediato, sin exit. Avanza para probar direcciones distintas. Cuando veas al grupo, pulsa Retroceder para volver aquí y avanza de nuevo: las dos pasadas deben ser idénticas."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "happy",
+              "enter": "left"
+            },
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "flirt",
+              "enter": "bottom"
+            },
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "happy",
+              "enter": "right"
+            }
+          ],
+          "character": "3C",
+          "text": "CORRECTO: Samu entra sólo desde la izquierda, Tony sólo desde abajo y Edu sólo desde la derecha. Ninguno debe hacer una diagonal, tampoco al regresar con Retroceder y volver a esta línea."
+        },
+        {
+          "actions": [
+            {
+              "type": "removeCharacter",
+              "position": "left"
+            },
+            {
+              "type": "removeCharacter",
+              "position": "center"
+            },
+            {
+              "type": "removeCharacter",
+              "position": "right"
+            }
+          ],
+          "character": "3C",
+          "text": "Repetimos la retirada inmediata. Ahora los tres deben subir verticalmente desde abajo."
+        },
+        {
+          "actions": [
+            {
+              "type": "showCharacter",
+              "character": "samu",
+              "position": "left",
+              "pose": "surprised",
+              "enter": "bottom"
+            },
+            {
+              "type": "showCharacter",
+              "character": "tony",
+              "position": "center",
+              "pose": "surprised",
+              "enter": "bottom"
+            },
+            {
+              "type": "showCharacter",
+              "character": "edu",
+              "position": "right",
+              "pose": "surprised",
+              "enter": "bottom"
+            }
+          ],
+          "character": "3C",
+          "text": "CORRECTO: los tres entran rectos desde abajo y terminan alineados. FALLO: alguno se desplaza también hacia un lado."
+        }
+      ]
+    },
+    {
+      "title": "Panel de repetición",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter0/habitacion_neon.webp",
+              "cut": true
+            }
+          ],
+          "character": "3C",
+          "text": "Pruebas completadas. Puedes repetir un bloque o finalizar el capítulo de QA."
+        },
+        {
+          "choices": [
+            {
+              "text": "Repetir personaje ya visible",
+              "nextScene": "Prueba 1: personaje ya visible"
+            },
+            {
+              "text": "Repetir tres entradas simultáneas",
+              "nextScene": "Prueba 3: tres entradas simultáneas"
+            },
+            {
+              "text": "Finalizar QA",
+              "nextScene": "Fin de QA"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Fin de QA",
+      "lines": [
+        {
+          "actions": [
+            {
+              "type": "setBackground",
+              "value": "assets/images/backgrounds/chapter0/habitacion_neon.webp",
+              "cut": true
+            },
+            {
+              "type": "removeCharacter",
+              "position": "left"
+            },
+            {
+              "type": "removeCharacter",
+              "position": "center"
+            },
+            {
+              "type": "removeCharacter",
+              "position": "right"
+            }
+          ],
+          "character": "3C",
+          "text": "Fin de la prueba. Al avanzar volverás al menú principal porque este capítulo está marcado como final."
+        }
+      ]
+    }
+  ]
+}
