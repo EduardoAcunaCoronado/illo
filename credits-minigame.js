@@ -139,9 +139,9 @@
         document.head.appendChild(style);
     }
 
-    class CreditsMinigame {
+    class CreditsMinigame extends window.MinigameBase {
         constructor(options = {}) {
-            this.options = options;
+            super(options);
             this.images = Array.isArray(options.images) && options.images.length > 0 ? options.images : DEFAULT_IMAGES;
             this.music = options.music || options.path || DEFAULT_MUSIC;
             this.message = options.message || 'Gracias por jugar';
@@ -155,10 +155,23 @@
             this.transitionTimer = null;
         }
 
-        play() {
+        start() {
+            this.state = 'running';
             ensureStyles();
             return new Promise((resolve) => {
                 this.resolve = resolve;
+                this.own(() => {
+                    this.finished = true;
+                    if (this.transitionTimer) clearTimeout(this.transitionTimer);
+                    this.timers.forEach((timer) => clearTimeout(timer));
+                    this.timers = [];
+                    if (this.audio) {
+                        try {
+                            this.audio.pause();
+                            this.audio.currentTime = 0;
+                        } catch (_error) {}
+                    }
+                });
                 this.render();
                 this.startAudio();
                 this.startSequence();
@@ -178,13 +191,14 @@
         </section>
       `;
             document.getElementById('game-container').appendChild(this.overlay);
-            this.overlay.querySelector('.credits-skip').addEventListener('click', () => this.finish());
+            this.attachOverlay(this.overlay);
+            this.listen(this.overlay.querySelector('.credits-skip'), 'click', () => this.finish());
         }
 
         startAudio() {
             this.audio = new Audio(this.music);
             this.audio.volume = this.options.volume == null ? 0.75 : this.options.volume;
-            this.audio.addEventListener('ended', () => this.finish());
+            this.listen(this.audio, 'ended', () => this.finish());
             this.audio.play().catch(() => {
                 this.scheduleFallback();
             });
@@ -211,7 +225,7 @@
 
             if (this.audio.readyState >= 1) begin();
             else {
-                this.audio.addEventListener('loadedmetadata', begin, { once: true });
+                this.listen(this.audio, 'loadedmetadata', begin, { once: true });
                 this.timers.push(setTimeout(begin, 1200));
             }
         }
@@ -280,6 +294,7 @@
                 } catch (e) {}
             }
             if (this.overlay) this.overlay.remove();
+            this.cleanup();
             if (this.resolve) this.resolve(true);
         }
 

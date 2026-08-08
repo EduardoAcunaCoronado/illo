@@ -1,6 +1,11 @@
 // Presentación común de vidas para todos los minijuegos. Hasta cinco mantiene
 // los corazones individuales; a partir de seis evita desbordar el HUD con un
 // único corazón y un multiplicador que siempre refleja las vidas restantes.
+import { ActionInterpreter } from './ActionInterpreter.js';
+import { AudioController } from './AudioController.js';
+import { DOMRenderer } from './DOMRenderer.js';
+import { HistoryManager } from './HistoryManager.js';
+
 window.MinigameLifeDisplay = Object.freeze({
     normalize(value) {
         return Math.max(0, Math.floor(Number(value) || 0));
@@ -38,6 +43,10 @@ window.MinigameLifeDisplay = Object.freeze({
 
 class VisualNovelEngine {
     constructor() {
+        this.actionInterpreter = new ActionInterpreter(this);
+        this.audioController = new AudioController(this);
+        this.domRenderer = new DOMRenderer();
+        this.historyManager = new HistoryManager(this);
         this.currentChapter = null;
         this.currentScene = 0;
         this.currentLine = 0;
@@ -112,12 +121,7 @@ class VisualNovelEngine {
     }
 
     _getBackgroundElement() {
-        if (this._backgroundElement && this._backgroundElement.isConnected) {
-            return this._backgroundElement;
-        }
-
-        this._backgroundElement = document.getElementById('background');
-        return this._backgroundElement;
+        return this.domRenderer.getBackgroundElement();
     }
 
     // Añade un objeto al inventario (sin duplicar). Persiste entre capítulos.
@@ -262,6 +266,11 @@ class VisualNovelEngine {
         addImage(line.background);
 
         const inspectAction = (action) => {
+            action = this.actionInterpreter.normalize(action);
+            if (Array.isArray(action)) {
+                action.forEach(inspectAction);
+                return;
+            }
             if (!action || typeof action !== 'object') return;
             const value = action.value;
             const path = action.path;
@@ -601,182 +610,7 @@ class VisualNovelEngine {
     }
 
     async executeAction(action) {
-        if (!action) return;
-
-        switch (action.type) {
-            case 'clearBackground':
-            case 'removeBackground':
-                this.clearBackground();
-                break;
-            case 'setBackground':
-                this.setBackground(action.value, action);
-                break;
-            case 'showCharacter':
-                await this.showCharacter(
-                    action.character,
-                    action.position,
-                    action.pose,
-                    action.flipped,
-                    action.enter,
-                    action.offsetY,
-                    action.scale,
-                );
-                break;
-            case 'hideCharacter':
-                this.hideCharacter(action.character, action.position, action.exit);
-                break;
-            case 'removeCharacter':
-            case 'quitarPersonaje':
-                this.removeCharacter(action.character, action.position, action.exit);
-                break;
-            case 'setPose':
-                this.setPose(action.character, action.position, action.pose);
-                break;
-            case 'animateCharacter':
-            case 'characterAnimation':
-            case 'poseSequence':
-                this.startCharacterPoseAnimation(action);
-                break;
-            case 'stopCharacterAnimation':
-            case 'stopPoseSequence':
-                this.stopCharacterPoseAnimation(action.character, action.position);
-                break;
-            case 'characterGlitch':
-            case 'glitchCharacter':
-                this.triggerCharacterGlitch(action.character, action.position, action.duration);
-                break;
-            case 'characterFullGlitch':
-            case 'fullCharacterGlitch':
-                this.triggerCharacterFullGlitch(action.character, action.position, action.duration);
-                break;
-            case 'characterGlitchUntilAdvance':
-            case 'glitchUntilAdvance':
-                this.startCharacterGlitchUntilAdvance(action.character, action.position);
-                break;
-            case 'characterAnimeFall':
-            case 'animeFall':
-                this.triggerCharacterAnimeFall(action.character, action.position, action);
-                break;
-            case 'hideDialog':
-            case 'hideText':
-            case 'ocultarTexto':
-                this.hideDialog();
-                break;
-            case 'setVariable':
-                this.gameState[action.variable] = action.value;
-                break;
-            case 'giveItem':
-            case 'addItem':
-                this.addItem(action.item || action.value);
-                break;
-            case 'playSound':
-                // Soportar tanto formato antiguo (action.value) como nuevo (action.path + opciones)
-                const soundPath = action.path || action.value;
-                const soundOptions = {
-                    volume: action.volume !== undefined ? action.volume : 1.0,
-                    loop: action.loop || false,
-                    autoPlay: action.autoPlay !== false,
-                    id: action.id,
-                    fadeIn: action.fadeIn || 0,
-                };
-                this.playSound(soundPath, soundOptions);
-                break;
-            case 'stopSound':
-                this.stopSound(action.id || action.audio, action.fadeOut || 0);
-                break;
-            case 'stopAllSounds':
-                this.stopAllSounds();
-                break;
-            case 'pauseSound':
-                this.pauseSound(action.id || action.audio);
-                break;
-            case 'resumeSound':
-                this.resumeSound(action.id || action.audio);
-                break;
-            case 'setVolume':
-                this.setVolume(action.id || action.audio, action.volume);
-                break;
-            case 'wait':
-                await this.wait(action.ms != null ? action.ms : action.value);
-                break;
-            case 'setTextDuration':
-            case 'textDuration':
-                this.setLineTextDuration(
-                    action.duration != null ? action.duration : action.ms != null ? action.ms : action.value,
-                );
-                break;
-            case 'waitForClick':
-            case 'waitClick':
-            case 'esperarClick':
-                await this.waitForActionClick();
-                break;
-            case 'minigame':
-                await this.playMinigame(action);
-                break;
-            case 'rescue':
-                this.rescueCharacter(action.character);
-                break;
-            case 'setDelay':
-                this.storyDelay = action.value || 0;
-                this.storyPressure = this.storyDelay;
-                break;
-            case 'addDelay':
-                this.storyDelay += action.value || 0;
-                this.storyPressure = this.storyDelay;
-                break;
-            case 'goToScene':
-                this.jumpToScene(action.value);
-                break;
-            case 'setNextChapter':
-                this.nextChapter = action.value;
-                break;
-            case 'playVideo':
-            case 'cutscene':
-                await this.playVideo(action);
-                break;
-            // ---- Efectos de "game feel" (juice.js) ----
-            case 'shake':
-            case 'screenShake':
-                if (window.Juice) window.Juice.shake(action.intensity || action.value || 8, action.duration || 350);
-                break;
-            case 'flash':
-                if (window.Juice) window.Juice.flash(action.color || action.value, action.duration);
-                break;
-            case 'grade':
-            case 'colorGrade':
-            case 'tinte':
-                if (window.Juice) window.Juice.grade(action.value || action.filter || 'none', action.duration);
-                break;
-            case 'vignette':
-            case 'vigneta':
-                if (window.Juice) {
-                    const s = action.value != null ? action.value : action.strength;
-                    window.Juice.vignette(s, action.duration);
-                }
-                break;
-            // ---- Juice II (jul 2026): dirección de escena ----
-            case 'fade':
-                // { to:"black", duration } funde A negro; { from:"black", duration }
-                // funde DESDE negro. Espera a que termine.
-                await this.fadeScene(action);
-                break;
-            case 'bgPan':
-                // Ken Burns del fondo: { zoomFrom, zoomTo, xFrom..yTo (%), duration }
-                this.bgPan(action);
-                break;
-            case 'showCG':
-                await this.showCG(action.path || action.value, action.duration, action);
-                break;
-            case 'hideCG':
-                this.hideCG(action.duration);
-                break;
-            case 'sfx':
-                // Capa Web Audio sintetizada (latido, rumble). { name, on, volume }
-                if (window.Juice && window.Juice.sfx) {
-                    window.Juice.sfx(action.name, action.on !== false, action);
-                }
-                break;
-        }
+        return this.actionInterpreter.execute(action);
     }
 
     // Reproduce un vídeo/cutscene a pantalla completa (p. ej. el opening de Tony).
@@ -1110,15 +944,7 @@ class VisualNovelEngine {
             ]);
         } catch (e) {
             if (!e || !e.minijuegoCancelado) throw e;
-            // Se salió del minijuego desde los botones de arriba: limpiar los
-            // restos que pudieran quedar y seguir como si nada.
-            document
-                .querySelectorAll('.minigame-overlay, .cutscene-overlay, .battle-minigame, .credits-minigame')
-                .forEach((o) => o.remove());
-            // La música y los efectos del minijuego no se van con el overlay.
-            // Quien nos ha sacado (otra escena, retroceder, menú) repinta luego
-            // su propio ambiente sonoro.
-            this.stopAllSounds();
+            this.limpiarMinijuegosActivos();
         } finally {
             this._abortarMinijuego = null;
         }
@@ -1131,7 +957,21 @@ class VisualNovelEngine {
     }
 
     abortarMinijuego() {
-        if (this._abortarMinijuego) this._abortarMinijuego();
+        const abortar = this._abortarMinijuego;
+        if (abortar) abortar();
+        this.limpiarMinijuegosActivos();
+    }
+
+    // Quitar solo el overlay no basta: un minijuego externo puede conservar
+    // RAF, timers, audio o listeners. La base cancela primero esos recursos;
+    // los integrados detectan después que su overlay ya no está conectado.
+    limpiarMinijuegosActivos({ stopAudio = true } = {}) {
+        window.MinigameBase?.cleanupAll?.();
+        document.querySelectorAll('.minigame-overlay, .battle-minigame, .credits-minigame').forEach((overlay) => {
+            overlay.remove();
+        });
+        window.HitboxDebugger?.clear?.();
+        if (stopAudio) this.stopAllSounds();
     }
 
     // Investigación narrativa de Furrielva. Furry Maps presenta las zonas como
@@ -9346,6 +9186,7 @@ class VisualNovelEngine {
     }
 
     reset() {
+        this.limpiarMinijuegosActivos();
         this.currentScene = 0;
         this.currentLine = 0;
         this.gameState = {};
@@ -9525,3 +9366,5 @@ class VisualNovelEngine {
         });
     }
 }
+
+export { VisualNovelEngine };

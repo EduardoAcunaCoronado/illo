@@ -6,18 +6,8 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/camino_a_ciudad_paloma.webp"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/camino_a_ciudad_paloma.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "background assets/images/backgrounds/chapter4/camino_a_ciudad_paloma.webp",
+            "sound assets/audio/music/chapter4/camino_a_ciudad_paloma.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000"
           ],
           "character": "3C",
           "text": "Tras abandonar Ecchi Land, Samu, Edu y Seraphyna siguen las indicaciones que José envió antes de que la comunicación se cortara."
@@ -26,24 +16,14 @@
           "character": "Samu",
           "text": "José decía que en Ciudad Paloma estaba pasando algo muy raro, que creía saber el porqué y que siguiéramos el camino de baldosas amarillas. Luego se cortó la llamada.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "Edu",
           "text": "Ya, pero lo de las baldosas amarillas suena bastante específico. También un poco a que la ciudad tiene muy claro por dónde quiere que vayamos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show edu right neutral"
           ]
         },
         {
@@ -51,24 +31,14 @@
           "speakingAs": "Tony",
           "text": "Mientras no acabemos convertidos en alpiste, yo voy tranquila. Bueno, tranquila dentro de lo que cabe después de Ecchi Land.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "Edu",
           "text": "¿Y si este es el mundo de ensueño de José? Porque lo de seguir baldosas amarillas hacia una ciudad misteriosa suena bastante a partida rara.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show edu right thinking"
           ]
         },
         {
@@ -76,24 +46,14 @@
           "speakingAs": "Tony",
           "text": "Tiene pinta de Dungeons & Dragons pasado por un filtro de palomas. Que, siendo José, tampoco me parece imposible.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "Samu",
           "text": "José nunca me había hablado de ningún personaje de rol suyo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
@@ -101,24 +61,14 @@
           "speakingAs": "Tony",
           "text": "José tiene pinta de guardar carpetas enteras de lore y soltarlo solo cuando alguien pregunta.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show tony right happy"
           ]
         },
         {
           "character": "Edu",
           "text": "Pues hoy le vamos a preguntar. Sobre todo por qué su ciudad necesita tantas palomas.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show edu right thinking"
           ]
         },
         {
@@ -129,24 +79,14 @@
           "character": "Edu",
           "text": "Chicos... ¿Qué es el guano?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show edu right thinking"
           ]
         },
         {
           "character": "Samu",
           "text": "Ese es exactamente el tipo de pregunta que José estaría encantado de responder.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
@@ -154,29 +94,15 @@
           "speakingAs": "Tony",
           "text": "Sí, la verdad es que es típico que te lo diga José, pero Edu, créeme: mejor no lo sepas.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "José",
           "text": "Achís...",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "left",
-              "pose": "silueta"
-            }
+            "remove right",
+            "show jose left silueta scale=1.18"
           ]
         },
         {
@@ -189,10 +115,7 @@
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena 2: Entrada a Ciudad Paloma"
-            }
+            "goto \"Escena 2: Entrada a Ciudad Paloma\""
           ]
         }
       ]
@@ -202,31 +125,11 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.webp"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/ciudad-paloma-1.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "remove left",
+            "remove right",
+            "background assets/images/backgrounds/chapter4/ciudad_paloma.webp",
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/chapter4/ciudad-paloma-1.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000"
           ],
           "character": "3C",
           "text": "El camino desemboca en una ciudad medieval de piedra clara, tejados naranjas, canales y campanarios. Algunas palomas descansan en las cornisas. No demasiadas. Las justas para justificar el nombre."
@@ -235,12 +138,7 @@
           "character": "Samu",
           "text": "Pues... es bonita. Yo esperaba una plaza cubierta de excrementos y señores tirando pan.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
@@ -248,24 +146,14 @@
           "speakingAs": "Tony",
           "text": "Dale cinco minutos. Toda ciudad tiene su zona turística.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show tony right happy"
           ]
         },
         {
           "character": "Edu",
           "text": "Mirad el cartel.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show edu right neutral"
           ]
         },
         {
@@ -277,24 +165,14 @@
           "speakingAs": "Tony",
           "text": "Contundente. Informativo. Imposible crear falsas expectativas.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "Samu",
           "text": "Y ahora toca encontrar a José. ¿Dónde...?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
@@ -303,10 +181,7 @@
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena 3: El guerrero de la máscara"
-            }
+            "goto \"Escena 3: El guerrero de la máscara\""
           ]
         }
       ]
@@ -316,30 +191,11 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/ciudad-paloma-1.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/palomas_andando_y_pisadas.mp3",
-              "volume": 1
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/entrada_epica_jose.webp"
-            }
+            "sound assets/audio/music/chapter4/ciudad-paloma-1.mp3 volume=0.6 loop=true id=bg_music",
+            "sound assets/audio/sfx/palomas_andando_y_pisadas.mp3 volume=1",
+            "remove left",
+            "remove right",
+            "background assets/images/backgrounds/chapter4/entrada_epica_jose.webp"
           ],
           "character": "3C",
           "text": "De la calle emerge un guerrero enorme: cuerpo de lagarto naranja, armadura de acero, una gran espada a la espalda y una cabeza de paloma coronada por rizos rojos y gafas redondas."
@@ -348,24 +204,14 @@
           "character": "Samu",
           "text": "...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show samu left surprised"
           ]
         },
         {
           "character": "Edu",
           "text": "...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "surprised"
-            }
+            "show edu right surprised"
           ]
         },
         {
@@ -373,96 +219,51 @@
           "speakingAs": "Tony",
           "text": "José, como seas tú, te juro que necesito una explicación larguísima.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show tony left surprised"
           ]
         },
         {
           "character": "José",
           "text": "Hola. Habéis tardado menos de lo que esperaba.",
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.webp"
-            },
-            {
-              "type": "rescue",
-              "character": "jose"
-            },
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "background assets/images/backgrounds/chapter4/ciudad_paloma.webp",
+            "rescue jose",
+            "show jose right happy scale=1.18"
           ]
         },
         {
           "character": "José",
           "text": "A ver si os reconozco... el lobo... ¿puede ser Samu?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show jose right thinking scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Me has reconocido tan rápido?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show samu left surprised"
           ]
         },
         {
           "character": "José",
           "text": "Hombre. Llevas años diciendo que, si pudieras elegir, serías un lobo. O un zorro. Al final te has quedado a medio camino, pero cuenta.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "¡Eh! Yo lo veo bastante conseguido.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
           "character": "José",
           "text": "Vale... y la loba es... espera... ¿Tony?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show jose right thinking scale=1.18"
           ]
         },
         {
@@ -470,25 +271,14 @@
           "speakingAs": "Tony",
           "text": "La misma que viste y calza.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "José",
           "text": "Pero... eres una chica.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "surprised"
-            }
+            "show jose right surprised scale=1.18"
           ]
         },
         {
@@ -496,24 +286,14 @@
           "speakingAs": "Tony",
           "text": "¿No te lo esperabas? Si siempre me han encantado los personajes femeninos. Lo que sea que nos transformara solo ha tenido muy buen gusto. Y por cierto, llámame Seraphyna.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "flirt"
-            }
+            "show tony left flirt"
           ]
         },
         {
           "character": "Samu",
           "text": "Lo preocupante es que eso tiene bastante sentido.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
@@ -524,75 +304,42 @@
           "character": "Edu",
           "text": "Bueno... ¿y de mí no dices nada?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show edu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "Sabía que eras Edu...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "embarrassed"
-            }
+            "show jose right embarrassed scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "¿Cómo lo has sabido?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show edu left surprised"
           ]
         },
         {
           "character": "José",
           "text": "Era el más fácil de todos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "¿Por qué?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show edu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "Porque eres el único dragón azul con una camiseta de Kingdom Souls.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
@@ -603,12 +350,7 @@
           "character": "Edu",
           "text": "¡Hostia! No me había dado cuenta para nada. Ya sabéis que es el único Souls que juego.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "embarrassed"
-            }
+            "show edu left embarrassed"
           ]
         },
         {
@@ -616,36 +358,21 @@
           "speakingAs": "Tony",
           "text": "La verdad es que ibas dando bastantes pistas.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "Samu",
           "text": "Disimular, lo que se dice disimular, no has disimulado mucho.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
           "character": "Samu",
           "text": "Estupendo... y ahora que nos hemos reconocido nos vas a responder una pregunta.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
@@ -653,37 +380,21 @@
           "text": "¿¡DESDE CUÁNDO TENÍAS UN PERSONAJE DE ROL!?",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "shocked"
-            }
+            "show samu left shocked"
           ]
         },
         {
           "character": "José",
           "text": "Cada uno tiene sus secretitos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show jose right neutral scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "A ver, yo no llamaría a esto «secretito». Eres un lagarto gigante disfrazado de ave con una espada de dos metros.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show edu left thinking"
           ]
         },
         {
@@ -691,75 +402,42 @@
           "speakingAs": "Tony",
           "text": "Y con gafas. No olvidemos las gafas. Dan seriedad al conjunto.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "José",
           "text": "Mi personaje se llama Piyón. Es un guerrero criado por las palomas de esta ciudad.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show jose right neutral scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "Espera. ¿Criado por palomas?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show samu left surprised"
           ]
         },
         {
           "character": "José",
           "text": "Sí. Encontraron un huevo de lagarto, lo incubaron y lo criaron como a uno de los suyos. Piyón creció convencido de que era una paloma especialmente grande.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show jose right neutral scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "¿Y nadie le explicó que tenía escamas, cola y no podía volar?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show edu left happy"
           ]
         },
         {
           "character": "José",
           "text": "Las palomas son una familia muy inclusiva.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
@@ -767,37 +445,21 @@
           "speakingAs": "Tony",
           "text": "O muy poco observadora.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Y la máscara?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "No es una máscara.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show jose right neutral scale=1.18"
           ]
         },
         {
@@ -808,21 +470,12 @@
           "character": "José",
           "text": "...Vale, sí es una máscara. Pero queda mejor si mantengo el misterio.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena 4: El problema de Ciudad Paloma"
-            }
+            "goto \"Escena 4: El problema de Ciudad Paloma\""
           ]
         }
       ]
@@ -834,81 +487,38 @@
           "character": "José",
           "text": "Me alegro de que hayáis venido, pero no os he llamado solo para enseñaros mi ficha de personaje. En Ciudad Paloma también han aparecido memes, los he mantenido a raya. Pero hay algo más...",
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/ciudad_paloma.webp",
-              "cut": true
-            },
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/ciudad-paloma-2.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "background assets/images/backgrounds/chapter4/ciudad_paloma.webp cut=true",
+            "show jose right neutral scale=1.18",
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/chapter4/ciudad-paloma-2.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Algo más?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "José",
           "text": "Sí, aquí se comportan de forma distinta. Están buscando algo bajo la ciudad.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show jose right neutral scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "Uf, no sé... Cada vez que alguien dice que hay «algo debajo de la ciudad», nunca es una cafetería.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show edu left worried"
           ]
         },
         {
           "character": "José",
           "text": "Bajo la ciudad hay algo y los memes están intentando entrar. El problema es que sus accesos no se abren solo a espadazos: Piyón puede romper casi cualquier cosa y aguantar golpes, pero la magia, la velocidad y la luz no son precisamente su fuerte. Para eso os necesito.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show jose right neutral scale=1.18"
           ]
         },
         {
@@ -916,119 +526,68 @@
           "speakingAs": "Tony",
           "text": "Resumiendo: tienes fuerza, armadura y una espada enorme, pero necesitas que los demás te solucionemos los puzles.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "José",
           "text": "También tengo suerte.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Mucha?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "Una cantidad estadísticamente irritante.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show jose right neutral scale=1.18"
           ]
         },
         {
           "character": "3C",
           "text": "Una paloma deja caer una moneda de oro justo delante de José.",
           "actions": [
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/drop_coin.mp3",
-              "volume": 1
-            }
+            "sound assets/audio/sfx/drop_coin.mp3 volume=1"
           ]
         },
         {
           "character": "Edu",
           "text": "Vale. Confirmado.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show edu left surprised"
           ]
         },
         {
           "character": "José",
           "text": "Por eso os necesito. Esta ciudad reconoce las clases de los avatares. Si conseguimos que responda a vosotros, podremos abrir el camino a la mazmorra.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Clases? Yo no recuerdo haber elegido ninguna.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "José",
           "text": "Puede que no las eligierais conscientemente. Pero vuestros avatares sí tienen una forma de luchar. La ciudad solo necesita despertarla.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show jose right neutral scale=1.18"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena 5: El despertar de las clases"
-            }
+            "goto \"Escena 5: El despertar de las clases\""
           ]
         }
       ]
@@ -1038,25 +597,10 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/ciudad-paloma-2.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/plaza_circular.webp"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            }
+            "sound assets/audio/music/chapter4/ciudad-paloma-2.mp3 volume=0.6 loop=true id=bg_music",
+            "background assets/images/backgrounds/shared/plaza_circular.webp",
+            "remove right",
+            "remove left"
           ],
           "character": "3C",
           "text": "José conduce al grupo hasta una plaza circular con cuatro símbolos tallados en el suelo. Al acercarse uno por uno, cada avatar despierta una runa distinta, como si la ciudad reconociera la clase que lleva dentro."
@@ -1065,135 +609,69 @@
           "character": "Samu",
           "text": "Vale... esto está reaccionando a nosotros.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show samu left surprised"
           ]
         },
         {
           "character": "3C",
           "text": "El círculo arcano se ilumina bajo Samu y la runa del mago despierta con un resplandor dorado. A su alrededor, destellos de fuego, hielo, relámpago y magia arcana orbitan sus manos, anunciando el nacimiento de un poder que llevaba dentro sin saberlo. La plaza lo reconoce al instante y sella su clase con un brillo solemne: Mago.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            }
+            "remove right",
+            "remove left"
           ]
         },
         {
           "actions": [
-            {
-              "type": "hideDialog"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/fire_spell.mp3",
-              "volume": 1
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_samu.webp"
-            },
-            {
-              "type": "waitForClick"
-            }
+            "dialogOff",
+            "sound assets/audio/sfx/fire_spell.mp3 volume=1",
+            "background assets/images/backgrounds/chapter4/despertar_samu.webp",
+            "waitForClick"
           ]
         },
         {
           "character": "Samu",
           "text": "¡Soy un mago! ¡Puedo notar varios tipos de magia a la vez!",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "left"
-            }
+            "show samu left happy",
+            "hide left"
           ]
         },
         {
           "character": "Edu",
           "text": "Procura no descubrir la magia de explosión mientras estamos todos cerca.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
           "character": "3C",
           "text": "La runa del pícaro se ilumina y estallan chispas azules. Varias copias ilusorias de Edu aparecen a su alrededor, moviéndose como sombras veloces entre trazos de dagas y relámpagos, mientras la plaza reconoce su clase: Pícaro Arcano.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            }
+            "remove right",
+            "remove left"
           ]
         },
         {
           "actions": [
-            {
-              "type": "hideDialog"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/fast_whoosh_and_zaps.mp3",
-              "volume": 1
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_edu.webp"
-            },
-            {
-              "type": "waitForClick"
-            }
+            "dialogOff",
+            "sound assets/audio/sfx/fast_whoosh_and_zaps.mp3 volume=1",
+            "background assets/images/backgrounds/chapter4/despertar_edu.webp",
+            "waitForClick"
           ]
         },
         {
           "character": "Edu",
           "text": "Vale, pero creo que acabo de moverme antes de decidir que quería moverme.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "surprised"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "left"
-            }
+            "show edu left surprised",
+            "hide left"
           ]
         },
         {
           "character": "José",
           "text": "Pícaro Arcano. Mucha velocidad, ataques rápidos y magia para engañar al enemigo. No eres un ladrón puro; eres más bien un problema difícil de enfocar.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
@@ -1201,45 +679,23 @@
           "speakingAs": "Tony",
           "text": "Le pega. Siempre está con el miedo de llegar tarde a los sitios.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "3C",
           "text": "La runa de la estrella se ilumina. Un círculo sagrado se abre a sus pies, dibujando símbolos dorados sobre la piedra. Seraphyna alza la mano, y de pronto el aire se llena de plumas brillantes, notas musicales y pequeños escudos de energía que giran a su alrededor como una melodía protectora. La plaza responde a su voz antes incluso de que cante: Maga Blanca / Cantora.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            }
+            "remove right",
+            "remove left"
           ]
         },
         {
           "actions": [
-            {
-              "type": "hideDialog"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/harp_holly_spell.mp3",
-              "volume": 1
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_tony.webp"
-            },
-            {
-              "type": "waitForClick"
-            }
+            "dialogOff",
+            "sound assets/audio/sfx/harp_holly_spell.mp3 volume=1",
+            "background assets/images/backgrounds/chapter4/despertar_tony.webp",
+            "waitForClick"
           ]
         },
         {
@@ -1248,53 +704,29 @@
           "text": "Lo de cantante sí, pero... ¿Maga Blanca?",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "surprised"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "left"
-            }
+            "show tony left surprised",
+            "hide left"
           ]
         },
         {
           "character": "Samu",
           "text": "La clase más pura del grupo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
           "character": "Edu",
           "text": "Y se la han dado precisamente a Seraphyna.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show edu right happy"
           ]
         },
         {
           "character": "José",
           "text": "La ciudad tiene un sentido del humor bastante desarrollado.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
@@ -1302,115 +734,59 @@
           "speakingAs": "Tony",
           "text": "Soy una maga blanca, no una monja. Puedo curaros y seguir teniendo pensamientos impuros perfectamente.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "left"
-            }
+            "show tony left happy",
+            "hide left"
           ]
         },
         {
           "character": "Samu",
           "text": "Eso era exactamente lo que nos preocupaba.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "3C",
           "text": "Finalmente, la runa de la espada se enciende y la plaza entera responde con un rugido de piedra y luz. Fragmentos del suelo se elevan a su alrededor, varias espadas doradas aparecen suspendidas en el aire, escudos de energía se abren a sus lados y la gran hoja que sostiene clava su punta en el círculo arcano. La clase queda sellada sin margen de duda: Guerrero.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            }
+            "remove right",
+            "remove left"
           ]
         },
         {
           "actions": [
-            {
-              "type": "hideDialog"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/sword_thud_rock.mp3",
-              "volume": 1
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/despertar_jose.webp"
-            },
-            {
-              "type": "waitForClick"
-            }
+            "dialogOff",
+            "sound assets/audio/sfx/sword_thud_rock.mp3 volume=1",
+            "background assets/images/backgrounds/chapter4/despertar_jose.webp",
+            "waitForClick"
           ]
         },
         {
           "character": "José",
           "text": "Ataque alto, defensa alta y suerte absurda. Todo correcto.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "right"
-            }
+            "show jose right determined scale=1.18",
+            "hide right"
           ]
         },
         {
           "character": "Edu",
           "text": "¿Y la velocidad?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show edu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "No se puede tener todo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "right"
-            }
+            "show jose right neutral scale=1.18",
+            "hide right"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena 6: La ciudad deja de ser segura"
-            }
+            "goto \"Escena 6: La ciudad deja de ser segura\""
           ]
         }
       ]
@@ -1422,40 +798,17 @@
           "character": "3C",
           "text": "Las campanas de Ciudad Paloma comienzan a sonar solas. Las palomas levantan el vuelo y el cielo se cubre de pequeñas grietas digitales.",
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/church_bell.mp3",
-              "volume": 1
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/pigeon-city-glitch.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_circular_glitch.webp"
-            }
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/sfx/church_bell.mp3 volume=1",
+            "sound assets/audio/music/chapter4/pigeon-city-glitch.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000",
+            "background assets/images/backgrounds/chapter4/plaza_circular_glitch.webp"
           ]
         },
         {
           "character": "Samu",
           "text": "Eso no parece parte del ritual.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
@@ -1463,31 +816,16 @@
           "text": "No lo es.",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "angry"
-            }
+            "show jose right angry scale=1.18"
           ]
         },
         {
           "character": "3C",
           "text": "A lo lejos, algo empieza a caer del cielo entre las grietas digitales: una bailarina con cabeza de capuchino gira sobre sí misma con una sonrisa afilada, un tiburón con zapatillas atraviesa el aire enseñando los dientes y una figura de madera con un bate desciende envuelta en una capa desgarrada.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/cielo_glitch_brainrot.webp"
-            }
+            "remove right",
+            "remove left",
+            "background assets/images/backgrounds/chapter4/cielo_glitch_brainrot.webp"
           ]
         },
         {
@@ -1503,41 +841,22 @@
           "speakingAs": "Tony",
           "text": "Genial. Cinco minutos siendo maga blanca y ya tengo pacientes.",
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque.webp"
-            },
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "angry"
-            }
+            "background assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque.webp",
+            "show tony left angry"
           ]
         },
         {
           "character": "Edu",
           "text": "Hombre, son bastantes.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
           "character": "José",
           "text": "Formación. Yo los mantengo ocupados. Samu, golpea a los grupos. Edu, busca sus puntos débiles. Seraphyna, evita que muramos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
@@ -1545,53 +864,26 @@
           "speakingAs": "Tony",
           "text": "Qué manera tan romántica de describir mi trabajo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "3C",
           "text": "El grupo se lanza contra los memes que invaden la plaza. Por primera vez, los cuatro coordinan sus avatares como si siempre hubieran sabido luchar juntos.",
           "actions": [
-            {
-              "type": "hideDialog"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.webp"
-            }
+            "dialogOff",
+            "remove right",
+            "remove left",
+            "remove center",
+            "background assets/images/backgrounds/chapter4/plaza_cicular_meme_ataque_heroes.webp"
           ]
         },
         {
           "character": "Samu",
           "text": "Vale... después de huir de memes en coche, poder plantarme y lanzarles magia de verdad se siente bastante mejor.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "left"
-            }
+            "show samu left determined",
+            "hide left"
           ]
         },
         {
@@ -1599,49 +891,24 @@
           "speakingAs": "Tony",
           "text": "Y curar al grupo mientras canto tiene su punto. No pensaba decir esto tan pronto, pero ser maga blanca es absurdamente práctico.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "right",
-              "pose": "happy"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "right"
-            }
+            "show tony right happy",
+            "hide right"
           ]
         },
         {
           "character": "Edu",
           "text": "Antes esto daba bastante más miedo. Ahora con Prisa puedo entrar, salir y dejarles cara de no haber entendido nada.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "happy"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "left"
-            }
+            "show edu left happy",
+            "hide left"
           ]
         },
         {
           "character": "José",
           "text": "Yo ya podía apañármelas con la espada, más o menos. Pero con vosotros cubriéndome... sí. Esto es muchísimo más fácil.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "right"
-            }
+            "show jose right happy scale=1.18",
+            "hide right"
           ]
         },
         {
@@ -1652,18 +919,9 @@
           "character": "3C",
           "text": "Pero justo cuando parecía que lo tenían todo controlado, tres figuras cayeron sobre la plaza.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_circular_brainrot_ataque.webp"
-            }
+            "remove right",
+            "remove left",
+            "background assets/images/backgrounds/chapter4/plaza_circular_brainrot_ataque.webp"
           ]
         },
         {
@@ -1683,56 +941,24 @@
           "speakingAs": "tung_tung_tung_sahur",
           "text": "Tung... tung... tung. El santuario sellado está debajo de esta ciudad. Y todo lo que internet ha vomitado quiere entrar.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tung_tung_tung_sahur",
-              "offsetY": "38%",
-              "scale": 1.5,
-              "position": "right",
-              "pose": "neutral"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "right"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/shared/brainrot_theme.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "show tung_tung_tung_sahur right neutral offsetY=38% scale=1.5",
+            "hide right",
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/shared/brainrot_theme.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000"
           ]
         },
         {
           "character": "José",
           "text": "Entonces no eran memes sueltos. Eran una avanzadilla... y todos venían directos hacia el santuario.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "left",
-              "pose": "angry"
-            }
+            "show jose left angry scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "¿Estamos hablando de los famosos y odiados brainrot?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
@@ -1740,37 +966,21 @@
           "speakingAs": "Tony",
           "text": "Los mismos. El tipo de contenido que ves dos segundos por accidente y luego tu cerebro tarda una semana en perdonarte.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "angry"
-            }
+            "show tony left angry"
           ]
         },
         {
           "character": "Samu",
           "text": "O sea, no son solo memes raros. Son brainrot organizados intentando entrar debajo de la ciudad.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "Eso es lo que me preocupa. Si algo así está obsesionado con ese santuario, entonces lo que hay ahí abajo debe ser mucho peor de lo que pensaba.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
@@ -1778,31 +988,16 @@
           "speakingAs": "tralalelo_tralala",
           "text": "Entonces corred, héroes. O intentadlo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tralalelo_tralala",
-              "position": "right",
-              "pose": "neutral"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "right"
-            }
+            "show tralalelo_tralala right neutral",
+            "hide right"
           ]
         },
         {
           "character": "3C",
           "text": "Tung Tung Tung Sahur levanta el bate y las grietas digitales se abren hacia el subsuelo. Tralalero Tralala salta tras él con una carcajada llena de dientes. Ballerina Capuchina se queda en la plaza, girando lentamente.",
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/plaza_circular_agujero.webp"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/agujero_brainrot.mp3",
-              "volume": 1
-            }
+            "background assets/images/backgrounds/chapter4/plaza_circular_agujero.webp",
+            "sound assets/audio/sfx/agujero_brainrot.mp3 volume=1"
           ]
         },
         {
@@ -1810,57 +1005,25 @@
           "speakingAs": "ballerina_capuchina",
           "text": "Id, mis queridos desastres virales. La orden externa exige que el camino quede abierto; yo bailaré con ellos hasta que sea demasiado tarde.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "ballerina_capuchina",
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show ballerina_capuchina right neutral"
           ]
         },
         {
           "character": "Samu",
           "text": "Vale. Primera batalla del día contra una taza de café con técnica clásica. Normalísimo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/ballerina_capuchina_battle.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/chapter4/ballerina_capuchina_battle.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000"
           ]
         },
         {
           "actions": [
-            {
-              "type": "minigame",
-              "game": "battle",
-              "enemy": "ballerina_capuchina",
-              "enemyHp": 9999,
-              "surviveTurns": 4,
-              "retryOnDefeat": true,
-              "useInventory": false,
-              "victoryTitle": "Habéis roto el compás",
-              "victoryText": "Ballerina abandona la danza, pero su objetivo ya está cumplido.",
-              "defeatText": "El baile os atrapa antes de que podáis seguirla. Volved a romper su ritmo."
-            }
+            "minigame battle enemy=ballerina_capuchina enemyHp=9999 surviveTurns=4 retryOnDefeat=true useInventory=false victoryTitle=\"Habéis roto el compás\" victoryText=\"Ballerina abandona la danza, pero su objetivo ya está cumplido.\" defeatText=\"El baile os atrapa antes de que podáis seguirla. Volved a romper su ritmo.\""
           ]
         },
         {
@@ -1868,26 +1031,15 @@
           "speakingAs": "ballerina_capuchina",
           "text": "Ay, qué monísimos. De verdad pensabais que estabais ganando. Solo necesitaba que siguierais bailando conmigo mientras los otros abrían camino.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "ballerina_capuchina",
-              "position": "right",
-              "pose": "neutral"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            }
+            "show ballerina_capuchina right neutral",
+            "remove left"
           ]
         },
         {
           "character": "3C",
           "text": "Ballerina Capuchina suelta una carcajada aguda. Durante un fotograma, hilos negros parecen tirar de sus muñecas desde algún lugar fuera del mundo; luego gira sobre una pierna y se deshace en vapor de café, píxeles y purpurina.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            }
+            "remove right"
           ]
         },
         {
@@ -1898,25 +1050,9 @@
           "character": "Samu",
           "text": "O sea, nos ha tenido entretenidos, se ha reído de nosotros y encima se ha ido como si nada.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/retomando_el_camino.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "show samu left worried",
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/chapter4/retomando_el_camino.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000"
           ]
         },
         {
@@ -1924,24 +1060,14 @@
           "speakingAs": "Tony",
           "text": "No como si nada. Ese tirón tenía la misma firma que la corrupción de Ecchi Land. Alguien está moviendo a los brainrot desde fuera... y quizá supiera perfectamente dónde me dejó encerrada.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show tony right worried"
           ]
         },
         {
           "character": "José",
           "text": "¿Crees que tu prisión fue deliberada?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried"
           ]
         },
         {
@@ -1949,24 +1075,14 @@
           "speakingAs": "Tony",
           "text": "Creo que ya no podemos llamarlo casualidad. Pero todavía no sé quién sostiene los hilos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "right",
-              "pose": "determined"
-            }
+            "show tony right determined"
           ]
         },
         {
           "character": "Edu",
           "text": "Uf, no sé... Para ser una taza con tutú pegaba bastante fuerte.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
@@ -1974,25 +1090,14 @@
           "speakingAs": "Tony",
           "text": "Y todo ese esfuerzo para que ni siquiera cuente como victoria limpia. Me parece ofensivo y, por desgracia, muy bien coreografiado.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "angry"
-            }
+            "show tony left angry"
           ]
         },
         {
           "character": "José",
           "text": "Mirad el lado bueno: el camino normal a la mazmorra estaba sellado, protegido por mecanismos antiguos y, en general, diseñado por alguien con una idea muy discutible de la accesibilidad.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
@@ -2003,22 +1108,13 @@
           "character": "3C",
           "text": "Sin perder más tiempo, el grupo se asoma al borde del cráter y desciende por el hueco abierto en la plaza, dejando atrás el caos de Ciudad Paloma para adentrarse en el santuario subterráneo.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            }
+            "remove right",
+            "remove left"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena 7: La puerta hacia el santuario"
-            }
+            "goto \"Escena 7: La puerta hacia el santuario\""
           ]
         }
       ]
@@ -2028,85 +1124,45 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario.webp"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/entrada-santuario.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "background assets/images/backgrounds/chapter4/mazmorra_puerta_santuario.webp",
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/chapter4/entrada-santuario.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000"
           ],
           "character": "3C",
           "text": "Frente al grupo se alza una puerta de piedra que da acceso al santuario y a sus pies hay cuatro mecanismos."
         },
         {
           "actions": [
-            {
-              "type": "hideDialog"
-            },
-            {
-              "type": "waitForClick"
-            }
+            "dialogOff",
+            "waitForClick"
           ]
         },
         {
           "character": "José",
           "text": "Esto es lo que intentaba explicaros. La ciudad no deja avanzar a una sola clase. Necesita un grupo completo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show jose right neutral scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "Espera. Si esta puerta necesita un grupo completo, ¿cómo han pasado Tung Tung Tung Sahur y el tiburón con zapatillas?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "Edu",
           "text": "Buena pregunta, sí. Porque yo no los he visto haciendo ningún puzle de equipo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
           "character": "José",
           "text": "No la han abierto. Se han filtrado por las grietas del sello. Los brainrot no respetan las reglas de la ciudad: son contenido corrupto, ruido digital con patas. Pueden colarse por donde la barrera está dañada.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
@@ -2114,49 +1170,28 @@
           "speakingAs": "Tony",
           "text": "Perfecto. Ellos hacen trampa porque son basura de internet y nosotros tenemos que abrir la puerta como personas decentes.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "angry"
-            }
+            "show tony left angry"
           ]
         },
         {
           "character": "José",
           "text": "Exacto. Ellos pueden colarse como glitch, pero nosotros no atravesamos una puerta de piedra de diez toneladas por mucho entusiasmo que le pongamos. Tenemos que abrirla usando nuestras habilidades a la vez.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "La cerradura rúnica reacciona a mi magia. No quiere que la golpeemos: quiere que la alimentemos sin pasarnos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
           "character": "Edu",
           "text": "Yo usaré Prisa sobre el mecanismo, pero sin que se descontrole.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "determined"
-            }
+            "show edu right determined"
           ]
         },
         {
@@ -2164,88 +1199,49 @@
           "speakingAs": "Tony",
           "text": "El sello responde a la magia sagrada. Puedo estabilizar las grietas y mantener la energía limpia. Qué apropiado todo. Yo, arreglando cosas.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "José",
           "text": "Y yo golpearé mi losa. Fuerza constante. Sin romper nada.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "El trabajo delicado para nosotros y la losa gorda para José.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show edu left happy"
           ]
         },
         {
           "character": "José",
           "text": "Conozco mis virtudes.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
           "character": "José",
           "text": "La puerta no se abre por fuerza bruta. Ni por magia sola. Tiene que notar los cuatro poderes al mismo nivel.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show jose right thinking scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Al mismo nivel cómo?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "Magia de Samu, velocidad de Edu, sanación de Seraphyna y fuerza de Piyón, o sea, yo. Si una sube demasiado o se queda corta, el sello se descompensa. Tenemos que mantenerlas equilibradas a la vez.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
@@ -2253,37 +1249,21 @@
           "speakingAs": "Tony",
           "text": "O sea, es una mesa coja, pero con poderes mágicos y una puerta medieval.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "Edu",
           "text": "Perdona, pero mantener cuatro cosas equilibradas a la vez suena a uno de esos minijuegos que empiezan fácil y luego te hacen sudar las manos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show edu left worried"
           ]
         },
         {
           "character": "José",
           "text": "Bien. Ahora sí: cada uno a su mecanismo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
@@ -2292,101 +1272,47 @@
         },
         {
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 500
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter4/abriendo_el_sello.mp3",
-              "volume": 0.7,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 500
-            },
-            {
-              "type": "minigame",
-              "game": "runeChanneling",
-              "levels": 7,
-              "holdRequired": 1.55
-            }
+            "stopSound bg_music fadeOut=500",
+            "sound assets/audio/music/chapter4/abriendo_el_sello.mp3 volume=0.7 loop=true id=bg_music fadeIn=500",
+            "minigame runeChanneling levels=7 holdRequired=1.55"
           ]
         },
         {
           "character": "3C",
           "text": "Los cuatro mecanismos se ocultan en el suelo. La puerta comienza a abrirse, revelando la entrada al santuario.",
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.webp"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/open_gate.mp3",
-              "volume": 1
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/shared/santurario-abierto.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "background assets/images/backgrounds/chapter4/mazmorra_puerta_santuario_abierta.webp",
+            "sound assets/audio/sfx/open_gate.mp3 volume=1",
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/shared/santurario-abierto.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000"
           ]
         },
         {
           "character": "Samu",
           "text": "Vale. Ahora sí empieza la aventura de verdad.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
           "character": "Edu",
           "text": "Uf, no sé... Después de todo lo que llevamos vivido, me cuesta creer que esto sea solo el principio.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
           "character": "Samu",
           "text": "Te rescaté antes de que Zip terminara de convertirte en una sombra con complejo de jefe final. Eso ya cuenta como aventura bastante seria.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "Edu",
           "text": "Sí, bueno... agradezco mucho no haber acabado haciendo ruidos oscuros en una esquina. Muy buen trabajo Samu.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "embarrassed"
-            }
+            "show edu right embarrassed"
           ]
         },
         {
@@ -2394,49 +1320,28 @@
           "speakingAs": "Tony",
           "text": "Y no olvidemos mi increíble concierto. Literalmente salvé el ambiente con talento, voz y una cantidad preocupante de autoestima.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "José",
           "text": "También podríamos mencionar que yo he pasado de persona normal a guerrero mazadísimo con armadura y una espada enorme.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "happy"
-            }
+            "show jose right happy scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "Es difícil no mencionarlo. Ocupas medio pasillo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
           "character": "Edu",
           "text": "Y aun así, con rescates, conciertos, brainrot y José convertido en armario de combate, todavía nadie me ha explicado qué narices es el guano.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show edu right thinking"
           ]
         },
         {
@@ -2444,50 +1349,28 @@
           "speakingAs": "Tony",
           "text": "Edu, créeme: hay misterios que es mejor dejar enterrados. Y ahora mismo vamos hacia uno bastante más peligroso.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show tony left worried"
           ]
         },
         {
           "character": "José",
           "text": "Si Tung Tung Tung Sahur y Tralalero Tralala han bajado por aquí, lo más probable es que volvamos a encontrarnos con los brainrot dentro del santuario.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "Entonces entramos juntos. Ya hemos sobrevivido a cosas imposibles. Una más no va a rompernos ahora.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
           "character": "José",
           "text": "No sé qué nos espera al otro lado de este túnel, pero esta vez no voy solo. Pase lo que pase ahí abajo, lo enfrentaremos juntos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         }
       ]

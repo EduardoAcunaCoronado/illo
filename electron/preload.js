@@ -4,7 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 // escucha en un puerto libre distinto cada vez, así que el origen cambia y el
 // almacenamiento con él. Las opciones de Configuración se guardan en la carpeta
 // de datos de la app (ver main.js) y se restauran aquí, en el preload, porque
-// corre antes que los scripts de la página: game.js, engine.js y
+// corre antes que los scripts de la página: game.js, engine.bundle.js y
 // battle-minigame.js leen el localStorage y se lo encuentran ya puesto.
 try {
     const settings = ipcRenderer.sendSync('settings:get-sync');

@@ -6,36 +6,16 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter0/habitacion_neon.webp"
-            },
-            {
-              "type": "showCharacter",
-              "character": "3c",
-              "position": "left",
-              "pose": "neutral"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter0/starport-open.mp3",
-              "volume": 1,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "background assets/images/backgrounds/chapter0/habitacion_neon.webp",
+            "show 3c left neutral",
+            "sound assets/audio/music/chapter0/starport-open.mp3 volume=1 loop=true id=bg_music fadeIn=1000"
           ],
           "character": "3C",
           "text": "¡Hola, buenas tardes! Control de continuidad, registro cero. Hora local: las cuatro y bastante. Puntualidad del protagonista: desaparecida."
         },
         {
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "nexo",
-              "position": "right",
-              "pose": "happy"
-            },
+            "show nexo right happy",
             {
               "type": "animateCharacter",
               "character": "nexo",
@@ -49,18 +29,8 @@
               "loop": true,
               "untilAdvance": true
             },
-            {
-              "type": "pauseSound",
-              "id": "bg_music"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter0/nexo.mp3",
-              "volume": 1.0,
-              "loop": true,
-              "id": "nexo",
-              "fadeIn": 600
-            }
+            "pauseSound bg_music",
+            "sound assets/audio/music/chapter0/nexo.mp3 volume=1 loop=true id=nexo fadeIn=600"
           ],
           "character": "Nexo",
           "text": "¡Enlace establecido! Cuatro protagonistas detectados. Cinco historiales enlazados.",
@@ -88,24 +58,14 @@
         },
         {
           "actions": [
-            {
-              "type": "setPose",
-              "character": "nexo",
-              "position": "right",
-              "pose": "surprised"
-            }
+            "pose nexo right surprised"
           ],
           "character": "Nexo",
           "text": "El quinto está vacío. No hay nombre, no hay cara... pero los otros cuatro conservan recuerdos alrededor del hueco."
         },
         {
           "actions": [
-            {
-              "type": "setPose",
-              "character": "3c",
-              "position": "left",
-              "pose": "happy"
-            }
+            "pose 3c left happy"
           ],
           "character": "3C",
           "text": "Prrrr. Marca la anomalía y baja la voz. Los misterios también merecen una entrada digna. Soy Capricorni 3.0; 3C, si no me obligáis a levantar acta."
@@ -131,25 +91,10 @@
         },
         {
           "actions": [
-            {
-              "type": "setPose",
-              "character": "3c",
-              "position": "left",
-              "pose": "angry"
-            },
-            {
-              "type": "stopSound",
-              "id": "nexo",
-              "fadeOut": 600
-            },
-            {
-              "type": "resumeSound",
-              "id": "bg_music"
-            },
-            {
-              "type": "removeCharacter",
-              "character": "nexo"
-            }
+            "pose 3c left angry",
+            "stopSound nexo fadeOut=600",
+            "resumeSound bg_music",
+            "remove nexo"
           ],
           "character": "3C",
           "text": "Nexo. «No decirlo» incluye no anunciar que no vas a decirlo.",
@@ -158,34 +103,21 @@
         },
         {
           "actions": [
-            {
-              "type": "setPose",
-              "character": "3c",
-              "position": "left",
-              "pose": "happy"
-            }
+            "pose 3c left happy"
           ],
           "character": "3C",
           "text": "En el capítulo de hoy comprobaremos cuánto puede torcerse un cumpleaños antes de que la realidad pida auxilio."
         },
         {
           "actions": [
-            {
-              "type": "setPose",
-              "character": "3c",
-              "position": "left",
-              "pose": "neutral"
-            }
+            "pose 3c left neutral"
           ],
           "character": "3C",
           "text": "Abrimos expediente: Samu. Se acostó humano. Va a despertarse con mucho más pelo y bastantes menos respuestas."
         },
         {
           "actions": [
-            {
-              "type": "setNextChapter",
-              "value": "chapter1"
-            }
+            "nextChapter chapter1"
           ]
         }
       ]

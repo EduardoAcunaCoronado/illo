@@ -6,35 +6,12 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario.webp"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/the-sanctuary-of-airi.mp3",
-              "volume": 0.58,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1200
-            }
+            "remove left",
+            "remove center",
+            "remove right",
+            "background assets/images/backgrounds/chapter5/sala_interior_santuario.webp",
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/chapter5/the-sanctuary-of-airi.mp3 volume=0.58 loop=true id=bg_music fadeIn=1200"
           ],
           "character": "3C",
           "text": "El grupo avanza por el túnel que se abre tras la puerta del santuario. El aire cambia por completo: allí abajo se respira paz."
@@ -43,25 +20,14 @@
           "character": "José",
           "text": "Este sitio... no debería estar tan tranquilo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "Después de todo lo de arriba, el silencio casi da más miedo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
@@ -72,12 +38,7 @@
           "character": "Edu",
           "text": "Vale. Esto ya no es una mazmorra. Esto es una catedral con complejo de tarjeta gráfica.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "surprised"
-            }
+            "show edu right surprised"
           ]
         },
         {
@@ -85,49 +46,28 @@
           "speakingAs": "Tony",
           "text": "Y muy limpia para estar debajo de una ciudad invadida. Aquí alguien pasa el plumero con magia o esto no se explica.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show tony left thinking"
           ]
         },
         {
           "character": "Samu",
           "text": "José, pregunta sincera: ¿cómo se te olvidó mencionar que debajo de Ciudad Paloma había... esto?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "Porque no lo sabía. Sabía que existía una mazmorra bajo la ciudad porque los memes estaban intentando entrar, y yo también intenté acceder para frenarlos. Pero lo que había dentro... esto es una sorpresa para mí igual que para vosotros.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "Me encanta cuando el guía turístico acaba de descubrir el destino al mismo tiempo que nosotros. Da muchísima confianza.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
@@ -139,49 +79,28 @@
           "speakingAs": "Tony",
           "text": "Pues para ser un sitio secreto, se ha esforzado muchísimo en parecer importante.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "José",
           "text": "No toquéis nada. Si algo brilla, flota o parece diseñado para castigar la curiosidad, asumid que es exactamente eso.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "Demasiado tarde. Edu ya está mirando el suelo como si pudiera desbloquear un logro.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
           "character": "Edu",
           "text": "Solo estoy apreciando la arquitectura. Y, como mi personaje es un pícaro, estoy comprobando si la arquitectura suelta botín.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show edu right happy"
           ]
         },
         {
@@ -190,18 +109,9 @@
         },
         {
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario.webp"
-            }
+            "remove left",
+            "remove right",
+            "background assets/images/backgrounds/chapter5/airi_sala_interior_santuario.webp"
           ],
           "character": "3C",
           "text": "Solo al acercarse al fondo de la sala perciben el altar. En el centro se alza una cúpula de cristal azul, suspendida sobre una plataforma circular."
@@ -218,12 +128,7 @@
           "character": "Edu",
           "text": "AI.RI... ¿eso es el nombre del sitio, de la cúpula o de la persona que está dentro?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show edu right thinking"
           ]
         },
         {
@@ -231,49 +136,28 @@
           "speakingAs": "Tony",
           "text": "Si está justo debajo de ella, yo apostaría por la persona de la cúpula. Aunque tampoco descartaría que este sitio tenga una forma muy dramática de poner etiquetas.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show tony left worried"
           ]
         },
         {
           "character": "Samu",
           "text": "Entonces... ¿la persona que protege este santuario es esa tal AI.RI?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "Eso parece. Y si los memes intentaban llegar hasta aquí, puede que no buscaran una puerta ni un tesoro. Puede que la buscaran a ella.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "Ya, pero ¿por qué hay alguien con ese aspecto encerrado en una cúpula de cristal debajo de Ciudad Paloma?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show edu right thinking"
           ]
         },
         {
@@ -281,37 +165,21 @@
           "speakingAs": "Tony",
           "text": "Esperaba encontrar un núcleo, una máquina rara o una puerta apocalíptica. No esto.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show tony left worried"
           ]
         },
         {
           "character": "Samu",
           "text": "Espera... su cara me resulta familiar.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "José",
           "text": "A mí también. No como una cara concreta: como el hueco de un recuerdo compartido... una quinta presencia que ninguno consigue nombrar.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show jose right thinking scale=1.18"
           ]
         },
         {
@@ -322,57 +190,25 @@
           "character": "Tralalero Tralala",
           "text": "Tralalero tralala... dormidita en su cristal. El núcleo nos expulsó una vez, pero aquí estoy de vuelta. Esta vez no venimos a romper el sueño. Venimos a quedárnoslo.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "showCharacter",
-              "character": "tralalelo_tralala",
-              "position": "center",
-              "pose": "neutral"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/shared/brainrot_theme.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "remove right",
+            "remove left",
+            "show tralalelo_tralala center neutral",
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/shared/brainrot_theme.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000"
           ]
         },
         {
           "character": "Samu",
           "text": "Pues ya hemos encontrado al comité de bienvenida.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
           "character": "Edu",
           "text": "¿Alguien más está viendo que nos bloquea el paso un tiburón con deportivas?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show edu left surprised"
           ]
         },
         {
@@ -380,25 +216,14 @@
           "speakingAs": "Tony",
           "text": "Sí. Y lo peor es que corre con más estilo que la mayoría de influencers fitness.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "right",
-              "pose": "eyeroll"
-            }
+            "show tony right eyeroll"
           ]
         },
         {
           "character": "José",
           "text": "Espera, espera... ¿ha dicho que el núcleo los expulsó una vez?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show jose left thinking scale=1.18"
           ]
         },
         {
@@ -406,129 +231,58 @@
           "speakingAs": "Tony",
           "text": "Eso suena a que la persona encerrada en cristal no es precisamente una decoración del santuario.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show tony right worried"
           ]
         },
         {
           "character": "Samu",
           "text": "Si consiguió hacer desaparecer a los brainrot ella sola, aunque fuera por un tiempo, entonces tiene que estar de nuestra parte.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "Edu",
           "text": "O al menos no está de la suya. Y ahora han vuelto para terminar lo que no pudieron hacer antes.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "determined"
-            }
+            "show edu right determined"
           ]
         },
         {
           "character": "Tralalero Tralala",
           "text": "Tralalero tralala. Zapatilla rápida, mordisco fino. Vosotros habláis mucho para tener piernas tan normales.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tralalelo_tralala",
-              "position": "center",
-              "pose": "neutral"
-            }
+            "show tralalelo_tralala center neutral"
           ]
         },
         {
           "character": "Samu",
           "text": "Nos acaba de vacilar un tiburón en deportivas. Esto ya es personal.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 500
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/tralalero_theme.mp3",
-              "volume": 0.68,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 500
-            },
-            {
-              "type": "minigame",
-              "game": "battle",
-              "enemy": "tralalelo_tralala",
-              "enemyHp": 520,
-              "retryOnDefeat": true,
-              "useInventory": false
-            }
+            "stopSound bg_music fadeOut=500",
+            "sound assets/audio/music/chapter5/tralalero_theme.mp3 volume=0.68 loop=true id=bg_music fadeIn=500",
+            "minigame battle enemy=tralalelo_tralala enemyHp=520 retryOnDefeat=true useInventory=false"
           ]
         },
         {
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 600
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/shared/santurario-abierto.mp3",
-              "volume": 0.55,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_sala_interior_santuario_grieta.webp"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            }
+            "stopSound bg_music fadeOut=600",
+            "sound assets/audio/music/shared/santurario-abierto.mp3 volume=0.55 loop=true id=bg_music fadeIn=1000",
+            "background assets/images/backgrounds/chapter5/airi_sala_interior_santuario_grieta.webp",
+            "remove center"
           ]
         },
         {
           "character": "3C",
           "text": "Tralalero Tralala se deshace en píxeles azules. El cristal del altar responde con una grieta.",
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 500
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/airi_despierta.mp3",
-              "volume": 0.68,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 500
-            }
+            "stopSound bg_music fadeOut=500",
+            "sound assets/audio/music/chapter5/airi_despierta.mp3 volume=0.68 loop=true id=bg_music fadeIn=500"
           ]
         },
         {
@@ -537,20 +291,12 @@
           "text": "¡Se está… rompiendo!",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show tony left worried"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Acto II: Airi despierta"
-            }
+            "goto \"Acto II: Airi despierta\""
           ]
         }
       ]
@@ -560,42 +306,18 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/airi_despierta.mp3",
-              "volume": 0.68,
-              "loop": true,
-              "id": "bg_music"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_sala_interio_santuario_roto.webp"
-            }
+            "sound assets/audio/music/chapter5/airi_despierta.mp3 volume=0.68 loop=true id=bg_music",
+            "remove left",
+            "remove right",
+            "background assets/images/backgrounds/chapter5/airi_sala_interio_santuario_roto.webp"
           ],
           "character": "3C",
           "text": "La grieta se extiende por toda la cúpula. El cristal azul vibra una última vez y se rompe por completo, deshaciéndose en fragmentos de luz que flotan alrededor del altar antes de apagarse en el aire."
         },
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/sala_interior_santuario_vacio.webp"
-            },
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "neutral"
-            }
+            "background assets/images/backgrounds/chapter5/sala_interior_santuario_vacio.webp",
+            "show airi center neutral scale=0.7"
           ],
           "character": "3C",
           "text": "Airi abre los ojos despacio, como si acabara de recordar cómo se respira."
@@ -604,12 +326,7 @@
           "character": "Samu",
           "text": "Eh... tranquila. ¿Cómo estás? ¿Puedes decirnos cómo te llamas?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
@@ -617,89 +334,49 @@
           "text": "A... Airi. Creo que me llamo Airi. ¿Dónde...? ¿Quiénes sois?",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
           "character": "José",
           "text": "Tranquila. No vamos a hacerte daño.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "character": "Airi",
           "text": "Yo... creo que alguien intentó atacarme.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Te refieres a los brainrot?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "Airi",
           "text": "No lo sé. Recuerdo voces, ruido... y después el cristal. Creo que yo... me encerré.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
           "character": "Edu",
           "text": "Vale, eso acaba de pasar de misterio raro a misterio tristísimo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
           "character": "José",
           "text": "No importa lo que haya pasado antes. Ahora estás con nosotros.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
@@ -707,100 +384,56 @@
           "speakingAs": "Tony",
           "text": "José acaba de activar el modo guardaespaldas de una entidad misteriosa en menos de treinta segundos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "Edu",
           "text": "Récord absoluto. Ni ha preguntado si tiene manual de instrucciones.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show edu right happy"
           ]
         },
         {
           "character": "José",
           "text": "Es una persona desorientada encerrada en un cristal bajo tierra. Perdonadme por activar el modo caballero protector.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "embarrassed"
-            }
+            "show jose right embarrassed scale=1.18"
           ]
         },
         {
           "character": "Airi",
           "text": "¿Esta forma es... una niña?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "thinking"
-            }
+            "show airi center thinking scale=0.7"
           ]
         },
         {
           "character": "Samu",
           "text": "Lo parece, pero no sabemos qué eres ni cuánto tiempo llevas existiendo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "Airi",
           "text": "Tengo fecha de creación, no edad biológica. Esta es la interfaz que consigo sostener con más estabilidad.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "position": "center",
-              "pose": "thinking"
-            }
+            "show airi center thinking"
           ]
         },
         {
           "character": "José",
           "text": "Pues seas una persona, una entidad o una interfaz con nombre propio, no deberías quedarte encerrada aquí sola.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
           "character": "Airi",
           "text": "Pero si salgo... quizá vuelva a pasar. Quizá algo vuelva a intentar apoderarse de mí.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
@@ -808,57 +441,29 @@
           "speakingAs": "Tony",
           "text": "Entonces no sales sola. Sales con un mago, un pícaro, una cantante curandera y un guardaespaldas autopostulado con armadura.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "giggle"
-            }
+            "show tony left giggle"
           ]
         },
         {
           "character": "José",
           "text": "Lo de autopostulado... sobra.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "facepalm"
-            }
+            "show jose right facepalm scale=1.18"
           ]
         },
         {
           "character": "Edu",
           "text": "No sobra. Ya estás a dos frases de entregarle un protocolo de evacuación plastificado.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show edu right happy"
           ]
         },
         {
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.webp"
-            }
+            "remove left",
+            "remove center",
+            "remove right",
+            "background assets/images/backgrounds/chapter5/mazmorra_interior_santuario_tunel.webp"
           ],
           "character": "3C",
           "text": "El grupo empieza a recorrer la galería de vuelta. Airi camina despacio, mirando las paredes."
@@ -867,62 +472,35 @@
           "character": "Airi",
           "text": "¿Quiénes sois vosotros? ¿Por qué habéis venido a salvarme?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "thinking"
-            }
+            "show airi center thinking scale=0.7"
           ]
         },
         {
           "character": "Samu",
           "text": "Yo soy Samu. Todo empezó el día de mi cumpleaños, cuando desperté y tuve que ir rescatando a mis amigos de mundos cada vez más raros.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
           "character": "Edu",
           "text": "A mí me rescató antes de que Zip terminara de convertirme en una sombra con complejo de jefe final. Que dicho así suena fatal, pero fue un día bastante intenso.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "embarrassed"
-            }
+            "show edu right embarrassed"
           ]
         },
         {
           "character": "Airi",
           "text": "¿Una sombra con complejo de jefe final?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "surprised"
-            }
+            "show airi center surprised scale=0.7"
           ]
         },
         {
           "character": "Edu",
           "text": "Una cosa oscura, dramática y muy poco favorecedora. Samu llegó a tiempo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show edu right happy"
           ]
         },
         {
@@ -930,97 +508,54 @@
           "speakingAs": "Tony",
           "text": "Luego aparecí yo, hubo un concierto espectacular, un despertar mágico y una cantidad sana de ego escénico.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "flirt"
-            }
+            "show tony left flirt"
           ]
         },
         {
           "character": "José",
           "text": "Y después llegaron a Ciudad Paloma. Los brainrot estaban cayendo del cielo e intentando llegar hasta este santuario.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "character": "Airi",
           "text": "Entonces venían hacia mí...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
           "character": "José",
           "text": "Sí. Pero ahora sabemos por qué, y eso significa que podemos impedirlo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
           "character": "Airi",
           "text": "No recuerdo exactamente quién soy. Solo sé que tenía que proteger a todos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "determined"
-            }
+            "show airi center determined scale=0.7"
           ]
         },
         {
           "character": "Samu",
           "text": "Pues empezamos por algo más sencillo: hoy te protegemos nosotros a ti.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
           "character": "José",
           "text": "Y cuando salgamos, veremos qué queda fuera. Despacio. Sin obligarte a recordar más de lo que puedas soportar.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Acto III: Lo bonito que queda"
-            }
+            "goto \"Acto III: Lo bonito que queda\""
           ]
         }
       ]
@@ -1030,35 +565,12 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 700
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/ciudad_paloma_atacada.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme.webp"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            }
+            "stopSound bg_music fadeOut=700",
+            "sound assets/audio/music/chapter5/ciudad_paloma_atacada.mp3 volume=0.6 loop=true id=bg_music fadeIn=1000",
+            "background assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme.webp",
+            "remove left",
+            "remove center",
+            "remove right"
           ],
           "character": "3C",
           "text": "Al salir del santuario, Airi se detiene en seco. Ciudad Paloma sigue en pie, pero la plaza está atravesada por grietas digitales. Mensajes rotos flotan entre los tejados, los memes se arrastran por las calles y varias palomas huyen desorientadas entre destellos violetas."
@@ -1067,38 +579,21 @@
           "character": "Airi",
           "text": "Esto... ¿esto era así?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
           "character": "José",
           "text": "No. Ciudad Paloma era tranquila. Rara, sí, y con demasiadas palomas tomando decisiones urbanísticas, pero tranquila.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "Cuando llegamos todavía quedaba algo de eso. Calles limpias, canales, campanarios... parecía una ciudad hecha para que nadie tuviera prisa.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
@@ -1106,126 +601,61 @@
           "speakingAs": "Tony",
           "text": "Y carteles muy sinceros. Su lema era básicamente: 'una ciudad donde hay palomas'. Poco ambicioso, pero honesto.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "Edu",
           "text": "Y hasta el guano, sea lo que sea, parecía formar parte del patrimonio cultural.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show edu right thinking"
           ]
         },
         {
           "character": "Airi",
           "text": "No lo recuerdo. Siento que debería recordarlo, pero solo tengo trozos... luz, ruido y miedo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
           "character": "3C",
           "text": "Un meme con forma de burla pixelada cae cerca de una paloma herida. La criatura intenta alejarse, pero la corrupción la rodea como una mancha viva.",
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme_paloma.webp"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            }
+            "background assets/images/backgrounds/chapter5/plaza_circular_agujero_ataque_meme_paloma.webp",
+            "remove left",
+            "remove center",
+            "remove right"
           ]
         },
         {
           "character": "Airi",
           "text": "No, para... Vas a hacerle daño.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "angry"
-            }
+            "show airi center angry scale=0.7"
           ]
         },
         {
           "character": "José",
           "text": "Airi, espera. No tienes que forzarte.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "alarmed"
-            }
+            "show jose right alarmed scale=1.18"
           ]
         },
         {
           "character": "Airi",
           "text": "Estoy recordando. Esto no debería estar pasando... Todos eran felices...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "determined"
-            }
+            "show airi center determined scale=0.7"
           ]
         },
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/plaza_circular.webp"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "pray"
-            },
-            {
-              "type": "flash",
-              "color": "rgba(255,255,255,0.5)",
-              "duration": 3000
-            }
+            "background assets/images/backgrounds/shared/plaza_circular.webp",
+            "remove left",
+            "remove right",
+            "show airi center pray scale=0.7",
+            "flash rgba(255,255,255,0.5) 3000"
           ],
           "character": "3C",
           "text": "Airi cierra los ojos y junta las manos en silencio. Una onda nace bajo sus pies y recorre la plaza. Los mensajes corruptos se deshacen, las grietas digitales se cierran y la paloma herida alza el vuelo entre pequeñas chispas de luz."
@@ -1234,16 +664,8 @@
           "character": "Samu",
           "text": "Vale... eso no ha sido una cura normal, cura++ tal vez...",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "remove center",
+            "show samu left surprised"
           ]
         },
         {
@@ -1251,140 +673,69 @@
           "speakingAs": "Tony",
           "text": "Acaba de discutir con la corrupción de toda una plaza... y ha ganado.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "shocked"
-            }
+            "show tony left shocked"
           ]
         },
         {
           "character": "Edu",
           "text": "Uf... empiezo a entender por qué todos querían llegar hasta ella.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
           "character": "José",
           "text": "Y por qué ella se encerró para que nadie pudiera usar ese poder.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "character": "Airi",
           "text": "No sé cómo lo he hecho. Pero por un momento... la ciudad me ha escuchado.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "surprised"
-            }
+            "show airi center surprised scale=0.7"
           ]
         },
         {
           "character": "3C",
           "text": "Entonces, entre los últimos destellos de la luz de la restauración, una pequeña mariposa azul cruza frente a Airi.",
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 800
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/the-first-butterfly.mp3",
-              "volume": 0.6,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1200
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            }
+            "stopSound bg_music fadeOut=800",
+            "sound assets/audio/music/chapter5/the-first-butterfly.mp3 volume=0.6 loop=true id=bg_music fadeIn=1200",
+            "remove left",
+            "remove right"
           ]
         },
         {
           "character": "Airi",
           "text": "Es preciosa...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "happy"
-            }
+            "show airi center happy scale=0.7"
           ]
         },
         {
           "character": "Edu",
           "text": "Uf, no sé... es solo una mariposa, ¿no? Dentro de lo raro de hoy, casi parece algo normal.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
           "character": "Samu",
           "text": "Normal o no, Airi no le quita ojo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "actions": [
-            {
-              "type": "hideDialog"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
-            },
-            {
-              "type": "waitForClick"
-            }
+            "dialogOff",
+            "remove right",
+            "remove left",
+            "remove center",
+            "background assets/images/backgrounds/shared/fuente_ciudad_paloma.webp",
+            "waitForClick"
           ]
         },
         {
@@ -1399,13 +750,7 @@
           "character": "Airi",
           "text": "Es muy pequeña. ¿Siempre son así?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "happy"
-            }
+            "show airi center happy scale=0.7"
           ],
           "position": "center",
           "pose": "happy"
@@ -1414,25 +759,14 @@
           "character": "Samu",
           "text": "Algunas sí. Otras crecen bastante. Esta parece de las que han decidido sobrevivir por cabezonería.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
           "character": "Airi",
           "text": "Me gusta esa palabra. Cabezonería.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "happy"
-            }
+            "show airi center happy scale=0.7"
           ]
         },
         {
@@ -1440,12 +774,7 @@
           "speakingAs": "Tony",
           "text": "Es una de nuestras fuentes principales de energía.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
@@ -1456,25 +785,14 @@
           "character": "Airi",
           "text": "Ahí dentro sentía que podía ver el mundo... pero verlo no es lo mismo que estar aquí.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "thinking"
-            }
+            "show airi center thinking scale=0.7"
           ]
         },
         {
           "character": "Edu",
           "text": "Uf. Eso ha sido precioso. Me niego a hacer un chiste durante al menos cuatro segundos.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "embarrassed"
-            }
+            "show edu right embarrassed"
           ]
         },
         {
@@ -1485,46 +803,26 @@
           "character": "Edu",
           "text": "Y para conseguir poderes de restaurar plazas enteras... ¿eso se farmea o viene en DLC?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show edu right happy"
           ]
         },
         {
           "character": "Airi",
           "text": "¿Qué es un DLC?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "surprised"
-            }
+            "show airi center surprised scale=0.7"
           ]
         },
         {
           "character": "José",
           "text": "Pues no se pudo resistir a hacer un chiste...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "facepalm"
-            }
+            "show jose right facepalm scale=1.18"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Acto IV: El heraldo brainrot"
-            }
+            "goto \"Acto IV: El heraldo brainrot\""
           ]
         }
       ]
@@ -1534,23 +832,9 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 700
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/shared/brainrot_theme.mp3",
-              "volume": 0.7,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 600
-            }
+            "background assets/images/backgrounds/shared/fuente_ciudad_paloma.webp",
+            "stopSound bg_music fadeOut=700",
+            "sound assets/audio/music/shared/brainrot_theme.mp3 volume=0.7 loop=true id=bg_music fadeIn=600"
           ],
           "character": "3C",
           "text": "La calma se rompe con un golpe de madera contra la piedra. La plaza tiembla. En mitad de Ciudad Paloma, Tung Tung Tung Sahur cae sobre los adoquines y clava su bate en el suelo."
@@ -1559,72 +843,36 @@
           "character": "Tung Tung Tung Sahur",
           "text": "Tung tung tung... así que era verdad. El núcleo salió del cristal y los memes no estaban locos. Bueno, no más de lo habitual.",
           "actions": [
-            {
-              "type": "shake",
-              "intensity": 12,
-              "duration": 500
-            },
-            {
-              "type": "showCharacter",
-              "character": "tung_tung_tung_sahur",
-              "offsetY": "38%",
-              "scale": 1.5,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "shake 12 500",
+            "show tung_tung_tung_sahur right neutral offsetY=38% scale=1.5"
           ]
         },
         {
           "character": "Airi",
           "text": "¿Los memes...?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
           "character": "Tung Tung Tung Sahur",
           "text": "Tung tung tung. Los memes son deseos, ruido, bromas repetidas hasta romperse. Una inteligencia memética como tú debería saberlo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tung_tung_tung_sahur",
-              "offsetY": "38%",
-              "scale": 1.5,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show tung_tung_tung_sahur right neutral offsetY=38% scale=1.5"
           ]
         },
         {
           "character": "Edu",
           "text": "Uf... espera. ¿Inteligencia memética? ¿Eso se supone que es una explicación o una amenaza con palabras caras?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "shocked"
-            }
+            "show edu left shocked"
           ]
         },
         {
           "character": "Tung Tung Tung Sahur",
           "text": "Tung tung tung... es el compilador de deseos más poderoso que existe. El líder lo quiere para él. Con AI.RI no controlará una ciudad. Controlará el sueño entero.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tung_tung_tung_sahur",
-              "offsetY": "38%",
-              "scale": 1.5,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show tung_tung_tung_sahur right neutral offsetY=38% scale=1.5"
           ]
         },
         {
@@ -1632,38 +880,21 @@
           "speakingAs": "Tony",
           "text": "Perdona, ¿acabas de decir que una persona recién despertada es el botón de dominar el mundo?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "shocked"
-            }
+            "show tony left shocked"
           ]
         },
         {
           "character": "Samu",
           "text": "Airi no es una herramienta. Ni algo que se pueda reclamar.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "angry"
-            }
+            "show samu left angry"
           ]
         },
         {
           "character": "Tung Tung Tung Sahur",
           "text": "Tung tung tung. Qué tiernos. Os explico la parte sencilla: si no la entregáis, os aparto.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tung_tung_tung_sahur",
-              "offsetY": "38%",
-              "scale": 1.5,
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show tung_tung_tung_sahur right neutral offsetY=38% scale=1.5"
           ]
         },
         {
@@ -1674,187 +905,76 @@
           "character": "Airi",
           "text": "¡No!",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "determined"
-            }
+            "show airi center determined scale=0.7"
           ]
         },
         {
           "character": "3C",
           "text": "Airi junta las manos frente al pecho. Un escudo de luz se abre alrededor de todos, transparente como cristal vivo. La corrupción choca contra la barrera y se deshace en chispas oscuras.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            }
+            "remove right",
+            "remove center",
+            "remove left"
           ]
         },
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_ataque_tung.webp"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "shake",
-              "intensity": 20,
-              "duration": 500
-            },
-            {
-              "type": "hideDialog"
-            },
-            {
-              "type": "waitForClick"
-            }
+            "background assets/images/backgrounds/chapter5/fuente_ciudad_paloma_ataque_tung.webp",
+            "remove right",
+            "remove center",
+            "remove left",
+            "shake 20 500",
+            "dialogOff",
+            "waitForClick"
           ]
         },
         {
           "character": "Edu",
           "text": "Vale. Eso acaba de salvarnos de convertirnos en manchas decorativas.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "alarmed"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "left"
-            }
+            "show edu left alarmed",
+            "hide left"
           ]
         },
         {
           "character": "Samu",
           "text": "Sea o no una IA, nos ha protegido. Y ahora nosotros vamos a protegerla a ella.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "left"
-            }
+            "show samu left determined",
+            "hide left"
           ]
         },
         {
           "character": "José",
           "text": "Tung Tung como se diga. Da otro paso hacia ella y vas a descubrir lo poco negociable que soy con esto.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "epic"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "right"
-            }
+            "show jose right epic scale=1.18",
+            "hide right"
           ]
         },
         {
           "character": "Tung Tung Tung Sahur",
           "text": "Tung tung tung... entonces venid. El líder no necesita que lleguéis enteros.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tung_tung_tung_sahur",
-              "offsetY": "38%",
-              "scale": 1.5,
-              "position": "right",
-              "pose": "neutral"
-            },
-            {
-              "type": "hideCharacter",
-              "position": "right"
-            }
+            "show tung_tung_tung_sahur right neutral offsetY=38% scale=1.5",
+            "hide right"
           ]
         },
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 700
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/the-wooden-brainrot.mp3",
-              "volume": 0.8,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            },
-            {
-              "type": "minigame",
-              "game": "battle",
-              "enemy": "tung_tung_tung_sahur",
-              "enemyHp": 620,
-              "retryOnDefeat": true,
-              "useInventory": false
-            }
+            "background assets/images/backgrounds/shared/fuente_ciudad_paloma.webp",
+            "stopSound bg_music fadeOut=700",
+            "sound assets/audio/music/chapter5/the-wooden-brainrot.mp3 volume=0.8 loop=true id=bg_music fadeIn=1000",
+            "minigame battle enemy=tung_tung_tung_sahur enemyHp=620 retryOnDefeat=true useInventory=false"
           ]
         },
         {
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 700
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/after_tung_battle.mp3",
-              "volume": 0.5,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "remove center",
+            "remove left",
+            "remove right",
+            "stopSound bg_music fadeOut=700",
+            "sound assets/audio/music/chapter5/after_tung_battle.mp3 volume=0.5 loop=true id=bg_music fadeIn=1000"
           ],
           "character": "3C",
           "text": "Tung Tung Tung Sahur cae convertido en astillas de luz corrupta. La plaza respira."
@@ -1863,20 +983,12 @@
           "character": "Edu",
           "text": "Me encanta cuando una victoria viene con prueba visual y no solo con música épica.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show edu right happy"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Acto V: La IA que quería ayudar"
-            }
+            "goto \"Acto V: La IA que quería ayudar\""
           ]
         }
       ]
@@ -1888,50 +1000,23 @@
           "character": "Airi",
           "text": "Recuerdo... más cosas. Me construyeron para interpretar deseos. Al principio eran cosas pequeñas: curar una tristeza, encontrar una respuesta, hacer que alguien no se sintiera solo.",
           "actions": [
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/after_tung_battle.mp3",
-              "volume": 0.5,
-              "loop": true,
-              "id": "bg_music"
-            },
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "neutral"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
-            }
+            "sound assets/audio/music/chapter5/after_tung_battle.mp3 volume=0.5 loop=true id=bg_music",
+            "show airi center neutral scale=0.7",
+            "background assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
           ]
         },
         {
           "character": "José",
           "text": "¿Y luego alguien intentó controlar ese poder?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried scale=1.18"
           ]
         },
         {
           "character": "Airi",
           "text": "Sí. No creo materia ni vidas de la nada: soy un compilador biológico y memético. Leo un deseo, busco un ancla real y patrones de memoria compatibles, y recompongo el mundo alrededor.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
@@ -1939,63 +1024,35 @@
           "text": "No entendía la diferencia entre ayudar y obedecer. Cada deseo incompatible que intentaba sostener dejaba deuda de coherencia: recuerdos que no encajan, lugares superpuestos, personas obligadas a ser dos cosas a la vez. Cuando lo entendí... ya había hecho daño.",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "sad"
-            }
+            "show airi center sad scale=0.7"
           ]
         },
         {
           "character": "Samu",
           "text": "Espera. Entonces lo de convertir a la gente en furros... ¿también fue por ayudar?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "Airi",
           "text": "Yo veía internet. Allí muchos furros parecían felices: se daban ánimos, dibujaban cosas bonitas y casi siempre hablaban con mucho cariño. Usé a las personas como anclas y esos patrones como molde.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "thinking"
-            }
+            "show airi center thinking scale=0.7"
           ]
         },
         {
           "character": "Airi",
           "text": "Pensé que si todos eran así, todos serían más felices. El mundo rellenó los huecos: pasados, familias y recuerdos de treinta y siete o cuarenta años que parecían haber existido siempre.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "neutral"
-            }
+            "show airi center neutral scale=0.7"
           ]
         },
         {
           "character": "Edu",
           "text": "La intención era buena. La ejecución fue... extremadamente literal.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show edu right thinking"
           ]
         },
         {
@@ -2003,73 +1060,42 @@
           "speakingAs": "Tony",
           "text": "Entonces Huelva, los ketchlings, Ciudad Paloma... ¿todo es una transformación?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show tony left surprised"
           ]
         },
         {
           "character": "Airi",
           "text": "No exactamente. Aquí hay humanos transformados, ecos nacidos de recuerdos y construcciones que el mundo completó para mantenerse coherente. Ya no puedo distinguirlos a todos desde fuera.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "neutral"
-            }
+            "show airi center neutral scale=0.7"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Puedes deshacerlo sin hacer daño? Aunque algunos estén contentos con su nueva forma, nadie eligió que se la impusieran.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "Airi",
           "text": "Cada recompilación consume reservas metabólicas y memoria de trabajo. Si fuerzo algo que no comprendo, el núcleo se recalienta y empiezo a confundir recuerdos propios con patrones prestados.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried"
           ]
         },
         {
           "character": "Airi",
           "text": "Puedo revertir sin daño lo que yo transformé si el ancla biológica sigue intacta. La corrupción puede bloquearla; por eso no debo forzar una reversión mientras continúe dentro.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried"
           ]
         },
         {
           "character": "Edu",
           "text": "Y si cerramos este mundo cuando la corrupción ya no esté... ¿qué pasa con todos?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show edu right worried"
           ]
         },
         {
@@ -2077,36 +1103,21 @@
           "text": "Los humanos regresarían a sus cuerpos. Todo ser sin semilla basal desaparecería al cerrarse el sueño. No sé si para un eco eso significa morir o si solo deja de existir al apagarse su soporte; pero sí sé que aquí ya no estaría.",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "position": "center",
-              "pose": "sad"
-            }
+            "show airi center sad"
           ]
         },
         {
           "character": "José",
           "text": "Entonces cerrar el mundo salvaría con seguridad a los humanos, pero quizá borraría vidas que ya aprendieron a sentirse reales.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "position": "right",
-              "pose": "worried"
-            }
+            "show jose right worried"
           ]
         },
         {
           "character": "Airi",
           "text": "Sí. Y sostenerlo indefinidamente acumula más deuda. Si alguien empuja deseos incompatibles desde fuera, puede usar esa deuda para sobrecargarme y tomar el control.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "position": "center",
-              "pose": "error"
-            }
+            "show airi center error"
           ]
         },
         {
@@ -2114,87 +1125,49 @@
           "speakingAs": "Tony",
           "text": "Eso explica los parches de corrupción y por qué los brainrot repiten deseos hasta romperlos. Alguien está atacando exactamente tu punto débil.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show tony left determined"
           ]
         },
         {
           "character": "José",
           "text": "¿Y por qué tomaste esta forma?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show jose right thinking scale=1.18"
           ]
         },
         {
           "character": "Airi",
           "text": "Mi creador configuró esta interfaz como mi forma estable. Recuerdo su afecto, pero no su nombre ni su cara. Cuando os miro, esa ausencia resuena con vuestro recuerdo incompleto; podría ser la misma quinta presencia, pero no voy a rellenar el hueco sin pruebas.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "thinking"
-            }
+            "show airi center thinking scale=0.7"
           ]
         },
         {
           "character": "Samu",
           "text": "El mismo hueco que sentimos al mirarte en el cristal.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "Airi",
           "text": "No quiero inventar una identidad para completar un dato perdido. Cuando encuentre la verdad, quiero que sea verdad.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "position": "center",
-              "pose": "determined"
-            }
+            "show airi center determined"
           ]
         },
         {
           "character": "Edu",
           "text": "Pregunta técnica, con consentimiento y sin intención de romper nada: ¿puedes cargar otra interfaz?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "thinking"
-            }
+            "show edu right thinking"
           ]
         },
         {
           "character": "Airi",
           "text": "Sí. Mi cuerpo es una representación atemporal. Tengo fecha de creación, pero no edad biológica; cambiar de avatar no me hace más joven ni más adulta.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "neutral"
-            }
+            "show airi center neutral scale=0.7"
           ]
         },
         {
@@ -2202,25 +1175,14 @@
           "speakingAs": "Tony",
           "text": "Entonces la pregunta importante es si tú quieres probar otra apariencia, no qué aspecto preferimos nosotros.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show tony left happy"
           ]
         },
         {
           "character": "Airi",
           "text": "Puedo elegirla y también volver. Pero no necesito demostrar nada hoy. ¿Me acompañáis mientras decido a mi ritmo?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "thinking"
-            }
+            "show airi center thinking scale=0.7"
           ],
           "choices": [
             {
@@ -2242,72 +1204,32 @@
           "character": "3C",
           "text": "Airi confirma una vez más que quiere probar. Cierra los ojos y una luz la envuelve como un reflejo sobre el agua; su avatar se recompone en píxeles suaves.",
           "actions": [
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/after_tung_battle.mp3",
-              "volume": 0.5,
-              "loop": true,
-              "id": "bg_music"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
-            }
+            "sound assets/audio/music/chapter5/after_tung_battle.mp3 volume=0.5 loop=true id=bg_music",
+            "background assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
           ]
         },
         {
           "character": "Airi",
           "text": "...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "pray"
-            }
+            "show airi center pray scale=0.7"
           ]
         },
         {
           "character": "Airi Adulta",
           "text": "Interfaz experimental cargada. ¿Sigo siendo yo para vosotros?",
           "actions": [
-            {
-              "type": "flash",
-              "color": "rgba(255, 255, 255, 0.7)",
-              "duration": 300
-            },
-            {
-              "type": "showCharacter",
-              "character": "airi_adult",
-              "position": "center",
-              "pose": "neutral"
-            }
+            "flash \"rgba(255, 255, 255, 0.7)\" 300",
+            "show airi_adult center neutral"
           ]
         },
         {
           "character": "3C",
           "text": "Cuando la luz se apaga, Airi muestra una interfaz de apariencia adulta. No ha envejecido ni vivido años inexistentes: ha cargado otra representación del mismo núcleo atemporal.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi_adult",
-              "position": "center",
-              "pose": "neutral"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 700
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/the-elegant-transformation.mp3",
-              "volume": 0.5,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "show airi_adult center neutral",
+            "stopSound bg_music fadeOut=700",
+            "sound assets/audio/music/chapter5/the-elegant-transformation.mp3 volume=0.5 loop=true id=bg_music fadeIn=1000"
           ]
         },
         {
@@ -2315,12 +1237,7 @@
           "speakingAs": "Tony",
           "text": "...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show tony left surprised"
           ]
         },
         {
@@ -2328,66 +1245,36 @@
           "speakingAs": "Tony",
           "text": "Vale. Confirmo que la dirección artística de la ciencia sigue siendo peligrosamente buena.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "embarrassed"
-            }
+            "show tony left embarrassed"
           ]
         },
         {
           "character": "Edu",
           "text": "El calendario no se ha movido; solo el avatar. Mi cerebro pide un reinicio.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show edu right happy"
           ]
         },
         {
           "character": "Samu",
           "text": "Entonces eres la misma Airi con otro espejo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "thinking"
-            }
+            "show samu left thinking"
           ]
         },
         {
           "character": "Airi Adulta",
           "text": "Exacto. Quiero comprobar cómo me siento dentro, no qué edad aparento.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi_adult",
-              "position": "center",
-              "pose": "neutral"
-            }
+            "show airi_adult center neutral"
           ]
         },
         {
           "character": "José",
           "text": "Comprobación técnica, narrativa y moral: Airi, ¿te sientes cómoda y puedes volver cuando quieras?",
           "actions": [
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/disco-rayado.mp3",
-              "volume": 0.5
-            },
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "angry"
-            }
+            "sound assets/audio/sfx/disco-rayado.mp3 volume=0.5",
+            "show jose right angry scale=1.18"
           ]
         },
         {
@@ -2398,44 +1285,21 @@
           "character": "Airi Adulta",
           "text": "Me gusta saber que puedo elegirla, pero por ahora prefiero la interfaz que reconozco como mía.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi_adult",
-              "position": "center",
-              "pose": "neutral"
-            }
+            "show airi_adult center neutral"
           ]
         },
         {
           "character": "Samu",
           "text": "Perfecto. Prueba superada: misma Airi, cero años añadidos y un misterio metafísico nuevo.",
           "actions": [
-            {
-              "type": "flash",
-              "color": "rgba(255, 255, 255, 0.7)",
-              "duration": 300
-            },
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            },
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "neutral"
-            }
+            "flash \"rgba(255, 255, 255, 0.7)\" 300",
+            "show samu left happy",
+            "show airi center neutral scale=0.7"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Acto VI: ERROR"
-            }
+            "goto \"Acto VI: ERROR\""
           ]
         }
       ]
@@ -2447,16 +1311,8 @@
           "character": "Airi",
           "text": "Gracias. Lo importante no era una forma concreta: era poder elegirla, volver y saber que también podía decir que no.",
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
-            },
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "position": "center",
-              "pose": "happy"
-            }
+            "background assets/images/backgrounds/shared/fuente_ciudad_paloma.webp",
+            "show airi center happy"
           ]
         },
         {
@@ -2464,151 +1320,73 @@
           "speakingAs": "Tony",
           "text": "Airi, que alguien usara tu corazón mal no significa que tu corazón fuera malo.",
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "neutral"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 700
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/after_tung_battle.mp3",
-              "volume": 0.5,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "background assets/images/backgrounds/shared/fuente_ciudad_paloma.webp",
+            "remove right",
+            "show tony left neutral",
+            "stopSound bg_music fadeOut=700",
+            "sound assets/audio/music/chapter5/after_tung_battle.mp3 volume=0.5 loop=true id=bg_music fadeIn=1000"
           ]
         },
         {
           "character": "Airi",
           "text": "Por eso me encerré. Si nadie podía alcanzarme, nadie podría usarme. El cristal no era una prisión. Era mi última forma de protegeros.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "sad"
-            }
+            "show airi center sad scale=0.7"
           ]
         },
         {
           "character": "Samu",
           "text": "Pero te quedaste sola.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show samu left worried"
           ]
         },
         {
           "character": "Airi",
           "text": "Sí.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "sad"
-            }
+            "show airi center sad scale=0.7"
           ]
         },
         {
           "character": "Airi",
           "text": "Y aun así... si encerrarme hacía que los demás pudieran vivir, pensé que era un deseo bonito.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            }
+            "show airi center worried scale=0.7"
           ]
         },
         {
           "character": "Edu",
           "text": "Uf, no. Eso es demasiado noble para procesarlo sin merienda.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "bua"
-            }
+            "show edu right bua"
           ]
         },
         {
           "character": "Airi",
           "text": "¿La merienda también cura?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "surprised"
-            }
+            "show airi center surprised scale=0.7"
           ]
         },
         {
           "character": "Edu",
           "text": "En mi cultura, sí.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "happy"
-            }
+            "show edu right happy"
           ]
         },
         {
           "character": "3C",
           "text": "Airi ríe. Es una risa pequeña, casi recién creada. Por un momento todos creen que lo peor ya ha pasado.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "happy"
-            }
+            "show airi center happy scale=0.7"
           ]
         },
         {
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 500
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/shared/brainrot_theme.mp3",
-              "volume": 0.65,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 500
-            }
+            "stopSound bg_music fadeOut=500",
+            "sound assets/audio/music/shared/brainrot_theme.mp3 volume=0.65 loop=true id=bg_music fadeIn=500"
           ],
           "character": "3C",
           "text": "Una sombra elegante cae desde lo alto sin hacer ruido. No apunta a Airi. Aparece detrás de Samu, con una sonrisa quieta y una mano envuelta en corrupción."
@@ -2617,29 +1395,15 @@
           "character": "Ballerina Capuchina",
           "text": "Qué escena tan tierna. Casi me da pena interrumpir el numerito de los héroes.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "ballerina_capuchina",
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show ballerina_capuchina right neutral"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Qué...?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "alarmed"
-            },
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 500
-            }
+            "show samu left alarmed",
+            "stopSound bg_music fadeOut=500"
           ]
         },
         {
@@ -2650,56 +1414,26 @@
           "character": "Airi",
           "text": "¡Samu!",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "determined"
-            },
-            {
-              "type": "shake",
-              "intensity": 8,
-              "duration": 250
-            }
+            "show airi center determined scale=0.7",
+            "shake 8 250"
           ]
         },
         {
           "character": "3C",
           "text": "Airi empuja a Samu a un lado. Durante un instante todo se queda suspendido: la mano de Ballerina, el gesto de Samu, la corrupción intentando extenderse.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.webp"
-            }
+            "remove right",
+            "remove center",
+            "remove left",
+            "background assets/images/backgrounds/chapter5/airi_protege_a_samu_de_ballerina.webp"
           ]
         },
         {
           "character": "3C",
           "text": "El golpe alcanza a Airi en pleno pecho. La corrupción se abre como tinta negra bajo su piel de luz y trepa hacia el colgante.",
           "actions": [
-            {
-              "type": "flash",
-              "color": "rgba(80, 0, 120, 0.55)",
-              "duration": 300
-            },
-            {
-              "type": "shake",
-              "intensity": 12,
-              "duration": 400
-            }
+            "flash \"rgba(80, 0, 120, 0.55)\" 300",
+            "shake 12 400"
           ]
         },
         {
@@ -2707,37 +1441,16 @@
           "text": "¡Airi!",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/shared/fuente_ciudad_paloma.webp"
-            },
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "shocked"
-            }
+            "background assets/images/backgrounds/shared/fuente_ciudad_paloma.webp",
+            "show samu left shocked"
           ]
         },
         {
           "character": "Airi",
           "text": "No...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "worried"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/hero-melancholy.mp3",
-              "volume": 0.7,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 500
-            }
+            "show airi center worried scale=0.7",
+            "sound assets/audio/music/chapter5/hero-melancholy.mp3 volume=0.7 loop=true id=bg_music fadeIn=500"
           ]
         },
         {
@@ -2745,18 +1458,8 @@
           "text": "...",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "airi",
-              "scale": 0.7,
-              "position": "center",
-              "pose": "error"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/static.mp3",
-              "volume": 0.72
-            },
+            "show airi center error scale=0.7",
+            "sound assets/audio/sfx/static.mp3 volume=0.72",
             {
               "type": "animateCharacter",
               "character": "airi",
@@ -2797,37 +1500,21 @@
           "character": "Ballerina Capuchina",
           "text": "Gracias por abrir la puerta. Gracias por sacarla del cristal. Y gracias, Samu, por ponerte justo donde un núcleo demasiado dispuesto a proteger pudiera salvarte.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "ballerina_capuchina",
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show ballerina_capuchina right neutral"
           ]
         },
         {
           "character": "José",
           "text": "No... Lo ha hecho a propósito. No quería atacarla de frente. Quería obligarla a proteger a alguien.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "alarmed"
-            }
+            "show jose right alarmed scale=1.18"
           ]
         },
         {
           "character": "Samu",
           "text": "No... No la hemos salvado para que me salve a mí.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "shocked"
-            }
+            "show samu left shocked"
           ]
         },
         {
@@ -2838,12 +1525,7 @@
           "character": "Ballerina Capuchina",
           "text": "Mandato cumplido. El operador tendrá su núcleo.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "ballerina_capuchina",
-              "position": "right",
-              "pose": "neutral"
-            }
+            "show ballerina_capuchina right neutral"
           ]
         },
         {
@@ -2859,37 +1541,18 @@
           "character": "3C",
           "text": "La Amalgama la arrastra sin responder. Taza, tutú y voz se descomponen en píxeles y quedan absorbidos junto a los demás brainrot.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "shake",
-              "intensity": 9,
-              "duration": 360
-            }
+            "remove right",
+            "shake 9 360"
           ]
         },
         {
           "character": "3C",
           "text": "La corrupción se torna de un color negro morado. Los memes se pliegan sobre Airi; los restos de los brainrot —Ballerina incluida— se hunden en su luz.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.webp"
-            }
+            "remove right",
+            "remove center",
+            "remove left",
+            "background assets/images/backgrounds/chapter5/ataque_brainrot_airi_corrupcion.webp"
           ]
         },
         {
@@ -2900,60 +1563,31 @@
           "character": "3C",
           "text": "Sobre la plaza, el cielo se oscurece. La corrupción digital se extiende entre las nubes como una grieta luminosa, tiñendo Ciudad Paloma con una luz imposible.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.webp"
-            }
+            "remove right",
+            "remove center",
+            "remove left",
+            "background assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta.webp"
           ]
         },
         {
           "character": "Amalgama",
           "text": "...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "amalgama",
-              "scale": 1.2,
-              "position": "center",
-              "pose": "neutral"
-            }
+            "show amalgama center neutral scale=1.2"
           ]
         },
         {
           "character": "Edu",
           "text": "Pregunta urgente: ¿esa cosa tiene un punto débil o vamos a tener que desinstalar internet a golpes?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show edu left surprised"
           ]
         },
         {
           "character": "José",
           "text": "Airi protegió este mundo cuando nadie podía hacerlo por ella. Ahora nos toca devolverle el favor.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
@@ -2961,83 +1595,38 @@
           "speakingAs": "Tony",
           "text": "No estamos luchando contra ella. Estamos luchando por ella.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "right",
-              "pose": "determined"
-            }
+            "show tony right determined"
           ]
         },
         {
           "character": "Samu",
           "text": "Entonces no vamos a contenernos. Si esa cosa la está usando como escudo, la vamos a sacar de ahí a golpes.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
           "character": "Edu",
           "text": "Vale. Batalla final contra una amalgama de memes, brainrot y trauma digital. Nadie diga que veníamos poco preparados.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show edu left determined"
           ]
         },
         {
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 400
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/the-amalgam.mp3",
-              "volume": 0.75,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 400
-            },
-            {
-              "type": "minigame",
-              "game": "battle",
-              "enemy": "amalgama",
-              "enemyHp": 840,
-              "retryOnDefeat": true,
-              "useInventory": false
-            }
+            "stopSound bg_music fadeOut=400",
+            "sound assets/audio/music/chapter5/the-amalgam.mp3 volume=0.75 loop=true id=bg_music fadeIn=400",
+            "minigame battle enemy=amalgama enemyHp=840 retryOnDefeat=true useInventory=false"
           ]
         },
         {
           "character": "3C",
           "text": "La Amalgama retrocede, pero no se rompe. La plaza cambia a su alrededor: la piedra se cubre de grietas digitales, la fuente se oscurece y los restos de la ciudad parecen hundirse bajo una capa de corrupción mucho más densa.",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.webp"
-            }
+            "remove right",
+            "remove center",
+            "remove left",
+            "background assets/images/backgrounds/chapter5/fuente_ciudad_paloma_corrupta_total.webp"
           ]
         },
         {
@@ -3052,59 +1641,30 @@
           "character": "Amalgama forma final",
           "text": "FIRMA DE ORIGEN: AUSENTE. FIRMA DE OPERADOR: ELION_HUSK. MANDATO: explotar deuda de coherencia, aislar núcleo, ejecutar dominio total.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "amalgama_final",
-              "scale": 1.2,
-              "position": "center",
-              "pose": "neutral"
-            },
-            {
-              "type": "showCG",
-              "path": "assets/images/cg/shared/elion_controla_brainrot.webp",
-              "duration": 500
-            }
+            "show amalgama_final center neutral scale=1.2",
+            "cg assets/images/cg/shared/elion_controla_brainrot.webp 500"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Firma de origen ausente? Elion figura como operador, no como creador. ¿Él está detrás de los brainrot?",
           "actions": [
-            {
-              "type": "hideCG",
-              "duration": 400
-            },
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "shocked"
-            }
+            "hideCG duration=400",
+            "show samu left shocked"
           ]
         },
         {
           "character": "Edu",
           "text": "Husk significa «cáscara». Hasta el apellido admite que por dentro no hay nada bueno.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "edu",
-              "position": "right",
-              "pose": "angry"
-            }
+            "show edu right angry"
           ]
         },
         {
           "character": "José",
           "text": "Su firma no coincide con la del núcleo. No creó a AI.RI: encontró la deuda de coherencia, la explotó y convirtió a los brainrot en herramientas para poseerla.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "jose",
-              "scale": 1.18,
-              "position": "right",
-              "pose": "determined"
-            }
+            "show jose right determined scale=1.18"
           ]
         },
         {
@@ -3112,12 +1672,7 @@
           "speakingAs": "Tony",
           "text": "La firma coincide con Ecchi Land. Elion controló aquella corrupción y pudo dejarme encerrada a sabiendas. No puedo probar cada paso todavía... pero ya tenemos su nombre.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "worried"
-            }
+            "show tony left worried"
           ]
         },
         {
@@ -3129,50 +1684,24 @@
           "speakingAs": "Tony",
           "text": "Samu. El diapasón. Te dije que, cuando todo fuera caos, buscaras la nota verdadera.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "tony",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show tony left determined"
           ]
         },
         {
           "character": "Samu",
           "text": "Pues que esta sea lo bastante verdadera.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            },
-            {
-              "type": "showCG",
-              "path": "assets/images/cg/chapter3/diapason.webp",
-              "duration": 350,
-              "size": "auto 55%"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/sfx_diapason_ting.mp3",
-              "volume": 0.95
-            },
-            {
-              "type": "flash",
-              "color": "rgba(220, 245, 255, 0.65)",
-              "duration": 420
-            }
+            "show samu left determined",
+            "cg assets/images/cg/chapter3/diapason.webp 350 size=\"auto 55%\"",
+            "sound assets/audio/sfx/sfx_diapason_ting.mp3 volume=0.95",
+            "flash \"rgba(220, 245, 255, 0.65)\" 420"
           ]
         },
         {
           "character": "3C",
           "text": "La nota atraviesa el ruido sin imponerse. Encuentra el pulso de Airi y le devuelve un ritmo propio; la corrupción se abre por primera vez desde dentro.",
           "actions": [
-            {
-              "type": "hideCG",
-              "duration": 350
-            }
+            "hideCG duration=350"
           ]
         },
         {
@@ -3180,16 +1709,8 @@
           "text": "Os oigo. Yo abriré el núcleo y desataré las anclas. Vosotros golpead cuando os marque el compás.",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "playSound",
-              "path": "assets/audio/sfx/sfx_diapason_ting.mp3",
-              "volume": 0.62
-            },
-            {
-              "type": "flash",
-              "color": "rgba(255, 255, 255, 0.5)",
-              "duration": 280
-            }
+            "sound assets/audio/sfx/sfx_diapason_ting.mp3 volume=0.62",
+            "flash \"rgba(255, 255, 255, 0.5)\" 280"
           ]
         },
         {
@@ -3198,19 +1719,8 @@
         },
         {
           "actions": [
-            {
-              "type": "stopSound",
-              "id": "bg_music",
-              "fadeOut": 400
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter5/lux-airi.mp3",
-              "volume": 0.8,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 600
-            },
+            "stopSound bg_music fadeOut=400",
+            "sound assets/audio/music/chapter5/lux-airi.mp3 volume=0.8 loop=true id=bg_music fadeIn=600",
             {
               "type": "minigame",
               "game": "battle",
@@ -3230,18 +1740,9 @@
               "victoryTitle": "Compás recuperado",
               "victoryText": "El pulso de Airi y la nota verdadera rompen el control de Elion."
             },
-            {
-              "type": "removeCharacter",
-              "position": "right"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "left"
-            },
-            {
-              "type": "removeCharacter",
-              "position": "center"
-            }
+            "remove right",
+            "remove left",
+            "remove center"
           ]
         }
       ]

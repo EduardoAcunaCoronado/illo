@@ -5,7 +5,13 @@ uno para quien juega y otro para quien desarrolla. `LEER_PRIMERO.md` es sólo
 la portada y el acceso rápido. Las plantillas de `.github/` son excepciones
 operativas, no documentación paralela.
 
-> **Estado verificado: 2026-08-07.** La validación actual reconoce 7 capítulos,
+La edición visual de consulta se genera en
+`output/pdf/manual_engine_y_juego_transfurmados.pdf`. Incluye capturas reales,
+ejemplos y un inventario de funciones extraído del código; no sustituye esta
+fuente canónica y debe regenerarse cuando cambien la API, los controles, el
+esquema de capítulos o una pantalla documentada.
+
+> **Estado verificado: 2026-08-08.** La validación actual reconoce 7 capítulos,
 > 64 escenas, 921 líneas, 27 fichas de personaje y 1.699 referencias de assets.
 > La galería generada contiene 107 entradas, 164 poses y 130 poses con
 > parpadeo. Estas cifras son una fotografía
@@ -329,7 +335,7 @@ mínima de 640×360. El formato ideal es 16:9.
 ## Principios de trabajo
 
 1. El contenido narrativo vive en JSON; el comportamiento general vive en el
-   motor. No modifiques `engine.js` para un simple cambio de texto o pose.
+   motor. No modifiques `engine/` para un simple cambio de texto o pose.
 2. `assets/` contiene runtime y salidas necesarias para herramientas.
    `workbench/` conserva maestros y originales útiles en una raíz espejo; el
    material retirado pertenece al historial de Git.
@@ -344,13 +350,14 @@ mínima de 640×360. El formato ideal es 16:9.
 Requisitos recomendados:
 
 - Node.js y npm para Electron, validadores, Prettier y builds.
-- Python 3 con Pillow, NumPy y OpenCV para las herramientas de imagen.
+- Python 3 con Pillow, NumPy y OpenCV para las herramientas de imagen; ReportLab
+  para regenerar la edición PDF de estos manuales.
 - FFmpeg/ffprobe para audio, vídeo y algunas miniaturas.
 
 Preparación orientativa de las herramientas locales:
 
 ```powershell
-python -m pip install pillow numpy opencv-python
+python -m pip install pillow numpy opencv-python reportlab
 ```
 
 FFmpeg y ffprobe deben estar disponibles en `PATH`. El proyecto aún no fija las
@@ -359,6 +366,7 @@ sección y `LEER_PRIMERO.md` deben actualizarse en el mismo cambio.
 
 ```powershell
 npm install                 # dependencias
+npm run build:engine        # compila los módulos ES a engine.bundle.js
 npm start                   # Electron de desarrollo
 npm run dev:web             # juego 8000 + Tools 8011, cierre conjunto
 npm run validate:content    # JSON, relaciones y assets
@@ -366,6 +374,10 @@ npm run validate:workbench  # estructura espejo, manifiestos y referencias
 npm run audit:assets        # conversiones pendientes, sin escribir
 npm run optimize:assets     # conserva originales y optimiza runtime
 npm run check:js            # formato JS con Prettier
+npm run check:modules       # formato de los módulos y tests nuevos
+npm run test:engine         # DSL, reloj pausable y ciclo de minijuegos
+npm run test:repeat -- 10   # repite bundle + contenido + motor
+npm run manual:pdf          # regenera el manual visual PDF
 npm run tools:eyes          # centro gráfico en localhost:8011
 npm run build:gallery       # regenera galería sin copiar promos externas
 npm run dist:dir            # build Windows sin instalador
@@ -381,8 +393,10 @@ notarización requieren credenciales externas; se explican en la referencia.
 | --- | --- |
 | `index.html` | DOM del escenario, menú, controles superiores, disclaimer y orden de scripts. |
 | `styles.css` | Interfaz general, responsive, diálogos, galería y estilos de minijuegos integrados. |
-| `game.js` | Menú, configuración, galería, selector de capítulos, bucle de juego, pausa y navegación. |
-| `engine.js` | Intérprete de acciones, render de escenas, estado, audio, vídeo, historial y minijuegos integrados. |
+| `game.js` | Menú, configuración, galería, selector de capítulos y bucle de juego. Consume el reloj pausable del motor. |
+| `engine/` | Fuente ES modular: intérprete/DSL, audio, DOM, tiempo, historial y `VisualNovelEngine`. |
+| `engine.bundle.js` | Artefacto clásico generado por esbuild y cargado por navegador y Electron. No se edita a mano. |
+| `minigames/MinigameBase.js` | Contrato `start/pause/resume/cleanup`, registro de instancias activas y cancelación común de listeners, overlays, timers y RAF. |
 | `juice.js` | Shake, flash, grade, viñeta, fundidos y camas WebAudio. |
 | `p5-effects.js` | Biblioteca visual heredada; el nombre del archivo es técnico y no define la identidad actual. |
 | `battle-minigame.js` / `battle-styles.css` | Combate por turnos y su UI. |
@@ -399,10 +413,18 @@ notarización requieren credenciales externas; se explican en la referencia.
 | `assets/metadata/*.json` | Galería, capas oculares, offsets, ediciones y copias limpias. |
 | `electron/` | Ventana segura, servidor interno con Range, ajustes persistentes e IPC limitado. |
 | `scripts/` | Validación, galería, optimización y herramientas gráficas. |
+| `scripts/generate_engine_manual_pdf.py` | Maqueta la edición PDF fechada, calcula cifras del guion e inventaría firmas desde el código. |
+| `output/pdf/manual_engine_y_juego_transfurmados.pdf` | Exportación visual de consulta; `DOCUMENTACION.md` sigue siendo la autoridad. |
+
+Los colores neón compartidos y las capas globales viven en `styles.css >
+:root` (`--neon-*`, `--color-*`, `--layer-*`). Los `z-index` locales de un
+minijuego pueden seguir siendo relativos a su overlay, pero startup, diálogo,
+transiciones, controles superiores, menús, pausa y debug deben usar las
+variables globales para conservar un único orden de apilado.
 
 ## Rendimiento y pruebas de regresión (desarrollo)
 
-- En `engine.js` se ha afinado el runtime para reducir trabajo redundante en cargas:
+- En `engine/VisualNovelEngine.js` se ha afinado el runtime para reducir trabajo redundante en cargas:
   - `preloadImages()` reutiliza imágenes ya decodificadas (`preloadedImages`) para evitar recrear objetos `Image` cuando el asset ya está listo.
   - `removeAllCharacters()` limpia los 3 huecos sin recalcular layout en cada hueco; el ajuste de composición se realiza una sola vez por lote.
   - `applyVolumeSettings()` actualiza también los bucles cacheados por ruta (`loopedAudioByPath`), no solo el canal actual o los IDs.
@@ -410,7 +432,7 @@ notarización requieren credenciales externas; se explican en la referencia.
 - `game.js`:
   - `loadAvailableChapters()` detecta `chapterN` en lotes con `Promise.all` para reducir latencia y sigue parando al primer hueco o capítulo con `isFinal: true`.
   - `loadAllCharacters()` usa la lista deduplicada de personajes y omite llamadas de precarga para fichas que ya están en memoria durante la misma sesión; así evita trabajo innecesario entre reinicios de partida sin perder robustez.
-- `engine.js`:
+- `engine/VisualNovelEngine.js`:
   - `loadChapter()` dispara el prefetch de activos de la primera línea del capítulo para evitar cargas en el primer frame visible.
   - `nextLine()` dispara prefetch de la línea activa y prefetch de la siguiente línea de destino (incluyendo paso de escena), sin bloquear la interacción del jugador.
   - `prefetchLineAssets()` deduplica peticiones en vuelo por línea (personaje, fondo, audio) para que una misma secuencia repetida no replique fetch/decodificación.
@@ -420,14 +442,17 @@ notarización requieren credenciales externas; se explican en la referencia.
   - Cada escenario se aísla: un error queda registrado y el resto sigue. El informe completo se muestra como JSON y el resumen se guarda en `illo_test_results_v1` para el catálogo.
   - Los valores predeterminados usan dos repeticiones para que las diferencias de caché y reutilización sean visibles sin tocar parámetros.
 
-Orden de scripts, basado en los `window.*` globales: `p5-effects.js` → módulo de
-batalla → `ketchup-hitboxes.js` → `hitbox-debugger.js` → módulos de
-créditos/guindillas/Ketchup/runas → `juice.js` → `engine.js` → `game.js`.
+Orden de scripts, basado en los `window.*` globales: `p5-effects.js` →
+`engine.bundle.js` → módulo de batalla → `ketchup-hitboxes.js` →
+`hitbox-debugger.js` → módulos de créditos/guindillas/Ketchup/runas →
+`juice.js` → `game.js`. El bundle debe ir antes de los minijuegos externos para
+publicar `MinigameBase` e instalar el reloj pausable antes de que empiece la
+partida.
 `game.js` crea una instancia de
 `VisualNovelEngine`, descubre `chapter0`, `chapter1`, etc. hasta encontrar
 `isFinal: true` o el primer hueco, carga personajes y llama a `nextLine()`.
 Cada línea ejecuta acciones, muestra texto o elecciones y espera input. `game.js`
-instala además la pausa global:
+consume además la pausa global instalada por `engine/TimeManager.js`:
 congela timers, RAF y `Date.now`, coordina audio/vídeo y bloquea entradas sin
 modificar los relojes narrativos al reanudar. No introduzcas un hueco en la
 numeración de capítulos: el descubrimiento se detiene ahí.
@@ -470,7 +495,7 @@ memory/                       contexto auxiliar, no manual canónico
 | Cambiar música/SFX | `assets/audio` + acciones `playSound`/`stopSound` | ID, loop, fade y clasificación music/sfx. |
 | Añadir cinemática | `assets/video/cutscenes` + `playVideo` | Audio, salto, último frame y crossfade. |
 | Ajustar un minijuego existente | Parámetros de la acción en el capítulo | Victoria, derrota, reintento, pausa y aborto. |
-| Crear un minijuego | Módulo dedicado o `engine.js`, router `playMinigame` e `index.html` | Carga, CSS, input, cleanup y test aislado. |
+| Crear un minijuego | Módulo dedicado o `engine/VisualNovelEngine.js`, router `playMinigame` e `index.html` | Carga, CSS, input, cleanup y test aislado. |
 | Cambiar combate | `battle-minigame.js` y `battle-styles.css` | Estados, objetivos, objetos, Kosai y varias resoluciones. |
 | Cambiar menú/galería/configuración | `game.js`, `index.html`, `styles.css` | Teclado, foco, clic propagado y Electron. |
 | Persistir un ajuste nuevo | `game.js`, allowlist de `electron/main.js` y `preload.js` si aplica | Navegador y reinicio de Electron. |
@@ -560,7 +585,7 @@ parpadeo y capas oculares. Si falta una capa válida, conserva el sprite complet
 como fallback; nunca debe deformar el cuerpo para simular un parpadeo.
 
 El cursor-retrato del diálogo usa el marco WebP
-`assets/images/ui/dialogue_speaker_cursor.webp`. `engine.js` resuelve la identidad
+`assets/images/ui/dialogue_speaker_cursor.webp`. `engine/VisualNovelEngine.js` resuelve la identidad
 real del hablante aunque `speakingAs` centre otro elemento del escenario y,
 antes de cada revelación furry, usa los sprites humanos WebP de
 `assets/images/characters/humans/`. Los umbrales narrativos actuales son
@@ -601,6 +626,42 @@ para el retrato.
 Los alias españoles e históricos existen por compatibilidad, pero el contenido
 nuevo debe usar un nombre canónico consistente. La referencia posterior detalla
 campos y ejemplos de cada acción.
+
+### DSL compacta de acciones
+
+`actions` y `afterActions` aceptan tanto los objetos históricos como cadenas
+compactas. El intérprete normaliza ambas formas al mismo objeto antes de
+precargar assets o despachar la acción. Los argumentos con espacios se escriben
+entre comillas; los opcionales usan `clave=valor` y convierten automáticamente
+números, booleanos y `null`.
+
+```json
+{
+  "actions": [
+    "background assets/images/backgrounds/chapter1/pisito.webp",
+    "show nexo right happy scale=1.1",
+    "sound assets/audio/music/menu/tema_menu.mp3 id=bg_music loop=true"
+  ]
+}
+```
+
+Alias compactos principales: `show`, `hide`, `remove`, `pose`, `background`,
+`sound`, `goto`, `video`, `cg`, `item`, `dialogOff` y `delay`. También se puede
+usar el nombre canónico (`wait`, `minigame`, `fade`, etc.). `sceneStart` es una
+macro secuencial: funde a negro, cambia o limpia el fondo y vuelve a revelar la
+escena; admite una ruta posicional y `duration=N`.
+
+La migración reproducible está en `scripts/migrate_actions_to_dsl.mjs`:
+
+```powershell
+node scripts/migrate_actions_to_dsl.mjs          # simulación y recuento
+node scripts/migrate_actions_to_dsl.mjs --write  # escritura con round-trip exacto
+```
+
+El script sólo convierte una acción cuando serializarla y volverla a parsear
+produce exactamente el mismo objeto; las configuraciones complejas permanecen
+como objetos. A fecha de verificación, 1.375 acciones están en DSL y 18 objetos
+complejos se conservan sin pérdida.
 
 ## Estado, continuidad y navegación
 
@@ -664,17 +725,17 @@ Claves registradas por `playMinigame`:
 
 | Clave | Implementación | Estado actual |
 | --- | --- | --- |
-| `furrielvaExplore` | `engine.js` | Activo en capítulo 2. |
-| `chiliHarvest` / `guindillas` | `engine.js` | Activo; carga poder picante. |
+| `furrielvaExplore` | `engine/VisualNovelEngine.js` | Activo en capítulo 2. |
+| `chiliHarvest` / `guindillas` | `engine/VisualNovelEngine.js` | Activo; carga poder picante. |
 | `ketchupBoss` / `ketchup` | `ketchup-minigame.js` | Activo; dificultad según guindillas/objeto. |
-| `gatos` | `engine.js` | Activo. |
-| `chase` | `engine.js` | Activo en capítulo 3. |
-| `rhythm` | `engine.js` | Activo en capítulo 3. |
-| `eduvuelo` | `engine.js` | Activo en capítulo 3. |
+| `gatos` | `engine/VisualNovelEngine.js` | Activo. |
+| `chase` | `engine/VisualNovelEngine.js` | Activo en capítulo 3. |
+| `rhythm` | `engine/VisualNovelEngine.js` | Activo en capítulo 3. |
+| `eduvuelo` | `engine/VisualNovelEngine.js` | Activo en capítulo 3. |
 | `battle` | `battle-minigame.js` | Activo en capítulos 3–5. |
 | `runeChanneling` | `rune-channeling-minigame.js` | Activo en capítulo 4. |
 | `credits` / `creditos` | `credits-minigame.js` | Activo en capítulo 6. |
-| `ecchi`, `paloma`, `runa`, `vocalecho` | `engine.js` | Motores disponibles; no aparecen en el recorrido activo actual. |
+| `ecchi`, `paloma`, `runa`, `vocalecho` | `engine/VisualNovelEngine.js` | Motores disponibles; no aparecen en el recorrido activo actual. |
 
 Para ajustar dificultad, cambia primero los parámetros de la acción JSON. El
 motor admite variantes `...ByDelay` que seleccionan valores según
@@ -694,12 +755,16 @@ Todo minijuego nuevo debe:
 4. Permitir reintento o definir claramente que el resultado no bloquea historia.
 5. Soportar aborto desde Opciones/Escenas.
 6. Mostrar controles antes de empezar y funcionar al menos con teclado/ratón.
-7. Exponer, si es módulo, una API `window.XMinigame.play(options)` que resuelva
-   una `Promise` y haga cleanup completo.
-8. Cargarse antes de `engine.js`, registrar su caso en `playMinigame` y en
+7. Extender `MinigameBase`, implementar `start()` y usar `listen()`,
+   `attachOverlay()`, `timeout()` y `animationFrame()` para que `cleanup()` retire
+   listeners y trabajo pendiente incluso si otro menú elimina el overlay.
+   `pause()` y `resume()` forman parte del contrato común. La salida global llama
+   a `MinigameBase.cleanupAll()` antes de retirar cualquier resto visual.
+8. Exponer una API `window.XMinigame.play(options)` que resuelva una `Promise`.
+9. Cargarse después de `engine.bundle.js`, registrar su caso en `playMinigame` y en
    `knownMinigames` de `scripts/validate_game_content.mjs`.
-9. Incluirse en `minijuegos_test.html` y pasar una prueba dentro del capítulo.
-10. Usar `MinigameLifeDisplay` si el personaje dispone de vidas.
+10. Incluirse en `minijuegos_test.html` y pasar una prueba dentro del capítulo.
+11. Usar `MinigameLifeDisplay` si el personaje dispone de vidas.
 
 ## Galería y metadatos
 
@@ -1074,7 +1139,10 @@ npm run validate:content
 npm run validate:workbench
 npm run audit:assets
 npm run check:js
-node --check engine.js
+npm run check:modules
+npm run test:engine
+npm run build:engine
+node --check engine.bundle.js
 node --check game.js
 ```
 
@@ -1087,8 +1155,10 @@ completamente en tiempo de ejecución.
 No existe todavía una suite E2E que recorra el juego completo; la prueba manual
 proporcional al cambio es parte obligatoria de la entrega.
 
-Deuda conocida a 2026-08-03: `npm run check:js` señala formato Prettier previo
-en 11 archivos JavaScript. El comando sigue siendo útil para no ampliar la
+Deuda conocida verificada a 2026-08-08: `npm run check:js` señala formato
+Prettier previo en archivos JavaScript históricos. `npm run check:modules`
+sí debe pasar para toda la fuente modular y sus tests. El chequeo global sigue
+siendo útil para no ampliar la
 deuda, pero no debe afirmarse que pasa globalmente ni ejecutarse `--write` sobre
 todo el proyecto sin revisar el diff funcional resultante.
 
@@ -1111,6 +1181,21 @@ La actualización documental viaja en el mismo cambio y sustituye información
 obsoleta en su sección canónica; no se añaden documentos por característica ni
 un diario cronológico duplicado. La regla normativa completa está en
 `AGENTS.md` y el recordatorio de entrega en `.github/PULL_REQUEST_TEMPLATE.md`.
+
+### Edición PDF de consulta
+
+`npm run manual:pdf` genera una edición A4 con portada, índice, marcadores,
+capturas, ejemplos de JSON/DSL, explicación de la migración y referencia de
+`VisualNovelEngine`, los módulos de `engine/`, `MinigameBase` y las funciones de
+`game.js`. El generador toma las cifras de `chapters/*.json`, compara las
+acciones actuales con `HEAD` cuando Git está disponible y extrae firmas y
+comentarios de la fuente, evitando mantener a mano un segundo catálogo.
+
+Las nueve capturas verificadas viven en `output/pdf/manual_engine_assets/` y la
+salida en `output/pdf/manual_engine_y_juego_transfurmados.pdf`. Tras un cambio
+visible se deben renovar las capturas afectadas antes de regenerar. La fecha y
+las cifras impresas son una fotografía de la edición; ante cualquier diferencia
+prevalecen este documento, el código y `npm run validate:content`.
 
 ## Canon, identidad y continuidad
 
@@ -1357,9 +1442,10 @@ el que se resalta mientras "habla".
 
 ## ⚙️ Acciones
 
-Esta sección es el contrato canónico de las acciones JSON. Cada acción indica
+Esta sección es el contrato canónico de las acciones JSON/DSL. Cada acción indica
 sus alias, campos aceptados y valores por defecto. `scripts/validate_game_content.mjs`
-comprueba tanto `actions` como `afterActions`; un nombre que exista en el motor
+normaliza las cadenas con el mismo parser del runtime y comprueba tanto `actions`
+como `afterActions`; un nombre que exista en el motor
 pero no en este manual o en el validador es una incompatibilidad que debe
 corregirse antes de cerrar el cambio.
 
@@ -1435,7 +1521,7 @@ Parámetros:
 
 `offsetY` y `scale` son **del guión, no del personaje**: el tamaño y la altura
 se deciden en cada aparición, así que el mismo personaje puede salir enorme en
-una escena y normal en otra. En `engine.js` no hay ninguna tabla de escalas.
+una escena y normal en otra. En `engine/VisualNovelEngine.js` no hay ninguna tabla de escalas.
 
 ```json
 {
@@ -2429,6 +2515,11 @@ Al añadir una prueba nueva se registra una entrada en `MINIGAME_CATALOG`, se
 asocia su panel `data-options-for` y se define su función `run`; no se deben crear
 filas independientes de botones por dificultad.
 
+Las acciones de capítulo pueden estar en DSL de texto. Los modos **Como en la
+historia** deben normalizarlas mediante `engine.actionInterpreter.normalize()`
+antes de buscar `game` o copiar opciones; leer `action.game` directamente sólo
+funciona con el formato objeto heredado.
+
 Las fichas de Persecución y Edu volando incluyen **Mostrar hitboxes de
 movimiento**. En la persecución dibuja las huellas elípticas: coche en verde,
 obstáculos en rojo y motos en amarillo. En el vuelo mantiene las cajas 2D y los
@@ -3254,7 +3345,7 @@ DESPUÉS:
 **Implementación Técnica:**
 
 ```javascript
-// En engine.js - displayDialog()
+// En engine/VisualNovelEngine.js - displayDialog()
 const skipHandler = () => {
   skipTyping = true;
   if (timeoutId) clearTimeout(timeoutId);
@@ -3319,7 +3410,7 @@ convergen dentro de la secuencia `chapter0`…`chapter6`.
 **Personalización:**
 
 ```javascript
-// En engine.js - playChapterIntro()
+// En engine/VisualNovelEngine.js - playChapterIntro()
 setTimeout(() => {
   chapterOverlay.classList.add("fade-out");
 }, 2000); // Cambiar duración aquí
@@ -3491,7 +3582,7 @@ El personaje que habla recibe un efecto de glow que pulsa suavemente:
 
 **Cómo Funciona Internamente:**
 
-En engine.js, el método `displayDialog()` detecta automáticamente:
+En engine/VisualNovelEngine.js, el método `displayDialog()` detecta automáticamente:
 
 - El nombre del personaje en `line.character`
 - Su posición (left o right)
@@ -3632,7 +3723,7 @@ Reemplazar por: #tu-color-aqui
 
 ### Velocidad de Texto
 
-En `engine.js`, modifica:
+En `engine/VisualNovelEngine.js`, modifica:
 
 ```javascript
 this.typingSpeed = 50; // Milisegundos por carácter
@@ -4357,7 +4448,7 @@ El sistema carga capítulos en orden numérico:
 | `Failed to fetch`      | Archivo no existe  | Verifica rutas   |
 | `JSON.parse error`     | JSON inválido      | Usa jsonlint.com |
 | `Cannot read property` | Recurso no cargado | Verifica game.js |
-| `Uncaught TypeError`   | Error en código    | Revisa engine.js |
+| `Uncaught TypeError`   | Error en código    | Revisa engine/VisualNovelEngine.js |
 
 ### Monitorear Estado
 
@@ -4460,8 +4551,9 @@ a la derecha del menú (`#menu-theme-btn`, que rearranca el tema) solo sale en
 web: en la app no hay nada que desbloquear. Es la regla simétrica a la de
 **Salir**, que solo sale en Electron.
 
-El juego se puede ejecutar como aplicación de escritorio de Windows sin cambiar
-nada del motor: sigue siendo el mismo `index.html` con `engine.js` y `game.js`.
+El juego se puede ejecutar como aplicación de escritorio de Windows sin una
+ruta alternativa: usa el mismo `index.html`, `engine.bundle.js` y `game.js` que
+el servidor web. La fuente de ese bundle vive en `engine/`.
 
 ### Ajustes persistentes
 
@@ -4488,7 +4580,8 @@ El recorrido completo:
 | Restaurar | `electron/preload.js` | Pide los ajustes con `sendSync('settings:get-sync')` y los devuelve al `localStorage`. |
 
 La restauración va en el **preload** y es síncrona a propósito: el preload corre
-antes que los scripts de la página, así que `engine.js` (`volFactor`),
+antes que los scripts de la página, así que `engine.bundle.js` (fuente en
+`engine/VisualNovelEngine.js`, incluido `volFactor`),
 `battle-minigame.js` (`kosaiEnabled`) y el propio panel de Configuración se
 encuentran el `localStorage` ya puesto y no necesitan esperar a ninguna promesa.
 
@@ -4565,7 +4658,7 @@ dist/
 │   ├── locales/                 ← 55 idiomas (46,6 MB)
 │   └── resources/
 │       └── app/                 ← el juego (1.208 MB)
-│           ├── index.html, engine.js, game.js, styles.css
+│           ├── index.html, engine.bundle.js, game.js, styles.css
 │           ├── electron/        ← main.js + static-server.js
 │           ├── chapters/, characters/
 │           └── assets/          ← 1.207 MB
@@ -5014,7 +5107,7 @@ Implementada en la rama `feature/extension-capitulo-2-edu`:
   activa.
 
 La implementación toca `chapters/chapter1.json`, `chapters/chapter2.json`,
-`characters/edu.json`, `characters/ketchling.json`, `engine.js`, `styles.css` y
+`characters/edu.json`, `characters/ketchling.json`, `engine/VisualNovelEngine.js`, `styles.css` y
 el manifiesto de assets. La validación incluye parseo de JSON, comprobación de
 destinos de escena, sintaxis JavaScript, existencia de referencias y recorrido
 real en navegador del mapa, fábrica, tapón, bienvenida y combate.
@@ -5427,7 +5520,7 @@ cinturón de herramientas de Rulo Mapache.
 Los archivos activos mantienen sus nombres, lienzo RGBA transparente y tamaño
 `965×1630`: `assets/images/characters/furrielva/tadeo_trufa_v1.png`,
 `lia_lince_v1.png` y `rulo_mapache_v1.png`. Al conservar rutas y dimensiones no
-ha sido necesario modificar `engine.js`; las tres escenas siguen usando el mismo
+ha sido necesario modificar `engine/VisualNovelEngine.js`; las tres escenas siguen usando el mismo
 encuadre, precarga y lógica de diálogo.
 
 ### Sprites de carrera de Samu sin halo blanco (2026-08-03)
@@ -6111,7 +6204,7 @@ encima sólo se muestran los PNG `half`, `closed` y `half`, para terminar retira
 la capa y revelar de nuevo el sprite base. La secuencia efectiva es
 `base → semicerrados → cerrados → semicerrados → base` y respeta el crop, X/Y y
 estirado guardados en la mesa de alineación, así como las copias retocadas en
-`blink_eye_pixel_edits.json`. `engine.js` construye este inventario desde
+`blink_eye_pixel_edits.json`. `engine/VisualNovelEngine.js` construye este inventario desde
 `blink_eye_region_previews.json`; los cinco parpadeos del ePod legado, fuera del
 canon activo, conservan el sistema anterior de sprites completos.
 
@@ -6190,8 +6283,9 @@ npm run validate:content
 ```
 
 `scripts/validate_game_content.mjs` comprueba los siete JSON de capítulo y todas
-las fichas de personaje; compara las acciones de `engine.js` con el inventario
-validado y exige que todas aparezcan en este manual. Valida tanto `actions` como
+las fichas de personaje; compara `ACTION_TYPES` de
+`engine/ActionInterpreter.js` con el inventario validado y exige que todas
+aparezcan en este manual. Parsea tanto objetos como cadenas DSL en `actions` y
 `afterActions`, además de minijuegos conocidos, personajes,
 poses de secuencias, destinos de escenas y elecciones, y la existencia de cada
 referencia bajo `assets/`, incluida su capitalización exacta. También audita

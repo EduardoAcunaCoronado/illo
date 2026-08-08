@@ -240,6 +240,8 @@
         }
         .tp-custom-fields { margin-top: 14px; padding: 14px; border: 1px dashed rgba(255, 209, 102, .3); border-radius: 13px; background: rgba(255, 209, 102, .035); }
         .tp-custom-caption { margin: 0 0 10px; color: var(--tp-gold); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .tp-option-result { margin-top: 14px; color: #ffb4cf; }
+        .tp-battle-config { margin-top: 14px; }
         .tp-check-grid { display: flex; flex-wrap: wrap; gap: 13px 24px; margin-top: 14px; }
         .tp-actions { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; padding: 18px 24px 22px; }
         .tp-actions-spacer { flex: 1; }
@@ -387,102 +389,70 @@
                             <p class="tp-option-note">Los presets aislados sirven para ajuste rápido. Historia lee la acción real del capítulo 3 y aplica el retraso seleccionado.</p>
                         </div>
 
-        <h2>🌶️ Recolectar guindillas</h2>
-        <div class="tp-row">
-            <button class="tp-btn" style="--c:#7cffb2" onclick="launchChiliHarvest('facil')">Fácil</button>
-            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchChiliHarvest('medio')">Medio</button>
-            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchChiliHarvest('dificil')">Difícil</button>
-        </div>
-        <div class="tp-config-grid">
-            <label>Duración
-                <input id="chili-duration" type="number" min="1" step="1" value="9">
-            </label>
-            <label>Objetivo poder
-                <input id="chili-power-goal" type="number" min="1" step="1" value="16">
-            </label>
-            <label>Poder máximo
-                <input id="chili-max-power" type="number" min="1" step="1" value="28">
-            </label>
-            <label>Bonus caja Neit
-                <input id="chili-box-bonus" type="number" min="0" step="1" value="12">
-            </label>
-        </div>
-        <label class="tp-music">
-            <input type="checkbox" id="chili-neit"> Probar con caja de Neit
-        </label>
-        <div id="ketchup-info" style="font-size: 11px; margin-top: 8px; color: #ffb4b4; opacity: 0.8;">
-            Poder conseguido: <span id="chili-speed-val">-</span>
-        </div>
+                        <div class="tp-options-panel" data-options-for="eduvuelo" hidden>
+                            <p class="tp-option-note">Los presets ajustan vuelo, energía y obstáculos. Historia aplica exactamente la acción del capítulo 3 y el retraso elegido.</p>
+                        </div>
 
-        <h2>🍅 Bullet Hell de Zip</h2>
-        <div class="tp-row">
-            <button class="tp-btn" data-testid="ketchup-easy" style="--c:#7cffb2" onclick="launchZipBulletHell('facil')">Fácil</button>
-            <button class="tp-btn" data-testid="ketchup-medium" style="--c:#4fd0ff" onclick="launchZipBulletHell('medio')">Medio</button>
-            <button class="tp-btn" data-testid="ketchup-hard" style="--c:#ff4fa3" onclick="launchZipBulletHell('dificil')">Difícil</button>
-            <button class="tp-btn" style="--c:#ffd166" onclick="launchKetchup('medio')">Flujo completo</button>
-            <button class="tp-btn" style="--c:#53d2ff" onclick="openHitboxEditor('ketchupBoss')">Editar hitbox</button>
-        </div>
-        <div class="tp-config-grid">
-            <label>HP Zip
-                <input id="zip-hp" type="number" min="1" step="1" value="700">
-            </label>
-            <label>Vidas Samu
-                <input id="zip-lives" type="number" min="1" step="1" value="3">
-            </label>
-            <label>Picante inicial
-                <input id="zip-spice-power" type="number" min="0" step="1" value="14">
-            </label>
-            <label>Picante máximo
-                <input id="zip-max-spice" type="number" min="1" step="1" value="28">
-            </label>
-        </div>
-        <label class="tp-music">
-            <input type="checkbox" id="zip-start-phase-two"> Empezar desde la segunda forma (60% de vida)
-        </label>
-        <label class="tp-music">
-            <input type="checkbox" id="zip-debug-hitboxes"> Mostrar hitbox real de Zip
-        </label>
+                        <div class="tp-options-panel" data-options-for="chili" hidden>
+                            <p class="tp-option-note">Los valores detallados sólo se aplican en Personalizado; los demás modos usan sus presets completos.</p>
+                            <div class="tp-check-grid">
+                                <label class="tp-check"><input type="checkbox" id="chili-neit"> Probar con caja de Neit</label>
+                            </div>
+                            <div class="tp-custom-fields" data-custom-for="chili" hidden>
+                                <p class="tp-custom-caption">Ajuste personalizado</p>
+                                <div class="tp-config-grid">
+                                    <label class="tp-field">Duración<input id="chili-duration" type="number" min="1" step="1" value="9"></label>
+                                    <label class="tp-field">Objetivo de poder<input id="chili-power-goal" type="number" min="1" step="1" value="16"></label>
+                                    <label class="tp-field">Poder máximo<input id="chili-max-power" type="number" min="1" step="1" value="28"></label>
+                                    <label class="tp-field">Bonus caja Neit<input id="chili-box-bonus" type="number" min="0" step="1" value="12"></label>
+                                </div>
+                            </div>
+                            <p class="tp-option-note tp-option-result">Poder conseguido: <strong id="chili-speed-val">—</strong></p>
+                        </div>
 
-        <h2>🔷 Equilibrio de poderes</h2>
-        <div class="tp-row">
-            <button class="tp-btn" style="--c:#7cffb2" onclick="launchRuneChanneling('facil')">Fácil</button>
-            <button class="tp-btn" style="--c:#4fd0ff" onclick="launchRuneChanneling('medio')">Medio</button>
-            <button class="tp-btn" style="--c:#ff4fa3" onclick="launchRuneChanneling('dificil')">Difícil</button>
-        </div>
+                        <div class="tp-options-panel" data-options-for="ketchupBoss" hidden>
+                            <p class="tp-option-note">Configura la segunda fase y el diagnóstico de colisiones. Los valores numéricos se editan en Personalizado.</p>
+                            <div class="tp-check-grid">
+                                <label class="tp-check"><input type="checkbox" id="zip-start-phase-two"> Empezar desde la segunda forma</label>
+                                <label class="tp-check"><input type="checkbox" id="zip-debug-hitboxes"> Mostrar hitbox real de Zip</label>
+                            </div>
+                            <div class="tp-custom-fields" data-custom-for="ketchupBoss" hidden>
+                                <p class="tp-custom-caption">Ajuste personalizado</p>
+                                <div class="tp-config-grid">
+                                    <label class="tp-field">HP Zip<input id="zip-hp" type="number" min="1" step="1" value="700"></label>
+                                    <label class="tp-field">Vidas de Samu<input id="zip-lives" type="number" min="1" step="1" value="3"></label>
+                                    <label class="tp-field">Picante inicial<input id="zip-spice-power" type="number" min="0" step="1" value="14"></label>
+                                    <label class="tp-field">Picante máximo<input id="zip-max-spice" type="number" min="1" step="1" value="28"></label>
+                                </div>
+                            </div>
+                        </div>
 
-        <h2>⚔️ Battle</h2>
-        <div class="tp-row tp-battle-row">
-            <div class="tp-battle-card" style="--c:#d8a05c">
-                <label>HP Ballerina
-                    <input id="hp-ballerina_capuchina" type="number" min="1" step="1" value="420">
-                </label>
-                <button class="tp-btn" onclick="launchBattle('ballerina_capuchina')">Ballerina</button>
-            </div>
-            <div class="tp-battle-card" style="--c:#2f9fe8">
-                <label>HP Tralalero
-                    <input id="hp-tralalelo_tralala" type="number" min="1" step="1" value="520">
-                </label>
-                <button class="tp-btn" onclick="launchBattle('tralalelo_tralala')" >Tralalero</button>
-            </div>
-            <div class="tp-battle-card" style="--c:#d28a24">
-                <label>HP Tung Tung
-                    <input id="hp-tung_tung_tung_sahur" type="number" min="1" step="1" value="620">
-                </label>
-                <button class="tp-btn" onclick="launchBattle('tung_tung_tung_sahur')" >Tung Tung</button>
-            </div>
-            <div class="tp-battle-card" style="--c:#b04fff">
-                <label>HP Amalgama
-                    <input id="hp-amalgama" type="number" min="1" step="1" value="840">
-                </label>
-                <button class="tp-btn" onclick="launchBattle('amalgama')" >Amalgama</button>
-            </div>
-            <div class="tp-battle-card" style="--c:#5a1b86">
-                <label>HP Amalgama final
-                    <input id="hp-amalgama_final" type="number" min="1" step="1" value="1120">
-                </label>
-                <button class="tp-btn" onclick="launchBattle('amalgama_final')" >Amalgama final</button>
-            </div>
-        </div>
+                        <div class="tp-options-panel" data-options-for="rune" hidden>
+                            <p class="tp-option-note">El modo controla cuánto tiempo debe mantenerse cada conjunto de runas dentro de su zona estable.</p>
+                        </div>
+
+                        <div class="tp-options-panel" data-options-for="battle" hidden>
+                            <p class="tp-option-note">Elige el rival y ajusta sus puntos de vida antes de iniciar el combate.</p>
+                            <div class="tp-config-grid tp-battle-config">
+                                <label class="tp-field">Rival
+                                    <select id="battle-enemy">
+                                        <option value="ballerina_capuchina">Ballerina Capuchina</option>
+                                        <option value="tralalelo_tralala">Tralalero Tralala</option>
+                                        <option value="tung_tung_tung_sahur">Tung Tung Tung Sahur</option>
+                                        <option value="amalgama">Amalgama</option>
+                                        <option value="amalgama_final">Amalgama final</option>
+                                    </select>
+                                </label>
+                                <label class="tp-field">HP Ballerina<input id="hp-ballerina_capuchina" type="number" min="1" step="1" value="420"></label>
+                                <label class="tp-field">HP Tralalero<input id="hp-tralalelo_tralala" type="number" min="1" step="1" value="520"></label>
+                                <label class="tp-field">HP Tung Tung<input id="hp-tung_tung_tung_sahur" type="number" min="1" step="1" value="620"></label>
+                                <label class="tp-field">HP Amalgama<input id="hp-amalgama" type="number" min="1" step="1" value="840"></label>
+                                <label class="tp-field">HP Amalgama final<input id="hp-amalgama_final" type="number" min="1" step="1" value="1120"></label>
+                            </div>
+                            <div class="tp-check-grid">
+                                <label class="tp-check"><input type="checkbox" id="tp-battle-debug-stats"> Mostrar estadísticas de depuración</label>
+                            </div>
+                        </div>
 
                         <div class="tp-options-panel" data-options-for="furrielva" hidden>
                             <p class="tp-option-note">Abre directamente el mapa de investigación de Furrielva con el fondo usado por el minijuego.</p>
@@ -514,8 +484,8 @@
     <script>
       (function () {
         var v = Date.now();
-        ['juice.js', 'ketchup-hitboxes.js', 'hitbox-debugger.js', 'battle-minigame.js', 'credits-minigame.js', 'chili-harvest-minigame.js',
-         'ketchup-minigame.js', 'rune-channeling-minigame.js', 'engine.js'].forEach(function (f) {
+        ['engine.bundle.js', 'juice.js', 'ketchup-hitboxes.js', 'hitbox-debugger.js', 'battle-minigame.js', 'credits-minigame.js', 'chili-harvest-minigame.js',
+         'ketchup-minigame.js', 'rune-channeling-minigame.js'].forEach(function (f) {
           document.write('<scr' + 'ipt src="' + f + '?v=' + v + '"><\/scr' + 'ipt>');
         });
       })();
@@ -729,7 +699,8 @@
             const cap = await (await fetch(`chapters/chapter3.json?v=${Date.now()}`, { cache: 'no-store' })).json();
             let cfg = null;
             cap.scenes.forEach(sc => sc.lines.forEach(li => (li.actions || []).forEach(action => {
-                if (action.game === juego) cfg = action;
+                const normalized = engine.actionInterpreter.normalize(action);
+                if (normalized.game === juego) cfg = normalized;
             })));
             if (!cfg) throw new Error('No se encontró ese minijuego en el capítulo 3.');
             cfg = Object.assign({}, cfg, {
@@ -856,9 +827,7 @@
             });
         }
 
-        async function launchZipHistoria() {
-            resultEl.textContent = '';
-            panel.classList.add('hidden');
+        async function getZipStoryOptions() {
             syncHitboxDebugger();
             const chapter = await (await fetch('chapters/chapter2.json?v=' + Date.now(), {
                 cache: 'no-store'
@@ -866,25 +835,31 @@
             let storyOptions = null;
             chapter.scenes.forEach(scene => scene.lines.forEach(line => {
                 (line.actions || []).forEach(action => {
-                    if (action.game === 'ketchupBoss') storyOptions = { ...action };
+                    const normalized = engine.actionInterpreter.normalize(action);
+                    if (normalized.game === 'ketchupBoss') storyOptions = { ...normalized };
                 });
             }));
-            if (!storyOptions) {
-                resultEl.textContent = 'No encontré ketchupBoss en chapter2.json.';
-                panel.classList.remove('hidden');
-                return;
-            }
+            if (!storyOptions) throw new Error('No se encontró ketchupBoss en chapter2.json.');
             delete storyOptions.type;
             delete storyOptions.game;
             storyOptions.debugHitboxes = document.getElementById('zip-debug-hitboxes').checked;
-            engine.gameState.chiliPower = getNumberInput('zip-spice-power', 14);
-            engine.gameState.chiliPowerMax = storyOptions.maxSpicePower;
-            engine.inventory = document.getElementById('chili-neit').checked ? ['caja_guindillas'] : [];
-            startMusic("assets/audio/music/chapter2/zip's-shadow-waltz.mp3");
-            await engine.playKetchupBossMinigame(storyOptions);
-            stopMusic();
-            resultEl.textContent = '✅ Superado con la configuración real de chapter2.json.';
-            panel.classList.remove('hidden');
+            return storyOptions;
+        }
+
+        async function launchZipHistoria() {
+            return runTest('Bullet Hell de Zip · Historia', async () => {
+                const storyOptions = await getZipStoryOptions();
+                engine.gameState.chiliPower = getNumberInput('zip-spice-power', 14);
+                engine.gameState.chiliPowerMax = storyOptions.maxSpicePower;
+                engine.inventory = document.getElementById('chili-neit').checked ? ['caja_guindillas'] : [];
+                startMusic("assets/audio/music/chapter2/zip's-shadow-waltz.mp3");
+                await engine.playKetchupBossMinigame(storyOptions);
+                return {
+                    ok: true,
+                    title: 'Zip derrotado con la configuración narrativa',
+                    detail: 'Configuración real leída de chapter2.json.',
+                };
+            });
         }
 
         async function launchKetchup(preset) {
@@ -1017,8 +992,8 @@
             {
                 id: 'ketchupBoss', icon: '🍅', title: 'Bullet Hell de Zip', chapter: 'Capítulo 2', category: 'Acción',
                 description: 'Combate completo contra Zip, con control de fase, picante e inspección de hitboxes.',
-                modes: ['facil', 'medio', 'dificil', 'custom'], defaultMode: 'medio', supportsFlow: true, hitboxEditor: true,
-                run: mode => launchZipBulletHell(mode),
+                modes: ['facil', 'medio', 'dificil', 'custom', 'historia'], defaultMode: 'medio', supportsFlow: true, hitboxEditor: true,
+                run: mode => mode === 'historia' ? launchZipHistoria() : launchZipBulletHell(mode),
             },
             {
                 id: 'rune', icon: '🔷', title: 'Equilibrio de poderes', chapter: 'Capítulo 4', category: 'Combate',
@@ -1030,7 +1005,7 @@
                 id: 'battle', icon: '⚔️', title: 'Battle', chapter: 'Capítulos 4–5', category: 'Combate',
                 description: 'Selecciona un enemigo, ajusta sus HP y ejecuta el sistema de combate por turnos.',
                 modes: [], defaultMode: null, actionLabel: 'Iniciar combate',
-                run: () => launchBattle('ballerina_capuchina'),
+                run: () => launchBattle(document.getElementById('battle-enemy')?.value || 'ballerina_capuchina'),
             },
             {
                 id: 'furrielva', icon: '🗺️', title: 'Investigación de Furrielva', chapter: 'Capítulo 2', category: 'Herramientas',
@@ -1241,9 +1216,15 @@
                         debugHitboxes: document.getElementById('tp-side-hitboxes').checked,
                     };
                 case 'chili': return { game: entry.id, mode: activeMode, ...getChiliOptions(activeMode) };
-                case 'ketchupBoss': return { game: entry.id, mode: activeMode, ...getZipOptions(activeMode) };
+                case 'ketchupBoss':
+                    return activeMode === 'historia'
+                        ? { source: 'chapters/chapter2.json', mode: activeMode, ...(await getZipStoryOptions()) }
+                        : { game: entry.id, mode: activeMode, ...getZipOptions(activeMode) };
                 case 'rune': return { game: entry.id, mode: activeMode, ...RUNE_CHANNELING[activeMode] };
-                case 'battle': return { game: entry.id, enemy: 'ballerina_capuchina', enemyHp: getBattleHp('ballerina_capuchina'), debugStats: battleDebugStatsOn() };
+                case 'battle': {
+                    const enemy = document.getElementById('battle-enemy')?.value || 'ballerina_capuchina';
+                    return { game: entry.id, enemy, enemyHp: getBattleHp(enemy), debugStats: battleDebugStatsOn() };
+                }
                 case 'furrielva': return { game: entry.id, background: 'assets/images/backgrounds/chapter2/furrielva/mapa_furrielva_furry_maps_v2_4k.webp' };
                 default: return { game: entry.id };
             }

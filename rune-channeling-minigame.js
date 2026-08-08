@@ -37,9 +37,9 @@
         },
     ];
 
-    class RuneChannelingMinigame {
+    class RuneChannelingMinigame extends window.MinigameBase {
         constructor(options = {}) {
-            this.options = options;
+            super(options);
             this.levels = options.levels || 7;
             this.level = 1;
             this.holdRequired = options.holdRequired || 1.35;
@@ -57,7 +57,8 @@
             return new RuneChannelingMinigame(options).play();
         }
 
-        play() {
+        start() {
+            this.state = 'running';
             return new Promise((resolve) => {
                 this.resolve = resolve;
                 this.render();
@@ -104,6 +105,7 @@
         </div>
       `;
             document.getElementById('game-container').appendChild(this.overlay);
+            this.attachOverlay(this.overlay);
         }
 
         bindEvents() {
@@ -126,12 +128,12 @@
             this.onPointerUp = () => this.keys.clear();
             this.swallowClick = (event) => event.stopPropagation();
 
-            document.addEventListener('keydown', this.onKeyDown);
-            document.addEventListener('keyup', this.onKeyUp);
-            window.addEventListener('blur', this.onBlur);
-            this.overlay.addEventListener('pointerdown', this.onPointerDown);
-            document.addEventListener('pointerup', this.onPointerUp);
-            this.overlay.addEventListener('click', this.swallowClick, true);
+            this.listen(document, 'keydown', this.onKeyDown);
+            this.listen(document, 'keyup', this.onKeyUp);
+            this.listen(window, 'blur', this.onBlur);
+            this.listen(this.overlay, 'pointerdown', this.onPointerDown);
+            this.listen(document, 'pointerup', this.onPointerUp);
+            this.listen(this.overlay, 'click', this.swallowClick, true);
         }
 
         startLevel(level) {
@@ -288,6 +290,7 @@
             setTimeout(
                 () => {
                     this.overlay.remove();
+                    this.cleanup();
                     this.resolve(won);
                 },
                 won ? 1500 : 900,

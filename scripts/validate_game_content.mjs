@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { ACTION_TYPES, parseAction } from "../engine/ActionInterpreter.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const chaptersDir = path.join(root, "chapters");
@@ -117,7 +118,12 @@ function checkAsset(reference, where) {
   }
 }
 
-function checkLosslessRgbaWebp(reference, where, expectedWidth, expectedHeight) {
+function checkLosslessRgbaWebp(
+  reference,
+  where,
+  expectedWidth,
+  expectedHeight,
+) {
   if (typeof reference !== "string" || !assetPattern.test(reference)) return;
   const clean = reference.split(/[?#]/, 1)[0].replaceAll("/", path.sep);
   const absolute = path.join(root, clean);
@@ -142,7 +148,8 @@ function checkLosslessRgbaWebp(reference, where, expectedWidth, expectedHeight) 
       `${where}: mide ${width}×${height}; se esperaba ${expectedWidth}×${expectedHeight}`,
     );
   }
-  if (!hasAlpha) errors.push(`${where}: el WebP lossless no declara canal alfa`);
+  if (!hasAlpha)
+    errors.push(`${where}: el WebP lossless no declara canal alfa`);
 }
 
 function walkAssets(value, where) {
@@ -287,31 +294,14 @@ const knownMinigames = new Set([
 ]);
 
 // El despachador, el validador y el manual deben evolucionar juntos. Esta
-// comprobación evita que una acción nueva funcione en engine.js pero quede fuera
+// comprobación evita que una acción nueva funcione en ActionInterpreter pero quede fuera
 // de la validación o sin aparecer en la documentación canónica.
-const engineSource = fs.readFileSync(path.join(root, "engine.js"), "utf8");
-const executeActionStart = engineSource.indexOf("async executeAction(action)");
-const executeActionEnd = engineSource.indexOf(
-  "// Reproduce un",
-  executeActionStart,
-);
-const executeActionSource =
-  executeActionStart >= 0 && executeActionEnd > executeActionStart
-    ? engineSource.slice(executeActionStart, executeActionEnd)
-    : "";
-if (!executeActionSource) {
-  errors.push(
-    "engine.js: no se pudo localizar executeAction para auditar sus acciones",
-  );
-}
-const dispatchedActions = new Set(
-  [...executeActionSource.matchAll(/case\s+['"]([^'"]+)['"]\s*:/g)].map(
-    (match) => match[1],
-  ),
-);
+const dispatchedActions = new Set(ACTION_TYPES);
 for (const type of dispatchedActions) {
   if (!knownActions.has(type)) {
-    errors.push(`engine.js: la acción «${type}» no figura en knownActions`);
+    errors.push(
+      `engine/ActionInterpreter.js: la acción «${type}» no figura en knownActions`,
+    );
   }
 }
 for (const type of knownActions) {
@@ -408,8 +398,29 @@ for (const file of filesIn(chaptersDir, ".json")) {
         ["actions", line.actions || []],
         ["afterActions", line.afterActions || []],
       ]) {
-        for (const action of actions) {
+        for (let action of actions) {
           const actionWhere = `${where} · ${bucket}`;
+          if (typeof action === "string") {
+            try {
+              const parsed = parseAction(action);
+              if (Array.isArray(parsed)) {
+                for (const macroAction of parsed) {
+                  walkAssets(macroAction, actionWhere);
+                  if (!knownActions.has(macroAction.type)) {
+                    errors.push(
+                      `${actionWhere}: macro contiene acción desconocida «${macroAction.type}»`,
+                    );
+                  }
+                }
+                continue;
+              }
+              action = parsed;
+              walkAssets(action, actionWhere);
+            } catch (error) {
+              errors.push(`${actionWhere}: DSL inválida (${error.message})`);
+              continue;
+            }
+          }
           if (!action || typeof action !== "object" || Array.isArray(action)) {
             errors.push(`${actionWhere}: acción con estructura inválida`);
             continue;
@@ -638,12 +649,7 @@ if (fs.existsSync(cleanSpriteFile)) {
           canvasWidth,
           canvasHeight,
         );
-        checkLosslessRgbaWebp(
-          entry.thumbnail,
-          `${where}.thumbnail`,
-          156,
-          156,
-        );
+        checkLosslessRgbaWebp(entry.thumbnail, `${where}.thumbnail`, 156, 156);
         checkLosslessRgbaWebp(
           entry.galleryThumbnail,
           `${where}.galleryThumbnail`,
@@ -659,12 +665,19 @@ if (fs.existsSync(cleanSpriteFile)) {
         ) {
           errors.push(`${where}: animationFrames debe ser un mapa de rutas`);
         } else {
-          for (const [source, cleaned] of Object.entries(entry.animationFrames)) {
+          for (const [source, cleaned] of Object.entries(
+            entry.animationFrames,
+          )) {
             checkAsset(source, `${where}.animationFrames fuente`);
             checkAsset(cleaned, `${where}.animationFrames copia`);
             if (typeof cleaned !== "string" || !/\.webp$/i.test(cleaned)) {
-              errors.push(`${where}: el frame limpio de ${source} debe usar WebP`);
-            } else if (Number.isInteger(canvasWidth) && Number.isInteger(canvasHeight)) {
+              errors.push(
+                `${where}: el frame limpio de ${source} debe usar WebP`,
+              );
+            } else if (
+              Number.isInteger(canvasWidth) &&
+              Number.isInteger(canvasHeight)
+            ) {
               checkLosslessRgbaWebp(
                 cleaned,
                 `${where}.animationFrames copia de ${source}`,
@@ -677,7 +690,11 @@ if (fs.existsSync(cleanSpriteFile)) {
       }
       const validation = entry?.validation;
       if (validation != null) {
-        if (!validation || typeof validation !== "object" || Array.isArray(validation)) {
+        if (
+          !validation ||
+          typeof validation !== "object" ||
+          Array.isArray(validation)
+        ) {
           errors.push(`${where}: validation debe ser un objeto`);
         } else {
           if (typeof validation.forced !== "boolean") {
@@ -685,16 +702,25 @@ if (fs.existsSync(cleanSpriteFile)) {
           }
           const review = validation.review;
           if (review != null && validation.forced !== true) {
-            errors.push(`${where}: una copia no forzada no puede declarar revisión manual`);
+            errors.push(
+              `${where}: una copia no forzada no puede declarar revisión manual`,
+            );
           }
           if (validation.forced === true) {
             if (validation.policy !== "white-halo-save-v1") {
               errors.push(`${where}: política de excepción desconocida`);
             }
-            if (!/^sha256:[0-9a-f]{64}$/.test(validation.diagnosticFingerprint || "")) {
+            if (
+              !/^sha256:[0-9a-f]{64}$/.test(
+                validation.diagnosticFingerprint || "",
+              )
+            ) {
               errors.push(`${where}: falta diagnosticFingerprint válido`);
             }
-            if (!validation.forcedAt || Number.isNaN(Date.parse(validation.forcedAt))) {
+            if (
+              !validation.forcedAt ||
+              Number.isNaN(Date.parse(validation.forcedAt))
+            ) {
               errors.push(`${where}: forcedAt no es una fecha válida`);
             }
             const warningCodes = Array.isArray(validation.warnings)
@@ -703,25 +729,41 @@ if (fs.existsSync(cleanSpriteFile)) {
                 )
               : [];
             if (!warningCodes.includes("lost-protected-alpha")) {
-              errors.push(`${where}: la excepción no conserva lost-protected-alpha`);
+              errors.push(
+                `${where}: la excepción no conserva lost-protected-alpha`,
+              );
             }
           }
           if (review != null) {
-            if (!review || typeof review !== "object" || Array.isArray(review)) {
+            if (
+              !review ||
+              typeof review !== "object" ||
+              Array.isArray(review)
+            ) {
               errors.push(`${where}: validation.review debe ser un objeto`);
             } else {
               if (
                 review.status !== "approved" ||
                 review.policy !== "white-halo-manual-review-v1"
               ) {
-                errors.push(`${where}: revisión manual desconocida o no aprobada`);
+                errors.push(
+                  `${where}: revisión manual desconocida o no aprobada`,
+                );
               }
-              if (!review.reviewedAt || Number.isNaN(Date.parse(review.reviewedAt))) {
+              if (
+                !review.reviewedAt ||
+                Number.isNaN(Date.parse(review.reviewedAt))
+              ) {
                 errors.push(`${where}: reviewedAt no es una fecha válida`);
               }
-              for (const field of ["subjectRevision", "artifactSetFingerprint"]) {
+              for (const field of [
+                "subjectRevision",
+                "artifactSetFingerprint",
+              ]) {
                 if (!/^sha256:[0-9a-f]{64}$/.test(review[field] || "")) {
-                  errors.push(`${where}: validation.review.${field} no es una huella válida`);
+                  errors.push(
+                    `${where}: validation.review.${field} no es una huella válida`,
+                  );
                 }
               }
             }

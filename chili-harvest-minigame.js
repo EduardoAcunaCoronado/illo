@@ -19,16 +19,17 @@
             ),
         );
 
-    class ChiliHarvestMinigame {
+    class ChiliHarvestMinigame extends window.MinigameBase {
         constructor(options = {}) {
-            this.options = options;
+            super(options);
         }
 
         static play(options = {}) {
             return new ChiliHarvestMinigame(options).play();
         }
 
-        async play() {
+        async start() {
+            this.state = 'running';
             const rawDuration = Number(this.options.duration) || 22000;
             const duration = rawDuration <= 120 ? rawDuration * 1000 : rawDuration;
             const powerGoal = Number(this.options.powerGoal) || 28;
@@ -58,6 +59,7 @@
             ]);
 
             return new Promise((resolve) => {
+                this.resolve = resolve;
                 const overlay = document.createElement('div');
                 overlay.className = 'minigame-overlay chili-harvest-minigame';
                 overlay.innerHTML = `
@@ -73,6 +75,7 @@
           <div class="minigame-instructions">Mueve con ← → / A D${allowMouse ? ' o el ratón' : ''}. Recoge guindillas; las botellas te hacen perder una.</div>
         `;
                 document.getElementById('game-container').appendChild(overlay);
+                this.attachOverlay(overlay);
 
                 const field = overlay.querySelector('#mg-field');
                 const player = overlay.querySelector('#mg-player');
@@ -118,10 +121,10 @@
                     updatePlayer();
                 };
                 const swallowClick = (event) => event.stopPropagation();
-                document.addEventListener('keydown', keyDown);
-                document.addEventListener('keyup', keyUp);
-                if (allowMouse) field.addEventListener('mousemove', mouseMove);
-                overlay.addEventListener('click', swallowClick, true);
+                this.listen(document, 'keydown', keyDown);
+                this.listen(document, 'keyup', keyUp);
+                if (allowMouse) this.listen(field, 'mousemove', mouseMove);
+                this.listen(overlay, 'click', swallowClick, true);
 
                 const detachControls = () => {
                     document.removeEventListener('keydown', keyDown);
@@ -164,6 +167,7 @@
                     overlay.appendChild(result);
                     setTimeout(() => {
                         overlay.remove();
+                        this.cleanup();
                         resolve(score);
                     }, 1200);
                 };

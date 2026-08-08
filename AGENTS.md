@@ -45,7 +45,8 @@ proyecto/
 ├── 📄 DOCUMENTACION.md        ← Referencia única
 ├── 📄 LEER_PRIMERO.md         ← Inicio rápido
 ├── 🔧 index.html
-├── ⚙️  engine.js
+├── ⚙️  engine.bundle.js       ← Bundle generado; fuente en engine/
+├── engine/                    ← Módulos ES del motor
 ├── 🎮 game.js
 ├── 🎨 styles.css
 ├── ✨ p5-effects.js

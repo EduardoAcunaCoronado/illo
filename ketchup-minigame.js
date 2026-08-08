@@ -18,16 +18,17 @@
             ),
         );
 
-    class KetchupMinigame {
+    class KetchupMinigame extends window.MinigameBase {
         constructor(options = {}) {
-            this.options = options;
+            super(options);
         }
 
         static play(options = {}) {
             return new KetchupMinigame(options).play();
         }
 
-        async play() {
+        async start() {
+            this.state = 'running';
             const enemyMaxHp = this.options.enemyHp || this.options.zipHp || 700;
             const startAtHpRatio = this.options.startAtHpRatio != null ? Number(this.options.startAtHpRatio) : null;
             const startEnemyHp =
@@ -112,6 +113,7 @@
             }
 
             return new Promise((resolve) => {
+                this.resolve = resolve;
                 let musicAudio = null;
                 if (musicTrack) {
                     musicAudio = new Audio(musicTrack);
@@ -153,6 +155,7 @@
           </div>
         `;
                 document.getElementById('game-container').appendChild(overlay);
+                this.attachOverlay(overlay);
 
                 const field = overlay.querySelector('#mg-field');
                 const player = overlay.querySelector('#mg-player');
@@ -461,17 +464,17 @@
                 };
                 const swallowClick = (e) => e.stopPropagation();
 
-                document.addEventListener('keydown', keyDown);
-                document.addEventListener('keyup', keyUp);
-                window.addEventListener('blur', blur);
+                this.listen(document, 'keydown', keyDown);
+                this.listen(document, 'keyup', keyUp);
+                this.listen(window, 'blur', blur);
                 if (allowMouse) {
-                    field.addEventListener('pointermove', pointerMove);
-                    field.addEventListener('pointerdown', pointerDown);
-                    field.addEventListener('pointerup', pointerUp);
-                    field.addEventListener('pointercancel', pointerUp);
-                    field.addEventListener('pointerleave', pointerLeave);
+                    this.listen(field, 'pointermove', pointerMove);
+                    this.listen(field, 'pointerdown', pointerDown);
+                    this.listen(field, 'pointerup', pointerUp);
+                    this.listen(field, 'pointercancel', pointerUp);
+                    this.listen(field, 'pointerleave', pointerLeave);
                 }
-                overlay.addEventListener('click', swallowClick, true);
+                this.listen(overlay, 'click', swallowClick, true);
 
                 const makeSprite = (className, icon, x, y, size = 34, hitboxClass = '') => {
                     const el = document.createElement('div');
@@ -849,7 +852,7 @@
                     patternTimer = 0.7 * enemyAttackDelay;
                 };
 
-                const cleanup = (won) => {
+                const stopRuntime = () => {
                     running = false;
                     unsubscribeHitboxConfig();
                     document.removeEventListener('keydown', keyDown);
@@ -875,6 +878,11 @@
                     enemyBullets.forEach((bullet) => bullet.el.remove());
                     shots.length = 0;
                     enemyBullets.length = 0;
+                };
+                this.own(stopRuntime);
+
+                const cleanup = (won) => {
+                    stopRuntime();
 
                     const result = document.createElement('div');
                     result.className = 'minigame-result';
@@ -887,6 +895,7 @@
                         () => {
                             overlay.removeEventListener('click', swallowClick, true);
                             overlay.remove();
+                            this.cleanup();
                             resolve(won);
                         },
                         won ? 1500 : 800,
@@ -894,7 +903,10 @@
                 };
 
                 const loop = (time) => {
-                    if (!running) return;
+                    if (!running || !overlay.isConnected) {
+                        stopRuntime();
+                        return;
+                    }
                     if (lastTime === null) lastTime = time;
                     const dt = Math.min((time - lastTime) / 1000, 0.05);
                     lastTime = time;

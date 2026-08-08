@@ -10,6 +10,10 @@ Este archivo es la portada del proyecto. Los dos manuales canónicos viven en
 - [Herramientas gráficas locales](DOCUMENTACION.md#herramientas-gráficas-locales):
   marcado y alineación ocular, limpieza de bases y halos.
 
+La edición ilustrada para lectura y formación está en
+`output/pdf/manual_engine_y_juego_transfurmados.pdf`. Es una exportación fechada;
+`DOCUMENTACION.md` sigue siendo la fuente canónica.
+
 ## Quiero jugar
 
 Si tienes una versión instalada, abre **Transfurmados**, pulsa **Entrar con
@@ -73,7 +77,8 @@ Puntos de entrada:
   no destructiva está en `storyboardV2/4k/` y se regenera con
   `python scripts/prepare_samu_opening_storyboard_v2_4k.py --force`.
 - Orquestación y menús: `game.js`.
-- Motor y acciones: `engine.js`.
+- Fuente del motor y acciones: `engine/`; bundle de navegador generado:
+  `engine.bundle.js` (`npm run build:engine`).
 - Interfaz: `index.html`, `styles.css` y `battle-styles.css`.
 - App de escritorio: `electron/` y `package.json`.
 
@@ -115,6 +120,8 @@ y el resultado se entrega únicamente mediante `Descargar WebP actual`.
 npm run validate:content
 npm run validate:workbench
 npm run audit:assets
+npm run test:engine
+npm run check:modules
 npm run check:js
 ```
 

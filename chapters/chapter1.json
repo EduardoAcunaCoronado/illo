@@ -6,18 +6,8 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.webp"
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter1/casasamu.mp3",
-              "volume": 1,
-              "loop": true,
-              "id": "bg_music",
-              "fadeIn": 1000
-            }
+            "background assets/images/backgrounds/chapter1/pisito.webp",
+            "sound assets/audio/music/chapter1/casasamu.mp3 volume=1 loop=true id=bg_music fadeIn=1000"
           ],
           "character": "3C",
           "text": "Una tarde cualquiera, Samu despierta convencido de que sigue siendo Samu. El espejo aún no ha presentado alegaciones."
@@ -26,47 +16,28 @@
           "character": "Samu",
           "text": "Mmmmmmmmmmmmmmmmgrgrgrgrgrgrg. ¡Buenos días!",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left"
-            }
+            "show samu left"
           ]
         },
         {
           "character": "Samu",
           "text": "¡Oh, no! Me he quedado dormido. Y eso que le dije a GePeTo que me despertara.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "sad"
-            }
+            "show samu left sad"
           ]
         },
         {
           "character": "Samu",
           "text": "Supongo que confiarle la hora a una IA no podía salir mal. Frase que seguro envejece estupendamente.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "angry"
-            }
+            "show samu left angry"
           ]
         },
         {
           "character": "Samu",
           "text": "Bueno, voy a mirarme en el espejo como hago todas las mañanas, aunque sean las 4 de la tarde.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy"
-            }
+            "show samu left happy"
           ]
         },
         {
@@ -74,31 +45,16 @@
           "text": "¿Soy un therian? No, espera... ese hocico es mío. ¡Tengo hocico de verdad!",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/bathroom.webp"
-            },
-            {
-              "type": "removeCharacter",
-              "character": "samu"
-            }
+            "background assets/images/backgrounds/chapter1/bathroom.webp",
+            "remove samu"
           ]
         },
         {
           "character": "Samu",
           "text": "Mejor dicho. ¡Sí, joder! Soy un furro de verdad. Así que pelillos a la mar.",
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.webp"
-            },
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "happy",
-              "flipped": false
-            }
+            "background assets/images/backgrounds/chapter1/pisito.webp",
+            "show samu left happy flipped=false"
           ]
         },
         {
@@ -124,44 +80,26 @@
           "character": "Samu",
           "text": "Pero no hay tiempo para celebraciones, tengo que ir a mi cumple, me estarán esperando.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "sad"
-            }
+            "show samu left sad"
           ]
         },
         {
           "character": "Samu",
           "text": "Aunque como siempre llego tarde no se sorprenderán.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "determined"
-            }
+            "show samu left determined"
           ]
         },
         {
           "character": "Samu",
           "text": "Mejor será que avise a mis amigos de que estoy en camino. Voy a llamar a Edu primero.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "neutral"
-            }
+            "show samu left neutral"
           ]
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Escena 2: Llamada a Edu"
-            }
+            "goto \"Escena 2: Llamada a Edu\""
           ]
         }
       ]
@@ -171,30 +109,10 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.webp",
-              "cut": true
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter1/casasamu.mp3",
-              "volume": 1,
-              "loop": true,
-              "id": "bg_music"
-            },
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "edu_humano"
-            },
-            {
-              "type": "characterGlitch",
-              "character": "iphone5",
-              "position": "right",
-              "duration": 1350
-            }
+            "background assets/images/backgrounds/chapter1/pisito.webp cut=true",
+            "sound assets/audio/music/chapter1/casasamu.mp3 volume=1 loop=true id=bg_music",
+            "show iphone5 right edu_humano",
+            "characterGlitch character=iphone5 position=right duration=1350"
           ],
           "character": "3C",
           "text": "Samu marca el número de Edu..."
@@ -203,24 +121,14 @@
           "character": "Samu",
           "text": "¡Edu! Hola, ¿qué tal? Voy de camino...",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "neutral"
-            }
+            "show samu left neutral"
           ]
         },
         {
           "character": "Edu",
           "text": "¡Samu, tío! Pues mira, que te voy a ser honesto... no me acordaba ni de que era tu cumple.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "edu_humano"
-            }
+            "show iphone5 right edu_humano"
           ],
           "speakingAs": "iphone5"
         },
@@ -228,24 +136,14 @@
           "character": "Samu",
           "text": "¿Qué? ¿De verdad?",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show samu left surprised"
           ]
         },
         {
           "character": "Edu",
           "text": "Perdona, perdona. Pero es que estoy en Kingdom Ketchup pasándolo bien. Estoy rodeado de ketchup por todas partes y aquí soy el rey.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "edu_humano"
-            }
+            "show iphone5 right edu_humano"
           ],
           "speakingAs": "iphone5"
         },
@@ -254,24 +152,14 @@
           "text": "¿Pasándolo bien? Edu, creí que te importaba... Y me abandonas por un derrapazo de ketchup.",
           "textAnimation": true,
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "sad"
-            }
+            "show samu left sad"
           ]
         },
         {
           "character": "Edu",
           "text": "Venga, no te rayes, tío. Vente y lo hablamos. Estoy en Furrielva, pero no consigo compartirte la ubicación: cada vez que lo intento, el mapa se queda pillado. Pregunta por Kingdom Ketchup; alguien sabrá orientarte.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "edu_humano"
-            }
+            "show iphone5 right edu_humano"
           ],
           "speakingAs": "iphone5"
         },
@@ -279,12 +167,7 @@
           "character": "Samu",
           "text": "¿Kingdom Ketchup, en Furrielva? Vale. Iré a buscarte, pero después nos vamos al cumpleaños.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "surprised"
-            }
+            "show samu left surprised"
           ]
         },
         {
@@ -292,34 +175,11 @@
           "text": "Aquí todos me necesitan, Samu. No puedo dejarles tirados. Cuando llegues lo enten... lo entenderás.",
           "speakingAs": "iphone5",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "edu_humano"
-            },
-            {
-              "type": "characterGlitch",
-              "character": "iphone5",
-              "position": "right",
-              "duration": 1350
-            },
-            {
-              "type": "characterFullGlitch",
-              "character": "iphone5",
-              "position": "right",
-              "duration": 1050
-            },
-            {
-              "type": "shake",
-              "intensity": 4,
-              "duration": 520
-            },
-            {
-              "type": "flash",
-              "color": "rgba(45, 170, 255, 0.16)",
-              "duration": 180
-            }
+            "show iphone5 right edu_humano",
+            "characterGlitch character=iphone5 position=right duration=1350",
+            "characterFullGlitch character=iphone5 position=right duration=1050",
+            "shake 4 520",
+            "flash \"rgba(45, 170, 255, 0.16)\" 180"
           ]
         },
         {
@@ -327,65 +187,30 @@
           "text": "Durante un solo fotograma, Edu desaparece. En la pantalla sonríe un husky de traje negro; en la solapa lleva un alfiler rojo. Después vuelve la interferencia.",
           "textSpeed": "slow",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "elion_husk",
-              "position": "right",
-              "pose": "shadow"
-            },
-            {
-              "type": "characterGlitch",
-              "character": "elion_husk",
-              "position": "right",
-              "duration": 900
-            },
-            {
-              "type": "flash",
-              "color": "rgba(190, 20, 35, 0.18)",
-              "duration": 160
-            }
+            "show elion_husk right shadow",
+            "characterGlitch character=elion_husk position=right duration=900",
+            "flash \"rgba(190, 20, 35, 0.18)\" 160"
           ]
         },
         {
           "character": "Samu",
           "text": "¿Quién era ese...? No era Edu. Bah, habrá sido la cobertura. Una cobertura con sastre, por lo visto.",
           "actions": [
-            {
-              "type": "showCharacter",
-              "character": "samu",
-              "position": "left",
-              "pose": "worried"
-            },
-            {
-              "type": "showCharacter",
-              "character": "iphone5",
-              "position": "right",
-              "pose": "edu_humano"
-            },
-            {
-              "type": "characterGlitch",
-              "character": "iphone5",
-              "position": "right",
-              "duration": 620
-            }
+            "show samu left worried",
+            "show iphone5 right edu_humano",
+            "characterGlitch character=iphone5 position=right duration=620"
           ]
         },
         {
           "character": "3C",
           "actions": [
-            {
-              "type": "removeCharacter",
-              "character": "iphone5"
-            }
+            "remove iphone5"
           ],
           "text": "Incidencia abierta: amigo ausente, fábrica imposible y un husky de traje que no figura en el reparto. Nexo, guarda dos veces."
         },
         {
           "actions": [
-            {
-              "type": "goToScene",
-              "value": "Fin del Capítulo 1"
-            }
+            "goto \"Fin del Capítulo 1\""
           ]
         }
       ]
@@ -395,22 +220,9 @@
       "lines": [
         {
           "actions": [
-            {
-              "type": "setBackground",
-              "value": "assets/images/backgrounds/chapter1/pisito.webp",
-              "cut": true
-            },
-            {
-              "type": "playSound",
-              "path": "assets/audio/music/chapter1/casasamu.mp3",
-              "volume": 1,
-              "loop": true,
-              "id": "bg_music"
-            },
-            {
-              "type": "setNextChapter",
-              "value": "chapter2"
-            }
+            "background assets/images/backgrounds/chapter1/pisito.webp cut=true",
+            "sound assets/audio/music/chapter1/casasamu.mp3 volume=1 loop=true id=bg_music",
+            "nextChapter chapter2"
           ],
           "character": "3C",
           "text": "Expediente uno cerrado. Samu sale a buscar a Edu. Su cumpleaños, mientras tanto, acaba de solicitar horas extra."

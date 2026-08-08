@@ -1,5 +1,5 @@
 MEMORIA OPERATIVA — PROJECT AI.RI: TRANSFURMADOS
-Actualizada: 2026-08-01
+Actualizada: 2026-08-08
 
 PROPÓSITO
 Esta memoria sirve para que futuros agentes entiendan el juego y, sobre todo, su guion
@@ -8,8 +8,9 @@ técnico ni a chapters/chapter0.json ... chapter6.json como fuente canónica del
 
 ORDEN DE AUTORIDAD
 1. Guion y comportamiento activos: chapters/chapter0.json ... chapter6.json.
-2. Motor actualmente ejecutado: index.html, game.js, engine.js, battle-minigame.js,
-   rune-channeling-minigame.js, credits-minigame.js, juice.js y styles.css.
+2. Runtime actualmente ejecutado: index.html, engine.bundle.js, game.js,
+   battle-minigame.js, rune-channeling-minigame.js, credits-minigame.js,
+   juice.js y styles.css. La fuente modular del bundle vive en engine/.
 3. Fichas visuales: characters/*.json y assets/.
 4. Intención autoral y decisiones de equipo: .claude/, especialmente
    reuniones/2026-07-25_PUNTOS_A_TRATAR.md.
@@ -295,8 +296,15 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - index.html monta un escenario fijo 1280×720 escalado a la ventana.
 - game.js controla menú, selector de capítulos, bucle de avance, fin de capítulo,
   configuración de volumen, menú de escenas y retroceso por escena.
-- engine.js interpreta JSON, acciones, diálogo con máquina de escribir, poses, sprites,
-  fondos, audio, vídeo, CG, efectos, decisiones, estados y minijuegos.
+- engine/ActionInterpreter.js normaliza objetos y cadenas DSL; 1.375 acciones
+  simples de capítulos están comprimidas y 18 configuraciones complejas siguen
+  como objetos. engine/VisualNovelEngine.js conserva el runtime principal;
+  TimeManager, AudioController, DOMRenderer e HistoryManager aíslan sus
+  responsabilidades y esbuild genera engine.bundle.js sin Vite.
+- Los minijuegos externos extienden MinigameBase, que publica el ciclo
+  start/pause/resume/cleanup, registra instancias activas y cancela listeners,
+  timers y RAF al retirar su overlay o volver al menú. VisualNovelEngine ejecuta
+  cleanupAll y elimina cualquier overlay residual antes de resetear la partida.
 - El clic durante el tecleo completa la línea; el siguiente avance continúa el guion.
 - El personaje que habla queda iluminado y los demás en gris. Narración/off-screen
   deja a todos atenuados. speakingAs permite resaltar un sprite distinto del nombre.
@@ -445,7 +453,7 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
   elimina el daño invisible que causaban los cables inferiores renderizados por
   debajo del viewport. Tras un golpe, el obstáculo queda resaltado brevemente y
   su aviso tiene prioridad para que el origen del daño sea visible.
-- Optimización de assets de persecución y Eduvuelo: engine.js conserva por sesión
+- Optimización de assets de persecución y Eduvuelo: engine/VisualNovelEngine.js conserva por sesión
   cada URL, promesa de precarga e Image ya decodificado; reintentar una partida o
   cambiar frames reutiliza memoria. Chase no precarga los tres PNG grandes del
   cable del antiguo motor fly. El servidor interno de Electron usa caché
@@ -476,7 +484,7 @@ MINIJUEGOS USADOS POR EL GUION ACTUAL
 - Rune Channeling: mantener/soltar A·S·D·F para equilibrar cuatro medidores durante
   siete niveles; representa cooperación de las cuatro clases.
 - Credits: secuencia de imágenes del viaje con “Gracias por jugar”.
-- engine.js también conserva ecchi, paloma, runa y vocalecho, pero ningún capítulo
+- engine/VisualNovelEngine.js también conserva ecchi, paloma, runa y vocalecho, pero ningún capítulo
   activo los invoca.
 
 SISTEMA DE COMBATE
@@ -1141,13 +1149,13 @@ ANIMACIÓN, ESTADO Y AUDIO DE LA REVISIÓN
   inversas. Todas recorren reposo/medio/extremo/medio/reposo.
   Las fuentes únicas viven en `assets/images/characters/eye_intermediate_sources/`
   y se generan/sanitizan con `scripts/build_blink_intermediates.py`; la galería y
-  `engine.js` inyectan automáticamente el intermedio sin duplicarlo en las fichas.
+  `engine/VisualNovelEngine.js` inyectan automáticamente el intermedio sin duplicarlo en las fichas.
   Los 116 assets WebP únicos viven en `animations/blinks/`, mantienen tamaño y
   alfa del sprite base y no mueven, escalan ni deforman el cuerpo. Se excluyen
   solo 34 poses sin ojos animables (siluetas, móviles, formas amorfas, caras
   tapadas y gafas opacas). El compositor es
   `scripts/compose_character_blink.py` y requiere máscaras oculares explícitas.
-  Las 17 poses manuales de 3C/Airi ya usan en `engine.js` y en la galería la
+  Las 17 poses manuales de 3C/Airi ya usan en `engine/VisualNovelEngine.js` y en la galería la
   variante ligera `sprite base → recorte half → recorte closed → half → base`.
   Los parches respetan crop, offsets, escalas y las ediciones PNG de origen
   `saved`; cualquier pose sin recortes mantiene el fallback de sprite completo.
@@ -1204,6 +1212,17 @@ MANUALES CANÓNICOS Y DEFINICIÓN DE TERMINADO — 2026-08-03
   el motivo; la documentación viaja en el mismo cambio.
 - `.github/PULL_REQUEST_TEMPLATE.md` y `.github/PR_WORKFLOW.md` exponen esa
   comprobación para que sea visible y verificable por todo el equipo.
+
+EDICIÓN PDF ILUSTRADA DEL MOTOR Y DEL JUEGO — 2026-08-08
+- `output/pdf/manual_engine_y_juego_transfurmados.pdf` es una exportación A4 de
+  consulta con capturas reales, ejemplos de capítulos antes/después y referencia
+  exhaustiva de funciones. Nunca sustituye a `DOCUMENTACION.md`.
+- `npm run manual:pdf` ejecuta `scripts/generate_engine_manual_pdf.py`; el
+  generador calcula cifras desde los capítulos e inventaría firmas desde las
+  fuentes para reducir desactualizaciones manuales.
+- Las capturas fuente de esta edición se conservan en
+  `output/pdf/manual_engine_assets/`. Deben renovarse cuando cambie una pantalla
+  documentada.
 
 CORRECCIÓN DE ASSETS DEL MINIJUEGO EDU VOLANDO — 2026-08-03
 - Los diez fotogramas de Edu (ocho de vuelo y dos de impulso) se cargan en
@@ -1288,6 +1307,9 @@ POSE WORRIED V2 DE SAMU Y ACCESOS DE DESARROLLO — 2026-08-04
   `?game=...&mode=...`. Los presets no reciben overrides numéricos: Guindillas y
   Zip sólo habilitan esos campos en Personalizado. `MINIGAME_CATALOG` declara
   cada ficha y `runTest()` centraliza ejecución, resultado, tiempo y limpieza.
+  Cada ficha tiene un único panel `data-options-for`; los formularios antiguos
+  no deben quedar sueltos dentro del inspector. Los modos narrativos normalizan
+  las acciones DSL antes de buscar su propiedad `game`.
   Zip integra Historia como modo del catálogo y lee `ketchupBoss` directamente
   de `chapter2.json`, además de conservar el flujo completo y el editor.
 - Las herramientas y la pantalla de pruebas vuelven mediante `?screen=menu`; el

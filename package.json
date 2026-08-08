@@ -6,9 +6,14 @@
     "author": "WildSoft",
     "main": "electron/main.js",
     "scripts": {
+        "build:engine": "esbuild engine/index.js --bundle --format=iife --platform=browser --target=chrome120,firefox120,safari17 --outfile=engine.bundle.js",
+        "prestart": "npm run build:engine",
         "start": "electron .",
+        "predev:web": "npm run build:engine",
         "dev:web": "node scripts/start_local_development.js",
+        "predist": "npm run build:engine",
         "dist": "electron-builder --win",
+        "predist:dir": "npm run build:engine",
         "dist:dir": "electron-builder --win --dir",
         "dist:mac": "electron-builder --mac --arm64",
         "dist:mac:dir": "electron-builder --mac --arm64 --dir",
@@ -20,11 +25,16 @@
         "validate:content": "node scripts/validate_game_content.mjs",
         "validate:workbench": "python scripts/validate_workbench_mirror.py",
         "format:js": "prettier --write \"**/*.js\"",
-        "check:js": "prettier --check \"**/*.js\""
+        "check:js": "prettier --check \"**/*.js\" \"!engine.bundle.js\"",
+        "check:modules": "prettier --check \"engine/ActionInterpreter.js\" \"engine/AudioController.js\" \"engine/DOMRenderer.js\" \"engine/HistoryManager.js\" \"engine/TimeManager.js\" \"engine/index.js\" \"minigames/MinigameBase.js\" \"scripts/*actions*.mjs\" \"scripts/run_repeated_tests.mjs\" \"tests/engine/*.mjs\"",
+        "test:engine": "node --test tests/engine/*.test.mjs",
+        "test:repeat": "node scripts/run_repeated_tests.mjs",
+        "manual:pdf": "python scripts/generate_engine_manual_pdf.py"
     },
     "devDependencies": {
         "electron": "^43.2.0",
         "electron-builder": "^26.15.3",
+        "esbuild": "^0.28.1",
         "prettier": "^3.9.6"
     },
     "build": {
@@ -38,6 +48,7 @@
             "index.html",
             "*.js",
             "*.css",
+            "engine.bundle.js",
             "electron/**/*",
             "assets/**/*",
             "!assets/**/_source/**/*",

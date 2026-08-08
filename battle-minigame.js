@@ -660,8 +660,9 @@
         },
     };
 
-    class BattleMinigame {
+    class BattleMinigame extends window.MinigameBase {
         constructor(options = {}) {
+            super(options);
             this.options = options;
             this.debugStats = options.debugStats === true;
             this.enemyTemplate = ENEMIES[options.enemy] || ENEMIES.ballerina_capuchina;
@@ -741,7 +742,8 @@
             };
         }
 
-        play() {
+        start() {
+            this.state = 'running';
             return new Promise((resolve) => {
                 this.resolve = resolve;
                 this.render();
@@ -751,7 +753,7 @@
                         ? `${this.enemy.name} embiste. ¡AGUANTAD hasta que cante!`
                         : `${this.enemy.name} bloquea el camino.`,
                 );
-                setTimeout(() => this.nextTurn(), 800);
+                this.timeout(() => this.nextTurn(), 800);
             });
         }
 
@@ -793,6 +795,7 @@
             const background = this.options.background || this.enemy.background;
             this.overlay.querySelector('.battle-background').style.backgroundImage = `url("${cacheBust(background)}")`;
             document.getElementById('game-container').appendChild(this.overlay);
+            this.attachOverlay(this.overlay);
             this.bindHoverSounds();
             this.updateHud();
         }
@@ -1115,7 +1118,7 @@
             } else {
                 this.awaitingPlayer = false;
                 this.renderEnemyTurn();
-                setTimeout(() => this.enemyAction(), 900);
+                this.timeout(() => this.enemyAction(), 900);
             }
         }
 
@@ -1315,7 +1318,7 @@
             }
             this.endActorTurn(actor);
             this.updateHud();
-            setTimeout(() => this.nextTurn(), 2000);
+            this.timeout(() => this.nextTurn(), 2000);
         }
 
         async performItemUse(actor, item, target) {
@@ -1336,7 +1339,7 @@
             }
             this.endActorTurn(actor);
             this.updateHud();
-            setTimeout(() => this.nextTurn(), 1600);
+            this.timeout(() => this.nextTurn(), 1600);
         }
 
         consumeBattleItem(item) {
@@ -1414,7 +1417,7 @@
                 }
                 this.endActorTurn(actor);
                 this.updateHud();
-                setTimeout(() => this.nextTurn(), 1100);
+                this.timeout(() => this.nextTurn(), 1100);
                 return;
             }
 
@@ -1429,7 +1432,7 @@
                 }
                 this.endActorTurn(actor);
                 this.updateHud();
-                setTimeout(() => this.nextTurn(), 1100);
+                this.timeout(() => this.nextTurn(), 1100);
                 return;
             }
 
@@ -1437,7 +1440,7 @@
             actor.normalTurnsSinceFinal += 1;
             this.endActorTurn(actor);
             this.updateHud();
-            setTimeout(() => this.nextTurn(), 1100);
+            this.timeout(() => this.nextTurn(), 1100);
         }
 
         async useEnemyNormalSkill(actor) {
@@ -1925,7 +1928,7 @@
             enemyEl.classList.remove('battle-enemy-hit');
             void enemyEl.offsetWidth;
             enemyEl.classList.add('battle-enemy-hit');
-            setTimeout(() => enemyEl.classList.remove('battle-enemy-hit'), 420);
+            this.timeout(() => enemyEl.classList.remove('battle-enemy-hit'), 420);
         }
 
         showEnemyDamageNumber(amount) {
@@ -1938,7 +1941,7 @@
             damageEl.style.left = `${48 + Math.random() * 8}%`;
             damageEl.style.top = `${30 + Math.random() * 10}%`;
             stage.appendChild(damageEl);
-            setTimeout(() => damageEl.remove(), 1100);
+            this.timeout(() => damageEl.remove(), 1100);
         }
 
         showAllyDamageNumbers(damages = []) {
@@ -1958,7 +1961,7 @@
                 damageEl.style.left = `${left}px`;
                 damageEl.style.top = `${top}px`;
                 this.overlay.appendChild(damageEl);
-                setTimeout(() => damageEl.remove(), 1100);
+                this.timeout(() => damageEl.remove(), 1100);
             });
         }
 
@@ -1969,7 +1972,7 @@
         playHitSound(count = 1, path = 'assets/audio/sfx/hit.mp3') {
             const hits = Math.max(0, Math.min(count || 0, 4));
             for (let index = 0; index < hits; index++) {
-                setTimeout(() => {
+                this.timeout(() => {
                     const audio = new Audio(path);
                     audio.volume = 0.72;
                     audio.play().catch(() => {});
@@ -1987,14 +1990,14 @@
         }
 
         flashAllies(allyIds = []) {
-            setTimeout(() => {
+            this.timeout(() => {
                 [...new Set(allyIds)].forEach((allyId) => {
                     const allyEl = this.overlay.querySelector(`.battle-ally-card[data-ally="${allyId}"]`);
                     if (!allyEl) return;
                     allyEl.classList.remove('battle-ally-hit');
                     void allyEl.offsetWidth;
                     allyEl.classList.add('battle-ally-hit');
-                    setTimeout(() => allyEl.classList.remove('battle-ally-hit'), 900);
+                    this.timeout(() => allyEl.classList.remove('battle-ally-hit'), 900);
                 });
             }, 0);
         }
@@ -2058,7 +2061,7 @@
             enemyEl?.classList.remove('airi-resonance-pulse');
             void enemyEl?.offsetWidth;
             enemyEl?.classList.add('airi-resonance-pulse');
-            setTimeout(() => enemyEl?.classList.remove('airi-resonance-pulse'), 760);
+            this.timeout(() => enemyEl?.classList.remove('airi-resonance-pulse'), 760);
             this.playBattleSound('assets/audio/sfx/sfx_diapason_ting.mp3', 0.7);
             this.message(
                 `Airi abre una brecha desde dentro: ${damage} de daño al núcleo y ${recovered} HP devueltos al grupo.`,
@@ -2098,7 +2101,7 @@
             this.interludes
                 .filter((item) => Number(item.turn) === turn && item.text)
                 .forEach((item, index) => {
-                    setTimeout(() => this.showUrgentBubble(item.speaker, item.text), 350 + index * 1900);
+                    this.timeout(() => this.showUrgentBubble(item.speaker, item.text), 350 + index * 1900);
                 });
         }
 
@@ -2108,8 +2111,8 @@
             bubble.className = 'battle-urgent-bubble';
             bubble.innerHTML = `${speaker ? `<span class="bub-speaker">${speaker}</span>` : ''}<span class="bub-text">${text}</span>`;
             this.overlay.appendChild(bubble);
-            setTimeout(() => bubble.classList.add('bub-out'), 2600);
-            setTimeout(() => bubble.remove(), 3100);
+            this.timeout(() => bubble.classList.add('bub-out'), 2600);
+            this.timeout(() => bubble.remove(), 3100);
         }
 
         message(text) {
@@ -2136,7 +2139,7 @@
         }
 
         wait(ms) {
-            return new Promise((resolve) => setTimeout(resolve, ms));
+            return new Promise((resolve) => this.timeout(resolve, ms));
         }
 
         checkBattleEnd() {
@@ -2162,7 +2165,7 @@
             // saltar el efecto de derrota del enemigo y mostrar el panel directo.
             if (won && !this.surviveWon) {
                 this.playEnemyDefeatEffect();
-                setTimeout(() => this.showBattleResult(won), this.getEnemyDefeatDuration());
+                this.timeout(() => this.showBattleResult(won), this.getEnemyDefeatDuration());
                 return;
             }
             this.showBattleResult(won);
