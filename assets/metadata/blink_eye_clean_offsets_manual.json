@@ -365,6 +365,32 @@
         1.0
       ]
     },
+    "andres.neutral": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        6,
+        0
+      ],
+      "closed": [
+        0,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
     "ballerina_capuchina.neutral": {
       "open": [
         0,
@@ -606,11 +632,115 @@
       ],
       "half": [
         22,
-        -30
+        -29
       ],
       "closed": [
+        30,
+        -37
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "elion_husk.angry": {
+      "open": [
         0,
         0
+      ],
+      "half": [
+        -5,
+        -1
+      ],
+      "closed": [
+        1,
+        0
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "elion_husk.smirk": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        -2,
+        -2
+      ],
+      "closed": [
+        -5,
+        -3
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "gorila.sospecha": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        6,
+        2
+      ],
+      "closed": [
+        4,
+        2
+      ],
+      "openScale": [
+        1.0,
+        1.0
+      ],
+      "halfScale": [
+        1.0,
+        1.0
+      ],
+      "closedScale": [
+        1.0,
+        1.0
+      ]
+    },
+    "jose.alarmed": {
+      "open": [
+        0,
+        0
+      ],
+      "half": [
+        -6,
+        -2
+      ],
+      "closed": [
+        -2,
+        -2
       ],
       "openScale": [
         1.0,

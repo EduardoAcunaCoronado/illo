@@ -114,7 +114,30 @@
         "open": "assets/images/characters/eye_layer_edits/saved/edu/thinking/eyes_open.png"
       },
       "edu.worried": {
-        "half": "assets/images/characters/eye_layer_edits/saved/edu/worried/eyes_half.png"
+        "half": "assets/images/characters/eye_layer_edits/saved/edu/worried/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/edu/worried/eyes_closed.png"
+      },
+      "elion_husk.angry": {
+        "half": "assets/images/characters/eye_layer_edits/saved/elion_husk/angry/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/elion_husk/angry/eyes_closed.png"
+      },
+      "elion_husk.smirk": {
+        "half": "assets/images/characters/eye_layer_edits/saved/elion_husk/smirk/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/elion_husk/smirk/eyes_closed.png"
+      },
+      "gorila.sospecha": {
+        "half": "assets/images/characters/eye_layer_edits/saved/gorila/sospecha/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/gorila/sospecha/eyes_closed.png",
+        "open": "assets/images/characters/eye_layer_edits/saved/gorila/sospecha/eyes_open.png"
+      },
+      "jose.alarmed": {
+        "open": "assets/images/characters/eye_layer_edits/saved/jose/alarmed/eyes_open.png",
+        "half": "assets/images/characters/eye_layer_edits/saved/jose/alarmed/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/jose/alarmed/eyes_closed.png"
+      },
+      "jose.angry": {
+        "half": "assets/images/characters/eye_layer_edits/saved/jose/angry/eyes_half.png",
+        "closed": "assets/images/characters/eye_layer_edits/saved/jose/angry/eyes_closed.png"
       }
     }
   }

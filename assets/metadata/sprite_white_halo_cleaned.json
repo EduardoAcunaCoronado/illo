@@ -453,8 +453,8 @@
             "speckPixels": 0
           }
         },
-        "changedVisibleRgbPixels": 25498,
-        "normalizedRetainedRgbPixels": 25498,
+        "changedVisibleRgbPixels": 22416,
+        "normalizedRetainedRgbPixels": 22416,
         "protection": {
           "reliableFillPixels": 1121603,
           "protectedInkPixels": 1235241,
@@ -470,7 +470,7 @@
           }
         }
       },
-      "updatedAt": "2026-08-08T02:03:51.248741+00:00",
+      "updatedAt": "2026-08-08T11:24:06.115808+00:00",
       "validation": {
         "policy": "white-halo-save-v1",
         "forced": true,
@@ -488,13 +488,13 @@
             }
           }
         ],
-        "forcedAt": "2026-08-08T02:03:51.248741+00:00",
-        "diagnosticFingerprint": "sha256:e44571d06b8e1af56a905c2b86ef6ed59848d277f75f37c6a1e793432255588f",
+        "forcedAt": "2026-08-08T11:24:06.115808+00:00",
+        "diagnosticFingerprint": "sha256:bab0fbe4cc1137617fbdc3813638e87d5a3609aec8021ed1ec4bbb743c6aa6f6",
         "review": {
           "status": "approved",
           "policy": "white-halo-manual-review-v1",
-          "reviewedAt": "2026-08-08T02:03:55.986644+00:00",
-          "subjectRevision": "sha256:5822b6f147a956003962968820d0970069e45ae056bda7d5ee9174c70bc07efc",
+          "reviewedAt": "2026-08-08T11:24:08.768218+00:00",
+          "subjectRevision": "sha256:59d71cfa63621c7737b09104743f45878edba5dd43d5cf0349089d8aa7508418",
           "artifactSetFingerprint": "sha256:b33ad670364c39fca40e101ba0f36da00dbf9224b98e99ebab69501a5ba17356"
         }
       }

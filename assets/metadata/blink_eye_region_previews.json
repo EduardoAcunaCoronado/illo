@@ -1758,7 +1758,7 @@
       "updatedAt": "2026-08-07T12:16:28.259403+00:00"
     },
     "edu.worried": {
-      "sourceBase": "assets/images/characters/edu/edu_worried.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/edu/worried/edu_worried_halo_limpio.webp",
       "sourceFrames": [
         "assets/images/characters/eye_intermediate_sources/edu/worried/eyes_half_source.webp",
         "assets/images/characters/edu/animations/blinks/edu_worried_blink_closed.webp",
@@ -1775,37 +1775,37 @@
       ],
       "regions": [
         {
-          "cx": 0.409912,
-          "cy": 0.263672,
-          "rx": 0.082868,
-          "ry": 0.107335,
+          "cx": 0.405665,
+          "cy": 0.266705,
+          "rx": 0.046842,
+          "ry": 0.051402,
           "rotation": 0.0,
           "mode": "include",
           "feather": 0.0
         },
         {
-          "cx": 0.53833,
-          "cy": 0.263672,
-          "rx": 0.084992,
-          "ry": 0.107731,
+          "cx": 0.52923,
+          "cy": 0.272772,
+          "rx": 0.053669,
+          "ry": 0.053829,
           "rotation": 0.0,
           "mode": "include",
           "feather": 0.0
         }
       ],
-      "width": 640,
-      "height": 474,
+      "width": 492,
+      "height": 261,
       "crop": {
-        "x": 653,
-        "y": 303,
-        "width": 640,
-        "height": 474
+        "x": 718,
+        "y": 424,
+        "width": 492,
+        "height": 261
       },
       "sourceCanvas": {
         "width": 2048,
         "height": 2048
       },
-      "updatedAt": "2026-08-07T12:16:31.461606+00:00"
+      "updatedAt": "2026-08-08T11:31:44.536463+00:00"
     },
     "edu.zip_happy": {
       "sourceBase": "assets/images/characters/edu/chapter2/edu_zip_happy.webp",

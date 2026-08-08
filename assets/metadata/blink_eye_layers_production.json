@@ -1845,7 +1845,7 @@
       }
     },
     "andres.neutral": {
-      "sourceBase": "assets/images/characters/andres/andres.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/andres/neutral/andres_halo_limpio.webp",
       "eyesBase": "assets/images/characters/eye_layers_production/andres/neutral/eyes_base.webp",
       "eyesHalf": "assets/images/characters/eye_layers_production/andres/neutral/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_production/andres/neutral/eyes_closed.webp",
@@ -1885,7 +1885,7 @@
           0
         ],
         "half": [
-          0,
+          6,
           0
         ],
         "closed": [
@@ -1932,16 +1932,16 @@
           "alphaPixels": 10846,
           "alphaRatio": 0.00689491,
           "bounds": [
-            436,
+            442,
             199,
-            678,
+            684,
             283
           ],
           "boundsRatio": 0.01292272
         },
         "closed": {
-          "alphaPixels": 10598,
-          "alphaRatio": 0.00673726,
+          "alphaPixels": 10038,
+          "alphaRatio": 0.00638126,
           "bounds": [
             436,
             200,
@@ -4113,7 +4113,7 @@
       }
     },
     "edu.worried": {
-      "sourceBase": "assets/images/characters/edu/edu_worried.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/edu/worried/edu_worried_halo_limpio.webp",
       "eyesBase": "assets/images/characters/eye_layers_production/edu/worried/eyes_base.webp",
       "eyesHalf": "assets/images/characters/eye_layers_production/edu/worried/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_production/edu/worried/eyes_closed.webp",
@@ -4122,26 +4122,26 @@
         "height": 2048
       },
       "crop": {
-        "x": 653,
-        "y": 303,
-        "width": 640,
-        "height": 474
+        "x": 718,
+        "y": 424,
+        "width": 492,
+        "height": 261
       },
       "regions": [
         {
-          "cx": 0.409912,
-          "cy": 0.263672,
-          "rx": 0.082868,
-          "ry": 0.107335,
+          "cx": 0.405665,
+          "cy": 0.266705,
+          "rx": 0.046842,
+          "ry": 0.051402,
           "rotation": 0.0,
           "mode": "include",
           "feather": 0.0
         },
         {
-          "cx": 0.53833,
-          "cy": 0.263672,
-          "rx": 0.084992,
-          "ry": 0.107731,
+          "cx": 0.52923,
+          "cy": 0.272772,
+          "rx": 0.053669,
+          "ry": 0.053829,
           "rotation": 0.0,
           "mode": "include",
           "feather": 0.0
@@ -4153,12 +4153,12 @@
           0
         ],
         "half": [
-          0,
-          0
+          22,
+          -29
         ],
         "closed": [
-          0,
-          0
+          30,
+          -37
         ],
         "openScale": [
           1.0,
@@ -4175,8 +4175,8 @@
       },
       "pixelEditsBaked": {
         "open": false,
-        "half": false,
-        "closed": false
+        "half": true,
+        "closed": true
       },
       "sourceLayers": {
         "open": "assets/images/characters/eye_region_previews/edu/worried/eyes_original.png",
@@ -4186,37 +4186,37 @@
       "blinkDirection": "closing",
       "metrics": {
         "open": {
-          "alphaPixels": 219554,
-          "alphaRatio": 0.05234575,
+          "alphaPixels": 69796,
+          "alphaRatio": 0.01664066,
           "bounds": [
-            669,
-            319,
-            1277,
-            761
+            734,
+            440,
+            1194,
+            669
           ],
-          "boundsRatio": 0.06407166
+          "boundsRatio": 0.02511501
         },
         "half": {
-          "alphaPixels": 219554,
-          "alphaRatio": 0.05234575,
+          "alphaPixels": 40682,
+          "alphaRatio": 0.00969934,
           "bounds": [
-            669,
-            319,
-            1277,
-            761
+            788,
+            397,
+            1207,
+            624
           ],
-          "boundsRatio": 0.06407166
+          "boundsRatio": 0.02267671
         },
         "closed": {
-          "alphaPixels": 219554,
-          "alphaRatio": 0.05234575,
+          "alphaPixels": 46335,
+          "alphaRatio": 0.01104712,
           "bounds": [
-            669,
-            319,
-            1277,
-            761
+            794,
+            401,
+            1212,
+            627
           ],
-          "boundsRatio": 0.06407166
+          "boundsRatio": 0.02252293
         }
       }
     },
@@ -4545,7 +4545,7 @@
       }
     },
     "elion_husk.angry": {
-      "sourceBase": "assets/images/characters/elion_husk/elion_husk_angry.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/elion_husk/angry/elion_husk_angry_halo_limpio.webp",
       "eyesBase": "assets/images/characters/eye_layers_production/elion_husk/angry/eyes_base.webp",
       "eyesHalf": "assets/images/characters/eye_layers_production/elion_husk/angry/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_production/elion_husk/angry/eyes_closed.webp",
@@ -4585,11 +4585,11 @@
           0
         ],
         "half": [
-          0,
-          0
+          -5,
+          -1
         ],
         "closed": [
-          0,
+          1,
           0
         ],
         "openScale": [
@@ -4607,8 +4607,8 @@
       },
       "pixelEditsBaked": {
         "open": false,
-        "half": false,
-        "closed": false
+        "half": true,
+        "closed": true
       },
       "sourceLayers": {
         "open": "assets/images/characters/eye_region_previews/elion_husk/angry/eyes_original.png",
@@ -4629,31 +4629,31 @@
           "boundsRatio": 0.01684103
         },
         "half": {
-          "alphaPixels": 20940,
-          "alphaRatio": 0.01330759,
+          "alphaPixels": 3354,
+          "alphaRatio": 0.0021315,
           "bounds": [
-            320,
-            125,
-            532,
-            250
+            354,
+            169,
+            504,
+            215
           ],
-          "boundsRatio": 0.01684103
+          "boundsRatio": 0.00438502
         },
         "closed": {
-          "alphaPixels": 20940,
-          "alphaRatio": 0.01330759,
+          "alphaPixels": 5826,
+          "alphaRatio": 0.00370248,
           "bounds": [
-            320,
-            125,
-            532,
-            250
+            348,
+            164,
+            520,
+            219
           ],
-          "boundsRatio": 0.01684103
+          "boundsRatio": 0.00601193
         }
       }
     },
     "elion_husk.neutral": {
-      "sourceBase": "assets/images/characters/elion_husk/elion_husk_neutral.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/elion_husk/neutral/elion_husk_neutral_halo_limpio.webp",
       "eyesBase": "assets/images/characters/eye_layers_production/elion_husk/neutral/eyes_base.webp",
       "eyesHalf": "assets/images/characters/eye_layers_production/elion_husk/neutral/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_production/elion_husk/neutral/eyes_closed.webp",
@@ -4761,7 +4761,7 @@
       }
     },
     "elion_husk.shadow": {
-      "sourceBase": "assets/images/characters/elion_husk/elion_husk_shadow.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/elion_husk/shadow/elion_husk_shadow_halo_limpio.webp",
       "eyesBase": "assets/images/characters/eye_layers_production/elion_husk/shadow/eyes_base.webp",
       "eyesHalf": "assets/images/characters/eye_layers_production/elion_husk/shadow/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_production/elion_husk/shadow/eyes_closed.webp",
@@ -4869,7 +4869,7 @@
       }
     },
     "elion_husk.smirk": {
-      "sourceBase": "assets/images/characters/elion_husk/elion_husk_smirk.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/elion_husk/smirk/elion_husk_smirk_halo_limpio.webp",
       "eyesBase": "assets/images/characters/eye_layers_production/elion_husk/smirk/eyes_base.webp",
       "eyesHalf": "assets/images/characters/eye_layers_production/elion_husk/smirk/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_production/elion_husk/smirk/eyes_closed.webp",
@@ -4909,12 +4909,12 @@
           0
         ],
         "half": [
-          0,
-          0
+          -2,
+          -2
         ],
         "closed": [
-          0,
-          0
+          -5,
+          -3
         ],
         "openScale": [
           1.0,
@@ -4931,8 +4931,8 @@
       },
       "pixelEditsBaked": {
         "open": false,
-        "half": false,
-        "closed": false
+        "half": true,
+        "closed": true
       },
       "sourceLayers": {
         "open": "assets/images/characters/eye_region_previews/elion_husk/smirk/eyes_original.png",
@@ -4953,31 +4953,31 @@
           "boundsRatio": 0.01811968
         },
         "half": {
-          "alphaPixels": 22745,
-          "alphaRatio": 0.01445469,
+          "alphaPixels": 2220,
+          "alphaRatio": 0.00141083,
           "bounds": [
-            319,
-            120,
-            535,
-            252
+            357,
+            164,
+            499,
+            206
           ],
-          "boundsRatio": 0.01811968
+          "boundsRatio": 0.00379018
         },
         "closed": {
-          "alphaPixels": 22745,
-          "alphaRatio": 0.01445469,
+          "alphaPixels": 5664,
+          "alphaRatio": 0.00359953,
           "bounds": [
-            319,
-            120,
-            535,
-            252
+            357,
+            148,
+            504,
+            210
           ],
-          "boundsRatio": 0.01811968
+          "boundsRatio": 0.00579204
         }
       }
     },
     "gorila.sospecha": {
-      "sourceBase": "assets/images/characters/gorila/gorila_sospecha.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/gorila/sospecha/gorila_sospecha_halo_limpio.webp",
       "eyesBase": "assets/images/characters/eye_layers_production/gorila/sospecha/eyes_base.webp",
       "eyesHalf": "assets/images/characters/eye_layers_production/gorila/sospecha/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_production/gorila/sospecha/eyes_closed.webp",
@@ -5017,12 +5017,12 @@
           0
         ],
         "half": [
-          0,
-          0
+          6,
+          2
         ],
         "closed": [
-          0,
-          0
+          4,
+          2
         ],
         "openScale": [
           1.0,
@@ -5038,9 +5038,9 @@
         ]
       },
       "pixelEditsBaked": {
-        "open": false,
-        "half": false,
-        "closed": false
+        "open": true,
+        "half": true,
+        "closed": true
       },
       "sourceLayers": {
         "open": "assets/images/characters/eye_region_previews/gorila/sospecha/eyes_original.png",
@@ -5050,42 +5050,42 @@
       "blinkDirection": "closing",
       "metrics": {
         "open": {
-          "alphaPixels": 28822,
-          "alphaRatio": 0.0271957,
+          "alphaPixels": 19574,
+          "alphaRatio": 0.01846952,
           "bounds": [
-            262,
-            80,
-            508,
-            242
+            264,
+            85,
+            505,
+            240
           ],
-          "boundsRatio": 0.03760332
+          "boundsRatio": 0.03524722
         },
         "half": {
-          "alphaPixels": 28822,
-          "alphaRatio": 0.0271957,
+          "alphaPixels": 1055,
+          "alphaRatio": 0.00099547,
           "bounds": [
-            262,
-            80,
-            508,
-            242
+            297,
+            121,
+            430,
+            169
           ],
-          "boundsRatio": 0.03760332
+          "boundsRatio": 0.00602378
         },
         "closed": {
-          "alphaPixels": 28822,
-          "alphaRatio": 0.0271957,
+          "alphaPixels": 1491,
+          "alphaRatio": 0.00140687,
           "bounds": [
-            262,
-            80,
-            508,
-            242
+            296,
+            89,
+            392,
+            172
           ],
-          "boundsRatio": 0.03760332
+          "boundsRatio": 0.0075184
         }
       }
     },
     "jose.alarmed": {
-      "sourceBase": "assets/images/characters/jose/jose_alarmed.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/jose/alarmed/jose_alarmed_halo_limpio.webp",
       "eyesBase": "assets/images/characters/eye_layers_production/jose/alarmed/eyes_base.webp",
       "eyesHalf": "assets/images/characters/eye_layers_production/jose/alarmed/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_production/jose/alarmed/eyes_closed.webp",
@@ -5125,12 +5125,12 @@
           0
         ],
         "half": [
-          0,
-          0
+          -6,
+          -2
         ],
         "closed": [
-          0,
-          0
+          -2,
+          -2
         ],
         "openScale": [
           1.0,
@@ -5146,9 +5146,9 @@
         ]
       },
       "pixelEditsBaked": {
-        "open": false,
-        "half": false,
-        "closed": false
+        "open": true,
+        "half": true,
+        "closed": true
       },
       "sourceLayers": {
         "open": "assets/images/characters/eye_region_previews/jose/alarmed/eyes_original.png",
@@ -5158,42 +5158,42 @@
       "blinkDirection": "closing",
       "metrics": {
         "open": {
-          "alphaPixels": 89192,
-          "alphaRatio": 0.08082558,
+          "alphaPixels": 71906,
+          "alphaRatio": 0.06516105,
           "bounds": [
-            370,
-            40,
-            733,
+            393,
+            54,
+            691,
             358
           ],
-          "boundsRatio": 0.10460602
+          "boundsRatio": 0.08209426
         },
         "half": {
-          "alphaPixels": 89192,
-          "alphaRatio": 0.08082558,
+          "alphaPixels": 6203,
+          "alphaRatio": 0.00562114,
           "bounds": [
-            370,
-            40,
-            733,
-            358
+            450,
+            166,
+            634,
+            240
           ],
-          "boundsRatio": 0.10460602
+          "boundsRatio": 0.01233879
         },
         "closed": {
-          "alphaPixels": 89192,
-          "alphaRatio": 0.08082558,
+          "alphaPixels": 5521,
+          "alphaRatio": 0.00500312,
           "bounds": [
-            370,
-            40,
-            733,
-            358
+            452,
+            168,
+            634,
+            239
           ],
-          "boundsRatio": 0.10460602
+          "boundsRatio": 0.01170989
         }
       }
     },
     "jose.angry": {
-      "sourceBase": "assets/images/characters/jose/jose_angry.webp",
+      "sourceBase": "assets/images/characters/sprite_halo_production/jose/angry/jose_angry_halo_limpio.webp",
       "eyesBase": "assets/images/characters/eye_layers_production/jose/angry/eyes_base.webp",
       "eyesHalf": "assets/images/characters/eye_layers_production/jose/angry/eyes_half.webp",
       "eyesClosed": "assets/images/characters/eye_layers_production/jose/angry/eyes_closed.webp",
@@ -5255,8 +5255,8 @@
       },
       "pixelEditsBaked": {
         "open": false,
-        "half": false,
-        "closed": false
+        "half": true,
+        "closed": true
       },
       "sourceLayers": {
         "open": "assets/images/characters/eye_region_previews/jose/angry/eyes_original.png",
@@ -5277,26 +5277,26 @@
           "boundsRatio": 0.10508993
         },
         "half": {
-          "alphaPixels": 92371,
-          "alphaRatio": 0.08370638,
+          "alphaPixels": 4751,
+          "alphaRatio": 0.00430535,
           "bounds": [
-            350,
-            165,
-            734,
-            467
+            419,
+            280,
+            707,
+            363
           ],
-          "boundsRatio": 0.10508993
+          "boundsRatio": 0.02166175
         },
         "closed": {
-          "alphaPixels": 92371,
-          "alphaRatio": 0.08370638,
+          "alphaPixels": 13417,
+          "alphaRatio": 0.01215845,
           "bounds": [
             350,
-            165,
+            188,
             734,
             467
           ],
-          "boundsRatio": 0.10508993
+          "boundsRatio": 0.09708639
         }
       }
     },
