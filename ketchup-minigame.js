@@ -18,15 +18,28 @@
             ),
         );
 
+    /**
+     * Minijuego del capítulo 2: Batalla "Bullet Hell" contra Zip.
+     * Hereda de MinigameBase para asegurar que se limpian sus eventos al terminar.
+     */
     class KetchupMinigame extends window.MinigameBase {
         constructor(options = {}) {
             super(options);
         }
 
+        /**
+         * Instancia y arranca el minijuego de forma estática.
+         * @param {Object} options - Configuración de dificultad, música y hitboxes.
+         */
         static play(options = {}) {
             return new KetchupMinigame(options).play();
         }
 
+        /**
+         * Bucle principal de inicio y configuración del minijuego.
+         * Crea la interfaz (HUD), inyecta los elementos en el DOM y gestiona el bucle de requestAnimationFrame.
+         * @returns {Promise} Se resuelve cuando el jugador gana, o se rechaza si muere/aborta.
+         */
         async start() {
             this.state = 'running';
             const enemyMaxHp = this.options.enemyHp || this.options.zipHp || 700;
@@ -232,6 +245,7 @@
                 let teleportWindup = 0;
                 let teleportActive = false;
 
+                // Estado de las teclas presionadas en el fotograma actual
                 const state = {
                     moveLeft: false,
                     moveRight: false,
@@ -902,12 +916,21 @@
                     );
                 };
 
+                /**
+                 * Bucle de juego (ejecutado en cada refresco de pantalla por requestAnimationFrame).
+                 * Gestiona el input, la física de balas, colisiones (hitboxes) y las animaciones (sprites).
+                 * @param {number} time - Tiempo de alta resolución provisto por el navegador.
+                 */
                 const loop = (time) => {
+                    // Si el juego ha sido cancelado o el overlay fue borrado, detenemos la ejecución recursiva
                     if (!running || !overlay.isConnected) {
                         stopRuntime();
                         return;
                     }
                     if (lastTime === null) lastTime = time;
+
+                    // Calculamos el Delta Time (tiempo entre fotogramas) con un límite máximo (0.05)
+                    // para evitar que los personajes atraviesen paredes si hay un tirón de FPS (lag spike).
                     const dt = Math.min((time - lastTime) / 1000, 0.05);
                     lastTime = time;
 

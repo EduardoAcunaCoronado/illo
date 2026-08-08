@@ -178,6 +178,25 @@ function serveFile(req, res, filePath, stat) {
     fs.createReadStream(filePath).pipe(res);
 }
 
+async function walkAssets(dir, base = '') {
+    let results = [];
+    try {
+        const list = await fsp.readdir(dir, { withFileTypes: true });
+        for (const dirent of list) {
+            const relPath = base ? `${base}/${dirent.name}` : dirent.name;
+            const resPath = path.join(dir, dirent.name);
+            if (dirent.isDirectory()) {
+                results = results.concat(await walkAssets(resPath, relPath));
+            } else {
+                results.push(`assets/${relPath}`.replace(/\\/g, '/'));
+            }
+        }
+    } catch (err) {
+        // Ignorar si la carpeta no existe
+    }
+    return results;
+}
+
 // Arranca el servidor sobre `root` y resuelve con { origin, close }.
 function startServer(rootDir, options = {}) {
     // Normalizado para que la comprobación anti-traversal compare rutas del
@@ -213,6 +232,62 @@ function startServer(rootDir, options = {}) {
                     'Content-Type': 'application/json; charset=utf-8',
                     'Content-Length': body.length,
                     'Cache-Control': 'no-store',
+                });
+                return req.method === 'HEAD' ? res.end() : res.end(body);
+            }
+                        if (requestPath === '/api/assets') {
+                const imgPath = path.join(root, 'assets', 'images');
+                const audPath = path.join(root, 'assets', 'audio');
+                const vidPath = path.join(root, 'assets', 'video');
+                const chapPath = path.join(root, 'chapters');
+                const charPath = path.join(root, 'characters');
+                
+                const [images, audio, video] = await Promise.all([
+                    walkAssets(imgPath, 'images'),
+                    walkAssets(audPath, 'audio'),
+                    walkAssets(vidPath, 'video')
+                ]);
+                
+                let chapters = [];
+                let scenes = [];
+                let characters = [];
+                let minigames = [];
+                
+                try {
+                    const chapFiles = await fsp.readdir(chapPath);
+                    for (const file of chapFiles) {
+                        if (file.endsWith('.json')) {
+                            const cid = file.replace('.json', '');
+                            chapters.push(cid);
+                            const data = JSON.parse(await fsp.readFile(path.join(chapPath, file), 'utf8'));
+                            if (data.scenes) {
+                                data.scenes.forEach(s => {
+                                    if (s.title) scenes.push({ title: s.title, chapter: cid });
+                                });
+                            }
+                        }
+                    }
+                    
+                    const charFiles = await fsp.readdir(charPath);
+                    for (const file of charFiles) {
+                        if (file.endsWith('.json')) {
+                            characters.push(file.replace('.json', ''));
+                        }
+                    }
+                    
+                    const rootFiles = await fsp.readdir(root);
+                    for (const file of rootFiles) {
+                        if (file.endsWith('-minigame.js')) {
+                            minigames.push(file.replace('.js', ''));
+                        }
+                    }
+                } catch(e) {}
+
+                const body = Buffer.from(JSON.stringify({ images, audio, video, chapters, scenes, characters, minigames }), 'utf8');
+                res.writeHead(200, {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Content-Length': body.length,
+                    'Cache-Control': 'no-store'
                 });
                 return req.method === 'HEAD' ? res.end() : res.end(body);
             }

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laboratorio DSL - Project AI.ri</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+      --bg-color: #0b0616;
+      --panel-bg: rgba(23, 17, 38, 0.6);
+      --card-bg: rgba(30, 22, 50, 0.7);
+      --card-hover: rgba(43, 31, 71, 0.9);
+      --border-color: rgba(138, 107, 214, 0.2);
+      --border-hover: rgba(138, 107, 214, 0.6);
+      --accent: #8a6bd6;
+      --accent-glow: rgba(138, 107, 214, 0.4);
+      --text-main: #f5f0ff;
+      --text-muted: #a698c4;
+      --font-stack: 'Inter', system-ui, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-stack);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background-image: 
+        radial-gradient(circle at 15% 50%, rgba(138, 107, 214, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(79, 55, 139, 0.08) 0%, transparent 50%);
+    }
+
+    header {
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(11, 6, 22, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    header h1::before {
+      content: '⚡';
+      font-size: 1.1em;
+    }
+
+    .back-btn {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: all 0.2s ease;
+    }
+
+    .back-btn:hover {
+      color: var(--text-main);
+      border-color: var(--border-color);
+      background: var(--card-bg);
+    }
+
+    .layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* LEFT PANEL - CATALOG */
+    .catalog-panel {
+      width: 400px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border-color);
+      background: var(--panel-bg);
+      backdrop-filter: blur(20px);
+    }
+
+    .catalog-header {
+      padding: 1.5rem;
+      padding-bottom: 1rem;
+    }
+
+    .catalog-header h2 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    
+    .catalog-header p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .action-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 1.5rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    /* Custom Scrollbar */
+    .action-list::-webkit-scrollbar { width: 6px; }
+    .action-list::-webkit-scrollbar-track { background: transparent; }
+    .action-list::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+    .action-list::-webkit-scrollbar-thumb:hover { background: var(--border-hover); }
+
+    .action-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .action-card:hover {
+      border-color: var(--accent);
+      background: var(--card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2), 0 0 0 1px var(--accent-glow) inset;
+    }
+    
+    .action-card.selected {
+      border-color: var(--accent);
+      background: var(--card-hover);
+      box-shadow: 0 0 0 2px var(--accent) inset;
+    }
+
+    .action-name {
+      font-family: monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .action-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .action-example {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--text-main);
+      background: rgba(0,0,0,0.3);
+      padding: 0.4rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* RIGHT PANEL - PREVIEW */
+    .preview-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .iframe-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* The iframe is exactly 1280x720 natively, we scale it to fit */
+    #game-frame {
+      width: 1280px;
+      height: 720px;
+      border: none;
+      transform-origin: center center;
+      box-shadow: 0 0 40px rgba(0,0,0,0.8);
+      background: #111;
+    }
+
+
+    .dynamic-form {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .form-group label {
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .dynamic-form input, .dynamic-form select {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 0.4rem 0.8rem;
+      color: #fff;
+      font-family: monospace;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .dynamic-form input:focus, .dynamic-form select:focus {
+      border-color: var(--accent);
+    }
+    .dynamic-form option {
+      background: #111;
+      color: #fff;
+    }
+    .command-name-badge {
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--accent);
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-family: monospace;
+      border: 1px solid var(--accent);
+      margin-right: 0.5rem;
+    }
+    .raw-input-mode .console-input-wrap { display: block; }
+    .raw-input-mode .dynamic-form { display: none; }
+    .form-mode .console-input-wrap { display: none; }
+    .form-mode .dynamic-form { display: flex; }
+
+
+    .dynamic-form {
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+      flex-wrap: wrap;
+      flex: 1;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .form-group label {
+      font-size: 0.75rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .dynamic-form input, .dynamic-form select {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 0.4rem 0.8rem;
+      color: #fff;
+      font-family: monospace;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .dynamic-form input:focus, .dynamic-form select:focus {
+      border-color: var(--accent);
+    }
+    .command-name-badge {
+      background: rgba(139, 92, 246, 0.2);
+      color: var(--accent);
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      font-weight: 700;
+      font-family: monospace;
+      border: 1px solid var(--accent);
+      margin-right: 0.5rem;
+    }
+    .raw-input-mode .console-input-wrap { display: block; }
+    .raw-input-mode .dynamic-form { display: none; }
+    .form-mode .console-input-wrap { display: none; }
+    .form-mode .dynamic-form { display: flex; }
+
+    /* BOTTOM CONTROLS */
+    .console-panel {
+      background: rgba(11, 6, 22, 0.95);
+      border-top: 1px solid var(--border-color);
+      padding: 1.5rem 2rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      backdrop-filter: blur(10px);
+    }
+
+    .console-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .console-input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      color: #fff;
+      font-family: monospace;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .console-input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.08);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .btn-execute {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      padding: 0 1.5rem;
+      height: 48px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-execute:hover {
+      background: #9d80e3;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(138, 107, 214, 0.3);
+    }
+    
+    .btn-execute:active {
+      transform: translateY(1px);
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Laboratorio DSL</h1>
+    <a href="/tools" class="back-btn">← Volver a Tools</a>
+  </header>
+
+  <div class="layout">
+    <aside class="catalog-panel">
+      <div class="catalog-header">
+        <h2>Catálogo de Acciones</h2>
+        <p>Haz clic en cualquier acción para cargarla en la consola e inyectarla en el motor al instante.</p>
+      </div>
+      <div class="action-list" id="action-list">
+        <!-- Rendered via JS -->
+      </div>
+    </aside>
+
+    <main class="preview-panel">
+      <div class="iframe-container" id="iframe-wrap">
+        <iframe id="game-frame" src="/?screen=playground"></iframe>
+      </div>
+      
+            <div class="console-panel" id="console-panel">
+        <!-- Dynamic form will be injected here -->
+        <div class="console-input-wrap">
+          <input type="text" id="dsl-input" class="console-input" placeholder="Selecciona una acción a la izquierda o escribe aquí..." autocomplete="off" spellcheck="false">
+        </div>
+        <button id="btn-execute" class="btn-execute">
+          Ejecutar <span>▶</span>
+        </button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const dslData = [
+      { name: "addDelay", desc: "Suma presión oculta a la historia. Afecta rutas y minijuegos. (Tienes una demo interactiva en el comando goto).", params: [{type: "number", name: "Puntos", default: "10"}] },
+      { name: "animateCharacter", desc: "Animación CSS en un sprite.", params: [{type: "asset", category: "characters", name: "Personaje ID"}, {type: "text", name: "Animación", default: "bounce"}] },
+      { name: "background", desc: "Cambia el fondo.", params: [{type: "asset", category: "images", name: "Imagen de fondo"}] },
+      { name: "bgPan", desc: "Desplaza el fondo (panorámica).", params: [{type: "text", name: "Params (x=50 y=0 duration=2)", default: "x=50 y=0 duration=2"}] },
+      { name: "cg / showCG", desc: "Ilustración a pantalla completa.", params: [{type: "asset", category: "images", name: "Imagen CG"}] },
+      { name: "characterAnimeFall", desc: "Caída cómica fuera de plano.", params: [{type: "asset", category: "characters", name: "Personaje ID"}] },
+      { name: "clearBackground", desc: "Quita el fondo actual.", params: [] },
+      { name: "fade", desc: "Transición de color sólido.", params: [{type: "select", name: "Dirección", options: ["out", "in"]}, {type: "text", name: "Color", default: "black"}, {type: "number", name: "Duración", default: "1"}] },
+      { name: "flash", desc: "Destello rápido.", params: [{type: "text", name: "Color", default: "white"}, {type: "number", name: "Duración", default: "0.5"}] },
+      { name: "glitchCharacter", desc: "Corrupción visual momentánea.", params: [{type: "asset", category: "characters", name: "Personaje ID"}] },
+      { name: "goto / goToScene", desc: "Salta a otra escena.", params: [{type: "asset", category: "scenes", name: "ID Escena"}] },
+      { name: "grade", desc: "Filtro de color global.", params: [{type: "text", name: "Filtro", default: "sepia"}, {type: "number", name: "Fuerza", default: "2"}] },
+      { name: "hide / hideCharacter", desc: "Oculta a un personaje.", params: [{type: "asset", category: "characters", name: "Personaje ID"}] },
+      { name: "hideCG", desc: "Quita la ilustración.", params: [] },
+      { name: "hideDialog", desc: "Esconde la caja de texto.", params: [] },
+      { name: "item / giveItem", desc: "Otorga un objeto al inventario.", params: [{type: "text", name: "Objeto ID", default: "linterna"}] },
+      { name: "minigame", desc: "Lanza un minijuego.", params: [{type: "asset", category: "minigames", name: "Minijuego ID", default: "battle-minigame"}] },
+      { name: "stopMinigame", desc: "Aborta el minijuego actual.", params: [] },
+      { name: "pauseSound", desc: "Pausa un sonido.", params: [{type: "text", name: "Params", default: "id=bg_music"}] },
+      { name: "playVideo / cutscene", desc: "Vídeo a pantalla completa.", params: [{type: "asset", category: "video", name: "Ruta de vídeo"}] },
+      { name: "pose / setPose", desc: "Cambia la expresión/pose.", params: [{type: "asset", category: "characters", name: "Personaje ID"}, {type: "dynamic_pose", name: "Pose"}] },
+      { name: "poseSequence", desc: "Secuencia de poses.", params: [{type: "asset", category: "characters", name: "Personaje ID"}, {type: "text", name: "Poses (coma)", default: "idle_1,idle_2"}] },
+      { name: "remove", desc: "Elimina personaje de memoria.", params: [{type: "asset", category: "characters", name: "Personaje ID"}] },
+      { name: "rescue", desc: "Marca rescatado.", params: [{type: "asset", category: "characters", name: "Personaje ID"}] },
+      { name: "resumeSound", desc: "Reanuda sonido.", params: [{type: "text", name: "Params", default: "id=bg_music"}] },
+      { name: "sceneStart", desc: "Funde a negro, limpia y revela.", params: [] },
+      { name: "setDelay", desc: "Fija la presión de la historia a un valor exacto (ver addDelay).", params: [{type: "number", name: "Puntos", default: "60"}] },
+      { name: "setNextChapter", desc: "Próximo capítulo.", params: [{type: "asset", category: "chapters", name: "Capítulo ID"}] },
+      { name: "setTextDuration", desc: "Velocidad del texto.", params: [{type: "number", name: "Velocidad", default: "20"}] },
+      { name: "setVariable", desc: "Cambia estado del juego.", params: [{type: "text", name: "Asignación", default: "investigado=true"}] },
+      { name: "setVolume", desc: "Volumen de un canal.", params: [{type: "text", name: "Params", default: "id=bg_music vol=0.5"}] },
+      { name: "sfx", desc: "Sonido continuo (Juice).", params: [{type: "select", name: "ID", options: ["heartbeat", "rumble"]}] },
+      { name: "shake", desc: "Agita la pantalla.", params: [{type: "number", name: "Fuerza", default: "0.5"}] },
+      { name: "show / showCharacter", desc: "Muestra/mueve personaje.", params: [{type: "asset", category: "characters", name: "Personaje ID"}, {type: "select", name: "Posición", options: ["left", "center", "right"]}, {type: "dynamic_pose", name: "Pose"}] },
+      { name: "sound / playSound", desc: "Reproduce música/sfx.", params: [{type: "asset", category: "audio", name: "Ruta de Audio"}] },
+      { name: "stopAllSounds", desc: "Corta todo el audio.", params: [] },
+      { name: "stopCharacterAnimation", desc: "Detiene animación CSS.", params: [{type: "asset", category: "characters", name: "Personaje ID"}] },
+      { name: "stopSound", desc: "Detiene un audio.", params: [{type: "text", name: "Params", default: "id=bg_music"}] },
+      { name: "vignette", desc: "Viñeteado oscuro.", params: [{type: "number", name: "Fuerza", default: "0.8"}] },
+      { name: "wait", desc: "Pausa el juego X tiempo.", params: [{type: "number", name: "Segundos", default: "2"}] },
+      { name: "waitForClick", desc: "Pausa hasta el clic.", params: [] }
+    ];
+
+    let projectAssets = { images: [], audio: [], video: [] };
+    
+    // Fetch assets from the new dev server API
+      fetch('/api/assets')
+        .then(res => res.json())
+        .then(data => {
+          if (data.images && data.audio) {
+              projectAssets = data;
+            console.log("Assets cargados:", projectAssets);
+        }
+      })
+      .catch(err => console.warn("No se pudo cargar /api/assets (quizás necesites reiniciar el servidor)", err));
+
+    const listEl = document.getElementById('action-list');
+    const consolePanel = document.getElementById('console-panel');
+    const inputEl = document.getElementById('dsl-input');
+    const btnEl = document.getElementById('btn-execute');
+    const iframe = document.getElementById('game-frame');
+    const wrap = document.getElementById('iframe-wrap');
+    
+    let currentActiveCommand = null;
+
+    // Escalar el Iframe para que siempre encaje en el contenedor derecho
+    function resizeIframe() {
+      const wrapRect = wrap.getBoundingClientRect();
+      const targetW = 1280;
+      const targetH = 720;
+      const scaleX = wrapRect.width / targetW;
+      const scaleY = wrapRect.height / targetH;
+      const scale = Math.min(scaleX, scaleY) * 0.95; 
+      iframe.style.transform = `scale(${scale})`;
+    }
+
+    window.addEventListener('resize', resizeIframe);
+    resizeIframe();
+    iframe.onload = resizeIframe;
+
+    function buildDynamicForm(item) {
+        currentActiveCommand = item;
+        
+        // Remove old dynamic form if exists
+        const oldForm = document.getElementById('dynamic-form-container');
+        if (oldForm) oldForm.remove();
+        
+        consolePanel.classList.remove('raw-input-mode');
+        consolePanel.classList.add('form-mode');
+        
+        const formContainer = document.createElement('div');
+        formContainer.id = 'dynamic-form-container';
+        formContainer.className = 'dynamic-form';
+        
+        const badge = document.createElement('div');
+        badge.className = 'command-name-badge';
+        badge.textContent = item.name.split(' ')[0];
+        formContainer.appendChild(badge);
+        
+        if (item.params.length === 0) {
+            // Comando sin argumentos, dejar espacio
+            const badgeOnly = document.createElement('div');
+            badgeOnly.style.flex = "1";
+            badgeOnly.style.color = "var(--text-muted)";
+            badgeOnly.style.fontSize = "0.85rem";
+            badgeOnly.textContent = "(Sin argumentos)";
+            formContainer.appendChild(badgeOnly);
+        }
+        
+        item.params.forEach((param, index) => {
+            const group = document.createElement('div');
+            group.className = 'form-group';
+            
+            const label = document.createElement('label');
+            label.textContent = param.name;
+            group.appendChild(label);
+            
+            if (param.type === 'select') {
+                const sel = document.createElement('select');
+                sel.dataset.paramIndex = index;
+                param.options.forEach(opt => {
+                    const o = document.createElement('option');
+                    o.value = opt;
+                    o.textContent = opt;
+                    sel.appendChild(o);
+                });
+                group.appendChild(sel);
+            } else if (param.type === 'asset') {
+                const sel = document.createElement('select');
+                sel.dataset.paramIndex = index;
+                sel.dataset.category = param.category;
+                
+                const assetsList = projectAssets[param.category] || [];
+                if (assetsList.length === 0) {
+                    const opt = document.createElement('option');
+                    opt.value = "";
+                    opt.textContent = "-- Sin assets cargados --";
+                    sel.appendChild(opt);
+                } else {
+                    assetsList.forEach(item => {
+                        const opt = document.createElement('option');
+                        if (param.category === 'scenes') {
+                            opt.value = item.title;
+                            opt.textContent = `[${item.chapter}] ${item.title}`;
+                            opt.dataset.chapter = item.chapter;
+                        } else {
+                            opt.value = item;
+                            const parts = item.split('/');
+                            opt.textContent = parts.slice(Math.max(0, parts.length - 3)).join('/');
+                        }
+                        sel.appendChild(opt);
+                    });
+                }
+                group.appendChild(sel);
+            } else if (param.type === 'dynamic_pose') {
+                const sel = document.createElement('select');
+                sel.dataset.paramIndex = index;
+                sel.className = 'dynamic-pose-select';
+                group.appendChild(sel);
+            } else {
+                const inp = document.createElement('input');
+                inp.type = param.type === 'number' ? 'number' : 'text';
+                inp.dataset.paramIndex = index;
+                inp.value = param.default || '';
+                
+                if (param.type === 'number') inp.step = "0.1";
+                
+                group.appendChild(inp);
+                
+                inp.addEventListener('keydown', (e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    executeDSL();
+                  }
+                });
+            }
+            
+            formContainer.appendChild(group);
+        });
+        
+        // Configurar actualización de poses dinámicas
+        const charSelects = formContainer.querySelectorAll('select[data-category="characters"]');
+        const poseSelects = formContainer.querySelectorAll('.dynamic-pose-select');
+        if (charSelects.length > 0 && poseSelects.length > 0) {
+            const charSel = charSelects[0];
+            const poseSel = poseSelects[0];
+            
+            const updatePoses = () => {
+                const charId = charSel.value;
+                if (!charId) {
+                    poseSel.innerHTML = '<option value="">(Selecciona un personaje)</option>';
+                    return;
+                }
+                fetch(`/characters/${charId}.json`)
+                    .then(r => r.json())
+                    .then(data => {
+                        poseSel.innerHTML = '';
+                        if (data.poses && Object.keys(data.poses).length > 0) {
+                            Object.keys(data.poses).forEach(p => {
+                                const opt = document.createElement('option');
+                                opt.value = p;
+                                opt.textContent = p;
+                                poseSel.appendChild(opt);
+                            });
+                        } else {
+                            poseSel.innerHTML = '<option value="">(Sin poses disponibles)</option>';
+                        }
+                    })
+                    .catch(e => {
+                        poseSel.innerHTML = '<option value="">(Error cargando poses)</option>';
+                    });
+            };
+            
+            charSel.addEventListener('change', updatePoses);
+            updatePoses(); // Carga inicial
+        }
+        
+        // Insert before execute button
+        consolePanel.insertBefore(formContainer, btnEl);
+    }
+
+    function getDslString() {
+        if (!currentActiveCommand || consolePanel.classList.contains('raw-input-mode')) {
+            return inputEl.value.trim();
+        }
+        
+        const cmd = currentActiveCommand.name.split(' ')[0];
+        const formContainer = document.getElementById('dynamic-form-container');
+        if (!formContainer) return cmd;
+        
+        const inputs = formContainer.querySelectorAll('input, select');
+        const args = [];
+        inputs.forEach(inp => {
+            let val = inp.value.trim();
+            if (val) {
+                if (/[ \t'"\\]/.test(val)) {
+                    val = JSON.stringify(val);
+                }
+                args.push(val);
+            }
+        });
+        
+        return [cmd, ...args].join(' ');
+    }
+
+    // Renderizar lista
+    dslData.sort((a, b) => a.name.localeCompare(b.name)).forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'action-card';
+      
+      // Generate a string example just for the card display
+      const exArgs = item.params.map(p => {
+          if (p.type === 'asset') return `<asset>`;
+          return p.default || `[${p.name}]`;
+      }).join(' ');
+      const exampleStr = `${item.name.split(' ')[0]} ${exArgs}`.trim();
+      
+      card.innerHTML = `
+        <div class="action-name">${item.name}</div>
+        <div class="action-desc">${item.desc}</div>
+        <div class="action-example">${exampleStr}</div>
+      `;
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.action-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        buildDynamicForm(item);
+      });
+      listEl.appendChild(card);
+    });
+
+    // Modo raw input por defecto
+    consolePanel.classList.add('raw-input-mode');
+
+    // Ejecución
+    async function executeDSL() {
+      const dsl = getDslString();
+      if (!dsl) return;
+      
+      const gameWin = iframe.contentWindow;
+      if (gameWin && gameWin.engine && gameWin.engine.actionInterpreter) {
+        try {
+          // Si es goto, asegurar que el capítulo está cargado
+          if (currentActiveCommand && currentActiveCommand.name.includes('goto')) {
+              const formContainer = document.getElementById('dynamic-form-container');
+              if (formContainer && !consolePanel.classList.contains('raw-input-mode')) {
+                  const sel = formContainer.querySelector('select');
+                  if (sel) {
+                      const selectedOpt = sel.options[sel.selectedIndex];
+                      const chapterId = selectedOpt.dataset.chapter;
+                      if (chapterId && (!gameWin.engine.currentChapter || gameWin.engine.currentChapter.id !== chapterId)) {
+                          console.log('Auto-cargando capítulo:', chapterId);
+                          await gameWin.engine.loadChapter(chapterId);
+                      }
+                      
+                      // Limpiar cualquier pantalla de fin de capítulo que haya podido quedarse colgada
+                      const stuckOverlays = gameWin.document.querySelectorAll('.nm-modal, .chapter-transition-curtain, .chapter-end-overlay');
+                      stuckOverlays.forEach(m => m.remove());
+                      
+                      // Arrancar el bucle del juego si no está activo, 
+                      // necesario para que las escenas avancen por sí solas tras acabar un capítulo.
+                      if (!gameWin.isGameRunning && typeof gameWin.playGame === 'function') {
+                          gameWin.isGameRunning = true;
+                          // No le hacemos await para no bloquear la ejecución del comando actual, 
+                          // arranca en segundo plano
+                          gameWin.playGame();
+                      }
+                  }
+              }
+          }
+
+          gameWin.engine.actionInterpreter.execute(dsl);
+          
+          // Efecto visual en el botón
+          btnEl.style.transform = 'scale(0.95)';
+          btnEl.style.backgroundColor = '#4ade80';
+          setTimeout(() => {
+              btnEl.style.transform = '';
+              btnEl.style.backgroundColor = '';
+          }, 200);
+          
+        } catch (err) {
+          console.error("Error ejecutando DSL:", err);
+          btnEl.style.backgroundColor = '#ef4444'; // Error red
+          setTimeout(() => btnEl.style.backgroundColor = '', 500);
+        }
+      } else {
+        console.warn("El motor del juego no está listo todavía o no exporta window.engine.");
+      }
+    }
+
+    btnEl.addEventListener('click', executeDSL);
+    inputEl.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        executeDSL();
+      }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{
+  "id": "demo_delay",
+  "title": "Demo de addDelay",
+  "scenes": [
+    {
+      "id": "start",
+      "title": "Explicación de addDelay",
+      "lines": [
+        "stopMinigame",
+        "clearBackground",
+        "hide",
+        "stopAllSounds",
+        "background assets/images/backgrounds/exterior/callejuela_oscura.webp",
+        "show samu center normal",
+        "Samu: ¡Hola! Te voy a explicar para qué sirve la acción addDelay de forma visual.",
+        "Samu: Fíjate en que no ha pasado nada. No detiene el tiempo como la acción \"wait\".",
+        "Samu: Si yo tomo decisiones muy lentas en un capítulo, el guionista puede inyectar \"addDelay 10\" en mis opciones.",
+        "addDelay 10",
+        "show samu center happy",
+        "Samu: ¡Zas! Acaba de ejecutarse en silencio. El reloj interno de la historia ha sumado 10 puntos de presión.",
+        "Samu: Ahora, gracias a eso, las siguientes líneas pueden tener condiciones.",
+        {
+          "text": "Samu: ¡Ey, este texto es exclusivo! Solo sale porque la presión de la historia ha llegado a 10.",
+          "delayAtLeast": 10
+        },
+        {
+          "text": "Samu: (Este texto nunca lo verás porque requiere 50 de presión, y solo tenemos 10).",
+          "delayAtLeast": 50
+        },
+        "show samu center normal",
+        "Samu: Además de para rutas secretas, los minijuegos leen esta presión y se vuelven más difíciles si es muy alta.",
+        "Samu: ¡Y eso es todo! Una mecánica narrativa invisible pero muy potente."
+      ]
+    }
+  ]
+}

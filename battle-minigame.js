@@ -660,7 +660,15 @@
         },
     };
 
+    /**
+     * Motor de combate por turnos (Minijuego de Batalla).
+     * Soporta batallas tradicionales (reducir PV enemigo a 0) o modos de supervivencia (aguantar X turnos).
+     * Hereda de MinigameBase para asegurar la limpieza del DOM al terminar.
+     */
     class BattleMinigame extends window.MinigameBase {
+        /**
+         * @param {Object} options - Configuración de la batalla (enemigo, grupo, inventario).
+         */
         constructor(options = {}) {
             super(options);
             this.options = options;
@@ -742,6 +750,10 @@
             };
         }
 
+        /**
+         * Inicializa la interfaz de batalla y arranca el bucle de turnos (ATB).
+         * @returns {Promise} Se resuelve cuando termina el combate (true = victoria, false = derrota).
+         */
         start() {
             this.state = 'running';
             return new Promise((resolve) => {
@@ -1054,6 +1066,12 @@
             return 'enemigo';
         }
 
+        /**
+         * Simula el motor ATB para predecir quiénes serán los próximos en atacar.
+         * Devuelve un array de los siguientes `count` luchadores, ideal para dibujar la barra lateral de próximos turnos.
+         * @param {number} count - Número de turnos futuros a predecir.
+         * @returns {Array<Object>} Lista ordenada de personajes que actuarán próximamente.
+         */
         getUpcomingOrder(count) {
             const snapshots = this.fighters
                 .filter((fighter) => fighter.currentHp > 0)
@@ -1064,15 +1082,22 @@
             const order = [];
 
             for (let i = 0; i < count; i++) {
+                // Ordenamos por quien tiene el menor tiempo restante en el reloj.
+                // En caso de empate, ataca primero el más rápido.
                 snapshots.sort((a, b) => a.clock - b.clock || this.getSpeed(b.fighter) - this.getSpeed(a.fighter));
                 const next = snapshots[0];
                 order.push(next.fighter);
+                // Simulamos que el luchador actúa y se le añade el retraso de su próximo turno.
                 next.clock += this.getTurnDelay(next.fighter);
             }
 
             return order;
         }
 
+        /**
+         * Obtiene el luchador que debe actuar en este momento exacto.
+         * @returns {Object} El personaje cuyo reloj ATB está más cerca de 0.
+         */
         getNextFighter() {
             const alive = this.fighters.filter((fighter) => fighter.currentHp > 0);
             alive.sort((a, b) => {
@@ -1083,6 +1108,11 @@
             return alive[0];
         }
 
+        /**
+         * Avanza el reloj interno de un luchador después de que haya actuado.
+         * A mayor velocidad del luchador, menor será el retraso añadido.
+         * @param {Object} fighter - El luchador que acaba de gastar su turno.
+         */
         advanceFighterClock(fighter) {
             this.turnClock.set(fighter.id, (this.turnClock.get(fighter.id) || 0) + this.getTurnDelay(fighter));
         }
@@ -1105,17 +1135,24 @@
                 .reduce((sum, status) => sum + status.value, 0);
         }
 
+        /**
+         * Calcula y cede el control al siguiente personaje (jugador o IA).
+         */
         nextTurn() {
+            // Evaluamos si alguien ha muerto o si se cumplieron los turnos de supervivencia
             if (this.checkBattleEnd()) return;
+
             const fighter = this.getNextFighter();
             this.activeFighter = fighter;
             this.updateHud();
 
             if (fighter.team === 'ally') {
+                // Es el turno de un héroe: desbloquear interfaz y esperar input
                 this.awaitingPlayer = true;
                 this.renderSkills(fighter);
                 this.message(`Turno de ${fighter.name}.`);
             } else {
+                // Es el turno del enemigo: bloquear interfaz y ejecutar IA tras una pequeña pausa visual
                 this.awaitingPlayer = false;
                 this.renderEnemyTurn();
                 this.timeout(() => this.enemyAction(), 900);

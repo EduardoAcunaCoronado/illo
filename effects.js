@@ -1,8 +1,12 @@
 /**
- * Efectos visuales y sonoros estilo Persona 5
+ * Librería de efectos visuales heredados (originalmente p5-effects).
+ * Incluye animaciones CSS dinámicas, sacudidas, partículas y transiciones
+ * de interfaz. Utiliza inyección de estilos (CSS-in-JS).
  */
-
 class Persona5Effects {
+    /**
+     * @constructor
+     */
     constructor() {
         this.isInitialized = false;
         this.soundEnabled = true;
@@ -86,21 +90,26 @@ class Persona5Effects {
     }
 
     /**
-     * Efecto de selección en un botón
+     * Inyecta el efecto de selección visual en un botón.
+     * @param {HTMLElement} element - El nodo del DOM a resaltar.
      */
     highlightChoice(element) {
         element.classList.add('p5-selected');
     }
 
     /**
-     * Remover efecto de selección
+     * Elimina el efecto de selección de un botón.
+     * @param {HTMLElement} element - El nodo del DOM a restaurar.
      */
     unhighlightChoice(element) {
         element.classList.remove('p5-selected');
     }
 
     /**
-     * Efecto de aparición de texto con destellos
+     * Convierte una cadena de texto en una matriz de elementos `<span>`,
+     * cada uno con una animación de aparición en cascada (destello).
+     * @param {string} text - Texto original a dividir.
+     * @returns {Array<HTMLElement>} Un array con cada carácter envuelto en un span animado.
      */
     spanText(text) {
         const spans = text.split('').map((char) => {
@@ -108,6 +117,7 @@ class Persona5Effects {
             span.textContent = char;
             span.style.display = 'inline-block';
             span.style.opacity = '0';
+            // Animación por defecto definida globalmente en el CSS
             span.style.animation = `fadeIn 0.1s ease-out forwards`;
             return span;
         });
@@ -115,11 +125,16 @@ class Persona5Effects {
     }
 
     /**
-     * Efecto de cambio de escena con transición
+     * Realiza un fundido a negro (fade in / fade out) sincrónico.
+     * Añade un overlay temporal al contenedor del juego y lo retira al terminar.
+     * @param {number} [duration=600] - Duración total de la transición en milisegundos.
+     * @returns {Promise<void>} Se resuelve cuando la pantalla vuelve a estar transparente.
      */
     async transitionScene(duration = 600) {
         const container = document.getElementById('game-container');
         const overlay = document.createElement('div');
+
+        // Estilos en línea para el overlay negro
         overlay.style.cssText = `
             position: absolute;
             top: 0;
@@ -135,8 +150,10 @@ class Persona5Effects {
 
         return new Promise((resolve) => {
             requestAnimationFrame(() => {
+                // Aparece a negro
                 overlay.style.opacity = '1';
                 setTimeout(() => {
+                    // Desaparece y vuelve a ser transparente
                     overlay.style.opacity = '0';
                     setTimeout(() => {
                         overlay.remove();
@@ -148,7 +165,9 @@ class Persona5Effects {
     }
 
     /**
-     * Efecto de impacto visual al presionar un botón
+     * Aplica un impacto visual de escalado (hacia dentro y rebote) a un nodo.
+     * También emite un sonido de impacto genérico.
+     * @param {HTMLElement} element - El nodo del DOM que sufrirá el impacto.
      */
     buttonPress(element) {
         element.classList.add('p5-impact');
@@ -159,7 +178,10 @@ class Persona5Effects {
     }
 
     /**
-     * Efecto de ondas de choque
+     * Dibuja una onda de choque concéntrica desde unas coordenadas específicas.
+     * Crea un div temporal que se expande radialmente y se destruye a los 600ms.
+     * @param {number} x - Coordenada X (píxeles).
+     * @param {number} y - Coordenada Y (píxeles).
      */
     shockwave(x, y) {
         const container = document.getElementById('game-container');
@@ -200,7 +222,8 @@ class Persona5Effects {
     }
 
     /**
-     * Animación de líneas de enfoque
+     * Genera una cuadrícula temporal de líneas de enfoque (barras intermitentes)
+     * para resaltar momentos climáticos. Las líneas se desvanecen automáticamente tras 400ms.
      */
     focusLines() {
         const container = document.getElementById('game-container');
@@ -252,7 +275,13 @@ class Persona5Effects {
     }
 
     /**
-     * Crear partículas de efecto
+     * Inyecta múltiples partículas circulares que se dispersan en forma de explosión radial.
+     * Las partículas calculan su propia física a través de RequestAnimationFrame y se auto-destruyen
+     * al perder su opacidad total (life <= 0).
+     * @param {number} x - Origen X de la explosión.
+     * @param {number} y - Origen Y de la explosión.
+     * @param {number} [count=8] - Número de partículas a generar.
+     * @param {string} [color='#ffcc00'] - Color CSS de las partículas.
      */
     createParticles(x, y, count = 8, color = '#ffcc00') {
         const container = document.getElementById('game-container');
@@ -303,7 +332,9 @@ class Persona5Effects {
     }
 
     /**
-     * Reproducir sonido (requiere archivos de audio)
+     * Reproduce un sonido predefinido si el sistema tiene el sonido habilitado.
+     * Ignora errores como la falta de interacción previa requerida por el navegador.
+     * @param {string} [soundType='select'] - Identificador del sonido a reproducir ('select', 'impact', 'transition', 'confirm').
      */
     playSound(soundType = 'select') {
         if (!this.soundEnabled) return;
@@ -330,7 +361,9 @@ class Persona5Effects {
     }
 
     /**
-     * Efectos de teclado visible (menú)
+     * Muestra una burbuja emergente temporal en la esquina inferior derecha
+     * con el nombre de la tecla pulsada, útil para confirmar interacciones de UI en teclado.
+     * @param {string} keyName - Texto a mostrar en la burbuja.
      */
     keyboardEffect(keyName) {
         const overlay = document.createElement('div');
@@ -366,7 +399,10 @@ class Persona5Effects {
     }
 
     /**
-     * Efecto de movimiento de cámara (screen shake)
+     * Sacude bruscamente la pantalla aplicando transformaciones CSS al contenedor del juego.
+     * La intensidad decae linealmente con el tiempo.
+     * @param {number} [intensity=5] - Desplazamiento máximo inicial en píxeles.
+     * @param {number} [duration=200] - Duración total de la sacudida en milisegundos.
      */
     shakeScreen(intensity = 5, duration = 200) {
         const container = document.getElementById('game-container');
@@ -391,7 +427,8 @@ class Persona5Effects {
     }
 
     /**
-     * Desactivar/activar sonido
+     * Define si la librería emitirá sonidos o no.
+     * @param {boolean} enabled - True para habilitar, False para silenciar.
      */
     setSoundEnabled(enabled) {
         this.soundEnabled = enabled;

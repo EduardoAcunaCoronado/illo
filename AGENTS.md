@@ -49,7 +49,7 @@ proyecto/
 ├── engine/                    ← Módulos ES del motor
 ├── 🎮 game.js
 ├── 🎨 styles.css
-├── ✨ p5-effects.js
+├── ✨ effects.js
 ├── electron/                 ← App de escritorio (main.js + static-server.js)
 ├── characters/
 ├── chapters/

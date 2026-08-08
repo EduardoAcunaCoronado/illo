@@ -57,6 +57,7 @@ export const ACTION_TYPES = Object.freeze([
     'waitClick',
     'esperarClick',
     'minigame',
+    'stopMinigame',
     'rescue',
     'setDelay',
     'addDelay',
@@ -92,6 +93,7 @@ const NO_POSITIONAL_ARGS = new Set([
     'hideText',
     'ocultarTexto',
     'hideCG',
+    'stopMinigame',
 ]);
 
 const POSITIONAL_FIELDS = Object.freeze({
@@ -428,6 +430,9 @@ export class ActionInterpreter {
                 break;
             case 'minigame':
                 await engine.playMinigame(action);
+                break;
+            case 'stopMinigame':
+                engine.abortarMinijuego();
                 break;
             case 'rescue':
                 engine.rescueCharacter(action.character);

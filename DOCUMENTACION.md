@@ -939,6 +939,8 @@ Antes de añadir o sustituir un maestro de Samu, comprueba que su directorio baj
 de `workbench/` y no versionarse.
 ## Herramientas gráficas locales
 
+### Centro de Herramientas
+
 Inicia el centro con `ABRIR_EDITOR_OJOS.bat` o `npm run tools:eyes` y abre
 <http://localhost:8011/tools>.
 

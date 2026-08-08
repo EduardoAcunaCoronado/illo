@@ -1,10 +1,24 @@
+// === VARIABLES GLOBALES DEL MOTOR ===
+// Alias para acceder rápidamente a los gestores del tiempo y multimedia interceptados.
 const gamePauseMedia = window.gamePauseMedia;
 const gamePauseClock = window.gamePauseClock;
 
+/**
+ * Instancia principal del motor de la novela visual.
+ * Se encarga de procesar los JSON, dibujar fondos, personajes, diálogos y efectos.
+ * @type {VisualNovelEngine}
+ */
 const engine = new VisualNovelEngine();
+window.engine = engine;
+
+// Banderas de estado global del juego
 let isGameRunning = false;
 let waitingForInput = false;
+
+// Referencia a la función actual que espera un clic del usuario (para avanzar texto o diálogos)
 let clickHandler = null;
+
+// Control del capítulo actualmente cargado en memoria
 let currentChapterNumber = 0;
 let currentChapterName = null;
 const PRELOADED_GAME_CHARACTERS = [
@@ -35,14 +49,23 @@ const PRELOADED_GAME_CHARACTERS = [
     'tralalelo_tralala',
 ];
 
-// Mantener Control acelera el texto y avanza las líneas, como el modo skip de
-// una novela visual. Las elecciones y los minijuegos siguen requiriendo input.
+// === MANEJO DE ATAJOS DE TECLADO GLOBALES ===
+
+// Mantener la tecla 'Control' acelera el texto y avanza las líneas rápidamente.
+// Es equivalente al modo "Skip" estándar de cualquier novela visual.
+// Nota: Las elecciones de menú y los minijuegos ignorarán este acelerador por seguridad.
 document.addEventListener('keydown', (e) => {
+    // Si no es Control, si se mantiene pulsada rebotando (repeat) o si el juego no ha empezado, ignoramos.
     if (e.key !== 'Control' || e.repeat || !isGameRunning) return;
+
+    // Activamos la velocidad rápida en el motor principal
     engine.setFastForward(true);
+
+    // Si hay un diálogo esperando que hagamos clic para continuar, lo disparamos automáticamente
     if (clickHandler) clickHandler();
 });
 
+// Cuando soltamos la tecla Control, comprobamos si sigue presionada (por si hay solapamiento) y desactivamos el acelerador
 document.addEventListener('keyup', (e) => {
     if (e.key === 'Control') engine.setFastForward(e.ctrlKey);
 });
@@ -53,7 +76,8 @@ window.addEventListener('blur', () => engine.setFastForward(false));
 let AVAILABLE_CHAPTERS = [];
 let availableChaptersPromise = null;
 
-// Elementos del DOM
+// === ELEMENTOS DEL DOM ===
+// Referencias cacheadas a los elementos principales de la interfaz HTML para evitar buscarlos continuamente.
 const gameContainer = document.getElementById('game-container');
 const mainMenu = document.getElementById('main-menu');
 const startBtn = document.getElementById('start-btn');
@@ -62,10 +86,19 @@ const galleryBtn = document.getElementById('gallery-btn');
 const dialogBox = document.getElementById('dialog-box');
 const gameArea = document.querySelector('#game-container > :not(#main-menu)');
 
+/**
+ * Muestra u oculta el menú principal del juego manejando además la accesibilidad.
+ *
+ * @param {boolean} visible - True para mostrar el menú, False para ocultarlo y entrar al juego.
+ */
 function setMainMenuVisible(visible) {
+    // La clase 'hidden' se usa para aplicar transiciones CSS de opacidad.
     mainMenu.classList.toggle('hidden', !visible);
+
+    // El atributo 'inert' evita que los elementos ocultos reciban clics del ratón o el teclado (tabulación).
     mainMenu.toggleAttribute('inert', !visible);
 
+    // Ajustamos las etiquetas ARIA para los lectores de pantalla (accesibilidad).
     if (visible) {
         mainMenu.removeAttribute('aria-hidden');
     } else {
@@ -139,18 +172,31 @@ function showToolsOfflineDialog(result) {
     queueMicrotask(() => toolsRetryBtn?.focus());
 }
 
+/**
+ * Comprueba el estado de salud del servidor de "Eye Tools" (el editor visual).
+ * Este servidor se ejecuta en el puerto 8011 de forma paralela al juego.
+ *
+ * @returns {Promise<{ok: boolean, reason?: string}>} Promesa que resuelve a un objeto con el estado.
+ */
 async function checkEyeToolsHealth() {
     if (!toolsMenuLink) return { ok: false };
+
+    // Usamos AbortController para cancelar la petición fetch si tarda más de 1.6 segundos.
+    // Esto evita que el menú se quede "colgado" esperando si el servidor está caído.
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 1600);
+
     try {
         const healthUrl = new URL('/api/health', toolsMenuLink.href);
         const gameHealthUrl = new URL('/api/dev-health', location.origin);
+
+        // 1. Verificamos primero que estamos en un entorno de desarrollo válido (puerto 8000)
         const gameResponse = await fetch(gameHealthUrl, {
-            cache: 'no-store',
+            cache: 'no-store', // Evitamos caché para obtener siempre el estado en vivo
             signal: controller.signal,
         });
         if (!gameResponse.ok) return { ok: false, reason: 'unsupported-game-server' };
+
         const gameHealth = await gameResponse.json();
         const validGame =
             gameHealth?.ok === true &&
@@ -158,29 +204,42 @@ async function checkEyeToolsHealth() {
             gameHealth?.protocolVersion === 1;
         if (!validGame) return { ok: false, reason: 'unsupported-game-server' };
 
+        // 2. Si el juego es válido, verificamos si el servidor de Tools (8011) responde
         const response = await fetch(healthUrl, {
             cache: 'no-store',
             signal: controller.signal,
         });
         if (!response.ok) return { ok: false };
+
         const health = await response.json();
         const validTools =
             health?.ok === true && health?.service === 'project-airi-eye-tools' && health?.protocolVersion === 1;
         if (!validTools) return { ok: false };
+
+        // 3. Verificamos que tanto el juego como Tools están sirviendo la MISMA carpeta del proyecto
         if (!health.rootId || health.rootId !== gameHealth.rootId) {
             return { ok: false, reason: 'wrong-project' };
         }
+
         return { ok: true };
     } catch (_error) {
         return { ok: false };
     } finally {
+        // Limpiamos el timeout para no causar fugas de memoria
         clearTimeout(timeout);
     }
 }
 
+/**
+ * Inicia la secuencia de apertura del editor "Eye Tools".
+ * Bloquea múltiples clics mediante la bandera toolsCheckRunning.
+ */
 async function openEyeTools() {
+    // Si ya estamos comprobando, ignoramos clics adicionales
     if (!toolsMenuLink || toolsCheckRunning) return;
     toolsCheckRunning = true;
+
+    // Feedback visual en la interfaz del menú
     toolsMenuLink.classList.add('is-checking');
     toolsMenuLink.setAttribute('aria-busy', 'true');
     if (toolsStatus) toolsStatus.textContent = 'Comprobando Tools…';
@@ -189,6 +248,8 @@ async function openEyeTools() {
     let result = null;
     try {
         try {
+            // Electron tiene un método nativo para asegurar que el subproceso de Python arranque.
+            // Si no estamos en Electron (navegador web), hacemos el chequeo manual por HTTP.
             if (window.desktopApp?.ensureEyeTools) {
                 result = await window.desktopApp.ensureEyeTools();
             } else {
@@ -198,15 +259,18 @@ async function openEyeTools() {
             result = { ok: false, reason: 'start-failed' };
         }
 
+        // Si todo va bien, redirigimos la página actual a la URL de Tools
         if (result?.ok) {
             if (toolsStatus) toolsStatus.textContent = 'Tools disponible. Abriendo…';
             window.location.assign(toolsMenuLink.href);
             return;
         }
 
+        // Si falla, mostramos el modal de error
         if (toolsStatus) toolsStatus.textContent = 'Tools no está disponible.';
         showToolsOfflineDialog(result);
     } finally {
+        // Restauramos el estado de la interfaz sin importar si hubo éxito o error
         toolsCheckRunning = false;
         toolsMenuLink.classList.remove('is-checking');
         toolsMenuLink.removeAttribute('aria-busy');
@@ -2084,6 +2148,30 @@ function startStartupOpening() {
 
 function setupStartupSequence() {
     const startupTarget = new URLSearchParams(location.search).get('screen');
+    if (startupTarget === 'playground') {
+        startupFinished = true;
+        startupStarted = true;
+        document.body.classList.remove('startup-pending');
+        startupOverlay?.remove();
+        
+        // Ocultar explícitamente el menú principal y su fondo
+        setMainMenuVisible(false);
+        if (typeof stopMenuVideoLoop === 'function') {
+            stopMenuVideoLoop();
+        }
+        
+        isGameRunning = true;
+        engine.reset();
+        
+        // Remove ?screen=playground from URL to keep it clean if refreshed
+        const cleanParams = new URLSearchParams(location.search);
+        cleanParams.delete('screen');
+        const cleanQuery = cleanParams.size ? `?${cleanParams}` : '';
+        const cleanUrl = `${location.pathname}${cleanQuery}${location.hash}`;
+        history.replaceState(history.state, '', cleanUrl);
+        return;
+    }
+
     if (startupTarget === 'menu') {
         // Los accesos de desarrollo vuelven aquí. Ya se ha visto el arranque en
         // la pestaña de origen, así que no repetimos disclaimer ni opening.
@@ -2566,25 +2654,32 @@ async function loadAllCharacters() {
     }
 }
 
+/**
+ * Inicia una partida nueva desde cero, restableciendo todo el progreso.
+ * Limpia el inventario, el nivel de presión de la historia y recarga los personajes.
+ */
 async function startNewGame() {
-    if (isGameRunning) return; // doble clic = una sola partida
+    // Si ya estamos jugando, ignoramos (evita errores si el usuario hace doble clic rápido en "Nueva Partida")
+    if (isGameRunning) return;
+
+    // Reseteos de estado global
     engine.setFastForward(false);
     stopMenuMedia();
     setMainMenuVisible(false);
     isGameRunning = true;
     currentChapterNumber = 0;
 
-    // Partida nueva: limpiar el progreso de rescates, llamadas e inventario
+    // Partida nueva: limpiar el progreso de rescates, llamadas e inventario en el motor
     engine.rescued = [];
     engine.completedCalls = [];
     engine.inventory = [];
     engine.storyDelay = 0;
     engine.storyPressure = 0;
 
-    // Cargar todos los personajes disponibles
+    // Cargar todos los personajes disponibles en memoria antes de empezar a dibujar
     await loadAllCharacters();
 
-    // Iniciar con chapter0
+    // Iniciar con chapter0 (El prólogo)
     await playChapter(currentChapterNumber);
 }
 
@@ -2595,6 +2690,12 @@ function releaseChapterTransition(transitionCurtain) {
     setTimeout(() => transitionCurtain.remove(), 380);
 }
 
+/**
+ * Carga e inicia la reproducción de un capítulo específico.
+ *
+ * @param {number|string} chapterIdentifier - Puede ser el número (0, 1) o el nombre del archivo ("chapter1").
+ * @param {HTMLElement} transitionCurtain - Opcional. Elemento visual del DOM usado para transiciones suaves al cargar.
+ */
 async function playChapter(chapterIdentifier, transitionCurtain = null) {
     // Permitir tanto número (chapter0, chapter1...) como identificador directo.
     const chapterName = typeof chapterIdentifier === 'number' ? `chapter${chapterIdentifier}` : chapterIdentifier;
@@ -2602,18 +2703,18 @@ async function playChapter(chapterIdentifier, transitionCurtain = null) {
     if (typeof chapterIdentifier === 'number') {
         currentChapterNumber = chapterIdentifier;
     } else {
-        // También los ids en string ("chapter4") actualizan el contador: si no, el
-        // fallback numérico de endGame se queda clavado en 0 y, en capítulos sin
-        // setNextChapter (4 y 5), "Siguiente capítulo" devolvía al chapter1 y el
-        // juego entero entraba en bucle.
+        // También los ids en string ("chapter4") actualizan el contador.
+        // Si no se actualiza, al finalizar un capítulo (endGame) el juego entra en bucle infinito
+        // porque el contador numérico se queda estancado en 0 o 1.
         const numerico = String(chapterIdentifier).match(/^chapter(\d+)$/);
         if (numerico) currentChapterNumber = parseInt(numerico[1], 10);
     }
     currentChapterName = chapterName;
 
-    // Cargar el capítulo
+    // Pedimos al motor que cargue y parsee el archivo JSON del capítulo
     const chapter = await engine.loadChapter(chapterName);
 
+    // Si el capítulo no existe o hay error de carga, devolvemos al jugador al menú principal
     if (!chapter) {
         isGameRunning = false;
         engine.setFastForward(false);
@@ -2623,24 +2724,33 @@ async function playChapter(chapterIdentifier, transitionCurtain = null) {
         return;
     }
 
+    // Liberamos el telón visual (si había uno tapando la pantalla durante la carga)
     releaseChapterTransition(transitionCurtain);
 
-    // Jugar el capítulo
+    // Cedemos el control al bucle principal del juego
     await playGame();
 }
 
+/**
+ * El bucle principal infinito del juego.
+ * Mantiene la novela visual avanzando línea a línea hasta que se acaba el contenido,
+ * evaluando continuamente si hay peticiones de salto de escena, retrocesos o salidas al menú.
+ */
+window.playGame = playGame;
 async function playGame() {
     startRewindWatcher();
+
+    // Mientras el juego esté activo, el bucle da vueltas procesando acciones
     while (isGameRunning) {
-        // Salida al menú principal desde el menú de pausa
+        // --- 1. Salida al menú principal desde el menú de pausa ---
         if (exitToMenuRequested) {
             exitToMenuRequested = false;
             volverAlMenuPrincipal();
             break;
         }
 
-        // Petición de retroceso: rebobinar y volver a reproducir la escena anterior
-        // desde su primera línea (sus acciones repintan fondo, personajes y música).
+        // --- 2. Petición de retroceso (Botón Rebobinar) ---
+        // Vuelve a reproducir la escena anterior desde su primera línea (repintando fondos y sprites).
         if (rewindRequested) {
             rewindRequested = false;
             engine.historyManager.rewind();
@@ -2648,7 +2758,7 @@ async function playGame() {
             continue;
         }
 
-        // Salto directo desde el menú de escenas
+        // --- 3. Salto directo desde el menú de escenas ---
         if (sceneJumpRequested !== null) {
             const destino = sceneJumpRequested;
             sceneJumpRequested = null;
@@ -2657,8 +2767,8 @@ async function playGame() {
             continue;
         }
 
-        // Salto de línea exclusivo del panel de depuración. Se atiende dentro
-        // del bucle existente, nunca arrancando un segundo playGame en paralelo.
+        // --- 4. Salto de línea (exclusivo del panel de desarrollo) ---
+        // Se atiende dentro del bucle existente, nunca arrancando un segundo playGame en paralelo.
         if (lineJumpRequested !== null) {
             const destino = lineJumpRequested;
             lineJumpRequested = null;
@@ -2667,21 +2777,25 @@ async function playGame() {
             continue;
         }
 
+        // Procesamos y renderizamos la siguiente línea del JSON del capítulo actual
         const hasMoreContent = await engine.nextLine();
 
+        // Si ya no quedan líneas (hasMoreContent es false), hemos llegado al final del archivo
         if (!hasMoreContent) {
-            // Último diálogo ya está mostrado, esperar click antes de terminar
             if (engine.isWaitingForInput) {
                 await waitForClick();
             }
-            endGame();
+            endGame(); // Salta al siguiente capítulo o fin de la demo
             break;
         }
 
+        // Si la línea procesada no requiere que el jugador haga clic (ej: un simple cambio de fondo),
+        // pasamos directamente a la siguiente iteración del bucle.
         if (!engine.isWaitingForInput) {
             continue;
         }
 
+        // Si requiere input, pausamos el bucle hasta que el usuario pulse la pantalla o espacio.
         await waitForClick();
     }
 }

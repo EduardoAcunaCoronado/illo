@@ -956,7 +956,7 @@ def build_story() -> list[Flowable]:
         ),
         H2("7.1 Orden de carga"),
         code(
-            "p5-effects.js\n"
+            "effects.js\n"
             "  -> engine.bundle.js\n"
             "  -> battle / hitboxes / créditos / guindillas / Ketchup / runas\n"
             "  -> juice.js\n"

@@ -124,16 +124,29 @@ class VisualNovelEngine {
         return this.domRenderer.getBackgroundElement();
     }
 
-    // Añade un objeto al inventario (sin duplicar). Persiste entre capítulos.
+    /**
+     * Añade un objeto al inventario del jugador, previniendo duplicados.
+     * El inventario persiste a través de los capítulos.
+     * @param {string} name - Identificador del objeto (ej. 'diapason').
+     */
     addItem(name) {
         if (name && !this.inventory.includes(name)) this.inventory.push(name);
     }
 
-    // Indica si el jugador tiene un objeto en el inventario.
+    /**
+     * Comprueba si el jugador posee un objeto determinado en su inventario.
+     * @param {string} name - Identificador del objeto.
+     * @returns {boolean} `true` si el objeto está en el inventario.
+     */
     hasItem(name) {
         return this.inventory.includes(name);
     }
 
+    /**
+     * Activa o desactiva el avance rápido del texto.
+     * Si se activa, finaliza inmediatamente la línea actual si se estaba escribiendo.
+     * @param {boolean} active - `true` para acelerar el flujo, `false` para velocidad normal.
+     */
     setFastForward(active) {
         this.fastForward = !!active && !this.textPaused;
         if (this.fastForward && this._finishTyping) {
@@ -141,15 +154,27 @@ class VisualNovelEngine {
         }
     }
 
-    // Pausa exclusivamente el escritor de diálogo. Los minijuegos, vídeos y
-    // animaciones siguen su curso cuando el jugador oculta el HUD con H o clic
-    // derecho; al mostrarlo de nuevo, el texto continúa por el mismo grafema.
+    /**
+     * Pausa exclusivamente el escritor de diálogo (typewriter).
+     * Los minijuegos, vídeos y animaciones CSS siguen su curso cuando el jugador
+     * oculta el HUD con 'H' o clic derecho.
+     * @param {boolean} paused - `true` para pausar la escritura, `false` para reanudar.
+     */
     setTextPaused(paused) {
         this.textPaused = !!paused;
         if (this.textPaused) this.fastForward = false;
         if (this._setTypingPaused) this._setTypingPaused(this.textPaused);
     }
 
+    /**
+     * Descarga y parsea un archivo JSON, con caché integrada y deduplicación
+     * de peticiones simultáneas (fetch in-flight).
+     * @param {string} path - Ruta al archivo JSON (ej. 'chapters/chapter1.json').
+     * @param {Object} [options={}] - Opciones de la petición.
+     * @param {boolean} [options.allow404=false] - Si es `true`, devuelve `fallback` silenciosamente ante un error HTTP 404 en vez de lanzar excepción.
+     * @param {*} [options.fallback] - Valor devuelto si falla la petición y `allow404` es cierto.
+     * @returns {Promise<Object|null>} El JSON parseado o el fallback.
+     */
     async fetchJson(path, options = {}) {
         const { allow404 = false, fallback } = options;
 
@@ -188,6 +213,13 @@ class VisualNovelEngine {
         }
     }
 
+    /**
+     * Carga de manera asíncrona el guion de un capítulo.
+     * Restablece el estado de escena y lanza el prefetch de activos de la primera línea.
+     * Muestra la cinemática de título si es un capítulo nuevo.
+     * @param {string} chapterName - Nombre del archivo del capítulo sin extensión (ej. 'chapter1').
+     * @returns {Promise<Object|null>} El objeto del capítulo o null si no se encuentra.
+     */
     async loadChapter(chapterName) {
         const normalizedChapterName = String(chapterName);
         const inFlight = this.chapterLoadPromises.get(normalizedChapterName);
@@ -559,6 +591,10 @@ class VisualNovelEngine {
         });
     }
 
+    /**
+     * Obtiene el nodo JSON de la escena actual en el capítulo cargado.
+     * @returns {Object|null} El objeto de escena, o null si no existe.
+     */
     getCurrentScene() {
         if (!this.currentChapter || !this.currentChapter.scenes) {
             return null;
@@ -566,6 +602,10 @@ class VisualNovelEngine {
         return this.currentChapter.scenes[this.currentScene];
     }
 
+    /**
+     * Obtiene el nodo JSON de la línea de diálogo o acción que se está ejecutando actualmente.
+     * @returns {Object|null} El objeto de línea actual.
+     */
     getCurrentLine() {
         const scene = this.getCurrentScene();
         if (!scene || !scene.lines) {
@@ -574,17 +614,16 @@ class VisualNovelEngine {
         return scene.lines[this.currentLine];
     }
 
-    // Si la línea define una variante por consecuencia, devuelve una copia con
-    // el texto alternativo. Soporta (en orden de prioridad):
-    // - byRescueCount: mapa "nº de rescatados" -> texto. Permite revelar la
-    //   historia por etapas según el ORDEN de rescate. Al entrar a un Capítulo 2
-    //   la acción "rescue" ya se ejecutó, así que rescued.length vale 1, 2 o 3
-    //   según si este amigo es el 1º, 2º o 3º/último rescate. Se elige la entrada
-    //   cuya clave sea el mayor umbral <= rescued.length (así "3" cubre el último
-    //   rescate aunque en el futuro hubiera más amigos).
-    // - allRescuedText: se usa cuando ya se ha rescatado a todos (3).
-    // - consequence.delayAtLeast: se usa según el retraso acumulado.
-    // Si no aplica ninguna, devuelve la línea tal cual.
+    /**
+     * Si la línea define una variante por consecuencia, devuelve una copia mutada
+     * con el texto alternativo. Soporta (en orden de prioridad):
+     * - `byRescueCount`: Modifica el texto dependiendo del historial de rescates (ej. "nº de rescatados").
+     * - `allRescuedText`: Se usa cuando se ha completado la misión de rescatar a todos.
+     * - `consequence.delayAtLeast`: Cambia el texto si las decisiones del jugador causaron un retraso acumulado alto.
+     * Si no aplica ninguna mutación, devuelve la línea original.
+     * @param {Object} line - Nodo de línea JSON a evaluar.
+     * @returns {Object} Línea resuelta (original o mutada).
+     */
     resolveConsequenceLine(line) {
         if (line.byRescueCount && typeof line.byRescueCount === 'object') {
             const count = this.rescued.length;
@@ -609,13 +648,22 @@ class VisualNovelEngine {
         return line;
     }
 
+    /**
+     * Pasa una acción no conversacional al intérprete.
+     * @param {Object} action - Nodo JSON de acción (ej. changeBackground, minigame, flag).
+     * @returns {Promise<any>} Promesa que se resuelve cuando la acción finaliza su ciclo de vida.
+     */
     async executeAction(action) {
         return this.actionInterpreter.execute(action);
     }
 
-    // Reproduce un vídeo/cutscene a pantalla completa (p. ej. el opening de Tony).
-    // El vídeo trae su propio audio; se pausa la música del juego mientras dura y
-    // se reanuda al terminar. Se puede saltar con clic / Esc / Enter / Espacio.
+    /**
+     * Reproduce un vídeo o cinemática pre-renderizada a pantalla completa.
+     * Mutea la música principal, muestra el visor MP4, y captura clics/teclado para permitir "Saltar".
+     * Restaura todo el estado al finalizar.
+     * @param {Object} [action={}] - Opciones del nodo JSON (src, audioCrossfade, muted, endBackground...).
+     * @returns {Promise<void>} Se resuelve cuando la cinemática termina o el usuario la salta.
+     */
     playVideo(action = {}) {
         const src = action.path || action.value || action.src;
         if (!src) {
@@ -848,6 +896,10 @@ class VisualNovelEngine {
     }
 
     async playMinigame(action) {
+        if (this.hayMinijuegoAbierto()) {
+            this.abortarMinijuego();
+        }
+
         // Ajustar la dificultad según el retraso acumulado, si se define.
         // Cualquier propiedad "<algo>ByDelay" (p. ej. maxHitsByDelay,
         // maxMissesByDelay) sobreescribe "<algo>" eligiendo la entrada cuya
@@ -895,10 +947,12 @@ class VisualNovelEngine {
                             break;
                         case 'chiliHarvest':
                         case 'guindillas':
+                        case 'chili-harvest-minigame':
                             await this.playChiliHarvestMinigame(action);
                             break;
                         case 'ketchupBoss':
                         case 'ketchup':
+                        case 'ketchup-minigame':
                             await this.playKetchupBossMinigame(action);
                             break;
                         case 'ecchi':
@@ -913,6 +967,7 @@ class VisualNovelEngine {
                         case 'runeChanneling':
                         case 'rune_channeling':
                         case 'canalizacionRunas':
+                        case 'rune-channeling-minigame':
                             await this.playRuneChannelingMinigame(action);
                             break;
                         case 'gatos':
@@ -925,10 +980,12 @@ class VisualNovelEngine {
                             await this.playRhythmMinigame(action);
                             break;
                         case 'battle':
+                        case 'battle-minigame':
                             await this.playBattleMinigame(action);
                             break;
                         case 'credits':
                         case 'creditos':
+                        case 'credits-minigame':
                             await this.playCreditsMinigame(action);
                             break;
                         case 'chase':
@@ -959,6 +1016,10 @@ class VisualNovelEngine {
     abortarMinijuego() {
         const abortar = this._abortarMinijuego;
         if (abortar) abortar();
+        
+        const abortarRetry = this._abortarRetry;
+        if (abortarRetry) abortarRetry();
+        
         this.limpiarMinijuegosActivos();
     }
 
@@ -1526,7 +1587,11 @@ class VisualNovelEngine {
         });
     }
 
-    // Créditos finales del compi (credits-minigame.js). Solo tras cerrar el núcleo.
+    /**
+     * Lanza el minijuego de créditos finales y espera a que concluya.
+     * @param {Object} [options={}] - Parámetros adicionales para los créditos.
+     * @returns {Promise<boolean>} Devuelve true al terminar.
+     */
     async playCreditsMinigame(options = {}) {
         this.isWaitingForInput = false;
 
@@ -1538,6 +1603,12 @@ class VisualNovelEngine {
         return await window.CreditsMinigame.play(options);
     }
 
+    /**
+     * Inicia una instancia de batalla (motor ATB).
+     * Inyecta el diapasón si el jugador lo tiene en su inventario.
+     * @param {Object} [options={}] - Configuración de batalla (enemigo, grupo, turnos de supervivencia).
+     * @returns {Promise<boolean>} Promesa que se resuelve con true (victoria) o false (derrota).
+     */
     async playBattleMinigame(options = {}) {
         this.isWaitingForInput = false;
 
@@ -1584,6 +1655,12 @@ class VisualNovelEngine {
         return won;
     }
 
+    /**
+     * Lanza el minijuego de canalización de runas.
+     * En caso de fracaso, retiene al jugador hasta que logre superarlo.
+     * @param {Object} [options={}] - Dificultad (niveles, tiempo).
+     * @returns {Promise<boolean>} Promesa que se resuelve (siempre true por los reintentos).
+     */
     async playRuneChannelingMinigame(options = {}) {
         this.isWaitingForInput = false;
 
@@ -1602,9 +1679,13 @@ class VisualNovelEngine {
         return won;
     }
 
-    // Primera parte del combate de Kingdom Ketchup: durante un tiempo fijo,
-    // Samu reúne tantas guindillas como pueda. No se pierde la historia si se
-    // recogen pocas; el resultado regula la dificultad de la batalla contra Zip.
+    /**
+     * Inicia la primera fase del combate contra Zip: la recolección de chiles picantes.
+     * El resultado no es binario; la cantidad obtenida se guarda en el estado
+     * y define el nivel de dificultad posterior del jefe.
+     * @param {Object} [options={}] - Tiempos y velocidad de spawn.
+     * @returns {Promise<number>} Número final de chiles recolectados limpios.
+     */
     async playChiliHarvestMinigame(options = {}) {
         this.isWaitingForInput = false;
         const collected = await this.runChiliHarvestRound(options);
@@ -2124,13 +2205,17 @@ class VisualNovelEngine {
         });
     }
 
-    // Pantalla de derrota: ofrece reintentar el minijuego.
-    // Pantalla de "has perdido, ¿reintentas?". Se puede ABORTAR desde fuera
-    // (menú de escenas / retroceder): si no, quien llegue aquí desde el selector
-    // se queda encerrado, porque la única salida es ganar el minijuego. Al
-    // abortar se rechaza con un error etiquetado que playMinigame recoge y
-    // deshace toda la cadena del minijuego de una vez.
+    /**
+     * Muestra la pantalla de derrota ("Game Over" / "Reintentar") estandarizada para minijuegos.
+     * Atrapa al jugador en un bucle visual hasta que presione el botón "Reintentar".
+     * Soporta cancelación externa a través del menú de retroceso de escenas.
+     * @param {string} [message='¡No ha salido bien!'] - Texto de error a mostrar.
+     * @returns {Promise<void>} Se resuelve cuando el jugador decide reintentar.
+     */
     showMinigameRetry(message = '¡No ha salido bien!') {
+        if (!this.hayMinijuegoAbierto()) {
+            return Promise.reject(new Error('minijuego-cancelado'));
+        }
         return new Promise((resolve, reject) => {
             const overlay = document.createElement('div');
             overlay.className = 'minigame-overlay minigame-retry';
@@ -2566,8 +2651,12 @@ class VisualNovelEngine {
         });
     }
 
-    // Minijuego: reacción rápida en Ecchi Land.
-    // Orquesta las rondas y permite reintentar si pierdes.
+    /**
+     * Inicia el minijuego de reacción en Ecchi Land (Clica melocotones, esquiva besos).
+     * Orquesta las rondas y permite reintentar si el jugador pierde.
+     * @param {Object} [options={}] - Parámetros de dificultad (velocidad, umbrales).
+     * @returns {Promise<boolean>} Devuelve true cuando el jugador logra superar el nivel.
+     */
     async playEcchiMinigame(options = {}) {
         this.isWaitingForInput = false;
 
@@ -2581,8 +2670,12 @@ class VisualNovelEngine {
         return won;
     }
 
-    // Una ronda del minijuego de reacción. Resuelve true (ganada) o false (perdida).
-    // Clica 🍑 antes de que desaparezcan; NO cliques 💋 (trampas).
+    /**
+     * Gestiona una ronda individual del minijuego de reacción (Ecchi Land).
+     * El objetivo es hacer clic en 🍑 antes de que desaparezcan sin tocar 💋.
+     * @param {Object} [options={}] - Configuración de la ronda.
+     * @returns {Promise<boolean>} True si alcanza el objetivo de puntuación; false si agota los fallos.
+     */
     runEcchiRound(options = {}) {
         const goal = options.goal || 12; // aciertos para ganar
         const maxMisses = options.maxMisses || 3; // fallos permitidos
@@ -2711,8 +2804,12 @@ class VisualNovelEngine {
         });
     }
 
-    // Minijuego: memoria de palomas (estilo Simon) en Ciudad Paloma.
-    // Orquesta las rondas y permite reintentar si pierdes.
+    /**
+     * Inicia el minijuego de memoria "Simon Dice" en Ciudad Paloma.
+     * Orquesta las rondas y permite reintentar si fallas. Aplica modificadores si tienes el diapasón.
+     * @param {Object} [options={}] - Dificultad base (velocidad de destello y rondas).
+     * @returns {Promise<boolean>} Devuelve true cuando el jugador supera el minijuego completo.
+     */
     async playPalomaMinigame(options = {}) {
         this.isWaitingForInput = false;
 
@@ -2737,8 +2834,12 @@ class VisualNovelEngine {
         return won;
     }
 
-    // Una partida de memoria: repite la secuencia de palomas que se ilumina.
-    // La secuencia crece cada nivel hasta completar `rounds`. Resuelve true/false.
+    /**
+     * Gestiona una ronda individual del minijuego de memoria de palomas.
+     * Repite la secuencia lumínica. La secuencia crece cada nivel hasta `rounds`.
+     * @param {Object} [options={}] - Configuración de tiempos y niveles totales.
+     * @returns {Promise<boolean>} Promesa que se resuelve con true o false.
+     */
     runPalomaRound(options = {}) {
         const rounds = options.rounds || 5; // niveles para ganar
         const flashMs = options.flashMs || 600; // duración de cada destello
@@ -4023,11 +4124,12 @@ class VisualNovelEngine {
         return won;
     }
 
-    // ============================================================
-    // Minijuego "eduvuelo" (Edu volando): recupera las partituras entre el
-    // entramado del concierto. Desde agosto de 2026 usa un motor propio para
-    // poder tener impulso, energía, combos y patrones sin tocar la persecución.
-    // ============================================================
+    /**
+     * Lanza el minijuego de vuelo (Edu recuperando partituras).
+     * Retiene al jugador y repite el minijuego si pierde.
+     * @param {Object} [options={}] - Parámetros de dificultad.
+     * @returns {Promise<boolean>} Promesa que se resuelve (siempre true).
+     */
     async playEduVueloMinigame(options = {}) {
         this.isWaitingForInput = false;
         let won = false;
@@ -4065,9 +4167,12 @@ class VisualNovelEngine {
         return won;
     }
 
-    // Motor dedicado al vuelo. La progresión alterna frases de partituras con
-    // patrones de peligro, de modo que una mala tirada aleatoria nunca alarga la
-    // partida ni genera una pared sin salida.
+    /**
+     * Motor dedicado al vuelo de Edu.
+     * Orquesta la generación aleatoria de frases de partituras (score) y obstáculos (hazards).
+     * @param {Object} [cfg={}] - Configuración técnica y parámetros físicos.
+     * @returns {Promise<boolean>} Promesa que se resuelve con true (meta alcanzada) o false (sin vidas).
+     */
     async runEduFlight(cfg = {}) {
         this.isWaitingForInput = false;
         const SP = 'assets/images/minigames/chapter3/sprites/';
@@ -9303,6 +9408,12 @@ class VisualNovelEngine {
         return true;
     }
 
+    /**
+     * Dibuja y anima una pantalla de presentación ("splash screen") con el título del capítulo.
+     * Flota sobre el contenedor del juego durante 2.5 segundos y se desvanece sola.
+     * @param {Object} chapter - Nodo JSON del capítulo que contiene la propiedad 'title'.
+     * @returns {Promise<void>} Se resuelve cuando el overlay ha desaparecido por completo.
+     */
     async playChapterIntro(chapter) {
         const gameContainer = document.getElementById('game-container');
         const chapterTitle = chapter.title || 'Capítulo Sin Título';
@@ -9334,6 +9445,13 @@ class VisualNovelEngine {
         });
     }
 
+    /**
+     * Dibuja la pantalla interactiva de "Fin del Capítulo".
+     * Detiene el progreso hasta que el usuario presiona "Continuar". Al hacerlo,
+     * la pantalla se convierte en un telón de transición que cubre el juego.
+     * @param {string} chapterTitle - Subtítulo a mostrar bajo el texto "Fin del Capítulo".
+     * @returns {Promise<HTMLElement>} Promesa que resuelve entregando el propio nodo DOM del telón (para que sea eliminado luego).
+     */
     async showChapterEnd(chapterTitle) {
         const gameContainer = document.getElementById('game-container');
 

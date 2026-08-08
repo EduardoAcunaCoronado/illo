@@ -37,9 +37,15 @@
         },
     ];
 
+    /**
+     * Minijuego del capítulo 5: "Canalización de Runas".
+     * El jugador debe mantener 4 teclas simultáneas en equilibrio durante varios niveles.
+     * Hereda de MinigameBase.
+     */
     class RuneChannelingMinigame extends window.MinigameBase {
         constructor(options = {}) {
             super(options);
+            // Configuración del desafío
             this.levels = options.levels || 7;
             this.level = 1;
             this.holdRequired = options.holdRequired || 1.35;
@@ -57,6 +63,10 @@
             return new RuneChannelingMinigame(options).play();
         }
 
+        /**
+         * Inicializa y arranca el bucle de animaciones.
+         * @returns {Promise} Se resuelve con true si el jugador supera todos los niveles.
+         */
         start() {
             this.state = 'running';
             return new Promise((resolve) => {
@@ -156,6 +166,9 @@
             this.message(`Nivel ${level}: cada poder busca su propio equilibrio.`);
         }
 
+        /**
+         * Bucle de juego. Comprueba que el componente siga vivo y calcula el Delta Time.
+         */
         tick(time) {
             // Si nos han sacado desde los botones de arriba, el overlay ya no está en
             // el documento: parar el bucle y soltar los oyentes de teclado, que
@@ -173,6 +186,10 @@
             this.rafId = requestAnimationFrame((nextTime) => this.tick(nextTime));
         }
 
+        /**
+         * Aplica la física a las runas (gravedad, impulso de teclas, ruido aleatorio).
+         * @param {number} dt - Delta time
+         */
         update(dt) {
             let allStable = true;
             const push = 58 + this.level * 4.5;

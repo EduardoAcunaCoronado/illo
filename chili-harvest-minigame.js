@@ -19,6 +19,11 @@
             ),
         );
 
+    /**
+     * Minijuego del capítulo 2: Recolección de chiles picantes.
+     * El jugador mueve a Samu de izquierda a derecha recogiendo chiles y esquivando ketchup.
+     * Hereda de MinigameBase.
+     */
     class ChiliHarvestMinigame extends window.MinigameBase {
         constructor(options = {}) {
             super(options);
@@ -28,6 +33,11 @@
             return new ChiliHarvestMinigame(options).play();
         }
 
+        /**
+         * Inicializa la partida, pre-carga las imágenes de Samu, los chiles y el ketchup,
+         * inyecta el HUD y arranca el bucle de físicas.
+         * @returns {Promise<number>} Devuelve el número final de chiles recolectados.
+         */
         async start() {
             this.state = 'running';
             const rawDuration = Number(this.options.duration) || 22000;
@@ -155,6 +165,9 @@
                     });
                 };
 
+                /**
+                 * Finaliza el minijuego, deshabilita controles, limpia la pantalla y muestra la puntuación.
+                 */
                 const cleanup = () => {
                     if (!running) return;
                     running = false;
@@ -172,6 +185,10 @@
                     }, 1200);
                 };
 
+                /**
+                 * Bucle recursivo que controla la caída de objetos y su detección de colisiones.
+                 * @param {number} time - Marca de tiempo del frame actual.
+                 */
                 const loop = (time) => {
                     if (!running || !overlay.isConnected) {
                         running = false;
