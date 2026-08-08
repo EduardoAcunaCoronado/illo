@@ -307,6 +307,21 @@ FUNCIONAMIENTO JUGABLE Y TÉCNICO
 - Todo cambio real de setBackground, y clearBackground cuando había un fondo,
   ejecuta removeCharacter sobre left, center y right. Las apariciones del nuevo
   fondo deben declararse después de setBackground.
+- `showCharacter.enter` usa `fade` si el guion lo omite; `null` reserva una
+  aparición instantánea. Sólo anima el paso de no visible a visible; repetir la
+  acción para un personaje ya presente actualiza su estado sin reentrada. Durante
+  una entrada, la recomposición horizontal no se interpola, así que retirar y
+  volver a mostrar varios huecos conserva `left`, `right`, `bottom` o `fade` sin
+  movimientos diagonales. La regresión vive en
+  `npm run test:character-transitions`.
+- `showCharacter` y `setPose` aceptan `fade`, que vale `true` por defecto cuando
+  el mismo personaje visible cambia de pose. `fade: false` sustituye el sprite
+  al instante. El fundido usa dos capas temporales durante 280 ms, precarga el
+  destino y siempre consolida una única imagen al terminar o ser interrumpido;
+  las secuencias de acting lo desactivan internamente.
+- Al avanzar por `dialoguePlayback` después de Retroceder, `nextLine()` solicita
+  `recreateActions: true`: restaura la base anterior y reaplica las acciones de
+  presentación, incluidos los `enter`, sin repetir progreso ni minijuegos.
 - Menú de escenas: puede saltar a cualquier escena del capítulo, incluso desde una
   elección; se oculta durante un minijuego activo. Sólo la escena actual se
   distingue, en dorado. No existe estado azul ni estilo de escena visitada;

@@ -30,15 +30,15 @@
       "frames": [
         {
           "src": "assets/images/characters/edu/animations/edu_neutral_blink_half.webp",
-          "duration": 65
+          "duration": 30
         },
         {
           "src": "assets/images/characters/edu/animations/edu_neutral_blink_closed.webp",
-          "duration": 95
+          "duration": 15
         },
         {
           "src": "assets/images/characters/edu/animations/edu_neutral_blink_half.webp",
-          "duration": 65
+          "duration": 30
         }
       ],
       "delayRange": [
@@ -47,7 +47,7 @@
       ],
       "loop": true
     },
-    "happy": [{ "src": "assets/images/characters/edu/animations/blinks/edu_happy_blink_closed.webp", "duration": 95 }],
+    "happy": [{ "src": "assets/images/characters/edu/animations/blinks/edu_happy_blink_closed.webp", "duration": 40 }],
     "sad": [{ "src": "assets/images/characters/edu/animations/blinks/edu_sad_blink_closed.webp", "duration": 95 }],
     "angry": [{ "src": "assets/images/characters/edu/animations/blinks/edu_angry_blink_closed.webp", "duration": 95 }],
     "surprised": [{ "src": "assets/images/characters/edu/animations/blinks/edu_surprised_blink_closed.webp", "duration": 90 }],

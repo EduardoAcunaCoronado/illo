@@ -433,6 +433,13 @@ for (const file of filesIn(chaptersDir, ".json")) {
             errors.push(`${actionWhere}: setPose requiere position`);
           }
           if (
+            ["showCharacter", "setPose"].includes(action.type) &&
+            Object.prototype.hasOwnProperty.call(action, "fade") &&
+            typeof action.fade !== "boolean"
+          ) {
+            errors.push(`${actionWhere}: fade debe ser true o false`);
+          }
+          if (
             [
               "showCharacter",
               "setPose",
